@@ -2,7 +2,7 @@
 
 Simulador realista de administración de loterías en **Álora**. Tú eres **Miriam**.
 
-**Versión: 0.4**
+**Versión: 0.5**
 
 ## Cómo jugar
 
@@ -11,19 +11,20 @@ Simulador realista de administración de loterías en **Álora**. Tú eres **Mir
 
 No abras `index.html` de la raíz.
 
-## Novedades v0.4
+## Novedades v0.5
 
-- +50 loterías inventadas (autonómicas, provinciales y locales de Álora/Málaga/Andalucía)
-- Quíntuple Plus y más apuestas hípicas
-- TPV: deshacer última línea (Ctrl+Z), confirmaciones importantes
-- Tema claro / oscuro
-- Escaparate de décimos de administración
-- Abonos: el cliente visita y Miriam confirma en el TPV
-- Pantalla de resultados del día al cerrar
-- Alerta de premio alto (≥ 2.000 €)
-- Pedidos a proveedor con coste y fecha; inventario de rascas los lunes
-- Cumpleaños / santoral y más eventos locales
-- PDF de estadísticas
+- Cada lotería inventada con mecánica propia (17 modos: décimos, bingos, ruleta, cartas, dados, hora, fecha…)
+- Turno de peña los viernes (pedido grande, transferencia)
+- Fracciones / pedrea / serie en el TPV
+- Rascas en mostrador (animación al comprobar)
+- Caja ↔ banco (ingreso y pedir cambio)
+- Liquidación mensual LAE/ONCE + PDF
+- Comisión y características visibles en el TPV
+- Tablón del pueblo
+- Atajos: **N** TPV · **A** arqueo · **C** cierre
+- Ajustes: volúmenes, tipografía, velocidad, tema
+- PDF de extracto semanal y tickets más completos
+- Autosave visible (“guardado hace… · hueco N”)
 
 ## Desarrollo
 
