@@ -62,9 +62,15 @@ Recrear una red **supercompleta** en Alemania para Nimby Rails:
 
 ## Flota
 
-- Unidades catalogadas: **45**
+- Unidades catalogadas: **847** (179 base + 668 variantes)
 - Asignación: automática según servicios del operador (ver `data/operators.json` → `flota`)
 - Colecciones Workshop recomendadas: ver `data/fleet.json`
+
+## Hubs y corredores
+
+- Estaciones/hubs: **568**
+- Corredores: **39**
+- Detalle: `data/hubs.json`, `data/corridors.json`
 
 ## Generador
 
@@ -74,19 +80,21 @@ Entrada:
 - `data/line-types.json`
 - `data/hubs.json`
 - `data/fleet.json`
+- `data/corridors.json`
 
 Salida:
 
 - `output/lines-sample.json` (muestra)
-- futuras corridas masivas: `output/lines-batch-*.json`
+- `output/lines-mass.json` (lote masivo)
+- `output/*-summary.json`
 
 ## Fases
 
 | Fase | Estado | Contenido |
 | --- | --- | --- |
 | A | Hecha | Catálogo operadores + logos + colores + zonas |
-| B | Base lista | Nomenclatura y tipos de línea |
-| C | Base lista | Catálogo flota + asignación mixta |
-| D | Scaffold | Generador de líneas a escala |
-| E | Pendiente | Hubs/estaciones exhaustivos + miles de líneas |
-| F | Pendiente | Guía de importación a partida Nimby Rails |
+| B | Hecha | Nomenclatura y tipos de línea |
+| C | Hecha | Catálogo flota ampliado (cientos) + asignación mixta |
+| D | Hecha | Generador por corredor + cuotas |
+| E | Hecha | Hubs densificados + miles de líneas |
+| F | Hecha | Guía de importación a partida Nimby Rails |

@@ -1,42 +1,7741 @@
 {
-  "version": "0.1.0",
-  "nota": "Nodos principales reales + algunos ficticios de densificación. Se ampliará masivamente en fases posteriores.",
+  "version": "0.2.0",
+  "nota": "Nodos reales densificados + distritos metropolitanos + estaciones ficticias de densificación.",
+  "total": 568,
   "hubs": [
-    {"id": "berlin-hbf", "nombre": "Berlín Central", "land": "be", "lat": 52.525, "lon": 13.369, "tier": 1, "roles": ["av", "ld", "s", "u", "ae"]},
-    {"id": "hamburg-hbf", "nombre": "Hamburgo Central", "land": "hh", "lat": 53.553, "lon": 10.006, "tier": 1, "roles": ["av", "ld", "s", "u", "ae"]},
-    {"id": "muenchen-hbf", "nombre": "Múnich Central", "land": "by", "lat": 48.140, "lon": 11.558, "tier": 1, "roles": ["av", "ld", "s", "u", "ae"]},
-    {"id": "frankfurt-hbf", "nombre": "Fráncfort del Meno Central", "land": "he", "lat": 50.107, "lon": 8.663, "tier": 1, "roles": ["av", "ld", "s", "u", "ae"]},
-    {"id": "koeln-hbf", "nombre": "Colonia Central", "land": "nw", "lat": 50.943, "lon": 6.958, "tier": 1, "roles": ["av", "ld", "s", "t"]},
-    {"id": "stuttgart-hbf", "nombre": "Stuttgart Central", "land": "bw", "lat": 48.784, "lon": 9.182, "tier": 1, "roles": ["av", "ld", "s", "t", "ae"]},
-    {"id": "duesseldorf-hbf", "nombre": "Düsseldorf Central", "land": "nw", "lat": 51.220, "lon": 6.794, "tier": 1, "roles": ["ld", "s", "t", "ae"]},
-    {"id": "hannover-hbf", "nombre": "Hannover Central", "land": "ni", "lat": 52.377, "lon": 9.742, "tier": 1, "roles": ["av", "ld", "s", "t"]},
-    {"id": "nuernberg-hbf", "nombre": "Núremberg Central", "land": "by", "lat": 49.446, "lon": 11.082, "tier": 1, "roles": ["av", "ld", "s", "u"]},
-    {"id": "leipzig-hbf", "nombre": "Leipzig Central", "land": "sn", "lat": 51.345, "lon": 12.381, "tier": 1, "roles": ["av", "ld", "s", "t"]},
-    {"id": "dresden-hbf", "nombre": "Dresde Central", "land": "sn", "lat": 51.040, "lon": 13.732, "tier": 1, "roles": ["ld", "s", "t"]},
-    {"id": "dortmund-hbf", "nombre": "Dortmund Central", "land": "nw", "lat": 51.518, "lon": 7.459, "tier": 1, "roles": ["ld", "s", "re"]},
-    {"id": "essen-hbf", "nombre": "Essen Central", "land": "nw", "lat": 51.451, "lon": 7.014, "tier": 1, "roles": ["ld", "s", "re"]},
-    {"id": "bremen-hbf", "nombre": "Bremen Central", "land": "hb", "lat": 53.083, "lon": 8.814, "tier": 1, "roles": ["ld", "re", "t"]},
-    {"id": "mannheim-hbf", "nombre": "Mannheim Central", "land": "bw", "lat": 49.479, "lon": 8.469, "tier": 1, "roles": ["av", "ld", "re"]},
-    {"id": "karlsruhe-hbf", "nombre": "Karlsruhe Central", "land": "bw", "lat": 48.993, "lon": 8.401, "tier": 2, "roles": ["ld", "re", "tt"]},
-    {"id": "freiburg-hbf", "nombre": "Friburgo Central", "land": "bw", "lat": 47.998, "lon": 7.842, "tier": 2, "roles": ["ld", "re", "tur"]},
-    {"id": "augsburg-hbf", "nombre": "Augsburgo Central", "land": "by", "lat": 48.365, "lon": 10.886, "tier": 2, "roles": ["ld", "re", "s"]},
-    {"id": "regensburg-hbf", "nombre": "Ratisbona Central", "land": "by", "lat": 49.011, "lon": 12.099, "tier": 2, "roles": ["ld", "re"]},
-    {"id": "wuerzburg-hbf", "nombre": "Wurzburgo Central", "land": "by", "lat": 49.801, "lon": 9.936, "tier": 2, "roles": ["av", "ld", "re"]},
-    {"id": "erfurt-hbf", "nombre": "Erfurt Central", "land": "th", "lat": 50.973, "lon": 11.038, "tier": 1, "roles": ["av", "ld", "re"]},
-    {"id": "magdeburg-hbf", "nombre": "Magdeburgo Central", "land": "st", "lat": 52.130, "lon": 11.627, "tier": 2, "roles": ["ld", "re", "t"]},
-    {"id": "potsdam-hbf", "nombre": "Potsdam Central", "land": "bb", "lat": 52.392, "lon": 13.067, "tier": 2, "roles": ["re", "s"]},
-    {"id": "rostock-hbf", "nombre": "Rostock Central", "land": "mv", "lat": 54.078, "lon": 12.131, "tier": 2, "roles": ["ld", "re", "t"]},
-    {"id": "kiel-hbf", "nombre": "Kiel Central", "land": "sh", "lat": 54.315, "lon": 10.132, "tier": 2, "roles": ["ld", "re", "ae"]},
-    {"id": "luebeck-hbf", "nombre": "Lübeck Central", "land": "sh", "lat": 53.867, "lon": 10.669, "tier": 2, "roles": ["ld", "re", "tur"]},
-    {"id": "saarbruecken-hbf", "nombre": "Sarrebruck Central", "land": "sl", "lat": 49.241, "lon": 6.991, "tier": 2, "roles": ["ld", "re"]},
-    {"id": "mainz-hbf", "nombre": "Maguncia Central", "land": "rp", "lat": 50.001, "lon": 8.259, "tier": 2, "roles": ["ld", "re", "s"]},
-    {"id": "koblenz-hbf", "nombre": "Coblenza Central", "land": "rp", "lat": 50.351, "lon": 7.588, "tier": 2, "roles": ["ld", "re", "tur"]},
-    {"id": "aachen-hbf", "nombre": "Aquisgrán Central", "land": "nw", "lat": 50.768, "lon": 6.091, "tier": 2, "roles": ["av", "ld", "re"]},
-    {"id": "kassel-wilhelmshoehe", "nombre": "Kassel Wilhelmshöhe", "land": "he", "lat": 51.312, "lon": 9.447, "tier": 2, "roles": ["av", "ld", "re"]},
-    {"id": "berlin-sx", "nombre": "Berlín Anillo Norte (ficticio)", "land": "be", "lat": 52.560, "lon": 13.360, "tier": 3, "roles": ["s", "or", "mc"], "origen_datos": "ficticia"},
-    {"id": "ruhr-orbital", "nombre": "Ruhr Orbital Central (ficticio)", "land": "nw", "lat": 51.480, "lon": 7.150, "tier": 3, "roles": ["s", "or", "mc", "re"], "origen_datos": "ficticia"},
-    {"id": "muenchen-suedkreuz", "nombre": "Múnich Cruce Sur (ficticio)", "land": "by", "lat": 48.100, "lon": 11.560, "tier": 3, "roles": ["s", "mc", "re"], "origen_datos": "ficticia"},
-    {"id": "frankfurt-westkreuz", "nombre": "Fráncfort Cruce Oeste (ficticio)", "land": "he", "lat": 50.110, "lon": 8.560, "tier": 3, "roles": ["s", "mc", "ae"], "origen_datos": "ficticia"},
-    {"id": "hamburg-hafencity", "nombre": "Hamburgo Puerto Nuevo (ficticio)", "land": "hh", "lat": 53.540, "lon": 9.990, "tier": 3, "roles": ["s", "u", "t"], "origen_datos": "ficticia"}
+    {
+      "id": "berlin-hbf",
+      "nombre": "Berlín Central",
+      "land": "be",
+      "lat": 52.525,
+      "lon": 13.369,
+      "tier": 1,
+      "roles": [
+        "av",
+        "ld",
+        "s",
+        "u",
+        "ae"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "hamburg-hbf",
+      "nombre": "Hamburgo Central",
+      "land": "hh",
+      "lat": 53.553,
+      "lon": 10.006,
+      "tier": 1,
+      "roles": [
+        "av",
+        "ld",
+        "s",
+        "u",
+        "ae"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "muenchen-hbf",
+      "nombre": "Múnich Central",
+      "land": "by",
+      "lat": 48.14,
+      "lon": 11.558,
+      "tier": 1,
+      "roles": [
+        "av",
+        "ld",
+        "s",
+        "u",
+        "ae"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "frankfurt-hbf",
+      "nombre": "Fráncfort del Meno Central",
+      "land": "he",
+      "lat": 50.107,
+      "lon": 8.663,
+      "tier": 1,
+      "roles": [
+        "av",
+        "ld",
+        "s",
+        "u",
+        "ae"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "koeln-hbf",
+      "nombre": "Colonia Central",
+      "land": "nw",
+      "lat": 50.943,
+      "lon": 6.958,
+      "tier": 1,
+      "roles": [
+        "av",
+        "ld",
+        "s",
+        "t"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "stuttgart-hbf",
+      "nombre": "Stuttgart Central",
+      "land": "bw",
+      "lat": 48.784,
+      "lon": 9.182,
+      "tier": 1,
+      "roles": [
+        "av",
+        "ld",
+        "s",
+        "t",
+        "ae"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "duesseldorf-hbf",
+      "nombre": "Düsseldorf Central",
+      "land": "nw",
+      "lat": 51.22,
+      "lon": 6.794,
+      "tier": 1,
+      "roles": [
+        "ld",
+        "s",
+        "t",
+        "ae"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "hannover-hbf",
+      "nombre": "Hannover Central",
+      "land": "ni",
+      "lat": 52.377,
+      "lon": 9.742,
+      "tier": 1,
+      "roles": [
+        "av",
+        "ld",
+        "s",
+        "t"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "nuernberg-hbf",
+      "nombre": "Núremberg Central",
+      "land": "by",
+      "lat": 49.446,
+      "lon": 11.082,
+      "tier": 1,
+      "roles": [
+        "av",
+        "ld",
+        "s",
+        "u"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "leipzig-hbf",
+      "nombre": "Leipzig Central",
+      "land": "sn",
+      "lat": 51.345,
+      "lon": 12.381,
+      "tier": 1,
+      "roles": [
+        "av",
+        "ld",
+        "s",
+        "t"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "dresden-hbf",
+      "nombre": "Dresde Central",
+      "land": "sn",
+      "lat": 51.04,
+      "lon": 13.732,
+      "tier": 1,
+      "roles": [
+        "ld",
+        "s",
+        "t"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "dortmund-hbf",
+      "nombre": "Dortmund Central",
+      "land": "nw",
+      "lat": 51.518,
+      "lon": 7.459,
+      "tier": 1,
+      "roles": [
+        "ld",
+        "s",
+        "re"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "essen-hbf",
+      "nombre": "Essen Central",
+      "land": "nw",
+      "lat": 51.451,
+      "lon": 7.014,
+      "tier": 1,
+      "roles": [
+        "ld",
+        "s",
+        "re"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "bremen-hbf",
+      "nombre": "Bremen Central",
+      "land": "hb",
+      "lat": 53.083,
+      "lon": 8.814,
+      "tier": 1,
+      "roles": [
+        "ld",
+        "re",
+        "t"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "mannheim-hbf",
+      "nombre": "Mannheim Central",
+      "land": "bw",
+      "lat": 49.479,
+      "lon": 8.469,
+      "tier": 1,
+      "roles": [
+        "av",
+        "ld",
+        "re"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "erfurt-hbf",
+      "nombre": "Erfurt Central",
+      "land": "th",
+      "lat": 50.973,
+      "lon": 11.038,
+      "tier": 1,
+      "roles": [
+        "av",
+        "ld",
+        "re"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "karlsruhe-hbf",
+      "nombre": "Karlsruhe Central",
+      "land": "bw",
+      "lat": 48.993,
+      "lon": 8.401,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "tt"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "freiburg-hbf",
+      "nombre": "Friburgo Central",
+      "land": "bw",
+      "lat": 47.998,
+      "lon": 7.842,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "tur"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "augsburg-hbf",
+      "nombre": "Augsburgo Central",
+      "land": "by",
+      "lat": 48.365,
+      "lon": 10.886,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "regensburg-hbf",
+      "nombre": "Ratisbona Central",
+      "land": "by",
+      "lat": 49.011,
+      "lon": 12.099,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "wuerzburg-hbf",
+      "nombre": "Wurzburgo Central",
+      "land": "by",
+      "lat": 49.801,
+      "lon": 9.936,
+      "tier": 2,
+      "roles": [
+        "av",
+        "ld",
+        "re"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "magdeburg-hbf",
+      "nombre": "Magdeburgo Central",
+      "land": "st",
+      "lat": 52.13,
+      "lon": 11.627,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "t"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "potsdam-hbf",
+      "nombre": "Potsdam Central",
+      "land": "bb",
+      "lat": 52.392,
+      "lon": 13.067,
+      "tier": 2,
+      "roles": [
+        "re",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "rostock-hbf",
+      "nombre": "Rostock Central",
+      "land": "mv",
+      "lat": 54.078,
+      "lon": 12.131,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "t"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "kiel-hbf",
+      "nombre": "Kiel Central",
+      "land": "sh",
+      "lat": 54.315,
+      "lon": 10.132,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "ae"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "luebeck-hbf",
+      "nombre": "Lübeck Central",
+      "land": "sh",
+      "lat": 53.867,
+      "lon": 10.669,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "tur"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "saarbruecken-hbf",
+      "nombre": "Sarrebruck Central",
+      "land": "sl",
+      "lat": 49.241,
+      "lon": 6.991,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "mainz-hbf",
+      "nombre": "Maguncia Central",
+      "land": "rp",
+      "lat": 50.001,
+      "lon": 8.259,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "koblenz-hbf",
+      "nombre": "Coblenza Central",
+      "land": "rp",
+      "lat": 50.351,
+      "lon": 7.588,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "tur"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "aachen-hbf",
+      "nombre": "Aquisgrán Central",
+      "land": "nw",
+      "lat": 50.768,
+      "lon": 6.091,
+      "tier": 2,
+      "roles": [
+        "av",
+        "ld",
+        "re"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "kassel-wilhelmshoehe",
+      "nombre": "Kassel Wilhelmshöhe",
+      "land": "he",
+      "lat": 51.312,
+      "lon": 9.447,
+      "tier": 2,
+      "roles": [
+        "av",
+        "ld",
+        "re"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "ulm-hbf",
+      "nombre": "Ulm Central",
+      "land": "bw",
+      "lat": 48.399,
+      "lon": 9.983,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "heilbronn-hbf",
+      "nombre": "Heilbronn Central",
+      "land": "bw",
+      "lat": 49.143,
+      "lon": 9.21,
+      "tier": 2,
+      "roles": [
+        "re",
+        "tt"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "offenburg",
+      "nombre": "Offenburg",
+      "land": "bw",
+      "lat": 48.476,
+      "lon": 7.946,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "basel-bad",
+      "nombre": "Basilea Bad Bf",
+      "land": "bw",
+      "lat": 47.567,
+      "lon": 7.607,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "av",
+        "ir"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "ingolstadt-hbf",
+      "nombre": "Ingolstadt Central",
+      "land": "by",
+      "lat": 48.744,
+      "lon": 11.437,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "landshut-hbf",
+      "nombre": "Landshut Central",
+      "land": "by",
+      "lat": 48.547,
+      "lon": 12.147,
+      "tier": 2,
+      "roles": [
+        "re",
+        "rb"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "passau-hbf",
+      "nombre": "Passau Central",
+      "land": "by",
+      "lat": 48.574,
+      "lon": 13.451,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "bamberg",
+      "nombre": "Bamberg",
+      "land": "by",
+      "lat": 49.901,
+      "lon": 10.899,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "hof-hbf",
+      "nombre": "Hof Central",
+      "land": "by",
+      "lat": 50.308,
+      "lon": 11.923,
+      "tier": 2,
+      "roles": [
+        "re",
+        "rb"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "schweinfurt-hbf",
+      "nombre": "Schweinfurt Central",
+      "land": "by",
+      "lat": 50.057,
+      "lon": 10.211,
+      "tier": 2,
+      "roles": [
+        "re",
+        "rb"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "wiesbaden-hbf",
+      "nombre": "Wiesbaden Central",
+      "land": "he",
+      "lat": 50.071,
+      "lon": 8.244,
+      "tier": 2,
+      "roles": [
+        "re",
+        "s",
+        "tt"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "darmstadt-hbf",
+      "nombre": "Darmstadt Central",
+      "land": "he",
+      "lat": 49.872,
+      "lon": 8.629,
+      "tier": 2,
+      "roles": [
+        "re",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "fulda",
+      "nombre": "Fulda",
+      "land": "he",
+      "lat": 50.554,
+      "lon": 9.684,
+      "tier": 2,
+      "roles": [
+        "av",
+        "ld",
+        "re"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "giessen",
+      "nombre": "Giessen",
+      "land": "he",
+      "lat": 50.579,
+      "lon": 8.666,
+      "tier": 2,
+      "roles": [
+        "re",
+        "rb"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "marburg",
+      "nombre": "Marburg",
+      "land": "he",
+      "lat": 50.819,
+      "lon": 8.775,
+      "tier": 2,
+      "roles": [
+        "re",
+        "rb"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "bonn-hbf",
+      "nombre": "Bonn Central",
+      "land": "nw",
+      "lat": 50.732,
+      "lon": 7.097,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "t"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "wuppertal-hbf",
+      "nombre": "Wuppertal Central",
+      "land": "nw",
+      "lat": 51.255,
+      "lon": 7.15,
+      "tier": 2,
+      "roles": [
+        "re",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "bochum-hbf",
+      "nombre": "Bochum Central",
+      "land": "nw",
+      "lat": 51.479,
+      "lon": 7.223,
+      "tier": 2,
+      "roles": [
+        "re",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "duisburg-hbf",
+      "nombre": "Duisburgo Central",
+      "land": "nw",
+      "lat": 51.43,
+      "lon": 6.776,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "s",
+        "re"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "muenster-hbf",
+      "nombre": "Münster Central",
+      "land": "nw",
+      "lat": 51.957,
+      "lon": 7.635,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "bielefeld-hbf",
+      "nombre": "Bielefeld Central",
+      "land": "nw",
+      "lat": 52.029,
+      "lon": 8.533,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "hagen-hbf",
+      "nombre": "Hagen Central",
+      "land": "nw",
+      "lat": 51.363,
+      "lon": 7.46,
+      "tier": 2,
+      "roles": [
+        "re",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "solingen-hbf",
+      "nombre": "Solingen Central",
+      "land": "nw",
+      "lat": 51.162,
+      "lon": 7.004,
+      "tier": 2,
+      "roles": [
+        "re",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "krefeld-hbf",
+      "nombre": "Krefeld Central",
+      "land": "nw",
+      "lat": 51.326,
+      "lon": 6.568,
+      "tier": 2,
+      "roles": [
+        "re",
+        "rb"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "moenchengladbach-hbf",
+      "nombre": "Mönchengladbach Central",
+      "land": "nw",
+      "lat": 51.197,
+      "lon": 6.446,
+      "tier": 2,
+      "roles": [
+        "re",
+        "rb"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "osnabrueck-hbf",
+      "nombre": "Osnabrück Central",
+      "land": "ni",
+      "lat": 52.273,
+      "lon": 8.061,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "oldenburg-hbf",
+      "nombre": "Oldemburgo Central",
+      "land": "ni",
+      "lat": 53.144,
+      "lon": 8.222,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "goettingen",
+      "nombre": "Gotinga",
+      "land": "ni",
+      "lat": 51.537,
+      "lon": 9.928,
+      "tier": 2,
+      "roles": [
+        "av",
+        "ld",
+        "re"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "braunschweig-hbf",
+      "nombre": "Brunswick Central",
+      "land": "ni",
+      "lat": 52.252,
+      "lon": 10.54,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "wolfsburg-hbf",
+      "nombre": "Wolfsburgo Central",
+      "land": "ni",
+      "lat": 52.429,
+      "lon": 10.788,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "hildesheim-hbf",
+      "nombre": "Hildesheim Central",
+      "land": "ni",
+      "lat": 52.16,
+      "lon": 9.952,
+      "tier": 2,
+      "roles": [
+        "re",
+        "rb"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "celle",
+      "nombre": "Celle",
+      "land": "ni",
+      "lat": 52.621,
+      "lon": 10.063,
+      "tier": 2,
+      "roles": [
+        "re",
+        "rb"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "luneburg",
+      "nombre": "Luneburgo",
+      "land": "ni",
+      "lat": 53.25,
+      "lon": 10.42,
+      "tier": 2,
+      "roles": [
+        "re",
+        "rb"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "flensburg",
+      "nombre": "Flensburgo",
+      "land": "sh",
+      "lat": 54.775,
+      "lon": 9.436,
+      "tier": 2,
+      "roles": [
+        "re",
+        "ld"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "neumuenster",
+      "nombre": "Neumünster",
+      "land": "sh",
+      "lat": 54.076,
+      "lon": 9.984,
+      "tier": 2,
+      "roles": [
+        "re",
+        "rb"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "schwerin-hbf",
+      "nombre": "Schwerin Central",
+      "land": "mv",
+      "lat": 53.634,
+      "lon": 11.408,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "stralsund-hbf",
+      "nombre": "Stralsund Central",
+      "land": "mv",
+      "lat": 54.309,
+      "lon": 13.077,
+      "tier": 2,
+      "roles": [
+        "re",
+        "tur"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "greifswald",
+      "nombre": "Greifswald",
+      "land": "mv",
+      "lat": 54.093,
+      "lon": 13.371,
+      "tier": 2,
+      "roles": [
+        "re",
+        "rb"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "neuruppin",
+      "nombre": "Neuruppin Rheinsberger Tor",
+      "land": "bb",
+      "lat": 52.927,
+      "lon": 12.81,
+      "tier": 2,
+      "roles": [
+        "re",
+        "rb"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "cottbus-hbf",
+      "nombre": "Cottbus Central",
+      "land": "bb",
+      "lat": 51.756,
+      "lon": 14.326,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "frankfurt-oder",
+      "nombre": "Fráncfort del Óder",
+      "land": "bb",
+      "lat": 52.337,
+      "lon": 14.547,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "brandenburg-hbf",
+      "nombre": "Brandeburgo Central",
+      "land": "bb",
+      "lat": 52.401,
+      "lon": 12.564,
+      "tier": 2,
+      "roles": [
+        "re",
+        "rb"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "dessau-hbf",
+      "nombre": "Dessau Central",
+      "land": "st",
+      "lat": 51.84,
+      "lon": 12.235,
+      "tier": 2,
+      "roles": [
+        "re",
+        "tur"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "halle-hbf",
+      "nombre": "Halle Central",
+      "land": "st",
+      "lat": 51.479,
+      "lon": 11.987,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "chemnitz-hbf",
+      "nombre": "Chemnitz Central",
+      "land": "sn",
+      "lat": 50.84,
+      "lon": 12.931,
+      "tier": 2,
+      "roles": [
+        "re",
+        "tt"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "zwickau-hbf",
+      "nombre": "Zwickau Central",
+      "land": "sn",
+      "lat": 50.715,
+      "lon": 12.477,
+      "tier": 2,
+      "roles": [
+        "re",
+        "rb"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "gera-hbf",
+      "nombre": "Gera Central",
+      "land": "th",
+      "lat": 50.883,
+      "lon": 12.077,
+      "tier": 2,
+      "roles": [
+        "re",
+        "rb"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "jena-paradies",
+      "nombre": "Jena Paradies",
+      "land": "th",
+      "lat": 50.925,
+      "lon": 11.594,
+      "tier": 2,
+      "roles": [
+        "re",
+        "rb"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "weimar",
+      "nombre": "Weimar",
+      "land": "th",
+      "lat": 50.992,
+      "lon": 11.328,
+      "tier": 2,
+      "roles": [
+        "re",
+        "ld"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "eisenach",
+      "nombre": "Eisenach",
+      "land": "th",
+      "lat": 50.977,
+      "lon": 10.332,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "trier-hbf",
+      "nombre": "Tréveris Central",
+      "land": "rp",
+      "lat": 49.757,
+      "lon": 6.652,
+      "tier": 2,
+      "roles": [
+        "re",
+        "tur"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "kaiserslautern-hbf",
+      "nombre": "Kaiserslautern Central",
+      "land": "rp",
+      "lat": 49.436,
+      "lon": 7.769,
+      "tier": 2,
+      "roles": [
+        "re",
+        "rb"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "ludwigshafen-hbf",
+      "nombre": "Ludwigshafen Central",
+      "land": "rp",
+      "lat": 49.478,
+      "lon": 8.434,
+      "tier": 2,
+      "roles": [
+        "re",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "heidelberg-hbf",
+      "nombre": "Heidelberg Central",
+      "land": "bw",
+      "lat": 49.404,
+      "lon": 8.675,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "reutlingen-hbf",
+      "nombre": "Reutlingen Central",
+      "land": "bw",
+      "lat": 48.496,
+      "lon": 9.209,
+      "tier": 2,
+      "roles": [
+        "re",
+        "rb"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "konstanz",
+      "nombre": "Constanza",
+      "land": "bw",
+      "lat": 47.659,
+      "lon": 9.178,
+      "tier": 2,
+      "roles": [
+        "re",
+        "tur"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "friedrichshafen-stadt",
+      "nombre": "Friedrichshafen Ciudad",
+      "land": "bw",
+      "lat": 47.653,
+      "lon": 9.473,
+      "tier": 2,
+      "roles": [
+        "re",
+        "tur"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "rosenheim",
+      "nombre": "Rosenheim",
+      "land": "by",
+      "lat": 47.85,
+      "lon": 12.119,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "kempten",
+      "nombre": "Kempten",
+      "land": "by",
+      "lat": 47.715,
+      "lon": 10.316,
+      "tier": 2,
+      "roles": [
+        "re",
+        "tur"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "garmisch",
+      "nombre": "Garmisch-Partenkirchen",
+      "land": "by",
+      "lat": 47.492,
+      "lon": 11.097,
+      "tier": 2,
+      "roles": [
+        "re",
+        "tur"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "berlin-suedkreuz",
+      "nombre": "Berlín Südkreuz",
+      "land": "be",
+      "lat": 52.475,
+      "lon": 13.365,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "s",
+        "ae"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "berlin-gesundbrunnen",
+      "nombre": "Berlín Gesundbrunnen",
+      "land": "be",
+      "lat": 52.549,
+      "lon": 13.389,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "s",
+        "u"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "berlin-ost",
+      "nombre": "Berlín Ostbahnhof",
+      "land": "be",
+      "lat": 52.51,
+      "lon": 13.435,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "berlin-spandau",
+      "nombre": "Berlín Spandau",
+      "land": "be",
+      "lat": 52.535,
+      "lon": 13.197,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "s",
+        "re"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "hamburg-altona",
+      "nombre": "Hamburgo-Altona",
+      "land": "hh",
+      "lat": 53.552,
+      "lon": 9.935,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "s",
+        "re"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "hamburg-dammtor",
+      "nombre": "Hamburgo Dammtor",
+      "land": "hh",
+      "lat": 53.561,
+      "lon": 9.99,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "hamburg-harburg",
+      "nombre": "Hamburgo-Harburgo",
+      "land": "hh",
+      "lat": 53.456,
+      "lon": 9.992,
+      "tier": 2,
+      "roles": [
+        "re",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "muenchen-ost",
+      "nombre": "Múnich Este",
+      "land": "by",
+      "lat": 48.127,
+      "lon": 11.607,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "s",
+        "u"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "muenchen-pasing",
+      "nombre": "Múnich-Pasing",
+      "land": "by",
+      "lat": 48.149,
+      "lon": 11.461,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "s",
+        "re"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "frankfurt-sued",
+      "nombre": "Fráncfort Sur",
+      "land": "he",
+      "lat": 50.099,
+      "lon": 8.686,
+      "tier": 2,
+      "roles": [
+        "re",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "frankfurt-flughafen",
+      "nombre": "Fráncfort Aeropuerto",
+      "land": "he",
+      "lat": 50.051,
+      "lon": 8.571,
+      "tier": 1,
+      "roles": [
+        "av",
+        "ld",
+        "ae",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "koeln-messe",
+      "nombre": "Colonia Messe/Deutz",
+      "land": "nw",
+      "lat": 50.941,
+      "lon": 6.975,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "s",
+        "re"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "duesseldorf-flughafen",
+      "nombre": "Düsseldorf Aeropuerto",
+      "land": "nw",
+      "lat": 51.292,
+      "lon": 6.787,
+      "tier": 2,
+      "roles": [
+        "ae",
+        "s",
+        "re"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "muenchen-flughafen",
+      "nombre": "Múnich Aeropuerto",
+      "land": "by",
+      "lat": 48.354,
+      "lon": 11.786,
+      "tier": 2,
+      "roles": [
+        "ae",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "berlin-brandenburg-flughafen",
+      "nombre": "Berlín Brandeburgo Aeropuerto",
+      "land": "bb",
+      "lat": 52.366,
+      "lon": 13.502,
+      "tier": 2,
+      "roles": [
+        "ae",
+        "s",
+        "re"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "hamburg-flughafen",
+      "nombre": "Hamburgo Aeropuerto",
+      "land": "hh",
+      "lat": 53.633,
+      "lon": 10.006,
+      "tier": 2,
+      "roles": [
+        "ae",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "stuttgart-flughafen",
+      "nombre": "Stuttgart Aeropuerto/Feria",
+      "land": "bw",
+      "lat": 48.69,
+      "lon": 9.193,
+      "tier": 2,
+      "roles": [
+        "ae",
+        "s",
+        "t"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "hannover-flughafen",
+      "nombre": "Hannover Aeropuerto",
+      "land": "ni",
+      "lat": 52.461,
+      "lon": 9.691,
+      "tier": 2,
+      "roles": [
+        "ae",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "koeln-bonn-flughafen",
+      "nombre": "Colonia/Bonn Aeropuerto",
+      "land": "nw",
+      "lat": 50.879,
+      "lon": 7.119,
+      "tier": 2,
+      "roles": [
+        "ae",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "berlin-zoo",
+      "nombre": "Berlín Zoologischer Garten",
+      "land": "be",
+      "lat": 52.507,
+      "lon": 13.332,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "berlin-friedrichstrasse",
+      "nombre": "Berlín Friedrichstraße",
+      "land": "be",
+      "lat": 52.52,
+      "lon": 13.387,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "berlin-alexanderplatz",
+      "nombre": "Berlín Alexanderplatz",
+      "land": "be",
+      "lat": 52.521,
+      "lon": 13.411,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "berlin-lichtenberg",
+      "nombre": "Berlín Lichtenberg",
+      "land": "be",
+      "lat": 52.51,
+      "lon": 13.496,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "berlin-wannsee",
+      "nombre": "Berlín-Wannsee",
+      "land": "be",
+      "lat": 52.421,
+      "lon": 13.179,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "oranienburg",
+      "nombre": "Oranienburg",
+      "land": "bb",
+      "lat": 52.754,
+      "lon": 13.249,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "bernau",
+      "nombre": "Bernau",
+      "land": "bb",
+      "lat": 52.676,
+      "lon": 13.593,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "koenigs-wusterhausen",
+      "nombre": "Königs Wusterhausen",
+      "land": "bb",
+      "lat": 52.298,
+      "lon": 13.633,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "eberswalde",
+      "nombre": "Eberswalde",
+      "land": "bb",
+      "lat": 52.834,
+      "lon": 13.797,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "juterbog",
+      "nombre": "Jüterbog",
+      "land": "bb",
+      "lat": 51.984,
+      "lon": 13.067,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "wittenberge",
+      "nombre": "Wittenberge",
+      "land": "bb",
+      "lat": 53,
+      "lon": 11.75,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "rathenow",
+      "nombre": "Rathenow",
+      "land": "bb",
+      "lat": 52.6,
+      "lon": 12.33,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "fuerstenwalde",
+      "nombre": "Fürstenwalde",
+      "land": "bb",
+      "lat": 52.36,
+      "lon": 14.07,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "tuebingen",
+      "nombre": "Tubinga",
+      "land": "bw",
+      "lat": 48.52,
+      "lon": 9.055,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "pforzheim",
+      "nombre": "Pforzheim",
+      "land": "bw",
+      "lat": 48.894,
+      "lon": 8.703,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "baden-baden",
+      "nombre": "Baden-Baden",
+      "land": "bw",
+      "lat": 48.79,
+      "lon": 8.191,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "villingen",
+      "nombre": "Villingen-Schwenningen",
+      "land": "bw",
+      "lat": 48.064,
+      "lon": 8.464,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "ravensburg",
+      "nombre": "Ravensburg",
+      "land": "bw",
+      "lat": 47.785,
+      "lon": 9.612,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "aschaffenburg",
+      "nombre": "Aschaffenburg",
+      "land": "bw",
+      "lat": 49.98,
+      "lon": 9.144,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "schwaebisch-hall",
+      "nombre": "Schwäbisch Hall",
+      "land": "bw",
+      "lat": 49.112,
+      "lon": 9.743,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "ludwigsburg",
+      "nombre": "Ludwigsburgo",
+      "land": "bw",
+      "lat": 48.892,
+      "lon": 9.186,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "esslingen",
+      "nombre": "Esslingen",
+      "land": "bw",
+      "lat": 48.739,
+      "lon": 9.3,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "sindelfingen",
+      "nombre": "Sindelfingen",
+      "land": "bw",
+      "lat": 48.709,
+      "lon": 9.005,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "goeppingen",
+      "nombre": "Göppingen",
+      "land": "bw",
+      "lat": 48.702,
+      "lon": 9.652,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "singen",
+      "nombre": "Singen",
+      "land": "bw",
+      "lat": 47.759,
+      "lon": 8.84,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "fuerth-hbf",
+      "nombre": "Fürth Central",
+      "land": "by",
+      "lat": 49.47,
+      "lon": 11,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "erlangen",
+      "nombre": "Erlangen",
+      "land": "by",
+      "lat": 49.596,
+      "lon": 11.002,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "ansbach",
+      "nombre": "Ansbach",
+      "land": "by",
+      "lat": 49.301,
+      "lon": 10.578,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "bayreuth-hbf",
+      "nombre": "Bayreuth Central",
+      "land": "by",
+      "lat": 49.95,
+      "lon": 11.58,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "coburg",
+      "nombre": "Coburgo",
+      "land": "by",
+      "lat": 50.263,
+      "lon": 10.957,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "memmingen",
+      "nombre": "Memmingen",
+      "land": "by",
+      "lat": 47.986,
+      "lon": 10.186,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "neu-ulm",
+      "nombre": "Neu-Ulm",
+      "land": "by",
+      "lat": 48.393,
+      "lon": 10.005,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "freising",
+      "nombre": "Freising",
+      "land": "by",
+      "lat": 48.395,
+      "lon": 11.744,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "dachau",
+      "nombre": "Dachau",
+      "land": "by",
+      "lat": 48.255,
+      "lon": 11.445,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "germering",
+      "nombre": "Germering-Unterpfaffenhofen",
+      "land": "by",
+      "lat": 48.13,
+      "lon": 11.37,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "starnberg",
+      "nombre": "Starnberg",
+      "land": "by",
+      "lat": 47.997,
+      "lon": 11.344,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "bad-toelz",
+      "nombre": "Bad Tölz",
+      "land": "by",
+      "lat": 47.76,
+      "lon": 11.558,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "traunstein",
+      "nombre": "Traunstein",
+      "land": "by",
+      "lat": 47.87,
+      "lon": 12.64,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "weilheim",
+      "nombre": "Weilheim",
+      "land": "by",
+      "lat": 47.841,
+      "lon": 11.148,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "deggendorf",
+      "nombre": "Deggendorf",
+      "land": "by",
+      "lat": 48.83,
+      "lon": 12.96,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "straubing",
+      "nombre": "Straubing",
+      "land": "by",
+      "lat": 48.877,
+      "lon": 12.574,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "bremen-neustadt",
+      "nombre": "Bremen Neustadt",
+      "land": "hb",
+      "lat": 53.07,
+      "lon": 8.79,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "bremen-vahr",
+      "nombre": "Bremen Vahr",
+      "land": "hb",
+      "lat": 53.08,
+      "lon": 8.89,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "bremerhaven-hbf",
+      "nombre": "Bremerhaven Central",
+      "land": "hb",
+      "lat": 53.535,
+      "lon": 8.599,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "hanau-hbf",
+      "nombre": "Hanau Central",
+      "land": "he",
+      "lat": 50.121,
+      "lon": 8.929,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "offenbach-hbf",
+      "nombre": "Offenbach Central",
+      "land": "he",
+      "lat": 50.099,
+      "lon": 8.761,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "bad-homburg",
+      "nombre": "Bad Homburg",
+      "land": "he",
+      "lat": 50.22,
+      "lon": 8.621,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "friedberg",
+      "nombre": "Friedberg",
+      "land": "he",
+      "lat": 50.333,
+      "lon": 8.76,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "limburg",
+      "nombre": "Limburgo",
+      "land": "he",
+      "lat": 50.384,
+      "lon": 8.068,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "wetzlar",
+      "nombre": "Wetzlar",
+      "land": "he",
+      "lat": 50.564,
+      "lon": 8.504,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "bad-nauheim",
+      "nombre": "Bad Nauheim",
+      "land": "he",
+      "lat": 50.367,
+      "lon": 8.749,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "ruedesheim",
+      "nombre": "Rüdesheim",
+      "land": "he",
+      "lat": 49.977,
+      "lon": 7.915,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "hamburg-bergedorf",
+      "nombre": "Hamburgo-Bergedorf",
+      "land": "hh",
+      "lat": 53.489,
+      "lon": 10.206,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "hamburg-billwerder",
+      "nombre": "Hamburgo Billwerder",
+      "land": "hh",
+      "lat": 53.51,
+      "lon": 10.12,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "hamburg-ohlsdorf",
+      "nombre": "Hamburgo Ohlsdorf",
+      "land": "hh",
+      "lat": 53.621,
+      "lon": 10.032,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "hamburg-blankenese",
+      "nombre": "Hamburgo Blankenese",
+      "land": "hh",
+      "lat": 53.564,
+      "lon": 9.814,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "wismar",
+      "nombre": "Wismar",
+      "land": "mv",
+      "lat": 53.892,
+      "lon": 11.466,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "guestrow",
+      "nombre": "Güstrow",
+      "land": "mv",
+      "lat": 53.796,
+      "lon": 12.174,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "neubrandenburg",
+      "nombre": "Neubrandenburg",
+      "land": "mv",
+      "lat": 53.562,
+      "lon": 13.261,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "waren",
+      "nombre": "Waren Müritz",
+      "land": "mv",
+      "lat": 53.52,
+      "lon": 12.68,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "bergen-ruegen",
+      "nombre": "Bergen auf Rügen",
+      "land": "mv",
+      "lat": 54.418,
+      "lon": 13.429,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "wilhelmshaven",
+      "nombre": "Wilhelmshaven",
+      "land": "ni",
+      "lat": 53.52,
+      "lon": 8.115,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "empten",
+      "nombre": "Emden Central",
+      "land": "ni",
+      "lat": 53.37,
+      "lon": 7.196,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "nordhorn",
+      "nombre": "Nordhorn",
+      "land": "ni",
+      "lat": 52.43,
+      "lon": 7.07,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "meppen",
+      "nombre": "Meppen",
+      "land": "ni",
+      "lat": 52.694,
+      "lon": 7.297,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "nienburg",
+      "nombre": "Nienburg",
+      "land": "ni",
+      "lat": 52.643,
+      "lon": 9.22,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "hameln",
+      "nombre": "Hameln",
+      "land": "ni",
+      "lat": 52.101,
+      "lon": 9.35,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "goslar",
+      "nombre": "Goslar",
+      "land": "ni",
+      "lat": 51.907,
+      "lon": 10.426,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "goettingen-geismar",
+      "nombre": "Gotinga Geismar",
+      "land": "ni",
+      "lat": 51.52,
+      "lon": 9.95,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "stade",
+      "nombre": "Stade",
+      "land": "ni",
+      "lat": 53.596,
+      "lon": 9.477,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "cuxhaven",
+      "nombre": "Cuxhaven",
+      "land": "ni",
+      "lat": 53.862,
+      "lon": 8.703,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "paderborn-hbf",
+      "nombre": "Paderborn Central",
+      "land": "nw",
+      "lat": 51.713,
+      "lon": 8.741,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "siegen",
+      "nombre": "Siegen",
+      "land": "nw",
+      "lat": 50.876,
+      "lon": 8.016,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "arnsberg",
+      "nombre": "Arnsberg",
+      "land": "nw",
+      "lat": 51.437,
+      "lon": 8.066,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "iserlohn",
+      "nombre": "Iserlohn",
+      "land": "nw",
+      "lat": 51.375,
+      "lon": 7.693,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "remscheid",
+      "nombre": "Remscheid",
+      "land": "nw",
+      "lat": 51.178,
+      "lon": 7.2,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "neuss-hbf",
+      "nombre": "Neuss Central",
+      "land": "nw",
+      "lat": 51.204,
+      "lon": 6.684,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "reclinghausen",
+      "nombre": "Recklinghausen Central",
+      "land": "nw",
+      "lat": 51.616,
+      "lon": 7.203,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "gelsenkirchen-hbf",
+      "nombre": "Gelsenkirchen Central",
+      "land": "nw",
+      "lat": 51.505,
+      "lon": 7.102,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "oberhausen-hbf",
+      "nombre": "Oberhausen Central",
+      "land": "nw",
+      "lat": 51.474,
+      "lon": 6.852,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "hamm-hbf",
+      "nombre": "Hamm Central",
+      "land": "nw",
+      "lat": 51.678,
+      "lon": 7.808,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "unna",
+      "nombre": "Unna",
+      "land": "nw",
+      "lat": 51.538,
+      "lon": 7.689,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "lippstadt",
+      "nombre": "Lippstadt",
+      "land": "nw",
+      "lat": 51.673,
+      "lon": 8.349,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "kleve",
+      "nombre": "Kleve",
+      "land": "nw",
+      "lat": 51.789,
+      "lon": 6.138,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "wesel",
+      "nombre": "Wesel",
+      "land": "nw",
+      "lat": 51.656,
+      "lon": 6.619,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "neustadt-weinstrasse",
+      "nombre": "Neustadt an der Weinstraße",
+      "land": "rp",
+      "lat": 49.35,
+      "lon": 8.14,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "speyer",
+      "nombre": "Speyer",
+      "land": "rp",
+      "lat": 49.317,
+      "lon": 8.431,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "worms-hbf",
+      "nombre": "Worms Central",
+      "land": "rp",
+      "lat": 49.635,
+      "lon": 8.356,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "bad-kreuznach",
+      "nombre": "Bad Kreuznach",
+      "land": "rp",
+      "lat": 49.843,
+      "lon": 7.866,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "idarleberstein",
+      "nombre": "Idar-Oberstein",
+      "land": "rp",
+      "lat": 49.704,
+      "lon": 7.303,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "andernach",
+      "nombre": "Andernach",
+      "land": "rp",
+      "lat": 50.44,
+      "lon": 7.4,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "bingen",
+      "nombre": "Bingen Central",
+      "land": "rp",
+      "lat": 49.969,
+      "lon": 7.883,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "husum",
+      "nombre": "Husum",
+      "land": "sh",
+      "lat": 54.474,
+      "lon": 9.054,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "heide",
+      "nombre": "Heide",
+      "land": "sh",
+      "lat": 54.196,
+      "lon": 9.098,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "itzehoe",
+      "nombre": "Itzehoe",
+      "land": "sh",
+      "lat": 53.925,
+      "lon": 9.515,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "elmshorn",
+      "nombre": "Elmshorn",
+      "land": "sh",
+      "lat": 53.755,
+      "lon": 9.66,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "bad-oldesloe",
+      "nombre": "Bad Oldesloe",
+      "land": "sh",
+      "lat": 53.81,
+      "lon": 10.374,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "norderstedt",
+      "nombre": "Norderstedt Mitte",
+      "land": "sh",
+      "lat": 53.707,
+      "lon": 9.994,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "neunkirchen",
+      "nombre": "Neunkirchen Saar",
+      "land": "sl",
+      "lat": 49.351,
+      "lon": 7.186,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "homburg",
+      "nombre": "Homburg Saar",
+      "land": "sl",
+      "lat": 49.328,
+      "lon": 7.337,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "saarlouis",
+      "nombre": "Saarlouis",
+      "land": "sl",
+      "lat": 49.316,
+      "lon": 6.751,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "merzig",
+      "nombre": "Merzig",
+      "land": "sl",
+      "lat": 49.444,
+      "lon": 6.637,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "sankt-wendel",
+      "nombre": "Sankt Wendel",
+      "land": "sl",
+      "lat": 49.467,
+      "lon": 7.168,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "bautzen",
+      "nombre": "Bautzen",
+      "land": "sn",
+      "lat": 51.175,
+      "lon": 14.429,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "goerlitz",
+      "nombre": "Görlitz",
+      "land": "sn",
+      "lat": 51.147,
+      "lon": 14.979,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "plauen",
+      "nombre": "Plauen",
+      "land": "sn",
+      "lat": 50.506,
+      "lon": 12.13,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "freiberg",
+      "nombre": "Freiberg",
+      "land": "sn",
+      "lat": 50.909,
+      "lon": 13.345,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "radebeul",
+      "nombre": "Radebeul Ost",
+      "land": "sn",
+      "lat": 51.098,
+      "lon": 13.679,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "meissen",
+      "nombre": "Meissen",
+      "land": "sn",
+      "lat": 51.163,
+      "lon": 13.483,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "pirna",
+      "nombre": "Pirna",
+      "land": "sn",
+      "lat": 50.962,
+      "lon": 13.938,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "hoyerswerda",
+      "nombre": "Hoyerswerda",
+      "land": "sn",
+      "lat": 51.438,
+      "lon": 14.25,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "stendal",
+      "nombre": "Stendal",
+      "land": "st",
+      "lat": 52.595,
+      "lon": 11.855,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "salzwedel",
+      "nombre": "Salzwedel",
+      "land": "st",
+      "lat": 52.85,
+      "lon": 11.16,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "wernigerode",
+      "nombre": "Wernigerode",
+      "land": "st",
+      "lat": 51.84,
+      "lon": 10.785,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "halberstadt",
+      "nombre": "Halberstadt",
+      "land": "st",
+      "lat": 51.896,
+      "lon": 11.05,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "naumburg",
+      "nombre": "Naumburgo",
+      "land": "st",
+      "lat": 51.161,
+      "lon": 11.795,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "wittenberg",
+      "nombre": "Lutherstadt Wittenberg",
+      "land": "st",
+      "lat": 51.867,
+      "lon": 12.648,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "bernburb",
+      "nombre": "Bernburg",
+      "land": "st",
+      "lat": 51.8,
+      "lon": 11.74,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "suhl",
+      "nombre": "Suhl",
+      "land": "th",
+      "lat": 50.611,
+      "lon": 10.693,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "ilmenau",
+      "nombre": "Ilmenau",
+      "land": "th",
+      "lat": 50.685,
+      "lon": 10.921,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "nordhausen",
+      "nombre": "Nordhausen",
+      "land": "th",
+      "lat": 51.493,
+      "lon": 10.793,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "muehlhausen",
+      "nombre": "Mühlhausen",
+      "land": "th",
+      "lat": 51.21,
+      "lon": 10.46,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "altenburg",
+      "nombre": "Altenburgo",
+      "land": "th",
+      "lat": 50.993,
+      "lon": 12.444,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "saalfeld",
+      "nombre": "Saalfeld",
+      "land": "th",
+      "lat": 50.65,
+      "lon": 11.37,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "meiningen",
+      "nombre": "Meiningen",
+      "land": "th",
+      "lat": 50.563,
+      "lon": 10.415,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "be-n1",
+      "nombre": "Mitte",
+      "land": "be",
+      "lat": 52.480000000000004,
+      "lon": 13.370000000000001,
+      "tier": 4,
+      "roles": [
+        "u",
+        "s",
+        "t"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "be"
+    },
+    {
+      "id": "be-n2",
+      "nombre": "Prenzlauer Berg",
+      "land": "be",
+      "lat": 52.5,
+      "lon": 13.370000000000001,
+      "tier": 4,
+      "roles": [
+        "u",
+        "s",
+        "t"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "be"
+    },
+    {
+      "id": "be-n3",
+      "nombre": "Kreuzberg",
+      "land": "be",
+      "lat": 52.52,
+      "lon": 13.370000000000001,
+      "tier": 4,
+      "roles": [
+        "u",
+        "s",
+        "t"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "be"
+    },
+    {
+      "id": "be-n4",
+      "nombre": "Neukölln",
+      "land": "be",
+      "lat": 52.540000000000006,
+      "lon": 13.370000000000001,
+      "tier": 4,
+      "roles": [
+        "u",
+        "s",
+        "t"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "be"
+    },
+    {
+      "id": "be-n5",
+      "nombre": "Charlottenburg",
+      "land": "be",
+      "lat": 52.56,
+      "lon": 13.370000000000001,
+      "tier": 4,
+      "roles": [
+        "u",
+        "s",
+        "t"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "be"
+    },
+    {
+      "id": "be-n6",
+      "nombre": "Spandau Nord",
+      "land": "be",
+      "lat": 52.480000000000004,
+      "lon": 13.4,
+      "tier": 4,
+      "roles": [
+        "u",
+        "s",
+        "t"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "be"
+    },
+    {
+      "id": "be-n7",
+      "nombre": "Köpenick",
+      "land": "be",
+      "lat": 52.5,
+      "lon": 13.4,
+      "tier": 4,
+      "roles": [
+        "u",
+        "s",
+        "t"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "be"
+    },
+    {
+      "id": "be-n8",
+      "nombre": "Marzahn",
+      "land": "be",
+      "lat": 52.52,
+      "lon": 13.4,
+      "tier": 4,
+      "roles": [
+        "u",
+        "s",
+        "t"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "be"
+    },
+    {
+      "id": "be-n9",
+      "nombre": "Reinickendorf",
+      "land": "be",
+      "lat": 52.540000000000006,
+      "lon": 13.4,
+      "tier": 4,
+      "roles": [
+        "u",
+        "s",
+        "t"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "be"
+    },
+    {
+      "id": "be-n10",
+      "nombre": "Tempelhof",
+      "land": "be",
+      "lat": 52.56,
+      "lon": 13.4,
+      "tier": 4,
+      "roles": [
+        "u",
+        "s",
+        "t"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "be"
+    },
+    {
+      "id": "be-n11",
+      "nombre": "Steglitz",
+      "land": "be",
+      "lat": 52.480000000000004,
+      "lon": 13.43,
+      "tier": 4,
+      "roles": [
+        "u",
+        "s",
+        "t"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "be"
+    },
+    {
+      "id": "be-n12",
+      "nombre": "Pankow Ost",
+      "land": "be",
+      "lat": 52.5,
+      "lon": 13.43,
+      "tier": 4,
+      "roles": [
+        "u",
+        "s",
+        "t"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "be"
+    },
+    {
+      "id": "hh-n1",
+      "nombre": "HafenCity",
+      "land": "hh",
+      "lat": 53.51,
+      "lon": 9.97,
+      "tier": 4,
+      "roles": [
+        "u",
+        "s",
+        "t"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "hh"
+    },
+    {
+      "id": "hh-n2",
+      "nombre": "St. Pauli",
+      "land": "hh",
+      "lat": 53.529999999999994,
+      "lon": 9.97,
+      "tier": 4,
+      "roles": [
+        "u",
+        "s",
+        "t"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "hh"
+    },
+    {
+      "id": "hh-n3",
+      "nombre": "Wandsbek",
+      "land": "hh",
+      "lat": 53.55,
+      "lon": 9.97,
+      "tier": 4,
+      "roles": [
+        "u",
+        "s",
+        "t"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "hh"
+    },
+    {
+      "id": "hh-n4",
+      "nombre": "Eimsbüttel",
+      "land": "hh",
+      "lat": 53.57,
+      "lon": 9.97,
+      "tier": 4,
+      "roles": [
+        "u",
+        "s",
+        "t"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "hh"
+    },
+    {
+      "id": "hh-n5",
+      "nombre": "Harburg Süd",
+      "land": "hh",
+      "lat": 53.589999999999996,
+      "lon": 9.97,
+      "tier": 4,
+      "roles": [
+        "u",
+        "s",
+        "t"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "hh"
+    },
+    {
+      "id": "hh-n6",
+      "nombre": "Altona Norte",
+      "land": "hh",
+      "lat": 53.51,
+      "lon": 10,
+      "tier": 4,
+      "roles": [
+        "u",
+        "s",
+        "t"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "hh"
+    },
+    {
+      "id": "hh-n7",
+      "nombre": "Billstedt",
+      "land": "hh",
+      "lat": 53.529999999999994,
+      "lon": 10,
+      "tier": 4,
+      "roles": [
+        "u",
+        "s",
+        "t"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "hh"
+    },
+    {
+      "id": "hh-n8",
+      "nombre": "Veddel",
+      "land": "hh",
+      "lat": 53.55,
+      "lon": 10,
+      "tier": 4,
+      "roles": [
+        "u",
+        "s",
+        "t"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "hh"
+    },
+    {
+      "id": "by-mu-n1",
+      "nombre": "Schwabing",
+      "land": "by",
+      "lat": 48.1,
+      "lon": 11.55,
+      "tier": 4,
+      "roles": [
+        "u",
+        "s",
+        "t"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "by_mu"
+    },
+    {
+      "id": "by-mu-n2",
+      "nombre": "Sendling",
+      "land": "by",
+      "lat": 48.12,
+      "lon": 11.55,
+      "tier": 4,
+      "roles": [
+        "u",
+        "s",
+        "t"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "by_mu"
+    },
+    {
+      "id": "by-mu-n3",
+      "nombre": "Giesing",
+      "land": "by",
+      "lat": 48.14,
+      "lon": 11.55,
+      "tier": 4,
+      "roles": [
+        "u",
+        "s",
+        "t"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "by_mu"
+    },
+    {
+      "id": "by-mu-n4",
+      "nombre": "Moosach",
+      "land": "by",
+      "lat": 48.160000000000004,
+      "lon": 11.55,
+      "tier": 4,
+      "roles": [
+        "u",
+        "s",
+        "t"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "by_mu"
+    },
+    {
+      "id": "by-mu-n5",
+      "nombre": "Trudering",
+      "land": "by",
+      "lat": 48.18,
+      "lon": 11.55,
+      "tier": 4,
+      "roles": [
+        "u",
+        "s",
+        "t"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "by_mu"
+    },
+    {
+      "id": "by-mu-n6",
+      "nombre": "Laim",
+      "land": "by",
+      "lat": 48.1,
+      "lon": 11.58,
+      "tier": 4,
+      "roles": [
+        "u",
+        "s",
+        "t"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "by_mu"
+    },
+    {
+      "id": "by-mu-n7",
+      "nombre": "Bogenhausen",
+      "land": "by",
+      "lat": 48.12,
+      "lon": 11.58,
+      "tier": 4,
+      "roles": [
+        "u",
+        "s",
+        "t"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "by_mu"
+    },
+    {
+      "id": "by-mu-n8",
+      "nombre": "Hasenbergl",
+      "land": "by",
+      "lat": 48.14,
+      "lon": 11.58,
+      "tier": 4,
+      "roles": [
+        "u",
+        "s",
+        "t"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "by_mu"
+    },
+    {
+      "id": "by-mu-n9",
+      "nombre": "Neuperlach",
+      "land": "by",
+      "lat": 48.160000000000004,
+      "lon": 11.58,
+      "tier": 4,
+      "roles": [
+        "u",
+        "s",
+        "t"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "by_mu"
+    },
+    {
+      "id": "by-mu-n10",
+      "nombre": "Freiham",
+      "land": "by",
+      "lat": 48.18,
+      "lon": 11.58,
+      "tier": 4,
+      "roles": [
+        "u",
+        "s",
+        "t"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "by_mu"
+    },
+    {
+      "id": "by-nu-n1",
+      "nombre": "Langwasser",
+      "land": "by",
+      "lat": 49.410000000000004,
+      "lon": 11.05,
+      "tier": 4,
+      "roles": [
+        "u",
+        "s",
+        "t"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "by_nu"
+    },
+    {
+      "id": "by-nu-n2",
+      "nombre": "Röthenbach",
+      "land": "by",
+      "lat": 49.43,
+      "lon": 11.05,
+      "tier": 4,
+      "roles": [
+        "u",
+        "s",
+        "t"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "by_nu"
+    },
+    {
+      "id": "by-nu-n3",
+      "nombre": "Thon",
+      "land": "by",
+      "lat": 49.45,
+      "lon": 11.05,
+      "tier": 4,
+      "roles": [
+        "u",
+        "s",
+        "t"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "by_nu"
+    },
+    {
+      "id": "by-nu-n4",
+      "nombre": "Maxfeld",
+      "land": "by",
+      "lat": 49.470000000000006,
+      "lon": 11.05,
+      "tier": 4,
+      "roles": [
+        "u",
+        "s",
+        "t"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "by_nu"
+    },
+    {
+      "id": "by-nu-n5",
+      "nombre": "Schweinau",
+      "land": "by",
+      "lat": 49.49,
+      "lon": 11.05,
+      "tier": 4,
+      "roles": [
+        "u",
+        "s",
+        "t"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "by_nu"
+    },
+    {
+      "id": "by-nu-n6",
+      "nombre": "Mögeldorf",
+      "land": "by",
+      "lat": 49.410000000000004,
+      "lon": 11.08,
+      "tier": 4,
+      "roles": [
+        "u",
+        "s",
+        "t"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "by_nu"
+    },
+    {
+      "id": "nw-ko-n1",
+      "nombre": "Ehrenfeld",
+      "land": "nw",
+      "lat": 50.9,
+      "lon": 6.93,
+      "tier": 4,
+      "roles": [
+        "t",
+        "u",
+        "s"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "nw_ko"
+    },
+    {
+      "id": "nw-ko-n2",
+      "nombre": "Kalk",
+      "land": "nw",
+      "lat": 50.919999999999995,
+      "lon": 6.93,
+      "tier": 4,
+      "roles": [
+        "t",
+        "u",
+        "s"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "nw_ko"
+    },
+    {
+      "id": "nw-ko-n3",
+      "nombre": "Nippes",
+      "land": "nw",
+      "lat": 50.94,
+      "lon": 6.93,
+      "tier": 4,
+      "roles": [
+        "t",
+        "u",
+        "s"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "nw_ko"
+    },
+    {
+      "id": "nw-ko-n4",
+      "nombre": "Rodenkirchen",
+      "land": "nw",
+      "lat": 50.96,
+      "lon": 6.93,
+      "tier": 4,
+      "roles": [
+        "t",
+        "u",
+        "s"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "nw_ko"
+    },
+    {
+      "id": "nw-ko-n5",
+      "nombre": "Mülheim",
+      "land": "nw",
+      "lat": 50.98,
+      "lon": 6.93,
+      "tier": 4,
+      "roles": [
+        "t",
+        "u",
+        "s"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "nw_ko"
+    },
+    {
+      "id": "nw-ko-n6",
+      "nombre": "Chorweiler",
+      "land": "nw",
+      "lat": 50.9,
+      "lon": 6.96,
+      "tier": 4,
+      "roles": [
+        "t",
+        "u",
+        "s"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "nw_ko"
+    },
+    {
+      "id": "nw-ru-n1",
+      "nombre": "Ruhr Mitte",
+      "land": "nw",
+      "lat": 51.44,
+      "lon": 7.12,
+      "tier": 4,
+      "roles": [
+        "s",
+        "t",
+        "mc",
+        "or"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "nw_ru"
+    },
+    {
+      "id": "nw-ru-n2",
+      "nombre": "Ruhr Norte",
+      "land": "nw",
+      "lat": 51.459999999999994,
+      "lon": 7.12,
+      "tier": 4,
+      "roles": [
+        "s",
+        "t",
+        "mc",
+        "or"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "nw_ru"
+    },
+    {
+      "id": "nw-ru-n3",
+      "nombre": "Ruhr Sur",
+      "land": "nw",
+      "lat": 51.48,
+      "lon": 7.12,
+      "tier": 4,
+      "roles": [
+        "s",
+        "t",
+        "mc",
+        "or"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "nw_ru"
+    },
+    {
+      "id": "nw-ru-n4",
+      "nombre": "Emscher Park",
+      "land": "nw",
+      "lat": 51.5,
+      "lon": 7.12,
+      "tier": 4,
+      "roles": [
+        "s",
+        "t",
+        "mc",
+        "or"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "nw_ru"
+    },
+    {
+      "id": "nw-ru-n5",
+      "nombre": "Phoenix See",
+      "land": "nw",
+      "lat": 51.519999999999996,
+      "lon": 7.12,
+      "tier": 4,
+      "roles": [
+        "s",
+        "t",
+        "mc",
+        "or"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "nw_ru"
+    },
+    {
+      "id": "nw-ru-n6",
+      "nombre": "Campus Ruhr",
+      "land": "nw",
+      "lat": 51.44,
+      "lon": 7.15,
+      "tier": 4,
+      "roles": [
+        "s",
+        "t",
+        "mc",
+        "or"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "nw_ru"
+    },
+    {
+      "id": "he-ff-n1",
+      "nombre": "Westend",
+      "land": "he",
+      "lat": 50.07,
+      "lon": 8.65,
+      "tier": 4,
+      "roles": [
+        "u",
+        "s",
+        "t"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "he_ff"
+    },
+    {
+      "id": "he-ff-n2",
+      "nombre": "Sachsenhausen",
+      "land": "he",
+      "lat": 50.089999999999996,
+      "lon": 8.65,
+      "tier": 4,
+      "roles": [
+        "u",
+        "s",
+        "t"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "he_ff"
+    },
+    {
+      "id": "he-ff-n3",
+      "nombre": "Bockenheim",
+      "land": "he",
+      "lat": 50.11,
+      "lon": 8.65,
+      "tier": 4,
+      "roles": [
+        "u",
+        "s",
+        "t"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "he_ff"
+    },
+    {
+      "id": "he-ff-n4",
+      "nombre": "Höchst",
+      "land": "he",
+      "lat": 50.13,
+      "lon": 8.65,
+      "tier": 4,
+      "roles": [
+        "u",
+        "s",
+        "t"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "he_ff"
+    },
+    {
+      "id": "he-ff-n5",
+      "nombre": "Niederrad",
+      "land": "he",
+      "lat": 50.15,
+      "lon": 8.65,
+      "tier": 4,
+      "roles": [
+        "u",
+        "s",
+        "t"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "he_ff"
+    },
+    {
+      "id": "he-ff-n6",
+      "nombre": "Gateway Gardens",
+      "land": "he",
+      "lat": 50.07,
+      "lon": 8.68,
+      "tier": 4,
+      "roles": [
+        "u",
+        "s",
+        "t"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "he_ff"
+    },
+    {
+      "id": "bw-st-n1",
+      "nombre": "Bad Cannstatt",
+      "land": "bw",
+      "lat": 48.74,
+      "lon": 9.15,
+      "tier": 4,
+      "roles": [
+        "t",
+        "u",
+        "s"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "bw_st"
+    },
+    {
+      "id": "bw-st-n2",
+      "nombre": "Vaihingen",
+      "land": "bw",
+      "lat": 48.76,
+      "lon": 9.15,
+      "tier": 4,
+      "roles": [
+        "t",
+        "u",
+        "s"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "bw_st"
+    },
+    {
+      "id": "bw-st-n3",
+      "nombre": "Zuffenhausen",
+      "land": "bw",
+      "lat": 48.78,
+      "lon": 9.15,
+      "tier": 4,
+      "roles": [
+        "t",
+        "u",
+        "s"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "bw_st"
+    },
+    {
+      "id": "bw-st-n4",
+      "nombre": "Feuerbach",
+      "land": "bw",
+      "lat": 48.800000000000004,
+      "lon": 9.15,
+      "tier": 4,
+      "roles": [
+        "t",
+        "u",
+        "s"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "bw_st"
+    },
+    {
+      "id": "bw-st-n5",
+      "nombre": "Möhringen",
+      "land": "bw",
+      "lat": 48.82,
+      "lon": 9.15,
+      "tier": 4,
+      "roles": [
+        "t",
+        "u",
+        "s"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "bw_st"
+    },
+    {
+      "id": "bw-st-n6",
+      "nombre": "Ostfildern Hub",
+      "land": "bw",
+      "lat": 48.74,
+      "lon": 9.18,
+      "tier": 4,
+      "roles": [
+        "t",
+        "u",
+        "s"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "bw_st"
+    },
+    {
+      "id": "sn-dd-n1",
+      "nombre": "Neustadt",
+      "land": "sn",
+      "lat": 51.01,
+      "lon": 13.71,
+      "tier": 4,
+      "roles": [
+        "t",
+        "s"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "sn_dd"
+    },
+    {
+      "id": "sn-dd-n2",
+      "nombre": "Prohlis",
+      "land": "sn",
+      "lat": 51.029999999999994,
+      "lon": 13.71,
+      "tier": 4,
+      "roles": [
+        "t",
+        "s"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "sn_dd"
+    },
+    {
+      "id": "sn-dd-n3",
+      "nombre": "Cotta",
+      "land": "sn",
+      "lat": 51.05,
+      "lon": 13.71,
+      "tier": 4,
+      "roles": [
+        "t",
+        "s"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "sn_dd"
+    },
+    {
+      "id": "sn-dd-n4",
+      "nombre": "Klotzsche",
+      "land": "sn",
+      "lat": 51.07,
+      "lon": 13.71,
+      "tier": 4,
+      "roles": [
+        "t",
+        "s"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "sn_dd"
+    },
+    {
+      "id": "sn-dd-n5",
+      "nombre": "Plauen DD",
+      "land": "sn",
+      "lat": 51.089999999999996,
+      "lon": 13.71,
+      "tier": 4,
+      "roles": [
+        "t",
+        "s"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "sn_dd"
+    },
+    {
+      "id": "sn-le-n1",
+      "nombre": "Plagwitz",
+      "land": "sn",
+      "lat": 51.300000000000004,
+      "lon": 12.34,
+      "tier": 4,
+      "roles": [
+        "t",
+        "s"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "sn_le"
+    },
+    {
+      "id": "sn-le-n2",
+      "nombre": "Connewitz",
+      "land": "sn",
+      "lat": 51.32,
+      "lon": 12.34,
+      "tier": 4,
+      "roles": [
+        "t",
+        "s"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "sn_le"
+    },
+    {
+      "id": "sn-le-n3",
+      "nombre": "Gohlis",
+      "land": "sn",
+      "lat": 51.34,
+      "lon": 12.34,
+      "tier": 4,
+      "roles": [
+        "t",
+        "s"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "sn_le"
+    },
+    {
+      "id": "sn-le-n4",
+      "nombre": "Paunsdorf",
+      "land": "sn",
+      "lat": 51.36000000000001,
+      "lon": 12.34,
+      "tier": 4,
+      "roles": [
+        "t",
+        "s"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "sn_le"
+    },
+    {
+      "id": "sn-le-n5",
+      "nombre": "Mockau",
+      "land": "sn",
+      "lat": 51.38,
+      "lon": 12.34,
+      "tier": 4,
+      "roles": [
+        "t",
+        "s"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "sn_le"
+    },
+    {
+      "id": "ni-ha-n1",
+      "nombre": "Laatzen Hub",
+      "land": "ni",
+      "lat": 52.33,
+      "lon": 9.71,
+      "tier": 4,
+      "roles": [
+        "t",
+        "u",
+        "s"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "ni_ha"
+    },
+    {
+      "id": "ni-ha-n2",
+      "nombre": "Langenhagen Mitte",
+      "land": "ni",
+      "lat": 52.349999999999994,
+      "lon": 9.71,
+      "tier": 4,
+      "roles": [
+        "t",
+        "u",
+        "s"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "ni_ha"
+    },
+    {
+      "id": "ni-ha-n3",
+      "nombre": "Linden",
+      "land": "ni",
+      "lat": 52.37,
+      "lon": 9.71,
+      "tier": 4,
+      "roles": [
+        "t",
+        "u",
+        "s"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "ni_ha"
+    },
+    {
+      "id": "ni-ha-n4",
+      "nombre": "Misburg",
+      "land": "ni",
+      "lat": 52.39,
+      "lon": 9.71,
+      "tier": 4,
+      "roles": [
+        "t",
+        "u",
+        "s"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "ni_ha"
+    },
+    {
+      "id": "ni-ha-n5",
+      "nombre": "Wettbergen",
+      "land": "ni",
+      "lat": 52.41,
+      "lon": 9.71,
+      "tier": 4,
+      "roles": [
+        "t",
+        "u",
+        "s"
+      ],
+      "origen_datos": "hibrida",
+      "metro_area": "ni_ha"
+    },
+    {
+      "id": "fx-bw-001",
+      "nombre": "Valle Estación 1",
+      "land": "bw",
+      "lat": 48.45,
+      "lon": 8.85,
+      "tier": 5,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-by-002",
+      "nombre": "Monte Parque 1",
+      "land": "by",
+      "lat": 48.72,
+      "lon": 11.54,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-be-003",
+      "nombre": "Puerto Norte 1",
+      "land": "be",
+      "lat": 52.61000000000001,
+      "lon": 13.23,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-bb-004",
+      "nombre": "Campo Oeste 1",
+      "land": "bb",
+      "lat": 52.16,
+      "lon": 13.12,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-hb-005",
+      "nombre": "Nueva Estación 1",
+      "land": "hb",
+      "lat": 53.01,
+      "lon": 8.71,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-hh-006",
+      "nombre": "Alta Parque 1",
+      "land": "hh",
+      "lat": 53.65,
+      "lon": 10.2,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-he-007",
+      "nombre": "Baja Norte 1",
+      "land": "he",
+      "lat": 50.370000000000005,
+      "lon": 8.89,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-mv-008",
+      "nombre": "Villa Oeste 1",
+      "land": "mv",
+      "lat": 53.739999999999995,
+      "lon": 12.28,
+      "tier": 5,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ni-009",
+      "nombre": "Puente Estación 1",
+      "land": "ni",
+      "lat": 52.71,
+      "lon": 9.57,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nw-010",
+      "nombre": "Lago Parque 1",
+      "land": "nw",
+      "lat": 51.18,
+      "lon": 7.0600000000000005,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-rp-011",
+      "nombre": "Bosque Norte 1",
+      "land": "rp",
+      "lat": 49.85,
+      "lon": 7.949999999999999,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sl-012",
+      "nombre": "Cruz Oeste 1",
+      "land": "sl",
+      "lat": 49.47,
+      "lon": 6.840000000000001,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sn-013",
+      "nombre": "Valle Estación 1",
+      "land": "sn",
+      "lat": 50.89,
+      "lon": 13.43,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-st-014",
+      "nombre": "Monte Parque 1",
+      "land": "st",
+      "lat": 51.86,
+      "lon": 11.719999999999999,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sh-015",
+      "nombre": "Puerto Norte 1",
+      "land": "sh",
+      "lat": 54.330000000000005,
+      "lon": 9.610000000000001,
+      "tier": 5,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-th-016",
+      "nombre": "Campo Oeste 1",
+      "land": "th",
+      "lat": 50.699999999999996,
+      "lon": 11.1,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-bw-017",
+      "nombre": "Nueva Estación 2",
+      "land": "bw",
+      "lat": 48.67,
+      "lon": 8.99,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-by-018",
+      "nombre": "Alta Parque 2",
+      "land": "by",
+      "lat": 48.94,
+      "lon": 11.68,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-be-019",
+      "nombre": "Baja Norte 2",
+      "land": "be",
+      "lat": 52.330000000000005,
+      "lon": 13.370000000000001,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-bb-020",
+      "nombre": "Villa Oeste 2",
+      "land": "bb",
+      "lat": 52.379999999999995,
+      "lon": 12.76,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-hb-021",
+      "nombre": "Puente Estación 2",
+      "land": "hb",
+      "lat": 53.23,
+      "lon": 8.850000000000001,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-hh-022",
+      "nombre": "Lago Parque 2",
+      "land": "hh",
+      "lat": 53.37,
+      "lon": 9.84,
+      "tier": 5,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-he-023",
+      "nombre": "Bosque Norte 2",
+      "land": "he",
+      "lat": 50.59,
+      "lon": 9.030000000000001,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-mv-024",
+      "nombre": "Cruz Oeste 2",
+      "land": "mv",
+      "lat": 53.959999999999994,
+      "lon": 12.42,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ni-025",
+      "nombre": "Valle Estación 2",
+      "land": "ni",
+      "lat": 52.43,
+      "lon": 9.71,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nw-026",
+      "nombre": "Monte Parque 2",
+      "land": "nw",
+      "lat": 51.4,
+      "lon": 7.2,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-rp-027",
+      "nombre": "Puerto Norte 2",
+      "land": "rp",
+      "lat": 50.07,
+      "lon": 7.59,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sl-028",
+      "nombre": "Campo Oeste 2",
+      "land": "sl",
+      "lat": 49.190000000000005,
+      "lon": 6.98,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sn-029",
+      "nombre": "Nueva Estación 2",
+      "land": "sn",
+      "lat": 51.11,
+      "lon": 13.069999999999999,
+      "tier": 5,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-st-030",
+      "nombre": "Alta Parque 2",
+      "land": "st",
+      "lat": 52.08,
+      "lon": 11.86,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sh-031",
+      "nombre": "Baja Norte 2",
+      "land": "sh",
+      "lat": 54.050000000000004,
+      "lon": 9.75,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-th-032",
+      "nombre": "Villa Oeste 2",
+      "land": "th",
+      "lat": 50.92,
+      "lon": 11.24,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-bw-033",
+      "nombre": "Puente Estación 3",
+      "land": "bw",
+      "lat": 48.89,
+      "lon": 9.129999999999999,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-by-034",
+      "nombre": "Lago Parque 3",
+      "land": "by",
+      "lat": 48.66,
+      "lon": 11.32,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-be-035",
+      "nombre": "Bosque Norte 3",
+      "land": "be",
+      "lat": 52.550000000000004,
+      "lon": 13.51,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-bb-036",
+      "nombre": "Cruz Oeste 3",
+      "land": "bb",
+      "lat": 52.6,
+      "lon": 12.9,
+      "tier": 5,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-hb-037",
+      "nombre": "Valle Estación 3",
+      "land": "hb",
+      "lat": 52.949999999999996,
+      "lon": 8.99,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-hh-038",
+      "nombre": "Monte Parque 3",
+      "land": "hh",
+      "lat": 53.589999999999996,
+      "lon": 9.98,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-he-039",
+      "nombre": "Puerto Norte 3",
+      "land": "he",
+      "lat": 50.81,
+      "lon": 8.67,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-mv-040",
+      "nombre": "Campo Oeste 3",
+      "land": "mv",
+      "lat": 53.68,
+      "lon": 12.56,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ni-041",
+      "nombre": "Nueva Estación 3",
+      "land": "ni",
+      "lat": 52.65,
+      "lon": 9.35,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nw-042",
+      "nombre": "Alta Parque 3",
+      "land": "nw",
+      "lat": 51.62,
+      "lon": 7.34,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-rp-043",
+      "nombre": "Baja Norte 3",
+      "land": "rp",
+      "lat": 49.79,
+      "lon": 7.7299999999999995,
+      "tier": 5,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sl-044",
+      "nombre": "Villa Oeste 3",
+      "land": "sl",
+      "lat": 49.410000000000004,
+      "lon": 7.12,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sn-045",
+      "nombre": "Puente Estación 3",
+      "land": "sn",
+      "lat": 51.33,
+      "lon": 13.209999999999999,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-st-046",
+      "nombre": "Lago Parque 3",
+      "land": "st",
+      "lat": 51.8,
+      "lon": 11.5,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sh-047",
+      "nombre": "Bosque Norte 3",
+      "land": "sh",
+      "lat": 54.27,
+      "lon": 9.89,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-th-048",
+      "nombre": "Cruz Oeste 3",
+      "land": "th",
+      "lat": 51.14,
+      "lon": 10.88,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-bw-049",
+      "nombre": "Valle Estación 4",
+      "land": "bw",
+      "lat": 48.61,
+      "lon": 9.27,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-by-050",
+      "nombre": "Monte Parque 4",
+      "land": "by",
+      "lat": 48.879999999999995,
+      "lon": 11.46,
+      "tier": 5,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-be-051",
+      "nombre": "Puerto Norte 4",
+      "land": "be",
+      "lat": 52.27,
+      "lon": 13.15,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-bb-052",
+      "nombre": "Campo Oeste 4",
+      "land": "bb",
+      "lat": 52.32,
+      "lon": 13.04,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-hb-053",
+      "nombre": "Nueva Estación 4",
+      "land": "hb",
+      "lat": 53.17,
+      "lon": 8.63,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-hh-054",
+      "nombre": "Alta Parque 4",
+      "land": "hh",
+      "lat": 53.309999999999995,
+      "lon": 10.12,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-he-055",
+      "nombre": "Baja Norte 4",
+      "land": "he",
+      "lat": 50.53,
+      "lon": 8.81,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-mv-056",
+      "nombre": "Villa Oeste 4",
+      "land": "mv",
+      "lat": 53.9,
+      "lon": 12.7,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ni-057",
+      "nombre": "Puente Estación 4",
+      "land": "ni",
+      "lat": 52.370000000000005,
+      "lon": 9.49,
+      "tier": 5,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nw-058",
+      "nombre": "Lago Parque 4",
+      "land": "nw",
+      "lat": 51.339999999999996,
+      "lon": 6.98,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-rp-059",
+      "nombre": "Bosque Norte 4",
+      "land": "rp",
+      "lat": 50.01,
+      "lon": 7.869999999999999,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sl-060",
+      "nombre": "Cruz Oeste 4",
+      "land": "sl",
+      "lat": 49.13,
+      "lon": 6.760000000000001,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sn-061",
+      "nombre": "Valle Estación 4",
+      "land": "sn",
+      "lat": 51.050000000000004,
+      "lon": 13.35,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-st-062",
+      "nombre": "Monte Parque 4",
+      "land": "st",
+      "lat": 52.019999999999996,
+      "lon": 11.639999999999999,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sh-063",
+      "nombre": "Puerto Norte 4",
+      "land": "sh",
+      "lat": 53.99,
+      "lon": 10.030000000000001,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-th-064",
+      "nombre": "Campo Oeste 4",
+      "land": "th",
+      "lat": 50.86,
+      "lon": 11.02,
+      "tier": 5,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-bw-065",
+      "nombre": "Nueva Estación 5",
+      "land": "bw",
+      "lat": 48.830000000000005,
+      "lon": 8.91,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-by-066",
+      "nombre": "Alta Parque 5",
+      "land": "by",
+      "lat": 48.599999999999994,
+      "lon": 11.6,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-be-067",
+      "nombre": "Baja Norte 5",
+      "land": "be",
+      "lat": 52.49,
+      "lon": 13.290000000000001,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-bb-068",
+      "nombre": "Villa Oeste 5",
+      "land": "bb",
+      "lat": 52.54,
+      "lon": 13.18,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-hb-069",
+      "nombre": "Puente Estación 5",
+      "land": "hb",
+      "lat": 52.89,
+      "lon": 8.770000000000001,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-hh-070",
+      "nombre": "Lago Parque 5",
+      "land": "hh",
+      "lat": 53.529999999999994,
+      "lon": 9.76,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-he-071",
+      "nombre": "Bosque Norte 5",
+      "land": "he",
+      "lat": 50.75,
+      "lon": 8.950000000000001,
+      "tier": 5,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-mv-072",
+      "nombre": "Cruz Oeste 5",
+      "land": "mv",
+      "lat": 53.62,
+      "lon": 12.34,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ni-073",
+      "nombre": "Valle Estación 5",
+      "land": "ni",
+      "lat": 52.59,
+      "lon": 9.63,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nw-074",
+      "nombre": "Monte Parque 5",
+      "land": "nw",
+      "lat": 51.559999999999995,
+      "lon": 7.12,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-rp-075",
+      "nombre": "Puerto Norte 5",
+      "land": "rp",
+      "lat": 49.73,
+      "lon": 8.01,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sl-076",
+      "nombre": "Campo Oeste 5",
+      "land": "sl",
+      "lat": 49.35,
+      "lon": 6.9,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sn-077",
+      "nombre": "Nueva Estación 5",
+      "land": "sn",
+      "lat": 51.27,
+      "lon": 12.989999999999998,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-st-078",
+      "nombre": "Alta Parque 5",
+      "land": "st",
+      "lat": 51.74,
+      "lon": 11.78,
+      "tier": 5,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sh-079",
+      "nombre": "Baja Norte 5",
+      "land": "sh",
+      "lat": 54.21,
+      "lon": 9.67,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-th-080",
+      "nombre": "Villa Oeste 5",
+      "land": "th",
+      "lat": 51.08,
+      "lon": 11.16,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-bw-081",
+      "nombre": "Puente Estación 6",
+      "land": "bw",
+      "lat": 48.550000000000004,
+      "lon": 9.049999999999999,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-by-082",
+      "nombre": "Lago Parque 6",
+      "land": "by",
+      "lat": 48.82,
+      "lon": 11.74,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-be-083",
+      "nombre": "Bosque Norte 6",
+      "land": "be",
+      "lat": 52.71,
+      "lon": 13.43,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-bb-084",
+      "nombre": "Cruz Oeste 6",
+      "land": "bb",
+      "lat": 52.26,
+      "lon": 12.82,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-hb-085",
+      "nombre": "Valle Estación 6",
+      "land": "hb",
+      "lat": 53.11,
+      "lon": 8.91,
+      "tier": 5,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-hh-086",
+      "nombre": "Monte Parque 6",
+      "land": "hh",
+      "lat": 53.75,
+      "lon": 9.9,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-he-087",
+      "nombre": "Puerto Norte 6",
+      "land": "he",
+      "lat": 50.47,
+      "lon": 9.09,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-mv-088",
+      "nombre": "Campo Oeste 6",
+      "land": "mv",
+      "lat": 53.839999999999996,
+      "lon": 12.48,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ni-089",
+      "nombre": "Nueva Estación 6",
+      "land": "ni",
+      "lat": 52.81,
+      "lon": 9.27,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nw-090",
+      "nombre": "Alta Parque 6",
+      "land": "nw",
+      "lat": 51.28,
+      "lon": 7.26,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-rp-091",
+      "nombre": "Baja Norte 6",
+      "land": "rp",
+      "lat": 49.949999999999996,
+      "lon": 7.6499999999999995,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sl-092",
+      "nombre": "Villa Oeste 6",
+      "land": "sl",
+      "lat": 49.57,
+      "lon": 7.04,
+      "tier": 5,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sn-093",
+      "nombre": "Puente Estación 6",
+      "land": "sn",
+      "lat": 50.99,
+      "lon": 13.129999999999999,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-st-094",
+      "nombre": "Lago Parque 6",
+      "land": "st",
+      "lat": 51.96,
+      "lon": 11.92,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sh-095",
+      "nombre": "Bosque Norte 6",
+      "land": "sh",
+      "lat": 54.43,
+      "lon": 9.81,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-th-096",
+      "nombre": "Cruz Oeste 6",
+      "land": "th",
+      "lat": 50.8,
+      "lon": 10.8,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-bw-097",
+      "nombre": "Valle Estación 7",
+      "land": "bw",
+      "lat": 48.77,
+      "lon": 9.19,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-by-098",
+      "nombre": "Monte Parque 7",
+      "land": "by",
+      "lat": 49.04,
+      "lon": 11.38,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-be-099",
+      "nombre": "Puerto Norte 7",
+      "land": "be",
+      "lat": 52.43,
+      "lon": 13.57,
+      "tier": 5,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-bb-100",
+      "nombre": "Campo Oeste 7",
+      "land": "bb",
+      "lat": 52.48,
+      "lon": 12.96,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-hb-101",
+      "nombre": "Nueva Estación 7",
+      "land": "hb",
+      "lat": 52.83,
+      "lon": 8.55,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-hh-102",
+      "nombre": "Alta Parque 7",
+      "land": "hh",
+      "lat": 53.47,
+      "lon": 10.04,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-he-103",
+      "nombre": "Baja Norte 7",
+      "land": "he",
+      "lat": 50.690000000000005,
+      "lon": 8.73,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-mv-104",
+      "nombre": "Villa Oeste 7",
+      "land": "mv",
+      "lat": 53.559999999999995,
+      "lon": 12.62,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ni-105",
+      "nombre": "Puente Estación 7",
+      "land": "ni",
+      "lat": 52.53,
+      "lon": 9.41,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nw-106",
+      "nombre": "Lago Parque 7",
+      "land": "nw",
+      "lat": 51.5,
+      "lon": 7.4,
+      "tier": 5,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-rp-107",
+      "nombre": "Bosque Norte 7",
+      "land": "rp",
+      "lat": 49.67,
+      "lon": 7.789999999999999,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sl-108",
+      "nombre": "Cruz Oeste 7",
+      "land": "sl",
+      "lat": 49.29,
+      "lon": 6.680000000000001,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sn-109",
+      "nombre": "Valle Estación 7",
+      "land": "sn",
+      "lat": 51.21,
+      "lon": 13.27,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-st-110",
+      "nombre": "Monte Parque 7",
+      "land": "st",
+      "lat": 51.68,
+      "lon": 11.559999999999999,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sh-111",
+      "nombre": "Puerto Norte 7",
+      "land": "sh",
+      "lat": 54.150000000000006,
+      "lon": 9.950000000000001,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-th-112",
+      "nombre": "Campo Oeste 7",
+      "land": "th",
+      "lat": 51.019999999999996,
+      "lon": 10.94,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-bw-113",
+      "nombre": "Nueva Estación 8",
+      "land": "bw",
+      "lat": 48.49,
+      "lon": 9.33,
+      "tier": 5,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-by-114",
+      "nombre": "Alta Parque 8",
+      "land": "by",
+      "lat": 48.76,
+      "lon": 11.52,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-be-115",
+      "nombre": "Baja Norte 8",
+      "land": "be",
+      "lat": 52.650000000000006,
+      "lon": 13.21,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-bb-116",
+      "nombre": "Villa Oeste 8",
+      "land": "bb",
+      "lat": 52.199999999999996,
+      "lon": 13.1,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-hb-117",
+      "nombre": "Puente Estación 8",
+      "land": "hb",
+      "lat": 53.05,
+      "lon": 8.690000000000001,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-hh-118",
+      "nombre": "Lago Parque 8",
+      "land": "hh",
+      "lat": 53.69,
+      "lon": 10.18,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-he-119",
+      "nombre": "Bosque Norte 8",
+      "land": "he",
+      "lat": 50.410000000000004,
+      "lon": 8.870000000000001,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-mv-120",
+      "nombre": "Cruz Oeste 8",
+      "land": "mv",
+      "lat": 53.779999999999994,
+      "lon": 12.26,
+      "tier": 5,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ni-121",
+      "nombre": "Valle Estación 8",
+      "land": "ni",
+      "lat": 52.75,
+      "lon": 9.55,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nw-122",
+      "nombre": "Monte Parque 8",
+      "land": "nw",
+      "lat": 51.22,
+      "lon": 7.04,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-rp-123",
+      "nombre": "Puerto Norte 8",
+      "land": "rp",
+      "lat": 49.89,
+      "lon": 7.93,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sl-124",
+      "nombre": "Campo Oeste 8",
+      "land": "sl",
+      "lat": 49.51,
+      "lon": 6.82,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sn-125",
+      "nombre": "Nueva Estación 8",
+      "land": "sn",
+      "lat": 50.93,
+      "lon": 13.41,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-st-126",
+      "nombre": "Alta Parque 8",
+      "land": "st",
+      "lat": 51.9,
+      "lon": 11.7,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sh-127",
+      "nombre": "Baja Norte 8",
+      "land": "sh",
+      "lat": 54.370000000000005,
+      "lon": 9.59,
+      "tier": 5,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-th-128",
+      "nombre": "Villa Oeste 8",
+      "land": "th",
+      "lat": 50.74,
+      "lon": 11.08,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-bw-129",
+      "nombre": "Puente Estación 9",
+      "land": "bw",
+      "lat": 48.71,
+      "lon": 8.969999999999999,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-by-130",
+      "nombre": "Lago Parque 9",
+      "land": "by",
+      "lat": 48.98,
+      "lon": 11.66,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-be-131",
+      "nombre": "Bosque Norte 9",
+      "land": "be",
+      "lat": 52.370000000000005,
+      "lon": 13.35,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-bb-132",
+      "nombre": "Cruz Oeste 9",
+      "land": "bb",
+      "lat": 52.42,
+      "lon": 13.24,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-hb-133",
+      "nombre": "Valle Estación 9",
+      "land": "hb",
+      "lat": 53.269999999999996,
+      "lon": 8.83,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-hh-134",
+      "nombre": "Monte Parque 9",
+      "land": "hh",
+      "lat": 53.41,
+      "lon": 9.82,
+      "tier": 5,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-he-135",
+      "nombre": "Puerto Norte 9",
+      "land": "he",
+      "lat": 50.63,
+      "lon": 9.01,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-mv-136",
+      "nombre": "Campo Oeste 9",
+      "land": "mv",
+      "lat": 54,
+      "lon": 12.4,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ni-137",
+      "nombre": "Nueva Estación 9",
+      "land": "ni",
+      "lat": 52.47,
+      "lon": 9.69,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nw-138",
+      "nombre": "Alta Parque 9",
+      "land": "nw",
+      "lat": 51.44,
+      "lon": 7.180000000000001,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-rp-139",
+      "nombre": "Baja Norte 9",
+      "land": "rp",
+      "lat": 50.11,
+      "lon": 7.569999999999999,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sl-140",
+      "nombre": "Villa Oeste 9",
+      "land": "sl",
+      "lat": 49.230000000000004,
+      "lon": 6.96,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sn-141",
+      "nombre": "Puente Estación 9",
+      "land": "sn",
+      "lat": 51.15,
+      "lon": 13.049999999999999,
+      "tier": 5,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-st-142",
+      "nombre": "Lago Parque 9",
+      "land": "st",
+      "lat": 52.12,
+      "lon": 11.84,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sh-143",
+      "nombre": "Bosque Norte 9",
+      "land": "sh",
+      "lat": 54.09,
+      "lon": 9.73,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-th-144",
+      "nombre": "Cruz Oeste 9",
+      "land": "th",
+      "lat": 50.96,
+      "lon": 11.22,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-bw-145",
+      "nombre": "Valle Estación 10",
+      "land": "bw",
+      "lat": 48.93,
+      "lon": 9.11,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-by-146",
+      "nombre": "Monte Parque 10",
+      "land": "by",
+      "lat": 48.699999999999996,
+      "lon": 11.3,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-be-147",
+      "nombre": "Puerto Norte 10",
+      "land": "be",
+      "lat": 52.59,
+      "lon": 13.49,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-bb-148",
+      "nombre": "Campo Oeste 10",
+      "land": "bb",
+      "lat": 52.64,
+      "lon": 12.88,
+      "tier": 5,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-hb-149",
+      "nombre": "Nueva Estación 10",
+      "land": "hb",
+      "lat": 52.989999999999995,
+      "lon": 8.97,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-hh-150",
+      "nombre": "Alta Parque 10",
+      "land": "hh",
+      "lat": 53.629999999999995,
+      "lon": 9.96,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-he-151",
+      "nombre": "Baja Norte 10",
+      "land": "he",
+      "lat": 50.35,
+      "lon": 8.65,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-mv-152",
+      "nombre": "Villa Oeste 10",
+      "land": "mv",
+      "lat": 53.72,
+      "lon": 12.54,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ni-153",
+      "nombre": "Puente Estación 10",
+      "land": "ni",
+      "lat": 52.690000000000005,
+      "lon": 9.33,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nw-154",
+      "nombre": "Lago Parque 10",
+      "land": "nw",
+      "lat": 51.16,
+      "lon": 7.32,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-rp-155",
+      "nombre": "Bosque Norte 10",
+      "land": "rp",
+      "lat": 49.83,
+      "lon": 7.71,
+      "tier": 5,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sl-156",
+      "nombre": "Cruz Oeste 10",
+      "land": "sl",
+      "lat": 49.45,
+      "lon": 7.1000000000000005,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sn-157",
+      "nombre": "Valle Estación 10",
+      "land": "sn",
+      "lat": 50.870000000000005,
+      "lon": 13.19,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-st-158",
+      "nombre": "Monte Parque 10",
+      "land": "st",
+      "lat": 51.839999999999996,
+      "lon": 11.479999999999999,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sh-159",
+      "nombre": "Puerto Norte 10",
+      "land": "sh",
+      "lat": 54.31,
+      "lon": 9.870000000000001,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-th-160",
+      "nombre": "Campo Oeste 10",
+      "land": "th",
+      "lat": 50.68,
+      "lon": 10.86,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-bw-161",
+      "nombre": "Nueva Estación 11",
+      "land": "bw",
+      "lat": 48.650000000000006,
+      "lon": 9.25,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-by-162",
+      "nombre": "Alta Parque 11",
+      "land": "by",
+      "lat": 48.919999999999995,
+      "lon": 11.44,
+      "tier": 5,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-be-163",
+      "nombre": "Baja Norte 11",
+      "land": "be",
+      "lat": 52.31,
+      "lon": 13.63,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-bb-164",
+      "nombre": "Villa Oeste 11",
+      "land": "bb",
+      "lat": 52.36,
+      "lon": 13.02,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-hb-165",
+      "nombre": "Puente Estación 11",
+      "land": "hb",
+      "lat": 53.21,
+      "lon": 8.610000000000001,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-hh-166",
+      "nombre": "Lago Parque 11",
+      "land": "hh",
+      "lat": 53.349999999999994,
+      "lon": 10.1,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-he-167",
+      "nombre": "Bosque Norte 11",
+      "land": "he",
+      "lat": 50.57,
+      "lon": 8.790000000000001,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-mv-168",
+      "nombre": "Cruz Oeste 11",
+      "land": "mv",
+      "lat": 53.94,
+      "lon": 12.68,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ni-169",
+      "nombre": "Valle Estación 11",
+      "land": "ni",
+      "lat": 52.410000000000004,
+      "lon": 9.47,
+      "tier": 5,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nw-170",
+      "nombre": "Monte Parque 11",
+      "land": "nw",
+      "lat": 51.379999999999995,
+      "lon": 6.96,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-rp-171",
+      "nombre": "Puerto Norte 11",
+      "land": "rp",
+      "lat": 50.05,
+      "lon": 7.85,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sl-172",
+      "nombre": "Campo Oeste 11",
+      "land": "sl",
+      "lat": 49.17,
+      "lon": 6.74,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sn-173",
+      "nombre": "Nueva Estación 11",
+      "land": "sn",
+      "lat": 51.09,
+      "lon": 13.33,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-st-174",
+      "nombre": "Alta Parque 11",
+      "land": "st",
+      "lat": 52.059999999999995,
+      "lon": 11.62,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sh-175",
+      "nombre": "Baja Norte 11",
+      "land": "sh",
+      "lat": 54.03,
+      "lon": 10.010000000000002,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-th-176",
+      "nombre": "Villa Oeste 11",
+      "land": "th",
+      "lat": 50.9,
+      "lon": 11,
+      "tier": 5,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-bw-177",
+      "nombre": "Puente Estación 12",
+      "land": "bw",
+      "lat": 48.870000000000005,
+      "lon": 8.889999999999999,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-by-178",
+      "nombre": "Lago Parque 12",
+      "land": "by",
+      "lat": 48.64,
+      "lon": 11.58,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-be-179",
+      "nombre": "Bosque Norte 12",
+      "land": "be",
+      "lat": 52.53,
+      "lon": 13.27,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-bb-180",
+      "nombre": "Cruz Oeste 12",
+      "land": "bb",
+      "lat": 52.58,
+      "lon": 13.16,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-hb-181",
+      "nombre": "Valle Estación 12",
+      "land": "hb",
+      "lat": 52.93,
+      "lon": 8.75,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-hh-182",
+      "nombre": "Monte Parque 12",
+      "land": "hh",
+      "lat": 53.57,
+      "lon": 10.24,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-he-183",
+      "nombre": "Puerto Norte 12",
+      "land": "he",
+      "lat": 50.79,
+      "lon": 8.93,
+      "tier": 5,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-mv-184",
+      "nombre": "Campo Oeste 12",
+      "land": "mv",
+      "lat": 53.66,
+      "lon": 12.32,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ni-185",
+      "nombre": "Nueva Estación 12",
+      "land": "ni",
+      "lat": 52.63,
+      "lon": 9.61,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nw-186",
+      "nombre": "Alta Parque 12",
+      "land": "nw",
+      "lat": 51.6,
+      "lon": 7.1000000000000005,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-rp-187",
+      "nombre": "Baja Norte 12",
+      "land": "rp",
+      "lat": 49.769999999999996,
+      "lon": 7.99,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sl-188",
+      "nombre": "Villa Oeste 12",
+      "land": "sl",
+      "lat": 49.39,
+      "lon": 6.880000000000001,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sn-189",
+      "nombre": "Puente Estación 12",
+      "land": "sn",
+      "lat": 51.31,
+      "lon": 12.969999999999999,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-st-190",
+      "nombre": "Lago Parque 12",
+      "land": "st",
+      "lat": 51.78,
+      "lon": 11.76,
+      "tier": 5,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sh-191",
+      "nombre": "Bosque Norte 12",
+      "land": "sh",
+      "lat": 54.25,
+      "lon": 9.65,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-th-192",
+      "nombre": "Cruz Oeste 12",
+      "land": "th",
+      "lat": 51.12,
+      "lon": 11.14,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-bw-193",
+      "nombre": "Valle Estación 13",
+      "land": "bw",
+      "lat": 48.59,
+      "lon": 9.03,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-by-194",
+      "nombre": "Monte Parque 13",
+      "land": "by",
+      "lat": 48.86,
+      "lon": 11.72,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-be-195",
+      "nombre": "Puerto Norte 13",
+      "land": "be",
+      "lat": 52.75,
+      "lon": 13.41,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-bb-196",
+      "nombre": "Campo Oeste 13",
+      "land": "bb",
+      "lat": 52.3,
+      "lon": 12.8,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-hb-197",
+      "nombre": "Nueva Estación 13",
+      "land": "hb",
+      "lat": 53.15,
+      "lon": 8.89,
+      "tier": 5,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-hh-198",
+      "nombre": "Alta Parque 13",
+      "land": "hh",
+      "lat": 53.79,
+      "lon": 9.88,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-he-199",
+      "nombre": "Baja Norte 13",
+      "land": "he",
+      "lat": 50.51,
+      "lon": 9.07,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-mv-200",
+      "nombre": "Villa Oeste 13",
+      "land": "mv",
+      "lat": 53.879999999999995,
+      "lon": 12.46,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ni-201",
+      "nombre": "Puente Estación 13",
+      "land": "ni",
+      "lat": 52.35,
+      "lon": 9.25,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nw-202",
+      "nombre": "Lago Parque 13",
+      "land": "nw",
+      "lat": 51.32,
+      "lon": 7.24,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-rp-203",
+      "nombre": "Bosque Norte 13",
+      "land": "rp",
+      "lat": 49.99,
+      "lon": 7.63,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sl-204",
+      "nombre": "Cruz Oeste 13",
+      "land": "sl",
+      "lat": 49.11,
+      "lon": 7.0200000000000005,
+      "tier": 5,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sn-205",
+      "nombre": "Valle Estación 13",
+      "land": "sn",
+      "lat": 51.03,
+      "lon": 13.11,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-st-206",
+      "nombre": "Monte Parque 13",
+      "land": "st",
+      "lat": 52,
+      "lon": 11.899999999999999,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sh-207",
+      "nombre": "Puerto Norte 13",
+      "land": "sh",
+      "lat": 53.970000000000006,
+      "lon": 9.790000000000001,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-th-208",
+      "nombre": "Campo Oeste 13",
+      "land": "th",
+      "lat": 50.839999999999996,
+      "lon": 10.78,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-bw-209",
+      "nombre": "Nueva Estación 14",
+      "land": "bw",
+      "lat": 48.81,
+      "lon": 9.17,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-by-210",
+      "nombre": "Alta Parque 14",
+      "land": "by",
+      "lat": 48.58,
+      "lon": 11.36,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-be-211",
+      "nombre": "Baja Norte 14",
+      "land": "be",
+      "lat": 52.470000000000006,
+      "lon": 13.55,
+      "tier": 5,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-bb-212",
+      "nombre": "Villa Oeste 14",
+      "land": "bb",
+      "lat": 52.519999999999996,
+      "lon": 12.94,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-hb-213",
+      "nombre": "Puente Estación 14",
+      "land": "hb",
+      "lat": 52.87,
+      "lon": 9.030000000000001,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-hh-214",
+      "nombre": "Lago Parque 14",
+      "land": "hh",
+      "lat": 53.51,
+      "lon": 10.02,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-he-215",
+      "nombre": "Bosque Norte 14",
+      "land": "he",
+      "lat": 50.730000000000004,
+      "lon": 8.71,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-mv-216",
+      "nombre": "Cruz Oeste 14",
+      "land": "mv",
+      "lat": 53.599999999999994,
+      "lon": 12.6,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ni-217",
+      "nombre": "Valle Estación 14",
+      "land": "ni",
+      "lat": 52.57,
+      "lon": 9.39,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nw-218",
+      "nombre": "Monte Parque 14",
+      "land": "nw",
+      "lat": 51.54,
+      "lon": 7.38,
+      "tier": 5,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-rp-219",
+      "nombre": "Puerto Norte 14",
+      "land": "rp",
+      "lat": 49.71,
+      "lon": 7.77,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sl-220",
+      "nombre": "Campo Oeste 14",
+      "land": "sl",
+      "lat": 49.33,
+      "lon": 6.66,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sn-221",
+      "nombre": "Nueva Estación 14",
+      "land": "sn",
+      "lat": 51.25,
+      "lon": 13.25,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-st-222",
+      "nombre": "Alta Parque 14",
+      "land": "st",
+      "lat": 51.72,
+      "lon": 11.54,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sh-223",
+      "nombre": "Baja Norte 14",
+      "land": "sh",
+      "lat": 54.190000000000005,
+      "lon": 9.930000000000001,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-th-224",
+      "nombre": "Villa Oeste 14",
+      "land": "th",
+      "lat": 51.059999999999995,
+      "lon": 10.92,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-bw-225",
+      "nombre": "Puente Estación 15",
+      "land": "bw",
+      "lat": 48.53,
+      "lon": 9.31,
+      "tier": 5,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-by-226",
+      "nombre": "Lago Parque 15",
+      "land": "by",
+      "lat": 48.8,
+      "lon": 11.5,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-be-227",
+      "nombre": "Bosque Norte 15",
+      "land": "be",
+      "lat": 52.690000000000005,
+      "lon": 13.19,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-bb-228",
+      "nombre": "Cruz Oeste 15",
+      "land": "bb",
+      "lat": 52.24,
+      "lon": 13.08,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-hb-229",
+      "nombre": "Valle Estación 15",
+      "land": "hb",
+      "lat": 53.089999999999996,
+      "lon": 8.67,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-hh-230",
+      "nombre": "Monte Parque 15",
+      "land": "hh",
+      "lat": 53.73,
+      "lon": 10.16,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-he-231",
+      "nombre": "Puerto Norte 15",
+      "land": "he",
+      "lat": 50.45,
+      "lon": 8.85,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-mv-232",
+      "nombre": "Campo Oeste 15",
+      "land": "mv",
+      "lat": 53.82,
+      "lon": 12.74,
+      "tier": 5,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ni-233",
+      "nombre": "Nueva Estación 15",
+      "land": "ni",
+      "lat": 52.79,
+      "lon": 9.53,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nw-234",
+      "nombre": "Alta Parque 15",
+      "land": "nw",
+      "lat": 51.26,
+      "lon": 7.0200000000000005,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-rp-235",
+      "nombre": "Baja Norte 15",
+      "land": "rp",
+      "lat": 49.93,
+      "lon": 7.91,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sl-236",
+      "nombre": "Villa Oeste 15",
+      "land": "sl",
+      "lat": 49.550000000000004,
+      "lon": 6.800000000000001,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sn-237",
+      "nombre": "Puente Estación 15",
+      "land": "sn",
+      "lat": 50.97,
+      "lon": 13.389999999999999,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-st-238",
+      "nombre": "Lago Parque 15",
+      "land": "st",
+      "lat": 51.94,
+      "lon": 11.68,
+      "tier": 5,
+      "roles": [
+        "rl",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sh-239",
+      "nombre": "Bosque Norte 15",
+      "land": "sh",
+      "lat": 54.410000000000004,
+      "lon": 9.57,
+      "tier": 5,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-th-240",
+      "nombre": "Cruz Oeste 15",
+      "land": "th",
+      "lat": 50.78,
+      "lon": 11.06,
+      "tier": 5,
+      "roles": [
+        "rb",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "berlin-orbital-n",
+      "nombre": "Berlín Orbital Norte",
+      "land": "be",
+      "lat": 52.58,
+      "lon": 13.36,
+      "tier": 3,
+      "roles": [
+        "s",
+        "or",
+        "mc"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "berlin-orbital-s",
+      "nombre": "Berlín Orbital Sur",
+      "land": "be",
+      "lat": 52.45,
+      "lon": 13.38,
+      "tier": 3,
+      "roles": [
+        "s",
+        "or",
+        "mc"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "berlin-orbital-e",
+      "nombre": "Berlín Orbital Este",
+      "land": "be",
+      "lat": 52.52,
+      "lon": 13.55,
+      "tier": 3,
+      "roles": [
+        "s",
+        "or",
+        "mc"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "berlin-orbital-w",
+      "nombre": "Berlín Orbital Oeste",
+      "land": "be",
+      "lat": 52.52,
+      "lon": 13.2,
+      "tier": 3,
+      "roles": [
+        "s",
+        "or",
+        "mc"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "ruhr-orbital",
+      "nombre": "Ruhr Orbital Central",
+      "land": "nw",
+      "lat": 51.48,
+      "lon": 7.15,
+      "tier": 3,
+      "roles": [
+        "s",
+        "or",
+        "mc",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "ruhr-orbital-w",
+      "nombre": "Ruhr Orbital Oeste",
+      "land": "nw",
+      "lat": 51.45,
+      "lon": 6.9,
+      "tier": 3,
+      "roles": [
+        "s",
+        "or",
+        "mc"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "ruhr-orbital-e",
+      "nombre": "Ruhr Orbital Este",
+      "land": "nw",
+      "lat": 51.5,
+      "lon": 7.45,
+      "tier": 3,
+      "roles": [
+        "s",
+        "or",
+        "mc"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "muenchen-suedkreuz",
+      "nombre": "Múnich Cruce Sur",
+      "land": "by",
+      "lat": 48.1,
+      "lon": 11.56,
+      "tier": 3,
+      "roles": [
+        "s",
+        "mc",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "muenchen-nordkreuz",
+      "nombre": "Múnich Cruce Norte",
+      "land": "by",
+      "lat": 48.2,
+      "lon": 11.56,
+      "tier": 3,
+      "roles": [
+        "s",
+        "mc"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "frankfurt-westkreuz",
+      "nombre": "Fráncfort Cruce Oeste",
+      "land": "he",
+      "lat": 50.11,
+      "lon": 8.56,
+      "tier": 3,
+      "roles": [
+        "s",
+        "mc",
+        "ae"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "frankfurt-ostkreuz",
+      "nombre": "Fráncfort Cruce Este",
+      "land": "he",
+      "lat": 50.12,
+      "lon": 8.75,
+      "tier": 3,
+      "roles": [
+        "s",
+        "mc"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "hamburg-hafencity",
+      "nombre": "Hamburgo Puerto Nuevo",
+      "land": "hh",
+      "lat": 53.54,
+      "lon": 9.99,
+      "tier": 3,
+      "roles": [
+        "s",
+        "u",
+        "t"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "hamburg-orbital",
+      "nombre": "Hamburgo Anillo",
+      "land": "hh",
+      "lat": 53.57,
+      "lon": 10.05,
+      "tier": 3,
+      "roles": [
+        "s",
+        "or"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "stuttgart-ring",
+      "nombre": "Stuttgart Anillo",
+      "land": "bw",
+      "lat": 48.77,
+      "lon": 9.2,
+      "tier": 3,
+      "roles": [
+        "s",
+        "or",
+        "tt"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "koeln-ring",
+      "nombre": "Colonia Anillo",
+      "land": "nw",
+      "lat": 50.95,
+      "lon": 6.97,
+      "tier": 3,
+      "roles": [
+        "s",
+        "t",
+        "or"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "leipzig-ring",
+      "nombre": "Leipzig Anillo",
+      "land": "sn",
+      "lat": 51.35,
+      "lon": 12.4,
+      "tier": 3,
+      "roles": [
+        "s",
+        "or",
+        "t"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dresden-ring",
+      "nombre": "Dresde Anillo",
+      "land": "sn",
+      "lat": 51.06,
+      "lon": 13.75,
+      "tier": 3,
+      "roles": [
+        "s",
+        "or",
+        "t"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "hannover-ring",
+      "nombre": "Hannover Anillo",
+      "land": "ni",
+      "lat": 52.38,
+      "lon": 9.75,
+      "tier": 3,
+      "roles": [
+        "s",
+        "or",
+        "t"
+      ],
+      "origen_datos": "ficticia"
+    }
   ]
 }

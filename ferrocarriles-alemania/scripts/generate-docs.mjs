@@ -12,7 +12,7 @@ function mdTable(headers, rows) {
   return `${head}\n${sep}\n${body}`;
 }
 
-export function generateDocs({ operators, lands, lineTypes, fleet }) {
+export function generateDocs({ operators, lands, lineTypes, fleet, hubs, corridors }) {
   const docsDir = path.join(root, "docs");
   fs.mkdirSync(docsDir, { recursive: true });
 
@@ -20,6 +20,10 @@ export function generateDocs({ operators, lands, lineTypes, fleet }) {
   for (const op of operators) {
     byTipo[op.tipo] = (byTipo[op.tipo] || 0) + 1;
   }
+  const hubTotal = hubs?.total || hubs?.hubs?.length || 0;
+  const corridorTotal = corridors?.corredores?.length || 0;
+  const fleetBases = fleet.unidades.filter((u) => u.variante === "base" || !u.variante);
+  const fleetVariants = fleet.unidades.length - fleetBases.length;
 
   const operadoresMd = `# Catálogo de operadores
 
@@ -181,9 +185,15 @@ ${mdTable(
 
 ## Flota
 
-- Unidades catalogadas: **${fleet.unidades.length}**
+- Unidades catalogadas: **${fleet.unidades.length}** (${fleetBases.length} base + ${fleetVariants} variantes)
 - Asignación: automática según servicios del operador (ver \`data/operators.json\` → \`flota\`)
 - Colecciones Workshop recomendadas: ver \`data/fleet.json\`
+
+## Hubs y corredores
+
+- Estaciones/hubs: **${hubTotal}**
+- Corredores: **${corridorTotal}**
+- Detalle: \`data/hubs.json\`, \`data/corridors.json\`
 
 ## Generador
 
@@ -193,27 +203,49 @@ Entrada:
 - \`data/line-types.json\`
 - \`data/hubs.json\`
 - \`data/fleet.json\`
+- \`data/corridors.json\`
 
 Salida:
 
 - \`output/lines-sample.json\` (muestra)
-- futuras corridas masivas: \`output/lines-batch-*.json\`
+- \`output/lines-mass.json\` (lote masivo)
+- \`output/*-summary.json\`
 
 ## Fases
 
 | Fase | Estado | Contenido |
 | --- | --- | --- |
 | A | Hecha | Catálogo operadores + logos + colores + zonas |
-| B | Base lista | Nomenclatura y tipos de línea |
-| C | Base lista | Catálogo flota + asignación mixta |
-| D | Scaffold | Generador de líneas a escala |
-| E | Pendiente | Hubs/estaciones exhaustivos + miles de líneas |
-| F | Pendiente | Guía de importación a partida Nimby Rails |
+| B | Hecha | Nomenclatura y tipos de línea |
+| C | Hecha | Catálogo flota ampliado (cientos) + asignación mixta |
+| D | Hecha | Generador por corredor + cuotas |
+| E | Hecha | Hubs densificados + miles de líneas |
+| F | Hecha | Guía de importación a partida Nimby Rails |
 `;
+
+  const byCat = {};
+  for (const u of fleet.unidades) {
+    byCat[u.categoria] = (byCat[u.categoria] || 0) + 1;
+  }
 
   const flotaMd = `# Flota (Workshop Nimby Rails)
 
 Material de **pasajeros** moderno. Los \`workshop_ref\` son nombres de búsqueda orientativos.
+
+## Totales
+
+- **${fleet.unidades.length}** unidades en catálogo
+- **${fleetBases.length}** modelos base
+- **${fleetVariants}** variantes (composición, livrea, aeropuerto)
+
+## Por categoría
+
+${mdTable(
+  ["Categoría", "Unidades"],
+  Object.entries(byCat)
+    .sort((a, b) => b[1] - a[1])
+    .map(([k, v]) => [k, String(v)])
+)}
 
 ## Colecciones
 
@@ -221,11 +253,11 @@ ${fleet.colecciones_recomendadas
   .map((c) => `- [${c.nombre}](${c.url}) — ${c.uso}`)
   .join("\n")}
 
-## Unidades
+## Modelos base (referencia)
 
 ${mdTable(
   ["ID", "Nombre", "Vmax", "Cap.", "Servicios", "Workshop"],
-  fleet.unidades.map((u) => [
+  fleetBases.map((u) => [
     `\`${u.id}\``,
     u.nombre,
     String(u.vmax_kmh),
@@ -234,10 +266,84 @@ ${mdTable(
     u.workshop_ref,
   ])
 )}
+
+> El catálogo completo (incluidas variantes) está en \`data/fleet.json\`.
+`;
+
+  const generadorMd = `# Generador de red
+
+## Idea
+
+1. Toma **corredores** (secuencias de hubs) y genera pares/saltos con \`via\`.
+2. Respeta **cuotas por tipo** (\`AV\`, \`RE\`, \`S\`…).
+3. Rellena con **ramales por proximidad** (haversine) y filtros de distancia min/max.
+4. Asigna operador según cobertura de Lands + tipo de servicio + competencia.
+5. Copia el **color del operador** y elige material de su flota principal.
+
+## Comandos
+
+\`\`\`bash
+npm run build
+npm run generate:sample   # ~400 líneas
+npm run generate:mass     # 8000 líneas
+node generator/cli.mjs batch 3000
+\`\`\`
+
+## Campos de cada línea
+
+\`id\`, \`codigo\`, \`codigo_interno\`, \`nombre\`, \`tipo_id\`, \`prefijo\`, \`operador_id\`, \`color\`, \`origen\`, \`destino\`, \`via\`, \`distancia_km\`, \`frecuencia_min\`, \`material\`, \`origen_datos\`, \`lands\`, \`corredor_id\`
+`;
+
+  const importacionMd = `# Guía de importación a Nimby Rails
+
+Nimby Rails no importa este JSON de forma nativa. Este proyecto es la **capa de diseño/planificación** para construir la partida a mano (o con herramientas externas) de forma coherente.
+
+## Flujo recomendado
+
+1. **Suscribir Workshop**  
+   Usa las colecciones de \`docs/FLOTA.md\` / \`data/fleet.json\`. Busca cada \`workshop_ref\` y suscríbete.
+
+2. **Crear operadores en la partida**  
+   Para cada entrada de \`data/operators.json\`:
+   - nombre en español
+   - color corporativo
+   - logo SVG de \`assets/logos/{id}.svg\` (exporta a PNG si el juego lo pide)
+
+3. **Plantar hubs**  
+   Prioriza tier 1–2 de \`data/hubs.json\`, luego metropolitanos, luego ficticios de densificación.
+
+4. **Trazar corredores**  
+   Sigue \`data/corridors.json\` (AV del Rin, eje norte-sur, S-Bahn, etc.).
+
+5. **Abrir líneas desde el lote**  
+   Usa \`output/lines-mass.json\` (o la sample) filtrando por \`corredor_id\` o \`tipo_id\`.  
+   Código público = \`codigo\`; color = \`color\`; tren = primer id de \`material\`.
+
+6. **Competencia**  
+   En un mismo eje pueden aparecer varios \`operador_id\`. Mantén ambos si quieres rivalidad; o deja el dominante local.
+
+## Orden práctico de construcción
+
+1. AV/LD nacionales  
+2. S/U/T de las 8–10 áreas metro  
+3. RE/RB por Land  
+4. RL/TUR/AE/N de relleno  
+
+## Archivos clave
+
+| Archivo | Uso |
+| --- | --- |
+| \`data/operators.json\` | Marca y flota |
+| \`data/fleet.json\` | Material Workshop |
+| \`data/hubs.json\` | Estaciones |
+| \`data/corridors.json\` | Ejes |
+| \`output/lines-mass.json\` | Miles de líneas listas para ejecutar |
 `;
 
   fs.writeFileSync(path.join(docsDir, "OPERADORES.md"), operadoresMd, "utf8");
   fs.writeFileSync(path.join(docsDir, "NOMENCLATURA.md"), nomenclaturaMd, "utf8");
   fs.writeFileSync(path.join(docsDir, "DISENO.md"), disenoMd, "utf8");
   fs.writeFileSync(path.join(docsDir, "FLOTA.md"), flotaMd, "utf8");
+  fs.writeFileSync(path.join(docsDir, "GENERADOR.md"), generadorMd, "utf8");
+  fs.writeFileSync(path.join(docsDir, "IMPORTACION.md"), importacionMd, "utf8");
 }

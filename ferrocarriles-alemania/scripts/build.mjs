@@ -5,6 +5,8 @@ import { operators, lands } from "./seed-operators.mjs";
 import { assignFleets } from "./assign-fleet.mjs";
 import { generateLogos } from "./generate-logos.mjs";
 import { generateDocs } from "./generate-docs.mjs";
+import { buildFleetDocument } from "./seed-fleet.mjs";
+import { buildHubsDocument } from "./seed-hubs.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, "..");
@@ -41,7 +43,6 @@ function rgbToHex({ r, g, b }) {
   );
 }
 
-/** Garantiza un color corporativo distinto por operador. */
 function uniquifyColors(ops) {
   const used = new Set();
   let tweak = 0;
@@ -61,16 +62,22 @@ function uniquifyColors(ops) {
   }
 }
 
-const fleet = JSON.parse(fs.readFileSync(path.join(dataDir, "fleet.json"), "utf8"));
+const fleetDoc = buildFleetDocument();
+fs.writeFileSync(path.join(dataDir, "fleet.json"), JSON.stringify(fleetDoc, null, 2) + "\n", "utf8");
+
+const hubsDoc = buildHubsDocument();
+fs.writeFileSync(path.join(dataDir, "hubs.json"), JSON.stringify(hubsDoc, null, 2) + "\n", "utf8");
+
 const lineTypes = JSON.parse(fs.readFileSync(path.join(dataDir, "line-types.json"), "utf8"));
+const corridors = JSON.parse(fs.readFileSync(path.join(dataDir, "corridors.json"), "utf8"));
 
 assertUniqueIds(operators);
 uniquifyColors(operators);
-const withFleet = assignFleets(operators, fleet.unidades);
+const withFleet = assignFleets(operators, fleetDoc.unidades);
 generateLogos(withFleet);
 
 const operatorsDoc = {
-  version: "0.1.0",
+  version: "0.2.0",
   generado: new Date().toISOString(),
   idioma: "es",
   regla_color: "color de línea = color del operador",
@@ -79,17 +86,15 @@ const operatorsDoc = {
   operators: withFleet,
 };
 
-fs.writeFileSync(
-  path.join(dataDir, "operators.json"),
-  JSON.stringify(operatorsDoc, null, 2) + "\n",
-  "utf8"
-);
+fs.writeFileSync(path.join(dataDir, "operators.json"), JSON.stringify(operatorsDoc, null, 2) + "\n", "utf8");
 
 generateDocs({
   operators: withFleet,
   lands,
   lineTypes,
-  fleet,
+  fleet: fleetDoc,
+  hubs: hubsDoc,
+  corridors,
 });
 
 const byTipo = withFleet.reduce((acc, op) => {
@@ -99,6 +104,8 @@ const byTipo = withFleet.reduce((acc, op) => {
 
 console.log("Build OK");
 console.log(`  Operadores: ${withFleet.length}`);
-console.log(`  Tipos: ${JSON.stringify(byTipo)}`);
-console.log(`  Logos: assets/logos/*.svg + index.html`);
-console.log(`  Docs: docs/DISENO.md, OPERADORES.md, NOMENCLATURA.md, FLOTA.md`);
+console.log(`  Flota: ${fleetDoc.total} unidades`);
+console.log(`  Hubs: ${hubsDoc.total}`);
+console.log(`  Corredores: ${corridors.corredores.length}`);
+console.log(`  Tipos operador: ${JSON.stringify(byTipo)}`);
+console.log(`  Logos + docs regenerados`);

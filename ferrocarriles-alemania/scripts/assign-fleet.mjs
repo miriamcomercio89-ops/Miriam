@@ -1,5 +1,5 @@
 /**
- * Asigna flota mixta a cada operador según sus servicios.
+ * Asigna flota mixta amplia a cada operador según sus servicios.
  */
 export function assignFleets(operators, fleetUnits) {
   const byService = new Map();
@@ -17,27 +17,52 @@ export function assignFleets(operators, fleetUnits) {
         pool.set(unit.id, unit);
       }
     }
-    const list = [...pool.values()];
+    let list = [...pool.values()];
     if (list.length === 0) {
       return { ...op, flota: [] };
     }
 
-    // Variedad: 3–8 unidades según amplitud de servicios
-    const target = Math.min(list.length, Math.max(3, Math.min(8, op.servicios.length + 2)));
+    // Preferir bases + algo de variantes
+    const bases = list.filter((u) => u.variante === "base" || !u.variante);
+    const variants = list.filter((u) => u.variante && u.variante !== "base");
+    list = [...bases, ...variants];
+
+    // Nacionales/metropolitanos: más variedad; urbanos: menos
+    const maxByTipo = {
+      nacional: 22,
+      internacional: 16,
+      regional: 14,
+      metropolitano: 16,
+      urbano: 10,
+      especializado: 12,
+    };
+    const target = Math.min(list.length, maxByTipo[op.tipo] || 12);
+
     const flota = [];
-    for (let i = 0; i < target; i++) {
-      const unit = list[(idx * 3 + i * 5) % list.length];
-      if (!flota.find((f) => f.unidad_id === unit.id)) {
-        const peso = unit.servicios.filter((s) => op.servicios.includes(s)).length;
-        flota.push({
-          unidad_id: unit.id,
-          nombre: unit.nombre,
-          workshop_ref: unit.workshop_ref,
-          papel: peso >= 2 ? "principal" : "secundario",
-          unidades_estimadas: 8 + ((idx + i * 7) % 40) + peso * 4,
-        });
+    for (let i = 0; i < list.length && flota.length < target; i++) {
+      const unit = list[(idx * 5 + i * 7) % list.length];
+      if (flota.find((f) => f.unidad_id === unit.id)) continue;
+      const peso = unit.servicios.filter((s) => op.servicios.includes(s)).length;
+      const isBase = unit.variante === "base" || !unit.variante;
+      flota.push({
+        unidad_id: unit.id,
+        nombre: unit.nombre,
+        workshop_ref: unit.workshop_ref,
+        categoria: unit.categoria,
+        papel: isBase && peso >= 1 ? (peso >= 2 ? "principal" : "secundario") : "variante",
+        unidades_estimadas: 6 + ((idx + i * 11) % 50) + peso * 5 + (isBase ? 8 : 0),
+      });
+    }
+
+    // Garantizar al menos 2 principales si hay bases
+    const principales = flota.filter((f) => f.papel === "principal");
+    if (principales.length < 2) {
+      for (const f of flota) {
+        if (f.papel !== "principal") f.papel = "principal";
+        if (flota.filter((x) => x.papel === "principal").length >= 2) break;
       }
     }
+
     return { ...op, flota };
   });
 }

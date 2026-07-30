@@ -1,0 +1,78 @@
+{
+  "total": 400,
+  "distancia_total_km": 35256,
+  "por_tipo": {
+    "av": 12,
+    "ld": 32,
+    "ir": 28,
+    "re": 64,
+    "rb": 72,
+    "s": 40,
+    "u": 16,
+    "t": 20,
+    "tt": 8,
+    "ae": 8,
+    "n": 6,
+    "tur": 10,
+    "or": 12,
+    "px": 12,
+    "mc": 12,
+    "rl": 48
+  },
+  "por_origen_datos": {
+    "real": 282,
+    "hibrida": 118
+  },
+  "operadores_distintos": 61,
+  "corredores_distintos": 23,
+  "top_corredores": [
+    {
+      "id": "s-berlin",
+      "lineas": 73
+    },
+    {
+      "id": "ld-saxon",
+      "lineas": 35
+    },
+    {
+      "id": "re-brandeburgo",
+      "lineas": 28
+    },
+    {
+      "id": "re-turingia",
+      "lineas": 27
+    },
+    {
+      "id": "av-norte-sur",
+      "lineas": 26
+    },
+    {
+      "id": "av-rin",
+      "lineas": 25
+    },
+    {
+      "id": "re-baviera-este",
+      "lineas": 23
+    },
+    {
+      "id": "re-selva-negra",
+      "lineas": 22
+    },
+    {
+      "id": "ld-rin-mosela",
+      "lineas": 18
+    },
+    {
+      "id": "ld-baltico",
+      "lineas": 17
+    },
+    {
+      "id": "s-hamburg",
+      "lineas": 15
+    },
+    {
+      "id": "re-baja-sajonia",
+      "lineas": 13
+    }
+  ]
+}
