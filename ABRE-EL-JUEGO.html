@@ -558,6 +558,54 @@ select {
   padding: 8px;
   font: inherit;
 }
+.notice-banner {
+  margin: 8px 0 0;
+  padding: 8px 14px;
+  background: rgba(14, 107, 122, 0.12);
+  border: 1px solid rgba(14, 107, 122, 0.28);
+  border-radius: 10px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--brand-deep);
+}
+.jackpot-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  margin: 6px 0 0;
+  padding: 6px 4px;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+.jackpot-strip strong {
+  color: var(--ink);
+  font-weight: 700;
+  margin-right: 4px;
+}
+.wish-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.88rem;
+}
+.wish-ok {
+  color: #0b6b3a;
+  background: rgba(11, 107, 58, 0.08);
+  border-radius: 8px;
+  padding: 4px 8px;
+}
+.wish-miss {
+  color: #9b1c1c;
+  background: rgba(155, 28, 28, 0.08);
+  border-radius: 8px;
+  padding: 4px 8px;
+}
+.wish-extra {
+  color: #8a5a00;
+  background: rgba(196, 140, 0, 0.12);
+  border-radius: 8px;
+  padding: 4px 8px;
+}
 @media (max-width: 1100px) {
   .layout {
     grid-template-columns: 1fr;
@@ -758,6 +806,165 @@ try {
         { cents: 1e7, p: 1e-5 }
       ],
       description: "Premium. Hasta 100.000 \u20AC."
+    },
+    // ——— +10 rascas v0.3 ———
+    {
+      id: "rasca-bingo",
+      name: "Bingo Instant\xE1neo",
+      org: "LAE",
+      priceCents: 200,
+      commissionRate: 0.06,
+      orderDays: 2,
+      topPrizeCents: 15e5,
+      prizes: [
+        { cents: 200, p: 0.14 },
+        { cents: 500, p: 0.05 },
+        { cents: 2e3, p: 0.015 },
+        { cents: 15e5, p: 4e-5 }
+      ],
+      description: "Bingo al instante. Hasta 15.000 \u20AC."
+    },
+    {
+      id: "rasca-poker",
+      name: "P\xF3ker de la Suerte",
+      org: "LAE",
+      priceCents: 200,
+      commissionRate: 0.06,
+      orderDays: 2,
+      topPrizeCents: 18e5,
+      prizes: [
+        { cents: 200, p: 0.13 },
+        { cents: 400, p: 0.05 },
+        { cents: 2e3, p: 0.012 },
+        { cents: 18e5, p: 35e-6 }
+      ],
+      description: "Jugada de p\xF3ker. Hasta 18.000 \u20AC."
+    },
+    {
+      id: "rasca-fruta",
+      name: "Frutas de la Fortuna",
+      org: "LAE",
+      priceCents: 100,
+      commissionRate: 0.06,
+      orderDays: 2,
+      topPrizeCents: 5e5,
+      prizes: [
+        { cents: 100, p: 0.2 },
+        { cents: 200, p: 0.07 },
+        { cents: 1e3, p: 0.02 },
+        { cents: 5e5, p: 6e-5 }
+      ],
+      description: "Cl\xE1sico de frutas."
+    },
+    {
+      id: "rasca-20e",
+      name: "M\xE1ximo 2.000.000 \u20AC",
+      org: "LAE",
+      priceCents: 2e3,
+      commissionRate: 0.06,
+      orderDays: 2,
+      topPrizeCents: 2e8,
+      prizes: [
+        { cents: 2e3, p: 0.1 },
+        { cents: 5e3, p: 0.03 },
+        { cents: 5e4, p: 4e-3 },
+        { cents: 2e8, p: 8e-6 }
+      ],
+      description: "Rasca premium 20 \u20AC."
+    },
+    {
+      id: "rasca-10x",
+      name: "\xD710 Instant\xE1neo",
+      org: "LAE",
+      priceCents: 1e3,
+      commissionRate: 0.06,
+      orderDays: 2,
+      topPrizeCents: 5e7,
+      prizes: [
+        { cents: 1e3, p: 0.11 },
+        { cents: 5e3, p: 0.025 },
+        { cents: 25e3, p: 4e-3 },
+        { cents: 5e7, p: 12e-6 }
+      ],
+      description: "Multiplica \xD710."
+    },
+    {
+      id: "rasca-navidad",
+      name: "Rasca de Navidad",
+      org: "LAE",
+      priceCents: 200,
+      commissionRate: 0.06,
+      orderDays: 2,
+      topPrizeCents: 25e5,
+      prizes: [
+        { cents: 200, p: 0.15 },
+        { cents: 500, p: 0.05 },
+        { cents: 5e3, p: 8e-3 },
+        { cents: 25e5, p: 3e-5 }
+      ],
+      description: "Edici\xF3n navide\xF1a."
+    },
+    {
+      id: "rasca-once-oro",
+      name: "Rasca ONCE de Oro",
+      org: "ONCE",
+      priceCents: 300,
+      commissionRate: 0.055,
+      orderDays: 2,
+      topPrizeCents: 3e6,
+      prizes: [
+        { cents: 300, p: 0.12 },
+        { cents: 600, p: 0.04 },
+        { cents: 3e3, p: 0.01 },
+        { cents: 3e6, p: 25e-6 }
+      ],
+      description: "Oro solidario."
+    },
+    {
+      id: "rasca-once-estrella",
+      name: "Estrella de la Suerte",
+      org: "ONCE",
+      priceCents: 200,
+      commissionRate: 0.055,
+      orderDays: 2,
+      topPrizeCents: 22e5,
+      prizes: [
+        { cents: 200, p: 0.14 },
+        { cents: 500, p: 0.05 },
+        { cents: 2e3, p: 0.012 },
+        { cents: 22e5, p: 3e-5 }
+      ],
+      description: "Encuentra la estrella."
+    },
+    {
+      id: "rasca-once-verano",
+      name: "Rasca Verano ONCE",
+      org: "ONCE",
+      priceCents: 200,
+      commissionRate: 0.055,
+      orderDays: 2,
+      topPrizeCents: 2e6,
+      prizes: [
+        { cents: 200, p: 0.15 },
+        { cents: 1e3, p: 0.03 },
+        { cents: 2e6, p: 3e-5 }
+      ],
+      description: "Edici\xF3n verano."
+    },
+    {
+      id: "rasca-lucky",
+      name: "Lucky 7",
+      org: "LAE",
+      priceCents: 100,
+      commissionRate: 0.06,
+      orderDays: 2,
+      topPrizeCents: 777e3,
+      prizes: [
+        { cents: 100, p: 0.17 },
+        { cents: 700, p: 0.04 },
+        { cents: 777e3, p: 5e-5 }
+      ],
+      description: "La suerte del 7."
     }
   ];
   function rollScratchPrize(card, rng) {
@@ -1066,6 +1273,54 @@ try {
       numberMode: "triplex",
       description: "3 cifras."
     },
+    {
+      id: "once-extra-verano",
+      name: "Extraordinario ONCE Verano",
+      org: "ONCE",
+      tpvCategory: "ONCE",
+      category: "especial",
+      priceCents: 600,
+      commissionRate: 0.05,
+      drawDays: [],
+      orderDays: 2,
+      stockType: "physical",
+      checkable: true,
+      needsNumbers: true,
+      numberMode: "nacional",
+      description: "Sorteo extraordinario de verano."
+    },
+    {
+      id: "once-extra-navidad",
+      name: "Extraordinario ONCE Navidad",
+      org: "ONCE",
+      tpvCategory: "ONCE",
+      category: "especial",
+      priceCents: 600,
+      commissionRate: 0.05,
+      drawDays: [],
+      orderDays: 2,
+      stockType: "physical",
+      checkable: true,
+      needsNumbers: true,
+      numberMode: "nacional",
+      description: "Sorteo extraordinario de Navidad."
+    },
+    {
+      id: "once-extra-dia",
+      name: "Extraordinario D\xEDa de la ONCE",
+      org: "ONCE",
+      tpvCategory: "ONCE",
+      category: "especial",
+      priceCents: 600,
+      commissionRate: 0.05,
+      drawDays: [],
+      orderDays: 2,
+      stockType: "physical",
+      checkable: true,
+      needsNumbers: true,
+      numberMode: "nacional",
+      description: "Sorteo del D\xEDa de la ONCE."
+    },
     // ——— Autonómicas / provinciales / locales inventadas ———
     {
       id: "and-fortuna",
@@ -1238,6 +1493,9 @@ try {
     "once-eurojackpot",
     "once-super-once",
     "once-triplex",
+    "once-extra-verano",
+    "once-extra-navidad",
+    "once-extra-dia",
     "and-fortuna",
     "and-olivo",
     "and-costa",
@@ -1650,75 +1908,52 @@ try {
     };
   }
   function generateAbonadosAndPenas() {
-    const base = generateRegularCustomers(40, 9090);
-    const abonados = base.slice(0, 18).map((c, i) => ({
+    const base = generateRegularCustomers(60, 9090);
+    const subs = [
+      "Primitiva + Bonoloto semanal",
+      "Euromillones martes y viernes",
+      "Nacional del s\xE1bado",
+      "Cup\xF3n ONCE diario",
+      "Bonoloto diario"
+    ];
+    const abonados = base.slice(0, 40).map((c, i) => ({
       ...c,
       id: `abo-${i + 1}`,
       kind: "abonado",
       favoriteProduct: c.preferredProducts[0],
-      subscription: "Primitiva + Bonoloto semanal",
+      subscription: subs[i % subs.length],
       prizesClaimed: [],
       orders: []
     }));
-    const penas = [
-      {
-        id: "pena-1",
-        kind: "pena",
-        name: "Pe\xF1a El Desfiladero",
-        regular: true,
-        street: "Calle Real",
-        preferredProducts: ["lae-euromillones", "lae-primitiva", "lae-nacional"],
-        visitChance: 0.15,
-        prefersPayment: "transfer",
-        trait: "generosa",
-        line: "Para la pe\xF1a, como cada semana.",
-        favoriteProduct: "lae-euromillones",
-        subscription: "Bote compartido Euromillones",
-        members: 24,
-        history: [],
-        prizesClaimed: [],
-        orders: [],
-        preferredDays: [2, 5]
-      },
-      {
-        id: "pena-2",
-        kind: "pena",
-        name: "Pe\xF1a Virgen de Flores",
-        regular: true,
-        street: "Plaza Baja",
-        preferredProducts: ["lae-nacional", "lae-navidad", "alo-local"],
-        visitChance: 0.12,
-        prefersPayment: "cash",
-        trait: "constante",
-        line: "D\xE9cimos para la pe\xF1a.",
-        favoriteProduct: "lae-nacional",
-        subscription: "Nacional jueves/s\xE1bado",
-        members: 15,
-        history: [],
-        prizesClaimed: [],
-        orders: [],
-        preferredDays: [4, 6]
-      },
-      {
-        id: "pena-3",
-        kind: "pena",
-        name: "Pe\xF1a del Chorro",
-        regular: true,
-        street: "Camino de El Chorro",
-        preferredProducts: ["lae-bonoloto", "once-eurojackpot", "rasca-jackpot"],
-        visitChance: 0.1,
-        prefersPayment: "bizum",
-        trait: "habladora",
-        line: "Hoy venimos con lista larga.",
-        favoriteProduct: "lae-bonoloto",
-        subscription: "Bonoloto diario compartido",
-        members: 30,
-        history: [],
-        prizesClaimed: [],
-        orders: [],
-        preferredDays: [1, 2, 3, 4, 5]
-      }
+    const penaDefs = [
+      ["pena-1", "Pe\xF1a El Desfiladero", "Calle Real", ["lae-euromillones", "lae-primitiva"], "Bote Euromillones", 24, [2, 5]],
+      ["pena-2", "Pe\xF1a Virgen de Flores", "Plaza Baja", ["lae-nacional", "lae-navidad"], "Nacional jueves/s\xE1bado", 15, [4, 6]],
+      ["pena-3", "Pe\xF1a del Chorro", "Camino de El Chorro", ["lae-bonoloto", "once-eurojackpot"], "Bonoloto diario", 30, [1, 2, 3, 4, 5]],
+      ["pena-4", "Pe\xF1a Caminito", "Avenida de Andaluc\xEDa", ["lae-euromillones", "rasca-jackpot"], "Euromillones + rascas", 18, [2, 5]],
+      ["pena-5", "Pe\xF1a San Juan", "Calle Veracruz", ["once-cuponazo", "lae-primitiva"], "Cuponazo viernes", 12, [5]],
+      ["pena-6", "Pe\xF1a Hoya Dulce", "Calle Hoyo", ["lae-quiniela", "lae-bonoloto"], "Quiniela domingo", 20, [5, 0]],
+      ["pena-7", "Pe\xF1a Estaci\xF3n", "Calle Estaci\xF3n", ["lae-nacional", "alo-local"], "D\xE9cimos locales", 10, [4]],
+      ["pena-8", "Pe\xF1a Guadalhorce", "Calle Ancha", ["lae-gordo-primitiva", "lae-primitiva"], "Gordo + Primitiva", 22, [3, 6]]
     ];
+    const penas = penaDefs.map(([id, name, street, prefs, subscription, members, preferredDays], i) => ({
+      id,
+      kind: "pena",
+      name,
+      regular: true,
+      street,
+      preferredProducts: prefs,
+      visitChance: 0.1 + i % 3 * 0.02,
+      prefersPayment: ["transfer", "cash", "bizum"][i % 3],
+      trait: TRAITS[i % TRAITS.length],
+      line: "Pedido para la pe\xF1a.",
+      favoriteProduct: prefs[0],
+      subscription,
+      members,
+      history: [],
+      prizesClaimed: [],
+      orders: [],
+      preferredDays
+    }));
     return { abonados, penas };
   }
 
@@ -1761,10 +1996,178 @@ try {
     return (events == null ? void 0 : events[ymd2]) || null;
   }
 
+  // src/game/notices.js
+  function todaysDrawNotices(state2) {
+    const d = gameDate(state2);
+    const dow = d.getUTCDay();
+    const ymd2 = gameYmd(state2);
+    const notices = [];
+    const catalog = [
+      { id: "lae-bonoloto", days: [1, 2, 3, 4, 5, 6], label: "Bonoloto" },
+      { id: "lae-primitiva", days: [3, 6], label: "Primitiva" },
+      { id: "lae-euromillones", days: [2, 5], label: "Euromillones" },
+      { id: "lae-nacional", days: [4, 6], label: "Loter\xEDa Nacional" },
+      { id: "lae-gordo-primitiva", days: [0], label: "Gordo de la Primitiva" },
+      { id: "lae-quiniela", days: [0], label: "Quiniela" },
+      { id: "once-cupon", days: [1, 2, 3, 4, 5], label: "Cup\xF3n ONCE" },
+      { id: "once-cuponazo", days: [5], label: "Cuponazo" },
+      { id: "once-eurojackpot", days: [2, 5], label: "Eurojackpot" },
+      { id: "once-sueldazo", days: [0], label: "Sueldazo" }
+    ];
+    for (const c of catalog) {
+      if (c.days.includes(dow)) notices.push(c.label);
+    }
+    if (ymd2.endsWith("-12-22")) notices.push("Sorteo de Navidad");
+    if (ymd2.endsWith("-01-06")) notices.push("Sorteo del Ni\xF1o");
+    for (const ex of state2.onceExtras || []) {
+      if (ex.ymd === ymd2) notices.push(ex.name);
+    }
+    return notices;
+  }
+  function specialOrderDeadlines(state2) {
+    const y = gameDate(state2).getUTCFullYear();
+    const m = gameDate(state2).getUTCMonth() + 1;
+    return {
+      navidad: {
+        productId: "lae-navidad",
+        deliverBy: `${m <= 12 ? y : y}-12-21`,
+        drawOn: `${y}-12-22`
+      },
+      nino: {
+        productId: "lae-nino",
+        deliverBy: m === 1 ? `${y}-01-05` : `${y + 1}-01-05`,
+        drawOn: m === 1 ? `${y}-01-06` : `${y + 1}-01-06`
+      }
+    };
+  }
+  function createCalendarOrder(state2, { productId, qty, clientId, clientName, deliverBy }) {
+    const p = getProduct(productId);
+    if (!p) return null;
+    const order = {
+      id: `cal-${Date.now()}`,
+      productId,
+      productName: p.name,
+      qty,
+      clientId,
+      clientName,
+      arriveOnYmd: deliverBy,
+      deliverBy,
+      status: "pending",
+      reserved: true,
+      special: true,
+      calendar: true
+    };
+    state2.orders.push(order);
+    state2.dayLog.push({
+      at: state2.clock.gameTimeMs,
+      text: `Encargo calendario: ${clientName} \xB7 ${p.name} \xD7${qty} (entrega ${deliverBy})`
+    });
+    return order;
+  }
+  function ensureOnceExtras(state2) {
+    var _a;
+    if ((_a = state2.onceExtras) == null ? void 0 : _a.length) return state2;
+    const y = gameDate(state2).getUTCFullYear();
+    state2.onceExtras = [
+      { id: "once-extra-verano", name: "Extraordinario ONCE Verano", ymd: `${y}-07-15`, priceCents: 600 },
+      { id: "once-extra-navidad", name: "Extraordinario ONCE Navidad", ymd: `${y}-12-28`, priceCents: 600 },
+      { id: "once-extra-dia", name: "Extraordinario D\xEDa de la ONCE", ymd: `${y}-12-03`, priceCents: 600 }
+    ];
+    return state2;
+  }
+
+  // src/game/rng.js
+  function mulberry322(seed) {
+    let a = seed >>> 0;
+    return function() {
+      let t = a += 1831565813;
+      t = Math.imul(t ^ t >>> 15, t | 1);
+      t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+  function hashSeed(...parts) {
+    let h = 2166136261;
+    const s = parts.join("|");
+    for (let i = 0; i < s.length; i++) {
+      h ^= s.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+    return h >>> 0;
+  }
+  function pickUnique(rng, count, from) {
+    const pool = Array.from({ length: from }, (_, i) => i + 1);
+    const out = [];
+    for (let i = 0; i < count; i++) {
+      const idx = Math.floor(rng() * pool.length);
+      out.push(pool.splice(idx, 1)[0]);
+    }
+    return out.sort((a, b) => a - b);
+  }
+  function pickInt(rng, min, maxInclusive) {
+    return min + Math.floor(rng() * (maxInclusive - min + 1));
+  }
+  function pad5(n) {
+    return String(n).padStart(5, "0");
+  }
+
+  // src/game/jackpots.js
+  var JACKPOT_GAMES = [
+    { id: "lae-euromillones", name: "Euromillones", base: 17e8, min: 17e8, step: 5e8 },
+    { id: "lae-primitiva", name: "Primitiva", base: 8e8, min: 14e7, step: 2e8 },
+    { id: "lae-bonoloto", name: "Bonoloto", base: 4e7, min: 4e7, step: 2e7 },
+    { id: "lae-gordo-primitiva", name: "Gordo Primitiva", base: 5e8, min: 5e8, step: 1e8 },
+    { id: "once-eurojackpot", name: "Eurojackpot", base: 1e9, min: 1e9, step: 4e8 },
+    { id: "once-cuponazo", name: "Cuponazo", base: 9e8, min: 9e8, step: 1e8 }
+  ];
+  function ensureJackpots(state2) {
+    var _a;
+    if (!state2.jackpots) state2.jackpots = {};
+    const ymd2 = gameYmd(state2);
+    const weekKey = weekId(gameDate(state2));
+    if (state2.jackpots.weekKey === weekKey && Object.keys(state2.jackpots.values || {}).length) {
+      return state2;
+    }
+    const rng = mulberry322(hashSeed("jackpot", weekKey));
+    const values = {};
+    for (const g of JACKPOT_GAMES) {
+      const prev = ((_a = state2.jackpots.values) == null ? void 0 : _a[g.id]) || g.base;
+      const roll = rng();
+      let next;
+      if (roll < 0.18) next = g.min;
+      else if (roll < 0.55) next = prev + g.step;
+      else next = prev + Math.floor(g.step * (0.5 + rng()));
+      values[g.id] = Math.max(g.min, next);
+    }
+    state2.jackpots = { weekKey, updatedYmd: ymd2, values };
+    return state2;
+  }
+  function weekId(d) {
+    const tmp = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+    const dayNum = tmp.getUTCDay() || 7;
+    tmp.setUTCDate(tmp.getUTCDate() + 4 - dayNum);
+    const yearStart = new Date(Date.UTC(tmp.getUTCFullYear(), 0, 1));
+    const week = Math.ceil(((tmp - yearStart) / 864e5 + 1) / 7);
+    return `${tmp.getUTCFullYear()}-W${String(week).padStart(2, "0")}`;
+  }
+  function jackpotList(state2) {
+    ensureJackpots(state2);
+    return JACKPOT_GAMES.map((g) => ({
+      id: g.id,
+      name: g.name,
+      cents: state2.jackpots.values[g.id] || g.base,
+      label: formatEuro(state2.jackpots.values[g.id] || g.base)
+    }));
+  }
+  function formatJackpotShort(cents) {
+    if (cents >= 1e8) return `${(cents / 1e8).toFixed(1)} M\u20AC`;
+    return formatEuro(cents);
+  }
+
   // src/game/state.js
   var STARTING_BANK_CENTS = 95e4;
-  var SAVE_VERSION = 3;
-  var GAME_VERSION = "0.2";
+  var SAVE_VERSION = 4;
+  var GAME_VERSION = "0.3";
   var SLOT_COUNT = 3;
   var STORAGE_PREFIX = "loterias-alora-slot-";
   var OFFICE = {
@@ -1803,7 +2206,7 @@ try {
         stock[p.id] = null;
       }
     }
-    return {
+    const game = {
       version: SAVE_VERSION,
       gameVersion: GAME_VERSION,
       meta: {
@@ -1829,9 +2232,14 @@ try {
         dayPrizesPaidCents: 0,
         dayPrizesReimbursableCents: 0,
         dayExpensesCents: 0,
+        dayShortageCents: 0,
+        changeErrorsToday: 0,
         lastSettlement: null,
-        ledger: []
+        ledger: [],
+        weeklySnapshots: []
       },
+      jackpots: {},
+      onceExtras: [],
       stock,
       orders: [],
       reservations: [],
@@ -1848,21 +2256,35 @@ try {
         servedToday: 0,
         nextSpawnAtMs: start.getTime() + 10 * 1e3
       },
-      settings: { music: true, sfx: true },
+      settings: { music: true, sfx: true, autosaveMinutes: 2 },
       dayLog: [],
       holidays,
       events,
-      stats: { totalSalesCents: 0, totalCustomers: 0, daysPlayed: 0 },
+      stats: {
+        totalSalesCents: 0,
+        totalCustomers: 0,
+        daysPlayed: 0,
+        totalCommissionCents: 0,
+        totalPrizesPaidCents: 0,
+        totalShortageCents: 0
+      },
       ui: {
         screen: "counter",
         toast: null,
         paymentSession: null,
         tpv: null,
+        arqueo: null,
         lastTickets: [],
         lastCloseSummary: null,
         fichaId: null
       }
     };
+    return finalizeNewGame(game);
+  }
+  function finalizeNewGame(state2) {
+    ensureOnceExtras(state2);
+    ensureJackpots(state2);
+    return state2;
   }
   function migrateState(data) {
     if (!data) return createNewGame();
@@ -1871,7 +2293,7 @@ try {
     if (!data.prizeManagement) data.prizeManagement = [];
     if (!data.events) data.events = buildAloraEvents(2025, 2032);
     if (!data.nextIds) data.nextIds = { ticket: 1 };
-    if (!data.settings) data.settings = { music: true, sfx: true };
+    if (!data.settings) data.settings = { music: true, sfx: true, autosaveMinutes: 2 };
     if (!data.customers.abonados || !data.customers.penas) {
       const { abonados, penas } = generateAbonadosAndPenas();
       data.customers.abonados = data.customers.abonados || abonados;
@@ -1881,10 +2303,18 @@ try {
     if (data.finance && data.finance.dayPrizesReimbursableCents == null) {
       data.finance.dayPrizesReimbursableCents = 0;
     }
+    if (!data.stats) data.stats = {};
+    data.stats.totalCommissionCents = data.stats.totalCommissionCents || 0;
+    data.stats.totalPrizesPaidCents = data.stats.totalPrizesPaidCents || 0;
+    data.stats.totalShortageCents = data.stats.totalShortageCents || 0;
+    data.jackpots = data.jackpots || {};
     data.ui = data.ui || {};
     data.ui.tpv = null;
+    data.ui.arqueo = null;
     data.version = SAVE_VERSION;
     data.gameVersion = GAME_VERSION;
+    ensureOnceExtras(data);
+    ensureJackpots(data);
     return data;
   }
 
@@ -2050,40 +2480,17 @@ try {
   function newGame() {
     return createNewGame();
   }
-
-  // src/game/rng.js
-  function mulberry322(seed) {
-    let a = seed >>> 0;
-    return function() {
-      let t = a += 1831565813;
-      t = Math.imul(t ^ t >>> 15, t | 1);
-      t ^= t + Math.imul(t ^ t >>> 7, t | 61);
-      return ((t ^ t >>> 14) >>> 0) / 4294967296;
-    };
-  }
-  function hashSeed(...parts) {
-    let h = 2166136261;
-    const s = parts.join("|");
-    for (let i = 0; i < s.length; i++) {
-      h ^= s.charCodeAt(i);
-      h = Math.imul(h, 16777619);
+  function maybeAutosave(state2, lastAutosaveRealMs2, intervalMs = 12e4) {
+    var _a;
+    const now = Date.now();
+    if (now - lastAutosaveRealMs2 < intervalMs) return lastAutosaveRealMs2;
+    const slot = ((_a = state2.meta) == null ? void 0 : _a.activeSlot) || 1;
+    try {
+      state2.meta.activeSlot = slot;
+      saveToSlot(state2, slot);
+    } catch (e) {
     }
-    return h >>> 0;
-  }
-  function pickUnique(rng, count, from) {
-    const pool = Array.from({ length: from }, (_, i) => i + 1);
-    const out = [];
-    for (let i = 0; i < count; i++) {
-      const idx = Math.floor(rng() * pool.length);
-      out.push(pool.splice(idx, 1)[0]);
-    }
-    return out.sort((a, b) => a - b);
-  }
-  function pickInt(rng, min, maxInclusive) {
-    return min + Math.floor(rng() * (maxInclusive - min + 1));
-  }
-  function pad5(n) {
-    return String(n).padStart(5, "0");
+    return now;
   }
 
   // src/game/draws.js
@@ -2549,6 +2956,7 @@ try {
     const changeSum = countTotalCents(ps.changeGiven);
     if (changeSum !== changeNeeded) {
       ps.error = `El cambio no cuadra. Debes devolver ${formatEuro(changeNeeded)} y tienes ${formatEuro(changeSum)}. Corrige y vuelve a intentar.`;
+      state2.finance.changeErrorsToday = (state2.finance.changeErrorsToday || 0) + 1;
       return state2;
     }
     let drawer = addToDrawer(state2.finance.drawer, ps.tendered);
@@ -2575,6 +2983,7 @@ try {
     state2.finance.daySalesCents += ps.totalCents;
     state2.finance.dayCommissionCents += commission;
     state2.stats.totalSalesCents += ps.totalCents;
+    state2.stats.totalCommissionCents = (state2.stats.totalCommissionCents || 0) + commission;
     if (method !== "cash") {
       state2.finance.bankCents += ps.totalCents;
     }
@@ -2695,9 +3104,20 @@ try {
     if (month === 12 || month === 11 && day >= 15) f += 0.8;
     if (month === 1 && day <= 10) f += 0.6;
     if (d.getUTCDay() === 5) f += 0.25;
+    if (month >= 6 && month <= 9) f += 0.45;
+    if (month === 10 && day >= 10 && day <= 14) f += 0.35;
+    if (month === 12 && day >= 5 && day <= 9) f += 0.25;
     const ev = eventOn(gameYmd(state2), state2.events);
     if (ev) f += ev.crowd || 0;
     return f;
+  }
+  function isTouristSeason(state2) {
+    const m = gameDate(state2).getUTCMonth() + 1;
+    const d = gameDate(state2).getUTCDate();
+    if (m >= 6 && m <= 9) return true;
+    if (m === 10 && d >= 10 && d <= 14) return true;
+    if (m === 12 && d >= 5 && d <= 9) return true;
+    return false;
   }
   function maybeSpawnCustomers(state2) {
     if (!isOpenHours(state2)) return state2;
@@ -2745,7 +3165,16 @@ try {
       const a = state2.customers.penas[Math.floor(rng() * state2.customers.penas.length)];
       return { ...a };
     }
-    if (rng() < 0.28 + (crowdFactor(state2) - 1) * 0.08) return makeVisitor();
+    const touristBoost = isTouristSeason(state2) ? 0.15 : 0;
+    if (rng() < 0.28 + (crowdFactor(state2) - 1) * 0.08 + touristBoost) {
+      const v = makeVisitor();
+      if (isTouristSeason(state2) && rng() < 0.55) {
+        v.street = "Turista (Caminito / El Chorro)";
+        v.line = "De pasada por el Caminito, me llevo algo.";
+        v.preferredProducts = ["rasca-jackpot", "lae-nacional", "alo-chorro", "rasca-once-verano"];
+      }
+      return v;
+    }
     const dow = gameDate(state2).getUTCDay();
     const candidates = state2.customers.regulars.filter((c) => {
       var _a2;
@@ -3023,6 +3452,7 @@ try {
     ticket.paidMethod = method;
     state2.finance.dayPrizesPaidCents += amount;
     state2.finance.dayPrizesReimbursableCents = (state2.finance.dayPrizesReimbursableCents || 0) + amount;
+    state2.stats.totalPrizesPaidCents = (state2.stats.totalPrizesPaidCents || 0) + amount;
     state2.finance.ledger.push({
       id: `prize-${Date.now()}`,
       at: state2.clock.gameTimeMs,
@@ -3252,11 +3682,16 @@ try {
     const summary = buildDayCloseSummary(state2);
     summary.settlement = settlement;
     state2.stats.daysPlayed += 1;
+    if (state2.finance.dayShortageCents) {
+      state2.stats.totalShortageCents = (state2.stats.totalShortageCents || 0) + state2.finance.dayShortageCents;
+    }
     state2.finance.daySalesCents = 0;
     state2.finance.dayCommissionCents = 0;
     state2.finance.dayPrizesPaidCents = 0;
     state2.finance.dayPrizesReimbursableCents = 0;
     state2.finance.dayExpensesCents = 0;
+    state2.finance.dayShortageCents = 0;
+    state2.finance.changeErrorsToday = 0;
     state2.customers.servedToday = 0;
     state2.customers.current = null;
     state2.customers.queue = [];
@@ -3500,16 +3935,22 @@ ${xrefPos}
   }
 
   // src/game/tpv.js
+  var CANCEL_REASONS = ["error", "sin stock", "cambio de idea", "otro"];
   function openTpv(state2, client) {
     state2.ui.tpv = {
       clientId: (client == null ? void 0 : client.id) || null,
       clientName: (client == null ? void 0 : client.name) || "Cliente",
+      wishlist: (client == null ? void 0 : client.wishlist) ? client.wishlist.map((w) => ({ ...w })) : [],
       category: "LAE",
       lines: [],
       editingLineId: null,
       numberEntry: null,
-      // { lineId, mode, draft }
-      message: null
+      cancelPrompt: null,
+      // { lineId }
+      step: "edit",
+      // edit | receipt
+      message: null,
+      cancelledLines: []
     };
     state2.ui.screen = "tpv";
     return state2;
@@ -3565,13 +4006,69 @@ ${xrefPos}
     return state2;
   }
   function removeTpvLine(state2, id) {
-    var _a;
     const tpv = state2.ui.tpv;
     if (!tpv) return state2;
-    tpv.lines = tpv.lines.filter((l) => l.id !== id);
-    if (((_a = tpv.numberEntry) == null ? void 0 : _a.lineId) === id) tpv.numberEntry = null;
-    tpv.message = "L\xEDnea eliminada";
+    tpv.cancelPrompt = { lineId: id };
+    tpv.message = "Elige motivo de cancelaci\xF3n";
     return state2;
+  }
+  function confirmCancelLine(state2, reason) {
+    var _a;
+    const tpv = state2.ui.tpv;
+    if (!(tpv == null ? void 0 : tpv.cancelPrompt)) return state2;
+    const id = tpv.cancelPrompt.lineId;
+    const line = tpv.lines.find((l) => l.id === id);
+    if (line) {
+      tpv.cancelledLines.push({ ...line, reason: reason || "otro", at: state2.clock.gameTimeMs });
+      tpv.lines = tpv.lines.filter((l) => l.id !== id);
+      state2.dayLog.push({
+        at: state2.clock.gameTimeMs,
+        text: `TPV: cancelada l\xEDnea ${line.name} \xD7${line.qty} (${reason})`
+      });
+    }
+    if (((_a = tpv.numberEntry) == null ? void 0 : _a.lineId) === id) tpv.numberEntry = null;
+    tpv.cancelPrompt = null;
+    tpv.message = `L\xEDnea cancelada: ${reason}`;
+    return state2;
+  }
+  function dismissCancelPrompt(state2) {
+    if (state2.ui.tpv) state2.ui.tpv.cancelPrompt = null;
+    return state2;
+  }
+  function validateWishlist(tpv) {
+    const wish = (tpv == null ? void 0 : tpv.wishlist) || [];
+    const covered = [];
+    const missing = [];
+    const extras = [];
+    const qtyByProduct = {};
+    for (const l of (tpv == null ? void 0 : tpv.lines) || []) {
+      qtyByProduct[l.productId] = (qtyByProduct[l.productId] || 0) + l.qty;
+    }
+    const used = { ...qtyByProduct };
+    for (const w of wish) {
+      const have = used[w.productId] || 0;
+      if (have >= w.qty) {
+        covered.push({ ...w, have });
+        used[w.productId] = have - w.qty;
+      } else if (have > 0) {
+        missing.push({ ...w, have, need: w.qty - have });
+        used[w.productId] = 0;
+      } else {
+        missing.push({ ...w, have: 0, need: w.qty });
+      }
+    }
+    for (const [productId, left] of Object.entries(used)) {
+      if (left > 0) {
+        const p = getProduct(productId);
+        extras.push({ productId, productName: (p == null ? void 0 : p.name) || productId, qty: left });
+      }
+    }
+    return {
+      covered,
+      missing,
+      extras,
+      complete: missing.length === 0
+    };
   }
   function setLineQty(state2, id, qty) {
     var _a;
@@ -3603,8 +4100,12 @@ ${xrefPos}
       return state2;
     }
     line.selection = parsed.selection;
+    if (parsed.selection.series) line.qty = 10;
+    else if (parsed.selection.fractions && parsed.selection.fractions > 1) {
+      line.qty = parsed.selection.fractions;
+    }
     tpv.numberEntry = null;
-    tpv.message = "N\xFAmeros marcados";
+    tpv.message = parsed.selection.series ? "Serie entera marcada (10 d\xE9cimos)" : "N\xFAmeros marcados";
     return state2;
   }
   function cancelNumberEntry(state2) {
@@ -3639,10 +4140,20 @@ ${xrefPos}
     const raw = String(text || "").trim();
     if (!raw) return { ok: false, error: "Escribe los n\xFAmeros que dicta el cliente" };
     if (mode === "nacional" || mode === "triplex") {
+      const serie = raw.match(/serie\s*(\d{5})/i);
+      if (serie && mode === "nacional") {
+        return {
+          ok: true,
+          selection: { number: serie[1], series: true, fractions: 10 }
+        };
+      }
+      const pedrea = raw.match(/(\d{5})\s*(?:x|×|\*|decimos?|décimos?)?\s*(\d+)?/i);
       const digits = raw.replace(/\D/g, "");
       const need = mode === "triplex" ? 3 : 5;
-      if (digits.length < need) return { ok: false, error: `Haz falta ${need} cifras` };
-      return { ok: true, selection: { number: digits.slice(0, need).padStart(need, "0") } };
+      if (digits.length < need && !pedrea) return { ok: false, error: `Haz falta ${need} cifras` };
+      const number = (pedrea ? pedrea[1] : digits.slice(0, need)).padStart(need, "0");
+      const fractions = pedrea && pedrea[2] ? Math.max(1, Math.min(10, Number(pedrea[2]))) : 1;
+      return { ok: true, selection: { number, fractions, series: false } };
     }
     if (mode === "6from49") {
       const nums = raw.split(/[\s,;.-]+/).map(Number).filter((n) => n >= 1 && n <= 49);
@@ -3706,14 +4217,37 @@ ${xrefPos}
     return ((tpv == null ? void 0 : tpv.lines) || []).reduce((s, l) => s + l.unitCents * l.qty, 0);
   }
   function tpvReadyToCharge(tpv) {
-    var _a;
+    var _a, _b;
     if (!((_a = tpv == null ? void 0 : tpv.lines) == null ? void 0 : _a.length)) return { ok: false, error: "El ticket est\xE1 vac\xEDo" };
     for (const l of tpv.lines) {
       if (l.needsNumbers && !l.selection) {
         return { ok: false, error: `Faltan n\xFAmeros en ${l.name}` };
       }
     }
+    if ((_b = tpv.wishlist) == null ? void 0 : _b.length) {
+      const v = validateWishlist(tpv);
+      if (!v.complete) {
+        const miss = v.missing.map((m) => `${m.productName} (faltan ${m.need})`).join(", ");
+        return { ok: false, error: `La petici\xF3n no est\xE1 completa: ${miss}. Puedes a\xF1adir de m\xE1s, pero no de menos.` };
+      }
+    }
     return { ok: true };
+  }
+  function goTpvReceipt(state2) {
+    const tpv = state2.ui.tpv;
+    if (!tpv) return state2;
+    const ready = tpvReadyToCharge(tpv);
+    if (!ready.ok) {
+      tpv.message = ready.error;
+      return state2;
+    }
+    tpv.step = "receipt";
+    tpv.message = null;
+    return state2;
+  }
+  function backTpvEdit(state2) {
+    if (state2.ui.tpv) state2.ui.tpv.step = "edit";
+    return state2;
   }
   function tpvToSaleItems(tpv) {
     return tpv.lines.map((l) => ({
@@ -3729,7 +4263,13 @@ ${xrefPos}
   function formatLineSelection(line) {
     const s = line.selection;
     if (!s) return "Sin marcar";
-    if (s.number) return `N\xBA ${s.number}`;
+    if (s.number) {
+      let t = `N\xBA ${s.number}`;
+      if (s.series) t += " \xB7 serie entera";
+      else if (s.fractions && s.fractions > 1) t += ` \xB7 ${s.fractions} d\xE9cimos`;
+      else if (s.fractions === 1) t += " \xB7 1 d\xE9cimo";
+      return t;
+    }
     if (s.column) return `Columna ${s.column.join("")}`;
     if (s.goals) return `Goles ${s.goals.join("")}`;
     if (s.stars) return `${(s.numbers || []).join(",")} \u2605 ${s.stars.join(",")}`;
@@ -3741,11 +4281,117 @@ ${xrefPos}
     return "\u2014";
   }
 
+  // src/game/audit.js
+  function startArqueo(state2, kind = "close") {
+    state2.ui.arqueo = {
+      kind,
+      // open | close
+      counted: emptyDrawer(),
+      step: "count",
+      message: null
+    };
+    state2.ui.screen = "arqueo";
+    return state2;
+  }
+  function adjustArqueoCount(state2, denomId, delta) {
+    const a = state2.ui.arqueo;
+    if (!a) return state2;
+    a.counted[denomId] = Math.max(0, (a.counted[denomId] || 0) + delta);
+    a.message = null;
+    return state2;
+  }
+  function confirmArqueo(state2) {
+    const a = state2.ui.arqueo;
+    if (!a) return state2;
+    const expected = drawerTotalCents(state2.finance.drawer);
+    const counted = countTotalCents(a.counted);
+    const diff = counted - expected;
+    a.result = { expected, counted, diff };
+    a.step = "result";
+    if (diff === 0) {
+      a.message = "Arqueo correcto. La caja cuadra.";
+      state2.finance.changeErrorsToday = state2.finance.changeErrorsToday || 0;
+    } else if (diff < 0) {
+      state2.finance.changeErrorsToday = (state2.finance.changeErrorsToday || 0) + 1;
+      state2.finance.bankCents += diff;
+      state2.finance.dayShortageCents = (state2.finance.dayShortageCents || 0) + Math.abs(diff);
+      state2.finance.ledger.push({
+        id: `short-${Date.now()}`,
+        at: state2.clock.gameTimeMs,
+        type: "shortage",
+        label: `Faltante de caja (${a.kind})`,
+        totalCents: diff
+      });
+      a.message = `Faltante de ${formatEuro(Math.abs(diff))}. Se ajusta del banco. Aviso sin cerrar el negocio.`;
+      state2.dayLog.push({
+        at: state2.clock.gameTimeMs,
+        text: `Faltante de caja: ${formatEuro(Math.abs(diff))} (${a.kind})`
+      });
+    } else {
+      state2.finance.bankCents += diff;
+      a.message = `Sobra ${formatEuro(diff)}. Se ingresa en el banco.`;
+      state2.dayLog.push({
+        at: state2.clock.gameTimeMs,
+        text: `Sobrante de caja: ${formatEuro(diff)}`
+      });
+    }
+    if (a.kind === "open" && expected < 1e3) {
+      state2.finance.drawer = defaultFloatDrawer();
+    }
+    return state2;
+  }
+  function closeArqueo(state2) {
+    var _a;
+    const kind = (_a = state2.ui.arqueo) == null ? void 0 : _a.kind;
+    state2.ui.arqueo = null;
+    if (kind === "close") state2.ui.screen = "close";
+    else state2.ui.screen = "counter";
+    return state2;
+  }
+  function buildWeeklyStatement(state2) {
+    const now = gameDate(state2);
+    const weekAgo = new Date(now.getTime());
+    weekAgo.setUTCDate(weekAgo.getUTCDate() - 7);
+    const fromMs = weekAgo.getTime();
+    let sales = 0;
+    let commission = 0;
+    let prizes = 0;
+    let expenses = 0;
+    let shortage = 0;
+    let settlements = 0;
+    for (const e of state2.finance.ledger || []) {
+      if (e.at < fromMs) continue;
+      if (e.type === "sale") {
+        sales += e.totalCents || 0;
+        commission += e.commissionCents || 0;
+      } else if (e.type === "prize") prizes += e.totalCents || 0;
+      else if (e.type === "expense") expenses += Math.abs(e.totalCents || 0);
+      else if (e.type === "shortage") shortage += Math.abs(e.totalCents || 0);
+      else if (e.type === "settlement") settlements += 1;
+    }
+    return {
+      fromYmd: weekAgo.toISOString().slice(0, 10),
+      toYmd: gameYmd(state2),
+      sales,
+      commission,
+      prizes,
+      expenses,
+      shortage,
+      settlements,
+      net: commission - expenses - shortage
+    };
+  }
+  function isMonday(state2) {
+    return gameDate(state2).getUTCDay() === 1;
+  }
+
   // src/main.js
   var state = null;
   var toastTimer = null;
   var needsFullRender = true;
   var lastClockMinute = -1;
+  var lastAutosaveRealMs = Date.now();
+  var tpvKeysBound = false;
   var app = document.getElementById("app");
   function showToast(msg) {
     if (!state) return;
@@ -3768,10 +4414,11 @@ ${xrefPos}
     if (((_b = state == null ? void 0 : state.settings) == null ? void 0 : _b.sfx) != null) setSfxEnabled(!!state.settings.sfx);
   }
   function loop() {
-    var _a, _b, _c, _d;
+    var _a, _b, _c, _d, _e;
     if (state && state.ui.screen !== "menu") {
       advanceClock(state);
       ensureDrawsResolved(state);
+      ensureJackpots(state);
       if (state.ui.screen === "counter") {
         const before = ((_a = state.customers.current) == null ? void 0 : _a.id) || null;
         const qBefore = ((_b = state.customers.queue) == null ? void 0 : _b.length) || 0;
@@ -3780,6 +4427,12 @@ ${xrefPos}
         const qAfter = ((_d = state.customers.queue) == null ? void 0 : _d.length) || 0;
         if (before !== after || qBefore !== qAfter) needsFullRender = true;
       }
+      const prevAutosave = lastAutosaveRealMs;
+      lastAutosaveRealMs = maybeAutosave(state, lastAutosaveRealMs);
+      if (lastAutosaveRealMs !== prevAutosave) {
+        if ((_e = state.ui.toast) == null ? void 0 : _e.startsWith("Partida guardada")) state.ui.toast = null;
+      }
+      maybeMondayHint();
       const minute = Math.floor(state.clock.gameTimeMs / 6e4);
       if (needsFullRender) {
         render();
@@ -3797,6 +4450,14 @@ ${xrefPos}
       }
     }
     requestAnimationFrame(loop);
+  }
+  function maybeMondayHint() {
+    if (!state || !isMonday(state)) return;
+    const ymd2 = gameYmd(state);
+    if (state.ui.mondayHintYmd === ymd2) return;
+    state.ui.mondayHintYmd = ymd2;
+    showToast("Lunes: revisa el extracto semanal (men\xFA Extracto semanal).");
+    needsFullRender = true;
   }
   function renderClockOnly() {
     const el = document.getElementById("live-clock");
@@ -3820,6 +4481,9 @@ ${xrefPos}
     if (state.ui.screen === "draws") return renderDraws();
     if (state.ui.screen === "management") return renderManagement();
     if (state.ui.screen === "fichas") return renderFichas();
+    if (state.ui.screen === "arqueo") return renderArqueo();
+    if (state.ui.screen === "weekly") return renderWeekly();
+    if (state.ui.screen === "stats") return renderStats();
     return renderCounter();
   }
   function escapeHtml(s) {
@@ -3899,7 +4563,7 @@ ${xrefPos}
         </div>
         <p class="disclaimer">
           Fan-made / no oficial. Nombres de Loter\xEDas y Apuestas del Estado y ONCE usados solo con fines de simulaci\xF3n.
-          Juego responsable \xB7 +18. Versi\xF3n ${GAME_VERSION}: TPV completo, cola, abonados/pe\xF1as, liquidaciones y tickets PDF.
+          Juego responsable \xB7 +18. Versi\xF3n ${GAME_VERSION}: TPV con ticket, arqueo, botes, extracto semanal y encargos de calendario.
         </p>
       </div>
     </div>
@@ -3911,7 +4575,8 @@ ${xrefPos}
       ensureDrawsResolved(state);
       maybeStartMusic();
       state.ui.screen = "counter";
-      showToast("Bienvenida, Miriam. Versi\xF3n 0.2 lista. Abre el TPV para vender.");
+      lastAutosaveRealMs = Date.now();
+      showToast("Bienvenida, Miriam. Versi\xF3n 0.3 lista. Abre el TPV para vender.");
       needsFullRender = true;
       render();
     };
@@ -3944,6 +4609,20 @@ ${xrefPos}
       };
     });
   }
+  function drawNoticeBannerHTML() {
+    const notices = todaysDrawNotices(state);
+    if (!notices.length) return "";
+    return `<div class="notice-banner">Hoy hay sorteo de: ${escapeHtml(notices.join(", "))}</div>`;
+  }
+  function jackpotStripHTML() {
+    const list = jackpotList(state).slice(0, 4);
+    if (!list.length) return "";
+    return `<div class="jackpot-strip">${list.map((j) => `<span><strong>${escapeHtml(j.name)}</strong> ${escapeHtml(formatJackpotShort(j.cents))}</span>`).join("")}</div>`;
+  }
+  function touristHintHTML() {
+    if (!isTouristSeason(state)) return "";
+    return `<div class="muted" style="font-size:0.85rem;margin-top:4px">Temporada tur\xEDstica (Caminito / El Chorro): m\xE1s visitantes.</div>`;
+  }
   function topbarHTML() {
     const d = gameDate(state);
     const dateStr = d.toLocaleDateString("es-ES", {
@@ -3961,6 +4640,7 @@ ${xrefPos}
       <div class="brand">
         <div class="brand-name">Loter\xEDas \xC1lora</div>
         <div class="brand-sub">Miriam \xB7 \xC1lora \xB7 v${GAME_VERSION}${ev ? ` \xB7 ${escapeHtml(ev)}` : ""}</div>
+        ${touristHintHTML()}
       </div>
       <div class="clock-block">
         <div class="clock-time" id="live-clock">${formatGameClock(state)}</div>
@@ -3974,6 +4654,8 @@ ${xrefPos}
         <button class="btn ${speed === 60 ? "active" : ""}" data-speed="60">Muy r\xE1pido</button>
       </div>
     </header>
+    ${drawNoticeBannerHTML()}
+    ${jackpotStripHTML()}
   `;
   }
   function bindTopbar() {
@@ -4000,6 +4682,9 @@ ${xrefPos}
       <button class="btn" data-nav="prize">Pagar premio</button>
       <button class="btn" data-nav="management">Gesti\xF3n premios${openMgmt ? ` (${openMgmt})` : ""}</button>
       <button class="btn" data-nav="stock">Stock y pedidos</button>
+      <button class="btn" data-nav="arqueo">Arqueo</button>
+      <button class="btn" data-nav="weekly">Extracto semanal</button>
+      <button class="btn" data-nav="stats">Estad\xEDsticas</button>
       <button class="btn" data-nav="close">Cierre y balance</button>
       <button class="btn" data-nav="saves">Guardar / exportar</button>
       <button class="btn" id="btn-music-toggle">${musicOn2 ? "\u266A M\xFAsica: ON" : "\u266A M\xFAsica: OFF"}</button>
@@ -4022,7 +4707,11 @@ ${xrefPos}
         sfx.click();
         const screen = btn.getAttribute("data-nav");
         if (screen === "fichas") state.ui.fichaId = null;
-        state.ui.screen = screen;
+        if (screen === "arqueo") {
+          startArqueo(state, "midday");
+        } else {
+          state.ui.screen = screen;
+        }
         needsFullRender = true;
         render();
       };
@@ -4072,6 +4761,39 @@ ${xrefPos}
       (w) => `<li>\u2022 <strong>${escapeHtml(w.productName)}</strong> \xD7 ${w.qty}${w.preferDictate ? ' <span class="muted">(dictado)</span>' : ""}</li>`
     ).join("")}</ul>`;
   }
+  function calendarOrderButtonsHTML(prefix = "cal") {
+    const d = specialOrderDeadlines(state);
+    return `
+    <div class="actions" style="margin-top:8px;flex-wrap:wrap">
+      <button class="btn" id="btn-${prefix}-navidad" title="Entrega ${d.navidad.deliverBy}">Encargo Navidad</button>
+      <button class="btn" id="btn-${prefix}-nino" title="Entrega ${d.nino.deliverBy}">Encargo Ni\xF1o</button>
+    </div>`;
+  }
+  function bindCalendarOrderButtons(prefix, client) {
+    const deadlines = specialOrderDeadlines(state);
+    const make = (kind) => {
+      var _a, _b;
+      const d = deadlines[kind];
+      const name = (client == null ? void 0 : client.name) || prompt("Nombre del cliente para el encargo:", "Cliente") || "Cliente";
+      const qtyRaw = prompt(`Cantidad de ${((_a = getProduct(d.productId)) == null ? void 0 : _a.name) || kind}:`, "10");
+      const qty = Math.max(1, Math.min(200, Number(qtyRaw) || 10));
+      createCalendarOrder(state, {
+        productId: d.productId,
+        qty,
+        clientId: (client == null ? void 0 : client.id) || null,
+        clientName: name,
+        deliverBy: d.deliverBy
+      });
+      sfx.success();
+      showToast(`Encargo ${(_b = getProduct(d.productId)) == null ? void 0 : _b.name}: \xD7${qty} \xB7 entrega ${d.deliverBy}`);
+      needsFullRender = true;
+      render();
+    };
+    const nav = document.getElementById(`btn-${prefix}-navidad`);
+    const nino = document.getElementById(`btn-${prefix}-nino`);
+    if (nav) nav.onclick = () => make("navidad");
+    if (nino) nino.onclick = () => make("nino");
+  }
   function renderCounter() {
     var _a;
     const client = state.customers.current;
@@ -4089,6 +4811,11 @@ ${xrefPos}
         <h2>Mostrador listo</h2>
         <p>Esperando clientes\u2026 Afluencia <span id="crowd-hint">${crowdHint()}</span>
         ${ev ? `\xB7 <span id="event-banner">${escapeHtml(ev)}</span>` : '<span id="event-banner"></span>'}</p>
+        ${isTouristSeason(state) ? '<p class="muted">Hay turistas del Caminito: m\xE1s cola y rascas.</p>' : ""}
+        <div class="actions" style="margin-top:12px">
+          <button class="btn" id="btn-arqueo-open">Arqueo de apertura</button>
+        </div>
+        ${calendarOrderButtonsHTML("counter")}
       </div>`;
     } else {
       clientBlock = renderClientPanel(client);
@@ -4101,6 +4828,10 @@ ${xrefPos}
         ${sideNav()}
         <section class="panel counter-stage">
           ${clientBlock}
+          ${client && isOpenHours(state) && !isClosedDay(state) ? `<div style="margin-top:12px" class="actions">
+                  <button class="btn" id="btn-arqueo-open">Arqueo de apertura</button>
+                </div>
+                ${calendarOrderButtonsHTML("counter")}` : ""}
           <div style="margin-top:16px">
             <h3>Cola (${((_a = state.customers.queue) == null ? void 0 : _a.length) || 0})</h3>
             ${queueHTML()}
@@ -4126,6 +4857,16 @@ ${xrefPos}
     bindTopbar();
     bindNav();
     bindClientActions();
+    bindCalendarOrderButtons("counter", state.customers.current);
+    const arqueoOpen = document.getElementById("btn-arqueo-open");
+    if (arqueoOpen) {
+      arqueoOpen.onclick = () => {
+        sfx.click();
+        startArqueo(state, "open");
+        needsFullRender = true;
+        render();
+      };
+    }
   }
   function renderClientPanel(client) {
     const intent = client.intent || "buy";
@@ -4351,12 +5092,139 @@ ${xrefPos}
       };
     }
   }
+  function wishlistValidationHTML(tpv) {
+    var _a;
+    if (!((_a = tpv == null ? void 0 : tpv.wishlist) == null ? void 0 : _a.length)) return "";
+    const v = validateWishlist(tpv);
+    const rows = [];
+    for (const c of v.covered) {
+      rows.push(
+        `<div class="wish-ok">\u2713 ${escapeHtml(c.productName)} \xD7${c.qty}</div>`
+      );
+    }
+    for (const m of v.missing) {
+      rows.push(
+        `<div class="wish-miss">\u2717 ${escapeHtml(m.productName)} \xB7 faltan ${m.need} (hay ${m.have})</div>`
+      );
+    }
+    for (const e of v.extras) {
+      rows.push(
+        `<div class="wish-extra">+ Extra: ${escapeHtml(e.productName)} \xD7${e.qty}</div>`
+      );
+    }
+    return `<div class="wish-panel" style="margin:10px 0">
+    <strong>Petici\xF3n del cliente</strong>
+    ${rows.join("") || '<div class="muted">Sin l\xEDneas a\xFAn</div>'}
+  </div>`;
+  }
+  function cancelPromptHTML(tpv) {
+    if (!(tpv == null ? void 0 : tpv.cancelPrompt)) return "";
+    const line = tpv.lines.find((l) => l.id === tpv.cancelPrompt.lineId);
+    return `<div class="dictate-box" style="margin:10px 0">
+    <strong>Cancelar l\xEDnea${line ? `: ${escapeHtml(line.name)}` : ""}</strong>
+    <p class="muted">Elige motivo</p>
+    <div class="actions" style="flex-wrap:wrap">
+      ${CANCEL_REASONS.map(
+      (r) => `<button class="btn danger" data-cancel-reason="${escapeHtml(r)}">${escapeHtml(r)}</button>`
+    ).join("")}
+      <button class="btn ghost" id="btn-cancel-dismiss">No cancelar</button>
+    </div>
+  </div>`;
+  }
+  function resolveTpvClient(tpv) {
+    var _a, _b, _c, _d;
+    return ((_a = state.customers.current) == null ? void 0 : _a.id) === tpv.clientId ? state.customers.current : state.customers.regulars.find((c) => c.id === tpv.clientId) || ((_b = state.customers.abonados) == null ? void 0 : _b.find((c) => c.id === tpv.clientId)) || ((_c = state.customers.penas) == null ? void 0 : _c.find((c) => c.id === tpv.clientId)) || {
+      id: tpv.clientId,
+      name: tpv.clientName,
+      prefersPayment: ((_d = state.customers.current) == null ? void 0 : _d.prefersPayment) || "cash"
+    };
+  }
+  function confirmTpvCharge() {
+    const tpv = state.ui.tpv;
+    if (!tpv) return;
+    const ready = tpvReadyToCharge(tpv);
+    if (!ready.ok) {
+      tpv.message = ready.error;
+      sfx.error();
+      needsFullRender = true;
+      render();
+      return;
+    }
+    const items = tpvToSaleItems(tpv);
+    const client = resolveTpvClient(tpv);
+    startPayment(state, { items, client });
+    state.ui.tpv = null;
+    sfx.drawer();
+    needsFullRender = true;
+    render();
+  }
+  function goTpvChargeOrReceipt() {
+    var _a;
+    const tpv = state.ui.tpv;
+    if (!tpv) return;
+    if (tpv.step === "receipt") {
+      confirmTpvCharge();
+      return;
+    }
+    goTpvReceipt(state);
+    if (((_a = state.ui.tpv) == null ? void 0 : _a.step) !== "receipt") sfx.error();
+    else sfx.scan();
+    needsFullRender = true;
+    render();
+  }
+  function renderTpvReceipt(tpv) {
+    const total = tpvTotalCents(tpv);
+    app.innerHTML = `
+    <div class="shell">
+      ${topbarHTML()}
+      <div class="panel" style="margin-top:16px;max-width:720px">
+        <h2>Ticket de venta \xB7 ${escapeHtml(tpv.clientName || "Cliente")}</h2>
+        <p class="muted">Revisa el ticket antes de cobrar. Puedes descargar PDF.</p>
+        ${wishlistValidationHTML(tpv)}
+        <div class="log" style="margin:12px 0">
+          ${tpv.lines.map(
+      (l) => `<div class="log-item"><strong>${escapeHtml(l.name)}</strong> \xD7${l.qty} \xB7 ${formatEuro(l.unitCents * l.qty)}
+                ${l.needsNumbers ? `<div class="muted">${escapeHtml(formatLineSelection(l))}</div>` : ""}</div>`
+    ).join("")}
+        </div>
+        <div class="total-box">Total<strong>${formatEuro(total)}</strong></div>
+        <div class="actions" style="margin-top:14px">
+          <button class="btn" id="btn-tpv-pdf">PDF ticket</button>
+          <button class="btn primary" id="btn-tpv-confirm-pay" style="min-height:52px">Confirmar cobro</button>
+          <button class="btn ghost" id="btn-tpv-back-edit">Volver a editar</button>
+        </div>
+      </div>
+    </div>
+    ${toastHTML()}
+  `;
+    bindTopbar();
+    document.getElementById("btn-tpv-pdf").onclick = () => {
+      downloadSaleReceiptPdf({
+        items: tpvToSaleItems(tpv),
+        totalCents: total,
+        clientName: tpv.clientName,
+        method: "pendiente",
+        tickets: []
+      });
+      sfx.click();
+      showToast("PDF del ticket descargado");
+    };
+    document.getElementById("btn-tpv-confirm-pay").onclick = () => confirmTpvCharge();
+    document.getElementById("btn-tpv-back-edit").onclick = () => {
+      backTpvEdit(state);
+      sfx.click();
+      needsFullRender = true;
+      render();
+    };
+    ensureTpvKeyboard();
+  }
   function renderTpv() {
     const tpv = state.ui.tpv;
     if (!tpv) {
       state.ui.screen = "counter";
       return render();
     }
+    if (tpv.step === "receipt") return renderTpvReceipt(tpv);
     const cat = tpv.category || "LAE";
     const products = productsByTpvCategory(cat);
     const total = tpvTotalCents(tpv);
@@ -4368,11 +5236,13 @@ ${xrefPos}
         <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
           <div>
             <h2 style="margin:0">TPV \xB7 ${escapeHtml(tpv.clientName || "Cliente")}</h2>
-            <p class="muted" style="margin:4px 0 0">Terminal de ventas \xB7 elige categor\xEDa, a\xF1ade productos y cobra</p>
+            <p class="muted" style="margin:4px 0 0">F1\u2013F6 categor\xEDas \xB7 Enter cobrar \xB7 Esc atr\xE1s</p>
           </div>
           <button class="btn ghost" id="btn-tpv-back">Volver al mostrador</button>
         </div>
         ${tpv.message ? `<div class="error-box" style="margin:10px 0">${escapeHtml(tpv.message)}</div>` : ""}
+        ${wishlistValidationHTML(tpv)}
+        ${cancelPromptHTML(tpv)}
         ${entry ? `<div class="dictate-box">
                 <strong>Dictado: ${escapeHtml(entry.productName || "")}</strong>
                 <p class="muted">${escapeHtml(dictateHint(entry.mode))}</p>
@@ -4385,7 +5255,7 @@ ${xrefPos}
         <div class="tpv-wrap">
           <div class="tpv-cats">
             ${TPV_CATEGORIES.map(
-      (c) => `<button class="btn ${c === cat ? "primary" : ""}" data-tpv-cat="${c}">${escapeHtml(c)}</button>`
+      (c, i) => `<button class="btn ${c === cat ? "primary" : ""}" data-tpv-cat="${c}">F${i + 1} ${escapeHtml(c)}</button>`
     ).join("")}
           </div>
           <div class="tpv-products">
@@ -4432,6 +5302,7 @@ ${xrefPos}
     ${toastHTML()}
   `;
     bindTopbar();
+    ensureTpvKeyboard();
     document.getElementById("btn-tpv-back").onclick = () => {
       sfx.click();
       closeTpv(state);
@@ -4482,6 +5353,23 @@ ${xrefPos}
         render();
       };
     });
+    app.querySelectorAll("[data-cancel-reason]").forEach((btn) => {
+      btn.onclick = () => {
+        confirmCancelLine(state, btn.getAttribute("data-cancel-reason"));
+        sfx.click();
+        needsFullRender = true;
+        render();
+      };
+    });
+    const dismissCancel = document.getElementById("btn-cancel-dismiss");
+    if (dismissCancel) {
+      dismissCancel.onclick = () => {
+        dismissCancelPrompt(state);
+        sfx.click();
+        needsFullRender = true;
+        render();
+      };
+    }
     app.querySelectorAll("[data-reroll]").forEach((btn) => {
       btn.onclick = () => {
         rerollLineNumbers(state, btn.getAttribute("data-reroll"));
@@ -4522,28 +5410,7 @@ ${xrefPos}
         render();
       };
     }
-    document.getElementById("btn-tpv-charge").onclick = () => {
-      var _a, _b, _c, _d;
-      const ready = tpvReadyToCharge(tpv);
-      if (!ready.ok) {
-        tpv.message = ready.error;
-        sfx.error();
-        needsFullRender = true;
-        render();
-        return;
-      }
-      const items = tpvToSaleItems(tpv);
-      const client = ((_a = state.customers.current) == null ? void 0 : _a.id) === tpv.clientId ? state.customers.current : state.customers.regulars.find((c) => c.id === tpv.clientId) || ((_b = state.customers.abonados) == null ? void 0 : _b.find((c) => c.id === tpv.clientId)) || ((_c = state.customers.penas) == null ? void 0 : _c.find((c) => c.id === tpv.clientId)) || {
-        id: tpv.clientId,
-        name: tpv.clientName,
-        prefersPayment: ((_d = state.customers.current) == null ? void 0 : _d.prefersPayment) || "cash"
-      };
-      startPayment(state, { items, client });
-      state.ui.tpv = null;
-      sfx.drawer();
-      needsFullRender = true;
-      render();
-    };
+    document.getElementById("btn-tpv-charge").onclick = () => goTpvChargeOrReceipt();
     document.getElementById("btn-tpv-cancel").onclick = () => {
       sfx.click();
       closeTpv(state);
@@ -4551,6 +5418,49 @@ ${xrefPos}
       needsFullRender = true;
       render();
     };
+  }
+  function ensureTpvKeyboard() {
+    if (tpvKeysBound) return;
+    tpvKeysBound = true;
+    document.addEventListener("keydown", (e) => {
+      var _a;
+      if (!state || state.ui.screen !== "tpv" || !state.ui.tpv) return;
+      const tpv = state.ui.tpv;
+      const tag = (((_a = e.target) == null ? void 0 : _a.tagName) || "").toLowerCase();
+      const typing = tag === "input" || tag === "textarea";
+      if (e.key === "Escape") {
+        e.preventDefault();
+        if (tpv.cancelPrompt) {
+          dismissCancelPrompt(state);
+        } else if (tpv.numberEntry) {
+          cancelNumberEntry(state);
+        } else if (tpv.step === "receipt") {
+          backTpvEdit(state);
+        } else {
+          closeTpv(state);
+          showToast("TPV cerrado");
+        }
+        needsFullRender = true;
+        render();
+        return;
+      }
+      if (e.key === "Enter" && !typing) {
+        e.preventDefault();
+        goTpvChargeOrReceipt();
+        return;
+      }
+      if (!typing && /^F[1-6]$/.test(e.key)) {
+        e.preventDefault();
+        const idx = Number(e.key.slice(1)) - 1;
+        const cat = TPV_CATEGORIES[idx];
+        if (cat && tpv.step !== "receipt") {
+          setTpvCategory(state, cat);
+          sfx.click();
+          needsFullRender = true;
+          render();
+        }
+      }
+    });
   }
   function renderCash() {
     const ps = state.ui.paymentSession;
@@ -4799,7 +5709,9 @@ ${xrefPos}
                 </div>`}
 
           <p class="muted">*Beneficio \u2248 comisiones \u2212 gastos (antes de liquidar)</p>
+          <p class="muted" style="margin-top:12px">Recomendado: haz el arqueo de caja antes de cerrar.</p>
           <div class="actions" style="margin-top:18px">
+            <button class="btn" id="btn-arqueo-before-close">Arqueo de caja primero</button>
             <button class="btn accent" id="btn-do-close">Liquidar, balance y cerrar d\xEDa</button>
           </div>
         </section>
@@ -4809,6 +5721,12 @@ ${xrefPos}
   `;
     bindTopbar();
     bindNav();
+    document.getElementById("btn-arqueo-before-close").onclick = () => {
+      sfx.click();
+      startArqueo(state, "close");
+      needsFullRender = true;
+      render();
+    };
     document.getElementById("btn-do-close").onclick = () => {
       const { summary: s } = closeDay(state);
       const slot = state.meta.activeSlot || 1;
@@ -4821,6 +5739,173 @@ ${xrefPos}
       needsFullRender = true;
       render();
     };
+  }
+  function arqueoDenomEditor() {
+    var _a;
+    const counted = ((_a = state.ui.arqueo) == null ? void 0 : _a.counted) || {};
+    return [
+      ["Billetes", BILLS],
+      ["Monedas", COINS]
+    ].map(
+      ([title, list]) => `
+      <h3 style="margin-top:14px">${title}</h3>
+      <div class="denom-grid">
+        ${list.map((d) => {
+        const n = counted[d.id] || 0;
+        return `<div class="denom">
+              <div class="label">${d.label}</div>
+              <div class="row">
+                <button data-arqueo="${d.id}" data-delta="-1">\u2212</button>
+                <strong>${n}</strong>
+                <button data-arqueo="${d.id}" data-delta="1">+</button>
+              </div>
+            </div>`;
+      }).join("")}
+      </div>`
+    ).join("");
+  }
+  function renderArqueo() {
+    const a = state.ui.arqueo;
+    if (!a) {
+      state.ui.screen = "counter";
+      return render();
+    }
+    const kindLabel = a.kind === "open" ? "apertura" : a.kind === "close" ? "cierre" : "caja";
+    let body;
+    if (a.step === "result" && a.result) {
+      const { expected, counted, diff } = a.result;
+      body = `
+      <div class="hero-counter">
+        <h2>Resultado del arqueo</h2>
+        <p>${escapeHtml(a.message || "")}</p>
+      </div>
+      <div class="close-summary">
+        <div class="stat-row"><span>Esperado (caja)</span><strong>${formatEuro(expected)}</strong></div>
+        <div class="stat-row"><span>Contado</span><strong>${formatEuro(counted)}</strong></div>
+        <div class="stat-row"><span>Diferencia</span><strong>${formatEuro(diff)}</strong></div>
+      </div>
+      <div class="actions" style="margin-top:16px">
+        <button class="btn primary" id="btn-arqueo-done">Cerrar arqueo</button>
+      </div>`;
+    } else {
+      const counted = countTotalCents(a.counted);
+      body = `
+      <p class="muted">Cuenta billetes y monedas del caj\xF3n (${kindLabel}).</p>
+      <div class="totals" style="margin:12px 0">
+        <div class="total-box">Contado<strong>${formatEuro(counted)}</strong></div>
+        <div class="total-box">En sistema<strong>${formatEuro(drawerTotalCents(state.finance.drawer))}</strong></div>
+      </div>
+      ${arqueoDenomEditor()}
+      ${a.message ? `<div class="error-box" style="margin:10px 0">${escapeHtml(a.message)}</div>` : ""}
+      <div class="actions" style="margin-top:16px">
+        <button class="btn primary" id="btn-arqueo-confirm">Confirmar conteo</button>
+        <button class="btn ghost" id="btn-arqueo-cancel">Cancelar</button>
+      </div>`;
+    }
+    app.innerHTML = `
+    <div class="shell">
+      ${topbarHTML()}
+      <div class="layout" style="grid-template-columns:280px 1fr">
+        ${sideNav()}
+        <section class="panel">
+          <h2>Arqueo de ${kindLabel}</h2>
+          ${body}
+        </section>
+      </div>
+    </div>
+    ${toastHTML()}
+  `;
+    bindTopbar();
+    bindNav();
+    app.querySelectorAll("[data-arqueo]").forEach((btn) => {
+      btn.onclick = () => {
+        adjustArqueoCount(state, btn.getAttribute("data-arqueo"), Number(btn.getAttribute("data-delta")));
+        sfx.click();
+        needsFullRender = true;
+        render();
+      };
+    });
+    const conf = document.getElementById("btn-arqueo-confirm");
+    if (conf) {
+      conf.onclick = () => {
+        confirmArqueo(state);
+        sfx.scan();
+        needsFullRender = true;
+        render();
+      };
+    }
+    const done = document.getElementById("btn-arqueo-done");
+    if (done) {
+      done.onclick = () => {
+        closeArqueo(state);
+        sfx.success();
+        needsFullRender = true;
+        render();
+      };
+    }
+    const cancel = document.getElementById("btn-arqueo-cancel");
+    if (cancel) {
+      cancel.onclick = () => {
+        closeArqueo(state);
+        sfx.click();
+        needsFullRender = true;
+        render();
+      };
+    }
+  }
+  function renderWeekly() {
+    const w = buildWeeklyStatement(state);
+    app.innerHTML = `
+    <div class="shell">
+      ${topbarHTML()}
+      <div class="layout" style="grid-template-columns:280px 1fr">
+        ${sideNav()}
+        <section class="panel">
+          <h2>Extracto semanal</h2>
+          <p class="muted">${w.fromYmd} \u2192 ${w.toYmd}${isMonday(state) ? " \xB7 Hoy es lunes (revisi\xF3n recomendada)" : ""}</p>
+          <div class="close-summary">
+            <div class="stat-row"><span>Ventas</span><strong>${formatEuro(w.sales)}</strong></div>
+            <div class="stat-row"><span>Comisiones</span><strong>${formatEuro(w.commission)}</strong></div>
+            <div class="stat-row"><span>Premios</span><strong>${formatEuro(w.prizes)}</strong></div>
+            <div class="stat-row"><span>Gastos</span><strong>${formatEuro(w.expenses)}</strong></div>
+            <div class="stat-row"><span>Faltantes</span><strong>${formatEuro(w.shortage)}</strong></div>
+            <div class="stat-row"><span>Liquidaciones</span><strong>${w.settlements}</strong></div>
+            <div class="stat-row"><span>Neto (comisi\xF3n \u2212 gastos \u2212 faltantes)</span><strong>${formatEuro(w.net)}</strong></div>
+          </div>
+        </section>
+      </div>
+    </div>
+    ${toastHTML()}
+  `;
+    bindTopbar();
+    bindNav();
+  }
+  function renderStats() {
+    var _a, _b;
+    const s = state.stats || {};
+    app.innerHTML = `
+    <div class="shell">
+      ${topbarHTML()}
+      <div class="layout" style="grid-template-columns:280px 1fr">
+        ${sideNav()}
+        <section class="panel">
+          <h2>Estad\xEDsticas</h2>
+          <p class="muted">Acumulado de la partida</p>
+          <div class="close-summary">
+            <div class="stat-row"><span>D\xEDas jugados</span><strong>${(_a = s.daysPlayed) != null ? _a : 0}</strong></div>
+            <div class="stat-row"><span>Ventas totales</span><strong>${formatEuro(s.totalSalesCents || 0)}</strong></div>
+            <div class="stat-row"><span>Comisiones totales</span><strong>${formatEuro(s.totalCommissionCents || 0)}</strong></div>
+            <div class="stat-row"><span>Premios pagados</span><strong>${formatEuro(s.totalPrizesPaidCents || 0)}</strong></div>
+            <div class="stat-row"><span>Faltantes de caja</span><strong>${formatEuro(s.totalShortageCents || 0)}</strong></div>
+            <div class="stat-row"><span>Clientes atendidos</span><strong>${(_b = s.totalCustomers) != null ? _b : 0}</strong></div>
+          </div>
+        </section>
+      </div>
+    </div>
+    ${toastHTML()}
+  `;
+    bindTopbar();
+    bindNav();
   }
   function renderSavesInGame() {
     const slots = listSlots();
@@ -4916,6 +6001,11 @@ ${xrefPos}
         ${sideNav()}
         <section class="panel">
           <h2>Stock y pedidos</h2>
+          <div style="margin-bottom:14px">
+            <h3 style="margin:0 0 6px">Encargos de calendario</h3>
+            <p class="muted" style="margin:0 0 8px">Navidad / Ni\xF1o con fecha de entrega.</p>
+            ${calendarOrderButtonsHTML("stock")}
+          </div>
           <div class="stock-list">
             ${physical.map((p) => {
       var _a;
@@ -4941,6 +6031,7 @@ ${xrefPos}
   `;
     bindTopbar();
     bindNav();
+    bindCalendarOrderButtons("stock", state.customers.current);
     app.querySelectorAll("[data-order]").forEach((btn) => {
       btn.onclick = () => {
         orderStock(state, btn.getAttribute("data-order"), 20);
@@ -5092,6 +6183,8 @@ ${xrefPos}
         (o) => `<div class="log-item">${escapeHtml(o.productName || o.productId || "Pedido")} \xD7${o.qty || 1}${o.arriveOnYmd ? ` \xB7 ${o.arriveOnYmd}` : ""}${o.status ? ` \xB7 ${o.status}` : ""}</div>`
       ).join("") : '<div class="muted">Sin pedidos en ficha.</div>'}
       </div>
+      <h3 style="margin-top:16px">Nuevo encargo calendario</h3>
+      ${calendarOrderButtonsHTML("ficha")}
     `;
     } else {
       body = `
@@ -5136,6 +6229,7 @@ ${xrefPos}
   `;
     bindTopbar();
     bindNav();
+    if (detail) bindCalendarOrderButtons("ficha", detail);
     app.querySelectorAll("[data-ficha]").forEach((btn) => {
       btn.onclick = () => {
         sfx.click();

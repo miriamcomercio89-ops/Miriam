@@ -113,6 +113,7 @@ export function confirmChange(state) {
   const changeSum = countTotalCents(ps.changeGiven);
   if (changeSum !== changeNeeded) {
     ps.error = `El cambio no cuadra. Debes devolver ${formatEuro(changeNeeded)} y tienes ${formatEuro(changeSum)}. Corrige y vuelve a intentar.`;
+    state.finance.changeErrorsToday = (state.finance.changeErrorsToday || 0) + 1;
     return state;
   }
 
@@ -145,6 +146,7 @@ function applySaleAccounting(state, ps, method) {
   state.finance.daySalesCents += ps.totalCents;
   state.finance.dayCommissionCents += commission;
   state.stats.totalSalesCents += ps.totalCents;
+  state.stats.totalCommissionCents = (state.stats.totalCommissionCents || 0) + commission;
 
   if (method !== 'cash') {
     state.finance.bankCents += ps.totalCents;

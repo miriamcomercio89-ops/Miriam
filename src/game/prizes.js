@@ -56,6 +56,7 @@ function paySmallPrize(state, ticket, method) {
   ticket.paidMethod = method;
   state.finance.dayPrizesPaidCents += amount;
   state.finance.dayPrizesReimbursableCents = (state.finance.dayPrizesReimbursableCents || 0) + amount;
+  state.stats.totalPrizesPaidCents = (state.stats.totalPrizesPaidCents || 0) + amount;
   state.finance.ledger.push({
     id: `prize-${Date.now()}`,
     at: state.clock.gameTimeMs,

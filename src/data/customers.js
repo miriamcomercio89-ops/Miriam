@@ -131,75 +131,52 @@ export function makeVisitor(rng = Math.random) {
 }
 
 export function generateAbonadosAndPenas() {
-  const base = generateRegularCustomers(40, 9090);
-  const abonados = base.slice(0, 18).map((c, i) => ({
+  const base = generateRegularCustomers(60, 9090);
+  const subs = [
+    'Primitiva + Bonoloto semanal',
+    'Euromillones martes y viernes',
+    'Nacional del sábado',
+    'Cupón ONCE diario',
+    'Bonoloto diario',
+  ];
+  const abonados = base.slice(0, 40).map((c, i) => ({
     ...c,
     id: `abo-${i + 1}`,
     kind: 'abonado',
     favoriteProduct: c.preferredProducts[0],
-    subscription: 'Primitiva + Bonoloto semanal',
+    subscription: subs[i % subs.length],
     prizesClaimed: [],
     orders: [],
   }));
-  const penas = [
-    {
-      id: 'pena-1',
-      kind: 'pena',
-      name: 'Peña El Desfiladero',
-      regular: true,
-      street: 'Calle Real',
-      preferredProducts: ['lae-euromillones', 'lae-primitiva', 'lae-nacional'],
-      visitChance: 0.15,
-      prefersPayment: 'transfer',
-      trait: 'generosa',
-      line: 'Para la peña, como cada semana.',
-      favoriteProduct: 'lae-euromillones',
-      subscription: 'Bote compartido Euromillones',
-      members: 24,
-      history: [],
-      prizesClaimed: [],
-      orders: [],
-      preferredDays: [2, 5],
-    },
-    {
-      id: 'pena-2',
-      kind: 'pena',
-      name: 'Peña Virgen de Flores',
-      regular: true,
-      street: 'Plaza Baja',
-      preferredProducts: ['lae-nacional', 'lae-navidad', 'alo-local'],
-      visitChance: 0.12,
-      prefersPayment: 'cash',
-      trait: 'constante',
-      line: 'Décimos para la peña.',
-      favoriteProduct: 'lae-nacional',
-      subscription: 'Nacional jueves/sábado',
-      members: 15,
-      history: [],
-      prizesClaimed: [],
-      orders: [],
-      preferredDays: [4, 6],
-    },
-    {
-      id: 'pena-3',
-      kind: 'pena',
-      name: 'Peña del Chorro',
-      regular: true,
-      street: 'Camino de El Chorro',
-      preferredProducts: ['lae-bonoloto', 'once-eurojackpot', 'rasca-jackpot'],
-      visitChance: 0.1,
-      prefersPayment: 'bizum',
-      trait: 'habladora',
-      line: 'Hoy venimos con lista larga.',
-      favoriteProduct: 'lae-bonoloto',
-      subscription: 'Bonoloto diario compartido',
-      members: 30,
-      history: [],
-      prizesClaimed: [],
-      orders: [],
-      preferredDays: [1, 2, 3, 4, 5],
-    },
+  const penaDefs = [
+    ['pena-1', 'Peña El Desfiladero', 'Calle Real', ['lae-euromillones', 'lae-primitiva'], 'Bote Euromillones', 24, [2, 5]],
+    ['pena-2', 'Peña Virgen de Flores', 'Plaza Baja', ['lae-nacional', 'lae-navidad'], 'Nacional jueves/sábado', 15, [4, 6]],
+    ['pena-3', 'Peña del Chorro', 'Camino de El Chorro', ['lae-bonoloto', 'once-eurojackpot'], 'Bonoloto diario', 30, [1, 2, 3, 4, 5]],
+    ['pena-4', 'Peña Caminito', 'Avenida de Andalucía', ['lae-euromillones', 'rasca-jackpot'], 'Euromillones + rascas', 18, [2, 5]],
+    ['pena-5', 'Peña San Juan', 'Calle Veracruz', ['once-cuponazo', 'lae-primitiva'], 'Cuponazo viernes', 12, [5]],
+    ['pena-6', 'Peña Hoya Dulce', 'Calle Hoyo', ['lae-quiniela', 'lae-bonoloto'], 'Quiniela domingo', 20, [5, 0]],
+    ['pena-7', 'Peña Estación', 'Calle Estación', ['lae-nacional', 'alo-local'], 'Décimos locales', 10, [4]],
+    ['pena-8', 'Peña Guadalhorce', 'Calle Ancha', ['lae-gordo-primitiva', 'lae-primitiva'], 'Gordo + Primitiva', 22, [3, 6]],
   ];
+  const penas = penaDefs.map(([id, name, street, prefs, subscription, members, preferredDays], i) => ({
+    id,
+    kind: 'pena',
+    name,
+    regular: true,
+    street,
+    preferredProducts: prefs,
+    visitChance: 0.1 + (i % 3) * 0.02,
+    prefersPayment: ['transfer', 'cash', 'bizum'][i % 3],
+    trait: TRAITS[i % TRAITS.length],
+    line: 'Pedido para la peña.',
+    favoriteProduct: prefs[0],
+    subscription,
+    members,
+    history: [],
+    prizesClaimed: [],
+    orders: [],
+    preferredDays,
+  }));
   return { abonados, penas };
 }
 

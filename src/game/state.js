@@ -3,10 +3,12 @@ import { defaultFloatDrawer, emptyDrawer, drawerTotalCents } from '../data/money
 import { buildHolidayMap } from '../data/holidays.js';
 import { generateRegularCustomers, generateAbonadosAndPenas } from '../data/customers.js';
 import { buildAloraEvents } from '../data/events.js';
+import { ensureOnceExtras } from './notices.js';
+import { ensureJackpots } from './jackpots.js';
 
 export const STARTING_BANK_CENTS = 950000;
-export const SAVE_VERSION = 3;
-export const GAME_VERSION = '0.2';
+export const SAVE_VERSION = 4;
+export const GAME_VERSION = '0.3';
 export const SLOT_COUNT = 3;
 export const STORAGE_PREFIX = 'loterias-alora-slot-';
 
@@ -52,7 +54,7 @@ export function createNewGame(options = {}) {
     }
   }
 
-  return {
+  const game = {
     version: SAVE_VERSION,
     gameVersion: GAME_VERSION,
     meta: {
@@ -78,9 +80,14 @@ export function createNewGame(options = {}) {
       dayPrizesPaidCents: 0,
       dayPrizesReimbursableCents: 0,
       dayExpensesCents: 0,
+      dayShortageCents: 0,
+      changeErrorsToday: 0,
       lastSettlement: null,
       ledger: [],
+      weeklySnapshots: [],
     },
+    jackpots: {},
+    onceExtras: [],
     stock,
     orders: [],
     reservations: [],
@@ -97,21 +104,36 @@ export function createNewGame(options = {}) {
       servedToday: 0,
       nextSpawnAtMs: start.getTime() + 10 * 1000,
     },
-    settings: { music: true, sfx: true },
+    settings: { music: true, sfx: true, autosaveMinutes: 2 },
     dayLog: [],
     holidays,
     events,
-    stats: { totalSalesCents: 0, totalCustomers: 0, daysPlayed: 0 },
+    stats: {
+      totalSalesCents: 0,
+      totalCustomers: 0,
+      daysPlayed: 0,
+      totalCommissionCents: 0,
+      totalPrizesPaidCents: 0,
+      totalShortageCents: 0,
+    },
     ui: {
       screen: 'counter',
       toast: null,
       paymentSession: null,
       tpv: null,
+      arqueo: null,
       lastTickets: [],
       lastCloseSummary: null,
       fichaId: null,
     },
   };
+  return finalizeNewGame(game);
+}
+
+export function finalizeNewGame(state) {
+  ensureOnceExtras(state);
+  ensureJackpots(state);
+  return state;
 }
 
 export function migrateState(data) {
@@ -121,7 +143,7 @@ export function migrateState(data) {
   if (!data.prizeManagement) data.prizeManagement = [];
   if (!data.events) data.events = buildAloraEvents(2025, 2032);
   if (!data.nextIds) data.nextIds = { ticket: 1 };
-  if (!data.settings) data.settings = { music: true, sfx: true };
+  if (!data.settings) data.settings = { music: true, sfx: true, autosaveMinutes: 2 };
   if (!data.customers.abonados || !data.customers.penas) {
     const { abonados, penas } = generateAbonadosAndPenas();
     data.customers.abonados = data.customers.abonados || abonados;
@@ -131,10 +153,18 @@ export function migrateState(data) {
   if (data.finance && data.finance.dayPrizesReimbursableCents == null) {
     data.finance.dayPrizesReimbursableCents = 0;
   }
+  if (!data.stats) data.stats = {};
+  data.stats.totalCommissionCents = data.stats.totalCommissionCents || 0;
+  data.stats.totalPrizesPaidCents = data.stats.totalPrizesPaidCents || 0;
+  data.stats.totalShortageCents = data.stats.totalShortageCents || 0;
+  data.jackpots = data.jackpots || {};
   data.ui = data.ui || {};
   data.ui.tpv = null;
+  data.ui.arqueo = null;
   data.version = SAVE_VERSION;
   data.gameVersion = GAME_VERSION;
+  ensureOnceExtras(data);
+  ensureJackpots(data);
   return data;
 }
 

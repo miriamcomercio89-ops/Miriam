@@ -94,3 +94,17 @@ export function importGame(file) {
 export function newGame() {
   return createNewGame();
 }
+
+/** Autosave periódico al hueco activo (o 1) */
+export function maybeAutosave(state, lastAutosaveRealMs, intervalMs = 120000) {
+  const now = Date.now();
+  if (now - lastAutosaveRealMs < intervalMs) return lastAutosaveRealMs;
+  const slot = state.meta?.activeSlot || 1;
+  try {
+    state.meta.activeSlot = slot;
+    saveToSlot(state, slot);
+  } catch {
+    /* ignore */
+  }
+  return now;
+}

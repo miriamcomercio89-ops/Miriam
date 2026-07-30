@@ -6,15 +6,21 @@ import { formatEuro } from '../data/money.js';
 /**
  * Sesión TPV: carrito multi-línea.
  */
+export const CANCEL_REASONS = ['error', 'sin stock', 'cambio de idea', 'otro'];
+
 export function openTpv(state, client) {
   state.ui.tpv = {
     clientId: client?.id || null,
     clientName: client?.name || 'Cliente',
+    wishlist: client?.wishlist ? client.wishlist.map((w) => ({ ...w })) : [],
     category: 'LAE',
     lines: [],
     editingLineId: null,
-    numberEntry: null, // { lineId, mode, draft }
+    numberEntry: null,
+    cancelPrompt: null, // { lineId }
+    step: 'edit', // edit | receipt
     message: null,
+    cancelledLines: [],
   };
   state.ui.screen = 'tpv';
   return state;
@@ -86,10 +92,72 @@ export function addTpvProduct(state, productId, { qty = 1, numberSource = 'rando
 export function removeTpvLine(state, id) {
   const tpv = state.ui.tpv;
   if (!tpv) return state;
-  tpv.lines = tpv.lines.filter((l) => l.id !== id);
-  if (tpv.numberEntry?.lineId === id) tpv.numberEntry = null;
-  tpv.message = 'Línea eliminada';
+  tpv.cancelPrompt = { lineId: id };
+  tpv.message = 'Elige motivo de cancelación';
   return state;
+}
+
+export function confirmCancelLine(state, reason) {
+  const tpv = state.ui.tpv;
+  if (!tpv?.cancelPrompt) return state;
+  const id = tpv.cancelPrompt.lineId;
+  const line = tpv.lines.find((l) => l.id === id);
+  if (line) {
+    tpv.cancelledLines.push({ ...line, reason: reason || 'otro', at: state.clock.gameTimeMs });
+    tpv.lines = tpv.lines.filter((l) => l.id !== id);
+    state.dayLog.push({
+      at: state.clock.gameTimeMs,
+      text: `TPV: cancelada línea ${line.name} ×${line.qty} (${reason})`,
+    });
+  }
+  if (tpv.numberEntry?.lineId === id) tpv.numberEntry = null;
+  tpv.cancelPrompt = null;
+  tpv.message = `Línea cancelada: ${reason}`;
+  return state;
+}
+
+export function dismissCancelPrompt(state) {
+  if (state.ui.tpv) state.ui.tpv.cancelPrompt = null;
+  return state;
+}
+
+/** Compara wishlist del cliente con líneas del TPV */
+export function validateWishlist(tpv) {
+  const wish = tpv?.wishlist || [];
+  const covered = [];
+  const missing = [];
+  const extras = [];
+
+  const qtyByProduct = {};
+  for (const l of tpv?.lines || []) {
+    qtyByProduct[l.productId] = (qtyByProduct[l.productId] || 0) + l.qty;
+  }
+  const used = { ...qtyByProduct };
+
+  for (const w of wish) {
+    const have = used[w.productId] || 0;
+    if (have >= w.qty) {
+      covered.push({ ...w, have });
+      used[w.productId] = have - w.qty;
+    } else if (have > 0) {
+      missing.push({ ...w, have, need: w.qty - have });
+      used[w.productId] = 0;
+    } else {
+      missing.push({ ...w, have: 0, need: w.qty });
+    }
+  }
+  for (const [productId, left] of Object.entries(used)) {
+    if (left > 0) {
+      const p = getProduct(productId);
+      extras.push({ productId, productName: p?.name || productId, qty: left });
+    }
+  }
+  return {
+    covered,
+    missing,
+    extras,
+    complete: missing.length === 0,
+  };
 }
 
 export function setLineQty(state, id, qty) {
@@ -122,8 +190,14 @@ export function applyDictatedNumbers(state, text) {
     return state;
   }
   line.selection = parsed.selection;
+  if (parsed.selection.series) line.qty = 10;
+  else if (parsed.selection.fractions && parsed.selection.fractions > 1) {
+    line.qty = parsed.selection.fractions;
+  }
   tpv.numberEntry = null;
-  tpv.message = 'Números marcados';
+  tpv.message = parsed.selection.series
+    ? 'Serie entera marcada (10 décimos)'
+    : 'Números marcados';
   return state;
 }
 
@@ -163,10 +237,22 @@ function parseDictatedNumbers(mode, text) {
   if (!raw) return { ok: false, error: 'Escribe los números que dicta el cliente' };
 
   if (mode === 'nacional' || mode === 'triplex') {
+    // Serie entera: "serie 12345" → 10 décimos del número
+    const serie = raw.match(/serie\s*(\d{5})/i);
+    if (serie && mode === 'nacional') {
+      return {
+        ok: true,
+        selection: { number: serie[1], series: true, fractions: 10 },
+      };
+    }
+    // Pedrea: "12345 x2" o "12345 2 décimos"
+    const pedrea = raw.match(/(\d{5})\s*(?:x|×|\*|decimos?|décimos?)?\s*(\d+)?/i);
     const digits = raw.replace(/\D/g, '');
     const need = mode === 'triplex' ? 3 : 5;
-    if (digits.length < need) return { ok: false, error: `Haz falta ${need} cifras` };
-    return { ok: true, selection: { number: digits.slice(0, need).padStart(need, '0') } };
+    if (digits.length < need && !pedrea) return { ok: false, error: `Haz falta ${need} cifras` };
+    const number = (pedrea ? pedrea[1] : digits.slice(0, need)).padStart(need, '0');
+    const fractions = pedrea && pedrea[2] ? Math.max(1, Math.min(10, Number(pedrea[2]))) : 1;
+    return { ok: true, selection: { number, fractions, series: false } };
   }
 
   if (mode === '6from49') {
@@ -251,7 +337,32 @@ export function tpvReadyToCharge(tpv) {
       return { ok: false, error: `Faltan números en ${l.name}` };
     }
   }
+  if (tpv.wishlist?.length) {
+    const v = validateWishlist(tpv);
+    if (!v.complete) {
+      const miss = v.missing.map((m) => `${m.productName} (faltan ${m.need})`).join(', ');
+      return { ok: false, error: `La petición no está completa: ${miss}. Puedes añadir de más, pero no de menos.` };
+    }
+  }
   return { ok: true };
+}
+
+export function goTpvReceipt(state) {
+  const tpv = state.ui.tpv;
+  if (!tpv) return state;
+  const ready = tpvReadyToCharge(tpv);
+  if (!ready.ok) {
+    tpv.message = ready.error;
+    return state;
+  }
+  tpv.step = 'receipt';
+  tpv.message = null;
+  return state;
+}
+
+export function backTpvEdit(state) {
+  if (state.ui.tpv) state.ui.tpv.step = 'edit';
+  return state;
 }
 
 /** Convierte carrito TPV a items de cobro */
@@ -270,7 +381,13 @@ export function tpvToSaleItems(tpv) {
 export function formatLineSelection(line) {
   const s = line.selection;
   if (!s) return 'Sin marcar';
-  if (s.number) return `Nº ${s.number}`;
+  if (s.number) {
+    let t = `Nº ${s.number}`;
+    if (s.series) t += ' · serie entera';
+    else if (s.fractions && s.fractions > 1) t += ` · ${s.fractions} décimos`;
+    else if (s.fractions === 1) t += ' · 1 décimo';
+    return t;
+  }
   if (s.column) return `Columna ${s.column.join('')}`;
   if (s.goals) return `Goles ${s.goals.join('')}`;
   if (s.stars) return `${(s.numbers || []).join(',')} ★ ${s.stars.join(',')}`;

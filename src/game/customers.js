@@ -16,9 +16,22 @@ export function crowdFactor(state) {
   if (month === 12 || (month === 11 && day >= 15)) f += 0.8;
   if (month === 1 && day <= 10) f += 0.6;
   if (d.getUTCDay() === 5) f += 0.25;
+  // Temporada turística El Chorro / Caminito: verano + puentes
+  if (month >= 6 && month <= 9) f += 0.45;
+  if (month === 10 && day >= 10 && day <= 14) f += 0.35;
+  if (month === 12 && day >= 5 && day <= 9) f += 0.25;
   const ev = eventOn(gameYmd(state), state.events);
   if (ev) f += ev.crowd || 0;
   return f;
+}
+
+export function isTouristSeason(state) {
+  const m = gameDate(state).getUTCMonth() + 1;
+  const d = gameDate(state).getUTCDate();
+  if (m >= 6 && m <= 9) return true;
+  if (m === 10 && d >= 10 && d <= 14) return true;
+  if (m === 12 && d >= 5 && d <= 9) return true;
+  return false;
 }
 
 export function maybeSpawnCustomers(state) {
@@ -74,7 +87,16 @@ function pickArrivingClient(state) {
     const a = state.customers.penas[Math.floor(rng() * state.customers.penas.length)];
     return { ...a };
   }
-  if (rng() < 0.28 + (crowdFactor(state) - 1) * 0.08) return makeVisitor();
+  const touristBoost = isTouristSeason(state) ? 0.15 : 0;
+  if (rng() < 0.28 + (crowdFactor(state) - 1) * 0.08 + touristBoost) {
+    const v = makeVisitor();
+    if (isTouristSeason(state) && rng() < 0.55) {
+      v.street = 'Turista (Caminito / El Chorro)';
+      v.line = 'De pasada por el Caminito, me llevo algo.';
+      v.preferredProducts = ['rasca-jackpot', 'lae-nacional', 'alo-chorro', 'rasca-once-verano'];
+    }
+    return v;
+  }
 
   const dow = gameDate(state).getUTCDay();
   const candidates = state.customers.regulars.filter((c) => {

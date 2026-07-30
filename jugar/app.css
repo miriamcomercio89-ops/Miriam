@@ -551,6 +551,54 @@ select {
   padding: 8px;
   font: inherit;
 }
+.notice-banner {
+  margin: 8px 0 0;
+  padding: 8px 14px;
+  background: rgba(14, 107, 122, 0.12);
+  border: 1px solid rgba(14, 107, 122, 0.28);
+  border-radius: 10px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--brand-deep);
+}
+.jackpot-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  margin: 6px 0 0;
+  padding: 6px 4px;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+.jackpot-strip strong {
+  color: var(--ink);
+  font-weight: 700;
+  margin-right: 4px;
+}
+.wish-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.88rem;
+}
+.wish-ok {
+  color: #0b6b3a;
+  background: rgba(11, 107, 58, 0.08);
+  border-radius: 8px;
+  padding: 4px 8px;
+}
+.wish-miss {
+  color: #9b1c1c;
+  background: rgba(155, 28, 28, 0.08);
+  border-radius: 8px;
+  padding: 4px 8px;
+}
+.wish-extra {
+  color: #8a5a00;
+  background: rgba(196, 140, 0, 0.12);
+  border-radius: 8px;
+  padding: 4px 8px;
+}
 @media (max-width: 1100px) {
   .layout {
     grid-template-columns: 1fr;

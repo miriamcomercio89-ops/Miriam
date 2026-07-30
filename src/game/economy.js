@@ -178,11 +178,17 @@ export function closeDay(state) {
   summary.settlement = settlement;
   state.stats.daysPlayed += 1;
 
+  if (state.finance.dayShortageCents) {
+    state.stats.totalShortageCents =
+      (state.stats.totalShortageCents || 0) + state.finance.dayShortageCents;
+  }
   state.finance.daySalesCents = 0;
   state.finance.dayCommissionCents = 0;
   state.finance.dayPrizesPaidCents = 0;
   state.finance.dayPrizesReimbursableCents = 0;
   state.finance.dayExpensesCents = 0;
+  state.finance.dayShortageCents = 0;
+  state.finance.changeErrorsToday = 0;
   state.customers.servedToday = 0;
   state.customers.current = null;
   state.customers.queue = [];
