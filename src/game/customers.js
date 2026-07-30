@@ -1,4 +1,4 @@
-import { getProduct, PRODUCTS } from '../data/products.js';
+import { getProduct, PRODUCTS, REGIONAL_IDS } from '../data/products.js';
 import { makeVisitor } from '../data/customers.js';
 import { isOpenHours, gameDate, gameYmd } from './time.js';
 import { startPayment } from './cash.js';
@@ -7,6 +7,7 @@ import { eventOn } from '../data/events.js';
 import { checkTicket, ticketsForClient } from './tickets.js';
 import { ensureDrawsResolved } from './draws.js';
 import { hashSeed, mulberry32 } from './rng.js';
+import { isBirthdayToday, matchesSanto } from '../data/birthdays.js';
 
 export function crowdFactor(state) {
   const d = gameDate(state);
@@ -78,8 +79,20 @@ function scheduleNextSpawn(state) {
 
 function pickArrivingClient(state) {
   const rng = Math.random;
+  const ymd = gameYmd(state);
+  // Cumpleaños / santoral: prioridad suave
+  if (rng() < 0.12) {
+    const specials = (state.customers.regulars || []).filter(
+      (c) => isBirthdayToday(c, ymd) || matchesSanto(c, ymd),
+    );
+    if (specials.length) {
+      const c = { ...specials[Math.floor(rng() * specials.length)] };
+      c.specialDay = isBirthdayToday(c, ymd) ? 'birthday' : 'santo';
+      return c;
+    }
+  }
   // Peñas / abonados con menos frecuencia pero relevantes
-  if (rng() < 0.08 && state.customers.abonados?.length) {
+  if (rng() < 0.1 && state.customers.abonados?.length) {
     const a = state.customers.abonados[Math.floor(rng() * state.customers.abonados.length)];
     return { ...a };
   }
@@ -102,6 +115,7 @@ function pickArrivingClient(state) {
   const candidates = state.customers.regulars.filter((c) => {
     let chance = c.visitChance * crowdFactor(state);
     if (c.preferredDays?.includes(dow)) chance *= 2.2;
+    if (isBirthdayToday(c, ymd) || matchesSanto(c, ymd)) chance *= 3;
     return rng() < chance;
   });
   if (!candidates.length) {
@@ -152,9 +166,27 @@ export function attachIntent(state, client) {
     return client;
   }
 
+  // Abonado / peña: viene a por su abono (Miriam confirma en TPV)
+  if ((client.kind === 'abonado' || client.kind === 'pena') && rng() < 0.55) {
+    const p = getProduct(client.favoriteProduct || client.preferredProducts?.[0]);
+    const qty = client.kind === 'pena' ? 5 : client.abonoQty || 2;
+    client.intent = 'abono';
+    client.wishlist = p
+      ? [{ productId: p.id, productName: p.name, qty, preferDictate: false }]
+      : [];
+    client.note =
+      client.kind === 'pena'
+        ? `Peña: confirmar abono «${client.subscription || p?.name || ''}» ×${qty}`
+        : `Abono: confirmar «${client.subscription || p?.name || ''}» ×${qty}`;
+    if (client.specialDay === 'birthday') client.note += ' · ¡Cumpleaños!';
+    return client;
+  }
+
   client.intent = 'buy';
   client.wishlist = buildRichWishlist(state, client);
   client.note = client.line || 'Quiere varias cosas.';
+  if (client.specialDay === 'birthday') client.note = `¡Hoy es su cumpleaños! ${client.note}`;
+  else if (client.specialDay === 'santo') client.note = `Santoral · ${client.note}`;
   return client;
 }
 
@@ -194,13 +226,26 @@ export function buildRichWishlist(state, client) {
   return lines;
 }
 
+const REGIONAL_AUTO = (REGIONAL_IDS || []).filter((id) => id.startsWith('and-'));
+const REGIONAL_PROV = (REGIONAL_IDS || []).filter((id) => id.startsWith('mal-'));
+const REGIONAL_LOCAL = (REGIONAL_IDS || []).filter((id) => id.startsWith('alo-') || id.startsWith('pue-'));
+
 const POOLS = {
-  lae: ['lae-primitiva', 'lae-bonoloto', 'lae-euromillones', 'lae-nacional', 'lae-gordo-primitiva', 'lae-quiniela'],
+  lae: [
+    'lae-primitiva',
+    'lae-bonoloto',
+    'lae-euromillones',
+    'lae-nacional',
+    'lae-gordo-primitiva',
+    'lae-quiniela',
+    'lae-lototurf',
+    'lae-quintuple',
+  ],
   once: ['once-cupon', 'once-cuponazo', 'once-eurojackpot', 'once-super-once', 'once-triplex'],
   rasca: ['rasca-7-vidas', 'rasca-multiplica', 'rasca-diamante', 'rasca-oro', 'rasca-jackpot', 'rasca-once-clasico'],
-  auto: ['and-fortuna', 'and-olivo', 'and-costa'],
-  prov: ['mal-premio', 'mal-axarquia'],
-  local: ['alo-local', 'alo-hoya', 'alo-chorro'],
+  auto: REGIONAL_AUTO.length ? REGIONAL_AUTO : ['and-fortuna', 'and-olivo', 'and-costa'],
+  prov: REGIONAL_PROV.length ? REGIONAL_PROV : ['mal-premio', 'mal-axarquia'],
+  local: REGIONAL_LOCAL.length ? REGIONAL_LOCAL : ['alo-local', 'alo-hoya', 'alo-chorro'],
 };
 
 const WISH_TEMPLATES = [
@@ -221,6 +266,7 @@ const WISH_TEMPLATES = [
   ],
   [{ id: 'once-super-once', qty: 3 }, { id: 'once-triplex', qty: 2, dictate: true }, { pool: POOLS.rasca, qty: 1 }],
   [{ id: 'lae-lototurf', qty: 1 }, { id: 'lae-bonoloto', qty: 2 }, { pool: POOLS.local, qty: 1, p: 0.5 }],
+  [{ id: 'lae-quintuple', qty: 1, dictate: true }, { id: 'lae-lototurf', qty: 1, p: 0.6 }, { pool: POOLS.rasca, qty: 2, p: 0.5 }],
   // many small random mixes
   ...Array.from({ length: 40 }, () => {
     const n = 1 + Math.floor(Math.random() * 4);
@@ -344,6 +390,17 @@ export function checkCurrentTicket(state) {
       at: state.clock.gameTimeMs,
       text: `Comprobación: ${client.name} · PREMIO ${formatEuro(result.prizeCents)}`,
     });
+    if (result.large || result.huge) {
+      // alerta visual; import dinámico evitado — inline mínimo
+      state.ui.highPrizeAlert = {
+        ticketId: result.ticket?.id || client.ticketFocus?.id,
+        clientName: client.name,
+        productName: client.ticketFocus?.productName,
+        amountCents: result.prizeCents,
+        at: state.clock.gameTimeMs,
+      };
+      state.stats.highPrizesAlerted = (state.stats.highPrizesAlerted || 0) + 1;
+    }
   } else {
     state.ui.toast = 'No ha tocado.';
   }

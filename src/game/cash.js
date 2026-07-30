@@ -184,17 +184,21 @@ function finishSaleSideEffects(state) {
   ps.createdTickets = tickets;
   state.ui.lastTickets = tickets;
 
-  // Historial cliente
+  // Historial cliente (incluye abonados / peñas persistentes)
+  const entry = {
+    at: state.clock.gameTimeMs,
+    items: ps.items,
+    totalCents: ps.totalCents,
+    ticketIds: tickets.map((t) => t.id),
+  };
   const client =
     state.customers.regulars.find((c) => c.id === ps.clientId) ||
+    state.customers.abonados?.find((c) => c.id === ps.clientId) ||
+    state.customers.penas?.find((c) => c.id === ps.clientId) ||
     (state.customers.current?.id === ps.clientId ? state.customers.current : null);
   if (client) {
-    client.history.push({
-      at: state.clock.gameTimeMs,
-      items: ps.items,
-      totalCents: ps.totalCents,
-      ticketIds: tickets.map((t) => t.id),
-    });
+    if (!client.history) client.history = [];
+    client.history.push(entry);
   }
   state.stats.totalCustomers += 1;
   state.customers.servedToday += 1;

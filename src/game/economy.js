@@ -213,8 +213,8 @@ export function closeDay(state) {
   processArrivingOrders(state);
   ensureDrawsResolved(state);
   state.customers.nextSpawnAtMs = state.clock.gameTimeMs + 2 * 60 * 1000;
-  state.ui.screen = 'counter';
   state.ui.lastCloseSummary = summary;
+  state.ui.screen = 'day-results';
   state.dayLog.push({
     at: state.clock.gameTimeMs,
     text: `Nuevo día · ${OFFICE.businessName}. ${closedReason(state) || 'Abierta 08:00–20:00.'}`,

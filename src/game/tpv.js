@@ -319,11 +319,78 @@ function parseDictatedNumbers(mode, text) {
     const need = 5;
     const nums = raw.split(/[\s,;.-]+/).map(Number).filter((n) => n >= 1 && n <= max);
     const unique = [...new Set(nums)];
-    if (unique.length < need) return { ok: false, error: `${need} números del 1 al ${max}` };
+    if (unique.length < need) return { ok: false, error: `${need} numbers del 1 al ${max}` };
     return { ok: true, selection: { numbers: unique.slice(0, need).sort((a, b) => a - b) } };
   }
 
+  if (mode === 'quintuple') {
+    const nums = raw.split(/[\s,;.-]+/).map(Number).filter((n) => n >= 1 && n <= 20);
+    if (nums.length < 6) return { ok: false, error: '5 caballos (1–20) + suplementaria' };
+    return {
+      ok: true,
+      selection: { races: nums.slice(0, 5), plus: nums[5] },
+    };
+  }
+
   return { ok: false, error: 'No se entiende la combinación' };
+}
+
+/** Deshacer la última línea del ticket (sin motivo de cancelación). */
+export function undoLastTpvLine(state) {
+  const tpv = state.ui.tpv;
+  if (!tpv?.lines?.length) {
+    if (tpv) tpv.message = 'No hay líneas que deshacer';
+    return state;
+  }
+  const last = tpv.lines.pop();
+  if (tpv.numberEntry?.lineId === last.id) tpv.numberEntry = null;
+  if (tpv.cancelPrompt?.lineId === last.id) tpv.cancelPrompt = null;
+  tpv.message = `Deshecho: ${last.name} ×${last.qty}`;
+  state.dayLog.push({
+    at: state.clock.gameTimeMs,
+    text: `TPV: deshacer última línea ${last.name} ×${last.qty}`,
+  });
+  return state;
+}
+
+/** Añade líneas del abono del cliente (confirmación Miriam). */
+export function confirmAbonoOnTpv(state) {
+  const tpv = state.ui.tpv;
+  if (!tpv) return state;
+  const client =
+    state.customers.current ||
+    state.customers.abonados?.find((a) => a.id === tpv.clientId) ||
+    state.customers.penas?.find((a) => a.id === tpv.clientId);
+  if (!client) {
+    tpv.message = 'No hay cliente de abono en esta sesión';
+    return state;
+  }
+  if (client.kind !== 'abonado' && client.kind !== 'pena') {
+    tpv.message = 'Este cliente no tiene abono / peña';
+    return state;
+  }
+  const fav = client.favoriteProduct || client.preferredProducts?.[0];
+  const p = getProduct(fav);
+  if (!p) {
+    tpv.message = 'No hay producto de abono configurado';
+    return state;
+  }
+  const qty = client.kind === 'pena' ? 5 : client.abonoQty || 2;
+  addTpvProduct(state, p.id, { qty, numberSource: 'random' });
+  tpv.message = `Abono confirmado: ${p.name} ×${qty}`;
+  state.dayLog.push({
+    at: state.clock.gameTimeMs,
+    text: `Abono confirmado TPV: ${client.name} · ${p.name} ×${qty}`,
+  });
+  const src =
+    client.kind === 'abonado'
+      ? state.customers.abonados?.find((a) => a.id === client.id)
+      : state.customers.penas?.find((a) => a.id === client.id);
+  if (src) {
+    src.lastAbonoAt = state.clock.gameTimeMs;
+    src.abonosConfirmed = (src.abonosConfirmed || 0) + 1;
+  }
+  return state;
 }
 
 export function tpvTotalCents(tpv) {
@@ -392,6 +459,7 @@ export function formatLineSelection(line) {
   if (s.goals) return `Goles ${s.goals.join('')}`;
   if (s.stars) return `${(s.numbers || []).join(',')} ★ ${s.stars.join(',')}`;
   if (s.clave != null) return `${(s.numbers || []).join(',')} clave ${s.clave}`;
+  if (s.races) return `Carreras ${s.races.join('-')}${s.plus != null ? ` +${s.plus}` : ''}`;
   if (s.numbers) {
     const r = s.reintegro != null ? ` R${s.reintegro}` : '';
     return `${s.numbers.join(',')}${r}`;

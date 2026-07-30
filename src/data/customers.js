@@ -1,3 +1,5 @@
+import { assignBirthday } from './birthdays.js';
+
 /** Nombres y personalidad de clientes (sin slang andaluz) */
 
 const FIRST_NAMES = [
@@ -105,6 +107,7 @@ export function generateRegularCustomers(count = 280, seed = 2026) {
       preferredDays,
       line: pick(rng, LINES[trait]),
       history: [],
+      birthday: assignBirthday(rng),
     });
   }
   return list;
@@ -145,6 +148,9 @@ export function generateAbonadosAndPenas() {
     kind: 'abonado',
     favoriteProduct: c.preferredProducts[0],
     subscription: subs[i % subs.length],
+    abonoQty: 2 + (i % 3),
+    abonosConfirmed: 0,
+    lastAbonoAt: null,
     prizesClaimed: [],
     orders: [],
   }));

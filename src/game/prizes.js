@@ -102,12 +102,36 @@ export function startPrizeManagement(state, ticket) {
   state.prizeManagement.push(caseItem);
   ticket.status = 'managed';
   ticket.managementId = caseItem.id;
+  raiseHighPrizeAlert(state, ticket);
   state.dayLog.push({
     at: state.clock.gameTimeMs,
     text: `Gestión de premio ${level}: ${ticket.clientName} · ${formatEuro(ticket.prizeCents)}`,
   });
   state.ui.toast = `Premio de ${formatEuro(ticket.prizeCents)} enviado a gestión.`;
   return { ok: true, managed: true, case: caseItem };
+}
+
+/** Alerta visible de premio alto (≥ 2.000 €). */
+export function raiseHighPrizeAlert(state, ticket) {
+  if (!ticket || (ticket.prizeCents || 0) < LARGE_PRIZE_CENTS) return state;
+  state.ui.highPrizeAlert = {
+    ticketId: ticket.id,
+    clientName: ticket.clientName,
+    productName: ticket.productName,
+    amountCents: ticket.prizeCents,
+    at: state.clock.gameTimeMs,
+  };
+  state.stats.highPrizesAlerted = (state.stats.highPrizesAlerted || 0) + 1;
+  state.dayLog.push({
+    at: state.clock.gameTimeMs,
+    text: `⚠ ALERTA premio alto: ${ticket.clientName || 'cliente'} · ${formatEuro(ticket.prizeCents)} · ${ticket.productName}`,
+  });
+  return state;
+}
+
+export function dismissHighPrizeAlert(state) {
+  if (state.ui) state.ui.highPrizeAlert = null;
+  return state;
 }
 
 /** Al liquidar el día, los casos "submitted" pueden pasar a settled y el cliente cobra vía org */

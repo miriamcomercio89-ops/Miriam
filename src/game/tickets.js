@@ -251,7 +251,11 @@ export function formatSelection(ticket) {
   const s = ticket.selection || {};
   if (ticket.kind === 'rasca') return `Código ${s.code || '—'}`;
   if (s.number) return `Nº ${s.number}`;
+  if (s.races) return `Carreras ${s.races.join('-')}${s.plus != null ? ` +${s.plus}` : ''}`;
   if (s.stars) return `${(s.numbers || []).join(', ')} ★ ${(s.stars || []).join(', ')}`;
+  if (s.clave != null) return `${(s.numbers || []).join(', ')} clave ${s.clave}`;
+  if (s.column) return `Columna ${s.column.join('')}`;
+  if (s.goals) return `Goles ${s.goals.join('')}`;
   if (s.numbers) {
     const extra = s.reintegro != null ? ` · R${s.reintegro}` : '';
     return `${(s.numbers || []).join(', ')}${extra}`;

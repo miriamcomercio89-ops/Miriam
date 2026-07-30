@@ -108,3 +108,41 @@ function buildSimplePdf(lines) {
 function escapePdfText(s) {
   return s.replace(/\\/g, '\\\\').replace(/\(/g, '\\(').replace(/\)/g, '\\)');
 }
+
+export function downloadStatsPdf(state) {
+  const s = state.stats || {};
+  const f = state.finance || {};
+  const lines = [
+    OFFICE.businessName,
+    `${OFFICE.town} · ${OFFICE.employee}`,
+    '===== ESTADÍSTICAS DE PARTIDA =====',
+    `Versión juego: ${state.gameVersion || '?'}`,
+    `Fecha juego: ${new Date(state.clock?.gameTimeMs || Date.now()).toISOString().slice(0, 10)}`,
+    '--------------------------------',
+    `Días jugados: ${s.daysPlayed ?? 0}`,
+    `Ventas totales: ${formatEuro(s.totalSalesCents || 0)}`,
+    `Comisiones totales: ${formatEuro(s.totalCommissionCents || 0)}`,
+    `Premios pagados: ${formatEuro(s.totalPrizesPaidCents || 0)}`,
+    `Faltantes de caja: ${formatEuro(s.totalShortageCents || 0)}`,
+    `Clientes atendidos: ${s.totalCustomers ?? 0}`,
+    `Alertas premio alto: ${s.highPrizesAlerted ?? 0}`,
+    '--------------------------------',
+    `Banco actual: ${formatEuro(f.bankCents || 0)}`,
+    `Ventas hoy: ${formatEuro(f.daySalesCents || 0)}`,
+    `Comisión hoy: ${formatEuro(f.dayCommissionCents || 0)}`,
+    `Clientes hoy: ${state.customers?.servedToday ?? 0}`,
+    '--------------------------------',
+    'Fan-made / no oficial · +18',
+    'Juego responsable',
+  ];
+  const pdf = buildSimplePdf(lines);
+  const blob = new Blob([pdf], { type: 'application/pdf' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `estadisticas-alora-${Date.now()}.pdf`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}

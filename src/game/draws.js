@@ -52,6 +52,13 @@ export function generateDrawResult(productId, ymd) {
     case 'superonce':
     case 'lototurf':
       return { productId, ymd, numbers: pickUnique(rng, 5, 49) };
+    case 'quintuple':
+      return {
+        productId,
+        ymd,
+        races: Array.from({ length: 5 }, () => pickInt(rng, 1, 20)),
+        plus: pickInt(rng, 1, 20),
+      };
     case '5from40':
     default:
       if (['once-cupon', 'once-cuponazo', 'once-sueldazo', 'lae-nacional', 'lae-nacional-jueves', 'lae-navidad', 'lae-nino'].includes(productId)) {
@@ -92,6 +99,12 @@ export function generateBetSelection(productId, rng) {
   }
   if (mode === 'superonce' || mode === 'lototurf') {
     return { numbers: pickUnique(rng, 5, 49) };
+  }
+  if (mode === 'quintuple') {
+    return {
+      races: Array.from({ length: 5 }, () => pickInt(rng, 1, 20)),
+      plus: pickInt(rng, 1, 20),
+    };
   }
   if (mode === '5from40') {
     return { numbers: pickUnique(rng, 5, 40) };

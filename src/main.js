@@ -61,8 +61,9 @@ import {
 import { ensureDrawsResolved, listDrawHistory } from './game/draws.js';
 import { formatSelection } from './game/tickets.js';
 import { payTicketPrize, startPrizeManagement } from './game/prizes.js';
-import { downloadTicketPdf, downloadSaleReceiptPdf } from './game/pdf.js';
+import { downloadTicketPdf, downloadSaleReceiptPdf, downloadStatsPdf } from './game/pdf.js';
 import { eventOn } from './data/events.js';
+import { birthdayBanner } from './data/birthdays.js';
 import { GAME_VERSION } from './game/state.js';
 import {
   openTpv,
@@ -84,8 +85,18 @@ import {
   backTpvEdit,
   confirmCancelLine,
   dismissCancelPrompt,
+  undoLastTpvLine,
+  confirmAbonoOnTpv,
   CANCEL_REASONS,
 } from './game/tpv.js';
+import {
+  addShowcaseDecimo,
+  removeShowcaseDecimo,
+  sellShowcaseToTpv,
+  ensureShowcase,
+} from './game/showcase.js';
+import { placeSupplierOrder, mondayScratchInventory, restockLowScratches, supplierUnitCostCents } from './game/supplier.js';
+import { dismissHighPrizeAlert } from './game/prizes.js';
 import {
   startArqueo,
   adjustArqueoCount,
@@ -129,6 +140,16 @@ function maybeStartMusic() {
     setMusicEnabled(false);
   }
   if (state?.settings?.sfx != null) setSfxEnabled(!!state.settings.sfx);
+  applyTheme();
+}
+
+function applyTheme() {
+  const theme = state?.settings?.theme === 'dark' ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', theme);
+}
+
+function confirmImportant(message) {
+  return window.confirm(message);
 }
 
 function loop() {
@@ -178,7 +199,12 @@ function maybeMondayHint() {
   const ymd = gameYmd(state);
   if (state.ui.mondayHintYmd === ymd) return;
   state.ui.mondayHintYmd = ymd;
-  showToast('Lunes: revisa el extracto semanal (menú Extracto semanal).');
+  const { low } = mondayScratchInventory(state);
+  if (low.length) {
+    showToast(`Lunes: ${low.length} rascas bajos de stock · Extracto semanal + inventario rascas`);
+  } else {
+    showToast('Lunes: revisa el extracto semanal e inventario de rascas.');
+  }
   needsFullRender = true;
 }
 
@@ -195,12 +221,15 @@ function renderClockOnly() {
 }
 
 function render() {
+  applyTheme();
   if (!state || state.ui.screen === 'menu') return renderMenu();
   if (state.ui.screen === 'cash') return renderCash();
   if (state.ui.screen === 'tpv') return renderTpv();
   if (state.ui.screen === 'close') return renderClose();
+  if (state.ui.screen === 'day-results') return renderDayResults();
   if (state.ui.screen === 'saves') return renderSavesInGame();
   if (state.ui.screen === 'stock') return renderStock();
+  if (state.ui.screen === 'showcase') return renderShowcase();
   if (state.ui.screen === 'prize') return renderPrize();
   if (state.ui.screen === 'draws') return renderDraws();
   if (state.ui.screen === 'management') return renderManagement();
@@ -239,8 +268,48 @@ function crowdHint() {
 }
 
 function eventBannerText() {
-  const ev = eventOn(gameYmd(state), state.events);
-  return ev ? `Evento en Álora: ${ev.name}` : '';
+  const ymd = gameYmd(state);
+  const ev = eventOn(ymd, state.events);
+  const bday = birthdayBanner(state, ymd);
+  const parts = [];
+  if (ev) parts.push(`Evento en Álora: ${ev.name}`);
+  if (bday) parts.push(bday);
+  return parts.join(' · ');
+}
+
+function highPrizeAlertHTML() {
+  const a = state.ui?.highPrizeAlert;
+  if (!a) return '';
+  return `<div class="alert-banner" id="high-prize-alert">
+    <strong>⚠ Premio alto</strong>
+    <div>${escapeHtml(a.clientName || 'Cliente')} · ${escapeHtml(a.productName || '')} · ${formatEuro(a.amountCents)}</div>
+    <div class="actions" style="margin-top:8px">
+      <button class="btn" id="btn-dismiss-high-prize">Entendido</button>
+      <button class="btn primary" id="btn-goto-mgmt-prize">Ir a gestión</button>
+    </div>
+  </div>`;
+}
+
+function bindHighPrizeAlert() {
+  const d = document.getElementById('btn-dismiss-high-prize');
+  if (d) {
+    d.onclick = () => {
+      dismissHighPrizeAlert(state);
+      sfx.click();
+      needsFullRender = true;
+      render();
+    };
+  }
+  const g = document.getElementById('btn-goto-mgmt-prize');
+  if (g) {
+    g.onclick = () => {
+      dismissHighPrizeAlert(state);
+      state.ui.screen = 'management';
+      sfx.click();
+      needsFullRender = true;
+      render();
+    };
+  }
 }
 
 function dictateHint(mode) {
@@ -256,6 +325,7 @@ function dictateHint(mode) {
     superonce: '5 números del 1 al 49',
     '5from40': '5 números del 1 al 40',
     lototurf: '5 números del 1 al 49',
+    quintuple: '5 caballos 1–20 + suplementaria (ej. 3 7 11 14 18 5)',
   };
   return hints[mode] || 'Escribe la combinación dictada';
 }
@@ -299,7 +369,7 @@ function renderMenu() {
         </div>
         <p class="disclaimer">
           Fan-made / no oficial. Nombres de Loterías y Apuestas del Estado y ONCE usados solo con fines de simulación.
-          Juego responsable · +18. Versión ${GAME_VERSION}: TPV con ticket, arqueo, botes, extracto semanal y encargos de calendario.
+          Juego responsable · +18. Versión ${GAME_VERSION}: Catálogo +50 loterías, escaparate, abonos, tema, proveedor, resultados del día y PDF de estadísticas.
         </p>
       </div>
     </div>
@@ -313,7 +383,7 @@ function renderMenu() {
     maybeStartMusic();
     state.ui.screen = 'counter';
     lastAutosaveRealMs = Date.now();
-    showToast('Bienvenida, Miriam. Versión 0.3 lista. Abre el TPV para vender.');
+    showToast('Bienvenida, Miriam. Versión 0.4 lista. Abre el TPV para vender.');
     needsFullRender = true;
     render();
   };
@@ -420,6 +490,7 @@ function sideNav() {
   const profit = dayProfitBreakdown(state);
   const openMgmt = (state.prizeManagement || []).filter((c) => c.status !== 'settled').length;
   const musicOn = state.settings?.music !== false && isMusicEnabled();
+  const dark = state.settings?.theme === 'dark';
   return `
     <aside class="panel nav-side">
       <h3>Oficina</h3>
@@ -429,12 +500,14 @@ function sideNav() {
       <button class="btn" data-nav="prize">Pagar premio</button>
       <button class="btn" data-nav="management">Gestión premios${openMgmt ? ` (${openMgmt})` : ''}</button>
       <button class="btn" data-nav="stock">Stock y pedidos</button>
+      <button class="btn" data-nav="showcase">Escaparate</button>
       <button class="btn" data-nav="arqueo">Arqueo</button>
       <button class="btn" data-nav="weekly">Extracto semanal</button>
       <button class="btn" data-nav="stats">Estadísticas</button>
       <button class="btn" data-nav="close">Cierre y balance</button>
       <button class="btn" data-nav="saves">Guardar / exportar</button>
       <button class="btn" id="btn-music-toggle">${musicOn ? '♪ Música: ON' : '♪ Música: OFF'}</button>
+      <button class="btn" id="btn-theme-toggle">${dark ? 'Tema: oscuro' : 'Tema: claro'}</button>
       <hr style="border:none;border-top:1px solid var(--line);margin:14px 0" />
       <div class="stat-row"><span>Banco</span><strong>${formatEuro(state.finance.bankCents)}</strong></div>
       <div class="stat-row"><span>Caja</span><strong>${formatEuro(drawerTotalCents(state.finance.drawer))}</strong></div>
@@ -472,6 +545,17 @@ function bindNav() {
       state.settings.music = next;
       setMusicEnabled(next);
       if (next) startMusic();
+      sfx.click();
+      needsFullRender = true;
+      render();
+    };
+  }
+  const themeBtn = document.getElementById('btn-theme-toggle');
+  if (themeBtn) {
+    themeBtn.onclick = () => {
+      state.settings = state.settings || {};
+      state.settings.theme = state.settings.theme === 'dark' ? 'light' : 'dark';
+      applyTheme();
       sfx.click();
       needsFullRender = true;
       render();
@@ -595,6 +679,7 @@ function renderCounter() {
       <div class="layout">
         ${sideNav()}
         <section class="panel counter-stage">
+          ${highPrizeAlertHTML()}
           ${clientBlock}
           ${
             client && isOpenHours(state) && !isClosedDay(state)
@@ -633,6 +718,7 @@ function renderCounter() {
 
   bindTopbar();
   bindNav();
+  bindHighPrizeAlert();
   bindClientActions();
   bindCalendarOrderButtons('counter', state.customers.current);
   const arqueoOpen = document.getElementById('btn-arqueo-open');
@@ -653,28 +739,29 @@ function renderClientPanel(client) {
   const kindLabel =
     client.kind === 'pena' ? 'Peña' : client.kind === 'abonado' ? 'Abonado' : client.regular ? 'Habitual' : 'Visitante';
 
-  if (intent === 'buy' || intent === 'reserve_special') {
+  if (intent === 'buy' || intent === 'reserve_special' || intent === 'abono') {
     const totalWish = (client.wishlist || []).reduce((s, w) => {
       const p = getProduct(w.productId);
       return s + (p?.priceCents || 0) * w.qty;
     }, 0);
+    const title =
+      intent === 'reserve_special' ? 'Encargo / petición:' : intent === 'abono' ? 'Abono a confirmar en TPV:' : 'Quiere:';
     return `
       <div class="client-card">
-        <div class="muted">${kindLabel}${trait} · ${escapeHtml(client.street || '')}</div>
+        <div class="muted">${kindLabel}${trait} · ${escapeHtml(client.street || '')}${
+          client.specialDay === 'birthday' ? ' · Cumpleaños' : client.specialDay === 'santo' ? ' · Santo' : ''
+        }</div>
         <h3>${escapeHtml(client.name)}</h3>
         ${quote ? `<p class="muted">“${escapeHtml(quote)}”</p>` : ''}
-        <p>${intent === 'reserve_special' ? 'Encargo / petición:' : 'Quiere:'}</p>
+        <p>${title}</p>
         ${wishlistHTML(client)}
+        ${client.subscription ? `<p class="muted">Suscripción: ${escapeHtml(client.subscription)}</p>` : ''}
         ${totalWish ? `<p class="muted">Estimado: ${formatEuro(totalWish)}</p>` : ''}
         <p class="muted">Pago preferido: ${payLabel(client.prefersPayment)}</p>
         <div class="actions">
-          <button class="btn primary" id="btn-open-tpv">Abrir TPV</button>
-          <button class="btn" id="btn-load-wish">Cargar petición</button>
-          ${
-            intent === 'reserve_special'
-              ? `<button class="btn" id="btn-reserve">Reservar sin pagar</button>`
-              : `<button class="btn" id="btn-reserve">Reservar sin pagar</button>`
-          }
+          <button class="btn primary" id="btn-open-tpv">${intent === 'abono' ? 'Abrir TPV y confirmar abono' : 'Abrir TPV'}</button>
+          <button class="btn" id="btn-load-wish">${intent === 'abono' ? 'Cargar abono' : 'Cargar petición'}</button>
+          <button class="btn" id="btn-reserve">Reservar sin pagar</button>
           <button class="btn ghost" id="btn-skip">Despedir</button>
         </div>
       </div>`;
@@ -959,6 +1046,8 @@ function confirmTpvCharge() {
     render();
     return;
   }
+  const total = tpvTotalCents(tpv);
+  if (!confirmImportant(`¿Confirmar cobro de ${formatEuro(total)} a ${tpv.clientName || 'cliente'}?`)) return;
   const items = tpvToSaleItems(tpv);
   const client = resolveTpvClient(tpv);
   startPayment(state, { items, client });
@@ -1135,10 +1224,30 @@ function renderTpv() {
               }
             </div>
             <div class="total-box" style="margin-top:8px">Total<strong>${formatEuro(total)}</strong></div>
-            <div class="actions" style="margin-top:8px">
+            <div class="actions" style="margin-top:8px;flex-wrap:wrap">
               <button class="btn primary" id="btn-tpv-charge" style="flex:1;min-height:52px;font-size:1.05rem">Cobrar</button>
+              <button class="btn" id="btn-tpv-undo" style="min-height:52px" title="Ctrl+Z">Deshacer</button>
+              ${
+                state.customers.current?.kind === 'abonado' || state.customers.current?.kind === 'pena'
+                  ? `<button class="btn accent" id="btn-tpv-abono" style="min-height:52px">Confirmar abono</button>`
+                  : ''
+              }
               <button class="btn danger" id="btn-tpv-cancel" style="min-height:52px">Cancelar</button>
             </div>
+            ${
+              (state.showcase || []).length
+                ? `<div style="margin-top:10px">
+                    <div class="muted" style="margin-bottom:6px">Escaparate</div>
+                    ${(state.showcase || [])
+                      .slice(0, 6)
+                      .map(
+                        (d) =>
+                          `<button class="btn" style="width:100%;margin-bottom:4px;justify-content:flex-start" data-sell-showcase="${d.id}">nº ${escapeHtml(d.number)} · ${escapeHtml(d.productName)} ×${d.qty}</button>`,
+                      )
+                      .join('')}
+                  </div>`
+                : ''
+            }
           </aside>
         </div>
       </div>
@@ -1273,7 +1382,36 @@ function renderTpv() {
 
   document.getElementById('btn-tpv-charge').onclick = () => goTpvChargeOrReceipt();
 
+  const undoBtn = document.getElementById('btn-tpv-undo');
+  if (undoBtn) {
+    undoBtn.onclick = () => {
+      undoLastTpvLine(state);
+      sfx.click();
+      needsFullRender = true;
+      render();
+    };
+  }
+  const abonoBtn = document.getElementById('btn-tpv-abono');
+  if (abonoBtn) {
+    abonoBtn.onclick = () => {
+      if (!confirmImportant('¿Confirmar abono del cliente en el ticket?')) return;
+      confirmAbonoOnTpv(state);
+      sfx.success();
+      needsFullRender = true;
+      render();
+    };
+  }
+  app.querySelectorAll('[data-sell-showcase]').forEach((btn) => {
+    btn.onclick = () => {
+      sellShowcaseToTpv(state, btn.getAttribute('data-sell-showcase'));
+      sfx.tpv();
+      needsFullRender = true;
+      render();
+    };
+  });
+
   document.getElementById('btn-tpv-cancel').onclick = () => {
+    if (tpv.lines.length && !confirmImportant('¿Cancelar el TPV y perder el ticket actual?')) return;
     sfx.click();
     closeTpv(state);
     showToast('TPV cancelado');
@@ -1291,6 +1429,17 @@ function ensureTpvKeyboard() {
     const tag = (e.target?.tagName || '').toLowerCase();
     const typing = tag === 'input' || tag === 'textarea';
 
+    if ((e.ctrlKey || e.metaKey) && (e.key === 'z' || e.key === 'Z') && !typing) {
+      e.preventDefault();
+      if (tpv.step !== 'receipt') {
+        undoLastTpvLine(state);
+        sfx.click();
+        needsFullRender = true;
+        render();
+      }
+      return;
+    }
+
     if (e.key === 'Escape') {
       e.preventDefault();
       if (tpv.cancelPrompt) {
@@ -1300,6 +1449,7 @@ function ensureTpvKeyboard() {
       } else if (tpv.step === 'receipt') {
         backTpvEdit(state);
       } else {
+        if (tpv.lines.length && !confirmImportant('¿Cerrar el TPV y perder el ticket?')) return;
         closeTpv(state);
         showToast('TPV cerrado');
       }
@@ -1616,6 +1766,7 @@ function renderClose() {
     render();
   };
   document.getElementById('btn-do-close').onclick = () => {
+    if (!confirmImportant('¿Liquidar organizaciones, cerrar el día y pasar al siguiente laborable?')) return;
     const { summary: s } = closeDay(state);
     const slot = state.meta.activeSlot || 1;
     state.meta.activeSlot = slot;
@@ -1786,7 +1937,7 @@ function renderStats() {
         ${sideNav()}
         <section class="panel">
           <h2>Estadísticas</h2>
-          <p class="muted">Acumulado de la partida</p>
+          <p class="muted">Acumulado de la partida · v${GAME_VERSION}</p>
           <div class="close-summary">
             <div class="stat-row"><span>Días jugados</span><strong>${s.daysPlayed ?? 0}</strong></div>
             <div class="stat-row"><span>Ventas totales</span><strong>${formatEuro(s.totalSalesCents || 0)}</strong></div>
@@ -1794,6 +1945,10 @@ function renderStats() {
             <div class="stat-row"><span>Premios pagados</span><strong>${formatEuro(s.totalPrizesPaidCents || 0)}</strong></div>
             <div class="stat-row"><span>Faltantes de caja</span><strong>${formatEuro(s.totalShortageCents || 0)}</strong></div>
             <div class="stat-row"><span>Clientes atendidos</span><strong>${s.totalCustomers ?? 0}</strong></div>
+            <div class="stat-row"><span>Alertas premio alto</span><strong>${s.highPrizesAlerted ?? 0}</strong></div>
+          </div>
+          <div class="actions" style="margin-top:16px">
+            <button class="btn primary" id="btn-stats-pdf">Descargar PDF</button>
           </div>
         </section>
       </div>
@@ -1802,6 +1957,11 @@ function renderStats() {
   `;
   bindTopbar();
   bindNav();
+  document.getElementById('btn-stats-pdf').onclick = () => {
+    downloadStatsPdf(state);
+    sfx.success();
+    showToast('PDF de estadísticas descargado');
+  };
 }
 
 function renderSavesInGame() {
@@ -1890,6 +2050,8 @@ function renderSavesInGame() {
 
 function renderStock() {
   const physical = PRODUCTS.filter((p) => p.stockType === 'physical');
+  const monday = isMonday(state);
+  const scratchLow = monday ? mondayScratchInventory(state).low : [];
   app.innerHTML = `
     <div class="shell">
       ${topbarHTML()}
@@ -1897,6 +2059,18 @@ function renderStock() {
         ${sideNav()}
         <section class="panel">
           <h2>Stock y pedidos</h2>
+          <p class="muted">Pedidos a proveedor con coste (banco) y fecha de llegada.</p>
+          ${
+            monday
+              ? `<div class="alert-banner" style="border-color:rgba(14,107,122,0.35);background:rgba(14,107,122,0.1)">
+                  <strong>Lunes · inventario de rascas</strong>
+                  <div class="muted">${scratchLow.length ? `${scratchLow.length} por debajo de 15` : 'Todos los rascas OK (≥15)'}</div>
+                  <div class="actions" style="margin-top:8px">
+                    <button class="btn primary" id="btn-restock-scratches">Reponer rascas bajos</button>
+                  </div>
+                </div>`
+              : ''
+          }
           <div style="margin-bottom:14px">
             <h3 style="margin:0 0 6px">Encargos de calendario</h3>
             <p class="muted" style="margin:0 0 8px">Navidad / Niño con fecha de entrega.</p>
@@ -1906,10 +2080,11 @@ function renderStock() {
             ${physical
               .map((p) => {
                 const qty = state.stock[p.id] ?? 0;
+                const cost = supplierUnitCostCents(p);
                 return `<div class="stock-item">
-                  <span><strong>${escapeHtml(p.name)}</strong> <span class="muted">(${p.org})</span></span>
+                  <span><strong>${escapeHtml(p.name)}</strong> <span class="muted">(${p.org} · coste ~${formatEuro(cost)})</span></span>
                   <span>${qty}
-                    <button class="btn" style="padding:4px 8px;margin-left:8px" data-order="${p.id}">Pedir 20</button>
+                    <button class="btn" style="padding:4px 8px;margin-left:8px" data-supplier="${p.id}">Pedir 20</button>
                   </span>
                 </div>`;
               })
@@ -1925,9 +2100,9 @@ function renderStock() {
                     .slice(0, 40)
                     .map(
                       (o) =>
-                        `<div class="log-item">${o.status}${o.special ? ' · ENCARGO' : ''} · ${escapeHtml(o.productName)} ×${o.qty} · ${o.arriveOnYmd}${
-                          o.clientName ? ` · ${escapeHtml(o.clientName)}` : ''
-                        }</div>`,
+                        `<div class="log-item">${o.status}${o.supplier ? ' · PROVEEDOR' : ''}${o.special ? ' · ENCARGO' : ''} · ${escapeHtml(o.productName)} ×${o.qty} · ${o.arriveOnYmd}${
+                          o.totalCostCents != null ? ` · ${formatEuro(o.totalCostCents)}` : ''
+                        }${o.clientName ? ` · ${escapeHtml(o.clientName)}` : ''}</div>`,
                     )
                     .join('')
                 : '<div class="muted">Sin pedidos.</div>'
@@ -1941,9 +2116,24 @@ function renderStock() {
   bindTopbar();
   bindNav();
   bindCalendarOrderButtons('stock', state.customers.current);
-  app.querySelectorAll('[data-order]').forEach((btn) => {
+  const restock = document.getElementById('btn-restock-scratches');
+  if (restock) {
+    restock.onclick = () => {
+      if (!confirmImportant('¿Pedir reposición de rascas bajos al proveedor (cargo en banco)?')) return;
+      restockLowScratches(state);
+      sfx.success();
+      showToast(state.ui.toast);
+      needsFullRender = true;
+      render();
+    };
+  }
+  app.querySelectorAll('[data-supplier]').forEach((btn) => {
     btn.onclick = () => {
-      orderStock(state, btn.getAttribute('data-order'), 20);
+      const id = btn.getAttribute('data-supplier');
+      const p = getProduct(id);
+      if (!confirmImportant(`¿Pedir 20 × ${p?.name || id} al proveedor? Se cobra el coste del banco.`)) return;
+      placeSupplierOrder(state, id, 20);
+      sfx.click();
       showToast(state.ui.toast);
       needsFullRender = true;
       render();
@@ -2206,6 +2396,130 @@ function renderFichas() {
     };
   }
 }
+
+function renderDayResults() {
+  const s = state.ui.lastCloseSummary;
+  if (!s) {
+    state.ui.screen = 'counter';
+    return render();
+  }
+  const settle = s.settlement;
+  app.innerHTML = `
+    <div class="shell">
+      ${topbarHTML()}
+      <div class="panel day-results" style="margin-top:16px;max-width:720px">
+        <h2>Resultados del día</h2>
+        <p class="muted">Cierre de ${escapeHtml(s.date)} · siguiente laborable ${escapeHtml(s.nextDay)}</p>
+        <div class="close-summary">
+          <div class="stat-row"><span>Ventas</span><strong>${formatEuro(s.salesCents)}</strong></div>
+          <div class="stat-row"><span>Comisiones</span><strong>${formatEuro(s.commissionCents)}</strong></div>
+          <div class="stat-row"><span>Beneficio</span><strong>${formatEuro(s.profitCents)}</strong></div>
+          <div class="stat-row"><span>Premios pagados</span><strong>${formatEuro(s.prizesPaidCents)}</strong></div>
+          <div class="stat-row"><span>Gastos</span><strong>${formatEuro(s.expensesCents)}</strong></div>
+          <div class="stat-row"><span>Clientes</span><strong>${s.customersServed}</strong></div>
+          <div class="stat-row"><span>Banco tras cierre</span><strong>${formatEuro(s.bankCents)}</strong></div>
+        </div>
+        ${
+          settle
+            ? `<h3 style="margin-top:16px">Liquidación</h3>
+               <div class="close-summary">
+                 <div class="stat-row"><span>LAE remesa</span><strong>${formatEuro(settle.lae?.remittance || 0)}</strong></div>
+                 <div class="stat-row"><span>ONCE remesa</span><strong>${formatEuro(settle.once?.remittance || 0)}</strong></div>
+                 <div class="stat-row"><span>Otros remesa</span><strong>${formatEuro(settle.otros?.remittance || 0)}</strong></div>
+               </div>`
+            : ''
+        }
+        ${
+          s.nextDayReasonSkip?.length
+            ? `<p class="muted" style="margin-top:12px">Días saltados: ${escapeHtml(s.nextDayReasonSkip.join(', '))}</p>`
+            : ''
+        }
+        <div class="actions" style="margin-top:18px">
+          <button class="btn primary" id="btn-day-results-ok">Abrir mostrador</button>
+        </div>
+      </div>
+    </div>
+    ${toastHTML()}
+  `;
+  bindTopbar();
+  document.getElementById('btn-day-results-ok').onclick = () => {
+    sfx.click();
+    state.ui.screen = 'counter';
+    needsFullRender = true;
+    render();
+  };
+}
+
+function renderShowcase() {
+  ensureShowcase(state);
+  const items = state.showcase || [];
+  app.innerHTML = `
+    <div class="shell">
+      ${topbarHTML()}
+      <div class="layout" style="grid-template-columns:280px 1fr">
+        ${sideNav()}
+        <section class="panel">
+          <h2>Escaparate</h2>
+          <p class="muted">Décimos de administración a la vista (10–20). Véndelos desde el TPV.</p>
+          <div class="showcase-grid">
+            ${
+              items.length
+                ? items
+                    .map(
+                      (d) => `<div class="showcase-item">
+                        <strong>nº ${escapeHtml(d.number)}</strong>
+                        <div>${escapeHtml(d.productName)} ×${d.qty}</div>
+                        <div class="muted">${formatEuro(d.unitCents * d.qty)}${d.note ? ` · ${escapeHtml(d.note)}` : ''}</div>
+                        <button class="btn danger" style="margin-top:8px;padding:6px 10px" data-rm-sc="${d.id}">Quitar</button>
+                      </div>`,
+                    )
+                    .join('')
+                : '<div class="muted">Escaparate vacío.</div>'
+            }
+          </div>
+          <h3 style="margin-top:18px">Añadir décimo</h3>
+          <div class="actions" style="flex-wrap:wrap;align-items:flex-end">
+            <label>Producto<br/>
+              <select id="sc-product" style="padding:8px;border-radius:10px;border:1px solid var(--line)">
+                <option value="lae-nacional">Lotería Nacional</option>
+                <option value="lae-nacional-jueves">Nacional jueves</option>
+              </select>
+            </label>
+            <label>Número<br/><input id="sc-number" maxlength="5" placeholder="45821" style="padding:8px;border-radius:10px;border:1px solid var(--line);width:110px" /></label>
+            <label>Cant.<br/><input id="sc-qty" type="number" min="1" max="10" value="1" style="padding:8px;border-radius:10px;border:1px solid var(--line);width:70px" /></label>
+            <label>Nota<br/><input id="sc-note" placeholder="Vitrina" style="padding:8px;border-radius:10px;border:1px solid var(--line);width:140px" /></label>
+            <button class="btn primary" id="btn-sc-add">Añadir</button>
+          </div>
+        </section>
+      </div>
+    </div>
+    ${toastHTML()}
+  `;
+  bindTopbar();
+  bindNav();
+  document.getElementById('btn-sc-add').onclick = () => {
+    addShowcaseDecimo(state, {
+      productId: document.getElementById('sc-product').value,
+      number: document.getElementById('sc-number').value,
+      qty: Number(document.getElementById('sc-qty').value || 1),
+      note: document.getElementById('sc-note').value,
+    });
+    sfx.click();
+    showToast(state.ui.toast);
+    needsFullRender = true;
+    render();
+  };
+  app.querySelectorAll('[data-rm-sc]').forEach((btn) => {
+    btn.onclick = () => {
+      removeShowcaseDecimo(state, btn.getAttribute('data-rm-sc'));
+      sfx.click();
+      showToast(state.ui.toast);
+      needsFullRender = true;
+      render();
+    };
+  });
+}
+
 
 // Boot
 state = null;
