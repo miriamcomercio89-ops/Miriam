@@ -4,6 +4,9 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Loterías Álora — Miriam</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 <style>
 /* src/style.css */
 :root,
@@ -1035,6 +1038,460 @@ select {
   }
   to {
     opacity: 1;
+  }
+}
+.logo-mark {
+  --logo-bg: hsl(195 55% 40%);
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--logo-bg);
+  color: #fff;
+  flex-shrink: 0;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+  position: relative;
+  overflow: hidden;
+}
+.logo-mark::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.28),
+      transparent 55%);
+  pointer-events: none;
+}
+.logo-sm {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+}
+.logo-lg {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+}
+.logo-symbol {
+  font-size: 0.72em;
+  line-height: 1;
+  opacity: 0.95;
+  grid-area: 1 / 1;
+  transform: translateY(-7px);
+}
+.logo-abbr {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.72em;
+  letter-spacing: 0.02em;
+  grid-area: 1 / 1;
+  transform: translateY(6px);
+}
+.logo-lg .logo-abbr {
+  font-size: 0.85em;
+}
+.logo-sm .logo-symbol {
+  transform: translateY(-5px);
+  font-size: 0.65em;
+}
+.logo-sm .logo-abbr {
+  transform: translateY(5px);
+  font-size: 0.62em;
+}
+.menu-v1 {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(
+      900px 500px at 0% 0%,
+      rgba(12, 138, 138, 0.35),
+      transparent 55%),
+    radial-gradient(
+      700px 420px at 100% 10%,
+      rgba(240, 162, 2, 0.32),
+      transparent 50%),
+    radial-gradient(
+      600px 400px at 80% 100%,
+      rgba(232, 106, 93, 0.22),
+      transparent 55%),
+    linear-gradient(
+      160deg,
+      #c8efe8 0%,
+      #fff8ec 45%,
+      #fde2d4 100%);
+}
+.menu-blobs {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.menu-blobs .blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(2px);
+  opacity: 0.55;
+  animation: blob-float 12s ease-in-out infinite alternate;
+}
+.menu-blobs .b1 {
+  width: 180px;
+  height: 180px;
+  left: 8%;
+  top: 18%;
+  background: rgba(58, 168, 193, 0.45);
+}
+.menu-blobs .b2 {
+  width: 140px;
+  height: 140px;
+  right: 12%;
+  top: 22%;
+  background: rgba(240, 162, 2, 0.4);
+  animation-delay: -3s;
+}
+.menu-blobs .b3 {
+  width: 220px;
+  height: 220px;
+  left: 40%;
+  bottom: 8%;
+  background: rgba(232, 106, 93, 0.28);
+  animation-delay: -6s;
+}
+.menu-blobs .b4 {
+  width: 100px;
+  height: 100px;
+  right: 28%;
+  bottom: 20%;
+  background: rgba(12, 138, 138, 0.35);
+  animation-delay: -1.5s;
+}
+@keyframes blob-float {
+  from {
+    transform: translate(0, 0) scale(1);
+  }
+  to {
+    transform: translate(18px, -14px) scale(1.08);
+  }
+}
+.menu-card-color {
+  position: relative;
+  z-index: 1;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.95),
+      rgba(255, 249, 242, 0.92)),
+    var(--panel);
+  box-shadow: 0 20px 50px rgba(6, 95, 99, 0.16), 0 0 0 1px rgba(12, 138, 138, 0.08);
+}
+.menu-brand-row {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.menu-logo-mark {
+  width: 72px;
+  height: 72px;
+  border-radius: 20px;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.55rem;
+  color: #fff;
+  background:
+    linear-gradient(
+      145deg,
+      #0c8a8a,
+      #3aa8c1 55%,
+      #f0a202);
+  box-shadow: 0 10px 24px rgba(12, 138, 138, 0.35);
+  animation: rise 0.7s var(--ease-spring) both;
+}
+.menu-kicker {
+  font-size: 0.92rem;
+  color: var(--brand);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.menu-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 18px;
+}
+.menu-chip {
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #16323a;
+}
+.menu-chip.c-teal {
+  background: rgba(12, 138, 138, 0.2);
+  color: #065f63;
+}
+.menu-chip.c-amber {
+  background: rgba(240, 162, 2, 0.28);
+  color: #3a2800;
+}
+.menu-chip.c-coral {
+  background: rgba(232, 106, 93, 0.22);
+  color: #7a2a22;
+}
+.menu-chip.c-sky {
+  background: rgba(58, 168, 193, 0.25);
+  color: #0b4f5c;
+}
+.menu-cta {
+  min-height: 52px;
+  font-size: 1.05rem;
+  box-shadow: 0 10px 22px rgba(12, 138, 138, 0.28);
+}
+.menu-slots-title {
+  margin-top: 22px;
+  font-family: var(--font-display);
+  color: var(--brand-deep);
+}
+.slot-filled {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(12, 138, 138, 0.08),
+      rgba(240, 162, 2, 0.1));
+  border-color: rgba(12, 138, 138, 0.28);
+}
+.slot-empty {
+  background: rgba(255, 255, 255, 0.7);
+}
+.tpv-panel {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.95),
+      rgba(232, 248, 246, 0.9)),
+    var(--panel);
+  border: 1px solid rgba(12, 138, 138, 0.18);
+}
+.tpv-cat-btn {
+  border-left: 4px solid hsl(var(--cat-hue, 180) 55% 42%) !important;
+  background: hsl(var(--cat-hue, 180) 45% 96%) !important;
+}
+.tpv-cat-btn.primary {
+  background: hsl(var(--cat-hue, 180) 55% 42%) !important;
+  border-color: hsl(var(--cat-hue, 180) 55% 36%) !important;
+  color: #fff !important;
+}
+.tpv-product-rich {
+  background:
+    linear-gradient(
+      160deg,
+      #fff,
+      hsl(195 40% 97%)) !important;
+  border: 1px solid rgba(12, 138, 138, 0.18) !important;
+}
+.tpv-product-rich[data-org=ONCE] {
+  background:
+    linear-gradient(
+      160deg,
+      #fff,
+      hsl(28 70% 96%)) !important;
+  border-color: rgba(240, 162, 2, 0.35) !important;
+}
+.tpv-product-rich[data-org=LAE] {
+  background:
+    linear-gradient(
+      160deg,
+      #fff,
+      hsl(195 50% 96%)) !important;
+}
+.tpv-product-head {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-bottom: 6px;
+}
+.tpv-cart-rich {
+  background:
+    linear-gradient(
+      180deg,
+      #fff9f0,
+      #fff) !important;
+  border: 1px solid rgba(240, 162, 2, 0.35) !important;
+  box-shadow: 0 12px 28px rgba(240, 162, 2, 0.08);
+}
+.ency-layout {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 16px;
+  margin-top: 12px;
+}
+.ency-family-title {
+  margin: 14px 0 8px;
+  font-family: var(--font-display);
+  color: var(--brand-deep);
+  font-size: 1.15rem;
+}
+.ency-grid-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 8px;
+}
+.ency-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 8px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: #fff;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  transition:
+    transform 0.2s var(--ease-spring),
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.ency-card:hover,
+.ency-card.active {
+  transform: translateY(-2px);
+  border-color: var(--brand);
+  box-shadow: 0 10px 22px rgba(12, 138, 138, 0.12);
+}
+.ency-card.active {
+  background: rgba(12, 138, 138, 0.08);
+}
+.ency-card-name {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.2;
+}
+.ency-detail-pane {
+  position: sticky;
+  top: 12px;
+  align-self: start;
+  padding: 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(12, 138, 138, 0.2);
+  background:
+    linear-gradient(
+      160deg,
+      rgba(255, 255, 255, 0.95),
+      rgba(232, 248, 246, 0.85));
+  min-height: 240px;
+}
+.ency-detail-head {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+.ency-detail-head h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  color: var(--brand-deep);
+}
+.ency-lead {
+  margin: 0 0 10px;
+  line-height: 1.45;
+}
+.ency-flavor {
+  margin: 0 0 12px;
+  padding: 10px 14px;
+  border-left: 4px solid var(--accent);
+  background: rgba(240, 162, 2, 0.12);
+  border-radius: 0 12px 12px 0;
+  color: var(--ink);
+  font-style: italic;
+}
+.ency-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 12px 0;
+}
+.ency-grid > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(12, 138, 138, 0.06);
+  font-size: 0.88rem;
+}
+.ency-grid strong {
+  font-size: 0.75rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+.paperwork-box {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(240, 162, 2, 0.1);
+  border: 1px solid rgba(240, 162, 2, 0.35);
+}
+.paperwork-title {
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-bottom: 6px;
+  color: var(--accent-ink);
+}
+.paperwork-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.paperwork-item {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  cursor: pointer;
+  font-size: 0.88rem;
+}
+.paperwork-item input {
+  margin-top: 3px;
+}
+.prize-case-card {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(232, 106, 93, 0.06),
+      rgba(12, 138, 138, 0.05));
+}
+.wish-panel {
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(58, 168, 193, 0.1);
+  border: 1px solid rgba(58, 168, 193, 0.3);
+}
+.wish-ok {
+  color: var(--ok);
+  font-size: 0.88rem;
+}
+.wish-miss {
+  color: var(--bad);
+  font-size: 0.88rem;
+}
+.wish-extra {
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+@media (max-width: 960px) {
+  .ency-layout {
+    grid-template-columns: 1fr;
+  }
+  .ency-detail-pane {
+    position: static;
   }
 }
 
@@ -3473,8 +3930,8 @@ try {
 
   // src/game/state.js
   var STARTING_BANK_CENTS = 95e4;
-  var SAVE_VERSION = 10;
-  var GAME_VERSION = "0.9";
+  var SAVE_VERSION = 11;
+  var GAME_VERSION = "1.0";
   var SLOT_COUNT = 3;
   var STORAGE_PREFIX = "loterias-alora-slot-";
   var OFFICE = {
@@ -3666,6 +4123,7 @@ try {
       if (c.status === "open" && !c.note) {
         c.note = "Pendiente documentar y presentar.";
       }
+      if (!c.paperwork) c.paperwork = {};
     }
     data.ui = data.ui || {};
     data.ui.bankWithdrawCounts = data.ui.bankWithdrawCounts || null;
@@ -3689,8 +4147,14 @@ try {
       if (a.abonosConfirmed == null) a.abonosConfirmed = 0;
     }
     data.ui = data.ui || {};
-    data.ui.tpv = null;
-    data.ui.arqueo = null;
+    if (data.ui.tpv === void 0) data.ui.tpv = null;
+    if (data.ui.arqueo === void 0) data.ui.arqueo = null;
+    if (data.ui.paymentSession === void 0) data.ui.paymentSession = null;
+    if (!data.customers.current && data.customers.current !== null) data.customers.current = null;
+    if (!Array.isArray(data.dayLog)) data.dayLog = [];
+    if (!Array.isArray(data.reservations)) data.reservations = [];
+    if (!Array.isArray(data.weeklySnapshots)) data.weeklySnapshots = [];
+    if (!data.archive) data.archive = { tickets: [], ledger: [] };
     data.version = SAVE_VERSION;
     data.gameVersion = GAME_VERSION;
     ensureOnceExtras(data);
@@ -3788,8 +4252,37 @@ try {
   function slotKey(slot) {
     return `${STORAGE_PREFIX}${slot}`;
   }
-  function listSlots() {
+  function cloneState(state2) {
+    return JSON.parse(JSON.stringify(state2));
+  }
+  function fullSavePayload(state2, extraMeta = {}) {
     var _a, _b, _c;
+    const payload = cloneState(state2);
+    payload.version = SAVE_VERSION;
+    payload.gameVersion = GAME_VERSION;
+    payload.meta = {
+      ...payload.meta || {},
+      updatedAt: (/* @__PURE__ */ new Date()).toISOString(),
+      ...extraMeta,
+      complete: true,
+      counts: {
+        tickets: (payload.tickets || []).length,
+        orders: (payload.orders || []).length,
+        draws: Object.keys(payload.draws || {}).length,
+        ledger: (((_a = payload.finance) == null ? void 0 : _a.ledger) || []).length,
+        prizeManagement: (payload.prizeManagement || []).length,
+        showcase: (payload.showcase || []).length,
+        closeHistory: (payload.closeHistory || []).length,
+        dayLog: (payload.dayLog || []).length,
+        queue: (((_b = payload.customers) == null ? void 0 : _b.queue) || []).length,
+        regulars: (((_c = payload.customers) == null ? void 0 : _c.regulars) || []).length
+      }
+    };
+    payload.ui = payload.ui || {};
+    return payload;
+  }
+  function listSlots() {
+    var _a, _b, _c, _d, _e;
     const slots = [];
     for (let i = 1; i <= SLOT_COUNT; i++) {
       const raw = localStorage.getItem(slotKey(i));
@@ -3806,7 +4299,9 @@ try {
           gameTimeMs: (_a = data.clock) == null ? void 0 : _a.gameTimeMs,
           bankCents: (_b = data.finance) == null ? void 0 : _b.bankCents,
           daysPlayed: (_c = data.stats) == null ? void 0 : _c.daysPlayed,
-          gameVersion: data.gameVersion || "0.0"
+          gameVersion: data.gameVersion || "0.0",
+          tickets: (_d = data.tickets) == null ? void 0 : _d.length,
+          complete: !!((_e = data.meta) == null ? void 0 : _e.complete)
         });
       } catch (e) {
         slots.push({ slot: i, empty: true, corrupt: true });
@@ -3815,13 +4310,22 @@ try {
     return slots;
   }
   function saveToSlot(state2, slot, { silent = false } = {}) {
-    state2.meta.updatedAt = (/* @__PURE__ */ new Date()).toISOString();
+    const payload = fullSavePayload(state2);
+    payload.meta.activeSlot = slot;
+    try {
+      localStorage.setItem(slotKey(slot), JSON.stringify(payload));
+    } catch (e) {
+      state2.ui = state2.ui || {};
+      state2.ui.toast = "No se pudo guardar (almacenamiento lleno). Exporta JSON.";
+      throw e;
+    }
+    state2.meta = { ...state2.meta, ...payload.meta, activeSlot: slot };
     state2.version = SAVE_VERSION;
-    localStorage.setItem(slotKey(slot), JSON.stringify(state2));
+    state2.gameVersion = GAME_VERSION;
     state2.ui = state2.ui || {};
     state2.ui.lastAutosaveAt = Date.now();
     state2.ui.lastAutosaveSlot = slot;
-    if (!silent) state2.ui.toast = `Partida guardada en hueco ${slot}`;
+    if (!silent) state2.ui.toast = `Partida completa guardada en hueco ${slot}`;
     return state2;
   }
   function loadFromSlot(slot) {
@@ -3829,9 +4333,33 @@ try {
     if (!raw) return null;
     const data = migrateState(JSON.parse(raw));
     data.clock.lastRealMs = Date.now();
-    data.ui = data.ui || { screen: "counter", toast: null, paymentSession: null };
-    data.ui.paymentSession = null;
-    data.ui.screen = "counter";
+    data.ui = data.ui || { screen: "counter", toast: null };
+    data.meta = data.meta || {};
+    data.meta.activeSlot = slot;
+    const okScreens = /* @__PURE__ */ new Set([
+      "counter",
+      "tpv",
+      "cash",
+      "stock",
+      "showcase",
+      "bank",
+      "draws",
+      "prize",
+      "management",
+      "close",
+      "closes",
+      "stats",
+      "weekly",
+      "monthly",
+      "settings",
+      "saves",
+      "board",
+      "fichas",
+      "encyclopedia",
+      "arqueo",
+      "day-results"
+    ]);
+    if (!okScreens.has(data.ui.screen)) data.ui.screen = "counter";
     return data;
   }
   function downloadBlob(blob, filename) {
@@ -3845,29 +4373,24 @@ try {
     URL.revokeObjectURL(url);
   }
   function exportGame(state2) {
-    const payload = {
-      ...state2,
-      meta: { ...state2.meta, exportedAt: (/* @__PURE__ */ new Date()).toISOString() }
-    };
+    const payload = fullSavePayload(state2, { exportedAt: (/* @__PURE__ */ new Date()).toISOString(), exportKind: "full" });
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
     const ymd2 = (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
-    downloadBlob(blob, `loterias-alora-${ymd2}.json`);
+    downloadBlob(blob, `loterias-alora-completa-${ymd2}.json`);
+    state2.ui.toast = "Exportaci\xF3n completa: absolutamente todo el estado";
   }
   async function exportDayPackage(state2, { downloadDayClosePdf: downloadDayClosePdf2 } = {}) {
     var _a, _b;
     const summary = (_a = state2.ui) == null ? void 0 : _a.lastCloseSummary;
     const ymd2 = (summary == null ? void 0 : summary.date) || new Date(((_b = state2.clock) == null ? void 0 : _b.gameTimeMs) || Date.now()).toISOString().slice(0, 10);
-    const payload = {
-      ...state2,
-      meta: {
-        ...state2.meta,
-        exportedAt: (/* @__PURE__ */ new Date()).toISOString(),
-        dayPackage: ymd2
-      },
-      dayPackage: {
-        closeSummary: summary || null,
-        exportedAt: (/* @__PURE__ */ new Date()).toISOString()
-      }
+    const payload = fullSavePayload(state2, {
+      exportedAt: (/* @__PURE__ */ new Date()).toISOString(),
+      dayPackage: ymd2,
+      exportKind: "day-package"
+    });
+    payload.dayPackage = {
+      closeSummary: summary || null,
+      exportedAt: (/* @__PURE__ */ new Date()).toISOString()
     };
     downloadBlob(
       new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" }),
@@ -3877,7 +4400,7 @@ try {
       await new Promise((r) => setTimeout(r, 350));
       downloadDayClosePdf2(summary);
     }
-    state2.ui.toast = summary ? `Paquete del d\xEDa ${ymd2}: partida + PDF de cierre` : `Paquete del d\xEDa ${ymd2}: partida (sin cierre reciente)`;
+    state2.ui.toast = summary ? `Paquete del d\xEDa ${ymd2}: partida completa + PDF de cierre` : `Paquete del d\xEDa ${ymd2}: partida completa (sin cierre reciente)`;
     return { ymd: ymd2, hasPdf: !!summary };
   }
   function importGame(file) {
@@ -3889,8 +4412,7 @@ try {
           if (!data.clock || !data.finance) throw new Error("Archivo no v\xE1lido");
           data.clock.lastRealMs = Date.now();
           data.ui = data.ui || {};
-          data.ui.paymentSession = null;
-          data.ui.screen = "counter";
+          if (!data.ui.screen) data.ui.screen = "counter";
           resolve(data);
         } catch (e) {
           reject(e);
@@ -5847,10 +6369,12 @@ try {
       amountCents: ticket.prizeCents,
       level,
       status: "open",
-      // open | submitted | settled
+      // open | documented | submitted | settled
       createdAt: state2.clock.gameTimeMs,
-      note: level === "huge" ? "Premio muy elevado: formalizar con SELAE/ONCE. No se paga de caja." : "Premio elevado: gestionar cobro. No sale entero de tu caja."
+      note: level === "huge" ? "Premio muy elevado: formalizar con SELAE/ONCE. No se paga de caja. Completa el papeleo." : "Premio elevado: gestionar cobro. No sale entero de tu caja. Completa el papeleo.",
+      paperwork: {}
     };
+    ensureCasePaperwork(caseItem);
     state2.prizeManagement.push(caseItem);
     ticket.status = "managed";
     ticket.managementId = caseItem.id;
@@ -5888,20 +6412,75 @@ try {
     submitted: "Presentado",
     settled: "Liquidado"
   };
+  var PAPERWORK_BY_STATUS = {
+    open: [
+      { id: "dni", label: "Fotocopia DNI / NIE del beneficiario" },
+      { id: "ticket", label: "Ticket / d\xE9cimo original intacto" },
+      { id: "form", label: "Formulario de cobro LAE/ONCE cumplimentado" },
+      { id: "sign", label: "Firma y consentimiento del cliente" }
+    ],
+    documented: [
+      { id: "copy", label: "Copia del expediente archivada en oficina" },
+      { id: "receipt", label: "Acuse de presentaci\xF3n preparado" },
+      { id: "org", label: "Cita / env\xEDo a organismo confirmado" }
+    ],
+    submitted: [
+      { id: "liq", label: "Liquidaci\xF3n recibida del organismo" },
+      { id: "xfer", label: "Transferencia al cliente verificada" },
+      { id: "close", label: "Expediente cerrado y archivado" }
+    ]
+  };
+  function ensureCasePaperwork(c) {
+    if (!c.paperwork) c.paperwork = {};
+    for (const status of Object.keys(PAPERWORK_BY_STATUS)) {
+      if (!c.paperwork[status]) c.paperwork[status] = {};
+      for (const item of PAPERWORK_BY_STATUS[status]) {
+        if (c.paperwork[status][item.id] == null) c.paperwork[status][item.id] = false;
+      }
+    }
+    return c;
+  }
+  function togglePrizePaperwork(state2, caseId, status, itemId) {
+    var _a;
+    const c = (state2.prizeManagement || []).find((x) => x.id === caseId);
+    if (!c) return { ok: false, message: "Caso no encontrado" };
+    ensureCasePaperwork(c);
+    if (!((_a = PAPERWORK_BY_STATUS[status]) == null ? void 0 : _a.some((i) => i.id === itemId))) {
+      return { ok: false, message: "Documento no v\xE1lido" };
+    }
+    c.paperwork[status][itemId] = !c.paperwork[status][itemId];
+    const done = paperworkDone(c, status);
+    state2.ui.toast = done ? "Papeleo completo para este paso. Ya puedes avanzar." : "Documento marcado. Revisa la lista.";
+    return { ok: true, case: c, done };
+  }
+  function paperworkDone(c, status = c.status) {
+    ensureCasePaperwork(c);
+    const items = PAPERWORK_BY_STATUS[status] || [];
+    if (!items.length) return true;
+    return items.every((i) => {
+      var _a;
+      return !!((_a = c.paperwork[status]) == null ? void 0 : _a[i.id]);
+    });
+  }
   function advancePrizeCase(state2, caseId) {
     const c = (state2.prizeManagement || []).find((x) => x.id === caseId);
     if (!c) return { ok: false, message: "Caso no encontrado" };
     if (c.status === "settled") return { ok: false, message: "Ya est\xE1 liquidado" };
+    ensureCasePaperwork(c);
+    if (!paperworkDone(c, c.status)) {
+      state2.ui.toast = "Falta papeleo: marca todos los documentos del paso actual.";
+      return { ok: false, message: state2.ui.toast, case: c };
+    }
     if (c.status === "open") {
       c.status = "documented";
       c.documentedAt = state2.clock.gameTimeMs;
       c.note = "Documentaci\xF3n lista (DNI, ticket, formulario). Pendiente presentar.";
-      state2.ui.toast = "Caso documentado. Siguiente: presentar a LAE/ONCE.";
+      state2.ui.toast = "Caso documentado. Siguiente: presentar a LAE/ONCE (m\xE1s papeleo).";
     } else if (c.status === "documented") {
       c.status = "submitted";
       c.submittedAt = state2.clock.gameTimeMs;
       c.note = `Presentado a ${c.org || "organismo"}. Esperando liquidaci\xF3n.`;
-      state2.ui.toast = `Presentado a ${c.org || "organismo"}.`;
+      state2.ui.toast = `Presentado a ${c.org || "organismo"}. Completa el papeleo de liquidaci\xF3n.`;
     } else if (c.status === "submitted") {
       c.status = "settled";
       c.settledAt = state2.clock.gameTimeMs;
@@ -5918,17 +6497,241 @@ try {
       });
       state2.ui.toast = `Premio liquidado: ${formatEuro(c.amountCents)}`;
     } else {
-      if (c.status === "open") {
-      } else {
-        c.status = "submitted";
-        c.submittedAt = state2.clock.gameTimeMs;
-      }
+      c.status = "submitted";
+      c.submittedAt = state2.clock.gameTimeMs;
     }
     state2.dayLog.push({
       at: state2.clock.gameTimeMs,
       text: `Gesti\xF3n premio \u2192 ${PRIZE_MGMT_STATUS[c.status] || c.status}: ${c.clientName} \xB7 ${formatEuro(c.amountCents)}`
     });
     return { ok: true, case: c };
+  }
+
+  // src/data/logos.js
+  var ORG_HUE = {
+    LAE: 195,
+    ONCE: 28,
+    Auton\u00F3mica: 155,
+    Provincial: 210,
+    Local: 340
+  };
+  var MODE_SYMBOL = {
+    nacional: "\u2605",
+    "6from49": "\u277B",
+    euro: "\u2726",
+    eurojackpot: "\u2726",
+    gordo: "\u265B",
+    quiniela: "\u26BD",
+    quinigol: "\u{1F945}",
+    lototurf: "\u265E",
+    quintuple: "\u{1F3C7}",
+    triplex: "\u2778",
+    superonce: "\u25C8",
+    "5from40": "\u277A",
+    "6from36": "\u277B",
+    "4from30": "\u2779",
+    "7from45": "\u277C",
+    "2from20": "\u2777",
+    colorball: "\u25CF",
+    ruleta: "\u25CE",
+    fecha: "\u{1F4C5}",
+    horaSuerte: "\u23F1",
+    pares: "\u2696",
+    dados: "\u2680",
+    carta: "\u{1F0A1}",
+    bingo75: "\u24B7",
+    serieLocal: "\u2116"
+  };
+  function hashHue(str, base = 180) {
+    let h = 0;
+    for (let i = 0; i < str.length; i++) h = h * 31 + str.charCodeAt(i) >>> 0;
+    return (base + h % 50 - 10 + 360) % 360;
+  }
+  function logoAbbr(product) {
+    if (!product) return "?";
+    if (product.short) {
+      const s = product.short.replace(/[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ0-9]/g, "");
+      if (s.length >= 2) return s.slice(0, 3).toUpperCase();
+    }
+    const parts = String(product.name || product.id).replace(/^(El|La|Los|Las)\s+/i, "").split(/\s+/).filter(Boolean);
+    if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+    return String(product.name || "?").slice(0, 2).toUpperCase();
+  }
+  function productLogo(product) {
+    var _a;
+    if (!product) {
+      return { abbr: "?", symbol: "\u2022", hue: 180, bg: "hsl(180 40% 40%)", fg: "#fff", org: "" };
+    }
+    const base = (_a = ORG_HUE[product.org]) != null ? _a : 180;
+    const hue = hashHue(product.id || product.name, base);
+    const symbol = product.category === "rasca" ? "\u25C8" : MODE_SYMBOL[product.numberMode] || (product.org === "ONCE" ? "\u25CB" : "\u2605");
+    const bg = product.category === "rasca" ? `linear-gradient(135deg, hsl(${hue} 70% 42%), hsl(${(hue + 40) % 360} 75% 48%))` : product.org === "ONCE" ? `linear-gradient(135deg, hsl(${hue} 85% 48%), hsl(${(hue + 25) % 360} 80% 40%))` : product.org === "LAE" ? `linear-gradient(135deg, hsl(${hue} 55% 38%), hsl(${(hue + 20) % 360} 60% 48%))` : `linear-gradient(145deg, hsl(${hue} 50% 40%), hsl(${(hue + 35) % 360} 55% 50%))`;
+    return {
+      abbr: logoAbbr(product),
+      symbol,
+      hue,
+      bg,
+      fg: "#fff",
+      org: product.org || "",
+      id: product.id
+    };
+  }
+  function logoHTML(product, size = "md") {
+    const p = typeof product === "string" ? { id: product, name: product, org: "", short: product } : product;
+    const L2 = productLogo(p);
+    const cls = size === "lg" ? "logo-mark logo-lg" : size === "sm" ? "logo-mark logo-sm" : "logo-mark";
+    return `<span class="${cls}" data-logo="${escapeAttr(L2.id || "")}" style="--logo-bg:${L2.bg};color:${L2.fg}" title="${escapeAttr(
+      (p == null ? void 0 : p.name) || ""
+    )}"><span class="logo-symbol">${L2.symbol}</span><span class="logo-abbr">${L2.abbr}</span></span>`;
+  }
+  function escapeAttr(s) {
+    return String(s).replace(/"/g, "&quot;").replace(/</g, "&lt;");
+  }
+
+  // src/game/lotteryTraits.js
+  var TRAIT_OVERRIDES = {
+    "lae-nacional": { pace: "cl\xE1sico", queueWeight: 1.3, jackpotBoost: 1.1, payBias: ["cash", "card"] },
+    "lae-primitiva": { pace: "semanal", queueWeight: 1.2, jackpotBoost: 1.4, payBias: ["cash", "card", "bizum"] },
+    "lae-bonoloto": { pace: "diario", queueWeight: 1.1, jackpotBoost: 1.15, payBias: ["cash", "bizum"] },
+    "lae-euromillones": { pace: "bote alto", queueWeight: 1.5, jackpotBoost: 1.8, payBias: ["card", "cash"] },
+    "lae-gordo-primitiva": { pace: "domingo", queueWeight: 1.1, jackpotBoost: 1.35, payBias: ["cash"] },
+    "lae-quiniela": { pace: "futbolero", queueWeight: 1, jackpotBoost: 1.05, payBias: ["cash"] },
+    "lae-navidad": { pace: "estacional", queueWeight: 2, jackpotBoost: 2.2, payBias: ["cash", "transfer"] },
+    "lae-nino": { pace: "estacional", queueWeight: 1.6, jackpotBoost: 1.7, payBias: ["cash"] },
+    "once-cupon": { pace: "diario", queueWeight: 1.25, jackpotBoost: 1, payBias: ["cash"] },
+    "once-cuponazo": { pace: "viernes", queueWeight: 1.35, jackpotBoost: 1.3, payBias: ["cash", "card"] },
+    "once-sueldazo": { pace: "premio vitalicio", queueWeight: 1.2, jackpotBoost: 1.25, payBias: ["cash"] },
+    "once-eurojackpot": { pace: "europeo", queueWeight: 1.15, jackpotBoost: 1.5, payBias: ["card"] },
+    "once-super-once": { pace: "combinaciones", queueWeight: 0.95, jackpotBoost: 1.1, payBias: ["cash", "bizum"] },
+    "once-triplex": { pace: "r\xE1pido", queueWeight: 0.9, jackpotBoost: 0.9, payBias: ["cash"] }
+  };
+  function defaultPace(p) {
+    if (!p) return "normal";
+    if (p.category === "rasca") return "inmediato";
+    if (p.category === "especial" || p.seasonMonths) return "estacional";
+    if ((p.drawDays || []).length >= 5) return "diario";
+    if ((p.drawDays || []).length === 1) return "semanal";
+    return "regular";
+  }
+  function defaultPayBias(p) {
+    if (!p) return ["cash"];
+    if (p.priceCents >= 1e4) return ["cash", "card", "transfer"];
+    if (p.org === "ONCE") return ["cash", "bizum"];
+    if (p.category === "rasca") return ["cash"];
+    return ["cash", "card"];
+  }
+  function lotteryTraits(productOrId) {
+    var _a, _b;
+    const p = typeof productOrId === "string" ? getProduct(productOrId) : productOrId;
+    if (!p) {
+      return { pace: "\u2014", queueWeight: 1, jackpotBoost: 1, payBias: [], flavor: "", scratchStyle: null };
+    }
+    const o = TRAIT_OVERRIDES[p.id] || {};
+    return {
+      pace: o.pace || defaultPace(p),
+      queueWeight: (_a = o.queueWeight) != null ? _a : p.org === "LAE" ? 1.1 : p.org === "ONCE" ? 1.05 : 0.85,
+      jackpotBoost: (_b = o.jackpotBoost) != null ? _b : p.prizeTier === "big" ? 1.3 : 1,
+      payBias: o.payBias || defaultPayBias(p),
+      flavor: p.flavor || "",
+      scratchStyle: p.category === "rasca" ? p.trait || "rasca y gana" : null,
+      org: p.org,
+      category: p.category,
+      numberMode: p.numberMode || null
+    };
+  }
+
+  // src/game/encyclopedia.js
+  function encyclopediaEntries() {
+    return PRODUCTS.map((p) => {
+      const traits = lotteryTraits(p);
+      return {
+        id: p.id,
+        name: p.name,
+        short: p.short || "",
+        family: p.tpvCategory || p.org || "Otros",
+        org: p.org || "",
+        region: p.region || "",
+        description: p.description || "",
+        flavor: p.flavor || traits.flavor || "",
+        priceCents: p.priceCents,
+        tip: p.tip || "",
+        trait: p.trait || "",
+        topPrizeHint: p.topPrizeHint || "",
+        sellable: p.sellable !== false,
+        logo: logoHTML(p, "lg"),
+        logoSm: logoHTML(p, "sm"),
+        traits,
+        drawDays: p.drawDays || [],
+        drawHour: p.drawHour,
+        category: p.category,
+        numberMode: p.numberMode || "",
+        commissionRate: p.commissionRate,
+        stockType: p.stockType,
+        product: p
+      };
+    });
+  }
+  function encyclopediaById(id) {
+    return encyclopediaEntries().find((e) => e.id === id) || null;
+  }
+  function encyclopediaFamilies() {
+    const map = /* @__PURE__ */ new Map();
+    for (const e of encyclopediaEntries()) {
+      if (!map.has(e.family)) map.set(e.family, []);
+      map.get(e.family).push(e);
+    }
+    return map;
+  }
+  function encyclopediaStats() {
+    return {
+      total: PRODUCTS.length,
+      lae: PRODUCTS.filter((p) => p.org === "LAE").length,
+      once: PRODUCTS.filter((p) => p.org === "ONCE").length,
+      inventada: PRODUCTS.filter((p) => p.org !== "LAE" && p.org !== "ONCE").length,
+      sellable: PRODUCTS.filter((p) => p.sellable !== false).length,
+      regional: REGIONAL_LOTTERIES.length
+    };
+  }
+  var DAY_NAMES = ["Dom", "Lun", "Mar", "Mi\xE9", "Jue", "Vie", "S\xE1b"];
+  function renderEncyclopediaDetail(id) {
+    var _a, _b;
+    const e = encyclopediaById(id);
+    if (!e) return '<p class="muted">Producto no encontrado.</p>';
+    const t = e.traits;
+    const days = (e.drawDays || []).map((d) => DAY_NAMES[d] || d).join(", ") || "\u2014";
+    const hour = e.drawHour != null ? `${String(e.drawHour).padStart(2, "0")}:00` : "\u2014";
+    return `
+    <article class="ency-detail">
+      <header class="ency-detail-head">
+        ${e.logo}
+        <div>
+          <h2>${escapeHtml(e.name)}</h2>
+          <p class="muted">${escapeHtml(e.family)} \xB7 ${escapeHtml(e.org)}${e.region ? ` \xB7 ${escapeHtml(e.region)}` : ""}</p>
+        </div>
+      </header>
+      <p class="ency-lead">${escapeHtml(e.description || "Sin descripci\xF3n.")}</p>
+      ${e.flavor ? `<blockquote class="ency-flavor">${escapeHtml(e.flavor)}</blockquote>` : ""}
+      <div class="ency-grid">
+        <div><strong>Precio base</strong><span>${e.priceCents != null ? formatEuro(e.priceCents) : "\u2014"}</span></div>
+        <div><strong>En venta</strong><span>${e.sellable ? "S\xED" : "Solo consulta / pedido"}</span></div>
+        <div><strong>Mec\xE1nica</strong><span>${escapeHtml(e.trait || e.numberMode || "\u2014")}</span></div>
+        <div><strong>Premio orientativo</strong><span>${escapeHtml(e.topPrizeHint || "\u2014")}</span></div>
+        <div><strong>Ritmo</strong><span>${escapeHtml(t.pace || "\u2014")}</span></div>
+        <div><strong>Pago t\xEDpico</strong><span>${escapeHtml((t.payBias || []).join(", ") || "\u2014")}</span></div>
+        <div><strong>Peso en cola</strong><span>${(_a = t.queueWeight) != null ? _a : "\u2014"}</span></div>
+        <div><strong>Impulso bote</strong><span>${(_b = t.jackpotBoost) != null ? _b : "\u2014"}</span></div>
+        <div><strong>Sorteo</strong><span>${escapeHtml(days)} \xB7 ${escapeHtml(hour)}</span></div>
+        <div><strong>Comisi\xF3n</strong><span>${e.commissionRate != null ? `${(e.commissionRate * 100).toFixed(1)}%` : "\u2014"}</span></div>
+        <div><strong>Stock</strong><span>${e.stockType === "physical" ? "F\xEDsico" : "Terminal"}</span></div>
+        <div><strong>Categor\xEDa</strong><span>${escapeHtml(e.category || "\u2014")}</span></div>
+      </div>
+      ${e.tip ? `<p class="tip"><strong>Consejo Miriam:</strong> ${escapeHtml(e.tip)}</p>` : ""}
+      ${t.scratchStyle ? `<p class="muted">Estilo rasca: ${escapeHtml(t.scratchStyle)}</p>` : ""}
+    </article>
+  `;
+  }
+  function escapeHtml(s) {
+    return String(s != null ? s : "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   }
 
   // src/game/pdf.js
@@ -7353,15 +8156,16 @@ ${xrefPos}
     if (state.ui.screen === "bank") return renderBank();
     if (state.ui.screen === "settings") return renderSettings();
     if (state.ui.screen === "monthly") return renderMonthly();
+    if (state.ui.screen === "encyclopedia") return renderEncyclopedia();
     return renderCounter();
   }
-  function escapeHtml(s) {
+  function escapeHtml2(s) {
     return String(s).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
   }
   function toastHTML() {
     var _a;
     if (!((_a = state == null ? void 0 : state.ui) == null ? void 0 : _a.toast)) return "";
-    return `<div class="toast">${escapeHtml(state.ui.toast)}</div>`;
+    return `<div class="toast">${escapeHtml2(state.ui.toast)}</div>`;
   }
   function payLabel(m) {
     return { cash: "efectivo", card: "tarjeta", bizum: "Bizum", transfer: "transferencia", managed: "gesti\xF3n" }[m] || m;
@@ -7391,7 +8195,7 @@ ${xrefPos}
     if (!a) return "";
     return `<div class="alert-banner" id="high-prize-alert">
     <strong>\u26A0 Premio alto</strong>
-    <div>${escapeHtml(a.clientName || "Cliente")} \xB7 ${escapeHtml(a.productName || "")} \xB7 ${formatEuro(a.amountCents)}</div>
+    <div>${escapeHtml2(a.clientName || "Cliente")} \xB7 ${escapeHtml2(a.productName || "")} \xB7 ${formatEuro(a.amountCents)}</div>
     <div class="actions" style="margin-top:8px">
       <button class="btn" id="btn-dismiss-high-prize">Entendido</button>
       <button class="btn primary" id="btn-goto-mgmt-prize">Ir a gesti\xF3n</button>
@@ -7415,7 +8219,7 @@ ${xrefPos}
     var _a, _b, _c;
     const p = (_a = state.ui) == null ? void 0 : _a.pauseSummary;
     if (!p || !((_b = state.clock) == null ? void 0 : _b.paused)) return "";
-    const current = p.current ? `cliente actual: ${escapeHtml(p.current)}` : "sin cliente en mostrador";
+    const current = p.current ? `cliente actual: ${escapeHtml2(p.current)}` : "sin cliente en mostrador";
     return `<div class="pause-banner" id="pause-summary">
     <strong>Oficina en pausa</strong>
     <div>${(_c = p.queue) != null ? _c : 0} en cola \xB7 ${current} \xB7 ventas hoy ${formatEuro(p.salesToday || 0)}</div>
@@ -7497,30 +8301,48 @@ ${xrefPos}
   function renderMenu() {
     const slots = listSlots();
     app.innerHTML = `
-    <div class="menu-screen">
-      <div class="menu-card">
-        <div class="muted">\xC1lora \xB7 M\xE1laga \xB7 v${GAME_VERSION}</div>
-        <h1>Loter\xEDas \xC1lora</h1>
-        <p class="tagline">Simulador realista de mostrador. T\xFA eres Miriam, la \xFAnica empleada.</p>
+    <div class="menu-screen menu-v1">
+      <div class="menu-blobs" aria-hidden="true">
+        <span class="blob b1"></span>
+        <span class="blob b2"></span>
+        <span class="blob b3"></span>
+        <span class="blob b4"></span>
+      </div>
+      <div class="menu-card menu-card-color">
+        <div class="menu-brand-row">
+          <span class="menu-logo-mark" aria-hidden="true">LA</span>
+          <div>
+            <div class="menu-kicker">\xC1lora \xB7 M\xE1laga \xB7 v${GAME_VERSION}</div>
+            <h1>Loter\xEDas \xC1lora</h1>
+          </div>
+        </div>
+        <p class="tagline">Simulador estricto de mostrador. T\xFA eres Miriam: cobras, documentas y eliges cada d\xE9cimo a mano.</p>
+        <div class="menu-chip-row" aria-hidden="true">
+          <span class="menu-chip c-teal">Mostrador</span>
+          <span class="menu-chip c-amber">TPV</span>
+          <span class="menu-chip c-coral">Premios</span>
+          <span class="menu-chip c-sky">Enciclopedia</span>
+        </div>
         <div class="actions">
-          <button class="btn primary" id="btn-new">Nueva partida</button>
+          <button class="btn primary menu-cta" id="btn-new">Nueva partida</button>
           <label class="btn ghost" style="cursor:pointer">
             Importar archivo
             <input id="import-file" type="file" accept="application/json" hidden />
           </label>
         </div>
-        <h3 style="margin-top:22px;font-family:var(--font-display);color:var(--brand-deep)">Partidas guardadas</h3>
+        <h3 class="menu-slots-title">Partidas guardadas</h3>
+        <p class="muted" style="margin:0 0 8px;font-size:0.88rem">Guardado absoluto: TPV, caja, cola, premios y todo el estado.</p>
         <div class="slot-grid">
           ${slots.map((s) => {
       var _a;
       if (s.empty) {
-        return `<div class="slot"><div><strong>Hueco ${s.slot}</strong><div class="muted">Vac\xEDo</div></div></div>`;
+        return `<div class="slot slot-empty"><div><strong>Hueco ${s.slot}</strong><div class="muted">Vac\xEDo</div></div></div>`;
       }
       const when = s.gameTimeMs ? new Date(s.gameTimeMs).toLocaleString("es-ES", { timeZone: "UTC" }) : "";
-      return `<div class="slot">
+      return `<div class="slot slot-filled">
                 <div>
                   <strong>Hueco ${s.slot}</strong>
-                  <div class="muted">${when} \xB7 D\xEDa ${(_a = s.daysPlayed) != null ? _a : 0} \xB7 v${s.gameVersion || "?"}</div>
+                  <div class="muted">${when} \xB7 D\xEDa ${(_a = s.daysPlayed) != null ? _a : 0} \xB7 v${s.gameVersion || "?"}${s.complete ? " \xB7 completa" : ""}</div>
                 </div>
                 <div class="actions">
                   <button class="btn primary" data-load="${s.slot}">Continuar</button>
@@ -7530,7 +8352,7 @@ ${xrefPos}
         </div>
         <p class="disclaimer">
           Fan-made / no oficial. Nombres de Loter\xEDas y Apuestas del Estado y ONCE usados solo con fines de simulaci\xF3n.
-          Juego responsable \xB7 +18. Versi\xF3n ${GAME_VERSION}: encargos, vitrina, hora del sorteo, 5+C, ONCE extras, botes que caen y UI renovada.
+          Juego responsable \xB7 +18. Versi\xF3n ${GAME_VERSION}: guardado total, logos, enciclopedia, TPV manual y m\xE1s papeleo en premios.
         </p>
       </div>
     </div>
@@ -7543,7 +8365,7 @@ ${xrefPos}
       maybeStartMusic();
       state.ui.screen = "counter";
       lastAutosaveRealMs = Date.now();
-      showToast("Bienvenida, Miriam. Versi\xF3n 0.9 lista. \xA1A por el mostrador!");
+      showToast("Bienvenida, Miriam. Versi\xF3n 1.0: t\xFA eliges cada producto en el TPV.");
       needsFullRender = true;
       render();
     };
@@ -7586,31 +8408,31 @@ ${xrefPos}
       }).join(" \xB7 ");
       liveHtml = `<div class="notice-banner draw-live sticky-notice">
       <strong>\xA1Hora del sorteo!</strong>
-      <div class="notice-banner-detail">${escapeHtml(label)} \xB7 m\xE1s comprobaciones en cola</div>
+      <div class="notice-banner-detail">${escapeHtml2(label)} \xB7 m\xE1s comprobaciones en cola</div>
     </div>`;
     }
     const extras = onceExtraToday(state);
     const extraHtml = extras.length ? `<div class="notice-banner sticky-notice">
         <strong>ONCE extraordinario</strong>
-        <div class="notice-banner-detail">${escapeHtml(extras.map((e) => e.name).join(" \xB7 "))} \xB7 a la venta hoy</div>
+        <div class="notice-banner-detail">${escapeHtml2(extras.map((e) => e.name).join(" \xB7 "))} \xB7 a la venta hoy</div>
       </div>` : "";
     const details = todaysDrawDetails(state);
     if (!details.length && !liveHtml && !extraHtml) {
       const notices = todaysDrawNotices(state);
       if (!notices.length) return "";
-      return `<div class="notice-banner">Hoy hay sorteo de: ${escapeHtml(notices.join(", "))}</div>`;
+      return `<div class="notice-banner">Hoy hay sorteo de: ${escapeHtml2(notices.join(", "))}</div>`;
     }
     const items = details.map((d) => `${d.name} ${String(d.hour).padStart(2, "0")}:00`).join(" \xB7 ");
     const dayHtml = details.length ? `<div class="notice-banner sticky-notice">
     <strong>Hoy: ${details.length} sorteo${details.length === 1 ? "" : "s"}</strong>
-    <div class="notice-banner-detail">${escapeHtml(items)}</div>
+    <div class="notice-banner-detail">${escapeHtml2(items)}</div>
   </div>` : "";
     return `${liveHtml}${extraHtml}${dayHtml}`;
   }
   function jackpotStripHTML() {
     const list = jackpotList(state).slice(0, 4);
     if (!list.length) return "";
-    return `<div class="jackpot-strip">${list.map((j) => `<span><strong>${escapeHtml(j.name)}</strong> ${escapeHtml(formatJackpotShort(j.cents))}</span>`).join("")}</div>`;
+    return `<div class="jackpot-strip">${list.map((j) => `<span><strong>${escapeHtml2(j.name)}</strong> ${escapeHtml2(formatJackpotShort(j.cents))}</span>`).join("")}</div>`;
   }
   function touristHintHTML() {
     if (!isTouristSeason(state)) return "";
@@ -7642,7 +8464,7 @@ ${xrefPos}
     <header class="topbar">
       <div class="brand">
         <div class="brand-name">Loter\xEDas \xC1lora</div>
-        <div class="brand-sub">Miriam \xB7 \xC1lora \xB7 v${GAME_VERSION}${ev ? ` \xB7 ${escapeHtml(ev)}` : ""}</div>
+        <div class="brand-sub">Miriam \xB7 \xC1lora \xB7 v${GAME_VERSION}${ev ? ` \xB7 ${escapeHtml2(ev)}` : ""}</div>
         ${touristHintHTML()}
         ${autosaveBadge}
       </div>
@@ -7710,6 +8532,7 @@ ${xrefPos}
       </div>
       <div class="nav-group">
         <div class="nav-group-title">Oficina</div>
+        ${navBtn("encyclopedia", "Enciclopedia")}
         ${navBtn("stock", "Stock y pedidos")}
         ${navBtn("showcase", "Escaparate")}
         ${navBtn("close", "Cierre y balance")}
@@ -7795,9 +8618,9 @@ ${xrefPos}
       ${queue.slice(0, 12).map((c, i) => {
       const kind = c.kind === "pena" ? "Pe\xF1a" : c.kind === "abonado" ? "Abonado" : c.regular ? "Habitual" : "Visitante";
       const wish = (c.wishlist || []).slice(0, 2).map((w) => w.productName).join(", ");
-      return `<div class="queue-item"><strong>${i + 1}. ${escapeHtml(c.name)}</strong>
-            <span class="muted"> \xB7 ${kind}${c.intent ? ` \xB7 ${escapeHtml(c.intent)}` : ""}</span>
-            ${wish ? `<div class="muted">${escapeHtml(wish)}</div>` : ""}
+      return `<div class="queue-item"><strong>${i + 1}. ${escapeHtml2(c.name)}</strong>
+            <span class="muted"> \xB7 ${kind}${c.intent ? ` \xB7 ${escapeHtml2(c.intent)}` : ""}</span>
+            ${wish ? `<div class="muted">${escapeHtml2(wish)}</div>` : ""}
           </div>`;
     }).join("")}
       ${queue.length > 12 ? `<div class="muted">\u2026 y ${queue.length - 12} m\xE1s</div>` : ""}
@@ -7807,7 +8630,7 @@ ${xrefPos}
     const list = client.wishlist || [];
     if (!list.length) {
       if (client.request) {
-        return `<ul class="wish-list"><li><strong>${escapeHtml(client.request.productName)}</strong> \xD7 ${client.request.qty}</li></ul>`;
+        return `<ul class="wish-list"><li><strong>${escapeHtml2(client.request.productName)}</strong> \xD7 ${client.request.qty}</li></ul>`;
       }
       return "";
     }
@@ -7817,7 +8640,7 @@ ${xrefPos}
       if (w.fromPickup) extra.push("encargo");
       if (w.note) extra.push(w.note);
       if (w.preferDictate && !w.showcaseNumber) extra.push("dictado");
-      return `<li>\u2022 <strong>${escapeHtml(w.productName)}</strong> \xD7 ${w.qty}${extra.length ? ` <span class="muted">(${escapeHtml(extra.join(" \xB7 "))})</span>` : ""}</li>`;
+      return `<li>\u2022 <strong>${escapeHtml2(w.productName)}</strong> \xD7 ${w.qty}${extra.length ? ` <span class="muted">(${escapeHtml2(extra.join(" \xB7 "))})</span>` : ""}</li>`;
     }).join("")}</ul>`;
   }
   function calendarOrderButtonsHTML(prefix = "cal") {
@@ -7903,7 +8726,7 @@ ${xrefPos}
       <div class="hero-counter">
         <h2>Mostrador listo</h2>
         <p>Esperando clientes\u2026 Afluencia <span id="crowd-hint">${crowdHint()}</span>
-        ${ev ? `\xB7 <span id="event-banner">${escapeHtml(ev)}</span>` : '<span id="event-banner"></span>'}</p>
+        ${ev ? `\xB7 <span id="event-banner">${escapeHtml2(ev)}</span>` : '<span id="event-banner"></span>'}</p>
         ${isTouristSeason(state) ? '<p class="muted">Hay turistas del Caminito: m\xE1s cola y rascas.</p>' : ""}
         <div class="actions" style="margin-top:12px">
           <button class="btn" id="btn-arqueo-open">Arqueo de apertura</button>
@@ -7934,7 +8757,7 @@ ${xrefPos}
           <div style="margin-top:16px">
             <h3>Registro del d\xEDa</h3>
             <div class="log">
-              ${log.length ? log.map((l) => `<div class="log-item">${escapeHtml(l.text)}</div>`).join("") : '<div class="muted">A\xFAn no hay movimientos.</div>'}
+              ${log.length ? log.map((l) => `<div class="log-item">${escapeHtml2(l.text)}</div>`).join("") : '<div class="muted">A\xFAn no hay movimientos.</div>'}
             </div>
           </div>
         </section>
@@ -7998,18 +8821,19 @@ ${xrefPos}
       }, 0);
       const title = intent === "reserve_special" ? "Encargo / petici\xF3n:" : intent === "abono" ? "Abono a confirmar en TPV:" : intent === "pena_day" ? "Pedido de pe\xF1a:" : intent === "pickup" ? "Recoge su encargo:" : intent === "showcase_ask" ? "Pide del escaparate:" : "Quiere:";
       return `
-      <div class="client-card intent-${escapeHtml(intent)}">
-        <div class="muted">${kindLabel}${trait} \xB7 ${escapeHtml(client.street || "")}${client.specialDay === "birthday" ? " \xB7 Cumplea\xF1os" : client.specialDay === "santo" ? " \xB7 Santo" : ""}${intent === "pickup" ? " \xB7 Encargo listo" : ""}${intent === "showcase_ask" ? " \xB7 Vitrina" : ""}</div>
-        <h3>${escapeHtml(client.name)}</h3>
-        ${quote ? `<p class="muted">\u201C${escapeHtml(quote)}\u201D</p>` : ""}
+      <div class="client-card intent-${escapeHtml2(intent)}">
+        <div class="muted">${kindLabel}${trait} \xB7 ${escapeHtml2(client.street || "")}${client.specialDay === "birthday" ? " \xB7 Cumplea\xF1os" : client.specialDay === "santo" ? " \xB7 Santo" : ""}${intent === "pickup" ? " \xB7 Encargo listo" : ""}${intent === "showcase_ask" ? " \xB7 Vitrina" : ""}</div>
+        <h3>${escapeHtml2(client.name)}</h3>
+        ${quote ? `<p class="muted">\u201C${escapeHtml2(quote)}\u201D</p>` : ""}
         <p>${title}</p>
         ${wishlistHTML(client)}
-        ${client.subscription ? `<p class="muted">Suscripci\xF3n: ${escapeHtml(client.subscription)}</p>` : ""}
+        ${client.subscription ? `<p class="muted">Suscripci\xF3n: ${escapeHtml2(client.subscription)}</p>` : ""}
         ${totalWish ? `<p class="muted">Estimado: ${formatEuro(totalWish)}</p>` : ""}
         <p class="muted">Pago preferido: ${payLabel(client.prefersPayment)}</p>
+        <p class="tip" style="margin:8px 0 0">La petici\xF3n no se carga sola: \xE1brela en el TPV y selecciona t\xFA cada producto.</p>
         <div class="actions">
-          <button class="btn primary" id="btn-open-tpv">${intent === "abono" ? "Abrir TPV y confirmar abono" : intent === "pena_day" ? "Abrir TPV (cargar pe\xF1a)" : intent === "pickup" ? "Abrir TPV (entregar)" : intent === "showcase_ask" ? "Abrir TPV (vitrina)" : "Abrir TPV"}</button>
-          <button class="btn" id="btn-load-wish">${intent === "abono" ? "Cargar abono" : intent === "pena_day" ? "Cargar pedido pe\xF1a" : intent === "pickup" ? "Cargar encargo" : intent === "showcase_ask" ? "Cargar n\xBA vitrina" : "Cargar petici\xF3n"}</button>
+          <button class="btn primary" id="btn-open-tpv">Abrir TPV</button>
+          <button class="btn ghost" id="btn-load-wish" title="Opcional: solo si quieres meter la petici\xF3n de golpe">Cargar petici\xF3n (opcional)</button>
           ${intent === "pickup" || intent === "showcase_ask" ? "" : `<button class="btn" id="btn-reserve">Reservar sin pagar</button>`}
           <button class="btn ghost" id="btn-skip">Despedir</button>
         </div>
@@ -8024,23 +8848,23 @@ ${xrefPos}
       return `
       <div class="client-card">
         <div class="muted">Comprobaci\xF3n${trait}</div>
-        <h3>${escapeHtml(client.name)}</h3>
+        <h3>${escapeHtml2(client.name)}</h3>
         ${progressLabel}
-        <p>Trae <strong>${escapeHtml(t.productName)}</strong> (${t.id})</p>
+        <p>Trae <strong>${escapeHtml2(t.productName)}</strong> (${t.id})</p>
         <p class="muted">${formatSelection(t)}${t.drawYmd ? ` \xB7 Sorteo ${t.drawYmd}` : ""}</p>
         ${result ? `<div class="check-compare">
                 <div class="check-compare-col">
                   <span class="check-compare-label">Tu apuesta</span>
-                  <strong>${escapeHtml(result.betText || formatSelection(t))}</strong>
+                  <strong>${escapeHtml2(result.betText || formatSelection(t))}</strong>
                 </div>
                 <div class="check-compare-vs">vs</div>
                 <div class="check-compare-col">
-                  <span class="check-compare-label">Sorteo${t.drawYmd ? ` ${escapeHtml(t.drawYmd)}` : ""}</span>
-                  <strong>${escapeHtml(result.drawText || "\u2014")}</strong>
+                  <span class="check-compare-label">Sorteo${t.drawYmd ? ` ${escapeHtml2(t.drawYmd)}` : ""}</span>
+                  <strong>${escapeHtml2(result.drawText || "\u2014")}</strong>
                 </div>
               </div>
               <div class="${result.prizeCents ? "total-box" : "error-box"}" style="margin:10px 0">
-                ${result.pending ? escapeHtml(result.detail) : result.prizeCents ? `\xA1Premio: ${formatEuro(result.prizeCents)}! (${escapeHtml(result.detail || "")})` : `Sin premio. ${escapeHtml(result.detail || "")}`}
+                ${result.pending ? escapeHtml2(result.detail) : result.prizeCents ? `\xA1Premio: ${formatEuro(result.prizeCents)}! (${escapeHtml2(result.detail || "")})` : `Sin premio. ${escapeHtml2(result.detail || "")}`}
               </div>` : ""}
         <div class="actions">
           ${!result ? t.kind === "rasca" ? `<button class="btn primary" id="btn-scratch">Rascar en mostrador</button>` : `<button class="btn primary" id="btn-check">Comprobar</button>` : result.prizeCents > 0 ? `<button class="btn primary" id="btn-pay-now">Pagar ahora</button>
@@ -8057,8 +8881,8 @@ ${xrefPos}
       return `
       <div class="client-card">
         <div class="muted">Cobro de premio${trait}</div>
-        <h3>${escapeHtml(client.name)}</h3>
-        <p>Premio pendiente: <strong>${formatEuro(t.prizeCents)}</strong> \xB7 ${escapeHtml(t.productName)}</p>
+        <h3>${escapeHtml2(client.name)}</h3>
+        <p>Premio pendiente: <strong>${formatEuro(t.prizeCents)}</strong> \xB7 ${escapeHtml2(t.productName)}</p>
         <div class="actions">
           <button class="btn primary" id="btn-pay-now">Pagar ahora</button>
           <button class="btn" id="btn-defer">Seguir pendiente</button>
@@ -8073,15 +8897,15 @@ ${xrefPos}
       return `
       <div class="client-card">
         <div class="muted">Consulta de gesti\xF3n</div>
-        <h3>${escapeHtml(client.name)}</h3>
+        <h3>${escapeHtml2(client.name)}</h3>
         <p>Premio en gesti\xF3n: <strong>${formatEuro(t.prizeCents)}</strong></p>
-        <p class="muted">Estado: ${(mgmt == null ? void 0 : mgmt.status) || "en tr\xE1mite"} \xB7 ${escapeHtml((mgmt == null ? void 0 : mgmt.note) || "")}</p>
+        <p class="muted">Estado: ${(mgmt == null ? void 0 : mgmt.status) || "en tr\xE1mite"} \xB7 ${escapeHtml2((mgmt == null ? void 0 : mgmt.note) || "")}</p>
         <div class="actions">
           <button class="btn primary" id="btn-done-check">Explicar y despedir</button>
         </div>
       </div>`;
     }
-    return `<div class="client-card"><h3>${escapeHtml(client.name)}</h3><button class="btn" id="btn-skip">Despedir</button></div>`;
+    return `<div class="client-card"><h3>${escapeHtml2(client.name)}</h3><button class="btn" id="btn-skip">Despedir</button></div>`;
   }
   function loadWishlistIntoTpv(client) {
     var _a;
@@ -8113,20 +8937,11 @@ ${xrefPos}
     const openTpvBtn = document.getElementById("btn-open-tpv");
     if (openTpvBtn) {
       openTpvBtn.onclick = () => {
-        var _a, _b, _c, _d;
         const client = state.customers.current;
         if (!client) return;
         if (client.intent === "pena_day") sfx.pena();
         else sfx.tpv();
-        if (["pena_day", "pickup", "showcase_ask", "abono"].includes(client.intent) && (((_a = client.wishlist) == null ? void 0 : _a.length) || client.request)) {
-          loadWishlistIntoTpv(client);
-          if ((_b = state.ui.tpv) == null ? void 0 : _b.message) showToast(state.ui.tpv.message);
-        } else if ((_c = client.wishlist) == null ? void 0 : _c.length) {
-          loadWishlistIntoTpv(client);
-          if ((_d = state.ui.tpv) == null ? void 0 : _d.message) showToast(state.ui.tpv.message);
-        } else {
-          openTpv(state, client);
-        }
+        openTpv(state, client);
         needsFullRender = true;
         render();
       };
@@ -8299,17 +9114,17 @@ ${xrefPos}
     const rows = [];
     for (const c of v.covered) {
       rows.push(
-        `<div class="wish-ok">\u2713 ${escapeHtml(c.productName)} \xD7${c.qty}</div>`
+        `<div class="wish-ok">\u2713 ${escapeHtml2(c.productName)} \xD7${c.qty}</div>`
       );
     }
     for (const m of v.missing) {
       rows.push(
-        `<div class="wish-miss">\u2717 ${escapeHtml(m.productName)} \xB7 faltan ${m.need} (hay ${m.have})</div>`
+        `<div class="wish-miss">\u2717 ${escapeHtml2(m.productName)} \xB7 faltan ${m.need} (hay ${m.have})</div>`
       );
     }
     for (const e of v.extras) {
       rows.push(
-        `<div class="wish-extra">+ Extra: ${escapeHtml(e.productName)} \xD7${e.qty}</div>`
+        `<div class="wish-extra">+ Extra: ${escapeHtml2(e.productName)} \xD7${e.qty}</div>`
       );
     }
     return `<div class="wish-panel" style="margin:10px 0">
@@ -8321,11 +9136,11 @@ ${xrefPos}
     if (!(tpv == null ? void 0 : tpv.cancelPrompt)) return "";
     const line = tpv.lines.find((l) => l.id === tpv.cancelPrompt.lineId);
     return `<div class="dictate-box" style="margin:10px 0">
-    <strong>Cancelar l\xEDnea${line ? `: ${escapeHtml(line.name)}` : ""}</strong>
+    <strong>Cancelar l\xEDnea${line ? `: ${escapeHtml2(line.name)}` : ""}</strong>
     <p class="muted">Elige motivo</p>
     <div class="actions" style="flex-wrap:wrap">
       ${CANCEL_REASONS.map(
-      (r) => `<button class="btn danger" data-cancel-reason="${escapeHtml(r)}">${escapeHtml(r)}</button>`
+      (r) => `<button class="btn danger" data-cancel-reason="${escapeHtml2(r)}">${escapeHtml2(r)}</button>`
     ).join("")}
       <button class="btn ghost" id="btn-cancel-dismiss">No cancelar</button>
     </div>
@@ -8367,7 +9182,7 @@ ${xrefPos}
     return `<div class="error-box showcase-warn" style="margin:10px 0">
     <strong>Aviso escaparate</strong>
     <ul style="margin:6px 0 0;padding-left:1.2rem">
-      ${warnings.map((w) => `<li>${escapeHtml(w.message || w)}</li>`).join("")}
+      ${warnings.map((w) => `<li>${escapeHtml2(w.message || w)}</li>`).join("")}
     </ul>
   </div>`;
   }
@@ -8400,14 +9215,14 @@ ${xrefPos}
     <div class="shell">
       ${topbarHTML()}
       <div class="panel" style="margin-top:16px;max-width:720px">
-        <h2>Ticket de venta \xB7 ${escapeHtml(tpv.clientName || "Cliente")}</h2>
+        <h2>Ticket de venta \xB7 ${escapeHtml2(tpv.clientName || "Cliente")}</h2>
         <p class="muted">Revisa el ticket antes de cobrar. Puedes descargar PDF.</p>
         ${wishlistValidationHTML(tpv)}
         ${showcaseWarningsHTML(tpv)}
         <div class="log" style="margin:12px 0">
           ${tpv.lines.map(
-      (l) => `<div class="log-item"><strong>${escapeHtml(l.name)}</strong> \xD7${l.qty} \xB7 ${formatEuro(l.unitCents * l.qty)}
-                ${l.needsNumbers ? `<div class="muted">${escapeHtml(formatLineSelection(l))}</div>` : ""}</div>`
+      (l) => `<div class="log-item"><strong>${escapeHtml2(l.name)}</strong> \xD7${l.qty} \xB7 ${formatEuro(l.unitCents * l.qty)}
+                ${l.needsNumbers ? `<div class="muted">${escapeHtml2(formatLineSelection(l))}</div>` : ""}</div>`
     ).join("")}
         </div>
         <div class="total-box">Total<strong>${formatEuro(total)}</strong></div>
@@ -8453,24 +9268,25 @@ ${xrefPos}
     const products = productsByTpvCategory(cat).filter((p) => isOnceExtraSellable(state, p.id));
     const total = tpvTotalCents(tpv);
     const entry = tpv.numberEntry;
+    const catHue = { LAE: 195, ONCE: 28, Rascas: 310, Auton\u00F3micas: 155, Provinciales: 210, Locales: 340 };
     app.innerHTML = `
-    <div class="shell">
+    <div class="shell tpv-shell">
       ${topbarHTML()}
-      <div class="panel" style="margin-top:16px">
+      <div class="panel tpv-panel" style="margin-top:16px">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
           <div>
-            <h2 style="margin:0">TPV \xB7 ${escapeHtml(tpv.clientName || "Cliente")}</h2>
-            <p class="muted" style="margin:4px 0 0">F1\u2013F6 categor\xEDas \xB7 Enter cobrar \xB7 Esc atr\xE1s</p>
+            <h2 style="margin:0">TPV \xB7 ${escapeHtml2(tpv.clientName || "Cliente")}</h2>
+            <p class="muted" style="margin:4px 0 0">F1\u2013F6 categor\xEDas \xB7 Enter cobrar \xB7 Esc atr\xE1s \xB7 Selecci\xF3n manual</p>
           </div>
           <button class="btn ghost" id="btn-tpv-back">Volver al mostrador</button>
         </div>
-        ${tpv.message ? `<div class="error-box" style="margin:10px 0">${escapeHtml(tpv.message)}</div>` : ""}
+        ${tpv.message ? `<div class="error-box" style="margin:10px 0">${escapeHtml2(tpv.message)}</div>` : ""}
         ${wishlistValidationHTML(tpv)}
         ${cancelPromptHTML(tpv)}
         ${entry ? `<div class="dictate-box">
-                <strong>Dictado: ${escapeHtml(entry.productName || "")}</strong>
-                <p class="muted">${escapeHtml(dictateHint(entry.mode))}</p>
-                <textarea id="dictate-input" placeholder="N\xFAmeros que dicta el cliente\u2026">${escapeHtml(entry.draft || "")}</textarea>
+                <strong>Dictado: ${escapeHtml2(entry.productName || "")}</strong>
+                <p class="muted">${escapeHtml2(dictateHint(entry.mode))}</p>
+                <textarea id="dictate-input" placeholder="N\xFAmeros que dicta el cliente\u2026">${escapeHtml2(entry.draft || "")}</textarea>
                 <div class="actions" style="margin-top:8px">
                   <button class="btn primary" id="btn-dictate-ok">Marcar n\xFAmeros</button>
                   <button class="btn ghost" id="btn-dictate-cancel">Cancelar dictado</button>
@@ -8478,9 +9294,11 @@ ${xrefPos}
               </div>` : ""}
         <div class="tpv-wrap">
           <div class="tpv-cats">
-            ${TPV_CATEGORIES.map(
-      (c, i) => `<button class="btn ${c === cat ? "primary" : ""}" data-tpv-cat="${c}">F${i + 1} ${escapeHtml(c)}</button>`
-    ).join("")}
+            ${TPV_CATEGORIES.map((c, i) => {
+      var _a2;
+      const hue = (_a2 = catHue[c]) != null ? _a2 : 180;
+      return `<button class="btn tpv-cat-btn ${c === cat ? "primary" : ""}" data-tpv-cat="${c}" style="--cat-hue:${hue}">F${i + 1} ${escapeHtml2(c)}</button>`;
+    }).join("")}
           </div>
           <div class="tpv-products">
             ${products.map((p) => {
@@ -8488,14 +9306,19 @@ ${xrefPos}
       const stock = p.stockType === "physical" ? `Stock ${(_a2 = state.stock[p.id]) != null ? _a2 : 0}` : "Terminal";
       const meta = productMetaLabel(p) || `Com. ${(((_b2 = p.commissionRate) != null ? _b2 : 0.05) * 100).toFixed(1)}%${p.trait ? ` \xB7 ${p.trait}` : ""}`;
       const next = nextDrawLabel(p.id, gameDate(state));
-      return `<div class="tpv-product">
-                  <div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start">
-                    <strong>${escapeHtml(p.name)}</strong>
-                    <button class="btn ghost" style="padding:2px 8px;font-size:0.8rem" data-detail="${p.id}" title="Ficha">Info</button>
+      return `<div class="tpv-product tpv-product-rich" data-org="${escapeHtml2(p.org || "")}">
+                  <div class="tpv-product-head">
+                    ${logoHTML(p, "md")}
+                    <div style="flex:1;min-width:0">
+                      <div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start">
+                        <strong>${escapeHtml2(p.name)}</strong>
+                        <button class="btn ghost" style="padding:2px 8px;font-size:0.8rem" data-detail="${p.id}" title="Ficha">Info</button>
+                      </div>
+                      <span>${formatEuro(p.priceCents)} \xB7 ${escapeHtml2(stock)}</span>
+                    </div>
                   </div>
-                  <span>${formatEuro(p.priceCents)} \xB7 ${escapeHtml(stock)}</span>
-                  ${next ? `<div class="muted product-next">Pr\xF3ximo: ${escapeHtml(next)}</div>` : ""}
-                  <div class="product-meta">${escapeHtml(meta)}</div>
+                  ${next ? `<div class="muted product-next">Pr\xF3ximo: ${escapeHtml2(next)}</div>` : ""}
+                  <div class="product-meta">${escapeHtml2(meta)}</div>
                   <div class="actions" style="margin-top:8px;gap:6px">
                     <button class="btn primary" style="flex:1;min-height:42px;padding:8px" data-add-random="${p.id}">Aleatorio</button>
                     ${p.needsNumbers ? `<button class="btn" style="flex:1;min-height:42px;padding:8px" data-add-dictate="${p.id}">Dictado</button>` : `<button class="btn" style="flex:1;min-height:42px;padding:8px" data-add-random="${p.id}">+1</button>`}
@@ -8503,13 +9326,13 @@ ${xrefPos}
                 </div>`;
     }).join("")}
           </div>
-          <aside class="tpv-cart">
+          <aside class="tpv-cart tpv-cart-rich">
             <h3 style="margin:0 0 8px">Ticket</h3>
             <div style="flex:1;overflow:auto;display:flex;flex-direction:column;gap:8px">
               ${tpv.lines.length ? tpv.lines.map(
       (l) => `<div class="tpv-line">
-                          <div><strong>${escapeHtml(l.name)}</strong> \xB7 ${formatEuro(l.unitCents * l.qty)}</div>
-                          ${l.needsNumbers ? `<div class="muted">${escapeHtml(formatLineSelection(l))}</div>` : ""}
+                          <div><strong>${escapeHtml2(l.name)}</strong> \xB7 ${formatEuro(l.unitCents * l.qty)}</div>
+                          ${l.needsNumbers ? `<div class="muted">${escapeHtml2(formatLineSelection(l))}</div>` : ""}
                           <div class="actions" style="margin-top:6px;gap:4px;flex-wrap:wrap">
                             <button class="btn" style="padding:6px 10px" data-qty="${l.id}" data-delta="-1">\u2212</button>
                             <strong style="min-width:1.5rem;text-align:center">${l.qty}</strong>
@@ -8541,7 +9364,7 @@ ${xrefPos}
             ${(state.showcase || []).length ? `<div style="margin-top:10px">
                     <div class="muted" style="margin-bottom:6px">Escaparate</div>
                     ${(state.showcase || []).slice(0, 6).map(
-      (d) => `<button class="btn" style="width:100%;margin-bottom:4px;justify-content:flex-start" data-sell-showcase="${d.id}">n\xBA ${escapeHtml(d.number)} \xB7 ${escapeHtml(d.productName)} \xD7${d.qty}</button>`
+      (d) => `<button class="btn" style="width:100%;margin-bottom:4px;justify-content:flex-start" data-sell-showcase="${d.id}">n\xBA ${escapeHtml2(d.number)} \xB7 ${escapeHtml2(d.productName)} \xD7${d.qty}</button>`
     ).join("")}
                   </div>` : ""}
           </aside>
@@ -8739,23 +9562,26 @@ ${xrefPos}
     <div class="product-sheet-overlay" id="product-sheet">
       <div class="product-sheet panel">
         <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start">
-          <div>
-            <div class="muted">${escapeHtml(p.org || "")} \xB7 ${escapeHtml(p.tpvCategory || "")}</div>
-            <h2 style="margin:4px 0 8px">${escapeHtml(p.name)}</h2>
+          <div style="display:flex;gap:12px;align-items:flex-start">
+            ${logoHTML(p, "lg")}
+            <div>
+              <div class="muted">${escapeHtml2(p.org || "")} \xB7 ${escapeHtml2(p.tpvCategory || "")}</div>
+              <h2 style="margin:4px 0 8px">${escapeHtml2(p.name)}</h2>
+            </div>
           </div>
           <button class="btn ghost" id="btn-sheet-close">Cerrar</button>
         </div>
-        <p>${escapeHtml(p.description || "")}</p>
-        ${p.flavor ? `<p class="muted">\u201C${escapeHtml(p.flavor)}\u201D</p>` : ""}
+        <p>${escapeHtml2(p.description || "")}</p>
+        ${p.flavor ? `<p class="muted">\u201C${escapeHtml2(p.flavor)}\u201D</p>` : ""}
         <div class="close-summary" style="margin-top:12px">
           <div class="stat-row"><span>Precio</span><strong>${formatEuro(p.priceCents)}</strong></div>
           <div class="stat-row"><span>Comisi\xF3n</span><strong>${(((_e = p.commissionRate) != null ? _e : 0.05) * 100).toFixed(1)}%</strong></div>
-          <div class="stat-row"><span>Mec\xE1nica</span><strong>${escapeHtml(p.trait || p.numberMode || "\u2014")}</strong></div>
-          <div class="stat-row"><span>Premio orientativo</span><strong>${escapeHtml(p.topPrizeHint || "\u2014")}</strong></div>
-          <div class="stat-row"><span>D\xEDas de sorteo</span><strong>${escapeHtml(days)}</strong></div>
-          <div class="stat-row"><span>Hora</span><strong>${escapeHtml(hour)}</strong></div>
-          <div class="stat-row"><span>Stock</span><strong>${escapeHtml(stock)}</strong></div>
-          ${jack ? `<div class="stat-row"><span>Bote actual</span><strong>${escapeHtml(formatJackpotShort(jack))}</strong></div>` : ""}
+          <div class="stat-row"><span>Mec\xE1nica</span><strong>${escapeHtml2(p.trait || p.numberMode || "\u2014")}</strong></div>
+          <div class="stat-row"><span>Premio orientativo</span><strong>${escapeHtml2(p.topPrizeHint || "\u2014")}</strong></div>
+          <div class="stat-row"><span>D\xEDas de sorteo</span><strong>${escapeHtml2(days)}</strong></div>
+          <div class="stat-row"><span>Hora</span><strong>${escapeHtml2(hour)}</strong></div>
+          <div class="stat-row"><span>Stock</span><strong>${escapeHtml2(stock)}</strong></div>
+          ${jack ? `<div class="stat-row"><span>Bote actual</span><strong>${escapeHtml2(formatJackpotShort(jack))}</strong></div>` : ""}
           ${p.orderDays != null && p.stockType === "physical" ? `<div class="stat-row"><span>Pedido proveedor</span><strong>${p.orderDays} d\xEDa(s)</strong></div>` : ""}
         </div>
         <div class="actions" style="margin-top:14px">
@@ -8881,7 +9707,7 @@ ${xrefPos}
     let body = "";
     if (ps.step === "method") {
       body = `
-      <p>Cliente: <strong>${escapeHtml(ps.clientName)}</strong> \xB7 Prefiere ${payLabel(ps.preferredPayment)}</p>
+      <p>Cliente: <strong>${escapeHtml2(ps.clientName)}</strong> \xB7 Prefiere ${payLabel(ps.preferredPayment)}</p>
       <div class="totals" style="margin:12px 0">
         <div class="total-box">Total a cobrar<strong>${formatEuro(ps.totalCents)}</strong></div>
       </div>
@@ -8923,12 +9749,12 @@ ${xrefPos}
       body = `
       <div class="hero-counter">
         <h2>Cobro completado</h2>
-        <p>${escapeHtml(ps.clientName)} \xB7 ${formatEuro(ps.totalCents)} \xB7 ${payLabel(ps.method)}</p>
+        <p>${escapeHtml2(ps.clientName)} \xB7 ${formatEuro(ps.totalCents)} \xB7 ${payLabel(ps.method)}</p>
       </div>
       <h3>Tickets emitidos</h3>
       <div class="log">
         ${tickets.map(
-        (t) => `<div class="log-item"><strong>${t.id}</strong> \xB7 ${escapeHtml(t.productName)} \xB7 ${escapeHtml(formatSelection(t))}${t.drawYmd ? ` \xB7 sorteo ${t.drawYmd}` : ""}
+        (t) => `<div class="log-item"><strong>${t.id}</strong> \xB7 ${escapeHtml2(t.productName)} \xB7 ${escapeHtml2(formatSelection(t))}${t.drawYmd ? ` \xB7 sorteo ${t.drawYmd}` : ""}
                 <button class="btn" style="padding:4px 8px;margin-left:8px" data-pdf="${t.id}">PDF</button>
                 </div>`
       ).join("") || '<div class="muted">Sin tickets</div>'}
@@ -8945,7 +9771,7 @@ ${xrefPos}
         <h2>Caja</h2>
         <div class="muted">${ps.items.map((i) => `${i.name} \xD7${i.qty}`).join(" \xB7 ")}</div>
         ${ps.step === "cash-tender" || ps.step === "cash-change" ? `<p class="muted cash-keys-hint">Atajos: 1\u20137 billetes (5\u2013500\u20AC) \xB7 Q\u2013I monedas (2\u20AC\u21921c) \xB7 Shift=restar \xB7 Enter=continuar</p>` : ""}
-        ${ps.error ? `<div class="error-box" style="margin:10px 0">${escapeHtml(ps.error)}</div>` : ""}
+        ${ps.error ? `<div class="error-box" style="margin:10px 0">${escapeHtml2(ps.error)}</div>` : ""}
         ${body}
       </div>
     </div>
@@ -9167,7 +9993,7 @@ ${xrefPos}
 
           <h3 style="margin-top:18px">Liquidaci\xF3n prevista / \xFAltima</h3>
           ${settle ? `<div class="close-summary">
-                  ${settlementExplain(settle).map((line) => `<p class="muted" style="margin:4px 0">${escapeHtml(line)}</p>`).join("")}
+                  ${settlementExplain(settle).map((line) => `<p class="muted" style="margin:4px 0">${escapeHtml2(line)}</p>`).join("")}
                 </div>` : `<p class="muted">Se calcular\xE1 al cerrar: remesa = ventas \u2212 comisi\xF3n; el banco recibe el reembolso de premios.</p>
                 <div class="close-summary">
                   <div class="stat-row"><span>LAE remesa estimada</span><strong>${formatEuro((((_a = orgs == null ? void 0 : orgs.LAE) == null ? void 0 : _a.sales) || 0) - (((_b = orgs == null ? void 0 : orgs.LAE) == null ? void 0 : _b.commission) || 0))}</strong></div>
@@ -9252,7 +10078,7 @@ ${xrefPos}
       body = `
       <div class="hero-counter">
         <h2>Resultado del arqueo</h2>
-        <p>${escapeHtml(a.message || "")}</p>
+        <p>${escapeHtml2(a.message || "")}</p>
       </div>
       <div class="close-summary">
         <div class="stat-row"><span>Esperado (caja)</span><strong>${formatEuro(expected)}</strong></div>
@@ -9271,7 +10097,7 @@ ${xrefPos}
         <div class="total-box">En sistema<strong>${formatEuro(drawerTotalCents(state.finance.drawer))}</strong></div>
       </div>
       ${arqueoDenomEditor()}
-      ${a.message ? `<div class="error-box" style="margin:10px 0">${escapeHtml(a.message)}</div>` : ""}
+      ${a.message ? `<div class="error-box" style="margin:10px 0">${escapeHtml2(a.message)}</div>` : ""}
       <div class="actions" style="margin-top:16px">
         <button class="btn primary" id="btn-arqueo-confirm">Confirmar conteo</button>
         <button class="btn ghost" id="btn-arqueo-cancel">Cancelar</button>
@@ -9408,6 +10234,7 @@ ${xrefPos}
         ${sideNav()}
         <section class="panel">
           <h2>Guardar / exportar</h2>
+          <p class="muted">Se guarda <strong>absolutamente todo</strong>: TPV a medias, cobro, cola, tickets, premios, escaparate, arqueo, ajustes\u2026</p>
           <div class="slot-grid">
             ${slots.map(
       (s) => {
@@ -9416,7 +10243,7 @@ ${xrefPos}
               <div class="slot">
                 <div>
                   <strong>Hueco ${s.slot}</strong>
-                  <div class="muted">${s.empty ? "Vac\xEDo" : `D\xEDas ${(_a = s.daysPlayed) != null ? _a : 0} \xB7 v${s.gameVersion || "?"}`}</div>
+                  <div class="muted">${s.empty ? "Vac\xEDo" : `D\xEDas ${(_a = s.daysPlayed) != null ? _a : 0} \xB7 v${s.gameVersion || "?"}${s.tickets != null ? ` \xB7 ${s.tickets} tickets` : ""}${s.complete ? " \xB7 completa" : ""}`}</div>
                 </div>
                 <div class="actions">
                   <button class="btn primary" data-save="${s.slot}">Guardar aqu\xED</button>
@@ -9427,7 +10254,7 @@ ${xrefPos}
     ).join("")}
           </div>
           <div class="actions" style="margin-top:12px">
-            <button class="btn" id="btn-export">Exportar JSON</button>
+            <button class="btn" id="btn-export">Exportar partida completa</button>
             <button class="btn accent" id="btn-day-package">Paquete del d\xEDa</button>
             <label class="btn ghost" style="cursor:pointer">Importar<input id="import-file" type="file" accept="application/json" hidden /></label>
             <button class="btn danger" id="btn-menu">Volver al men\xFA</button>
@@ -9520,7 +10347,7 @@ ${xrefPos}
       const qty = (_a = state.stock[p.id]) != null ? _a : 0;
       const cost = supplierUnitCostCents(p);
       return `<div class="stock-item">
-                  <span><strong>${escapeHtml(p.name)}</strong> <span class="muted">(${p.org} \xB7 coste ~${formatEuro(cost)})</span></span>
+                  <span><strong>${escapeHtml2(p.name)}</strong> <span class="muted">(${p.org} \xB7 coste ~${formatEuro(cost)})</span></span>
                   <span>${qty}
                     <button class="btn" style="padding:4px 8px;margin-left:8px" data-supplier="${p.id}">Pedir 20</button>
                   </span>
@@ -9530,7 +10357,7 @@ ${xrefPos}
           <h3 style="margin-top:18px">Pedidos / reservas</h3>
           <div class="log">
             ${state.orders.length ? state.orders.slice().reverse().slice(0, 40).map(
-      (o) => `<div class="log-item">${o.status}${o.supplier ? " \xB7 PROVEEDOR" : ""}${o.special ? " \xB7 ENCARGO" : ""} \xB7 ${escapeHtml(o.productName)} \xD7${o.qty} \xB7 ${o.arriveOnYmd}${o.totalCostCents != null ? ` \xB7 ${formatEuro(o.totalCostCents)}` : ""}${o.clientName ? ` \xB7 ${escapeHtml(o.clientName)}` : ""}</div>`
+      (o) => `<div class="log-item">${o.status}${o.supplier ? " \xB7 PROVEEDOR" : ""}${o.special ? " \xB7 ENCARGO" : ""} \xB7 ${escapeHtml2(o.productName)} \xD7${o.qty} \xB7 ${o.arriveOnYmd}${o.totalCostCents != null ? ` \xB7 ${formatEuro(o.totalCostCents)}` : ""}${o.clientName ? ` \xB7 ${escapeHtml2(o.clientName)}` : ""}</div>`
     ).join("") : '<div class="muted">Sin pedidos.</div>'}
           </div>
         </section>
@@ -9586,14 +10413,14 @@ ${xrefPos}
           <p class="muted">Busca un ticket comprobado o paga un premio suelto sin ticket.</p>
           <h3>Buscar ticket</h3>
           <label>ID, cliente o producto<br/>
-            <input id="prize-search" value="${escapeHtml(state.ui.prizeSearch || "")}" placeholder="Ej. T12 o Miriam" style="width:100%;margin:6px 0 12px;padding:10px;border-radius:10px;border:1px solid var(--line)" />
+            <input id="prize-search" value="${escapeHtml2(state.ui.prizeSearch || "")}" placeholder="Ej. T12 o Miriam" style="width:100%;margin:6px 0 12px;padding:10px;border-radius:10px;border:1px solid var(--line)" />
           </label>
           <div class="log" style="max-height:260px;overflow:auto">
             ${list.length ? list.slice(0, 40).map(
       (t) => `<div class="log-item">
-                        <strong>${escapeHtml(t.id)}</strong> \xB7 ${escapeHtml(t.clientName || "\u2014")} \xB7 ${escapeHtml(t.productName)}
-                        <br/>${escapeHtml(formatSelection(t))} \xB7 <strong>${formatEuro(t.prizeCents)}</strong>
-                        <span class="muted"> \xB7 ${escapeHtml(t.status)}</span>
+                        <strong>${escapeHtml2(t.id)}</strong> \xB7 ${escapeHtml2(t.clientName || "\u2014")} \xB7 ${escapeHtml2(t.productName)}
+                        <br/>${escapeHtml2(formatSelection(t))} \xB7 <strong>${formatEuro(t.prizeCents)}</strong>
+                        <span class="muted"> \xB7 ${escapeHtml2(t.status)}</span>
                         <div class="actions" style="margin-top:6px">
                           ${t.status === "managed" || t.prizeCents >= LARGE_PRIZE_CENTS ? `<button class="btn accent" style="padding:4px 10px" data-manage-ticket="${t.id}">${t.status === "managed" ? "Ver gesti\xF3n" : "Gestionar"}</button>` : `<button class="btn primary" style="padding:4px 10px" data-pay-ticket="${t.id}" data-method="cash">Efectivo</button>
                           <button class="btn" style="padding:4px 10px" data-pay-ticket="${t.id}" data-method="transfer">Transfer.</button>`}
@@ -9690,7 +10517,7 @@ ${xrefPos}
           <div class="log">
             ${entries.length ? entries.map((d) => {
       const p = getProduct(d.productId);
-      return `<div class="log-item"><strong>${escapeHtml((p == null ? void 0 : p.name) || d.productId)}</strong> \xB7 ${d.ymd}<br/>${escapeHtml(formatDrawDetail(d))}</div>`;
+      return `<div class="log-item"><strong>${escapeHtml2((p == null ? void 0 : p.name) || d.productId)}</strong> \xB7 ${d.ymd}<br/>${escapeHtml2(formatDrawDetail(d))}</div>`;
     }).join("") : '<div class="muted">A\xFAn no hay sorteos. Avanza el tiempo hasta despu\xE9s de las 21:00.</div>'}
           </div>
         </section>
@@ -9701,10 +10528,36 @@ ${xrefPos}
     bindTopbar();
     bindNav();
   }
+  function paperworkHTML(c) {
+    ensureCasePaperwork(c);
+    if (c.status === "settled") {
+      return `<p class="muted" style="margin-top:8px">Expediente cerrado. Papeleo archivado.</p>`;
+    }
+    const items = PAPERWORK_BY_STATUS[c.status] || [];
+    const done = paperworkDone(c, c.status);
+    return `
+    <div class="paperwork-box">
+      <div class="paperwork-title">Papeleo del paso \xB7 ${escapeHtml2(PRIZE_MGMT_STATUS[c.status] || c.status)} ${done ? "\u2713" : "(incompleto)"}</div>
+      <ul class="paperwork-list">
+        ${items.map((item) => {
+      var _a;
+      const checked = !!((_a = c.paperwork[c.status]) == null ? void 0 : _a[item.id]);
+      return `<li>
+              <label class="paperwork-item">
+                <input type="checkbox" data-paper-case="${escapeHtml2(c.id)}" data-paper-status="${escapeHtml2(
+        c.status
+      )}" data-paper-item="${escapeHtml2(item.id)}" ${checked ? "checked" : ""} />
+                <span>${escapeHtml2(item.label)}</span>
+              </label>
+            </li>`;
+    }).join("")}
+      </ul>
+    </div>`;
+  }
   function renderManagement() {
     const list = [...state.prizeManagement || []].reverse();
     const nextLabel = {
-      open: "Documentar (DNI / ticket)",
+      open: "Documentar (tras papeleo)",
       documented: "Presentar a organismo",
       submitted: "Marcar liquidado"
     };
@@ -9715,16 +10568,19 @@ ${xrefPos}
         ${sideNav()}
         <section class="panel">
           <h2>Gesti\xF3n de premios grandes</h2>
-          <p class="muted">No salen de tu caja. T\xFA avanzas los pasos: abierto \u2192 documentado \u2192 presentado \u2192 liquidado (paga LAE/ONCE).</p>
+          <p class="muted">No salen de tu caja. Cada paso exige papeleo completo: abierto \u2192 documentado \u2192 presentado \u2192 liquidado (paga LAE/ONCE).</p>
           <div class="log">
             ${list.length ? list.map((c) => {
+      ensureCasePaperwork(c);
       const st = PRIZE_MGMT_STATUS[c.status] || c.status;
-      const btn = c.status !== "settled" ? `<button class="btn primary" style="margin-top:8px;padding:6px 12px" data-adv-case="${c.id}">${nextLabel[c.status] || "Avanzar"}</button>` : "";
-      return `<div class="log-item">
-                        <strong>${escapeHtml(c.clientName)}</strong> \xB7 ${formatEuro(c.amountCents)} \xB7 ${escapeHtml(c.productName)}
-                        <br/>Ticket ${escapeHtml(c.ticketId || "\u2014")} \xB7 ${escapeHtml(c.org || "")} \xB7 ${c.level}
-                        <br/>Estado: <strong>${escapeHtml(st)}</strong>
-                        <br/><span class="muted">${escapeHtml(c.note || "")}</span>
+      const ready = c.status === "settled" || paperworkDone(c, c.status);
+      const btn = c.status !== "settled" ? `<button class="btn primary" style="margin-top:8px;padding:6px 12px" data-adv-case="${c.id}" ${ready ? "" : 'disabled title="Completa el papeleo"'}>${nextLabel[c.status] || "Avanzar"}${ready ? "" : " \xB7 falta papeleo"}</button>` : "";
+      return `<div class="log-item prize-case-card">
+                        <strong>${escapeHtml2(c.clientName)}</strong> \xB7 ${formatEuro(c.amountCents)} \xB7 ${escapeHtml2(c.productName)}
+                        <br/>Ticket ${escapeHtml2(c.ticketId || "\u2014")} \xB7 ${escapeHtml2(c.org || "")} \xB7 ${c.level}
+                        <br/>Estado: <strong>${escapeHtml2(st)}</strong>
+                        <br/><span class="muted">${escapeHtml2(c.note || "")}</span>
+                        ${paperworkHTML(c)}
                         ${btn}
                       </div>`;
     }).join("") : '<div class="muted">No hay casos de gesti\xF3n.</div>'}
@@ -9736,11 +10592,79 @@ ${xrefPos}
   `;
     bindTopbar();
     bindNav();
+    app.querySelectorAll("[data-paper-case]").forEach((inp) => {
+      inp.onchange = () => {
+        const res = togglePrizePaperwork(
+          state,
+          inp.getAttribute("data-paper-case"),
+          inp.getAttribute("data-paper-status"),
+          inp.getAttribute("data-paper-item")
+        );
+        res.ok ? sfx.click() : sfx.error();
+        showToast(res.message || state.ui.toast);
+        needsFullRender = true;
+        render();
+      };
+    });
     app.querySelectorAll("[data-adv-case]").forEach((btn) => {
       btn.onclick = () => {
         const res = advancePrizeCase(state, btn.getAttribute("data-adv-case"));
         res.ok ? sfx.success() : sfx.error();
         showToast(res.message || state.ui.toast);
+        needsFullRender = true;
+        render();
+      };
+    });
+  }
+  function renderEncyclopedia() {
+    const families = encyclopediaFamilies();
+    const stats = encyclopediaStats();
+    const selected = state.ui.encyclopediaId || null;
+    const familyOrder = ["LAE", "ONCE", "Rascas", "Auton\xF3micas", "Provinciales", "Locales"];
+    const keys = [
+      ...familyOrder.filter((k) => families.has(k)),
+      ...[...families.keys()].filter((k) => !familyOrder.includes(k))
+    ];
+    app.innerHTML = `
+    <div class="shell">
+      ${topbarHTML()}
+      <div class="layout" style="grid-template-columns:280px 1fr">
+        ${sideNav()}
+        <section class="panel ency-panel">
+          <h2>Enciclopedia de loter\xEDas</h2>
+          <p class="muted">${stats.total} productos \xB7 LAE ${stats.lae} \xB7 ONCE ${stats.once} \xB7 regionales ${stats.regional}</p>
+          <div class="ency-layout">
+            <div class="ency-catalog">
+              ${keys.map((fam) => {
+      const entries = families.get(fam) || [];
+      return `<div class="ency-family">
+                    <h3 class="ency-family-title">${escapeHtml2(fam)}</h3>
+                    <div class="ency-grid-cards">
+                      ${entries.map(
+        (e) => `<button class="ency-card ${selected === e.id ? "active" : ""}" data-ency="${e.id}">
+                            ${e.logoSm || logoHTML(e.product, "sm")}
+                            <span class="ency-card-name">${escapeHtml2(e.short || e.name)}</span>
+                          </button>`
+      ).join("")}
+                    </div>
+                  </div>`;
+    }).join("")}
+            </div>
+            <div class="ency-detail-pane">
+              ${selected ? renderEncyclopediaDetail(selected) : '<p class="muted">Elige una loter\xEDa para consultar precio, mec\xE1nica, sorteos y sabor.</p>'}
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+    ${toastHTML()}
+  `;
+    bindTopbar();
+    bindNav();
+    app.querySelectorAll("[data-ency]").forEach((btn) => {
+      btn.onclick = () => {
+        sfx.click();
+        state.ui.encyclopediaId = btn.getAttribute("data-ency");
         needsFullRender = true;
         render();
       };
@@ -9766,31 +10690,31 @@ ${xrefPos}
       const clientOrders = (state.orders || []).filter((o) => o.clientId === detail.id).slice(-15).reverse();
       body = `
       <button class="btn ghost" id="btn-ficha-back" style="margin-bottom:12px">\u2190 Volver al listado</button>
-      <h2>${escapeHtml(detail.name)}</h2>
-      <p class="muted">${detail.kind === "pena" ? "Pe\xF1a" : "Abonado"}${detail.street ? ` \xB7 ${escapeHtml(detail.street)}` : ""}${detail.members ? ` \xB7 ${detail.members} socios` : ""}</p>
+      <h2>${escapeHtml2(detail.name)}</h2>
+      <p class="muted">${detail.kind === "pena" ? "Pe\xF1a" : "Abonado"}${detail.street ? ` \xB7 ${escapeHtml2(detail.street)}` : ""}${detail.members ? ` \xB7 ${detail.members} socios` : ""}</p>
       <div class="close-summary" style="margin-top:12px">
-        <div class="stat-row"><span>Suscripci\xF3n</span><strong>${escapeHtml(detail.subscription || "\u2014")}</strong></div>
+        <div class="stat-row"><span>Suscripci\xF3n</span><strong>${escapeHtml2(detail.subscription || "\u2014")}</strong></div>
         <div class="stat-row"><span>Pago preferido</span><strong>${payLabel(detail.prefersPayment || "cash")}</strong></div>
-        <div class="stat-row"><span>Favoritos</span><strong>${escapeHtml(favNames.join(", ") || "\u2014")}</strong></div>
+        <div class="stat-row"><span>Favoritos</span><strong>${escapeHtml2(favNames.join(", ") || "\u2014")}</strong></div>
       </div>
       <h3 style="margin-top:16px">Historial de compras</h3>
       <div class="log">
         ${history.length ? history.map((h) => {
         var _a;
         const items = (h.items || []).map((i) => `${i.name || i.productId}\xD7${i.qty}`).join(", ");
-        return `<div class="log-item">${formatEuro(h.totalCents || 0)} \xB7 ${escapeHtml(items || "venta")}${((_a = h.ticketIds) == null ? void 0 : _a.length) ? ` \xB7 tickets ${h.ticketIds.join(", ")}` : ""}</div>`;
+        return `<div class="log-item">${formatEuro(h.totalCents || 0)} \xB7 ${escapeHtml2(items || "venta")}${((_a = h.ticketIds) == null ? void 0 : _a.length) ? ` \xB7 tickets ${h.ticketIds.join(", ")}` : ""}</div>`;
       }).join("") : '<div class="muted">Sin compras registradas a\xFAn.</div>'}
       </div>
       <h3 style="margin-top:16px">Premios cobrados</h3>
       <div class="log">
         ${prizes.length ? prizes.map(
-        (p) => `<div class="log-item">${escapeHtml(p.productName || p.id || "Premio")} \xB7 ${formatEuro(p.amountCents || p.prizeCents || 0)}</div>`
+        (p) => `<div class="log-item">${escapeHtml2(p.productName || p.id || "Premio")} \xB7 ${formatEuro(p.amountCents || p.prizeCents || 0)}</div>`
       ).join("") : '<div class="muted">Ning\xFAn premio cobrado en ficha.</div>'}
       </div>
       <h3 style="margin-top:16px">Pedidos / encargos</h3>
       <div class="log">
         ${orders.length || clientOrders.length ? [...orders, ...clientOrders].slice(0, 20).map(
-        (o) => `<div class="log-item">${escapeHtml(o.productName || o.productId || "Pedido")} \xD7${o.qty || 1}${o.arriveOnYmd ? ` \xB7 ${o.arriveOnYmd}` : ""}${o.status ? ` \xB7 ${o.status}` : ""}</div>`
+        (o) => `<div class="log-item">${escapeHtml2(o.productName || o.productId || "Pedido")} \xD7${o.qty || 1}${o.arriveOnYmd ? ` \xB7 ${o.arriveOnYmd}` : ""}${o.status ? ` \xB7 ${o.status}` : ""}</div>`
       ).join("") : '<div class="muted">Sin pedidos en ficha.</div>'}
       </div>
       <h3 style="margin-top:16px">Nuevo encargo calendario</h3>
@@ -9807,8 +10731,8 @@ ${xrefPos}
           var _a;
           return `<button class="slot" data-ficha="${a.id}" style="cursor:pointer;text-align:left;width:100%">
               <div>
-                <strong>${escapeHtml(a.name)}</strong>
-                <div class="muted">${escapeHtml(a.subscription || "")} \xB7 ${escapeHtml(((_a = getProduct(a.favoriteProduct)) == null ? void 0 : _a.name) || "")}</div>
+                <strong>${escapeHtml2(a.name)}</strong>
+                <div class="muted">${escapeHtml2(a.subscription || "")} \xB7 ${escapeHtml2(((_a = getProduct(a.favoriteProduct)) == null ? void 0 : _a.name) || "")}</div>
               </div>
             </button>`;
         }
@@ -9819,8 +10743,8 @@ ${xrefPos}
         ${penas.map(
         (p) => `<button class="slot" data-ficha="${p.id}" style="cursor:pointer;text-align:left;width:100%">
               <div>
-                <strong>${escapeHtml(p.name)}</strong>
-                <div class="muted">${escapeHtml(p.subscription || "")}${p.members ? ` \xB7 ${p.members} socios` : ""}</div>
+                <strong>${escapeHtml2(p.name)}</strong>
+                <div class="muted">${escapeHtml2(p.subscription || "")}${p.members ? ` \xB7 ${p.members} socios` : ""}</div>
               </div>
             </button>`
       ).join("")}
@@ -9871,7 +10795,7 @@ ${xrefPos}
       ${topbarHTML()}
       <div class="panel day-results" style="margin-top:16px;max-width:720px">
         <h2>Resultados del d\xEDa</h2>
-        <p class="muted">Cierre de ${escapeHtml(s.date)} \xB7 siguiente laborable ${escapeHtml(s.nextDay)}</p>
+        <p class="muted">Cierre de ${escapeHtml2(s.date)} \xB7 siguiente laborable ${escapeHtml2(s.nextDay)}</p>
         <div class="close-summary">
           <div class="stat-row"><span>Ventas</span><strong>${formatEuro(s.salesCents)}</strong></div>
           <div class="stat-row"><span>Comisiones</span><strong>${formatEuro(s.commissionCents)}</strong></div>
@@ -9886,9 +10810,9 @@ ${xrefPos}
         ${settle ? `<h3 style="margin-top:16px">Liquidaci\xF3n</h3>
                <p class="muted">Remesa = ventas \u2212 comisi\xF3n retenida</p>
                <div class="close-summary">
-                 ${settlementExplain(settle).slice(2).map((line) => `<div class="stat-row"><span>${escapeHtml(line)}</span></div>`).join("")}
+                 ${settlementExplain(settle).slice(2).map((line) => `<div class="stat-row"><span>${escapeHtml2(line)}</span></div>`).join("")}
                </div>` : ""}
-        ${((_a = s.nextDayReasonSkip) == null ? void 0 : _a.length) ? `<p class="muted" style="margin-top:12px">D\xEDas saltados: ${escapeHtml(s.nextDayReasonSkip.join(", "))}</p>` : ""}
+        ${((_a = s.nextDayReasonSkip) == null ? void 0 : _a.length) ? `<p class="muted" style="margin-top:12px">D\xEDas saltados: ${escapeHtml2(s.nextDayReasonSkip.join(", "))}</p>` : ""}
         <div class="actions" style="margin-top:18px">
           <button class="btn" id="btn-day-close-pdf">PDF del cierre</button>
           <button class="btn accent" id="btn-day-package">Paquete del d\xEDa</button>
@@ -9949,7 +10873,7 @@ ${xrefPos}
       (r) => {
         var _a;
         return `<tr>
-                            <td>${escapeHtml(r.date)}</td>
+                            <td>${escapeHtml2(r.date)}</td>
                             <td>${formatEuro(r.salesCents)}</td>
                             <td>${formatEuro(r.commissionCents)}</td>
                             <td>${formatEuro(r.profitCents)}</td>
@@ -9986,9 +10910,9 @@ ${xrefPos}
           <div class="showcase-grid">
             ${items.length ? items.map(
       (d) => `<div class="showcase-item">
-                        <strong>n\xBA ${escapeHtml(d.number)}</strong>
-                        <div>${escapeHtml(d.productName)} \xD7${d.qty}</div>
-                        <div class="muted">${formatEuro(d.unitCents * d.qty)}${d.note ? ` \xB7 ${escapeHtml(d.note)}` : ""}</div>
+                        <strong>n\xBA ${escapeHtml2(d.number)}</strong>
+                        <div>${escapeHtml2(d.productName)} \xD7${d.qty}</div>
+                        <div class="muted">${formatEuro(d.unitCents * d.qty)}${d.note ? ` \xB7 ${escapeHtml2(d.note)}` : ""}</div>
                         <button class="btn danger" style="margin-top:8px;padding:6px 10px" data-rm-sc="${d.id}">Quitar</button>
                       </div>`
     ).join("") : '<div class="muted">Escaparate vac\xEDo.</div>'}
@@ -9999,7 +10923,7 @@ ${xrefPos}
             <label>Producto<br/>
               <select id="sc-product" style="padding:8px;border-radius:10px;border:1px solid var(--line);max-width:280px">
                 ${showcaseableProducts().map(
-      (p) => `<option value="${p.id}">${escapeHtml(p.short || p.name)} \xB7 ${escapeHtml(p.org || "")}</option>`
+      (p) => `<option value="${p.id}">${escapeHtml2(p.short || p.name)} \xB7 ${escapeHtml2(p.org || "")}</option>`
     ).join("")}
               </select>
             </label>
@@ -10047,13 +10971,13 @@ ${xrefPos}
         ${sideNav()}
         <section class="panel">
           <h2>Tabl\xF3n del pueblo</h2>
-          <p class="muted">\xC1lora \xB7 ${escapeHtml(ymd2)}</p>
+          <p class="muted">\xC1lora \xB7 ${escapeHtml2(ymd2)}</p>
           <div class="board-list" style="margin-top:12px;display:flex;flex-direction:column;gap:10px">
             ${items.length ? items.map(
-      (it) => `<article class="board-item" data-kind="${escapeHtml(it.kind || "")}" style="padding:12px;border:1px solid var(--line);border-radius:12px">
-                        <div class="muted" style="font-size:0.8rem;text-transform:uppercase">${escapeHtml(it.kind || "")}</div>
-                        <h3 style="margin:4px 0 6px;font-family:var(--font-display)">${escapeHtml(it.title)}</h3>
-                        <p style="margin:0">${escapeHtml(it.body || "")}</p>
+      (it) => `<article class="board-item" data-kind="${escapeHtml2(it.kind || "")}" style="padding:12px;border:1px solid var(--line);border-radius:12px">
+                        <div class="muted" style="font-size:0.8rem;text-transform:uppercase">${escapeHtml2(it.kind || "")}</div>
+                        <h3 style="margin:4px 0 6px;font-family:var(--font-display)">${escapeHtml2(it.title)}</h3>
+                        <p style="margin:0">${escapeHtml2(it.body || "")}</p>
                       </article>`
     ).join("") : '<div class="muted">Nada en el tabl\xF3n hoy.</div>'}
           </div>
@@ -10266,7 +11190,7 @@ ${xrefPos}
         ${sideNav()}
         <section class="panel">
           <h2>Liquidaci\xF3n mensual</h2>
-          <p class="muted">${escapeHtml(st.label)}</p>
+          <p class="muted">${escapeHtml2(st.label)}</p>
           <p class="muted">Remesa = ventas \u2212 comisi\xF3n. Los faltantes de arqueo restan del neto del mes.</p>
           <div class="close-summary">
             <div class="stat-row"><span>Ventas totales</span><strong>${formatEuro(st.totalSales)}</strong></div>
@@ -10311,7 +11235,7 @@ ${xrefPos}
     if (globalKeysBound) return;
     globalKeysBound = true;
     document.addEventListener("keydown", (e) => {
-      var _a, _b, _c, _d, _e;
+      var _a, _b, _c, _d;
       if (!state || state.ui.screen === "menu") return;
       const tag = (((_a = e.target) == null ? void 0 : _a.tagName) || "").toLowerCase();
       const typing = tag === "input" || tag === "textarea" || ((_b = e.target) == null ? void 0 : _b.isContentEditable);
@@ -10324,11 +11248,7 @@ ${xrefPos}
         e.preventDefault();
         if (client.intent === "pena_day") sfx.pena();
         else sfx.tpv();
-        if (client.intent === "pena_day" && (((_e = client.wishlist) == null ? void 0 : _e.length) || client.request)) {
-          loadWishlistIntoTpv(client);
-        } else {
-          openTpv(state, client);
-        }
+        openTpv(state, client);
         needsFullRender = true;
         render();
         return;
