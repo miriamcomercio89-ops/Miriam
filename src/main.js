@@ -60,7 +60,7 @@ import {
   getProduct,
   productMetaLabel,
 } from './data/products.js';
-import { BILLS, COINS, ALL_DENOMS, countTotalCents, emptyDrawer } from './data/money.js';
+import { BILLS, COINS, emptyDrawer } from './data/money.js';
 import {
   sfx,
   startMusic,

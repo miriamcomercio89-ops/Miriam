@@ -1,48 +1,59 @@
 /* src/style.css */
 :root,
 [data-theme=light] {
-  --bg0: #e8f0f2;
-  --bg1: #f7fafb;
-  --ink: #1a2b33;
-  --muted: #5a727c;
-  --line: #c5d5db;
-  --brand: #0e6b7a;
-  --brand-deep: #0a4f5a;
-  --accent: #e2a03a;
-  --accent-ink: #3d2a0a;
-  --ok: #1f7a4c;
-  --bad: #a33b3b;
-  --panel: rgba(255, 255, 255, 0.82);
-  --shadow: 0 18px 50px rgba(26, 43, 51, 0.1);
-  --radius: 18px;
+  --bg0: #dff3f0;
+  --bg1: #fff9f2;
+  --ink: #16323a;
+  --muted: #4f6d75;
+  --line: #b7d4d0;
+  --brand: #0c8a8a;
+  --brand-deep: #065f63;
+  --accent: #f0a202;
+  --accent-ink: #3a2800;
+  --ok: #1b8a5a;
+  --bad: #c23b4a;
+  --coral: #e86a5d;
+  --sky: #3aa8c1;
+  --panel: rgba(255, 255, 255, 0.88);
+  --shadow: 0 16px 40px rgba(6, 95, 99, 0.12);
+  --radius: 20px;
   --font-display:
     "Fraunces",
     Georgia,
     serif;
-  --font-body: "Manrope", sans-serif;
-  --bg-grad-a: rgba(14, 107, 122, 0.18);
-  --bg-grad-b: rgba(226, 160, 58, 0.16);
-  --bg-grad-c: #dce9ec;
-  --bg-grad-d: #eef5f2;
+  --font-body:
+    "Plus Jakarta Sans",
+    "Manrope",
+    sans-serif;
+  --bg-grad-a: rgba(12, 138, 138, 0.22);
+  --bg-grad-b: rgba(240, 162, 2, 0.18);
+  --bg-grad-c: #d4efe9;
+  --bg-grad-d: #fff6ea;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.3, 0.64, 1);
 }
 [data-theme=dark] {
-  --bg0: #122026;
-  --bg1: #1a2d35;
-  --ink: #e8f2f5;
-  --muted: #9bb0b8;
-  --line: #2f4750;
-  --brand: #3db8c9;
-  --brand-deep: #8fd4de;
-  --accent: #e2a03a;
-  --accent-ink: #3d2a0a;
-  --ok: #3ecf8e;
-  --bad: #e06a6a;
-  --panel: rgba(22, 38, 45, 0.9);
-  --shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
-  --bg-grad-a: rgba(61, 184, 201, 0.12);
-  --bg-grad-b: rgba(226, 160, 58, 0.1);
-  --bg-grad-c: #101c22;
-  --bg-grad-d: #152830;
+  --bg0: #0f2428;
+  --bg1: #163239;
+  --ink: #eaf6f4;
+  --muted: #9cb8b8;
+  --line: #2a4a50;
+  --brand: #3ecfc4;
+  --brand-deep: #9be7df;
+  --accent: #f0b429;
+  --accent-ink: #2a1f00;
+  --ok: #45d18c;
+  --bad: #f07178;
+  --coral: #f08a7a;
+  --sky: #5ec4d8;
+  --panel: rgba(18, 40, 46, 0.92);
+  --shadow: 0 18px 48px rgba(0, 0, 0, 0.4);
+  --bg-grad-a: rgba(62, 207, 196, 0.14);
+  --bg-grad-b: rgba(240, 180, 41, 0.12);
+  --bg-grad-c: #0d1f24;
+  --bg-grad-d: #152f36;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.3, 0.64, 1);
 }
 * {
   box-sizing: border-box;
@@ -155,20 +166,25 @@ select {
   border: 1px solid var(--line);
   background: #fff;
   color: var(--ink);
-  border-radius: 12px;
+  border-radius: 14px;
   padding: 10px 14px;
   cursor: pointer;
   transition:
-    transform 0.15s ease,
-    box-shadow 0.15s ease,
-    background 0.15s ease;
+    transform 0.22s var(--ease-spring),
+    box-shadow 0.22s var(--ease-out),
+    background 0.22s var(--ease-out),
+    border-color 0.22s var(--ease-out),
+    color 0.18s ease,
+    opacity 0.18s ease;
 }
 .btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 8px 18px rgba(26, 43, 51, 0.08);
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 10px 22px rgba(6, 95, 99, 0.12);
+  border-color: var(--brand);
 }
 .btn:active {
-  transform: translateY(0);
+  transform: translateY(0) scale(0.98);
+  transition-duration: 0.08s;
 }
 .btn.active {
   background: var(--brand);
@@ -207,7 +223,14 @@ select {
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   padding: 16px;
-  animation: rise 0.7s ease both;
+  animation: rise 0.55s var(--ease-out) both;
+  transition:
+    box-shadow 0.3s var(--ease-out),
+    transform 0.3s var(--ease-out),
+    border-color 0.25s ease;
+}
+.panel:hover {
+  box-shadow: 0 20px 48px rgba(6, 95, 99, 0.14);
 }
 .panel h2,
 .panel h3 {
@@ -238,19 +261,21 @@ select {
 .hero-counter {
   position: relative;
   overflow: hidden;
-  border-radius: 16px;
+  border-radius: 18px;
   padding: 28px 24px;
   background:
     linear-gradient(
-      120deg,
-      rgba(14, 107, 122, 0.92),
-      rgba(10, 79, 90, 0.88)),
+      125deg,
+      rgba(12, 138, 138, 0.95),
+      rgba(6, 95, 99, 0.9) 55%,
+      rgba(240, 162, 2, 0.55)),
     repeating-linear-gradient(
       -12deg,
-      rgba(255, 255, 255, 0.04) 0 8px,
+      rgba(255, 255, 255, 0.05) 0 8px,
       rgba(255, 255, 255, 0) 8px 16px);
   color: #f4fbfc;
   min-height: 180px;
+  animation: rise 0.5s var(--ease-out) both;
 }
 .hero-counter::after {
   content: "";
@@ -279,10 +304,42 @@ select {
 }
 .client-card {
   border: 1px solid var(--line);
-  border-radius: 16px;
-  padding: 16px;
-  background: #fff;
-  animation: pop 0.35s ease both;
+  border-radius: 18px;
+  padding: 16px 18px;
+  background:
+    linear-gradient(
+      180deg,
+      #fff 0%,
+      #f7fcfb 100%);
+  animation: pop 0.4s var(--ease-spring) both;
+  transition:
+    border-color 0.25s var(--ease-out),
+    box-shadow 0.25s var(--ease-out),
+    transform 0.25s var(--ease-out);
+  box-shadow: 0 8px 24px rgba(6, 95, 99, 0.06);
+}
+.client-card:hover {
+  border-color: rgba(12, 138, 138, 0.45);
+  box-shadow: 0 14px 32px rgba(6, 95, 99, 0.1);
+}
+.client-card.intent-pickup {
+  border-color: rgba(27, 138, 90, 0.45);
+  background:
+    linear-gradient(
+      180deg,
+      #f3fff8 0%,
+      #fff 100%);
+}
+.client-card.intent-showcase_ask {
+  border-color: rgba(240, 162, 2, 0.5);
+  background:
+    linear-gradient(
+      180deg,
+      #fffaf0 0%,
+      #fff 100%);
+}
+.client-card.intent-check {
+  border-color: rgba(58, 168, 193, 0.45);
 }
 .client-card h3 {
   margin: 0 0 4px;
@@ -579,14 +636,28 @@ select {
 .notice-banner {
   margin: 8px 0 0;
   padding: 12px 16px;
-  background: rgba(14, 107, 122, 0.14);
-  border: 2px solid rgba(14, 107, 122, 0.45);
-  border-radius: 12px;
+  background: rgba(12, 138, 138, 0.14);
+  border: 2px solid rgba(12, 138, 138, 0.4);
+  border-radius: 14px;
   font-size: 1.02rem;
   font-weight: 700;
   color: var(--brand-deep);
-  box-shadow: 0 0 0 1px rgba(14, 107, 122, 0.08);
-  animation: notice-pulse 2.8s ease-in-out infinite;
+  box-shadow: 0 0 0 1px rgba(12, 138, 138, 0.08);
+  animation: notice-pulse 2.8s ease-in-out infinite, rise 0.45s var(--ease-out) both;
+  transition: transform 0.25s var(--ease-out), background 0.25s ease;
+}
+.notice-banner.draw-live {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(232, 106, 93, 0.18),
+      rgba(240, 162, 2, 0.2));
+  border-color: rgba(232, 106, 93, 0.55);
+  color: #8a2e28;
+  animation: notice-pulse 1.6s ease-in-out infinite, rise 0.4s var(--ease-spring) both;
+}
+[data-theme=dark] .notice-banner.draw-live {
+  color: #ffc9c4;
 }
 .notice-banner.sticky-notice {
   position: sticky;
@@ -886,5 +957,76 @@ select {
 }
 .board-item[data-kind=sorteo],
 .board-item.sorteo {
-  border-color: rgba(14, 107, 122, 0.35);
+  border-color: rgba(12, 138, 138, 0.4);
+  background:
+    linear-gradient(
+      135deg,
+      rgba(12, 138, 138, 0.06),
+      transparent);
+}
+.board-item[data-kind=bote] {
+  border-color: rgba(240, 162, 2, 0.45);
+  background:
+    linear-gradient(
+      135deg,
+      rgba(240, 162, 2, 0.1),
+      transparent);
+}
+.board-item {
+  transition:
+    transform 0.25s var(--ease-out),
+    box-shadow 0.25s var(--ease-out),
+    border-color 0.25s ease;
+}
+.board-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(6, 95, 99, 0.1);
+}
+.tpv-product {
+  transition:
+    transform 0.22s var(--ease-spring),
+    border-color 0.22s ease,
+    box-shadow 0.22s var(--ease-out) !important;
+}
+.tpv-product:hover {
+  transform: translateY(-3px);
+  border-color: var(--brand) !important;
+  box-shadow: 0 12px 28px rgba(12, 138, 138, 0.12);
+}
+.nav-side .btn {
+  transition:
+    transform 0.2s var(--ease-spring),
+    background 0.22s var(--ease-out),
+    border-color 0.22s ease,
+    color 0.18s ease,
+    box-shadow 0.22s var(--ease-out);
+}
+.nav-group {
+  animation: rise 0.45s var(--ease-out) both;
+}
+.nav-group:nth-child(2) {
+  animation-delay: 0.04s;
+}
+.nav-group:nth-child(3) {
+  animation-delay: 0.08s;
+}
+.nav-group:nth-child(4) {
+  animation-delay: 0.12s;
+}
+.nav-group:nth-child(5) {
+  animation-delay: 0.16s;
+}
+.toast {
+  animation: pop 0.35s var(--ease-spring) both !important;
+}
+.shell {
+  animation: fade-in 0.35s var(--ease-out) both;
+}
+@keyframes fade-in {
+  from {
+    opacity: 0.6;
+  }
+  to {
+    opacity: 1;
+  }
 }
