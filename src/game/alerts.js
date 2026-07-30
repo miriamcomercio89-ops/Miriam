@@ -12,7 +12,7 @@ export function maybeLowCashAlert(state) {
   if (!state?.office?.isOpen) return false;
   const d = gameDate(state);
   const hour = d.getUTCHours();
-  if (hour < 10 || hour >= 14) return false;
+  if (hour < 9 || hour >= 15) return false;
   const ymd = gameYmd(state);
   if (state.ui.lowCashAlertYmd === ymd) return false;
   const total = drawerTotalCents(state.finance.drawer);

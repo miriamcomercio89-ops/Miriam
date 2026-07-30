@@ -5393,7 +5393,7 @@ ${xrefPos}
     if (!((_a = state2 == null ? void 0 : state2.office) == null ? void 0 : _a.isOpen)) return false;
     const d = gameDate(state2);
     const hour = d.getUTCHours();
-    if (hour < 10 || hour >= 14) return false;
+    if (hour < 9 || hour >= 15) return false;
     const ymd2 = gameYmd(state2);
     if (state2.ui.lowCashAlertYmd === ymd2) return false;
     const total = drawerTotalCents(state2.finance.drawer);
