@@ -4,6 +4,181 @@
   const STORAGE_KEY = 'miriam_state_v1';
   const GAME_TIME_SCALE = 0.25; // el tiempo del juego avanza 4x más lento que el real
 
+  // Fallback games (para abrir index.html directamente sin servidor)
+  const FALLBACK_GAMES = [
+  {
+    "id": "LAE-primitiva",
+    "name": "Primitiva",
+    "type": "LAE",
+    "price": 1,
+    "frequency": "miércoles y sábados",
+    "description": "Sorteo clásico de Lotería Primitiva. Selección de 6 números entre 1 y 49. Existe Bono + Reintegro en sorteos especiales.",
+    "data": { "pick": 6, "from": 49, "reintegro": true }
+  },
+  {
+    "id": "LAE-bonoloto",
+    "name": "Bonoloto",
+    "type": "LAE",
+    "price": 0.5,
+    "frequency": "diario (excepto domingos en algunos periodos)",
+    "description": "Sorteo diario de 6 números entre 1 y 49. Reintegro disponible.",
+    "data": { "pick": 6, "from": 49, "reintegro": true }
+  },
+  {
+    "id": "LAE-euromillones",
+    "name": "Euromillones",
+    "type": "LAE",
+    "price": 2.5,
+    "frequency": "martes y viernes",
+    "description": "Juego paneuropeo: 5 números (1-50) + 2 estrellas (1-12). Premios por categorías.",
+    "data": { "pickMain": 5, "fromMain": 50, "pickStars": 2, "fromStars": 12 }
+  },
+  {
+    "id": "LAE-el-gordo-primitiva",
+    "name": "El Gordo de la Primitiva",
+    "type": "LAE",
+    "price": 1,
+    "frequency": "domingo",
+    "description": "Sorteo semanal: 5 números (1-54) + número clave (1-9). Premios por categorías.",
+    "data": { "pick": 5, "from": 54, "claveFrom": 9 }
+  },
+  {
+    "id": "LAE-loteria-nacional",
+    "name": "Lotería Nacional",
+    "type": "LAE",
+    "price": 3,
+    "frequency": "varios sorteos semanales y extraordinarios (Navidad, El Niño)",
+    "description": "Sorteos con billetes y series; incluye Sorteo Extraordinario de Navidad y del Niño.",
+    "data": { "format": "billete/serie" }
+  },
+  {
+    "id": "LAE-quintuple-quiniela",
+    "name": "La Quiniela",
+    "type": "LAE",
+    "price": 0.75,
+    "frequency": "semanal",
+    "description": "Apuesta sobre resultados de partidos (1-X-2) con categorías y premios por aciertos.",
+    "data": { "markets": "fútbol 1X2" }
+  },
+  {
+    "id": "LAE-quinigol",
+    "name": "Quinigol",
+    "type": "LAE",
+    "price": 0.75,
+    "frequency": "semanal",
+    "description": "Pronosticar número de goles en 14 partidos; premios por aciertos exactos.",
+    "data": { "matches": 14 }
+  },
+  {
+    "id": "LAE-lototurf",
+    "name": "Lototurf",
+    "type": "LAE",
+    "price": 0.5,
+    "frequency": "semanal",
+    "description": "Combinación entre lotería y apuestas hípicas; varias modalidades.",
+    "data": {}
+  },
+  {
+    "id": "ONCE-cupon",
+    "name": "Cupón Diario (ONCE)",
+    "type": "ONCE",
+    "price": 2,
+    "frequency": "diario",
+    "description": "Cupón diario de la ONCE con premio mayor en cada sorteo; formato de 5 o 6 cifras según sorteo.",
+    "data": { "format": "números", "typicalPrize": "variable" }
+  },
+  {
+    "id": "ONCE-cuponazo",
+    "name": "Cuponazo (ONCE)",
+    "type": "ONCE",
+    "price": 5,
+    "frequency": "semanal",
+    "description": "Sorteo especial de la ONCE con grandes botes y premios acumulados.",
+    "data": {}
+  },
+  {
+    "id": "ONCE-sueldazo",
+    "name": "Sueldazo del Fin de Semana (ONCE)",
+    "type": "ONCE",
+    "price": 3,
+    "frequency": "semanal",
+    "description": "Sorteo de la ONCE con premios periódicos que suelen pagar rentas mensuales.",
+    "data": {}
+  },
+  {
+    "id": "Rasca-classic-1",
+    "name": "Rasca Clásico",
+    "type": "Rasca",
+    "price": 1,
+    "frequency": "instantáneo",
+    "description": "Rasca instantáneo clásico. Simple y directo; premio o nada.",
+    "data": { "format": "instant", "odds": "varia" }
+  },
+  {
+    "id": "Rasca-premium-2",
+    "name": "Rasca Premium",
+    "type": "Rasca",
+    "price": 5,
+    "frequency": "instantáneo",
+    "description": "Rasca con mayores premios y peores probabilidades de premio alto.",
+    "data": { "format": "instant", "odds": "varia" }
+  },
+  {
+    "id": "Autonomica-andalucia-1",
+    "name": "Andalucía Fortuna",
+    "type": "Autonómica",
+    "price": 1,
+    "frequency": "semanal",
+    "description": "Juego autonómico ficticio para Andalucía con sorteo semanal y varias categorías.",
+    "data": { "pick": 5, "from": 40 }
+  },
+  {
+    "id": "Autonomica-andalucia-2",
+    "name": "Sorteo Costa del Sol",
+    "type": "Autonómica",
+    "price": 2,
+    "frequency": "semanal",
+    "description": "Juego ficticio regional con bote acumulado y premio principal.",
+    "data": { "pick": 5, "from": 45 }
+  },
+  {
+    "id": "Provincial-malaga-1",
+    "name": "Provincia de Málaga — Premio",
+    "type": "Provincial",
+    "price": 1,
+    "frequency": "semanal",
+    "description": "Juego provincial inventado con varias categorías y reintegros.",
+    "data": { "pick": 5, "from": 50 }
+  },
+  {
+    "id": "Local-alora-1",
+    "name": "Álora Local",
+    "type": "Local",
+    "price": 0.5,
+    "frequency": "semanal",
+    "description": "Rifa local de Álora con premios en especie o dinero simbólico.",
+    "data": { "format": "localRaffle" }
+  },
+  {
+    "id": "Inventado-1",
+    "name": "MegaRasca 10M",
+    "type": "Inventado",
+    "price": 10,
+    "frequency": "instantáneo",
+    "description": "Rasca inventado con posibilidad de gran premio (simulado).",
+    "data": { "format": "instant", "topPrize": 10000000 }
+  },
+  {
+    "id": "Inventado-2",
+    "name": "Suerte 7",
+    "type": "Inventado",
+    "price": 1,
+    "frequency": "diario",
+    "description": "Juego de selección de 1 número del 1 al 7; si coincide, premio fijo.",
+    "data": { "pick": 1, "from": 7 }
+  }
+];
+
   // Default state
   const defaultState = {
     createdAt: new Date().toISOString(),
@@ -174,7 +349,15 @@
   fetch('data/games.json').then(r=>r.json()).then(g=>{
     if(Array.isArray(g) && g.length>0){ state.gamesCatalog = g; saveState(); }
     refreshUI();
-  }).catch(()=>{ refreshUI(); });
+  }).catch(()=>{ 
+    // Si falla el fetch (por ejemplo, file:// o CORS), usamos el fallback incrustado
+    if((!state.gamesCatalog) || state.gamesCatalog.length===0){
+      state.gamesCatalog = FALLBACK_GAMES.slice();
+      saveState();
+      log('Usando catálogo de juegos embebido (fallback) — no se requería servidor');
+    }
+    refreshUI();
+  });
 
   // Start clock
   tick();
