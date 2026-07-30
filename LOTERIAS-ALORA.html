@@ -712,6 +712,52 @@ select {
 .day-results {
   animation: rise 0.55s ease both;
 }
+.check-compare {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 10px;
+  align-items: stretch;
+  margin: 12px 0;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.4);
+}
+[data-theme=dark] .check-compare {
+  background: rgba(0, 0, 0, 0.22);
+}
+.check-compare-col {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.check-compare-label {
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.check-compare-col strong {
+  font-size: 0.98rem;
+  line-height: 1.35;
+  word-break: break-word;
+}
+.check-compare-vs {
+  align-self: center;
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  color: var(--brand);
+  opacity: 0.85;
+}
+@media (max-width: 640px) {
+  .check-compare {
+    grid-template-columns: 1fr;
+  }
+  .check-compare-vs {
+    justify-self: start;
+  }
+}
 .showcase-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -1165,6 +1211,8 @@ try {
       flavor: "",
       prizeTier: org === "Local" ? "small" : org === "Provincial" ? "mid" : "big",
       fractionable: false,
+      reintegro: org !== "Local",
+      minAge: 18,
       ...extra
     };
   }
@@ -1266,317 +1314,461 @@ try {
       description: "Un n\xFAmero de ruleta (0\u201336). Jueves."
     }),
     L("and-azahar", "Azahar Premiado", "Auton\xF3mica", "Auton\xF3micas", 160, [3], {
+      short: "Azahar",
+      prizeTier: "mid",
+      flavor: "Azahar de Sevilla",
+      topPrizeHint: "hasta 90.000 \u20AC",
       numberMode: "fecha",
       trait: "D\xEDa + mes",
-      topPrizeHint: "Flor",
       description: "Elige d\xEDa (1\u201331) y mes (1\u201312)."
     }),
     L("and-duende", "Duende Andaluz", "Auton\xF3mica", "Auton\xF3micas", 220, [5], {
+      short: "Duende",
+      prizeTier: "big",
+      flavor: "Cante jondo",
+      topPrizeHint: "hasta 350.000 \u20AC",
       numberMode: "bingo75",
       commissionRate: 0.075,
       trait: "Bingo 5/75",
-      topPrizeHint: "Duende mayor",
       description: "5 n\xFAmeros del 1 al 75."
     }),
     L("and-sol", "Sol de Andaluc\xEDa", "Auton\xF3mica", "Auton\xF3micas", 100, [1, 4], {
+      short: "Sol And.",
+      prizeTier: "mid",
+      flavor: "Hora del sol",
+      topPrizeHint: "hasta 110.000 \u20AC",
       numberMode: "horaSuerte",
       trait: "Hora HH:MM",
-      topPrizeHint: "Mediod\xEDa",
       description: "Marca una hora (00:00\u201323:59). Lunes y jueves."
     }),
     L("and-luna", "Luna Mora", "Auton\xF3mica", "Auton\xF3micas", 140, [6], {
+      short: "Luna Mora",
+      prizeTier: "mid",
+      flavor: "Noche andaluza",
+      topPrizeHint: "hasta 95.000 \u20AC",
       numberMode: "pares",
       trait: "Par / impar",
-      topPrizeHint: "Luna llena",
       description: "5 casillas par/impar. S\xE1bados."
     }),
     L("and-patio", "Patio Cordob\xE9s", "Auton\xF3mica", "Auton\xF3micas", 130, [2], {
+      short: "Patio",
+      prizeTier: "mid",
+      flavor: "Patios de C\xF3rdoba",
+      topPrizeHint: "hasta 70.000 \u20AC",
       numberMode: "dados",
       trait: "3 dados",
-      topPrizeHint: "Patio de flores",
       description: "3 dados (1\u20136). Martes."
     })
   ];
   var PROVINCIALES = [
     L("mal-premio", "Premio M\xE1laga", "Provincial", "Provinciales", 100, [4], {
+      short: "P. M\xE1laga",
+      prizeTier: "mid",
+      flavor: "Capital de la Costa",
+      topPrizeHint: "hasta 100.000 \u20AC",
       numberMode: "5from40",
       trait: "Provincial 5/40",
-      topPrizeHint: "Capital",
       description: "5/40 provincial. Jueves."
     }),
     L("mal-axarquia", "Axarqu\xEDa Premia", "Provincial", "Provinciales", 120, [3], {
+      short: "Axarqu\xEDa",
+      prizeTier: "mid",
+      flavor: "Moscatel y sol",
+      topPrizeHint: "hasta 85.000 \u20AC",
       numberMode: "4from30",
       drawHour: 18,
       trait: "4/30 comarcal",
-      topPrizeHint: "Uva moscatel",
       description: "4 del 1\u201330. Mi\xE9rcoles 18:00."
     }),
     L("mal-antequera", "Antequera Fortuna", "Provincial", "Provinciales", 150, [2], {
+      short: "Antequera",
+      prizeTier: "mid",
+      flavor: "D\xE9cimo del Torcal",
+      topPrizeHint: "hasta 150.000 \u20AC",
       numberMode: "nacional",
       fractionable: true,
       trait: "D\xE9cimo antequerano",
-      topPrizeHint: "Torcal",
       description: "5 cifras. Martes."
     }),
     L("mal-ronda", "Ronda de la Suerte", "Provincial", "Provinciales", 180, [5], {
+      short: "Ronda",
+      prizeTier: "mid",
+      flavor: "Puente y sierra",
+      topPrizeHint: "hasta 160.000 \u20AC",
       numberMode: "6from36",
       trait: "6/36 serran\xEDa",
-      topPrizeHint: "Puente nuevo",
       description: "6 del 1\u201336. Viernes."
     }),
     L("mal-marbella", "Marbella Gold", "Provincial", "Provinciales", 300, [6], {
+      short: "Marbella",
+      prizeTier: "big",
+      flavor: "Lujo terminal",
+      topPrizeHint: "hasta 2.000.000 \u20AC",
       numberMode: "euro",
       stockType: "terminal",
       orderDays: 0,
       commissionRate: 0.07,
       trait: "5/50 + 2 estrellas",
-      topPrizeHint: "Gold Mile",
       description: "Estilo Euromillones local (terminal)."
     }),
     L("mal-nerja", "Nerja Balc\xF3n", "Provincial", "Provinciales", 90, [1], {
+      short: "Nerja",
+      prizeTier: "small",
+      flavor: "Balc\xF3n de Europa",
+      topPrizeHint: "hasta 45.000 \u20AC",
       numberMode: "triplex",
       trait: "3 cifras cuevas",
-      topPrizeHint: "Balc\xF3n de Europa",
       description: "3 cifras. Lunes."
     }),
     L("mal-torre", "Torremolinos Sol", "Provincial", "Provinciales", 110, [3], {
+      short: "Torre",
+      prizeTier: "small",
+      flavor: "Paseo mar\xEDtimo",
+      topPrizeHint: "hasta 35.000 \u20AC",
       numberMode: "2from20",
       stockType: "terminal",
       orderDays: 0,
       trait: "Doble playa",
-      topPrizeHint: "Paseo",
       description: "2 del 1\u201320. Terminal."
     }),
     L("mal-estepona", "Estepona Orqu\xEDdea", "Provincial", "Provinciales", 170, [4], {
+      short: "Estepona",
+      prizeTier: "mid",
+      flavor: "Orqu\xEDdea costera",
+      topPrizeHint: "hasta 140.000 \u20AC",
       numberMode: "colorball",
       trait: "4/30 + orqu\xEDdea",
-      topPrizeHint: "Orqu\xEDdea de oro",
       description: "4 n\xFAmeros + color."
     }),
     L("mal-fuengirola", "Fuengirola Playa", "Provincial", "Provinciales", 100, [5], {
+      short: "Fuengirola",
+      prizeTier: "mid",
+      flavor: "Ruleta de playa",
+      topPrizeHint: "hasta 120.000 \u20AC",
       numberMode: "ruleta",
       trait: "Ruleta costa",
-      topPrizeHint: "Sohail",
       description: "N\xFAmero 0\u201336. Viernes."
     }),
     L("mal-velez", "V\xE9lez-M\xE1laga", "Provincial", "Provinciales", 130, [2], {
+      short: "V\xE9lez",
+      prizeTier: "mid",
+      flavor: "Fecha de Axarqu\xEDa",
+      topPrizeHint: "hasta 75.000 \u20AC",
       numberMode: "fecha",
       trait: "Fecha Axarqu\xEDa",
-      topPrizeHint: "Fortaleza",
       description: "D\xEDa y mes. Martes."
     }),
     L("mal-coin", "Co\xEDn Valle", "Provincial", "Provinciales", 80, [6], {
+      short: "Co\xEDn",
+      prizeTier: "small",
+      flavor: "Huerta del valle",
+      topPrizeHint: "hasta 40.000 \u20AC",
       numberMode: "dados",
       trait: "Dados del valle",
-      topPrizeHint: "Huerta",
       description: "3 dados. S\xE1bados."
     }),
     L("mal-alhaurin", "Alhaur\xEDn Suerte", "Provincial", "Provinciales", 140, [3], {
+      short: "Alhaur\xEDn",
+      prizeTier: "mid",
+      flavor: "Jard\xEDn de M\xE1laga",
+      topPrizeHint: "hasta 180.000 \u20AC",
       numberMode: "7from45",
       trait: "7/45 sierra",
-      topPrizeHint: "Jard\xEDn",
       description: "7 del 1\u201345. Mi\xE9rcoles."
     }),
     L("mal-cartama", "C\xE1rtama Guadalhorce", "Provincial", "Provinciales", 95, [1], {
+      short: "C\xE1rtama",
+      prizeTier: "small",
+      flavor: "Orillas del r\xEDo",
+      topPrizeHint: "hasta 50.000 \u20AC",
       numberMode: "pares",
       trait: "Par/impar r\xEDo",
-      topPrizeHint: "Guadalhorce",
       description: "5 casillas par/impar. Lunes."
     }),
     L("mal-archidona", "Archidona Pe\xF1a", "Provincial", "Provinciales", 160, [4], {
+      short: "Archidona",
+      prizeTier: "mid",
+      flavor: "Pe\xF1a de la Ochavada",
+      topPrizeHint: "hasta 100.000 \u20AC",
       numberMode: "carta",
       trait: "Baraja pe\xF1era",
-      topPrizeHint: "Ochavada",
       description: "3 cartas espa\xF1olas. Jueves."
     }),
     L("mal-torcal", "Torcal M\xE1gico", "Provincial", "Provinciales", 200, [5], {
+      short: "Torcal",
+      prizeTier: "big",
+      flavor: "Piedra k\xE1rstica",
+      topPrizeHint: "hasta 220.000 \u20AC",
       numberMode: "bingo75",
       trait: "Bingo k\xE1rstico",
-      topPrizeHint: "Formaciones",
       description: "5/75. Viernes."
     }),
     L("mal-caminito", "Caminito del Rey", "Provincial", "Provinciales", 250, [6], {
+      short: "Caminito",
+      prizeTier: "big",
+      flavor: "Pasarelas y v\xE9rtigo",
+      topPrizeHint: "hasta 280.000 \u20AC",
       numberMode: "horaSuerte",
       commissionRate: 0.11,
       trait: "Hora desfiladero",
-      topPrizeHint: "Pasarela",
       description: "Marca la hora de tu paseo. S\xE1bados."
     }),
     L("mal-chorro", "Desfiladero del Chorro", "Provincial", "Provinciales", 150, [2], {
+      short: "El Chorro",
+      prizeTier: "mid",
+      flavor: "Embalse de noche",
+      topPrizeHint: "hasta 130.000 \u20AC",
       numberMode: "6from36",
       drawHour: 21,
       trait: "6/36 embalse",
-      topPrizeHint: "Embalse",
       description: "6/36. Martes 21:00."
     }),
     L("mal-montes", "Montes de M\xE1laga", "Provincial", "Provinciales", 115, [3], {
+      short: "Montes",
+      prizeTier: "mid",
+      flavor: "Mirador de pinos",
+      topPrizeHint: "hasta 70.000 \u20AC",
       numberMode: "4from30",
       trait: "4/30 montes",
-      topPrizeHint: "Mirador",
       description: "4 del 1\u201330. Mi\xE9rcoles."
     })
   ];
   var LOCALES = [
     L("alo-local", "\xC1lora Local", "Local", "Locales", 50, [5], {
+      short: "\xC1lora Loc.",
+      prizeTier: "small",
+      flavor: "Serie del pueblo",
+      topPrizeHint: "hasta 15.000 \u20AC",
       numberMode: "serieLocal",
       drawHour: 19,
       trait: "Serie 000\u2013999",
-      topPrizeHint: "Pueblo",
       description: "N\xFAmero local de 3 cifras. Viernes 19:00."
     }),
     L("alo-hoya", "Hoya de M\xE1laga", "Local", "Locales", 100, [3], {
+      short: "Hoya",
+      prizeTier: "small",
+      flavor: "Valle dulce",
+      topPrizeHint: "hasta 40.000 \u20AC",
       numberMode: "5from40",
       trait: "5/40 valle",
-      topPrizeHint: "Hoya dulce",
       description: "5/40 de la Hoya. Mi\xE9rcoles."
     }),
     L("alo-chorro", "Suerte del Chorro", "Local", "Locales", 120, [6], {
+      short: "S. Chorro",
+      prizeTier: "mid",
+      flavor: "D\xE9cimo tur\xEDstico",
+      topPrizeHint: "hasta 90.000 \u20AC",
       numberMode: "nacional",
       fractionable: true,
       trait: "D\xE9cimo tur\xEDstico",
-      topPrizeHint: "Caminito",
       description: "5 cifras. Ideal turistas. S\xE1bados."
     }),
     L("alo-castillo", "Castillo de \xC1lora", "Local", "Locales", 100, [4], {
+      short: "Castillo",
+      prizeTier: "small",
+      flavor: "Torre del homenaje",
+      topPrizeHint: "hasta 25.000 \u20AC",
       numberMode: "triplex",
       drawHour: 18,
       trait: "3 cifras castillo",
-      topPrizeHint: "Torre",
       description: "3 cifras. Jueves 18:00."
     }),
     L("alo-flores", "Virgen de Flores Loter\xEDa", "Local", "Locales", 150, [1], {
+      short: "V. Flores",
+      prizeTier: "mid",
+      flavor: "Patrona de \xC1lora",
+      topPrizeHint: "hasta 60.000 \u20AC",
       numberMode: "fecha",
       trait: "Fecha patronal",
-      topPrizeHint: "Patrona",
       description: "Rifa inventada de la patrona: d\xEDa + mes."
     }),
     L("alo-sanjuan", "San Juan de \xC1lora", "Local", "Locales", 80, [2], {
+      short: "San Juan",
+      prizeTier: "small",
+      flavor: "Hogueras de junio",
+      topPrizeHint: "hasta 30.000 \u20AC",
       numberMode: "dados",
       trait: "Dados de hogueras",
-      topPrizeHint: "Hoguera",
       description: "3 dados. Martes."
     }),
     L("alo-estacion", "Estaci\xF3n Guadalhorce", "Local", "Locales", 50, [5], {
+      short: "Estaci\xF3n",
+      prizeTier: "small",
+      flavor: "And\xE9n Guadalhorce",
+      topPrizeHint: "hasta 20.000 \u20AC",
       numberMode: "2from20",
       stockType: "terminal",
       orderDays: 0,
       trait: "And\xE9n 1\u201320",
-      topPrizeHint: "Tren",
       description: "2 n\xFAmeros. Terminal de estaci\xF3n."
     }),
     L("alo-plaza", "Plaza Baja Premia", "Local", "Locales", 60, [3], {
+      short: "Plaza Baja",
+      prizeTier: "small",
+      flavor: "Caf\xE9 y ruleta",
+      topPrizeHint: "hasta 22.000 \u20AC",
       numberMode: "ruleta",
       trait: "Ruleta de plaza",
-      topPrizeHint: "Caf\xE9",
       description: "0\u201336. Mi\xE9rcoles."
     }),
     L("alo-real", "Calle Real Suerte", "Local", "Locales", 70, [4], {
+      short: "C. Real",
+      prizeTier: "small",
+      flavor: "Portales pares",
+      topPrizeHint: "hasta 18.000 \u20AC",
       numberMode: "pares",
       trait: "Par/impar calle",
-      topPrizeHint: "Portal",
       description: "5 casillas par/impar. Jueves."
     }),
     L("alo-puente", "Puente de \xC1lora", "Local", "Locales", 110, [6], {
+      short: "Puente",
+      prizeTier: "small",
+      flavor: "Arco sobre el r\xEDo",
+      topPrizeHint: "hasta 35.000 \u20AC",
       numberMode: "4from30",
       trait: "4/30 puente",
-      topPrizeHint: "Arco",
       description: "4 del 1\u201330. S\xE1bados."
     }),
     L("alo-mirador", "Mirador del Valle", "Local", "Locales", 130, [1], {
+      short: "Mirador",
+      prizeTier: "mid",
+      flavor: "Atardecer en el valle",
+      topPrizeHint: "hasta 55.000 \u20AC",
       numberMode: "horaSuerte",
       trait: "Hora del mirador",
-      topPrizeHint: "Atardecer",
       description: "Elige la hora del atardecer."
     }),
     L("alo-naranjo", "Naranjo Dulce", "Local", "Locales", 40, [2], {
+      short: "Naranjo",
+      prizeTier: "small",
+      flavor: "Serie barata dulce",
+      topPrizeHint: "hasta 8.000 \u20AC",
       numberMode: "serieLocal",
       commissionRate: 0.14,
       trait: "Serie barata",
-      topPrizeHint: "Naranja",
       description: "Serie 000\u2013999 a 0,40 \u20AC."
     }),
     L("alo-aceite", "Aceite de la Hoya", "Local", "Locales", 90, [5], {
+      short: "Aceite",
+      prizeTier: "small",
+      flavor: "Verde oliva",
+      topPrizeHint: "hasta 45.000 \u20AC",
       numberMode: "colorball",
       trait: "4/30 + verde oliva",
-      topPrizeHint: "AOVE",
       description: "4 n\xFAmeros + color (aceite)."
     }),
     L("alo-feria", "Feria de \xC1lora Rifa", "Local", "Locales", 150, [6], {
+      short: "Feria \xC1lora",
+      prizeTier: "mid",
+      flavor: "Caseta y baraja",
+      topPrizeHint: "hasta 70.000 \u20AC",
       numberMode: "carta",
       trait: "Baraja de feria",
-      topPrizeHint: "Caseta",
       description: "3 cartas. S\xE1bado de feria."
     }),
     L("alo-verano", "Verano en el Pueblo", "Local", "Locales", 100, [3], {
+      short: "Verano",
+      prizeTier: "mid",
+      flavor: "Bingo de terraza",
+      topPrizeHint: "hasta 80.000 \u20AC",
       numberMode: "bingo75",
       seasonMonths: [6, 7, 8],
       trait: "Bingo verano",
-      topPrizeHint: "Terraza",
       description: "5/75. M\xE1s stock en verano."
     }),
     L("alo-navidad", "Navidad Alore\xF1a", "Local", "Locales", 200, [], {
+      short: "Nav. \xC1lora",
+      prizeTier: "big",
+      flavor: "Gordo del pueblo",
+      topPrizeHint: "hasta 200.000 \u20AC",
       numberMode: "nacional",
       fractionable: true,
       seasonMonths: [11, 12],
       orderDays: 3,
       trait: "D\xE9cimo navide\xF1o local",
-      topPrizeHint: "Gordo del pueblo",
       description: "Sorteo local de Navidad (22 dic. inventado)."
     }),
     L("pue-pizarra", "Pizarra Vecina", "Local", "Locales", 50, [4], {
+      short: "Pizarra",
+      prizeTier: "small",
+      flavor: "Vecina del valle",
+      topPrizeHint: "hasta 12.000 \u20AC",
       numberMode: "triplex",
       trait: "3 cifras vecina",
-      topPrizeHint: "Pizarra",
       description: "3 cifras. Jueves."
     }),
     L("pue-carratraca", "Carratraca Termal", "Local", "Locales", 100, [2], {
+      short: "Carratraca",
+      prizeTier: "mid",
+      flavor: "Ba\xF1os termales",
+      topPrizeHint: "hasta 65.000 \u20AC",
       numberMode: "6from36",
       trait: "6/36 termal",
-      topPrizeHint: "Ba\xF1os",
       description: "6/36. Martes."
     }),
     L("pue-ardales", "Ardales Embalse", "Local", "Locales", 110, [5], {
+      short: "Ardales",
+      prizeTier: "mid",
+      flavor: "Embalse Conde",
+      topPrizeHint: "hasta 95.000 \u20AC",
       numberMode: "7from45",
       trait: "7/45 embalse",
-      topPrizeHint: "Conde",
       description: "7 del 1\u201345. Viernes."
     }),
     L("pue-elburgo", "El Burgo Sierra", "Local", "Locales", 55, [1], {
+      short: "El Burgo",
+      prizeTier: "small",
+      flavor: "Pinsapar terminal",
+      topPrizeHint: "hasta 18.000 \u20AC",
       numberMode: "2from20",
       stockType: "terminal",
       orderDays: 0,
       trait: "Doble sierra",
-      topPrizeHint: "Pinsapar",
       description: "2 del 1\u201320. Terminal."
     }),
     L("pue-yunquera", "Yunquera Pinsapo", "Local", "Locales", 100, [3], {
+      short: "Yunquera",
+      prizeTier: "small",
+      flavor: "Dados de la sierra",
+      topPrizeHint: "hasta 28.000 \u20AC",
       numberMode: "dados",
       trait: "Dados pinsapo",
-      topPrizeHint: "Sierra de las Nieves",
       description: "3 dados. Mi\xE9rcoles."
     }),
     L("pue-tolox", "Tolox Fuente", "Local", "Locales", 45, [6], {
+      short: "Tolox",
+      prizeTier: "small",
+      flavor: "Fuente del pueblo",
+      topPrizeHint: "hasta 10.000 \u20AC",
       numberMode: "serieLocal",
       trait: "Serie fuente",
-      topPrizeHint: "Agua",
       description: "000\u2013999. S\xE1bados."
     }),
     L("pue-casarabonela", "Casarabonela", "Local", "Locales", 75, [4], {
+      short: "Casarabonela",
+      prizeTier: "small",
+      flavor: "Blanca de la sierra",
+      topPrizeHint: "hasta 16.000 \u20AC",
       numberMode: "pares",
       trait: "Par/impar blanca",
-      topPrizeHint: "Blanca",
       description: "5 casillas. Jueves."
     }),
     L("pue-alozaima", "Alozaina Pasera", "Local", "Locales", 85, [2], {
+      short: "Alozaina",
+      prizeTier: "small",
+      flavor: "Pasera de uva",
+      topPrizeHint: "hasta 24.000 \u20AC",
       numberMode: "fecha",
       trait: "Fecha de pasera",
-      topPrizeHint: "Uva pasa",
       description: "D\xEDa + mes. Martes."
     }),
     L("pue-guaro", "Guaro Luna", "Local", "Locales", 95, [5], {
+      short: "Guaro",
+      prizeTier: "small",
+      flavor: "Luna de Guaro",
+      topPrizeHint: "hasta 32.000 \u20AC",
       numberMode: "horaSuerte",
       trait: "Hora lunar",
-      topPrizeHint: "Luna de Guaro",
       description: "Marca una hora. Viernes."
     })
   ];
@@ -1590,6 +1782,9 @@ try {
     {
       id: "lae-nacional",
       name: "Loter\xEDa Nacional",
+      short: "Nacional",
+      trait: "D\xE9cimo 5 cifras",
+      topPrizeHint: "hasta el Gordo",
       org: "LAE",
       tpvCategory: "LAE",
       category: "sorteo",
@@ -1607,6 +1802,9 @@ try {
     {
       id: "lae-nacional-jueves",
       name: "Nacional (solo jueves)",
+      short: "Nac. Jueves",
+      trait: "D\xE9cimo jueves",
+      topPrizeHint: "hasta el Gordo",
       org: "LAE",
       tpvCategory: "LAE",
       category: "sorteo",
@@ -1624,6 +1822,9 @@ try {
     {
       id: "lae-navidad",
       name: "Sorteo de Navidad",
+      short: "Navidad",
+      trait: "El Gordo \xB7 22 dic",
+      topPrizeHint: "4.000.000 \u20AC/serie",
       org: "LAE",
       tpvCategory: "LAE",
       category: "especial",
@@ -1641,6 +1842,9 @@ try {
     {
       id: "lae-nino",
       name: "Sorteo del Ni\xF1o",
+      short: "El Ni\xF1o",
+      trait: "6 enero",
+      topPrizeHint: "2.000.000 \u20AC/serie",
       org: "LAE",
       tpvCategory: "LAE",
       category: "especial",
@@ -1658,6 +1862,9 @@ try {
     {
       id: "lae-primitiva",
       name: "La Primitiva",
+      short: "Primitiva",
+      trait: "6/49 + reintegro",
+      topPrizeHint: "bote nacional",
       org: "LAE",
       tpvCategory: "LAE",
       category: "sorteo",
@@ -1676,6 +1883,9 @@ try {
     {
       id: "lae-bonoloto",
       name: "Bonoloto",
+      short: "Bonoloto",
+      trait: "6/49 diario",
+      topPrizeHint: "bote diario",
       org: "LAE",
       tpvCategory: "LAE",
       category: "sorteo",
@@ -1694,6 +1904,9 @@ try {
     {
       id: "lae-euromillones",
       name: "Euromillones",
+      short: "Euromillones",
+      trait: "5/50 + 2 estrellas",
+      topPrizeHint: "bote europeo",
       org: "LAE",
       tpvCategory: "LAE",
       category: "sorteo",
@@ -1712,6 +1925,9 @@ try {
     {
       id: "lae-gordo-primitiva",
       name: "El Gordo de la Primitiva",
+      short: "Gordo Prim.",
+      trait: "5/54 + clave",
+      topPrizeHint: "bote dominical",
       org: "LAE",
       tpvCategory: "LAE",
       category: "sorteo",
@@ -1730,6 +1946,9 @@ try {
     {
       id: "lae-quiniela",
       name: "La Quiniela",
+      short: "Quiniela",
+      trait: "14 \xD7 1X2 + pleno",
+      topPrizeHint: "pleno al 15",
       org: "LAE",
       tpvCategory: "LAE",
       category: "apuestas",
@@ -1747,6 +1966,9 @@ try {
     {
       id: "lae-quinigol",
       name: "Quinigol",
+      short: "Quinigol",
+      trait: "6 partidos 0/1/2/M",
+      topPrizeHint: "goles exactos",
       org: "LAE",
       tpvCategory: "LAE",
       category: "apuestas",
@@ -1764,6 +1986,9 @@ try {
     {
       id: "lae-lototurf",
       name: "Lototurf",
+      short: "Lototurf",
+      trait: "6/12 + caballo",
+      topPrizeHint: "h\xEDpica + loter\xEDa",
       org: "LAE",
       tpvCategory: "LAE",
       category: "apuestas",
@@ -1781,6 +2006,9 @@ try {
     {
       id: "lae-quintuple",
       name: "Qu\xEDntuple Plus",
+      short: "Qu\xEDntuple",
+      trait: "5 carreras + plus",
+      topPrizeHint: "h\xEDpica",
       org: "LAE",
       tpvCategory: "LAE",
       category: "apuestas",
@@ -1799,6 +2027,9 @@ try {
     {
       id: "once-cupon",
       name: "Cup\xF3n Diario ONCE",
+      short: "Cup\xF3n",
+      trait: "5 cifras L\u2013V",
+      topPrizeHint: "hasta 35.000 \u20AC",
       org: "ONCE",
       tpvCategory: "ONCE",
       category: "sorteo",
@@ -1816,6 +2047,9 @@ try {
     {
       id: "once-cuponazo",
       name: "Cuponazo ONCE",
+      short: "Cuponazo",
+      trait: "Viernes especial",
+      topPrizeHint: "hasta 9.000.000 \u20AC",
       org: "ONCE",
       tpvCategory: "ONCE",
       category: "especial",
@@ -1833,6 +2067,9 @@ try {
     {
       id: "once-sueldazo",
       name: "Sueldazo Fin de Semana",
+      short: "Sueldazo",
+      trait: "Domingo + reintegro",
+      topPrizeHint: "sueldo de por vida",
       org: "ONCE",
       tpvCategory: "ONCE",
       category: "especial",
@@ -1850,6 +2087,9 @@ try {
     {
       id: "once-eurojackpot",
       name: "Eurojackpot",
+      short: "Eurojackpot",
+      trait: "5/50 + 2/12",
+      topPrizeHint: "bote europeo",
       org: "ONCE",
       tpvCategory: "ONCE",
       category: "sorteo",
@@ -1867,6 +2107,9 @@ try {
     {
       id: "once-super-once",
       name: "Super Once",
+      short: "Super Once",
+      trait: "5/49 diario",
+      topPrizeHint: "combinaciones",
       org: "ONCE",
       tpvCategory: "ONCE",
       category: "sorteo",
@@ -1884,6 +2127,9 @@ try {
     {
       id: "once-triplex",
       name: "Triplex",
+      short: "Triplex",
+      trait: "3 cifras",
+      topPrizeHint: "hasta 25.000 \u20AC",
       org: "ONCE",
       tpvCategory: "ONCE",
       category: "sorteo",
@@ -1901,6 +2147,9 @@ try {
     {
       id: "once-extra-verano",
       name: "Extraordinario ONCE Verano",
+      short: "Extra verano",
+      trait: "Sorteo de verano",
+      topPrizeHint: "extraordinario",
       org: "ONCE",
       tpvCategory: "ONCE",
       category: "especial",
@@ -1917,6 +2166,9 @@ try {
     {
       id: "once-extra-navidad",
       name: "Extraordinario ONCE Navidad",
+      short: "Extra Navidad",
+      trait: "Sorteo navide\xF1o",
+      topPrizeHint: "extraordinario",
       org: "ONCE",
       tpvCategory: "ONCE",
       category: "especial",
@@ -1933,6 +2185,9 @@ try {
     {
       id: "once-extra-dia",
       name: "Extraordinario D\xEDa de la ONCE",
+      short: "D\xEDa ONCE",
+      trait: "Sorteo del d\xEDa",
+      topPrizeHint: "extraordinario",
       org: "ONCE",
       tpvCategory: "ONCE",
       category: "especial",
@@ -1949,16 +2204,22 @@ try {
     // ——— Autonómicas / provinciales / locales inventadas (Álora / Málaga / Andalucía) ———
     ...REGIONAL_LOTTERIES,
     // ——— Rascas ———
-    ...SCRATCH_CARDS.map((c) => ({
-      ...c,
-      tpvCategory: "Rascas",
-      category: "rasca",
-      stockType: "physical",
-      checkable: true,
-      instant: true,
-      needsNumbers: false,
-      drawDays: []
-    }))
+    ...SCRATCH_CARDS.map((c) => {
+      const top = c.topPrizeCents ? `hasta ${(c.topPrizeCents / 100).toLocaleString("es-ES")} \u20AC` : "instant\xE1neo";
+      return {
+        ...c,
+        short: c.short || c.name.replace(/^Rasca\s+/i, "").split(/\s+/).slice(0, 2).join(" "),
+        trait: c.trait || (c.org === "ONCE" ? "Rasca ONCE" : "Rasca LAE"),
+        topPrizeHint: c.topPrizeHint || top,
+        tpvCategory: "Rascas",
+        category: "rasca",
+        stockType: "physical",
+        checkable: true,
+        instant: true,
+        needsNumbers: false,
+        drawDays: []
+      };
+    })
   ];
   var TPV_CATEGORIES = ["LAE", "ONCE", "Rascas", "Auton\xF3micas", "Provinciales", "Locales"];
   function getProduct(id) {
@@ -2920,8 +3181,8 @@ try {
 
   // src/game/state.js
   var STARTING_BANK_CENTS = 95e4;
-  var SAVE_VERSION = 7;
-  var GAME_VERSION = "0.6";
+  var SAVE_VERSION = 8;
+  var GAME_VERSION = "0.7";
   var SLOT_COUNT = 3;
   var STORAGE_PREFIX = "loterias-alora-slot-";
   var OFFICE = {
@@ -3264,21 +3525,51 @@ try {
     data.ui.screen = "counter";
     return data;
   }
+  function downloadBlob(blob, filename) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
   function exportGame(state2) {
     const payload = {
       ...state2,
       meta: { ...state2.meta, exportedAt: (/* @__PURE__ */ new Date()).toISOString() }
     };
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
     const ymd2 = (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
-    a.href = url;
-    a.download = `loterias-alora-${ymd2}.json`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
+    downloadBlob(blob, `loterias-alora-${ymd2}.json`);
+  }
+  async function exportDayPackage(state2, { downloadDayClosePdf: downloadDayClosePdf2 } = {}) {
+    var _a, _b;
+    const summary = (_a = state2.ui) == null ? void 0 : _a.lastCloseSummary;
+    const ymd2 = (summary == null ? void 0 : summary.date) || new Date(((_b = state2.clock) == null ? void 0 : _b.gameTimeMs) || Date.now()).toISOString().slice(0, 10);
+    const payload = {
+      ...state2,
+      meta: {
+        ...state2.meta,
+        exportedAt: (/* @__PURE__ */ new Date()).toISOString(),
+        dayPackage: ymd2
+      },
+      dayPackage: {
+        closeSummary: summary || null,
+        exportedAt: (/* @__PURE__ */ new Date()).toISOString()
+      }
+    };
+    downloadBlob(
+      new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" }),
+      `paquete-dia-${ymd2}.json`
+    );
+    if (summary && typeof downloadDayClosePdf2 === "function") {
+      await new Promise((r) => setTimeout(r, 350));
+      downloadDayClosePdf2(summary);
+    }
+    state2.ui.toast = summary ? `Paquete del d\xEDa ${ymd2}: partida + PDF de cierre` : `Paquete del d\xEDa ${ymd2}: partida (sin cierre reciente)`;
+    return { ymd: ymd2, hasPdf: !!summary };
   }
   function importGame(file) {
     return new Promise((resolve, reject) => {
@@ -3810,6 +4101,35 @@ try {
     const prize = Math.round((base[hits] || 0) * mult);
     return { prizeCents: prize, detail: prize ? `${hits} aciertos` : "Sin premio", hits };
   }
+  function formatDrawResult(draw) {
+    if (!draw) return "\u2014";
+    if (draw.winningNumber != null) return `N\xBA ${draw.winningNumber}`;
+    if (draw.races) {
+      return `Carreras ${draw.races.join("-")}${draw.plus != null ? ` +${draw.plus}` : ""}`;
+    }
+    if (draw.color) return `${(draw.numbers || []).join(", ")} \xB7 ${draw.color}`;
+    if (draw.roulette != null) return `Ruleta ${draw.roulette}`;
+    if (draw.day != null) return `Fecha ${draw.day}/${draw.month}`;
+    if (draw.hour != null) {
+      return `Hora ${String(draw.hour).padStart(2, "0")}:${String(draw.minute).padStart(2, "0")}`;
+    }
+    if (draw.parity) return `Par/Impar ${draw.parity.join("")}`;
+    if (draw.dice) return `Dados ${draw.dice.join("-")}`;
+    if (draw.cards) return `Cartas ${draw.cards.map((c) => `${c.palo}-${c.valor}`).join(" ")}`;
+    if (draw.stars) return `${(draw.numbers || []).join(", ")} \u2605 ${(draw.stars || []).join(", ")}`;
+    if (draw.clave != null) {
+      return `${(draw.numbers || []).join(", ")} clave ${draw.clave}${draw.reintegro != null ? ` R${draw.reintegro}` : ""}`;
+    }
+    if (draw.column) return `Columna ${draw.column.join("")}${draw.pleno != null ? ` pleno ${draw.pleno}` : ""}`;
+    if (draw.goals) return `Goles ${draw.goals.join("")}`;
+    if (draw.numbers) {
+      let t = draw.numbers.join(", ");
+      if (draw.complementary != null) t += ` C${draw.complementary}`;
+      if (draw.reintegro != null) t += ` R${draw.reintegro}`;
+      return t;
+    }
+    return "\u2014";
+  }
   function checkTicket(state2, ticketId) {
     const ticket = state2.tickets.find((t) => t.id === ticketId);
     if (!ticket) return { ok: false, message: "Ticket no encontrado" };
@@ -3825,7 +4145,9 @@ try {
         ticket,
         prizeCents: ticket.prizeCents,
         detail: ticket.checkDetail,
-        large: ticket.prizeCents >= LARGE_PRIZE_CENTS
+        large: ticket.prizeCents >= LARGE_PRIZE_CENTS,
+        betText: formatSelection(ticket),
+        drawText: ticket.prizeCents ? `Premio oculto ${formatEuro(ticket.prizeCents)}` : "Sin premio en rasca"
       };
     }
     const draw = getDraw(state2, ticket.productId, ticket.drawYmd);
@@ -3835,7 +4157,9 @@ try {
         ticket,
         prizeCents: 0,
         pending: true,
-        detail: `Sorteo del ${ticket.drawYmd} a\xFAn no celebrado`
+        detail: `Sorteo del ${ticket.drawYmd} a\xFAn no celebrado`,
+        betText: formatSelection(ticket),
+        drawText: "Pendiente de celebrar"
       };
     }
     const result = evaluateDrawPrize(ticket, draw);
@@ -3843,14 +4167,29 @@ try {
     ticket.checkedAt = state2.clock.gameTimeMs;
     ticket.status = "checked";
     ticket.checkDetail = result.detail;
+    ticket.drawSnapshot = formatDrawResult(draw);
     return {
       ok: true,
       ticket,
       prizeCents: result.prizeCents,
       detail: result.detail,
       large: result.prizeCents >= LARGE_PRIZE_CENTS,
-      huge: result.prizeCents >= HUGE_PRIZE_CENTS
+      huge: result.prizeCents >= HUGE_PRIZE_CENTS,
+      betText: formatSelection(ticket),
+      drawText: formatDrawResult(draw),
+      draw
     };
+  }
+  function lastIssuedTicket(state2) {
+    var _a, _b, _c;
+    const list = state2.tickets || [];
+    if (!list.length) return null;
+    if ((_b = (_a = state2.ui) == null ? void 0 : _a.lastTickets) == null ? void 0 : _b.length) {
+      const id = (_c = state2.ui.lastTickets[state2.ui.lastTickets.length - 1]) == null ? void 0 : _c.id;
+      const t = list.find((x) => x.id === id);
+      if (t) return t;
+    }
+    return [...list].sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))[0];
   }
   function ticketsForClient(state2, clientId) {
     return (state2.tickets || []).filter((t) => t.clientId === clientId);
@@ -6519,7 +6858,7 @@ ${xrefPos}
         </div>
         <p class="disclaimer">
           Fan-made / no oficial. Nombres de Loter\xEDas y Apuestas del Estado y ONCE usados solo con fines de simulaci\xF3n.
-          Juego responsable \xB7 +18. Versi\xF3n ${GAME_VERSION}: Sorteos visibles, cadena de comprobaci\xF3n, alerta de caja, hist\xF3rico de cierres, pausa, PDF de cierre y sonidos.
+          Juego responsable \xB7 +18. Versi\xF3n ${GAME_VERSION}: comparar apuesta vs sorteo, reimprimir \xFAltimo ticket, paquete del d\xEDa y loter\xEDas con car\xE1cter propio.
         </p>
       </div>
     </div>
@@ -6532,7 +6871,7 @@ ${xrefPos}
       maybeStartMusic();
       state.ui.screen = "counter";
       lastAutosaveRealMs = Date.now();
-      showToast("Bienvenida, Miriam. Versi\xF3n 0.6 lista. Abre el TPV para vender.");
+      showToast("Bienvenida, Miriam. Versi\xF3n 0.7 lista. Abre el TPV para vender.");
       needsFullRender = true;
       render();
     };
@@ -6889,6 +7228,11 @@ ${xrefPos}
           <div class="stat-row"><span>Tickets emitidos</span><strong>${(state.tickets || []).length}</strong></div>
           <div class="stat-row"><span>Pedidos pendientes</span><strong>${state.orders.filter((o) => o.status === "pending").length}</strong></div>
           <div class="stat-row"><span>Afluencia</span><strong>\xD7${crowdFactor(state).toFixed(1)}</strong></div>
+          <div class="actions" style="margin-top:14px">
+            <button class="btn" id="btn-reprint-last" ${lastIssuedTicket(state) ? "" : "disabled"}>
+              Reimprimir \xFAltimo ticket
+            </button>
+          </div>
           <p class="disclaimer" style="margin-top:16px">Fan-made \xB7 no oficial \xB7 +18 \xB7 v${GAME_VERSION}</p>
         </aside>
       </div>
@@ -6910,6 +7254,20 @@ ${xrefPos}
         startArqueo(state, "open");
         needsFullRender = true;
         render();
+      };
+    }
+    const reprint = document.getElementById("btn-reprint-last");
+    if (reprint) {
+      reprint.onclick = () => {
+        const t = lastIssuedTicket(state);
+        if (!t) {
+          sfx.error();
+          showToast("No hay tickets emitidos para reimprimir");
+          return;
+        }
+        downloadTicketPdf(t);
+        sfx.success();
+        showToast(`Reimpreso: ${t.productName} (${t.id})`);
       };
     }
   }
@@ -6955,7 +7313,18 @@ ${xrefPos}
         ${progressLabel}
         <p>Trae <strong>${escapeHtml(t.productName)}</strong> (${t.id})</p>
         <p class="muted">${formatSelection(t)}${t.drawYmd ? ` \xB7 Sorteo ${t.drawYmd}` : ""}</p>
-        ${result ? `<div class="${result.prizeCents ? "total-box" : "error-box"}" style="margin:10px 0">
+        ${result ? `<div class="check-compare">
+                <div class="check-compare-col">
+                  <span class="check-compare-label">Tu apuesta</span>
+                  <strong>${escapeHtml(result.betText || formatSelection(t))}</strong>
+                </div>
+                <div class="check-compare-vs">vs</div>
+                <div class="check-compare-col">
+                  <span class="check-compare-label">Sorteo${t.drawYmd ? ` ${escapeHtml(t.drawYmd)}` : ""}</span>
+                  <strong>${escapeHtml(result.drawText || "\u2014")}</strong>
+                </div>
+              </div>
+              <div class="${result.prizeCents ? "total-box" : "error-box"}" style="margin:10px 0">
                 ${result.pending ? escapeHtml(result.detail) : result.prizeCents ? `\xA1Premio: ${formatEuro(result.prizeCents)}! (${escapeHtml(result.detail || "")})` : `Sin premio. ${escapeHtml(result.detail || "")}`}
               </div>` : ""}
         <div class="actions">
@@ -8160,6 +8529,7 @@ ${xrefPos}
           </div>
           <div class="actions" style="margin-top:12px">
             <button class="btn" id="btn-export">Exportar JSON</button>
+            <button class="btn accent" id="btn-day-package">Paquete del d\xEDa</button>
             <label class="btn ghost" style="cursor:pointer">Importar<input id="import-file" type="file" accept="application/json" hidden /></label>
             <button class="btn danger" id="btn-menu">Volver al men\xFA</button>
           </div>
@@ -8194,6 +8564,11 @@ ${xrefPos}
     document.getElementById("btn-export").onclick = () => {
       exportGame(state);
       showToast("Exportado");
+    };
+    document.getElementById("btn-day-package").onclick = async () => {
+      await exportDayPackage(state, { downloadDayClosePdf });
+      sfx.success();
+      showToast(state.ui.toast || "Paquete del d\xEDa descargado");
     };
     document.getElementById("import-file").onchange = async (e) => {
       var _a;
@@ -8530,6 +8905,7 @@ ${xrefPos}
         ${((_d = s.nextDayReasonSkip) == null ? void 0 : _d.length) ? `<p class="muted" style="margin-top:12px">D\xEDas saltados: ${escapeHtml(s.nextDayReasonSkip.join(", "))}</p>` : ""}
         <div class="actions" style="margin-top:18px">
           <button class="btn" id="btn-day-close-pdf">PDF del cierre</button>
+          <button class="btn accent" id="btn-day-package">Paquete del d\xEDa</button>
           <button class="btn" id="btn-day-closes">Hist\xF3rico cierres</button>
           <button class="btn primary" id="btn-day-results-ok">Abrir mostrador</button>
         </div>
@@ -8542,6 +8918,11 @@ ${xrefPos}
       downloadDayClosePdf(s);
       sfx.success();
       showToast("PDF del cierre descargado");
+    };
+    document.getElementById("btn-day-package").onclick = async () => {
+      await exportDayPackage(state, { downloadDayClosePdf });
+      sfx.success();
+      showToast(state.ui.toast || "Paquete del d\xEDa descargado");
     };
     document.getElementById("btn-day-closes").onclick = () => {
       sfx.click();
