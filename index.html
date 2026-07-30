@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Miriam — Administración de Loterías (simulador)</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app" class="app">
+    <header class="header">
+      <div class="logo">Miriam — Administración de Loterías (Álora)</div>
+      <div class="status">
+        <div id="game-clock" class="clock">--:--:--</div>
+        <div id="office-status" class="office-status">Cargando...</div>
+      </div>
+    </header>
+
+    <main class="main">
+      <aside class="sidebar">
+        <button id="btn-open-sales" class="btn">Abrir panel de ventas</button>
+        <button id="btn-open-admin" class="btn">Panel administrativo</button>
+        <hr>
+        <div class="storage-controls">
+          <button id="btn-export" class="btn">Exportar estado (JSON)</button>
+          <input id="import-file" type="file" accept="application/json" />
+        </div>
+      </aside>
+
+      <section class="content">
+        <div id="welcome" class="card">
+          <h2>Bienvenido, Administrador</h2>
+          <p>Este es el simulador de gestión de la administración de loterías ubicada en Álora. Todo funciona en el navegador y se guarda en localStorage.</p>
+        </div>
+
+        <div id="sales-panel" class="panel hidden card">
+          <h3>Panel de ventas</h3>
+          <div id="sales-controls">
+            <label>Juego
+              <select id="select-game"></select>
+            </label>
+            <label>Importe (€)
+              <input id="input-amount" type="number" min="0.1" step="0.1" value="1">
+            </label>
+            <button id="btn-sell" class="btn primary">Vender boleto</button>
+          </div>
+          <div id="recent-sales" class="list"></div>
+        </div>
+
+        <div id="admin-panel" class="panel hidden card">
+          <h3>Panel administrativo</h3>
+          <div class="admin-grid">
+            <div>
+              <h4>Clientes</h4>
+              <div id="clients-list" class="list"></div>
+              <button id="btn-add-client" class="btn">Añadir cliente</button>
+            </div>
+            <div>
+              <h4>Contabilidad</h4>
+              <div id="accounting-summary" class="list"></div>
+              <button id="btn-open-ledger" class="btn">Ver Libros</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="log" class="card log">
+          <h4>Registro</h4>
+          <div id="log-entries"></div>
+        </div>
+
+      </section>
+    </main>
+
+    <footer class="footer">Versión inicial — rama feature/lottery-full</footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

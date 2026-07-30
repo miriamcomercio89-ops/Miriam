@@ -1,0 +1,12 @@
+[
+  {
+    "id": "LAE-primitiva",
+    "name": "Primitiva",
+    "type": "LAE",
+    "description": "Sorteo clásico de Loterías y Apuestas del Estado. (Plantilla)",
+    "price": 1,
+    "frequency": "semanal",
+    "rules": "Por definir: combinaciones, probabilidades y tablas de premio reales.",
+    "data": {}
+  }
+]
