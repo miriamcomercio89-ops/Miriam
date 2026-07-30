@@ -1,0 +1,17 @@
+{
+  "name": "ferrocarriles-alemania",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Generador y diseño de la red ferroviaria ficticia-realista de Alemania (Nimby Rails)",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "generate:logos": "node scripts/generate-logos.mjs",
+    "generate:docs": "node scripts/generate-docs.mjs",
+    "generate:sample": "node generator/cli.mjs sample",
+    "stats": "node scripts/stats.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

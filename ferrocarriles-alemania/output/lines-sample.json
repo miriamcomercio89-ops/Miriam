@@ -1,0 +1,5892 @@
+{
+  "version": "0.1.0",
+  "generado": "2026-07-30T21:55:44.848Z",
+  "resumen": {
+    "total": 250,
+    "por_tipo": {
+      "ir": 34,
+      "s": 14,
+      "ld": 29,
+      "px": 29,
+      "tur": 13,
+      "re": 30,
+      "n": 27,
+      "ae": 19,
+      "u": 8,
+      "rb": 13,
+      "t": 8,
+      "av": 8,
+      "mc": 5,
+      "rl": 7,
+      "tt": 4,
+      "or": 2
+    },
+    "por_origen_datos": {
+      "real": 34,
+      "ficticia": 153,
+      "hibrida": 63
+    },
+    "operadores_distintos": 65
+  },
+  "lines": [
+    {
+      "id": "line-00001",
+      "codigo": "IR1",
+      "codigo_interno": "IR-nw-1",
+      "nombre": "Interregional Düsseldorf–Leipzig",
+      "tipo_id": "ir",
+      "prefijo": "IR",
+      "operador_id": "rrw",
+      "operador_nombre": "Renania Rodante",
+      "color": "#9F1239",
+      "origen": "duesseldorf-hbf",
+      "destino": "leipzig-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "flirt_ch",
+        "regiolis"
+      ],
+      "origen_datos": "real",
+      "lands": [
+        "nw",
+        "sn"
+      ]
+    },
+    {
+      "id": "line-00002",
+      "codigo": "IR2",
+      "codigo_interno": "IR-hb-2",
+      "nombre": "Interregional Bremen–Potsdam",
+      "tipo_id": "ir",
+      "prefijo": "IR",
+      "operador_id": "lib",
+      "operador_nombre": "Líneas Libres",
+      "color": "#EA580C",
+      "origen": "bremen-hbf",
+      "destino": "potsdam-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "kiss200"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "hb",
+        "bb"
+      ]
+    },
+    {
+      "id": "line-00003",
+      "codigo": "S1",
+      "codigo_interno": "S-th-1",
+      "nombre": "Cercanías Erfurt–Hamburgo Puerto Nuevo (ficticio)",
+      "tipo_id": "s",
+      "prefijo": "S",
+      "operador_id": "shh",
+      "operador_nombre": "Cercanías Hanseáticas",
+      "color": "#172554",
+      "origen": "erfurt-hbf",
+      "destino": "hamburg-hafencity",
+      "via": [],
+      "frecuencia_min": 10,
+      "material": [
+        "mi2n"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "th",
+        "hh"
+      ]
+    },
+    {
+      "id": "line-00004",
+      "codigo": "LD1",
+      "codigo_interno": "LD-rp-1",
+      "nombre": "Larga distancia Maguncia–Essen",
+      "tipo_id": "ld",
+      "prefijo": "LD",
+      "operador_id": "lib",
+      "operador_nombre": "Líneas Libres",
+      "color": "#EA580C",
+      "origen": "mainz-hbf",
+      "destino": "essen-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "kiss200"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "rp",
+        "nw"
+      ]
+    },
+    {
+      "id": "line-00005",
+      "codigo": "IR3",
+      "codigo_interno": "IR-he-3",
+      "nombre": "Interregional Fráncfort Cruce Oeste (ficticio)–Lübeck",
+      "tipo_id": "ir",
+      "prefijo": "IR",
+      "operador_id": "via",
+      "operador_nombre": "Vía Abierta Regional",
+      "color": "#854D0E",
+      "origen": "frankfurt-westkreuz",
+      "destino": "luebeck-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "flirt_ch",
+        "regiolis"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "he",
+        "sh"
+      ]
+    },
+    {
+      "id": "line-00006",
+      "codigo": "PX1",
+      "codigo_interno": "PX-bw-1",
+      "nombre": "Premium exprés Stuttgart–Múnich",
+      "tipo_id": "px",
+      "prefijo": "PX",
+      "operador_id": "aex",
+      "operador_nombre": "AeroEnlace Alemania",
+      "color": "#26A874",
+      "origen": "stuttgart-hbf",
+      "destino": "muenchen-hbf",
+      "via": [],
+      "frecuencia_min": 45,
+      "material": [
+        "ice3"
+      ],
+      "origen_datos": "real",
+      "lands": [
+        "bw",
+        "by"
+      ]
+    },
+    {
+      "id": "line-00007",
+      "codigo": "PX2",
+      "codigo_interno": "PX-nw-2",
+      "nombre": "Premium exprés Essen–Karlsruhe",
+      "tipo_id": "px",
+      "prefijo": "PX",
+      "operador_id": "fer",
+      "operador_nombre": "Feria y Congresos Rail",
+      "color": "#BBD2CD",
+      "origen": "essen-hbf",
+      "destino": "karlsruhe-hbf",
+      "via": [],
+      "frecuencia_min": 45,
+      "material": [
+        "ice4"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "nw",
+        "bw"
+      ]
+    },
+    {
+      "id": "line-00008",
+      "codigo": "LD2",
+      "codigo_interno": "LD-by-2",
+      "nombre": "Larga distancia Wurzburgo–Coblenza",
+      "tipo_id": "ld",
+      "prefijo": "LD",
+      "operador_id": "fer",
+      "operador_nombre": "Feria y Congresos Rail",
+      "color": "#BBD2CD",
+      "origen": "wuerzburg-hbf",
+      "destino": "koblenz-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "ice4"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "by",
+        "rp"
+      ]
+    },
+    {
+      "id": "line-00009",
+      "codigo": "TUR1",
+      "codigo_interno": "TUR-sl-1",
+      "nombre": "Turístico Sarrebruck–Stuttgart",
+      "tipo_id": "tur",
+      "prefijo": "TUR",
+      "operador_id": "pan",
+      "operador_nombre": "Panorámicos Alemanes",
+      "color": "#7E1979",
+      "origen": "saarbruecken-hbf",
+      "destino": "stuttgart-hbf",
+      "via": [],
+      "frecuencia_min": 120,
+      "material": [
+        "gtw_d"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "sl",
+        "bw"
+      ]
+    },
+    {
+      "id": "line-00010",
+      "codigo": "S2",
+      "codigo_interno": "S-by-2",
+      "nombre": "Cercanías Múnich Cruce Sur (ficticio)–Ratisbona",
+      "tipo_id": "s",
+      "prefijo": "S",
+      "operador_id": "snr",
+      "operador_nombre": "Cercanías Núremberg",
+      "color": "#1DBD63",
+      "origen": "muenchen-suedkreuz",
+      "destino": "regensburg-hbf",
+      "via": [],
+      "frecuencia_min": 10,
+      "material": [
+        "desiro_dd"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "by"
+      ]
+    },
+    {
+      "id": "line-00011",
+      "codigo": "S3",
+      "codigo_interno": "S-nw-3",
+      "nombre": "Cercanías Colonia–Berlín Anillo Norte (ficticio)",
+      "tipo_id": "s",
+      "prefijo": "S",
+      "operador_id": "sbe",
+      "operador_nombre": "Cercanías Capital",
+      "color": "#0369A1",
+      "origen": "koeln-hbf",
+      "destino": "berlin-sx",
+      "via": [],
+      "frecuencia_min": 10,
+      "material": [
+        "kiss160"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "nw",
+        "be"
+      ]
+    },
+    {
+      "id": "line-00012",
+      "codigo": "LD3",
+      "codigo_interno": "LD-nw-3",
+      "nombre": "Larga distancia Dortmund–Núremberg",
+      "tipo_id": "ld",
+      "prefijo": "LD",
+      "operador_id": "bor",
+      "operador_nombre": "Borde Este",
+      "color": "#75C4E8",
+      "origen": "dortmund-hbf",
+      "destino": "nuernberg-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "regio2n",
+        "icet"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "nw",
+        "by"
+      ]
+    },
+    {
+      "id": "line-00013",
+      "codigo": "RE1",
+      "codigo_interno": "RE-by-1",
+      "nombre": "Regional exprés Ratisbona–Magdeburgo",
+      "tipo_id": "re",
+      "prefijo": "RE",
+      "operador_id": "fda",
+      "operador_nombre": "Ferrocarril del Danubio Azul",
+      "color": "#0EA5E9",
+      "origen": "regensburg-hbf",
+      "destino": "magdeburg-hbf",
+      "via": [],
+      "frecuencia_min": 30,
+      "material": [
+        "desiro_ml"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "by",
+        "st"
+      ]
+    },
+    {
+      "id": "line-00014",
+      "codigo": "RE2",
+      "codigo_interno": "RE-sh-2",
+      "nombre": "Regional exprés Lübeck–Fráncfort Cruce Oeste (ficticio)",
+      "tipo_id": "re",
+      "prefijo": "RE",
+      "operador_id": "riv",
+      "operador_nombre": "Riberas del Rin",
+      "color": "#813AC4",
+      "origen": "luebeck-hbf",
+      "destino": "frankfurt-westkreuz",
+      "via": [],
+      "frecuencia_min": 30,
+      "material": [
+        "virm"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "sh",
+        "he"
+      ]
+    },
+    {
+      "id": "line-00015",
+      "codigo": "S4",
+      "codigo_interno": "S-nw-4",
+      "nombre": "Cercanías Ruhr Orbital–Dortmund",
+      "tipo_id": "s",
+      "prefijo": "S",
+      "operador_id": "sco",
+      "operador_nombre": "Cercanías Colonia-Bonn",
+      "color": "#EF4444",
+      "origen": "ruhr-orbital",
+      "destino": "dortmund-hbf",
+      "via": [],
+      "frecuencia_min": 10,
+      "material": [
+        "desiro_dd"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "nw"
+      ]
+    },
+    {
+      "id": "line-00016",
+      "codigo": "PX3",
+      "codigo_interno": "PX-he-3",
+      "nombre": "Premium exprés Fráncfort del Meno–Kiel",
+      "tipo_id": "px",
+      "prefijo": "PX",
+      "operador_id": "fer",
+      "operador_nombre": "Feria y Congresos Rail",
+      "color": "#BBD2CD",
+      "origen": "frankfurt-hbf",
+      "destino": "kiel-hbf",
+      "via": [],
+      "frecuencia_min": 45,
+      "material": [
+        "ice4"
+      ],
+      "origen_datos": "real",
+      "lands": [
+        "he",
+        "sh"
+      ]
+    },
+    {
+      "id": "line-00017",
+      "codigo": "N1",
+      "codigo_interno": "N-sn-1",
+      "nombre": "Nocturno Dresde–Hamburgo",
+      "tipo_id": "n",
+      "prefijo": "N",
+      "operador_id": "noc",
+      "operador_nombre": "Nocturno Continental",
+      "color": "#020617",
+      "origen": "dresden-hbf",
+      "destino": "hamburg-hbf",
+      "via": [],
+      "frecuencia_min": 1440,
+      "material": [
+        "night_coach"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "sn",
+        "hh"
+      ]
+    },
+    {
+      "id": "line-00018",
+      "codigo": "TUR2",
+      "codigo_interno": "TUR-by-2",
+      "nombre": "Turístico Augsburgo–Mannheim",
+      "tipo_id": "tur",
+      "prefijo": "TUR",
+      "operador_id": "pan",
+      "operador_nombre": "Panorámicos Alemanes",
+      "color": "#7E1979",
+      "origen": "augsburg-hbf",
+      "destino": "mannheim-hbf",
+      "via": [],
+      "frecuencia_min": 120,
+      "material": [
+        "gtw_d"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "by",
+        "bw"
+      ]
+    },
+    {
+      "id": "line-00019",
+      "codigo": "LD4",
+      "codigo_interno": "LD-sh-4",
+      "nombre": "Larga distancia Kiel–Maguncia",
+      "tipo_id": "ld",
+      "prefijo": "LD",
+      "operador_id": "lma",
+      "operador_nombre": "Líneas Maestras",
+      "color": "#334155",
+      "origen": "kiel-hbf",
+      "destino": "mainz-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "icn",
+        "kiss200"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "sh",
+        "rp"
+      ]
+    },
+    {
+      "id": "line-00020",
+      "codigo": "IR4",
+      "codigo_interno": "IR-be-4",
+      "nombre": "Interregional Berlín Anillo Norte (ficticio)–Colonia",
+      "tipo_id": "ir",
+      "prefijo": "IR",
+      "operador_id": "wex",
+      "operador_nombre": "Westfalia Express",
+      "color": "#CA8A04",
+      "origen": "berlin-sx",
+      "destino": "koeln-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "regiolis",
+        "twindexx"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "be",
+        "nw"
+      ]
+    },
+    {
+      "id": "line-00021",
+      "codigo": "TUR3",
+      "codigo_interno": "TUR-by-3",
+      "nombre": "Turístico Múnich–Augsburgo",
+      "tipo_id": "tur",
+      "prefijo": "TUR",
+      "operador_id": "pan",
+      "operador_nombre": "Panorámicos Alemanes",
+      "color": "#7E1979",
+      "origen": "muenchen-hbf",
+      "destino": "augsburg-hbf",
+      "via": [],
+      "frecuencia_min": 120,
+      "material": [
+        "gtw_d"
+      ],
+      "origen_datos": "real",
+      "lands": [
+        "by"
+      ]
+    },
+    {
+      "id": "line-00022",
+      "codigo": "S5",
+      "codigo_interno": "S-sn-5",
+      "nombre": "Cercanías Leipzig–Kassel Wilhelmshöhe",
+      "tipo_id": "s",
+      "prefijo": "S",
+      "operador_id": "slp",
+      "operador_nombre": "Cercanías Sajona Norte",
+      "color": "#2563EB",
+      "origen": "leipzig-hbf",
+      "destino": "kassel-wilhelmshoehe",
+      "via": [],
+      "frecuencia_min": 10,
+      "material": [
+        "mi2n"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "sn",
+        "he"
+      ]
+    },
+    {
+      "id": "line-00023",
+      "codigo": "AE1",
+      "codigo_interno": "AE-bw-1",
+      "nombre": "Aeropuerto exprés Friburgo–Hannover",
+      "tipo_id": "ae",
+      "prefijo": "AE",
+      "operador_id": "cdn",
+      "operador_nombre": "Corredores del Norte",
+      "color": "#0C4A6E",
+      "origen": "freiburg-hbf",
+      "destino": "hannover-hbf",
+      "via": [],
+      "frecuencia_min": 15,
+      "material": [
+        "regio2n",
+        "icetd"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "bw",
+        "ni"
+      ]
+    },
+    {
+      "id": "line-00024",
+      "codigo": "IR5",
+      "codigo_interno": "IR-mv-5",
+      "nombre": "Interregional Rostock–Erfurt",
+      "tipo_id": "ir",
+      "prefijo": "IR",
+      "operador_id": "cdn",
+      "operador_nombre": "Corredores del Norte",
+      "color": "#0C4A6E",
+      "origen": "rostock-hbf",
+      "destino": "erfurt-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "regio2n",
+        "icetd"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "mv",
+        "th"
+      ]
+    },
+    {
+      "id": "line-00025",
+      "codigo": "N2",
+      "codigo_interno": "N-he-2",
+      "nombre": "Nocturno Kassel Wilhelmshöhe–Múnich Cruce Sur (ficticio)",
+      "tipo_id": "n",
+      "prefijo": "N",
+      "operador_id": "noc",
+      "operador_nombre": "Nocturno Continental",
+      "color": "#020617",
+      "origen": "kassel-wilhelmshoehe",
+      "destino": "muenchen-suedkreuz",
+      "via": [],
+      "frecuencia_min": 1440,
+      "material": [
+        "night_coach"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "he",
+        "by"
+      ]
+    },
+    {
+      "id": "line-00026",
+      "codigo": "RE3",
+      "codigo_interno": "RE-hh-3",
+      "nombre": "Regional exprés Hamburgo–Dresde",
+      "tipo_id": "re",
+      "prefijo": "RE",
+      "operador_id": "ica",
+      "operador_nombre": "InterCiudades Alemania",
+      "color": "#0E7C7B",
+      "origen": "hamburg-hbf",
+      "destino": "dresden-hbf",
+      "via": [],
+      "frecuencia_min": 30,
+      "material": [
+        "virm",
+        "twindexx"
+      ],
+      "origen_datos": "real",
+      "lands": [
+        "hh",
+        "sn"
+      ]
+    },
+    {
+      "id": "line-00027",
+      "codigo": "U1",
+      "codigo_interno": "U-by-1",
+      "nombre": "Metro Núremberg–Rostock",
+      "tipo_id": "u",
+      "prefijo": "U",
+      "operador_id": "unu",
+      "operador_nombre": "Metro Franconia",
+      "color": "#211BD5",
+      "origen": "nuernberg-hbf",
+      "destino": "rostock-hbf",
+      "via": [],
+      "frecuencia_min": 5,
+      "material": [
+        "metro_mx"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "by",
+        "mv"
+      ]
+    },
+    {
+      "id": "line-00028",
+      "codigo": "LD5",
+      "codigo_interno": "LD-bw-5",
+      "nombre": "Larga distancia Karlsruhe–Berlín",
+      "tipo_id": "ld",
+      "prefijo": "LD",
+      "operador_id": "cdn",
+      "operador_nombre": "Corredores del Norte",
+      "color": "#0C4A6E",
+      "origen": "karlsruhe-hbf",
+      "destino": "berlin-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "regio2n",
+        "icetd"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "bw",
+        "be"
+      ]
+    },
+    {
+      "id": "line-00029",
+      "codigo": "IR6",
+      "codigo_interno": "IR-bb-6",
+      "nombre": "Interregional Potsdam–Bremen",
+      "tipo_id": "ir",
+      "prefijo": "IR",
+      "operador_id": "bor",
+      "operador_nombre": "Borde Este",
+      "color": "#75C4E8",
+      "origen": "potsdam-hbf",
+      "destino": "bremen-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "regio2n",
+        "icet"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "bb",
+        "hb"
+      ]
+    },
+    {
+      "id": "line-00030",
+      "codigo": "IR7",
+      "codigo_interno": "IR-nw-7",
+      "nombre": "Interregional Aquisgrán–Sarrebruck",
+      "tipo_id": "ir",
+      "prefijo": "IR",
+      "operador_id": "occ",
+      "operador_nombre": "Occidente Atlántico",
+      "color": "#A9C3AE",
+      "origen": "aachen-hbf",
+      "destino": "saarbruecken-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "virm",
+        "ice3b"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "nw",
+        "sl"
+      ]
+    },
+    {
+      "id": "line-00031",
+      "codigo": "LD6",
+      "codigo_interno": "LD-be-6",
+      "nombre": "Larga distancia Berlín–Fráncfort del Meno",
+      "tipo_id": "ld",
+      "prefijo": "LD",
+      "operador_id": "exc",
+      "operador_nombre": "Expreso Central",
+      "color": "#111827",
+      "origen": "berlin-hbf",
+      "destino": "frankfurt-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "kiss200"
+      ],
+      "origen_datos": "real",
+      "lands": [
+        "be",
+        "he"
+      ]
+    },
+    {
+      "id": "line-00032",
+      "codigo": "LD7",
+      "codigo_interno": "LD-ni-7",
+      "nombre": "Larga distancia Hannover–Friburgo",
+      "tipo_id": "ld",
+      "prefijo": "LD",
+      "operador_id": "fer",
+      "operador_nombre": "Feria y Congresos Rail",
+      "color": "#BBD2CD",
+      "origen": "hannover-hbf",
+      "destino": "freiburg-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "ice4"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "ni",
+        "bw"
+      ]
+    },
+    {
+      "id": "line-00033",
+      "codigo": "RB1",
+      "codigo_interno": "RB-bw-1",
+      "nombre": "Regional básico Mannheim–Aquisgrán",
+      "tipo_id": "rb",
+      "prefijo": "RB",
+      "operador_id": "svb",
+      "operador_nombre": "Servicios del Valle del Neckar",
+      "color": "#B45309",
+      "origen": "mannheim-hbf",
+      "destino": "aachen-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "regiolis",
+        "desiro_ml"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "bw",
+        "nw"
+      ]
+    },
+    {
+      "id": "line-00034",
+      "codigo": "PX4",
+      "codigo_interno": "PX-st-4",
+      "nombre": "Premium exprés Magdeburgo–Düsseldorf",
+      "tipo_id": "px",
+      "prefijo": "PX",
+      "operador_id": "nex",
+      "operador_nombre": "Nexo Ciudades",
+      "color": "#2ACC88",
+      "origen": "magdeburg-hbf",
+      "destino": "duesseldorf-hbf",
+      "via": [],
+      "frecuencia_min": 45,
+      "material": [
+        "railjet"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "st",
+        "nw"
+      ]
+    },
+    {
+      "id": "line-00035",
+      "codigo": "RE4",
+      "codigo_interno": "RE-rp-4",
+      "nombre": "Regional exprés Coblenza–Wurzburgo",
+      "tipo_id": "re",
+      "prefijo": "RE",
+      "operador_id": "alb",
+      "operador_nombre": "AlpenBahn Sur",
+      "color": "#1E3A5F",
+      "origen": "koblenz-hbf",
+      "destino": "wuerzburg-hbf",
+      "via": [],
+      "frecuencia_min": 30,
+      "material": [
+        "gtw_e",
+        "flirt_ch"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "rp",
+        "by"
+      ]
+    },
+    {
+      "id": "line-00036",
+      "codigo": "AE2",
+      "codigo_interno": "AE-hh-2",
+      "nombre": "Aeropuerto exprés Hamburgo Puerto Nuevo (ficticio)–Ruhr Orbital",
+      "tipo_id": "ae",
+      "prefijo": "AE",
+      "operador_id": "fer",
+      "operador_nombre": "Feria y Congresos Rail",
+      "color": "#BBD2CD",
+      "origen": "hamburg-hafencity",
+      "destino": "ruhr-orbital",
+      "via": [],
+      "frecuencia_min": 15,
+      "material": [
+        "ice4"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "hh",
+        "nw"
+      ]
+    },
+    {
+      "id": "line-00037",
+      "codigo": "T1",
+      "codigo_interno": "T-nw-1",
+      "nombre": "Tranvía Düsseldorf–Leipzig",
+      "tipo_id": "t",
+      "prefijo": "T",
+      "operador_id": "tdr",
+      "operador_nombre": "Tranvías Dresde",
+      "color": "#FBBF24",
+      "origen": "duesseldorf-hbf",
+      "destino": "leipzig-hbf",
+      "via": [],
+      "frecuencia_min": 8,
+      "material": [
+        "tram_train",
+        "flexity_swift"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "nw",
+        "sn"
+      ]
+    },
+    {
+      "id": "line-00038",
+      "codigo": "AE3",
+      "codigo_interno": "AE-hb-3",
+      "nombre": "Aeropuerto exprés Bremen–Potsdam",
+      "tipo_id": "ae",
+      "prefijo": "AE",
+      "operador_id": "whv",
+      "operador_nombre": "Hanseas del Weser",
+      "color": "#0E7490",
+      "origen": "bremen-hbf",
+      "destino": "potsdam-hbf",
+      "via": [],
+      "frecuencia_min": 15,
+      "material": [
+        "flirt_ch",
+        "regiolis"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "hb",
+        "bb"
+      ]
+    },
+    {
+      "id": "line-00039",
+      "codigo": "LD8",
+      "codigo_interno": "LD-th-8",
+      "nombre": "Larga distancia Erfurt–Hamburgo Puerto Nuevo (ficticio)",
+      "tipo_id": "ld",
+      "prefijo": "LD",
+      "operador_id": "lma",
+      "operador_nombre": "Líneas Maestras",
+      "color": "#334155",
+      "origen": "erfurt-hbf",
+      "destino": "hamburg-hafencity",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "icn",
+        "kiss200"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "th",
+        "hh"
+      ]
+    },
+    {
+      "id": "line-00040",
+      "codigo": "AE4",
+      "codigo_interno": "AE-rp-4",
+      "nombre": "Aeropuerto exprés Maguncia–Essen",
+      "tipo_id": "ae",
+      "prefijo": "AE",
+      "operador_id": "sco",
+      "operador_nombre": "Cercanías Colonia-Bonn",
+      "color": "#EF4444",
+      "origen": "mainz-hbf",
+      "destino": "essen-hbf",
+      "via": [],
+      "frecuencia_min": 15,
+      "material": [
+        "desiro_dd"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "rp",
+        "nw"
+      ]
+    },
+    {
+      "id": "line-00041",
+      "codigo": "TUR4",
+      "codigo_interno": "TUR-he-4",
+      "nombre": "Turístico Fráncfort Cruce Oeste (ficticio)–Lübeck",
+      "tipo_id": "tur",
+      "prefijo": "TUR",
+      "operador_id": "bal",
+      "operador_nombre": "Báltico Líneas",
+      "color": "#075985",
+      "origen": "frankfurt-westkreuz",
+      "destino": "luebeck-hbf",
+      "via": [],
+      "frecuencia_min": 120,
+      "material": [
+        "desiro_ml",
+        "gtw_e"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "he",
+        "sh"
+      ]
+    },
+    {
+      "id": "line-00042",
+      "codigo": "RE5",
+      "codigo_interno": "RE-bw-5",
+      "nombre": "Regional exprés Stuttgart–Múnich",
+      "tipo_id": "re",
+      "prefijo": "RE",
+      "operador_id": "alp",
+      "operador_nombre": "Alpes Express Sur",
+      "color": "#A75BAC",
+      "origen": "stuttgart-hbf",
+      "destino": "muenchen-hbf",
+      "via": [],
+      "frecuencia_min": 30,
+      "material": [
+        "kiss160"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "bw",
+        "by"
+      ]
+    },
+    {
+      "id": "line-00043",
+      "codigo": "AV1",
+      "codigo_interno": "AV-nw-1",
+      "nombre": "Alta velocidad Essen–Karlsruhe",
+      "tipo_id": "av",
+      "prefijo": "AV",
+      "operador_id": "peu",
+      "operador_nombre": "Puente Europeo",
+      "color": "#1D4ED8",
+      "origen": "essen-hbf",
+      "destino": "karlsruhe-hbf",
+      "via": [],
+      "frecuencia_min": 30,
+      "material": [
+        "giruno",
+        "ice1"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "nw",
+        "bw"
+      ]
+    },
+    {
+      "id": "line-00044",
+      "codigo": "PX5",
+      "codigo_interno": "PX-by-5",
+      "nombre": "Premium exprés Wurzburgo–Coblenza",
+      "tipo_id": "px",
+      "prefijo": "PX",
+      "operador_id": "raf",
+      "operador_nombre": "Rápidos Federales",
+      "color": "#0B3D91",
+      "origen": "wuerzburg-hbf",
+      "destino": "koblenz-hbf",
+      "via": [],
+      "frecuencia_min": 45,
+      "material": [
+        "ice2",
+        "giruno"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "by",
+        "rp"
+      ]
+    },
+    {
+      "id": "line-00045",
+      "codigo": "IR8",
+      "codigo_interno": "IR-sl-8",
+      "nombre": "Interregional Sarrebruck–Stuttgart",
+      "tipo_id": "ir",
+      "prefijo": "IR",
+      "operador_id": "mid",
+      "operador_nombre": "Mediodía Alemán",
+      "color": "#961D6C",
+      "origen": "saarbruecken-hbf",
+      "destino": "stuttgart-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "icetd",
+        "flirt_ch"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "sl",
+        "bw"
+      ]
+    },
+    {
+      "id": "line-00046",
+      "codigo": "RE6",
+      "codigo_interno": "RE-by-6",
+      "nombre": "Regional exprés Múnich Cruce Sur (ficticio)–Ratisbona",
+      "tipo_id": "re",
+      "prefijo": "RE",
+      "operador_id": "fda",
+      "operador_nombre": "Ferrocarril del Danubio Azul",
+      "color": "#0EA5E9",
+      "origen": "muenchen-suedkreuz",
+      "destino": "regensburg-hbf",
+      "via": [],
+      "frecuencia_min": 30,
+      "material": [
+        "desiro_ml"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "by"
+      ]
+    },
+    {
+      "id": "line-00047",
+      "codigo": "RE7",
+      "codigo_interno": "RE-nw-7",
+      "nombre": "Regional exprés Colonia–Berlín Anillo Norte (ficticio)",
+      "tipo_id": "re",
+      "prefijo": "RE",
+      "operador_id": "ica",
+      "operador_nombre": "InterCiudades Alemania",
+      "color": "#0E7C7B",
+      "origen": "koeln-hbf",
+      "destino": "berlin-sx",
+      "via": [],
+      "frecuencia_min": 30,
+      "material": [
+        "virm",
+        "twindexx"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "nw",
+        "be"
+      ]
+    },
+    {
+      "id": "line-00048",
+      "codigo": "TUR5",
+      "codigo_interno": "TUR-nw-5",
+      "nombre": "Turístico Dortmund–Núremberg",
+      "tipo_id": "tur",
+      "prefijo": "TUR",
+      "operador_id": "pan",
+      "operador_nombre": "Panorámicos Alemanes",
+      "color": "#7E1979",
+      "origen": "dortmund-hbf",
+      "destino": "nuernberg-hbf",
+      "via": [],
+      "frecuencia_min": 120,
+      "material": [
+        "gtw_d"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "nw",
+        "by"
+      ]
+    },
+    {
+      "id": "line-00049",
+      "codigo": "AE5",
+      "codigo_interno": "AE-by-5",
+      "nombre": "Aeropuerto exprés Ratisbona–Magdeburgo",
+      "tipo_id": "ae",
+      "prefijo": "AE",
+      "operador_id": "smu",
+      "operador_nombre": "Cercanías Isar",
+      "color": "#AA90A7",
+      "origen": "regensburg-hbf",
+      "destino": "magdeburg-hbf",
+      "via": [],
+      "frecuencia_min": 15,
+      "material": [
+        "flirt3"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "by",
+        "st"
+      ]
+    },
+    {
+      "id": "line-00050",
+      "codigo": "N3",
+      "codigo_interno": "N-sh-3",
+      "nombre": "Nocturno Lübeck–Fráncfort Cruce Oeste (ficticio)",
+      "tipo_id": "n",
+      "prefijo": "N",
+      "operador_id": "peu",
+      "operador_nombre": "Puente Europeo",
+      "color": "#1D4ED8",
+      "origen": "luebeck-hbf",
+      "destino": "frankfurt-westkreuz",
+      "via": [],
+      "frecuencia_min": 1440,
+      "material": [
+        "giruno",
+        "ice1"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "sh",
+        "he"
+      ]
+    },
+    {
+      "id": "line-00051",
+      "codigo": "IR9",
+      "codigo_interno": "IR-nw-9",
+      "nombre": "Interregional Ruhr Orbital–Dortmund",
+      "tipo_id": "ir",
+      "prefijo": "IR",
+      "operador_id": "fa",
+      "operador_nombre": "FerroAlemania",
+      "color": "#C8102E",
+      "origen": "ruhr-orbital",
+      "destino": "dortmund-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "ice4",
+        "tgv_duplex"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "nw"
+      ]
+    },
+    {
+      "id": "line-00052",
+      "codigo": "MC1",
+      "codigo_interno": "MC-he-1",
+      "nombre": "Metropolitano cruzado Fráncfort del Meno–Kiel",
+      "tipo_id": "mc",
+      "prefijo": "MC",
+      "operador_id": "shh",
+      "operador_nombre": "Cercanías Hanseáticas",
+      "color": "#172554",
+      "origen": "frankfurt-hbf",
+      "destino": "kiel-hbf",
+      "via": [],
+      "frecuencia_min": 15,
+      "material": [
+        "mi2n"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "he",
+        "sh"
+      ]
+    },
+    {
+      "id": "line-00053",
+      "codigo": "PX6",
+      "codigo_interno": "PX-sn-6",
+      "nombre": "Premium exprés Dresde–Hamburgo",
+      "tipo_id": "px",
+      "prefijo": "PX",
+      "operador_id": "exc",
+      "operador_nombre": "Expreso Central",
+      "color": "#111827",
+      "origen": "dresden-hbf",
+      "destino": "hamburg-hbf",
+      "via": [],
+      "frecuencia_min": 45,
+      "material": [
+        "kiss200"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "sn",
+        "hh"
+      ]
+    },
+    {
+      "id": "line-00054",
+      "codigo": "PX7",
+      "codigo_interno": "PX-by-7",
+      "nombre": "Premium exprés Augsburgo–Mannheim",
+      "tipo_id": "px",
+      "prefijo": "PX",
+      "operador_id": "lib",
+      "operador_nombre": "Líneas Libres",
+      "color": "#EA580C",
+      "origen": "augsburg-hbf",
+      "destino": "mannheim-hbf",
+      "via": [],
+      "frecuencia_min": 45,
+      "material": [
+        "kiss200"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "by",
+        "bw"
+      ]
+    },
+    {
+      "id": "line-00055",
+      "codigo": "RL1",
+      "codigo_interno": "RL-sh-1",
+      "nombre": "Ramal local Kiel–Maguncia",
+      "tipo_id": "rl",
+      "prefijo": "RL",
+      "operador_id": "val",
+      "operador_nombre": "Valles Verdes",
+      "color": "#556C46",
+      "origen": "kiel-hbf",
+      "destino": "mainz-hbf",
+      "via": [],
+      "frecuencia_min": 90,
+      "material": [
+        "gtw_d",
+        "talent"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "sh",
+        "rp"
+      ]
+    },
+    {
+      "id": "line-00056",
+      "codigo": "PX8",
+      "codigo_interno": "PX-be-8",
+      "nombre": "Premium exprés Berlín Anillo Norte (ficticio)–Colonia",
+      "tipo_id": "px",
+      "prefijo": "PX",
+      "operador_id": "vrp",
+      "operador_nombre": "VeloRápido",
+      "color": "#DC2626",
+      "origen": "berlin-sx",
+      "destino": "koeln-hbf",
+      "via": [],
+      "frecuencia_min": 45,
+      "material": [
+        "ice4"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "be",
+        "nw"
+      ]
+    },
+    {
+      "id": "line-00057",
+      "codigo": "U2",
+      "codigo_interno": "U-by-2",
+      "nombre": "Metro Múnich–Augsburgo",
+      "tipo_id": "u",
+      "prefijo": "U",
+      "operador_id": "umu",
+      "operador_nombre": "Metro Isar",
+      "color": "#0065B0",
+      "origen": "muenchen-hbf",
+      "destino": "augsburg-hbf",
+      "via": [],
+      "frecuencia_min": 5,
+      "material": [
+        "metro_mx"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "by"
+      ]
+    },
+    {
+      "id": "line-00058",
+      "codigo": "PX9",
+      "codigo_interno": "PX-sn-9",
+      "nombre": "Premium exprés Leipzig–Kassel Wilhelmshöhe",
+      "tipo_id": "px",
+      "prefijo": "PX",
+      "operador_id": "vrp",
+      "operador_nombre": "VeloRápido",
+      "color": "#DC2626",
+      "origen": "leipzig-hbf",
+      "destino": "kassel-wilhelmshoehe",
+      "via": [],
+      "frecuencia_min": 45,
+      "material": [
+        "ice4"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "sn",
+        "he"
+      ]
+    },
+    {
+      "id": "line-00059",
+      "codigo": "RE8",
+      "codigo_interno": "RE-bw-8",
+      "nombre": "Regional exprés Friburgo–Hannover",
+      "tipo_id": "re",
+      "prefijo": "RE",
+      "operador_id": "ica",
+      "operador_nombre": "InterCiudades Alemania",
+      "color": "#0E7C7B",
+      "origen": "freiburg-hbf",
+      "destino": "hannover-hbf",
+      "via": [],
+      "frecuencia_min": 30,
+      "material": [
+        "virm",
+        "twindexx"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "bw",
+        "ni"
+      ]
+    },
+    {
+      "id": "line-00060",
+      "codigo": "IR10",
+      "codigo_interno": "IR-mv-10",
+      "nombre": "Interregional Rostock–Erfurt",
+      "tipo_id": "ir",
+      "prefijo": "IR",
+      "operador_id": "cdn",
+      "operador_nombre": "Corredores del Norte",
+      "color": "#0C4A6E",
+      "origen": "rostock-hbf",
+      "destino": "erfurt-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "regio2n",
+        "icetd"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "mv",
+        "th"
+      ]
+    },
+    {
+      "id": "line-00061",
+      "codigo": "N4",
+      "codigo_interno": "N-he-4",
+      "nombre": "Nocturno Kassel Wilhelmshöhe–Múnich Cruce Sur (ficticio)",
+      "tipo_id": "n",
+      "prefijo": "N",
+      "operador_id": "noc",
+      "operador_nombre": "Nocturno Continental",
+      "color": "#020617",
+      "origen": "kassel-wilhelmshoehe",
+      "destino": "muenchen-suedkreuz",
+      "via": [],
+      "frecuencia_min": 1440,
+      "material": [
+        "night_coach"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "he",
+        "by"
+      ]
+    },
+    {
+      "id": "line-00062",
+      "codigo": "PX10",
+      "codigo_interno": "PX-hh-10",
+      "nombre": "Premium exprés Hamburgo–Dresde",
+      "tipo_id": "px",
+      "prefijo": "PX",
+      "operador_id": "raf",
+      "operador_nombre": "Rápidos Federales",
+      "color": "#0B3D91",
+      "origen": "hamburg-hbf",
+      "destino": "dresden-hbf",
+      "via": [],
+      "frecuencia_min": 45,
+      "material": [
+        "ice2",
+        "giruno"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "hh",
+        "sn"
+      ]
+    },
+    {
+      "id": "line-00063",
+      "codigo": "IR11",
+      "codigo_interno": "IR-by-11",
+      "nombre": "Interregional Núremberg–Rostock",
+      "tipo_id": "ir",
+      "prefijo": "IR",
+      "operador_id": "cos",
+      "operador_nombre": "Costa a Costa",
+      "color": "#C3B447",
+      "origen": "nuernberg-hbf",
+      "destino": "rostock-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "icetd",
+        "regio2n"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "by",
+        "mv"
+      ]
+    },
+    {
+      "id": "line-00064",
+      "codigo": "RE9",
+      "codigo_interno": "RE-bw-9",
+      "nombre": "Regional exprés Karlsruhe–Berlín",
+      "tipo_id": "re",
+      "prefijo": "RE",
+      "operador_id": "riv",
+      "operador_nombre": "Riberas del Rin",
+      "color": "#813AC4",
+      "origen": "karlsruhe-hbf",
+      "destino": "berlin-hbf",
+      "via": [],
+      "frecuencia_min": 30,
+      "material": [
+        "virm"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "bw",
+        "be"
+      ]
+    },
+    {
+      "id": "line-00065",
+      "codigo": "MC2",
+      "codigo_interno": "MC-bb-2",
+      "nombre": "Metropolitano cruzado Potsdam–Bremen",
+      "tipo_id": "mc",
+      "prefijo": "MC",
+      "operador_id": "sbe",
+      "operador_nombre": "Cercanías Capital",
+      "color": "#0369A1",
+      "origen": "potsdam-hbf",
+      "destino": "bremen-hbf",
+      "via": [],
+      "frecuencia_min": 15,
+      "material": [
+        "kiss160"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "bb",
+        "hb"
+      ]
+    },
+    {
+      "id": "line-00066",
+      "codigo": "PX11",
+      "codigo_interno": "PX-nw-11",
+      "nombre": "Premium exprés Aquisgrán–Sarrebruck",
+      "tipo_id": "px",
+      "prefijo": "PX",
+      "operador_id": "vrp",
+      "operador_nombre": "VeloRápido",
+      "color": "#DC2626",
+      "origen": "aachen-hbf",
+      "destino": "saarbruecken-hbf",
+      "via": [],
+      "frecuencia_min": 45,
+      "material": [
+        "ice4"
+      ],
+      "origen_datos": "real",
+      "lands": [
+        "nw",
+        "sl"
+      ]
+    },
+    {
+      "id": "line-00067",
+      "codigo": "LD9",
+      "codigo_interno": "LD-be-9",
+      "nombre": "Larga distancia Berlín–Fráncfort del Meno",
+      "tipo_id": "ld",
+      "prefijo": "LD",
+      "operador_id": "ica",
+      "operador_nombre": "InterCiudades Alemania",
+      "color": "#0E7C7B",
+      "origen": "berlin-hbf",
+      "destino": "frankfurt-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "virm",
+        "twindexx"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "be",
+        "he"
+      ]
+    },
+    {
+      "id": "line-00068",
+      "codigo": "LD10",
+      "codigo_interno": "LD-ni-10",
+      "nombre": "Larga distancia Hannover–Friburgo",
+      "tipo_id": "ld",
+      "prefijo": "LD",
+      "operador_id": "mid",
+      "operador_nombre": "Mediodía Alemán",
+      "color": "#961D6C",
+      "origen": "hannover-hbf",
+      "destino": "freiburg-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "icetd",
+        "flirt_ch"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "ni",
+        "bw"
+      ]
+    },
+    {
+      "id": "line-00069",
+      "codigo": "TUR6",
+      "codigo_interno": "TUR-bw-6",
+      "nombre": "Turístico Mannheim–Aquisgrán",
+      "tipo_id": "tur",
+      "prefijo": "TUR",
+      "operador_id": "pan",
+      "operador_nombre": "Panorámicos Alemanes",
+      "color": "#7E1979",
+      "origen": "mannheim-hbf",
+      "destino": "aachen-hbf",
+      "via": [],
+      "frecuencia_min": 120,
+      "material": [
+        "gtw_d"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "bw",
+        "nw"
+      ]
+    },
+    {
+      "id": "line-00070",
+      "codigo": "S6",
+      "codigo_interno": "S-st-6",
+      "nombre": "Cercanías Magdeburgo–Düsseldorf",
+      "tipo_id": "s",
+      "prefijo": "S",
+      "operador_id": "slp",
+      "operador_nombre": "Cercanías Sajona Norte",
+      "color": "#2563EB",
+      "origen": "magdeburg-hbf",
+      "destino": "duesseldorf-hbf",
+      "via": [],
+      "frecuencia_min": 10,
+      "material": [
+        "mi2n"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "st",
+        "nw"
+      ]
+    },
+    {
+      "id": "line-00071",
+      "codigo": "RL2",
+      "codigo_interno": "RL-rp-2",
+      "nombre": "Ramal local Coblenza–Wurzburgo",
+      "tipo_id": "rl",
+      "prefijo": "RL",
+      "operador_id": "thu",
+      "operador_nombre": "Turingios del Sur",
+      "color": "#9A3412",
+      "origen": "koblenz-hbf",
+      "destino": "wuerzburg-hbf",
+      "via": [],
+      "frecuencia_min": 90,
+      "material": [
+        "wink",
+        "lint"
+      ],
+      "origen_datos": "real",
+      "lands": [
+        "rp",
+        "by"
+      ]
+    },
+    {
+      "id": "line-00072",
+      "codigo": "AE6",
+      "codigo_interno": "AE-hh-6",
+      "nombre": "Aeropuerto exprés Hamburgo Puerto Nuevo (ficticio)–Ruhr Orbital",
+      "tipo_id": "ae",
+      "prefijo": "AE",
+      "operador_id": "sco",
+      "operador_nombre": "Cercanías Colonia-Bonn",
+      "color": "#EF4444",
+      "origen": "hamburg-hafencity",
+      "destino": "ruhr-orbital",
+      "via": [],
+      "frecuencia_min": 15,
+      "material": [
+        "desiro_dd"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "hh",
+        "nw"
+      ]
+    },
+    {
+      "id": "line-00073",
+      "codigo": "PX12",
+      "codigo_interno": "PX-nw-12",
+      "nombre": "Premium exprés Düsseldorf–Leipzig",
+      "tipo_id": "px",
+      "prefijo": "PX",
+      "operador_id": "nex",
+      "operador_nombre": "Nexo Ciudades",
+      "color": "#2ACC88",
+      "origen": "duesseldorf-hbf",
+      "destino": "leipzig-hbf",
+      "via": [],
+      "frecuencia_min": 45,
+      "material": [
+        "railjet"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "nw",
+        "sn"
+      ]
+    },
+    {
+      "id": "line-00074",
+      "codigo": "RE10",
+      "codigo_interno": "RE-hb-10",
+      "nombre": "Regional exprés Bremen–Potsdam",
+      "tipo_id": "re",
+      "prefijo": "RE",
+      "operador_id": "ica",
+      "operador_nombre": "InterCiudades Alemania",
+      "color": "#0E7C7B",
+      "origen": "bremen-hbf",
+      "destino": "potsdam-hbf",
+      "via": [],
+      "frecuencia_min": 30,
+      "material": [
+        "virm",
+        "twindexx"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "hb",
+        "bb"
+      ]
+    },
+    {
+      "id": "line-00075",
+      "codigo": "RB2",
+      "codigo_interno": "RB-th-2",
+      "nombre": "Regional básico Erfurt–Hamburgo Puerto Nuevo (ficticio)",
+      "tipo_id": "rb",
+      "prefijo": "RB",
+      "operador_id": "val",
+      "operador_nombre": "Valles Verdes",
+      "color": "#556C46",
+      "origen": "erfurt-hbf",
+      "destino": "hamburg-hafencity",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "gtw_d",
+        "talent"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "th",
+        "hh"
+      ]
+    },
+    {
+      "id": "line-00076",
+      "codigo": "N5",
+      "codigo_interno": "N-rp-5",
+      "nombre": "Nocturno Maguncia–Essen",
+      "tipo_id": "n",
+      "prefijo": "N",
+      "operador_id": "noc",
+      "operador_nombre": "Nocturno Continental",
+      "color": "#020617",
+      "origen": "mainz-hbf",
+      "destino": "essen-hbf",
+      "via": [],
+      "frecuencia_min": 1440,
+      "material": [
+        "night_coach"
+      ],
+      "origen_datos": "real",
+      "lands": [
+        "rp",
+        "nw"
+      ]
+    },
+    {
+      "id": "line-00077",
+      "codigo": "N6",
+      "codigo_interno": "N-he-6",
+      "nombre": "Nocturno Fráncfort Cruce Oeste (ficticio)–Lübeck",
+      "tipo_id": "n",
+      "prefijo": "N",
+      "operador_id": "fa",
+      "operador_nombre": "FerroAlemania",
+      "color": "#C8102E",
+      "origen": "frankfurt-westkreuz",
+      "destino": "luebeck-hbf",
+      "via": [],
+      "frecuencia_min": 1440,
+      "material": [
+        "ice4",
+        "tgv_duplex"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "he",
+        "sh"
+      ]
+    },
+    {
+      "id": "line-00078",
+      "codigo": "LD11",
+      "codigo_interno": "LD-bw-11",
+      "nombre": "Larga distancia Stuttgart–Múnich",
+      "tipo_id": "ld",
+      "prefijo": "LD",
+      "operador_id": "nex",
+      "operador_nombre": "Nexo Ciudades",
+      "color": "#2ACC88",
+      "origen": "stuttgart-hbf",
+      "destino": "muenchen-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "railjet"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "bw",
+        "by"
+      ]
+    },
+    {
+      "id": "line-00079",
+      "codigo": "T2",
+      "codigo_interno": "T-nw-2",
+      "nombre": "Tranvía Essen–Karlsruhe",
+      "tipo_id": "t",
+      "prefijo": "T",
+      "operador_id": "tdu",
+      "operador_nombre": "Tranvías Düsseldorf",
+      "color": "#69ADD7",
+      "origen": "essen-hbf",
+      "destino": "karlsruhe-hbf",
+      "via": [],
+      "frecuencia_min": 8,
+      "material": [
+        "citadis",
+        "tram_train"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "nw",
+        "bw"
+      ]
+    },
+    {
+      "id": "line-00080",
+      "codigo": "N7",
+      "codigo_interno": "N-by-7",
+      "nombre": "Nocturno Wurzburgo–Coblenza",
+      "tipo_id": "n",
+      "prefijo": "N",
+      "operador_id": "peu",
+      "operador_nombre": "Puente Europeo",
+      "color": "#1D4ED8",
+      "origen": "wuerzburg-hbf",
+      "destino": "koblenz-hbf",
+      "via": [],
+      "frecuencia_min": 1440,
+      "material": [
+        "giruno",
+        "ice1"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "by",
+        "rp"
+      ]
+    },
+    {
+      "id": "line-00081",
+      "codigo": "LD12",
+      "codigo_interno": "LD-sl-12",
+      "nombre": "Larga distancia Sarrebruck–Stuttgart",
+      "tipo_id": "ld",
+      "prefijo": "LD",
+      "operador_id": "peu",
+      "operador_nombre": "Puente Europeo",
+      "color": "#1D4ED8",
+      "origen": "saarbruecken-hbf",
+      "destino": "stuttgart-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "giruno",
+        "ice1"
+      ],
+      "origen_datos": "real",
+      "lands": [
+        "sl",
+        "bw"
+      ]
+    },
+    {
+      "id": "line-00082",
+      "codigo": "N8",
+      "codigo_interno": "N-by-8",
+      "nombre": "Nocturno Múnich Cruce Sur (ficticio)–Ratisbona",
+      "tipo_id": "n",
+      "prefijo": "N",
+      "operador_id": "noc",
+      "operador_nombre": "Nocturno Continental",
+      "color": "#020617",
+      "origen": "muenchen-suedkreuz",
+      "destino": "regensburg-hbf",
+      "via": [],
+      "frecuencia_min": 1440,
+      "material": [
+        "night_coach"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "by"
+      ]
+    },
+    {
+      "id": "line-00083",
+      "codigo": "LD13",
+      "codigo_interno": "LD-nw-13",
+      "nombre": "Larga distancia Colonia–Berlín Anillo Norte (ficticio)",
+      "tipo_id": "ld",
+      "prefijo": "LD",
+      "operador_id": "fer",
+      "operador_nombre": "Feria y Congresos Rail",
+      "color": "#BBD2CD",
+      "origen": "koeln-hbf",
+      "destino": "berlin-sx",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "ice4"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "nw",
+        "be"
+      ]
+    },
+    {
+      "id": "line-00084",
+      "codigo": "AE7",
+      "codigo_interno": "AE-nw-7",
+      "nombre": "Aeropuerto exprés Dortmund–Núremberg",
+      "tipo_id": "ae",
+      "prefijo": "AE",
+      "operador_id": "sco",
+      "operador_nombre": "Cercanías Colonia-Bonn",
+      "color": "#EF4444",
+      "origen": "dortmund-hbf",
+      "destino": "nuernberg-hbf",
+      "via": [],
+      "frecuencia_min": 15,
+      "material": [
+        "desiro_dd"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "nw",
+        "by"
+      ]
+    },
+    {
+      "id": "line-00085",
+      "codigo": "T3",
+      "codigo_interno": "T-by-3",
+      "nombre": "Tranvía Ratisbona–Magdeburgo",
+      "tipo_id": "t",
+      "prefijo": "T",
+      "operador_id": "tmu",
+      "operador_nombre": "Tranvías Múnich",
+      "color": "#0891B2",
+      "origen": "regensburg-hbf",
+      "destino": "magdeburg-hbf",
+      "via": [],
+      "frecuencia_min": 8,
+      "material": [
+        "albatros"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "by",
+        "st"
+      ]
+    },
+    {
+      "id": "line-00086",
+      "codigo": "LD14",
+      "codigo_interno": "LD-sh-14",
+      "nombre": "Larga distancia Lübeck–Fráncfort Cruce Oeste (ficticio)",
+      "tipo_id": "ld",
+      "prefijo": "LD",
+      "operador_id": "fer",
+      "operador_nombre": "Feria y Congresos Rail",
+      "color": "#BBD2CD",
+      "origen": "luebeck-hbf",
+      "destino": "frankfurt-westkreuz",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "ice4"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "sh",
+        "he"
+      ]
+    },
+    {
+      "id": "line-00087",
+      "codigo": "S7",
+      "codigo_interno": "S-nw-7",
+      "nombre": "Cercanías Ruhr Orbital–Dortmund",
+      "tipo_id": "s",
+      "prefijo": "S",
+      "operador_id": "sco",
+      "operador_nombre": "Cercanías Colonia-Bonn",
+      "color": "#EF4444",
+      "origen": "ruhr-orbital",
+      "destino": "dortmund-hbf",
+      "via": [],
+      "frecuencia_min": 10,
+      "material": [
+        "desiro_dd"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "nw"
+      ]
+    },
+    {
+      "id": "line-00088",
+      "codigo": "LD15",
+      "codigo_interno": "LD-he-15",
+      "nombre": "Larga distancia Fráncfort del Meno–Kiel",
+      "tipo_id": "ld",
+      "prefijo": "LD",
+      "operador_id": "cdn",
+      "operador_nombre": "Corredores del Norte",
+      "color": "#0C4A6E",
+      "origen": "frankfurt-hbf",
+      "destino": "kiel-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "regio2n",
+        "icetd"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "he",
+        "sh"
+      ]
+    },
+    {
+      "id": "line-00089",
+      "codigo": "IR12",
+      "codigo_interno": "IR-sn-12",
+      "nombre": "Interregional Dresde–Hamburgo",
+      "tipo_id": "ir",
+      "prefijo": "IR",
+      "operador_id": "bor",
+      "operador_nombre": "Borde Este",
+      "color": "#75C4E8",
+      "origen": "dresden-hbf",
+      "destino": "hamburg-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "regio2n",
+        "icet"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "sn",
+        "hh"
+      ]
+    },
+    {
+      "id": "line-00090",
+      "codigo": "IR13",
+      "codigo_interno": "IR-by-13",
+      "nombre": "Interregional Augsburgo–Mannheim",
+      "tipo_id": "ir",
+      "prefijo": "IR",
+      "operador_id": "uni",
+      "operador_nombre": "Universidad Express",
+      "color": "#7C2D12",
+      "origen": "augsburg-hbf",
+      "destino": "mannheim-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "flirt4",
+        "civity"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "by",
+        "bw"
+      ]
+    },
+    {
+      "id": "line-00091",
+      "codigo": "RE11",
+      "codigo_interno": "RE-sh-11",
+      "nombre": "Regional exprés Kiel–Maguncia",
+      "tipo_id": "re",
+      "prefijo": "RE",
+      "operador_id": "hol",
+      "operador_nombre": "Holstein Costero",
+      "color": "#0D9488",
+      "origen": "kiel-hbf",
+      "destino": "mainz-hbf",
+      "via": [],
+      "frecuencia_min": 30,
+      "material": [
+        "flirt3",
+        "coradia"
+      ],
+      "origen_datos": "real",
+      "lands": [
+        "sh",
+        "rp"
+      ]
+    },
+    {
+      "id": "line-00092",
+      "codigo": "AE8",
+      "codigo_interno": "AE-be-8",
+      "nombre": "Aeropuerto exprés Berlín Anillo Norte (ficticio)–Colonia",
+      "tipo_id": "ae",
+      "prefijo": "AE",
+      "operador_id": "nex",
+      "operador_nombre": "Nexo Ciudades",
+      "color": "#2ACC88",
+      "origen": "berlin-sx",
+      "destino": "koeln-hbf",
+      "via": [],
+      "frecuencia_min": 15,
+      "material": [
+        "railjet"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "be",
+        "nw"
+      ]
+    },
+    {
+      "id": "line-00093",
+      "codigo": "RB3",
+      "codigo_interno": "RB-by-3",
+      "nombre": "Regional básico Múnich–Augsburgo",
+      "tipo_id": "rb",
+      "prefijo": "RB",
+      "operador_id": "mfr",
+      "operador_nombre": "Media Franconia Rieles",
+      "color": "#7F1D1D",
+      "origen": "muenchen-hbf",
+      "destino": "augsburg-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "desiro_ml",
+        "gtw_e"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "by"
+      ]
+    },
+    {
+      "id": "line-00094",
+      "codigo": "TUR7",
+      "codigo_interno": "TUR-sn-7",
+      "nombre": "Turístico Leipzig–Kassel Wilhelmshöhe",
+      "tipo_id": "tur",
+      "prefijo": "TUR",
+      "operador_id": "pan",
+      "operador_nombre": "Panorámicos Alemanes",
+      "color": "#7E1979",
+      "origen": "leipzig-hbf",
+      "destino": "kassel-wilhelmshoehe",
+      "via": [],
+      "frecuencia_min": 120,
+      "material": [
+        "gtw_d"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "sn",
+        "he"
+      ]
+    },
+    {
+      "id": "line-00095",
+      "codigo": "N9",
+      "codigo_interno": "N-bw-9",
+      "nombre": "Nocturno Friburgo–Hannover",
+      "tipo_id": "n",
+      "prefijo": "N",
+      "operador_id": "peu",
+      "operador_nombre": "Puente Europeo",
+      "color": "#1D4ED8",
+      "origen": "freiburg-hbf",
+      "destino": "hannover-hbf",
+      "via": [],
+      "frecuencia_min": 1440,
+      "material": [
+        "giruno",
+        "ice1"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "bw",
+        "ni"
+      ]
+    },
+    {
+      "id": "line-00096",
+      "codigo": "IR14",
+      "codigo_interno": "IR-mv-14",
+      "nombre": "Interregional Rostock–Erfurt",
+      "tipo_id": "ir",
+      "prefijo": "IR",
+      "operador_id": "cdn",
+      "operador_nombre": "Corredores del Norte",
+      "color": "#0C4A6E",
+      "origen": "rostock-hbf",
+      "destino": "erfurt-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "regio2n",
+        "icetd"
+      ],
+      "origen_datos": "real",
+      "lands": [
+        "mv",
+        "th"
+      ]
+    },
+    {
+      "id": "line-00097",
+      "codigo": "N10",
+      "codigo_interno": "N-he-10",
+      "nombre": "Nocturno Kassel Wilhelmshöhe–Múnich Cruce Sur (ficticio)",
+      "tipo_id": "n",
+      "prefijo": "N",
+      "operador_id": "noc",
+      "operador_nombre": "Nocturno Continental",
+      "color": "#020617",
+      "origen": "kassel-wilhelmshoehe",
+      "destino": "muenchen-suedkreuz",
+      "via": [],
+      "frecuencia_min": 1440,
+      "material": [
+        "night_coach"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "he",
+        "by"
+      ]
+    },
+    {
+      "id": "line-00098",
+      "codigo": "TUR8",
+      "codigo_interno": "TUR-hh-8",
+      "nombre": "Turístico Hamburgo–Dresde",
+      "tipo_id": "tur",
+      "prefijo": "TUR",
+      "operador_id": "val",
+      "operador_nombre": "Valles Verdes",
+      "color": "#556C46",
+      "origen": "hamburg-hbf",
+      "destino": "dresden-hbf",
+      "via": [],
+      "frecuencia_min": 120,
+      "material": [
+        "gtw_d",
+        "talent"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "hh",
+        "sn"
+      ]
+    },
+    {
+      "id": "line-00099",
+      "codigo": "RB4",
+      "codigo_interno": "RB-by-4",
+      "nombre": "Regional básico Núremberg–Rostock",
+      "tipo_id": "rb",
+      "prefijo": "RB",
+      "operador_id": "val",
+      "operador_nombre": "Valles Verdes",
+      "color": "#556C46",
+      "origen": "nuernberg-hbf",
+      "destino": "rostock-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "gtw_d",
+        "talent"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "by",
+        "mv"
+      ]
+    },
+    {
+      "id": "line-00100",
+      "codigo": "AV2",
+      "codigo_interno": "AV-bw-2",
+      "nombre": "Alta velocidad Karlsruhe–Berlín",
+      "tipo_id": "av",
+      "prefijo": "AV",
+      "operador_id": "peu",
+      "operador_nombre": "Puente Europeo",
+      "color": "#1D4ED8",
+      "origen": "karlsruhe-hbf",
+      "destino": "berlin-hbf",
+      "via": [],
+      "frecuencia_min": 30,
+      "material": [
+        "giruno",
+        "ice1"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "bw",
+        "be"
+      ]
+    },
+    {
+      "id": "line-00101",
+      "codigo": "N11",
+      "codigo_interno": "N-bb-11",
+      "nombre": "Nocturno Potsdam–Bremen",
+      "tipo_id": "n",
+      "prefijo": "N",
+      "operador_id": "noc",
+      "operador_nombre": "Nocturno Continental",
+      "color": "#020617",
+      "origen": "potsdam-hbf",
+      "destino": "bremen-hbf",
+      "via": [],
+      "frecuencia_min": 1440,
+      "material": [
+        "night_coach"
+      ],
+      "origen_datos": "real",
+      "lands": [
+        "bb",
+        "hb"
+      ]
+    },
+    {
+      "id": "line-00102",
+      "codigo": "LD16",
+      "codigo_interno": "LD-nw-16",
+      "nombre": "Larga distancia Aquisgrán–Sarrebruck",
+      "tipo_id": "ld",
+      "prefijo": "LD",
+      "operador_id": "avr",
+      "operador_nombre": "Alta Velocidad Renana",
+      "color": "#1E40AF",
+      "origen": "aachen-hbf",
+      "destino": "saarbruecken-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "ice2",
+        "giruno"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "nw",
+        "sl"
+      ]
+    },
+    {
+      "id": "line-00103",
+      "codigo": "TT1",
+      "codigo_interno": "TT-be-1",
+      "nombre": "Tranvía-tren Berlín–Fráncfort del Meno",
+      "tipo_id": "tt",
+      "prefijo": "TT",
+      "operador_id": "hes",
+      "operador_nombre": "Hesse Conecta",
+      "color": "#BE123C",
+      "origen": "berlin-hbf",
+      "destino": "frankfurt-hbf",
+      "via": [],
+      "frecuencia_min": 15,
+      "material": [
+        "flirt3",
+        "coradia"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "be",
+        "he"
+      ]
+    },
+    {
+      "id": "line-00104",
+      "codigo": "PX13",
+      "codigo_interno": "PX-ni-13",
+      "nombre": "Premium exprés Hannover–Friburgo",
+      "tipo_id": "px",
+      "prefijo": "PX",
+      "operador_id": "raf",
+      "operador_nombre": "Rápidos Federales",
+      "color": "#0B3D91",
+      "origen": "hannover-hbf",
+      "destino": "freiburg-hbf",
+      "via": [],
+      "frecuencia_min": 45,
+      "material": [
+        "ice2",
+        "giruno"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "ni",
+        "bw"
+      ]
+    },
+    {
+      "id": "line-00105",
+      "codigo": "IR15",
+      "codigo_interno": "IR-bw-15",
+      "nombre": "Interregional Mannheim–Aquisgrán",
+      "tipo_id": "ir",
+      "prefijo": "IR",
+      "operador_id": "exc",
+      "operador_nombre": "Expreso Central",
+      "color": "#111827",
+      "origen": "mannheim-hbf",
+      "destino": "aachen-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "kiss200"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "bw",
+        "nw"
+      ]
+    },
+    {
+      "id": "line-00106",
+      "codigo": "RB5",
+      "codigo_interno": "RB-st-5",
+      "nombre": "Regional básico Magdeburgo–Düsseldorf",
+      "tipo_id": "rb",
+      "prefijo": "RB",
+      "operador_id": "har",
+      "operador_nombre": "Harz y Llanura",
+      "color": "#3F6212",
+      "origen": "magdeburg-hbf",
+      "destino": "duesseldorf-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "regiolis",
+        "wink"
+      ],
+      "origen_datos": "real",
+      "lands": [
+        "st",
+        "nw"
+      ]
+    },
+    {
+      "id": "line-00107",
+      "codigo": "T4",
+      "codigo_interno": "T-rp-4",
+      "nombre": "Tranvía Coblenza–Wurzburgo",
+      "tipo_id": "t",
+      "prefijo": "T",
+      "operador_id": "tmu",
+      "operador_nombre": "Tranvías Múnich",
+      "color": "#0891B2",
+      "origen": "koblenz-hbf",
+      "destino": "wuerzburg-hbf",
+      "via": [],
+      "frecuencia_min": 8,
+      "material": [
+        "albatros"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "rp",
+        "by"
+      ]
+    },
+    {
+      "id": "line-00108",
+      "codigo": "IR16",
+      "codigo_interno": "IR-hh-16",
+      "nombre": "Interregional Hamburgo Puerto Nuevo (ficticio)–Ruhr Orbital",
+      "tipo_id": "ir",
+      "prefijo": "IR",
+      "operador_id": "cdn",
+      "operador_nombre": "Corredores del Norte",
+      "color": "#0C4A6E",
+      "origen": "hamburg-hafencity",
+      "destino": "ruhr-orbital",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "regio2n",
+        "icetd"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "hh",
+        "nw"
+      ]
+    },
+    {
+      "id": "line-00109",
+      "codigo": "AV3",
+      "codigo_interno": "AV-nw-3",
+      "nombre": "Alta velocidad Düsseldorf–Leipzig",
+      "tipo_id": "av",
+      "prefijo": "AV",
+      "operador_id": "vrp",
+      "operador_nombre": "VeloRápido",
+      "color": "#DC2626",
+      "origen": "duesseldorf-hbf",
+      "destino": "leipzig-hbf",
+      "via": [],
+      "frecuencia_min": 30,
+      "material": [
+        "ice4"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "nw",
+        "sn"
+      ]
+    },
+    {
+      "id": "line-00110",
+      "codigo": "PX14",
+      "codigo_interno": "PX-hb-14",
+      "nombre": "Premium exprés Bremen–Potsdam",
+      "tipo_id": "px",
+      "prefijo": "PX",
+      "operador_id": "raf",
+      "operador_nombre": "Rápidos Federales",
+      "color": "#0B3D91",
+      "origen": "bremen-hbf",
+      "destino": "potsdam-hbf",
+      "via": [],
+      "frecuencia_min": 45,
+      "material": [
+        "ice2",
+        "giruno"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "hb",
+        "bb"
+      ]
+    },
+    {
+      "id": "line-00111",
+      "codigo": "U3",
+      "codigo_interno": "U-th-3",
+      "nombre": "Metro Erfurt–Hamburgo Puerto Nuevo (ficticio)",
+      "tipo_id": "u",
+      "prefijo": "U",
+      "operador_id": "uhh",
+      "operador_nombre": "Metro Hanseático",
+      "color": "#E30613",
+      "origen": "erfurt-hbf",
+      "destino": "hamburg-hafencity",
+      "via": [],
+      "frecuencia_min": 5,
+      "material": [
+        "metro_mp"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "th",
+        "hh"
+      ]
+    },
+    {
+      "id": "line-00112",
+      "codigo": "RL3",
+      "codigo_interno": "RL-rp-3",
+      "nombre": "Ramal local Maguncia–Essen",
+      "tipo_id": "rl",
+      "prefijo": "RL",
+      "operador_id": "val",
+      "operador_nombre": "Valles Verdes",
+      "color": "#556C46",
+      "origen": "mainz-hbf",
+      "destino": "essen-hbf",
+      "via": [],
+      "frecuencia_min": 90,
+      "material": [
+        "gtw_d",
+        "talent"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "rp",
+        "nw"
+      ]
+    },
+    {
+      "id": "line-00113",
+      "codigo": "T5",
+      "codigo_interno": "T-he-5",
+      "nombre": "Tranvía Fráncfort Cruce Oeste (ficticio)–Lübeck",
+      "tipo_id": "t",
+      "prefijo": "T",
+      "operador_id": "tfr",
+      "operador_nombre": "Tranvías Francfort",
+      "color": "#678382",
+      "origen": "frankfurt-westkreuz",
+      "destino": "luebeck-hbf",
+      "via": [],
+      "frecuencia_min": 8,
+      "material": [
+        "albatros"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "he",
+        "sh"
+      ]
+    },
+    {
+      "id": "line-00114",
+      "codigo": "RB6",
+      "codigo_interno": "RB-bw-6",
+      "nombre": "Regional básico Stuttgart–Múnich",
+      "tipo_id": "rb",
+      "prefijo": "RB",
+      "operador_id": "val",
+      "operador_nombre": "Valles Verdes",
+      "color": "#556C46",
+      "origen": "stuttgart-hbf",
+      "destino": "muenchen-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "gtw_d",
+        "talent"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "bw",
+        "by"
+      ]
+    },
+    {
+      "id": "line-00115",
+      "codigo": "LD17",
+      "codigo_interno": "LD-nw-17",
+      "nombre": "Larga distancia Essen–Karlsruhe",
+      "tipo_id": "ld",
+      "prefijo": "LD",
+      "operador_id": "fa",
+      "operador_nombre": "FerroAlemania",
+      "color": "#C8102E",
+      "origen": "essen-hbf",
+      "destino": "karlsruhe-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "ice4",
+        "tgv_duplex"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "nw",
+        "bw"
+      ]
+    },
+    {
+      "id": "line-00116",
+      "codigo": "TUR9",
+      "codigo_interno": "TUR-by-9",
+      "nombre": "Turístico Wurzburgo–Coblenza",
+      "tipo_id": "tur",
+      "prefijo": "TUR",
+      "operador_id": "mos",
+      "operador_nombre": "Mosela y Rin Sur",
+      "color": "#14532D",
+      "origen": "wuerzburg-hbf",
+      "destino": "koblenz-hbf",
+      "via": [],
+      "frecuencia_min": 120,
+      "material": [
+        "flirt3",
+        "coradia"
+      ],
+      "origen_datos": "real",
+      "lands": [
+        "by",
+        "rp"
+      ]
+    },
+    {
+      "id": "line-00117",
+      "codigo": "AE9",
+      "codigo_interno": "AE-sl-9",
+      "nombre": "Aeropuerto exprés Sarrebruck–Stuttgart",
+      "tipo_id": "ae",
+      "prefijo": "AE",
+      "operador_id": "aex",
+      "operador_nombre": "AeroEnlace Alemania",
+      "color": "#26A874",
+      "origen": "saarbruecken-hbf",
+      "destino": "stuttgart-hbf",
+      "via": [],
+      "frecuencia_min": 15,
+      "material": [
+        "ice3"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "sl",
+        "bw"
+      ]
+    },
+    {
+      "id": "line-00118",
+      "codigo": "AV4",
+      "codigo_interno": "AV-by-4",
+      "nombre": "Alta velocidad Múnich Cruce Sur (ficticio)–Ratisbona",
+      "tipo_id": "av",
+      "prefijo": "AV",
+      "operador_id": "raf",
+      "operador_nombre": "Rápidos Federales",
+      "color": "#0B3D91",
+      "origen": "muenchen-suedkreuz",
+      "destino": "regensburg-hbf",
+      "via": [],
+      "frecuencia_min": 30,
+      "material": [
+        "ice2",
+        "giruno"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "by"
+      ]
+    },
+    {
+      "id": "line-00119",
+      "codigo": "U4",
+      "codigo_interno": "U-nw-4",
+      "nombre": "Metro Colonia–Berlín Anillo Norte (ficticio)",
+      "tipo_id": "u",
+      "prefijo": "U",
+      "operador_id": "tko",
+      "operador_nombre": "Tranvías Colonia",
+      "color": "#CFC919",
+      "origen": "koeln-hbf",
+      "destino": "berlin-sx",
+      "via": [],
+      "frecuencia_min": 5,
+      "material": [
+        "flexity",
+        "tram_train"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "nw",
+        "be"
+      ]
+    },
+    {
+      "id": "line-00120",
+      "codigo": "RL4",
+      "codigo_interno": "RL-nw-4",
+      "nombre": "Ramal local Dortmund–Núremberg",
+      "tipo_id": "rl",
+      "prefijo": "RL",
+      "operador_id": "alb",
+      "operador_nombre": "AlpenBahn Sur",
+      "color": "#1E3A5F",
+      "origen": "dortmund-hbf",
+      "destino": "nuernberg-hbf",
+      "via": [],
+      "frecuencia_min": 90,
+      "material": [
+        "gtw_e",
+        "flirt_ch"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "nw",
+        "by"
+      ]
+    },
+    {
+      "id": "line-00121",
+      "codigo": "PX15",
+      "codigo_interno": "PX-by-15",
+      "nombre": "Premium exprés Ratisbona–Magdeburgo",
+      "tipo_id": "px",
+      "prefijo": "PX",
+      "operador_id": "nex",
+      "operador_nombre": "Nexo Ciudades",
+      "color": "#2ACC88",
+      "origen": "regensburg-hbf",
+      "destino": "magdeburg-hbf",
+      "via": [],
+      "frecuencia_min": 45,
+      "material": [
+        "railjet"
+      ],
+      "origen_datos": "real",
+      "lands": [
+        "by",
+        "st"
+      ]
+    },
+    {
+      "id": "line-00122",
+      "codigo": "OR1",
+      "codigo_interno": "OR-sh-1",
+      "nombre": "Orbital Lübeck–Fráncfort Cruce Oeste (ficticio)",
+      "tipo_id": "or",
+      "prefijo": "OR",
+      "operador_id": "shh",
+      "operador_nombre": "Cercanías Hanseáticas",
+      "color": "#172554",
+      "origen": "luebeck-hbf",
+      "destino": "frankfurt-westkreuz",
+      "via": [],
+      "frecuencia_min": 12,
+      "material": [
+        "mi2n"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "sh",
+        "he"
+      ]
+    },
+    {
+      "id": "line-00123",
+      "codigo": "PX16",
+      "codigo_interno": "PX-nw-16",
+      "nombre": "Premium exprés Ruhr Orbital–Dortmund",
+      "tipo_id": "px",
+      "prefijo": "PX",
+      "operador_id": "fa",
+      "operador_nombre": "FerroAlemania",
+      "color": "#C8102E",
+      "origen": "ruhr-orbital",
+      "destino": "dortmund-hbf",
+      "via": [],
+      "frecuencia_min": 45,
+      "material": [
+        "ice4",
+        "tgv_duplex"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "nw"
+      ]
+    },
+    {
+      "id": "line-00124",
+      "codigo": "RE12",
+      "codigo_interno": "RE-he-12",
+      "nombre": "Regional exprés Fráncfort del Meno–Kiel",
+      "tipo_id": "re",
+      "prefijo": "RE",
+      "operador_id": "riv",
+      "operador_nombre": "Riberas del Rin",
+      "color": "#813AC4",
+      "origen": "frankfurt-hbf",
+      "destino": "kiel-hbf",
+      "via": [],
+      "frecuencia_min": 30,
+      "material": [
+        "virm"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "he",
+        "sh"
+      ]
+    },
+    {
+      "id": "line-00125",
+      "codigo": "AE10",
+      "codigo_interno": "AE-sn-10",
+      "nombre": "Aeropuerto exprés Dresde–Hamburgo",
+      "tipo_id": "ae",
+      "prefijo": "AE",
+      "operador_id": "nex",
+      "operador_nombre": "Nexo Ciudades",
+      "color": "#2ACC88",
+      "origen": "dresden-hbf",
+      "destino": "hamburg-hbf",
+      "via": [],
+      "frecuencia_min": 15,
+      "material": [
+        "railjet"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "sn",
+        "hh"
+      ]
+    },
+    {
+      "id": "line-00126",
+      "codigo": "RB7",
+      "codigo_interno": "RB-by-7",
+      "nombre": "Regional básico Augsburgo–Mannheim",
+      "tipo_id": "rb",
+      "prefijo": "RB",
+      "operador_id": "bor",
+      "operador_nombre": "Borde Este",
+      "color": "#75C4E8",
+      "origen": "augsburg-hbf",
+      "destino": "mannheim-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "regio2n",
+        "icet"
+      ],
+      "origen_datos": "real",
+      "lands": [
+        "by",
+        "bw"
+      ]
+    },
+    {
+      "id": "line-00127",
+      "codigo": "N12",
+      "codigo_interno": "N-sh-12",
+      "nombre": "Nocturno Kiel–Maguncia",
+      "tipo_id": "n",
+      "prefijo": "N",
+      "operador_id": "noc",
+      "operador_nombre": "Nocturno Continental",
+      "color": "#020617",
+      "origen": "kiel-hbf",
+      "destino": "mainz-hbf",
+      "via": [],
+      "frecuencia_min": 1440,
+      "material": [
+        "night_coach"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "sh",
+        "rp"
+      ]
+    },
+    {
+      "id": "line-00128",
+      "codigo": "U5",
+      "codigo_interno": "U-be-5",
+      "nombre": "Metro Berlín Anillo Norte (ficticio)–Colonia",
+      "tipo_id": "u",
+      "prefijo": "U",
+      "operador_id": "ube",
+      "operador_nombre": "Metro Capital",
+      "color": "#F59E0B",
+      "origen": "berlin-sx",
+      "destino": "koeln-hbf",
+      "via": [],
+      "frecuencia_min": 5,
+      "material": [
+        "metro_mp"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "be",
+        "nw"
+      ]
+    },
+    {
+      "id": "line-00129",
+      "codigo": "LD18",
+      "codigo_interno": "LD-by-18",
+      "nombre": "Larga distancia Múnich–Augsburgo",
+      "tipo_id": "ld",
+      "prefijo": "LD",
+      "operador_id": "peu",
+      "operador_nombre": "Puente Europeo",
+      "color": "#1D4ED8",
+      "origen": "muenchen-hbf",
+      "destino": "augsburg-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "giruno",
+        "ice1"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "by"
+      ]
+    },
+    {
+      "id": "line-00130",
+      "codigo": "RB8",
+      "codigo_interno": "RB-sn-8",
+      "nombre": "Regional básico Leipzig–Kassel Wilhelmshöhe",
+      "tipo_id": "rb",
+      "prefijo": "RB",
+      "operador_id": "hes",
+      "operador_nombre": "Hesse Conecta",
+      "color": "#BE123C",
+      "origen": "leipzig-hbf",
+      "destino": "kassel-wilhelmshoehe",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "flirt3",
+        "coradia"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "sn",
+        "he"
+      ]
+    },
+    {
+      "id": "line-00131",
+      "codigo": "RE13",
+      "codigo_interno": "RE-bw-13",
+      "nombre": "Regional exprés Friburgo–Hannover",
+      "tipo_id": "re",
+      "prefijo": "RE",
+      "operador_id": "alb",
+      "operador_nombre": "AlpenBahn Sur",
+      "color": "#1E3A5F",
+      "origen": "freiburg-hbf",
+      "destino": "hannover-hbf",
+      "via": [],
+      "frecuencia_min": 30,
+      "material": [
+        "gtw_e",
+        "flirt_ch"
+      ],
+      "origen_datos": "real",
+      "lands": [
+        "bw",
+        "ni"
+      ]
+    },
+    {
+      "id": "line-00132",
+      "codigo": "IR17",
+      "codigo_interno": "IR-mv-17",
+      "nombre": "Interregional Rostock–Erfurt",
+      "tipo_id": "ir",
+      "prefijo": "IR",
+      "operador_id": "cdn",
+      "operador_nombre": "Corredores del Norte",
+      "color": "#0C4A6E",
+      "origen": "rostock-hbf",
+      "destino": "erfurt-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "regio2n",
+        "icetd"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "mv",
+        "th"
+      ]
+    },
+    {
+      "id": "line-00133",
+      "codigo": "N13",
+      "codigo_interno": "N-he-13",
+      "nombre": "Nocturno Kassel Wilhelmshöhe–Múnich Cruce Sur (ficticio)",
+      "tipo_id": "n",
+      "prefijo": "N",
+      "operador_id": "noc",
+      "operador_nombre": "Nocturno Continental",
+      "color": "#020617",
+      "origen": "kassel-wilhelmshoehe",
+      "destino": "muenchen-suedkreuz",
+      "via": [],
+      "frecuencia_min": 1440,
+      "material": [
+        "night_coach"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "he",
+        "by"
+      ]
+    },
+    {
+      "id": "line-00134",
+      "codigo": "IR18",
+      "codigo_interno": "IR-hh-18",
+      "nombre": "Interregional Hamburgo–Dresde",
+      "tipo_id": "ir",
+      "prefijo": "IR",
+      "operador_id": "via",
+      "operador_nombre": "Vía Abierta Regional",
+      "color": "#854D0E",
+      "origen": "hamburg-hbf",
+      "destino": "dresden-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "flirt_ch",
+        "regiolis"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "hh",
+        "sn"
+      ]
+    },
+    {
+      "id": "line-00135",
+      "codigo": "IR19",
+      "codigo_interno": "IR-by-19",
+      "nombre": "Interregional Núremberg–Rostock",
+      "tipo_id": "ir",
+      "prefijo": "IR",
+      "operador_id": "cdn",
+      "operador_nombre": "Corredores del Norte",
+      "color": "#0C4A6E",
+      "origen": "nuernberg-hbf",
+      "destino": "rostock-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "regio2n",
+        "icetd"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "by",
+        "mv"
+      ]
+    },
+    {
+      "id": "line-00136",
+      "codigo": "RL5",
+      "codigo_interno": "RL-bw-5",
+      "nombre": "Ramal local Karlsruhe–Berlín",
+      "tipo_id": "rl",
+      "prefijo": "RL",
+      "operador_id": "val",
+      "operador_nombre": "Valles Verdes",
+      "color": "#556C46",
+      "origen": "karlsruhe-hbf",
+      "destino": "berlin-hbf",
+      "via": [],
+      "frecuencia_min": 90,
+      "material": [
+        "gtw_d",
+        "talent"
+      ],
+      "origen_datos": "real",
+      "lands": [
+        "bw",
+        "be"
+      ]
+    },
+    {
+      "id": "line-00137",
+      "codigo": "PX17",
+      "codigo_interno": "PX-bb-17",
+      "nombre": "Premium exprés Potsdam–Bremen",
+      "tipo_id": "px",
+      "prefijo": "PX",
+      "operador_id": "exc",
+      "operador_nombre": "Expreso Central",
+      "color": "#111827",
+      "origen": "potsdam-hbf",
+      "destino": "bremen-hbf",
+      "via": [],
+      "frecuencia_min": 45,
+      "material": [
+        "kiss200"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "bb",
+        "hb"
+      ]
+    },
+    {
+      "id": "line-00138",
+      "codigo": "RB9",
+      "codigo_interno": "RB-nw-9",
+      "nombre": "Regional básico Aquisgrán–Sarrebruck",
+      "tipo_id": "rb",
+      "prefijo": "RB",
+      "operador_id": "rur",
+      "operador_nombre": "Ruhr Urbano Regional",
+      "color": "#1F2937",
+      "origen": "aachen-hbf",
+      "destino": "saarbruecken-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "flirt3",
+        "coradia"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "nw",
+        "sl"
+      ]
+    },
+    {
+      "id": "line-00139",
+      "codigo": "S8",
+      "codigo_interno": "S-be-8",
+      "nombre": "Cercanías Berlín–Fráncfort del Meno",
+      "tipo_id": "s",
+      "prefijo": "S",
+      "operador_id": "skl",
+      "operador_nombre": "Cercanías del Rin Medio",
+      "color": "#0F766E",
+      "origen": "berlin-hbf",
+      "destino": "frankfurt-hbf",
+      "via": [],
+      "frecuencia_min": 10,
+      "material": [
+        "m7"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "be",
+        "he"
+      ]
+    },
+    {
+      "id": "line-00140",
+      "codigo": "PX18",
+      "codigo_interno": "PX-ni-18",
+      "nombre": "Premium exprés Hannover–Friburgo",
+      "tipo_id": "px",
+      "prefijo": "PX",
+      "operador_id": "vrp",
+      "operador_nombre": "VeloRápido",
+      "color": "#DC2626",
+      "origen": "hannover-hbf",
+      "destino": "freiburg-hbf",
+      "via": [],
+      "frecuencia_min": 45,
+      "material": [
+        "ice4"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "ni",
+        "bw"
+      ]
+    },
+    {
+      "id": "line-00141",
+      "codigo": "S9",
+      "codigo_interno": "S-bw-9",
+      "nombre": "Cercanías Mannheim–Aquisgrán",
+      "tipo_id": "s",
+      "prefijo": "S",
+      "operador_id": "rur",
+      "operador_nombre": "Ruhr Urbano Regional",
+      "color": "#1F2937",
+      "origen": "mannheim-hbf",
+      "destino": "aachen-hbf",
+      "via": [],
+      "frecuencia_min": 10,
+      "material": [
+        "flirt3",
+        "coradia"
+      ],
+      "origen_datos": "real",
+      "lands": [
+        "bw",
+        "nw"
+      ]
+    },
+    {
+      "id": "line-00142",
+      "codigo": "AV5",
+      "codigo_interno": "AV-st-5",
+      "nombre": "Alta velocidad Magdeburgo–Düsseldorf",
+      "tipo_id": "av",
+      "prefijo": "AV",
+      "operador_id": "raf",
+      "operador_nombre": "Rápidos Federales",
+      "color": "#0B3D91",
+      "origen": "magdeburg-hbf",
+      "destino": "duesseldorf-hbf",
+      "via": [],
+      "frecuencia_min": 30,
+      "material": [
+        "ice2",
+        "giruno"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "st",
+        "nw"
+      ]
+    },
+    {
+      "id": "line-00143",
+      "codigo": "IR20",
+      "codigo_interno": "IR-rp-20",
+      "nombre": "Interregional Coblenza–Wurzburgo",
+      "tipo_id": "ir",
+      "prefijo": "IR",
+      "operador_id": "via",
+      "operador_nombre": "Vía Abierta Regional",
+      "color": "#854D0E",
+      "origen": "koblenz-hbf",
+      "destino": "wuerzburg-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "flirt_ch",
+        "regiolis"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "rp",
+        "by"
+      ]
+    },
+    {
+      "id": "line-00144",
+      "codigo": "RE14",
+      "codigo_interno": "RE-hh-14",
+      "nombre": "Regional exprés Hamburgo Puerto Nuevo (ficticio)–Ruhr Orbital",
+      "tipo_id": "re",
+      "prefijo": "RE",
+      "operador_id": "riv",
+      "operador_nombre": "Riberas del Rin",
+      "color": "#813AC4",
+      "origen": "hamburg-hafencity",
+      "destino": "ruhr-orbital",
+      "via": [],
+      "frecuencia_min": 30,
+      "material": [
+        "virm"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "hh",
+        "nw"
+      ]
+    },
+    {
+      "id": "line-00145",
+      "codigo": "IR21",
+      "codigo_interno": "IR-nw-21",
+      "nombre": "Interregional Düsseldorf–Leipzig",
+      "tipo_id": "ir",
+      "prefijo": "IR",
+      "operador_id": "saj",
+      "operador_nombre": "Sajonia Rieles",
+      "color": "#1F8A81",
+      "origen": "duesseldorf-hbf",
+      "destino": "leipzig-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "twindexx",
+        "m7"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "nw",
+        "sn"
+      ]
+    },
+    {
+      "id": "line-00146",
+      "codigo": "IR22",
+      "codigo_interno": "IR-hb-22",
+      "nombre": "Interregional Bremen–Potsdam",
+      "tipo_id": "ir",
+      "prefijo": "IR",
+      "operador_id": "lib",
+      "operador_nombre": "Líneas Libres",
+      "color": "#EA580C",
+      "origen": "bremen-hbf",
+      "destino": "potsdam-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "kiss200"
+      ],
+      "origen_datos": "real",
+      "lands": [
+        "hb",
+        "bb"
+      ]
+    },
+    {
+      "id": "line-00147",
+      "codigo": "IR23",
+      "codigo_interno": "IR-th-23",
+      "nombre": "Interregional Erfurt–Hamburgo Puerto Nuevo (ficticio)",
+      "tipo_id": "ir",
+      "prefijo": "IR",
+      "operador_id": "ica",
+      "operador_nombre": "InterCiudades Alemania",
+      "color": "#0E7C7B",
+      "origen": "erfurt-hbf",
+      "destino": "hamburg-hafencity",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "virm",
+        "twindexx"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "th",
+        "hh"
+      ]
+    },
+    {
+      "id": "line-00148",
+      "codigo": "PX19",
+      "codigo_interno": "PX-rp-19",
+      "nombre": "Premium exprés Maguncia–Essen",
+      "tipo_id": "px",
+      "prefijo": "PX",
+      "operador_id": "aex",
+      "operador_nombre": "AeroEnlace Alemania",
+      "color": "#26A874",
+      "origen": "mainz-hbf",
+      "destino": "essen-hbf",
+      "via": [],
+      "frecuencia_min": 45,
+      "material": [
+        "ice3"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "rp",
+        "nw"
+      ]
+    },
+    {
+      "id": "line-00149",
+      "codigo": "RE15",
+      "codigo_interno": "RE-he-15",
+      "nombre": "Regional exprés Fráncfort Cruce Oeste (ficticio)–Lübeck",
+      "tipo_id": "re",
+      "prefijo": "RE",
+      "operador_id": "ica",
+      "operador_nombre": "InterCiudades Alemania",
+      "color": "#0E7C7B",
+      "origen": "frankfurt-westkreuz",
+      "destino": "luebeck-hbf",
+      "via": [],
+      "frecuencia_min": 30,
+      "material": [
+        "virm",
+        "twindexx"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "he",
+        "sh"
+      ]
+    },
+    {
+      "id": "line-00150",
+      "codigo": "RB10",
+      "codigo_interno": "RB-bw-10",
+      "nombre": "Regional básico Stuttgart–Múnich",
+      "tipo_id": "rb",
+      "prefijo": "RB",
+      "operador_id": "mid",
+      "operador_nombre": "Mediodía Alemán",
+      "color": "#961D6C",
+      "origen": "stuttgart-hbf",
+      "destino": "muenchen-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "icetd",
+        "flirt_ch"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "bw",
+        "by"
+      ]
+    },
+    {
+      "id": "line-00151",
+      "codigo": "RE16",
+      "codigo_interno": "RE-nw-16",
+      "nombre": "Regional exprés Essen–Karlsruhe",
+      "tipo_id": "re",
+      "prefijo": "RE",
+      "operador_id": "rrw",
+      "operador_nombre": "Renania Rodante",
+      "color": "#9F1239",
+      "origen": "essen-hbf",
+      "destino": "karlsruhe-hbf",
+      "via": [],
+      "frecuencia_min": 30,
+      "material": [
+        "flirt_ch",
+        "regiolis"
+      ],
+      "origen_datos": "real",
+      "lands": [
+        "nw",
+        "bw"
+      ]
+    },
+    {
+      "id": "line-00152",
+      "codigo": "U6",
+      "codigo_interno": "U-by-6",
+      "nombre": "Metro Wurzburgo–Coblenza",
+      "tipo_id": "u",
+      "prefijo": "U",
+      "operador_id": "unu",
+      "operador_nombre": "Metro Franconia",
+      "color": "#211BD5",
+      "origen": "wuerzburg-hbf",
+      "destino": "koblenz-hbf",
+      "via": [],
+      "frecuencia_min": 5,
+      "material": [
+        "metro_mx"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "by",
+        "rp"
+      ]
+    },
+    {
+      "id": "line-00153",
+      "codigo": "LD19",
+      "codigo_interno": "LD-sl-19",
+      "nombre": "Larga distancia Sarrebruck–Stuttgart",
+      "tipo_id": "ld",
+      "prefijo": "LD",
+      "operador_id": "occ",
+      "operador_nombre": "Occidente Atlántico",
+      "color": "#A9C3AE",
+      "origen": "saarbruecken-hbf",
+      "destino": "stuttgart-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "virm",
+        "ice3b"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "sl",
+        "bw"
+      ]
+    },
+    {
+      "id": "line-00154",
+      "codigo": "RL6",
+      "codigo_interno": "RL-by-6",
+      "nombre": "Ramal local Múnich Cruce Sur (ficticio)–Ratisbona",
+      "tipo_id": "rl",
+      "prefijo": "RL",
+      "operador_id": "val",
+      "operador_nombre": "Valles Verdes",
+      "color": "#556C46",
+      "origen": "muenchen-suedkreuz",
+      "destino": "regensburg-hbf",
+      "via": [],
+      "frecuencia_min": 90,
+      "material": [
+        "gtw_d",
+        "talent"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "by"
+      ]
+    },
+    {
+      "id": "line-00155",
+      "codigo": "RE17",
+      "codigo_interno": "RE-nw-17",
+      "nombre": "Regional exprés Colonia–Berlín Anillo Norte (ficticio)",
+      "tipo_id": "re",
+      "prefijo": "RE",
+      "operador_id": "rrw",
+      "operador_nombre": "Renania Rodante",
+      "color": "#9F1239",
+      "origen": "koeln-hbf",
+      "destino": "berlin-sx",
+      "via": [],
+      "frecuencia_min": 30,
+      "material": [
+        "flirt_ch",
+        "regiolis"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "nw",
+        "be"
+      ]
+    },
+    {
+      "id": "line-00156",
+      "codigo": "IR24",
+      "codigo_interno": "IR-nw-24",
+      "nombre": "Interregional Dortmund–Núremberg",
+      "tipo_id": "ir",
+      "prefijo": "IR",
+      "operador_id": "fa",
+      "operador_nombre": "FerroAlemania",
+      "color": "#C8102E",
+      "origen": "dortmund-hbf",
+      "destino": "nuernberg-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "ice4",
+        "tgv_duplex"
+      ],
+      "origen_datos": "real",
+      "lands": [
+        "nw",
+        "by"
+      ]
+    },
+    {
+      "id": "line-00157",
+      "codigo": "N14",
+      "codigo_interno": "N-by-14",
+      "nombre": "Nocturno Ratisbona–Magdeburgo",
+      "tipo_id": "n",
+      "prefijo": "N",
+      "operador_id": "fa",
+      "operador_nombre": "FerroAlemania",
+      "color": "#C8102E",
+      "origen": "regensburg-hbf",
+      "destino": "magdeburg-hbf",
+      "via": [],
+      "frecuencia_min": 1440,
+      "material": [
+        "ice4",
+        "tgv_duplex"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "by",
+        "st"
+      ]
+    },
+    {
+      "id": "line-00158",
+      "codigo": "AE11",
+      "codigo_interno": "AE-sh-11",
+      "nombre": "Aeropuerto exprés Lübeck–Fráncfort Cruce Oeste (ficticio)",
+      "tipo_id": "ae",
+      "prefijo": "AE",
+      "operador_id": "cdn",
+      "operador_nombre": "Corredores del Norte",
+      "color": "#0C4A6E",
+      "origen": "luebeck-hbf",
+      "destino": "frankfurt-westkreuz",
+      "via": [],
+      "frecuencia_min": 15,
+      "material": [
+        "regio2n",
+        "icetd"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "sh",
+        "he"
+      ]
+    },
+    {
+      "id": "line-00159",
+      "codigo": "S10",
+      "codigo_interno": "S-nw-10",
+      "nombre": "Cercanías Ruhr Orbital–Dortmund",
+      "tipo_id": "s",
+      "prefijo": "S",
+      "operador_id": "sco",
+      "operador_nombre": "Cercanías Colonia-Bonn",
+      "color": "#EF4444",
+      "origen": "ruhr-orbital",
+      "destino": "dortmund-hbf",
+      "via": [],
+      "frecuencia_min": 10,
+      "material": [
+        "desiro_dd"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "nw"
+      ]
+    },
+    {
+      "id": "line-00160",
+      "codigo": "AV6",
+      "codigo_interno": "AV-he-6",
+      "nombre": "Alta velocidad Fráncfort del Meno–Kiel",
+      "tipo_id": "av",
+      "prefijo": "AV",
+      "operador_id": "peu",
+      "operador_nombre": "Puente Europeo",
+      "color": "#1D4ED8",
+      "origen": "frankfurt-hbf",
+      "destino": "kiel-hbf",
+      "via": [],
+      "frecuencia_min": 30,
+      "material": [
+        "giruno",
+        "ice1"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "he",
+        "sh"
+      ]
+    },
+    {
+      "id": "line-00161",
+      "codigo": "TUR10",
+      "codigo_interno": "TUR-sn-10",
+      "nombre": "Turístico Dresde–Hamburgo",
+      "tipo_id": "tur",
+      "prefijo": "TUR",
+      "operador_id": "pan",
+      "operador_nombre": "Panorámicos Alemanes",
+      "color": "#7E1979",
+      "origen": "dresden-hbf",
+      "destino": "hamburg-hbf",
+      "via": [],
+      "frecuencia_min": 120,
+      "material": [
+        "gtw_d"
+      ],
+      "origen_datos": "real",
+      "lands": [
+        "sn",
+        "hh"
+      ]
+    },
+    {
+      "id": "line-00162",
+      "codigo": "N15",
+      "codigo_interno": "N-by-15",
+      "nombre": "Nocturno Augsburgo–Mannheim",
+      "tipo_id": "n",
+      "prefijo": "N",
+      "operador_id": "fa",
+      "operador_nombre": "FerroAlemania",
+      "color": "#C8102E",
+      "origen": "augsburg-hbf",
+      "destino": "mannheim-hbf",
+      "via": [],
+      "frecuencia_min": 1440,
+      "material": [
+        "ice4",
+        "tgv_duplex"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "by",
+        "bw"
+      ]
+    },
+    {
+      "id": "line-00163",
+      "codigo": "RE18",
+      "codigo_interno": "RE-sh-18",
+      "nombre": "Regional exprés Kiel–Maguncia",
+      "tipo_id": "re",
+      "prefijo": "RE",
+      "operador_id": "nor",
+      "operador_nombre": "Norte Abierto",
+      "color": "#D87A86",
+      "origen": "kiel-hbf",
+      "destino": "mainz-hbf",
+      "via": [],
+      "frecuencia_min": 30,
+      "material": [
+        "virm",
+        "kiss200"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "sh",
+        "rp"
+      ]
+    },
+    {
+      "id": "line-00164",
+      "codigo": "N16",
+      "codigo_interno": "N-be-16",
+      "nombre": "Nocturno Berlín Anillo Norte (ficticio)–Colonia",
+      "tipo_id": "n",
+      "prefijo": "N",
+      "operador_id": "peu",
+      "operador_nombre": "Puente Europeo",
+      "color": "#1D4ED8",
+      "origen": "berlin-sx",
+      "destino": "koeln-hbf",
+      "via": [],
+      "frecuencia_min": 1440,
+      "material": [
+        "giruno",
+        "ice1"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "be",
+        "nw"
+      ]
+    },
+    {
+      "id": "line-00165",
+      "codigo": "AV7",
+      "codigo_interno": "AV-by-7",
+      "nombre": "Alta velocidad Múnich–Augsburgo",
+      "tipo_id": "av",
+      "prefijo": "AV",
+      "operador_id": "vrp",
+      "operador_nombre": "VeloRápido",
+      "color": "#DC2626",
+      "origen": "muenchen-hbf",
+      "destino": "augsburg-hbf",
+      "via": [],
+      "frecuencia_min": 30,
+      "material": [
+        "ice4"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "by"
+      ]
+    },
+    {
+      "id": "line-00166",
+      "codigo": "PX20",
+      "codigo_interno": "PX-sn-20",
+      "nombre": "Premium exprés Leipzig–Kassel Wilhelmshöhe",
+      "tipo_id": "px",
+      "prefijo": "PX",
+      "operador_id": "fer",
+      "operador_nombre": "Feria y Congresos Rail",
+      "color": "#BBD2CD",
+      "origen": "leipzig-hbf",
+      "destino": "kassel-wilhelmshoehe",
+      "via": [],
+      "frecuencia_min": 45,
+      "material": [
+        "ice4"
+      ],
+      "origen_datos": "real",
+      "lands": [
+        "sn",
+        "he"
+      ]
+    },
+    {
+      "id": "line-00167",
+      "codigo": "RE19",
+      "codigo_interno": "RE-bw-19",
+      "nombre": "Regional exprés Friburgo–Hannover",
+      "tipo_id": "re",
+      "prefijo": "RE",
+      "operador_id": "har",
+      "operador_nombre": "Harz y Llanura",
+      "color": "#3F6212",
+      "origen": "freiburg-hbf",
+      "destino": "hannover-hbf",
+      "via": [],
+      "frecuencia_min": 30,
+      "material": [
+        "regiolis",
+        "wink"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "bw",
+        "ni"
+      ]
+    },
+    {
+      "id": "line-00168",
+      "codigo": "IR25",
+      "codigo_interno": "IR-mv-25",
+      "nombre": "Interregional Rostock–Erfurt",
+      "tipo_id": "ir",
+      "prefijo": "IR",
+      "operador_id": "cdn",
+      "operador_nombre": "Corredores del Norte",
+      "color": "#0C4A6E",
+      "origen": "rostock-hbf",
+      "destino": "erfurt-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "regio2n",
+        "icetd"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "mv",
+        "th"
+      ]
+    },
+    {
+      "id": "line-00169",
+      "codigo": "N17",
+      "codigo_interno": "N-he-17",
+      "nombre": "Nocturno Kassel Wilhelmshöhe–Múnich Cruce Sur (ficticio)",
+      "tipo_id": "n",
+      "prefijo": "N",
+      "operador_id": "noc",
+      "operador_nombre": "Nocturno Continental",
+      "color": "#020617",
+      "origen": "kassel-wilhelmshoehe",
+      "destino": "muenchen-suedkreuz",
+      "via": [],
+      "frecuencia_min": 1440,
+      "material": [
+        "night_coach"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "he",
+        "by"
+      ]
+    },
+    {
+      "id": "line-00170",
+      "codigo": "PX21",
+      "codigo_interno": "PX-hh-21",
+      "nombre": "Premium exprés Hamburgo–Dresde",
+      "tipo_id": "px",
+      "prefijo": "PX",
+      "operador_id": "aex",
+      "operador_nombre": "AeroEnlace Alemania",
+      "color": "#26A874",
+      "origen": "hamburg-hbf",
+      "destino": "dresden-hbf",
+      "via": [],
+      "frecuencia_min": 45,
+      "material": [
+        "ice3"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "hh",
+        "sn"
+      ]
+    },
+    {
+      "id": "line-00171",
+      "codigo": "RE20",
+      "codigo_interno": "RE-by-20",
+      "nombre": "Regional exprés Núremberg–Rostock",
+      "tipo_id": "re",
+      "prefijo": "RE",
+      "operador_id": "alb",
+      "operador_nombre": "AlpenBahn Sur",
+      "color": "#1E3A5F",
+      "origen": "nuernberg-hbf",
+      "destino": "rostock-hbf",
+      "via": [],
+      "frecuencia_min": 30,
+      "material": [
+        "gtw_e",
+        "flirt_ch"
+      ],
+      "origen_datos": "real",
+      "lands": [
+        "by",
+        "mv"
+      ]
+    },
+    {
+      "id": "line-00172",
+      "codigo": "AE12",
+      "codigo_interno": "AE-bw-12",
+      "nombre": "Aeropuerto exprés Karlsruhe–Berlín",
+      "tipo_id": "ae",
+      "prefijo": "AE",
+      "operador_id": "sst",
+      "operador_nombre": "Cercanías Suabia",
+      "color": "#F97316",
+      "origen": "karlsruhe-hbf",
+      "destino": "berlin-hbf",
+      "via": [],
+      "frecuencia_min": 15,
+      "material": [
+        "flirt4"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "bw",
+        "be"
+      ]
+    },
+    {
+      "id": "line-00173",
+      "codigo": "IR26",
+      "codigo_interno": "IR-bb-26",
+      "nombre": "Interregional Potsdam–Bremen",
+      "tipo_id": "ir",
+      "prefijo": "IR",
+      "operador_id": "bor",
+      "operador_nombre": "Borde Este",
+      "color": "#75C4E8",
+      "origen": "potsdam-hbf",
+      "destino": "bremen-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "regio2n",
+        "icet"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "bb",
+        "hb"
+      ]
+    },
+    {
+      "id": "line-00174",
+      "codigo": "OR2",
+      "codigo_interno": "OR-nw-2",
+      "nombre": "Orbital Aquisgrán–Sarrebruck",
+      "tipo_id": "or",
+      "prefijo": "OR",
+      "operador_id": "srh",
+      "operador_nombre": "Cercanías Rin-Ruhr",
+      "color": "#475569",
+      "origen": "aachen-hbf",
+      "destino": "saarbruecken-hbf",
+      "via": [],
+      "frecuencia_min": 12,
+      "material": [
+        "kiss160",
+        "flirt4"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "nw",
+        "sl"
+      ]
+    },
+    {
+      "id": "line-00175",
+      "codigo": "AE13",
+      "codigo_interno": "AE-be-13",
+      "nombre": "Aeropuerto exprés Berlín–Fráncfort del Meno",
+      "tipo_id": "ae",
+      "prefijo": "AE",
+      "operador_id": "aex",
+      "operador_nombre": "AeroEnlace Alemania",
+      "color": "#26A874",
+      "origen": "berlin-hbf",
+      "destino": "frankfurt-hbf",
+      "via": [],
+      "frecuencia_min": 15,
+      "material": [
+        "ice3"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "be",
+        "he"
+      ]
+    },
+    {
+      "id": "line-00176",
+      "codigo": "N18",
+      "codigo_interno": "N-ni-18",
+      "nombre": "Nocturno Hannover–Friburgo",
+      "tipo_id": "n",
+      "prefijo": "N",
+      "operador_id": "noc",
+      "operador_nombre": "Nocturno Continental",
+      "color": "#020617",
+      "origen": "hannover-hbf",
+      "destino": "freiburg-hbf",
+      "via": [],
+      "frecuencia_min": 1440,
+      "material": [
+        "night_coach"
+      ],
+      "origen_datos": "real",
+      "lands": [
+        "ni",
+        "bw"
+      ]
+    },
+    {
+      "id": "line-00177",
+      "codigo": "LD20",
+      "codigo_interno": "LD-bw-20",
+      "nombre": "Larga distancia Mannheim–Aquisgrán",
+      "tipo_id": "ld",
+      "prefijo": "LD",
+      "operador_id": "nex",
+      "operador_nombre": "Nexo Ciudades",
+      "color": "#2ACC88",
+      "origen": "mannheim-hbf",
+      "destino": "aachen-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "railjet"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "bw",
+        "nw"
+      ]
+    },
+    {
+      "id": "line-00178",
+      "codigo": "RE21",
+      "codigo_interno": "RE-st-21",
+      "nombre": "Regional exprés Magdeburgo–Düsseldorf",
+      "tipo_id": "re",
+      "prefijo": "RE",
+      "operador_id": "riv",
+      "operador_nombre": "Riberas del Rin",
+      "color": "#813AC4",
+      "origen": "magdeburg-hbf",
+      "destino": "duesseldorf-hbf",
+      "via": [],
+      "frecuencia_min": 30,
+      "material": [
+        "virm"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "st",
+        "nw"
+      ]
+    },
+    {
+      "id": "line-00179",
+      "codigo": "RE22",
+      "codigo_interno": "RE-rp-22",
+      "nombre": "Regional exprés Coblenza–Wurzburgo",
+      "tipo_id": "re",
+      "prefijo": "RE",
+      "operador_id": "occ",
+      "operador_nombre": "Occidente Atlántico",
+      "color": "#A9C3AE",
+      "origen": "koblenz-hbf",
+      "destino": "wuerzburg-hbf",
+      "via": [],
+      "frecuencia_min": 30,
+      "material": [
+        "virm",
+        "ice3b"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "rp",
+        "by"
+      ]
+    },
+    {
+      "id": "line-00180",
+      "codigo": "LD21",
+      "codigo_interno": "LD-hh-21",
+      "nombre": "Larga distancia Hamburgo Puerto Nuevo (ficticio)–Ruhr Orbital",
+      "tipo_id": "ld",
+      "prefijo": "LD",
+      "operador_id": "peu",
+      "operador_nombre": "Puente Europeo",
+      "color": "#1D4ED8",
+      "origen": "hamburg-hafencity",
+      "destino": "ruhr-orbital",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "giruno",
+        "ice1"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "hh",
+        "nw"
+      ]
+    },
+    {
+      "id": "line-00181",
+      "codigo": "T6",
+      "codigo_interno": "T-nw-6",
+      "nombre": "Tranvía Düsseldorf–Leipzig",
+      "tipo_id": "t",
+      "prefijo": "T",
+      "operador_id": "tdu",
+      "operador_nombre": "Tranvías Düsseldorf",
+      "color": "#69ADD7",
+      "origen": "duesseldorf-hbf",
+      "destino": "leipzig-hbf",
+      "via": [],
+      "frecuencia_min": 8,
+      "material": [
+        "citadis",
+        "tram_train"
+      ],
+      "origen_datos": "real",
+      "lands": [
+        "nw",
+        "sn"
+      ]
+    },
+    {
+      "id": "line-00182",
+      "codigo": "AE14",
+      "codigo_interno": "AE-hb-14",
+      "nombre": "Aeropuerto exprés Bremen–Potsdam",
+      "tipo_id": "ae",
+      "prefijo": "AE",
+      "operador_id": "whv",
+      "operador_nombre": "Hanseas del Weser",
+      "color": "#0E7490",
+      "origen": "bremen-hbf",
+      "destino": "potsdam-hbf",
+      "via": [],
+      "frecuencia_min": 15,
+      "material": [
+        "flirt_ch",
+        "regiolis"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "hb",
+        "bb"
+      ]
+    },
+    {
+      "id": "line-00183",
+      "codigo": "RB11",
+      "codigo_interno": "RB-th-11",
+      "nombre": "Regional básico Erfurt–Hamburgo Puerto Nuevo (ficticio)",
+      "tipo_id": "rb",
+      "prefijo": "RB",
+      "operador_id": "nor",
+      "operador_nombre": "Norte Abierto",
+      "color": "#D87A86",
+      "origen": "erfurt-hbf",
+      "destino": "hamburg-hafencity",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "virm",
+        "kiss200"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "th",
+        "hh"
+      ]
+    },
+    {
+      "id": "line-00184",
+      "codigo": "MC3",
+      "codigo_interno": "MC-rp-3",
+      "nombre": "Metropolitano cruzado Maguncia–Essen",
+      "tipo_id": "mc",
+      "prefijo": "MC",
+      "operador_id": "rur",
+      "operador_nombre": "Ruhr Urbano Regional",
+      "color": "#1F2937",
+      "origen": "mainz-hbf",
+      "destino": "essen-hbf",
+      "via": [],
+      "frecuencia_min": 15,
+      "material": [
+        "flirt3",
+        "coradia"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "rp",
+        "nw"
+      ]
+    },
+    {
+      "id": "line-00185",
+      "codigo": "IR27",
+      "codigo_interno": "IR-he-27",
+      "nombre": "Interregional Fráncfort Cruce Oeste (ficticio)–Lübeck",
+      "tipo_id": "ir",
+      "prefijo": "IR",
+      "operador_id": "via",
+      "operador_nombre": "Vía Abierta Regional",
+      "color": "#854D0E",
+      "origen": "frankfurt-westkreuz",
+      "destino": "luebeck-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "flirt_ch",
+        "regiolis"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "he",
+        "sh"
+      ]
+    },
+    {
+      "id": "line-00186",
+      "codigo": "PX22",
+      "codigo_interno": "PX-bw-22",
+      "nombre": "Premium exprés Stuttgart–Múnich",
+      "tipo_id": "px",
+      "prefijo": "PX",
+      "operador_id": "vrp",
+      "operador_nombre": "VeloRápido",
+      "color": "#DC2626",
+      "origen": "stuttgart-hbf",
+      "destino": "muenchen-hbf",
+      "via": [],
+      "frecuencia_min": 45,
+      "material": [
+        "ice4"
+      ],
+      "origen_datos": "real",
+      "lands": [
+        "bw",
+        "by"
+      ]
+    },
+    {
+      "id": "line-00187",
+      "codigo": "LD22",
+      "codigo_interno": "LD-nw-22",
+      "nombre": "Larga distancia Essen–Karlsruhe",
+      "tipo_id": "ld",
+      "prefijo": "LD",
+      "operador_id": "lib",
+      "operador_nombre": "Líneas Libres",
+      "color": "#EA580C",
+      "origen": "essen-hbf",
+      "destino": "karlsruhe-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "kiss200"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "nw",
+        "bw"
+      ]
+    },
+    {
+      "id": "line-00188",
+      "codigo": "IR28",
+      "codigo_interno": "IR-by-28",
+      "nombre": "Interregional Wurzburgo–Coblenza",
+      "tipo_id": "ir",
+      "prefijo": "IR",
+      "operador_id": "lib",
+      "operador_nombre": "Líneas Libres",
+      "color": "#EA580C",
+      "origen": "wuerzburg-hbf",
+      "destino": "koblenz-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "kiss200"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "by",
+        "rp"
+      ]
+    },
+    {
+      "id": "line-00189",
+      "codigo": "LD23",
+      "codigo_interno": "LD-sl-23",
+      "nombre": "Larga distancia Sarrebruck–Stuttgart",
+      "tipo_id": "ld",
+      "prefijo": "LD",
+      "operador_id": "avr",
+      "operador_nombre": "Alta Velocidad Renana",
+      "color": "#1E40AF",
+      "origen": "saarbruecken-hbf",
+      "destino": "stuttgart-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "ice2",
+        "giruno"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "sl",
+        "bw"
+      ]
+    },
+    {
+      "id": "line-00190",
+      "codigo": "RE23",
+      "codigo_interno": "RE-by-23",
+      "nombre": "Regional exprés Múnich Cruce Sur (ficticio)–Ratisbona",
+      "tipo_id": "re",
+      "prefijo": "RE",
+      "operador_id": "via",
+      "operador_nombre": "Vía Abierta Regional",
+      "color": "#854D0E",
+      "origen": "muenchen-suedkreuz",
+      "destino": "regensburg-hbf",
+      "via": [],
+      "frecuencia_min": 30,
+      "material": [
+        "flirt_ch",
+        "regiolis"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "by"
+      ]
+    },
+    {
+      "id": "line-00191",
+      "codigo": "AE15",
+      "codigo_interno": "AE-nw-15",
+      "nombre": "Aeropuerto exprés Colonia–Berlín Anillo Norte (ficticio)",
+      "tipo_id": "ae",
+      "prefijo": "AE",
+      "operador_id": "cdn",
+      "operador_nombre": "Corredores del Norte",
+      "color": "#0C4A6E",
+      "origen": "koeln-hbf",
+      "destino": "berlin-sx",
+      "via": [],
+      "frecuencia_min": 15,
+      "material": [
+        "regio2n",
+        "icetd"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "nw",
+        "be"
+      ]
+    },
+    {
+      "id": "line-00192",
+      "codigo": "PX23",
+      "codigo_interno": "PX-nw-23",
+      "nombre": "Premium exprés Dortmund–Núremberg",
+      "tipo_id": "px",
+      "prefijo": "PX",
+      "operador_id": "lib",
+      "operador_nombre": "Líneas Libres",
+      "color": "#EA580C",
+      "origen": "dortmund-hbf",
+      "destino": "nuernberg-hbf",
+      "via": [],
+      "frecuencia_min": 45,
+      "material": [
+        "kiss200"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "nw",
+        "by"
+      ]
+    },
+    {
+      "id": "line-00193",
+      "codigo": "N19",
+      "codigo_interno": "N-by-19",
+      "nombre": "Nocturno Ratisbona–Magdeburgo",
+      "tipo_id": "n",
+      "prefijo": "N",
+      "operador_id": "noc",
+      "operador_nombre": "Nocturno Continental",
+      "color": "#020617",
+      "origen": "regensburg-hbf",
+      "destino": "magdeburg-hbf",
+      "via": [],
+      "frecuencia_min": 1440,
+      "material": [
+        "night_coach"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "by",
+        "st"
+      ]
+    },
+    {
+      "id": "line-00194",
+      "codigo": "RE24",
+      "codigo_interno": "RE-sh-24",
+      "nombre": "Regional exprés Lübeck–Fráncfort Cruce Oeste (ficticio)",
+      "tipo_id": "re",
+      "prefijo": "RE",
+      "operador_id": "riv",
+      "operador_nombre": "Riberas del Rin",
+      "color": "#813AC4",
+      "origen": "luebeck-hbf",
+      "destino": "frankfurt-westkreuz",
+      "via": [],
+      "frecuencia_min": 30,
+      "material": [
+        "virm"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "sh",
+        "he"
+      ]
+    },
+    {
+      "id": "line-00195",
+      "codigo": "LD24",
+      "codigo_interno": "LD-nw-24",
+      "nombre": "Larga distancia Ruhr Orbital–Dortmund",
+      "tipo_id": "ld",
+      "prefijo": "LD",
+      "operador_id": "fa",
+      "operador_nombre": "FerroAlemania",
+      "color": "#C8102E",
+      "origen": "ruhr-orbital",
+      "destino": "dortmund-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "ice4",
+        "tgv_duplex"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "nw"
+      ]
+    },
+    {
+      "id": "line-00196",
+      "codigo": "PX24",
+      "codigo_interno": "PX-he-24",
+      "nombre": "Premium exprés Fráncfort del Meno–Kiel",
+      "tipo_id": "px",
+      "prefijo": "PX",
+      "operador_id": "fer",
+      "operador_nombre": "Feria y Congresos Rail",
+      "color": "#BBD2CD",
+      "origen": "frankfurt-hbf",
+      "destino": "kiel-hbf",
+      "via": [],
+      "frecuencia_min": 45,
+      "material": [
+        "ice4"
+      ],
+      "origen_datos": "real",
+      "lands": [
+        "he",
+        "sh"
+      ]
+    },
+    {
+      "id": "line-00197",
+      "codigo": "U7",
+      "codigo_interno": "U-sn-7",
+      "nombre": "Metro Dresde–Hamburgo",
+      "tipo_id": "u",
+      "prefijo": "U",
+      "operador_id": "uhh",
+      "operador_nombre": "Metro Hanseático",
+      "color": "#E30613",
+      "origen": "dresden-hbf",
+      "destino": "hamburg-hbf",
+      "via": [],
+      "frecuencia_min": 5,
+      "material": [
+        "metro_mp"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "sn",
+        "hh"
+      ]
+    },
+    {
+      "id": "line-00198",
+      "codigo": "IR29",
+      "codigo_interno": "IR-by-29",
+      "nombre": "Interregional Augsburgo–Mannheim",
+      "tipo_id": "ir",
+      "prefijo": "IR",
+      "operador_id": "lma",
+      "operador_nombre": "Líneas Maestras",
+      "color": "#334155",
+      "origen": "augsburg-hbf",
+      "destino": "mannheim-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "icn",
+        "kiss200"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "by",
+        "bw"
+      ]
+    },
+    {
+      "id": "line-00199",
+      "codigo": "S11",
+      "codigo_interno": "S-sh-11",
+      "nombre": "Cercanías Kiel–Maguncia",
+      "tipo_id": "s",
+      "prefijo": "S",
+      "operador_id": "skl",
+      "operador_nombre": "Cercanías del Rin Medio",
+      "color": "#0F766E",
+      "origen": "kiel-hbf",
+      "destino": "mainz-hbf",
+      "via": [],
+      "frecuencia_min": 10,
+      "material": [
+        "m7"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "sh",
+        "rp"
+      ]
+    },
+    {
+      "id": "line-00200",
+      "codigo": "PX25",
+      "codigo_interno": "PX-be-25",
+      "nombre": "Premium exprés Berlín Anillo Norte (ficticio)–Colonia",
+      "tipo_id": "px",
+      "prefijo": "PX",
+      "operador_id": "raf",
+      "operador_nombre": "Rápidos Federales",
+      "color": "#0B3D91",
+      "origen": "berlin-sx",
+      "destino": "koeln-hbf",
+      "via": [],
+      "frecuencia_min": 45,
+      "material": [
+        "ice2",
+        "giruno"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "be",
+        "nw"
+      ]
+    },
+    {
+      "id": "line-00201",
+      "codigo": "IR30",
+      "codigo_interno": "IR-by-30",
+      "nombre": "Interregional Múnich–Augsburgo",
+      "tipo_id": "ir",
+      "prefijo": "IR",
+      "operador_id": "bor",
+      "operador_nombre": "Borde Este",
+      "color": "#75C4E8",
+      "origen": "muenchen-hbf",
+      "destino": "augsburg-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "regio2n",
+        "icet"
+      ],
+      "origen_datos": "real",
+      "lands": [
+        "by"
+      ]
+    },
+    {
+      "id": "line-00202",
+      "codigo": "S12",
+      "codigo_interno": "S-sn-12",
+      "nombre": "Cercanías Leipzig–Kassel Wilhelmshöhe",
+      "tipo_id": "s",
+      "prefijo": "S",
+      "operador_id": "slp",
+      "operador_nombre": "Cercanías Sajona Norte",
+      "color": "#2563EB",
+      "origen": "leipzig-hbf",
+      "destino": "kassel-wilhelmshoehe",
+      "via": [],
+      "frecuencia_min": 10,
+      "material": [
+        "mi2n"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "sn",
+        "he"
+      ]
+    },
+    {
+      "id": "line-00203",
+      "codigo": "S13",
+      "codigo_interno": "S-bw-13",
+      "nombre": "Cercanías Friburgo–Hannover",
+      "tipo_id": "s",
+      "prefijo": "S",
+      "operador_id": "sst",
+      "operador_nombre": "Cercanías Suabia",
+      "color": "#F97316",
+      "origen": "freiburg-hbf",
+      "destino": "hannover-hbf",
+      "via": [],
+      "frecuencia_min": 10,
+      "material": [
+        "flirt4"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "bw",
+        "ni"
+      ]
+    },
+    {
+      "id": "line-00204",
+      "codigo": "IR31",
+      "codigo_interno": "IR-mv-31",
+      "nombre": "Interregional Rostock–Erfurt",
+      "tipo_id": "ir",
+      "prefijo": "IR",
+      "operador_id": "cdn",
+      "operador_nombre": "Corredores del Norte",
+      "color": "#0C4A6E",
+      "origen": "rostock-hbf",
+      "destino": "erfurt-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "regio2n",
+        "icetd"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "mv",
+        "th"
+      ]
+    },
+    {
+      "id": "line-00205",
+      "codigo": "N20",
+      "codigo_interno": "N-he-20",
+      "nombre": "Nocturno Kassel Wilhelmshöhe–Múnich Cruce Sur (ficticio)",
+      "tipo_id": "n",
+      "prefijo": "N",
+      "operador_id": "noc",
+      "operador_nombre": "Nocturno Continental",
+      "color": "#020617",
+      "origen": "kassel-wilhelmshoehe",
+      "destino": "muenchen-suedkreuz",
+      "via": [],
+      "frecuencia_min": 1440,
+      "material": [
+        "night_coach"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "he",
+        "by"
+      ]
+    },
+    {
+      "id": "line-00206",
+      "codigo": "AE16",
+      "codigo_interno": "AE-hh-16",
+      "nombre": "Aeropuerto exprés Hamburgo–Dresde",
+      "tipo_id": "ae",
+      "prefijo": "AE",
+      "operador_id": "slp",
+      "operador_nombre": "Cercanías Sajona Norte",
+      "color": "#2563EB",
+      "origen": "hamburg-hbf",
+      "destino": "dresden-hbf",
+      "via": [],
+      "frecuencia_min": 15,
+      "material": [
+        "mi2n"
+      ],
+      "origen_datos": "real",
+      "lands": [
+        "hh",
+        "sn"
+      ]
+    },
+    {
+      "id": "line-00207",
+      "codigo": "RB12",
+      "codigo_interno": "RB-by-12",
+      "nombre": "Regional básico Núremberg–Rostock",
+      "tipo_id": "rb",
+      "prefijo": "RB",
+      "operador_id": "thu",
+      "operador_nombre": "Turingios del Sur",
+      "color": "#9A3412",
+      "origen": "nuernberg-hbf",
+      "destino": "rostock-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "wink",
+        "lint"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "by",
+        "mv"
+      ]
+    },
+    {
+      "id": "line-00208",
+      "codigo": "LD25",
+      "codigo_interno": "LD-bw-25",
+      "nombre": "Larga distancia Karlsruhe–Berlín",
+      "tipo_id": "ld",
+      "prefijo": "LD",
+      "operador_id": "cdn",
+      "operador_nombre": "Corredores del Norte",
+      "color": "#0C4A6E",
+      "origen": "karlsruhe-hbf",
+      "destino": "berlin-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "regio2n",
+        "icetd"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "bw",
+        "be"
+      ]
+    },
+    {
+      "id": "line-00209",
+      "codigo": "MC4",
+      "codigo_interno": "MC-bb-4",
+      "nombre": "Metropolitano cruzado Potsdam–Bremen",
+      "tipo_id": "mc",
+      "prefijo": "MC",
+      "operador_id": "sbe",
+      "operador_nombre": "Cercanías Capital",
+      "color": "#0369A1",
+      "origen": "potsdam-hbf",
+      "destino": "bremen-hbf",
+      "via": [],
+      "frecuencia_min": 15,
+      "material": [
+        "kiss160"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "bb",
+        "hb"
+      ]
+    },
+    {
+      "id": "line-00210",
+      "codigo": "RE25",
+      "codigo_interno": "RE-nw-25",
+      "nombre": "Regional exprés Aquisgrán–Sarrebruck",
+      "tipo_id": "re",
+      "prefijo": "RE",
+      "operador_id": "riv",
+      "operador_nombre": "Riberas del Rin",
+      "color": "#813AC4",
+      "origen": "aachen-hbf",
+      "destino": "saarbruecken-hbf",
+      "via": [],
+      "frecuencia_min": 30,
+      "material": [
+        "virm"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "nw",
+        "sl"
+      ]
+    },
+    {
+      "id": "line-00211",
+      "codigo": "PX26",
+      "codigo_interno": "PX-be-26",
+      "nombre": "Premium exprés Berlín–Fráncfort del Meno",
+      "tipo_id": "px",
+      "prefijo": "PX",
+      "operador_id": "nex",
+      "operador_nombre": "Nexo Ciudades",
+      "color": "#2ACC88",
+      "origen": "berlin-hbf",
+      "destino": "frankfurt-hbf",
+      "via": [],
+      "frecuencia_min": 45,
+      "material": [
+        "railjet"
+      ],
+      "origen_datos": "real",
+      "lands": [
+        "be",
+        "he"
+      ]
+    },
+    {
+      "id": "line-00212",
+      "codigo": "TT2",
+      "codigo_interno": "TT-ni-2",
+      "nombre": "Tranvía-tren Hannover–Friburgo",
+      "tipo_id": "tt",
+      "prefijo": "TT",
+      "operador_id": "trw",
+      "operador_nombre": "Trenes del Rin Negro",
+      "color": "#1F6B4A",
+      "origen": "hannover-hbf",
+      "destino": "freiburg-hbf",
+      "via": [],
+      "frecuencia_min": 15,
+      "material": [
+        "gtw_d",
+        "flirt4"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "ni",
+        "bw"
+      ]
+    },
+    {
+      "id": "line-00213",
+      "codigo": "N21",
+      "codigo_interno": "N-bw-21",
+      "nombre": "Nocturno Mannheim–Aquisgrán",
+      "tipo_id": "n",
+      "prefijo": "N",
+      "operador_id": "noc",
+      "operador_nombre": "Nocturno Continental",
+      "color": "#020617",
+      "origen": "mannheim-hbf",
+      "destino": "aachen-hbf",
+      "via": [],
+      "frecuencia_min": 1440,
+      "material": [
+        "night_coach"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "bw",
+        "nw"
+      ]
+    },
+    {
+      "id": "line-00214",
+      "codigo": "RE26",
+      "codigo_interno": "RE-st-26",
+      "nombre": "Regional exprés Magdeburgo–Düsseldorf",
+      "tipo_id": "re",
+      "prefijo": "RE",
+      "operador_id": "elb",
+      "operador_nombre": "Elba Verde Regional",
+      "color": "#047857",
+      "origen": "magdeburg-hbf",
+      "destino": "duesseldorf-hbf",
+      "via": [],
+      "frecuencia_min": 30,
+      "material": [
+        "flirt4"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "st",
+        "nw"
+      ]
+    },
+    {
+      "id": "line-00215",
+      "codigo": "RE27",
+      "codigo_interno": "RE-rp-27",
+      "nombre": "Regional exprés Coblenza–Wurzburgo",
+      "tipo_id": "re",
+      "prefijo": "RE",
+      "operador_id": "ica",
+      "operador_nombre": "InterCiudades Alemania",
+      "color": "#0E7C7B",
+      "origen": "koblenz-hbf",
+      "destino": "wuerzburg-hbf",
+      "via": [],
+      "frecuencia_min": 30,
+      "material": [
+        "virm",
+        "twindexx"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "rp",
+        "by"
+      ]
+    },
+    {
+      "id": "line-00216",
+      "codigo": "AE17",
+      "codigo_interno": "AE-hh-17",
+      "nombre": "Aeropuerto exprés Hamburgo Puerto Nuevo (ficticio)–Ruhr Orbital",
+      "tipo_id": "ae",
+      "prefijo": "AE",
+      "operador_id": "fer",
+      "operador_nombre": "Feria y Congresos Rail",
+      "color": "#BBD2CD",
+      "origen": "hamburg-hafencity",
+      "destino": "ruhr-orbital",
+      "via": [],
+      "frecuencia_min": 15,
+      "material": [
+        "ice4"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "hh",
+        "nw"
+      ]
+    },
+    {
+      "id": "line-00217",
+      "codigo": "RL7",
+      "codigo_interno": "RL-nw-7",
+      "nombre": "Ramal local Düsseldorf–Leipzig",
+      "tipo_id": "rl",
+      "prefijo": "RL",
+      "operador_id": "val",
+      "operador_nombre": "Valles Verdes",
+      "color": "#556C46",
+      "origen": "duesseldorf-hbf",
+      "destino": "leipzig-hbf",
+      "via": [],
+      "frecuencia_min": 90,
+      "material": [
+        "gtw_d",
+        "talent"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "nw",
+        "sn"
+      ]
+    },
+    {
+      "id": "line-00218",
+      "codigo": "RE28",
+      "codigo_interno": "RE-hb-28",
+      "nombre": "Regional exprés Bremen–Potsdam",
+      "tipo_id": "re",
+      "prefijo": "RE",
+      "operador_id": "ica",
+      "operador_nombre": "InterCiudades Alemania",
+      "color": "#0E7C7B",
+      "origen": "bremen-hbf",
+      "destino": "potsdam-hbf",
+      "via": [],
+      "frecuencia_min": 30,
+      "material": [
+        "virm",
+        "twindexx"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "hb",
+        "bb"
+      ]
+    },
+    {
+      "id": "line-00219",
+      "codigo": "AE18",
+      "codigo_interno": "AE-th-18",
+      "nombre": "Aeropuerto exprés Erfurt–Hamburgo Puerto Nuevo (ficticio)",
+      "tipo_id": "ae",
+      "prefijo": "AE",
+      "operador_id": "aex",
+      "operador_nombre": "AeroEnlace Alemania",
+      "color": "#26A874",
+      "origen": "erfurt-hbf",
+      "destino": "hamburg-hafencity",
+      "via": [],
+      "frecuencia_min": 15,
+      "material": [
+        "ice3"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "th",
+        "hh"
+      ]
+    },
+    {
+      "id": "line-00220",
+      "codigo": "PX27",
+      "codigo_interno": "PX-rp-27",
+      "nombre": "Premium exprés Maguncia–Essen",
+      "tipo_id": "px",
+      "prefijo": "PX",
+      "operador_id": "vrp",
+      "operador_nombre": "VeloRápido",
+      "color": "#DC2626",
+      "origen": "mainz-hbf",
+      "destino": "essen-hbf",
+      "via": [],
+      "frecuencia_min": 45,
+      "material": [
+        "ice4"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "rp",
+        "nw"
+      ]
+    },
+    {
+      "id": "line-00221",
+      "codigo": "TUR11",
+      "codigo_interno": "TUR-he-11",
+      "nombre": "Turístico Fráncfort Cruce Oeste (ficticio)–Lübeck",
+      "tipo_id": "tur",
+      "prefijo": "TUR",
+      "operador_id": "bal",
+      "operador_nombre": "Báltico Líneas",
+      "color": "#075985",
+      "origen": "frankfurt-westkreuz",
+      "destino": "luebeck-hbf",
+      "via": [],
+      "frecuencia_min": 120,
+      "material": [
+        "desiro_ml",
+        "gtw_e"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "he",
+        "sh"
+      ]
+    },
+    {
+      "id": "line-00222",
+      "codigo": "N22",
+      "codigo_interno": "N-bw-22",
+      "nombre": "Nocturno Stuttgart–Múnich",
+      "tipo_id": "n",
+      "prefijo": "N",
+      "operador_id": "noc",
+      "operador_nombre": "Nocturno Continental",
+      "color": "#020617",
+      "origen": "stuttgart-hbf",
+      "destino": "muenchen-hbf",
+      "via": [],
+      "frecuencia_min": 1440,
+      "material": [
+        "night_coach"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "bw",
+        "by"
+      ]
+    },
+    {
+      "id": "line-00223",
+      "codigo": "LD26",
+      "codigo_interno": "LD-nw-26",
+      "nombre": "Larga distancia Essen–Karlsruhe",
+      "tipo_id": "ld",
+      "prefijo": "LD",
+      "operador_id": "lma",
+      "operador_nombre": "Líneas Maestras",
+      "color": "#334155",
+      "origen": "essen-hbf",
+      "destino": "karlsruhe-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "icn",
+        "kiss200"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "nw",
+        "bw"
+      ]
+    },
+    {
+      "id": "line-00224",
+      "codigo": "LD27",
+      "codigo_interno": "LD-by-27",
+      "nombre": "Larga distancia Wurzburgo–Coblenza",
+      "tipo_id": "ld",
+      "prefijo": "LD",
+      "operador_id": "bor",
+      "operador_nombre": "Borde Este",
+      "color": "#75C4E8",
+      "origen": "wuerzburg-hbf",
+      "destino": "koblenz-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "regio2n",
+        "icet"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "by",
+        "rp"
+      ]
+    },
+    {
+      "id": "line-00225",
+      "codigo": "TT3",
+      "codigo_interno": "TT-sl-3",
+      "nombre": "Tranvía-tren Sarrebruck–Stuttgart",
+      "tipo_id": "tt",
+      "prefijo": "TT",
+      "operador_id": "tst",
+      "operador_nombre": "Tranvías Stuttgart",
+      "color": "#356F6A",
+      "origen": "saarbruecken-hbf",
+      "destino": "stuttgart-hbf",
+      "via": [],
+      "frecuencia_min": 15,
+      "material": [
+        "flexity",
+        "tram_train"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "sl",
+        "bw"
+      ]
+    },
+    {
+      "id": "line-00226",
+      "codigo": "PX28",
+      "codigo_interno": "PX-by-28",
+      "nombre": "Premium exprés Múnich Cruce Sur (ficticio)–Ratisbona",
+      "tipo_id": "px",
+      "prefijo": "PX",
+      "operador_id": "aex",
+      "operador_nombre": "AeroEnlace Alemania",
+      "color": "#26A874",
+      "origen": "muenchen-suedkreuz",
+      "destino": "regensburg-hbf",
+      "via": [],
+      "frecuencia_min": 45,
+      "material": [
+        "ice3"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "by"
+      ]
+    },
+    {
+      "id": "line-00227",
+      "codigo": "IR32",
+      "codigo_interno": "IR-nw-32",
+      "nombre": "Interregional Colonia–Berlín Anillo Norte (ficticio)",
+      "tipo_id": "ir",
+      "prefijo": "IR",
+      "operador_id": "via",
+      "operador_nombre": "Vía Abierta Regional",
+      "color": "#854D0E",
+      "origen": "koeln-hbf",
+      "destino": "berlin-sx",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "flirt_ch",
+        "regiolis"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "nw",
+        "be"
+      ]
+    },
+    {
+      "id": "line-00228",
+      "codigo": "U8",
+      "codigo_interno": "U-nw-8",
+      "nombre": "Metro Dortmund–Núremberg",
+      "tipo_id": "u",
+      "prefijo": "U",
+      "operador_id": "umu",
+      "operador_nombre": "Metro Isar",
+      "color": "#0065B0",
+      "origen": "dortmund-hbf",
+      "destino": "nuernberg-hbf",
+      "via": [],
+      "frecuencia_min": 5,
+      "material": [
+        "metro_mx"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "nw",
+        "by"
+      ]
+    },
+    {
+      "id": "line-00229",
+      "codigo": "TUR12",
+      "codigo_interno": "TUR-by-12",
+      "nombre": "Turístico Ratisbona–Magdeburgo",
+      "tipo_id": "tur",
+      "prefijo": "TUR",
+      "operador_id": "har",
+      "operador_nombre": "Harz y Llanura",
+      "color": "#3F6212",
+      "origen": "regensburg-hbf",
+      "destino": "magdeburg-hbf",
+      "via": [],
+      "frecuencia_min": 120,
+      "material": [
+        "regiolis",
+        "wink"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "by",
+        "st"
+      ]
+    },
+    {
+      "id": "line-00230",
+      "codigo": "N23",
+      "codigo_interno": "N-sh-23",
+      "nombre": "Nocturno Lübeck–Fráncfort Cruce Oeste (ficticio)",
+      "tipo_id": "n",
+      "prefijo": "N",
+      "operador_id": "peu",
+      "operador_nombre": "Puente Europeo",
+      "color": "#1D4ED8",
+      "origen": "luebeck-hbf",
+      "destino": "frankfurt-westkreuz",
+      "via": [],
+      "frecuencia_min": 1440,
+      "material": [
+        "giruno",
+        "ice1"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "sh",
+        "he"
+      ]
+    },
+    {
+      "id": "line-00231",
+      "codigo": "S14",
+      "codigo_interno": "S-nw-14",
+      "nombre": "Cercanías Ruhr Orbital–Dortmund",
+      "tipo_id": "s",
+      "prefijo": "S",
+      "operador_id": "sco",
+      "operador_nombre": "Cercanías Colonia-Bonn",
+      "color": "#EF4444",
+      "origen": "ruhr-orbital",
+      "destino": "dortmund-hbf",
+      "via": [],
+      "frecuencia_min": 10,
+      "material": [
+        "desiro_dd"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "nw"
+      ]
+    },
+    {
+      "id": "line-00232",
+      "codigo": "MC5",
+      "codigo_interno": "MC-he-5",
+      "nombre": "Metropolitano cruzado Fráncfort del Meno–Kiel",
+      "tipo_id": "mc",
+      "prefijo": "MC",
+      "operador_id": "shh",
+      "operador_nombre": "Cercanías Hanseáticas",
+      "color": "#172554",
+      "origen": "frankfurt-hbf",
+      "destino": "kiel-hbf",
+      "via": [],
+      "frecuencia_min": 15,
+      "material": [
+        "mi2n"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "he",
+        "sh"
+      ]
+    },
+    {
+      "id": "line-00233",
+      "codigo": "TUR13",
+      "codigo_interno": "TUR-sn-13",
+      "nombre": "Turístico Dresde–Hamburgo",
+      "tipo_id": "tur",
+      "prefijo": "TUR",
+      "operador_id": "shc",
+      "operador_nombre": "Schleswig Conexión",
+      "color": "#7BCCD2",
+      "origen": "dresden-hbf",
+      "destino": "hamburg-hbf",
+      "via": [],
+      "frecuencia_min": 120,
+      "material": [
+        "desiro_ml",
+        "flirt_ch"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "sn",
+        "hh"
+      ]
+    },
+    {
+      "id": "line-00234",
+      "codigo": "LD28",
+      "codigo_interno": "LD-by-28",
+      "nombre": "Larga distancia Augsburgo–Mannheim",
+      "tipo_id": "ld",
+      "prefijo": "LD",
+      "operador_id": "avr",
+      "operador_nombre": "Alta Velocidad Renana",
+      "color": "#1E40AF",
+      "origen": "augsburg-hbf",
+      "destino": "mannheim-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "ice2",
+        "giruno"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "by",
+        "bw"
+      ]
+    },
+    {
+      "id": "line-00235",
+      "codigo": "AV8",
+      "codigo_interno": "AV-sh-8",
+      "nombre": "Alta velocidad Kiel–Maguncia",
+      "tipo_id": "av",
+      "prefijo": "AV",
+      "operador_id": "peu",
+      "operador_nombre": "Puente Europeo",
+      "color": "#1D4ED8",
+      "origen": "kiel-hbf",
+      "destino": "mainz-hbf",
+      "via": [],
+      "frecuencia_min": 30,
+      "material": [
+        "giruno",
+        "ice1"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "sh",
+        "rp"
+      ]
+    },
+    {
+      "id": "line-00236",
+      "codigo": "RE29",
+      "codigo_interno": "RE-be-29",
+      "nombre": "Regional exprés Berlín Anillo Norte (ficticio)–Colonia",
+      "tipo_id": "re",
+      "prefijo": "RE",
+      "operador_id": "riv",
+      "operador_nombre": "Riberas del Rin",
+      "color": "#813AC4",
+      "origen": "berlin-sx",
+      "destino": "koeln-hbf",
+      "via": [],
+      "frecuencia_min": 30,
+      "material": [
+        "virm"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "be",
+        "nw"
+      ]
+    },
+    {
+      "id": "line-00237",
+      "codigo": "LD29",
+      "codigo_interno": "LD-by-29",
+      "nombre": "Larga distancia Múnich–Augsburgo",
+      "tipo_id": "ld",
+      "prefijo": "LD",
+      "operador_id": "nex",
+      "operador_nombre": "Nexo Ciudades",
+      "color": "#2ACC88",
+      "origen": "muenchen-hbf",
+      "destino": "augsburg-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "railjet"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "by"
+      ]
+    },
+    {
+      "id": "line-00238",
+      "codigo": "PX29",
+      "codigo_interno": "PX-sn-29",
+      "nombre": "Premium exprés Leipzig–Kassel Wilhelmshöhe",
+      "tipo_id": "px",
+      "prefijo": "PX",
+      "operador_id": "vrp",
+      "operador_nombre": "VeloRápido",
+      "color": "#DC2626",
+      "origen": "leipzig-hbf",
+      "destino": "kassel-wilhelmshoehe",
+      "via": [],
+      "frecuencia_min": 45,
+      "material": [
+        "ice4"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "sn",
+        "he"
+      ]
+    },
+    {
+      "id": "line-00239",
+      "codigo": "T7",
+      "codigo_interno": "T-bw-7",
+      "nombre": "Tranvía Friburgo–Hannover",
+      "tipo_id": "t",
+      "prefijo": "T",
+      "operador_id": "tha",
+      "operador_nombre": "Tranvías Hannover",
+      "color": "#1A4DD1",
+      "origen": "freiburg-hbf",
+      "destino": "hannover-hbf",
+      "via": [],
+      "frecuencia_min": 8,
+      "material": [
+        "flexity"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "bw",
+        "ni"
+      ]
+    },
+    {
+      "id": "line-00240",
+      "codigo": "IR33",
+      "codigo_interno": "IR-mv-33",
+      "nombre": "Interregional Rostock–Erfurt",
+      "tipo_id": "ir",
+      "prefijo": "IR",
+      "operador_id": "cdn",
+      "operador_nombre": "Corredores del Norte",
+      "color": "#0C4A6E",
+      "origen": "rostock-hbf",
+      "destino": "erfurt-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "regio2n",
+        "icetd"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "mv",
+        "th"
+      ]
+    },
+    {
+      "id": "line-00241",
+      "codigo": "N24",
+      "codigo_interno": "N-he-24",
+      "nombre": "Nocturno Kassel Wilhelmshöhe–Múnich Cruce Sur (ficticio)",
+      "tipo_id": "n",
+      "prefijo": "N",
+      "operador_id": "noc",
+      "operador_nombre": "Nocturno Continental",
+      "color": "#020617",
+      "origen": "kassel-wilhelmshoehe",
+      "destino": "muenchen-suedkreuz",
+      "via": [],
+      "frecuencia_min": 1440,
+      "material": [
+        "night_coach"
+      ],
+      "origen_datos": "hibrida",
+      "lands": [
+        "he",
+        "by"
+      ]
+    },
+    {
+      "id": "line-00242",
+      "codigo": "RB13",
+      "codigo_interno": "RB-hh-13",
+      "nombre": "Regional básico Hamburgo–Dresde",
+      "tipo_id": "rb",
+      "prefijo": "RB",
+      "operador_id": "erz",
+      "operador_nombre": "Montes Metálicos Tren",
+      "color": "#292524",
+      "origen": "hamburg-hbf",
+      "destino": "dresden-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "desiro_ml",
+        "gtw_e"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "hh",
+        "sn"
+      ]
+    },
+    {
+      "id": "line-00243",
+      "codigo": "T8",
+      "codigo_interno": "T-by-8",
+      "nombre": "Tranvía Núremberg–Rostock",
+      "tipo_id": "t",
+      "prefijo": "T",
+      "operador_id": "tro",
+      "operador_nombre": "Tranvías Rostock",
+      "color": "#D49246",
+      "origen": "nuernberg-hbf",
+      "destino": "rostock-hbf",
+      "via": [],
+      "frecuencia_min": 8,
+      "material": [
+        "tram_train"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "by",
+        "mv"
+      ]
+    },
+    {
+      "id": "line-00244",
+      "codigo": "RE30",
+      "codigo_interno": "RE-bw-30",
+      "nombre": "Regional exprés Karlsruhe–Berlín",
+      "tipo_id": "re",
+      "prefijo": "RE",
+      "operador_id": "riv",
+      "operador_nombre": "Riberas del Rin",
+      "color": "#813AC4",
+      "origen": "karlsruhe-hbf",
+      "destino": "berlin-hbf",
+      "via": [],
+      "frecuencia_min": 30,
+      "material": [
+        "virm"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "bw",
+        "be"
+      ]
+    },
+    {
+      "id": "line-00245",
+      "codigo": "N25",
+      "codigo_interno": "N-bb-25",
+      "nombre": "Nocturno Potsdam–Bremen",
+      "tipo_id": "n",
+      "prefijo": "N",
+      "operador_id": "noc",
+      "operador_nombre": "Nocturno Continental",
+      "color": "#020617",
+      "origen": "potsdam-hbf",
+      "destino": "bremen-hbf",
+      "via": [],
+      "frecuencia_min": 1440,
+      "material": [
+        "night_coach"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "bb",
+        "hb"
+      ]
+    },
+    {
+      "id": "line-00246",
+      "codigo": "IR34",
+      "codigo_interno": "IR-nw-34",
+      "nombre": "Interregional Aquisgrán–Sarrebruck",
+      "tipo_id": "ir",
+      "prefijo": "IR",
+      "operador_id": "uni",
+      "operador_nombre": "Universidad Express",
+      "color": "#7C2D12",
+      "origen": "aachen-hbf",
+      "destino": "saarbruecken-hbf",
+      "via": [],
+      "frecuencia_min": 60,
+      "material": [
+        "flirt4",
+        "civity"
+      ],
+      "origen_datos": "real",
+      "lands": [
+        "nw",
+        "sl"
+      ]
+    },
+    {
+      "id": "line-00247",
+      "codigo": "N26",
+      "codigo_interno": "N-be-26",
+      "nombre": "Nocturno Berlín–Fráncfort del Meno",
+      "tipo_id": "n",
+      "prefijo": "N",
+      "operador_id": "fa",
+      "operador_nombre": "FerroAlemania",
+      "color": "#C8102E",
+      "origen": "berlin-hbf",
+      "destino": "frankfurt-hbf",
+      "via": [],
+      "frecuencia_min": 1440,
+      "material": [
+        "ice4",
+        "tgv_duplex"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "be",
+        "he"
+      ]
+    },
+    {
+      "id": "line-00248",
+      "codigo": "AE19",
+      "codigo_interno": "AE-ni-19",
+      "nombre": "Aeropuerto exprés Hannover–Friburgo",
+      "tipo_id": "ae",
+      "prefijo": "AE",
+      "operador_id": "whv",
+      "operador_nombre": "Hanseas del Weser",
+      "color": "#0E7490",
+      "origen": "hannover-hbf",
+      "destino": "freiburg-hbf",
+      "via": [],
+      "frecuencia_min": 15,
+      "material": [
+        "flirt_ch",
+        "regiolis"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "ni",
+        "bw"
+      ]
+    },
+    {
+      "id": "line-00249",
+      "codigo": "TT4",
+      "codigo_interno": "TT-bw-4",
+      "nombre": "Tranvía-tren Mannheim–Aquisgrán",
+      "tipo_id": "tt",
+      "prefijo": "TT",
+      "operador_id": "tko",
+      "operador_nombre": "Tranvías Colonia",
+      "color": "#CFC919",
+      "origen": "mannheim-hbf",
+      "destino": "aachen-hbf",
+      "via": [],
+      "frecuencia_min": 15,
+      "material": [
+        "flexity",
+        "tram_train"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "bw",
+        "nw"
+      ]
+    },
+    {
+      "id": "line-00250",
+      "codigo": "N27",
+      "codigo_interno": "N-st-27",
+      "nombre": "Nocturno Magdeburgo–Düsseldorf",
+      "tipo_id": "n",
+      "prefijo": "N",
+      "operador_id": "noc",
+      "operador_nombre": "Nocturno Continental",
+      "color": "#020617",
+      "origen": "magdeburg-hbf",
+      "destino": "duesseldorf-hbf",
+      "via": [],
+      "frecuencia_min": 1440,
+      "material": [
+        "night_coach"
+      ],
+      "origen_datos": "ficticia",
+      "lands": [
+        "st",
+        "nw"
+      ]
+    }
+  ]
+}

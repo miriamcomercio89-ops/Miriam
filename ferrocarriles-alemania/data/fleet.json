@@ -1,0 +1,63 @@
+{
+  "version": "0.1.0",
+  "nota": "Catálogo de material rodante moderno inspirado en packs frecuentes del Steam Workshop de Nimby Rails (p.ej. European Trains y packs FLIRT/KISS/ICE/TGV/Citadis). Los workshop_ref son nombres de búsqueda orientativos; conviene verificar IDs exactos en el Workshop al importar la partida.",
+  "colecciones_recomendadas": [
+    {
+      "nombre": "European Trains",
+      "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=2942644931",
+      "uso": "ICE, TGV, FLIRT, KISS, Desiro, Talent, trenes regionales y urbanos europeos"
+    },
+    {
+      "nombre": "Packs FLIRT / KISS / Civity / Coradia / Flexity / Citadis",
+      "url": "https://steamcommunity.com/workshop/browse/?appid=1134710",
+      "uso": "Variedad regional, cercanías, tranvía y metro"
+    }
+  ],
+  "unidades": [
+    {"id": "ice4", "nombre": "ICE 4", "workshop_ref": "DE MU ICE 4", "categoria": "alta_velocidad", "vmax_kmh": 265, "capacidad": 830, "servicios": ["av", "ld", "px"]},
+    {"id": "ice3", "nombre": "ICE 3 Velaro D", "workshop_ref": "DE MU ICE 3 Velaro D", "categoria": "alta_velocidad", "vmax_kmh": 330, "capacidad": 460, "servicios": ["av", "px"]},
+    {"id": "ice3b", "nombre": "ICE 3", "workshop_ref": "DE MU ICE 3", "categoria": "alta_velocidad", "vmax_kmh": 330, "capacidad": 462, "servicios": ["av", "ld"]},
+    {"id": "ice2", "nombre": "ICE 2", "workshop_ref": "DE MU ICE 2", "categoria": "alta_velocidad", "vmax_kmh": 280, "capacidad": 418, "servicios": ["av", "ld"]},
+    {"id": "ice1", "nombre": "ICE 1", "workshop_ref": "DE MU ICE 1", "categoria": "alta_velocidad", "vmax_kmh": 280, "capacidad": 680, "servicios": ["av", "ld"]},
+    {"id": "icet", "nombre": "ICE T", "workshop_ref": "DE MU ICE T", "categoria": "alta_velocidad_basculante", "vmax_kmh": 230, "capacidad": 350, "servicios": ["ld", "px", "ir"]},
+    {"id": "icetd", "nombre": "ICE TD", "workshop_ref": "DE MU ICE TD", "categoria": "alta_velocidad_diesel", "vmax_kmh": 200, "capacidad": 250, "servicios": ["ld", "ir"]},
+    {"id": "tgv_duplex", "nombre": "TGV EuroDuplex", "workshop_ref": "FR MU TGV EuroDuplex", "categoria": "alta_velocidad", "vmax_kmh": 320, "capacidad": 550, "servicios": ["av", "ld"]},
+    {"id": "tgv_pos", "nombre": "TGV POS", "workshop_ref": "FR MU TGV POS", "categoria": "alta_velocidad", "vmax_kmh": 320, "capacidad": 360, "servicios": ["av"]},
+    {"id": "thalys", "nombre": "Thalys PBKA", "workshop_ref": "FR MU Thalys PBKA", "categoria": "alta_velocidad_internacional", "vmax_kmh": 300, "capacidad": 380, "servicios": ["av", "ld"]},
+    {"id": "giruno", "nombre": "Stadler Giruno", "workshop_ref": "CH MU RABe 501 Giruno", "categoria": "alta_velocidad", "vmax_kmh": 250, "capacidad": 400, "servicios": ["av", "ld"]},
+    {"id": "pendolino", "nombre": "Pendolino New", "workshop_ref": "CH MU RABe 503 New Pendolino", "categoria": "basculante", "vmax_kmh": 250, "capacidad": 430, "servicios": ["ld", "px"]},
+    {"id": "railjet", "nombre": "Railjet / Viaggio Comfort", "workshop_ref": "AT Coach Viaggio Comfort", "categoria": "larga_distancia", "vmax_kmh": 230, "capacidad": 400, "servicios": ["ld", "n", "px"]},
+    {"id": "kiss200", "nombre": "Stadler KISS 200", "workshop_ref": "Stadler KISS 200 / AT MU Rh 4010 KISS 200", "categoria": "doble_piso", "vmax_kmh": 200, "capacidad": 600, "servicios": ["ld", "ir", "re", "s"]},
+    {"id": "twindexx", "nombre": "Twindexx Swiss Express", "workshop_ref": "CH MU RABe 502 Twindexx", "categoria": "doble_piso", "vmax_kmh": 200, "capacidad": 550, "servicios": ["ld", "ir", "re"]},
+    {"id": "flirt4", "nombre": "Stadler FLIRT 4", "workshop_ref": "Stadler FLIRT 4 (D)EMU", "categoria": "regional", "vmax_kmh": 160, "capacidad": 300, "servicios": ["re", "rb", "ir", "s"]},
+    {"id": "flirt3", "nombre": "Stadler FLIRT 3", "workshop_ref": "NL MU FLIRT 3", "categoria": "regional", "vmax_kmh": 160, "capacidad": 280, "servicios": ["re", "rb", "s"]},
+    {"id": "flirt_ch", "nombre": "FLIRT Suizo", "workshop_ref": "CH MU RABe 522/523 FLIRT", "categoria": "regional", "vmax_kmh": 160, "capacidad": 260, "servicios": ["re", "rb"]},
+    {"id": "wink", "nombre": "FLIRT WINK", "workshop_ref": "NL MU FLIRT WINK", "categoria": "regional_hibrido", "vmax_kmh": 140, "capacidad": 150, "servicios": ["rb", "rl"]},
+    {"id": "gtw_e", "nombre": "GTW Eléctrico", "workshop_ref": "NL MU GTW Electric / AT MU Rh 4062", "categoria": "regional_ligero", "vmax_kmh": 140, "capacidad": 150, "servicios": ["rb", "rl"]},
+    {"id": "gtw_d", "nombre": "GTW Diésel", "workshop_ref": "NL MU GTW Diesel / AT MU Rh 5063", "categoria": "regional_ligero", "vmax_kmh": 140, "capacidad": 140, "servicios": ["rb", "rl", "tur"]},
+    {"id": "desiro_ml", "nombre": "Desiro ML", "workshop_ref": "AT MU Rh 4746 Desiro ML", "categoria": "regional", "vmax_kmh": 160, "capacidad": 300, "servicios": ["re", "rb", "s"]},
+    {"id": "desiro_classic", "nombre": "Desiro Classic", "workshop_ref": "AT MU Rh 5022 Desiro Classic", "categoria": "regional", "vmax_kmh": 120, "capacidad": 150, "servicios": ["rb", "rl"]},
+    {"id": "desiro_dd", "nombre": "Desiro Doble Piso", "workshop_ref": "CH MU RABe 514 Desiro Double Deck", "categoria": "cercanias", "vmax_kmh": 140, "capacidad": 500, "servicios": ["s", "re"]},
+    {"id": "talent", "nombre": "Talent", "workshop_ref": "AT MU Rh 4024 Talent", "categoria": "regional", "vmax_kmh": 140, "capacidad": 180, "servicios": ["rb", "rl", "tt"]},
+    {"id": "lint", "nombre": "LINT 41", "workshop_ref": "NL MU LINT 41H", "categoria": "regional_diesel", "vmax_kmh": 120, "capacidad": 120, "servicios": ["rb", "rl"]},
+    {"id": "civity", "nombre": "CAF Civity", "workshop_ref": "BR Class 397 Civity", "categoria": "intercity", "vmax_kmh": 200, "capacidad": 300, "servicios": ["ld", "ir", "re"]},
+    {"id": "coradia", "nombre": "Alstom Coradia Nordic", "workshop_ref": "Alstom Coradia Nordic", "categoria": "cercanias", "vmax_kmh": 160, "capacidad": 250, "servicios": ["s", "re", "rb"]},
+    {"id": "regiolis", "nombre": "Régiolis", "workshop_ref": "FR MU B 84500 Régiolis Regional", "categoria": "regional", "vmax_kmh": 160, "capacidad": 220, "servicios": ["re", "rb"]},
+    {"id": "regio2n", "nombre": "Regio 2N Omneo", "workshop_ref": "FR MU Z 55500 Regio 2N", "categoria": "doble_piso", "vmax_kmh": 200, "capacidad": 400, "servicios": ["re", "ir", "ld"]},
+    {"id": "m7", "nombre": "M7 Doble Piso", "workshop_ref": "BE Coach / EMU M7", "categoria": "doble_piso", "vmax_kmh": 200, "capacidad": 500, "servicios": ["ir", "re", "s"]},
+    {"id": "icn", "nombre": "ICN", "workshop_ref": "CH MU RABDe 500 ICN", "categoria": "basculante", "vmax_kmh": 200, "capacidad": 450, "servicios": ["ld", "ir"]},
+    {"id": "kiss160", "nombre": "KISS 160", "workshop_ref": "CH MU RABe 511 KISS 160", "categoria": "cercanias", "vmax_kmh": 160, "capacidad": 550, "servicios": ["s", "re"]},
+    {"id": "virm", "nombre": "VIRM Doble Piso", "workshop_ref": "NL MU VIRM", "categoria": "doble_piso", "vmax_kmh": 160, "capacidad": 500, "servicios": ["re", "ir", "s"]},
+    {"id": "mi2n", "nombre": "MI2N Altéo", "workshop_ref": "FR MU Z 1500 MI2N Altéo", "categoria": "cercanias", "vmax_kmh": 140, "capacidad": 500, "servicios": ["s", "or"]},
+    {"id": "z2n", "nombre": "Z 24500 2N NG", "workshop_ref": "FR MU Z 24500 2N NG", "categoria": "cercanias", "vmax_kmh": 140, "capacidad": 450, "servicios": ["s"]},
+    {"id": "metro_mx", "nombre": "Metro MX / Siemens", "workshop_ref": "NO Metro MX3000 / BE Metro MIVB Mx", "categoria": "metro", "vmax_kmh": 80, "capacidad": 700, "servicios": ["u"]},
+    {"id": "metro_mp", "nombre": "Metro MP89/MP05", "workshop_ref": "Paris Metro MP 89 / MP 05", "categoria": "metro", "vmax_kmh": 80, "capacidad": 700, "servicios": ["u"]},
+    {"id": "citadis", "nombre": "Alstom Citadis", "workshop_ref": "Alstom Citadis 401/402/502", "categoria": "tranvia", "vmax_kmh": 70, "capacidad": 300, "servicios": ["t", "tt"]},
+    {"id": "flexity", "nombre": "Bombardier Flexity", "workshop_ref": "Bombardier Flexity / Flexity Classic", "categoria": "tranvia", "vmax_kmh": 70, "capacidad": 250, "servicios": ["t", "tt"]},
+    {"id": "flexity_swift", "nombre": "Flexity Swift", "workshop_ref": "SE Tram SL A32 Bombardier Flexity Swift", "categoria": "tranvia", "vmax_kmh": 80, "capacidad": 280, "servicios": ["t", "tt"]},
+    {"id": "tram_train", "nombre": "Stadler Tram-Train", "workshop_ref": "BR Class 398 / tram-train Stadler", "categoria": "tram_train", "vmax_kmh": 100, "capacidad": 220, "servicios": ["tt", "t"]},
+    {"id": "albatros", "nombre": "Tram Albatros", "workshop_ref": "BE Tram De Lijn Albatros", "categoria": "tranvia", "vmax_kmh": 70, "capacidad": 250, "servicios": ["t"]},
+    {"id": "night_coach", "nombre": "Coches nocturnos Viaggio", "workshop_ref": "AT Coach Viaggio Comfort / Night consists", "categoria": "nocturno", "vmax_kmh": 200, "capacidad": 250, "servicios": ["n"]},
+    {"id": "scenic", "nombre": "Composición panorámica", "workshop_ref": "CH Coach Glacier Express / scenic coaches", "categoria": "turistico", "vmax_kmh": 100, "capacidad": 180, "servicios": ["tur"]}
+  ]
+}

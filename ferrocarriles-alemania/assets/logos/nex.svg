@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 128 128" role="img" aria-label="Nexo Ciudades">
+  <rect width="128" height="128" rx="24" fill="#2ACC88"/>
+  <g transform="translate(0,-6)"><polygon points="64,20 108,64 64,108 20,64" fill="#F8FAFC"/></g>
+  <rect x="16" y="96" width="96" height="22" rx="8" fill="#F8FAFC" opacity="0.95"/>
+  <text x="64" y="112" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="700" fill="#2ACC88">NEX</text>
+  <title>Nexo Ciudades</title>
+</svg>

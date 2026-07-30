@@ -1,0 +1,4814 @@
+{
+  "version": "0.1.0",
+  "generado": "2026-07-30T21:55:44.787Z",
+  "idioma": "es",
+  "regla_color": "color de línea = color del operador",
+  "total": 82,
+  "lands": [
+    {
+      "id": "bw",
+      "nombre": "Baden-Wurtemberg",
+      "capital": "Stuttgart"
+    },
+    {
+      "id": "by",
+      "nombre": "Baviera",
+      "capital": "Múnich"
+    },
+    {
+      "id": "be",
+      "nombre": "Berlín",
+      "capital": "Berlín"
+    },
+    {
+      "id": "bb",
+      "nombre": "Brandeburgo",
+      "capital": "Potsdam"
+    },
+    {
+      "id": "hb",
+      "nombre": "Bremen",
+      "capital": "Bremen"
+    },
+    {
+      "id": "hh",
+      "nombre": "Hamburgo",
+      "capital": "Hamburgo"
+    },
+    {
+      "id": "he",
+      "nombre": "Hesse",
+      "capital": "Wiesbaden"
+    },
+    {
+      "id": "mv",
+      "nombre": "Mecklemburgo-Pomerania Occidental",
+      "capital": "Schwerin"
+    },
+    {
+      "id": "ni",
+      "nombre": "Baja Sajonia",
+      "capital": "Hannover"
+    },
+    {
+      "id": "nw",
+      "nombre": "Renania del Norte-Westfalia",
+      "capital": "Düsseldorf"
+    },
+    {
+      "id": "rp",
+      "nombre": "Renania-Palatinado",
+      "capital": "Maguncia"
+    },
+    {
+      "id": "sl",
+      "nombre": "Sarre",
+      "capital": "Sarrebruck"
+    },
+    {
+      "id": "sn",
+      "nombre": "Sajonia",
+      "capital": "Dresde"
+    },
+    {
+      "id": "st",
+      "nombre": "Sajonia-Anhalt",
+      "capital": "Magdeburgo"
+    },
+    {
+      "id": "sh",
+      "nombre": "Schleswig-Holstein",
+      "capital": "Kiel"
+    },
+    {
+      "id": "th",
+      "nombre": "Turingia",
+      "capital": "Erfurt"
+    }
+  ],
+  "operators": [
+    {
+      "id": "fa",
+      "nombre": "FerroAlemania",
+      "nombre_corto": "FA",
+      "tipo": "nacional",
+      "competencia": "dominante",
+      "color": "#C8102E",
+      "color_secundario": "#FFFFFF",
+      "lands": [
+        "bw",
+        "by",
+        "be",
+        "bb",
+        "hb",
+        "hh",
+        "he",
+        "mv",
+        "ni",
+        "nw",
+        "rp",
+        "sl",
+        "sn",
+        "st",
+        "sh",
+        "th"
+      ],
+      "sede": "Berlín",
+      "eslogan": "La columna vertebral del país",
+      "servicios": [
+        "av",
+        "ld",
+        "ir",
+        "n",
+        "px"
+      ],
+      "logo_estilo": "barra",
+      "flota": [
+        {
+          "unidad_id": "ice4",
+          "nombre": "ICE 4",
+          "workshop_ref": "DE MU ICE 4",
+          "papel": "principal",
+          "unidades_estimadas": 20
+        },
+        {
+          "unidad_id": "tgv_duplex",
+          "nombre": "TGV EuroDuplex",
+          "workshop_ref": "FR MU TGV EuroDuplex",
+          "papel": "principal",
+          "unidades_estimadas": 23
+        },
+        {
+          "unidad_id": "icetd",
+          "nombre": "ICE TD",
+          "workshop_ref": "DE MU ICE TD",
+          "papel": "principal",
+          "unidades_estimadas": 30
+        },
+        {
+          "unidad_id": "civity",
+          "nombre": "CAF Civity",
+          "workshop_ref": "BR Class 397 Civity",
+          "papel": "principal",
+          "unidades_estimadas": 37
+        },
+        {
+          "unidad_id": "virm",
+          "nombre": "VIRM Doble Piso",
+          "workshop_ref": "NL MU VIRM",
+          "papel": "secundario",
+          "unidades_estimadas": 40
+        },
+        {
+          "unidad_id": "ice2",
+          "nombre": "ICE 2",
+          "workshop_ref": "DE MU ICE 2",
+          "papel": "principal",
+          "unidades_estimadas": 51
+        },
+        {
+          "unidad_id": "giruno",
+          "nombre": "Stadler Giruno",
+          "workshop_ref": "CH MU RABe 501 Giruno",
+          "papel": "principal",
+          "unidades_estimadas": 18
+        }
+      ],
+      "logo": "assets/logos/fa.svg"
+    },
+    {
+      "id": "raf",
+      "nombre": "Rápidos Federales",
+      "nombre_corto": "RAF",
+      "tipo": "nacional",
+      "competencia": "competitiva",
+      "color": "#0B3D91",
+      "color_secundario": "#F8FAFC",
+      "lands": [
+        "bw",
+        "by",
+        "be",
+        "bb",
+        "hb",
+        "hh",
+        "he",
+        "mv",
+        "ni",
+        "nw",
+        "rp",
+        "sl",
+        "sn",
+        "st",
+        "sh",
+        "th"
+      ],
+      "sede": "Fráncfort del Meno",
+      "eslogan": "Velocidad con sello federal",
+      "servicios": [
+        "av",
+        "ld",
+        "px"
+      ],
+      "logo_estilo": "flecha",
+      "flota": [
+        {
+          "unidad_id": "ice2",
+          "nombre": "ICE 2",
+          "workshop_ref": "DE MU ICE 2",
+          "papel": "principal",
+          "unidades_estimadas": 17
+        },
+        {
+          "unidad_id": "giruno",
+          "nombre": "Stadler Giruno",
+          "workshop_ref": "CH MU RABe 501 Giruno",
+          "papel": "principal",
+          "unidades_estimadas": 24
+        },
+        {
+          "unidad_id": "kiss200",
+          "nombre": "Stadler KISS 200",
+          "workshop_ref": "Stadler KISS 200 / AT MU Rh 4010 KISS 200",
+          "papel": "secundario",
+          "unidades_estimadas": 27
+        },
+        {
+          "unidad_id": "ice4",
+          "nombre": "ICE 4",
+          "workshop_ref": "DE MU ICE 4",
+          "papel": "principal",
+          "unidades_estimadas": 42
+        },
+        {
+          "unidad_id": "tgv_duplex",
+          "nombre": "TGV EuroDuplex",
+          "workshop_ref": "FR MU TGV EuroDuplex",
+          "papel": "principal",
+          "unidades_estimadas": 45
+        }
+      ],
+      "logo": "assets/logos/raf.svg"
+    },
+    {
+      "id": "exc",
+      "nombre": "Expreso Central",
+      "nombre_corto": "EXC",
+      "tipo": "nacional",
+      "competencia": "competitiva",
+      "color": "#111827",
+      "color_secundario": "#E39A00",
+      "lands": [
+        "be",
+        "bb",
+        "st",
+        "sn",
+        "th",
+        "he",
+        "ni",
+        "nw"
+      ],
+      "sede": "Erfurt",
+      "eslogan": "El eje este-oeste",
+      "servicios": [
+        "ld",
+        "ir",
+        "px"
+      ],
+      "logo_estilo": "diamante",
+      "flota": [
+        {
+          "unidad_id": "tgv_duplex",
+          "nombre": "TGV EuroDuplex",
+          "workshop_ref": "FR MU TGV EuroDuplex",
+          "papel": "secundario",
+          "unidades_estimadas": 14
+        },
+        {
+          "unidad_id": "kiss200",
+          "nombre": "Stadler KISS 200",
+          "workshop_ref": "Stadler KISS 200 / AT MU Rh 4010 KISS 200",
+          "papel": "principal",
+          "unidades_estimadas": 25
+        },
+        {
+          "unidad_id": "flirt4",
+          "nombre": "Stadler FLIRT 4",
+          "workshop_ref": "Stadler FLIRT 4 (D)EMU",
+          "papel": "secundario",
+          "unidades_estimadas": 28
+        },
+        {
+          "unidad_id": "ice3b",
+          "nombre": "ICE 3",
+          "workshop_ref": "DE MU ICE 3",
+          "papel": "secundario",
+          "unidades_estimadas": 35
+        }
+      ],
+      "logo": "assets/logos/exc.svg"
+    },
+    {
+      "id": "cdn",
+      "nombre": "Corredores del Norte",
+      "nombre_corto": "CDN",
+      "tipo": "nacional",
+      "competencia": "competitiva",
+      "color": "#0C4A6E",
+      "color_secundario": "#E0F2FE",
+      "lands": [
+        "sh",
+        "hh",
+        "hb",
+        "ni",
+        "mv",
+        "be",
+        "bb"
+      ],
+      "sede": "Hamburgo",
+      "eslogan": "Del Báltico al Mar del Norte",
+      "servicios": [
+        "ld",
+        "ir",
+        "ae"
+      ],
+      "logo_estilo": "ola",
+      "flota": [
+        {
+          "unidad_id": "pendolino",
+          "nombre": "Pendolino New",
+          "workshop_ref": "CH MU RABe 503 New Pendolino",
+          "papel": "secundario",
+          "unidades_estimadas": 15
+        },
+        {
+          "unidad_id": "regio2n",
+          "nombre": "Regio 2N Omneo",
+          "workshop_ref": "FR MU Z 55500 Regio 2N",
+          "papel": "principal",
+          "unidades_estimadas": 26
+        },
+        {
+          "unidad_id": "ice4",
+          "nombre": "ICE 4",
+          "workshop_ref": "DE MU ICE 4",
+          "papel": "secundario",
+          "unidades_estimadas": 29
+        },
+        {
+          "unidad_id": "icetd",
+          "nombre": "ICE TD",
+          "workshop_ref": "DE MU ICE TD",
+          "papel": "principal",
+          "unidades_estimadas": 40
+        },
+        {
+          "unidad_id": "railjet",
+          "nombre": "Railjet / Viaggio Comfort",
+          "workshop_ref": "AT Coach Viaggio Comfort",
+          "papel": "secundario",
+          "unidades_estimadas": 43
+        }
+      ],
+      "logo": "assets/logos/cdn.svg"
+    },
+    {
+      "id": "vrp",
+      "nombre": "VeloRápido",
+      "nombre_corto": "VRP",
+      "tipo": "nacional",
+      "competencia": "nicho",
+      "color": "#DC2626",
+      "color_secundario": "#FEF2F2",
+      "lands": [
+        "nw",
+        "he",
+        "bw",
+        "by",
+        "rp",
+        "sl"
+      ],
+      "sede": "Colonia",
+      "eslogan": "Alta velocidad del Rin al Danubio",
+      "servicios": [
+        "av",
+        "px"
+      ],
+      "logo_estilo": "rayo",
+      "flota": [
+        {
+          "unidad_id": "ice4",
+          "nombre": "ICE 4",
+          "workshop_ref": "DE MU ICE 4",
+          "papel": "principal",
+          "unidades_estimadas": 20
+        },
+        {
+          "unidad_id": "tgv_duplex",
+          "nombre": "TGV EuroDuplex",
+          "workshop_ref": "FR MU TGV EuroDuplex",
+          "papel": "secundario",
+          "unidades_estimadas": 23
+        },
+        {
+          "unidad_id": "pendolino",
+          "nombre": "Pendolino New",
+          "workshop_ref": "CH MU RABe 503 New Pendolino",
+          "papel": "secundario",
+          "unidades_estimadas": 30
+        },
+        {
+          "unidad_id": "ice2",
+          "nombre": "ICE 2",
+          "workshop_ref": "DE MU ICE 2",
+          "papel": "secundario",
+          "unidades_estimadas": 37
+        }
+      ],
+      "logo": "assets/logos/vrp.svg"
+    },
+    {
+      "id": "lma",
+      "nombre": "Líneas Maestras",
+      "nombre_corto": "LMA",
+      "tipo": "nacional",
+      "competencia": "competitiva",
+      "color": "#334155",
+      "color_secundario": "#EAB308",
+      "lands": [
+        "bw",
+        "by",
+        "be",
+        "bb",
+        "hb",
+        "hh",
+        "he",
+        "mv",
+        "ni",
+        "nw",
+        "rp",
+        "sl",
+        "sn",
+        "st",
+        "sh",
+        "th"
+      ],
+      "sede": "Hannover",
+      "eslogan": "Las rutas que unen Alemania",
+      "servicios": [
+        "ld",
+        "ir"
+      ],
+      "logo_estilo": "malla",
+      "flota": [
+        {
+          "unidad_id": "icn",
+          "nombre": "ICN",
+          "workshop_ref": "CH MU RABDe 500 ICN",
+          "papel": "principal",
+          "unidades_estimadas": 21
+        },
+        {
+          "unidad_id": "ice3b",
+          "nombre": "ICE 3",
+          "workshop_ref": "DE MU ICE 3",
+          "papel": "secundario",
+          "unidades_estimadas": 24
+        },
+        {
+          "unidad_id": "tgv_duplex",
+          "nombre": "TGV EuroDuplex",
+          "workshop_ref": "FR MU TGV EuroDuplex",
+          "papel": "secundario",
+          "unidades_estimadas": 31
+        },
+        {
+          "unidad_id": "kiss200",
+          "nombre": "Stadler KISS 200",
+          "workshop_ref": "Stadler KISS 200 / AT MU Rh 4010 KISS 200",
+          "papel": "principal",
+          "unidades_estimadas": 42
+        }
+      ],
+      "logo": "assets/logos/lma.svg"
+    },
+    {
+      "id": "ica",
+      "nombre": "InterCiudades Alemania",
+      "nombre_corto": "ICA",
+      "tipo": "nacional",
+      "competencia": "competitiva",
+      "color": "#0E7C7B",
+      "color_secundario": "#FFFFFF",
+      "lands": [
+        "bw",
+        "by",
+        "be",
+        "bb",
+        "hb",
+        "hh",
+        "he",
+        "mv",
+        "ni",
+        "nw",
+        "rp",
+        "sl",
+        "sn",
+        "st",
+        "sh",
+        "th"
+      ],
+      "sede": "Núremberg",
+      "eslogan": "Ciudad a ciudad, sin rodeos",
+      "servicios": [
+        "ld",
+        "ir",
+        "re"
+      ],
+      "logo_estilo": "circulos",
+      "flota": [
+        {
+          "unidad_id": "virm",
+          "nombre": "VIRM Doble Piso",
+          "workshop_ref": "NL MU VIRM",
+          "papel": "principal",
+          "unidades_estimadas": 22
+        },
+        {
+          "unidad_id": "coradia",
+          "nombre": "Alstom Coradia Nordic",
+          "workshop_ref": "Alstom Coradia Nordic",
+          "papel": "secundario",
+          "unidades_estimadas": 25
+        },
+        {
+          "unidad_id": "ice2",
+          "nombre": "ICE 2",
+          "workshop_ref": "DE MU ICE 2",
+          "papel": "secundario",
+          "unidades_estimadas": 32
+        },
+        {
+          "unidad_id": "thalys",
+          "nombre": "Thalys PBKA",
+          "workshop_ref": "FR MU Thalys PBKA",
+          "papel": "secundario",
+          "unidades_estimadas": 39
+        },
+        {
+          "unidad_id": "twindexx",
+          "nombre": "Twindexx Swiss Express",
+          "workshop_ref": "CH MU RABe 502 Twindexx",
+          "papel": "principal",
+          "unidades_estimadas": 54
+        }
+      ],
+      "logo": "assets/logos/ica.svg"
+    },
+    {
+      "id": "noc",
+      "nombre": "Nocturno Continental",
+      "nombre_corto": "NOC",
+      "tipo": "especializado",
+      "competencia": "nicho",
+      "color": "#020617",
+      "color_secundario": "#FDE68A",
+      "lands": [
+        "bw",
+        "by",
+        "be",
+        "bb",
+        "hb",
+        "hh",
+        "he",
+        "mv",
+        "ni",
+        "nw",
+        "rp",
+        "sl",
+        "sn",
+        "st",
+        "sh",
+        "th"
+      ],
+      "sede": "Múnich",
+      "eslogan": "Alemania mientras duermes",
+      "servicios": [
+        "n"
+      ],
+      "logo_estilo": "luna",
+      "flota": [
+        {
+          "unidad_id": "night_coach",
+          "nombre": "Coches nocturnos Viaggio",
+          "workshop_ref": "AT Coach Viaggio Comfort / Night consists",
+          "papel": "secundario",
+          "unidades_estimadas": 19
+        },
+        {
+          "unidad_id": "railjet",
+          "nombre": "Railjet / Viaggio Comfort",
+          "workshop_ref": "AT Coach Viaggio Comfort",
+          "papel": "secundario",
+          "unidades_estimadas": 26
+        }
+      ],
+      "logo": "assets/logos/noc.svg"
+    },
+    {
+      "id": "avr",
+      "nombre": "Alta Velocidad Renana",
+      "nombre_corto": "AVR",
+      "tipo": "nacional",
+      "competencia": "nicho",
+      "color": "#1E40AF",
+      "color_secundario": "#DBEAFE",
+      "lands": [
+        "nw",
+        "rp",
+        "he",
+        "bw",
+        "sl"
+      ],
+      "sede": "Mannheim",
+      "eslogan": "El corredor más denso de Europa",
+      "servicios": [
+        "av",
+        "ld",
+        "ae"
+      ],
+      "logo_estilo": "rio",
+      "flota": [
+        {
+          "unidad_id": "tgv_pos",
+          "nombre": "TGV POS",
+          "workshop_ref": "FR MU TGV POS",
+          "papel": "secundario",
+          "unidades_estimadas": 20
+        },
+        {
+          "unidad_id": "pendolino",
+          "nombre": "Pendolino New",
+          "workshop_ref": "CH MU RABe 503 New Pendolino",
+          "papel": "secundario",
+          "unidades_estimadas": 27
+        },
+        {
+          "unidad_id": "regio2n",
+          "nombre": "Regio 2N Omneo",
+          "workshop_ref": "FR MU Z 55500 Regio 2N",
+          "papel": "secundario",
+          "unidades_estimadas": 34
+        },
+        {
+          "unidad_id": "ice2",
+          "nombre": "ICE 2",
+          "workshop_ref": "DE MU ICE 2",
+          "papel": "principal",
+          "unidades_estimadas": 45
+        },
+        {
+          "unidad_id": "giruno",
+          "nombre": "Stadler Giruno",
+          "workshop_ref": "CH MU RABe 501 Giruno",
+          "papel": "principal",
+          "unidades_estimadas": 52
+        }
+      ],
+      "logo": "assets/logos/avr.svg"
+    },
+    {
+      "id": "peu",
+      "nombre": "Puente Europeo",
+      "nombre_corto": "PEU",
+      "tipo": "internacional",
+      "competencia": "nicho",
+      "color": "#1D4ED8",
+      "color_secundario": "#FEF3C7",
+      "lands": [
+        "bw",
+        "by",
+        "sl",
+        "rp",
+        "nw",
+        "sh",
+        "sn"
+      ],
+      "sede": "Friburgo",
+      "eslogan": "Alemania conectada al continente",
+      "servicios": [
+        "av",
+        "ld",
+        "n"
+      ],
+      "logo_estilo": "puente",
+      "flota": [
+        {
+          "unidad_id": "giruno",
+          "nombre": "Stadler Giruno",
+          "workshop_ref": "CH MU RABe 501 Giruno",
+          "papel": "principal",
+          "unidades_estimadas": 25
+        },
+        {
+          "unidad_id": "kiss200",
+          "nombre": "Stadler KISS 200",
+          "workshop_ref": "Stadler KISS 200 / AT MU Rh 4010 KISS 200",
+          "papel": "secundario",
+          "unidades_estimadas": 28
+        },
+        {
+          "unidad_id": "night_coach",
+          "nombre": "Coches nocturnos Viaggio",
+          "workshop_ref": "AT Coach Viaggio Comfort / Night consists",
+          "papel": "secundario",
+          "unidades_estimadas": 35
+        },
+        {
+          "unidad_id": "ice1",
+          "nombre": "ICE 1",
+          "workshop_ref": "DE MU ICE 1",
+          "papel": "principal",
+          "unidades_estimadas": 46
+        },
+        {
+          "unidad_id": "icet",
+          "nombre": "ICE T",
+          "workshop_ref": "DE MU ICE T",
+          "papel": "secundario",
+          "unidades_estimadas": 49
+        }
+      ],
+      "logo": "assets/logos/peu.svg"
+    },
+    {
+      "id": "trw",
+      "nombre": "Trenes del Rin Negro",
+      "nombre_corto": "TRW",
+      "tipo": "regional",
+      "competencia": "dominante",
+      "color": "#1F6B4A",
+      "color_secundario": "#ECFDF5",
+      "lands": [
+        "bw"
+      ],
+      "sede": "Stuttgart",
+      "eslogan": "Selva, valle y capital",
+      "servicios": [
+        "re",
+        "rb",
+        "rl",
+        "tt"
+      ],
+      "logo_estilo": "arbol",
+      "flota": [
+        {
+          "unidad_id": "desiro_dd",
+          "nombre": "Desiro Doble Piso",
+          "workshop_ref": "CH MU RABe 514 Desiro Double Deck",
+          "papel": "secundario",
+          "unidades_estimadas": 22
+        },
+        {
+          "unidad_id": "m7",
+          "nombre": "M7 Doble Piso",
+          "workshop_ref": "BE Coach / EMU M7",
+          "papel": "secundario",
+          "unidades_estimadas": 29
+        },
+        {
+          "unidad_id": "gtw_d",
+          "nombre": "GTW Diésel",
+          "workshop_ref": "NL MU GTW Diesel / AT MU Rh 5063",
+          "papel": "principal",
+          "unidades_estimadas": 40
+        },
+        {
+          "unidad_id": "flexity",
+          "nombre": "Bombardier Flexity",
+          "workshop_ref": "Bombardier Flexity / Flexity Classic",
+          "papel": "secundario",
+          "unidades_estimadas": 43
+        },
+        {
+          "unidad_id": "flirt4",
+          "nombre": "Stadler FLIRT 4",
+          "workshop_ref": "Stadler FLIRT 4 (D)EMU",
+          "papel": "principal",
+          "unidades_estimadas": 54
+        },
+        {
+          "unidad_id": "civity",
+          "nombre": "CAF Civity",
+          "workshop_ref": "BR Class 397 Civity",
+          "papel": "secundario",
+          "unidades_estimadas": 17
+        }
+      ],
+      "logo": "assets/logos/trw.svg"
+    },
+    {
+      "id": "svb",
+      "nombre": "Servicios del Valle del Neckar",
+      "nombre_corto": "SVN",
+      "tipo": "regional",
+      "competencia": "competitiva",
+      "color": "#B45309",
+      "color_secundario": "#FFF7ED",
+      "lands": [
+        "bw"
+      ],
+      "sede": "Heilbronn",
+      "eslogan": "El Neckar en movimiento",
+      "servicios": [
+        "re",
+        "rb",
+        "tt"
+      ],
+      "logo_estilo": "valle",
+      "flota": [
+        {
+          "unidad_id": "regiolis",
+          "nombre": "Régiolis",
+          "workshop_ref": "FR MU B 84500 Régiolis Regional",
+          "papel": "principal",
+          "unidades_estimadas": 27
+        },
+        {
+          "unidad_id": "wink",
+          "nombre": "FLIRT WINK",
+          "workshop_ref": "NL MU FLIRT WINK",
+          "papel": "secundario",
+          "unidades_estimadas": 30
+        },
+        {
+          "unidad_id": "lint",
+          "nombre": "LINT 41",
+          "workshop_ref": "NL MU LINT 41H",
+          "papel": "secundario",
+          "unidades_estimadas": 37
+        },
+        {
+          "unidad_id": "kiss200",
+          "nombre": "Stadler KISS 200",
+          "workshop_ref": "Stadler KISS 200 / AT MU Rh 4010 KISS 200",
+          "papel": "secundario",
+          "unidades_estimadas": 44
+        },
+        {
+          "unidad_id": "desiro_ml",
+          "nombre": "Desiro ML",
+          "workshop_ref": "AT MU Rh 4746 Desiro ML",
+          "papel": "principal",
+          "unidades_estimadas": 55
+        }
+      ],
+      "logo": "assets/logos/svb.svg"
+    },
+    {
+      "id": "alb",
+      "nombre": "AlpenBahn Sur",
+      "nombre_corto": "ABS",
+      "tipo": "regional",
+      "competencia": "competitiva",
+      "color": "#1E3A5F",
+      "color_secundario": "#EEF2FF",
+      "lands": [
+        "by",
+        "bw"
+      ],
+      "sede": "Garmisch-Partenkirchen",
+      "eslogan": "Montaña y precisión",
+      "servicios": [
+        "re",
+        "rb",
+        "tur",
+        "rl"
+      ],
+      "logo_estilo": "pico",
+      "flota": [
+        {
+          "unidad_id": "gtw_e",
+          "nombre": "GTW Eléctrico",
+          "workshop_ref": "NL MU GTW Electric / AT MU Rh 4062",
+          "papel": "principal",
+          "unidades_estimadas": 28
+        },
+        {
+          "unidad_id": "scenic",
+          "nombre": "Composición panorámica",
+          "workshop_ref": "CH Coach Glacier Express / scenic coaches",
+          "papel": "secundario",
+          "unidades_estimadas": 31
+        },
+        {
+          "unidad_id": "flirt_ch",
+          "nombre": "FLIRT Suizo",
+          "workshop_ref": "CH MU RABe 522/523 FLIRT",
+          "papel": "principal",
+          "unidades_estimadas": 42
+        },
+        {
+          "unidad_id": "regiolis",
+          "nombre": "Régiolis",
+          "workshop_ref": "FR MU B 84500 Régiolis Regional",
+          "papel": "principal",
+          "unidades_estimadas": 49
+        },
+        {
+          "unidad_id": "wink",
+          "nombre": "FLIRT WINK",
+          "workshop_ref": "NL MU FLIRT WINK",
+          "papel": "principal",
+          "unidades_estimadas": 16
+        },
+        {
+          "unidad_id": "lint",
+          "nombre": "LINT 41",
+          "workshop_ref": "NL MU LINT 41H",
+          "papel": "principal",
+          "unidades_estimadas": 23
+        }
+      ],
+      "logo": "assets/logos/alb.svg"
+    },
+    {
+      "id": "bav",
+      "nombre": "Bávaros Regionales",
+      "nombre_corto": "BAV",
+      "tipo": "regional",
+      "competencia": "dominante",
+      "color": "#0284C7",
+      "color_secundario": "#FFFFFF",
+      "lands": [
+        "by"
+      ],
+      "sede": "Múnich",
+      "eslogan": "Baviera entera, un billete",
+      "servicios": [
+        "re",
+        "rb",
+        "ir",
+        "rl"
+      ],
+      "logo_estilo": "escudo",
+      "flota": [
+        {
+          "unidad_id": "gtw_d",
+          "nombre": "GTW Diésel",
+          "workshop_ref": "NL MU GTW Diesel / AT MU Rh 5063",
+          "papel": "principal",
+          "unidades_estimadas": 29
+        },
+        {
+          "unidad_id": "icetd",
+          "nombre": "ICE TD",
+          "workshop_ref": "DE MU ICE TD",
+          "papel": "secundario",
+          "unidades_estimadas": 32
+        },
+        {
+          "unidad_id": "flirt3",
+          "nombre": "Stadler FLIRT 3",
+          "workshop_ref": "NL MU FLIRT 3",
+          "papel": "principal",
+          "unidades_estimadas": 43
+        },
+        {
+          "unidad_id": "coradia",
+          "nombre": "Alstom Coradia Nordic",
+          "workshop_ref": "Alstom Coradia Nordic",
+          "papel": "principal",
+          "unidades_estimadas": 50
+        },
+        {
+          "unidad_id": "virm",
+          "nombre": "VIRM Doble Piso",
+          "workshop_ref": "NL MU VIRM",
+          "papel": "principal",
+          "unidades_estimadas": 17
+        },
+        {
+          "unidad_id": "talent",
+          "nombre": "Talent",
+          "workshop_ref": "AT MU Rh 4024 Talent",
+          "papel": "principal",
+          "unidades_estimadas": 24
+        }
+      ],
+      "logo": "assets/logos/bav.svg"
+    },
+    {
+      "id": "fda",
+      "nombre": "Ferrocarril del Danubio Azul",
+      "nombre_corto": "FDA",
+      "tipo": "regional",
+      "competencia": "competitiva",
+      "color": "#0EA5E9",
+      "color_secundario": "#F0F9FF",
+      "lands": [
+        "by"
+      ],
+      "sede": "Ratisbona",
+      "eslogan": "Siguiendo el Danubio",
+      "servicios": [
+        "re",
+        "rb",
+        "tur"
+      ],
+      "logo_estilo": "ola",
+      "flota": [
+        {
+          "unidad_id": "kiss200",
+          "nombre": "Stadler KISS 200",
+          "workshop_ref": "Stadler KISS 200 / AT MU Rh 4010 KISS 200",
+          "papel": "secundario",
+          "unidades_estimadas": 26
+        },
+        {
+          "unidad_id": "desiro_ml",
+          "nombre": "Desiro ML",
+          "workshop_ref": "AT MU Rh 4746 Desiro ML",
+          "papel": "principal",
+          "unidades_estimadas": 37
+        },
+        {
+          "unidad_id": "regio2n",
+          "nombre": "Regio 2N Omneo",
+          "workshop_ref": "FR MU Z 55500 Regio 2N",
+          "papel": "secundario",
+          "unidades_estimadas": 40
+        },
+        {
+          "unidad_id": "gtw_e",
+          "nombre": "GTW Eléctrico",
+          "workshop_ref": "NL MU GTW Electric / AT MU Rh 4062",
+          "papel": "secundario",
+          "unidades_estimadas": 47
+        },
+        {
+          "unidad_id": "scenic",
+          "nombre": "Composición panorámica",
+          "workshop_ref": "CH Coach Glacier Express / scenic coaches",
+          "papel": "secundario",
+          "unidades_estimadas": 14
+        }
+      ],
+      "logo": "assets/logos/fda.svg"
+    },
+    {
+      "id": "mfr",
+      "nombre": "Media Franconia Rieles",
+      "nombre_corto": "MFR",
+      "tipo": "regional",
+      "competencia": "competitiva",
+      "color": "#7F1D1D",
+      "color_secundario": "#FFF1F2",
+      "lands": [
+        "by"
+      ],
+      "sede": "Núremberg",
+      "eslogan": "Franconia conectada",
+      "servicios": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "logo_estilo": "hex",
+      "flota": [
+        {
+          "unidad_id": "desiro_ml",
+          "nombre": "Desiro ML",
+          "workshop_ref": "AT MU Rh 4746 Desiro ML",
+          "papel": "principal",
+          "unidades_estimadas": 31
+        },
+        {
+          "unidad_id": "regio2n",
+          "nombre": "Regio 2N Omneo",
+          "workshop_ref": "FR MU Z 55500 Regio 2N",
+          "papel": "secundario",
+          "unidades_estimadas": 34
+        },
+        {
+          "unidad_id": "gtw_e",
+          "nombre": "GTW Eléctrico",
+          "workshop_ref": "NL MU GTW Electric / AT MU Rh 4062",
+          "papel": "principal",
+          "unidades_estimadas": 45
+        },
+        {
+          "unidad_id": "kiss200",
+          "nombre": "Stadler KISS 200",
+          "workshop_ref": "Stadler KISS 200 / AT MU Rh 4010 KISS 200",
+          "papel": "secundario",
+          "unidades_estimadas": 48
+        }
+      ],
+      "logo": "assets/logos/mfr.svg"
+    },
+    {
+      "id": "mbb",
+      "nombre": "Marca Brandeburgo",
+      "nombre_corto": "MBB",
+      "tipo": "regional",
+      "competencia": "dominante",
+      "color": "#4D7C0F",
+      "color_secundario": "#F7FEE7",
+      "lands": [
+        "bb",
+        "be"
+      ],
+      "sede": "Potsdam",
+      "eslogan": "Alrededor de la capital",
+      "servicios": [
+        "re",
+        "rb",
+        "ir",
+        "rl"
+      ],
+      "logo_estilo": "anillo",
+      "flota": [
+        {
+          "unidad_id": "flirt4",
+          "nombre": "Stadler FLIRT 4",
+          "workshop_ref": "Stadler FLIRT 4 (D)EMU",
+          "papel": "principal",
+          "unidades_estimadas": 36
+        },
+        {
+          "unidad_id": "civity",
+          "nombre": "CAF Civity",
+          "workshop_ref": "BR Class 397 Civity",
+          "papel": "principal",
+          "unidades_estimadas": 39
+        },
+        {
+          "unidad_id": "kiss160",
+          "nombre": "KISS 160",
+          "workshop_ref": "CH MU RABe 511 KISS 160",
+          "papel": "secundario",
+          "unidades_estimadas": 42
+        },
+        {
+          "unidad_id": "desiro_classic",
+          "nombre": "Desiro Classic",
+          "workshop_ref": "AT MU Rh 5022 Desiro Classic",
+          "papel": "principal",
+          "unidades_estimadas": 53
+        },
+        {
+          "unidad_id": "icn",
+          "nombre": "ICN",
+          "workshop_ref": "CH MU RABDe 500 ICN",
+          "papel": "secundario",
+          "unidades_estimadas": 16
+        },
+        {
+          "unidad_id": "flirt_ch",
+          "nombre": "FLIRT Suizo",
+          "workshop_ref": "CH MU RABe 522/523 FLIRT",
+          "papel": "principal",
+          "unidades_estimadas": 27
+        }
+      ],
+      "logo": "assets/logos/mbb.svg"
+    },
+    {
+      "id": "ode",
+      "nombre": "Óder Express Regional",
+      "nombre_corto": "OER",
+      "tipo": "regional",
+      "competencia": "competitiva",
+      "color": "#155E75",
+      "color_secundario": "#ECFEFF",
+      "lands": [
+        "bb"
+      ],
+      "sede": "Fráncfort del Óder",
+      "eslogan": "Frontera viva",
+      "servicios": [
+        "re",
+        "rb"
+      ],
+      "logo_estilo": "flecha",
+      "flota": [
+        {
+          "unidad_id": "m7",
+          "nombre": "M7 Doble Piso",
+          "workshop_ref": "BE Coach / EMU M7",
+          "papel": "secundario",
+          "unidades_estimadas": 29
+        },
+        {
+          "unidad_id": "gtw_d",
+          "nombre": "GTW Diésel",
+          "workshop_ref": "NL MU GTW Diesel / AT MU Rh 5063",
+          "papel": "secundario",
+          "unidades_estimadas": 36
+        },
+        {
+          "unidad_id": "twindexx",
+          "nombre": "Twindexx Swiss Express",
+          "workshop_ref": "CH MU RABe 502 Twindexx",
+          "papel": "secundario",
+          "unidades_estimadas": 43
+        },
+        {
+          "unidad_id": "desiro_dd",
+          "nombre": "Desiro Doble Piso",
+          "workshop_ref": "CH MU RABe 514 Desiro Double Deck",
+          "papel": "secundario",
+          "unidades_estimadas": 50
+        }
+      ],
+      "logo": "assets/logos/ode.svg"
+    },
+    {
+      "id": "whv",
+      "nombre": "Hanseas del Weser",
+      "nombre_corto": "HWV",
+      "tipo": "regional",
+      "competencia": "dominante",
+      "color": "#0E7490",
+      "color_secundario": "#FFFFFF",
+      "lands": [
+        "hb",
+        "ni"
+      ],
+      "sede": "Bremen",
+      "eslogan": "Puerto, marisma y ciudad",
+      "servicios": [
+        "re",
+        "rb",
+        "ae"
+      ],
+      "logo_estilo": "ancla",
+      "flota": [
+        {
+          "unidad_id": "wink",
+          "nombre": "FLIRT WINK",
+          "workshop_ref": "NL MU FLIRT WINK",
+          "papel": "secundario",
+          "unidades_estimadas": 30
+        },
+        {
+          "unidad_id": "lint",
+          "nombre": "LINT 41",
+          "workshop_ref": "NL MU LINT 41H",
+          "papel": "secundario",
+          "unidades_estimadas": 37
+        },
+        {
+          "unidad_id": "flirt_ch",
+          "nombre": "FLIRT Suizo",
+          "workshop_ref": "CH MU RABe 522/523 FLIRT",
+          "papel": "principal",
+          "unidades_estimadas": 48
+        },
+        {
+          "unidad_id": "regiolis",
+          "nombre": "Régiolis",
+          "workshop_ref": "FR MU B 84500 Régiolis Regional",
+          "papel": "principal",
+          "unidades_estimadas": 55
+        }
+      ],
+      "logo": "assets/logos/whv.svg"
+    },
+    {
+      "id": "hes",
+      "nombre": "Hesse Conecta",
+      "nombre_corto": "HCX",
+      "tipo": "regional",
+      "competencia": "dominante",
+      "color": "#BE123C",
+      "color_secundario": "#FFF1F2",
+      "lands": [
+        "he"
+      ],
+      "sede": "Fráncfort del Meno",
+      "eslogan": "El corazón en red",
+      "servicios": [
+        "re",
+        "rb",
+        "ir",
+        "ae",
+        "tt"
+      ],
+      "logo_estilo": "corazon",
+      "flota": [
+        {
+          "unidad_id": "flirt3",
+          "nombre": "Stadler FLIRT 3",
+          "workshop_ref": "NL MU FLIRT 3",
+          "papel": "principal",
+          "unidades_estimadas": 35
+        },
+        {
+          "unidad_id": "coradia",
+          "nombre": "Alstom Coradia Nordic",
+          "workshop_ref": "Alstom Coradia Nordic",
+          "papel": "principal",
+          "unidades_estimadas": 42
+        },
+        {
+          "unidad_id": "virm",
+          "nombre": "VIRM Doble Piso",
+          "workshop_ref": "NL MU VIRM",
+          "papel": "principal",
+          "unidades_estimadas": 49
+        },
+        {
+          "unidad_id": "talent",
+          "nombre": "Talent",
+          "workshop_ref": "AT MU Rh 4024 Talent",
+          "papel": "principal",
+          "unidades_estimadas": 16
+        },
+        {
+          "unidad_id": "citadis",
+          "nombre": "Alstom Citadis",
+          "workshop_ref": "Alstom Citadis 401/402/502",
+          "papel": "secundario",
+          "unidades_estimadas": 19
+        },
+        {
+          "unidad_id": "twindexx",
+          "nombre": "Twindexx Swiss Express",
+          "workshop_ref": "CH MU RABe 502 Twindexx",
+          "papel": "principal",
+          "unidades_estimadas": 30
+        },
+        {
+          "unidad_id": "desiro_dd",
+          "nombre": "Desiro Doble Piso",
+          "workshop_ref": "CH MU RABe 514 Desiro Double Deck",
+          "papel": "secundario",
+          "unidades_estimadas": 33
+        }
+      ],
+      "logo": "assets/logos/hes.svg"
+    },
+    {
+      "id": "trm",
+      "nombre": "Tren del Taunus y Main",
+      "nombre_corto": "TTM",
+      "tipo": "regional",
+      "competencia": "competitiva",
+      "color": "#78350F",
+      "color_secundario": "#FFFBEB",
+      "lands": [
+        "he"
+      ],
+      "sede": "Wiesbaden",
+      "eslogan": "Colinas al hilo del Main",
+      "servicios": [
+        "re",
+        "rb",
+        "tt"
+      ],
+      "logo_estilo": "valle",
+      "flota": [
+        {
+          "unidad_id": "kiss160",
+          "nombre": "KISS 160",
+          "workshop_ref": "CH MU RABe 511 KISS 160",
+          "papel": "secundario",
+          "unidades_estimadas": 32
+        },
+        {
+          "unidad_id": "desiro_classic",
+          "nombre": "Desiro Classic",
+          "workshop_ref": "AT MU Rh 5022 Desiro Classic",
+          "papel": "secundario",
+          "unidades_estimadas": 39
+        },
+        {
+          "unidad_id": "flexity_swift",
+          "nombre": "Flexity Swift",
+          "workshop_ref": "SE Tram SL A32 Bombardier Flexity Swift",
+          "papel": "secundario",
+          "unidades_estimadas": 46
+        },
+        {
+          "unidad_id": "flirt3",
+          "nombre": "Stadler FLIRT 3",
+          "workshop_ref": "NL MU FLIRT 3",
+          "papel": "principal",
+          "unidades_estimadas": 17
+        },
+        {
+          "unidad_id": "coradia",
+          "nombre": "Alstom Coradia Nordic",
+          "workshop_ref": "Alstom Coradia Nordic",
+          "papel": "principal",
+          "unidades_estimadas": 24
+        }
+      ],
+      "logo": "assets/logos/trm.svg"
+    },
+    {
+      "id": "bal",
+      "nombre": "Báltico Líneas",
+      "nombre_corto": "BAL",
+      "tipo": "regional",
+      "competencia": "dominante",
+      "color": "#075985",
+      "color_secundario": "#F0F9FF",
+      "lands": [
+        "mv",
+        "sh"
+      ],
+      "sede": "Rostock",
+      "eslogan": "Costa y lagunas",
+      "servicios": [
+        "re",
+        "rb",
+        "tur",
+        "rl"
+      ],
+      "logo_estilo": "ola",
+      "flota": [
+        {
+          "unidad_id": "kiss200",
+          "nombre": "Stadler KISS 200",
+          "workshop_ref": "Stadler KISS 200 / AT MU Rh 4010 KISS 200",
+          "papel": "secundario",
+          "unidades_estimadas": 33
+        },
+        {
+          "unidad_id": "desiro_ml",
+          "nombre": "Desiro ML",
+          "workshop_ref": "AT MU Rh 4746 Desiro ML",
+          "papel": "principal",
+          "unidades_estimadas": 44
+        },
+        {
+          "unidad_id": "regio2n",
+          "nombre": "Regio 2N Omneo",
+          "workshop_ref": "FR MU Z 55500 Regio 2N",
+          "papel": "secundario",
+          "unidades_estimadas": 47
+        },
+        {
+          "unidad_id": "gtw_e",
+          "nombre": "GTW Eléctrico",
+          "workshop_ref": "NL MU GTW Electric / AT MU Rh 4062",
+          "papel": "principal",
+          "unidades_estimadas": 18
+        },
+        {
+          "unidad_id": "scenic",
+          "nombre": "Composición panorámica",
+          "workshop_ref": "CH Coach Glacier Express / scenic coaches",
+          "papel": "secundario",
+          "unidades_estimadas": 21
+        },
+        {
+          "unidad_id": "flirt_ch",
+          "nombre": "FLIRT Suizo",
+          "workshop_ref": "CH MU RABe 522/523 FLIRT",
+          "papel": "principal",
+          "unidades_estimadas": 32
+        }
+      ],
+      "logo": "assets/logos/bal.svg"
+    },
+    {
+      "id": "pom",
+      "nombre": "Pomerania Rápida",
+      "nombre_corto": "POM",
+      "tipo": "regional",
+      "competencia": "competitiva",
+      "color": "#164E63",
+      "color_secundario": "#CFFAFE",
+      "lands": [
+        "mv"
+      ],
+      "sede": "Stralsund",
+      "eslogan": "Islas y tierra firme",
+      "servicios": [
+        "re",
+        "rb",
+        "tur"
+      ],
+      "logo_estilo": "isla",
+      "flota": [
+        {
+          "unidad_id": "flirt3",
+          "nombre": "Stadler FLIRT 3",
+          "workshop_ref": "NL MU FLIRT 3",
+          "papel": "principal",
+          "unidades_estimadas": 38
+        },
+        {
+          "unidad_id": "coradia",
+          "nombre": "Alstom Coradia Nordic",
+          "workshop_ref": "Alstom Coradia Nordic",
+          "papel": "principal",
+          "unidades_estimadas": 45
+        },
+        {
+          "unidad_id": "virm",
+          "nombre": "VIRM Doble Piso",
+          "workshop_ref": "NL MU VIRM",
+          "papel": "secundario",
+          "unidades_estimadas": 48
+        },
+        {
+          "unidad_id": "talent",
+          "nombre": "Talent",
+          "workshop_ref": "AT MU Rh 4024 Talent",
+          "papel": "secundario",
+          "unidades_estimadas": 15
+        },
+        {
+          "unidad_id": "flirt4",
+          "nombre": "Stadler FLIRT 4",
+          "workshop_ref": "Stadler FLIRT 4 (D)EMU",
+          "papel": "principal",
+          "unidades_estimadas": 26
+        }
+      ],
+      "logo": "assets/logos/pom.svg"
+    },
+    {
+      "id": "bsx",
+      "nombre": "Baja Sajonia Express",
+      "nombre_corto": "BSX",
+      "tipo": "regional",
+      "competencia": "dominante",
+      "color": "#B91C1C",
+      "color_secundario": "#FFFFFF",
+      "lands": [
+        "ni"
+      ],
+      "sede": "Hannover",
+      "eslogan": "Llanura a toda marcha",
+      "servicios": [
+        "re",
+        "rb",
+        "ir",
+        "rl"
+      ],
+      "logo_estilo": "barra",
+      "flota": [
+        {
+          "unidad_id": "kiss200",
+          "nombre": "Stadler KISS 200",
+          "workshop_ref": "Stadler KISS 200 / AT MU Rh 4010 KISS 200",
+          "papel": "principal",
+          "unidades_estimadas": 39
+        },
+        {
+          "unidad_id": "desiro_ml",
+          "nombre": "Desiro ML",
+          "workshop_ref": "AT MU Rh 4746 Desiro ML",
+          "papel": "principal",
+          "unidades_estimadas": 46
+        },
+        {
+          "unidad_id": "regio2n",
+          "nombre": "Regio 2N Omneo",
+          "workshop_ref": "FR MU Z 55500 Regio 2N",
+          "papel": "principal",
+          "unidades_estimadas": 53
+        },
+        {
+          "unidad_id": "gtw_e",
+          "nombre": "GTW Eléctrico",
+          "workshop_ref": "NL MU GTW Electric / AT MU Rh 4062",
+          "papel": "principal",
+          "unidades_estimadas": 20
+        },
+        {
+          "unidad_id": "icet",
+          "nombre": "ICE T",
+          "workshop_ref": "DE MU ICE T",
+          "papel": "secundario",
+          "unidades_estimadas": 23
+        },
+        {
+          "unidad_id": "flirt4",
+          "nombre": "Stadler FLIRT 4",
+          "workshop_ref": "Stadler FLIRT 4 (D)EMU",
+          "papel": "principal",
+          "unidades_estimadas": 38
+        }
+      ],
+      "logo": "assets/logos/bsx.svg"
+    },
+    {
+      "id": "har",
+      "nombre": "Harz y Llanura",
+      "nombre_corto": "HYL",
+      "tipo": "regional",
+      "competencia": "competitiva",
+      "color": "#3F6212",
+      "color_secundario": "#F7FEE7",
+      "lands": [
+        "ni",
+        "st"
+      ],
+      "sede": "Goslar",
+      "eslogan": "Del Harz al mar",
+      "servicios": [
+        "re",
+        "rb",
+        "tur",
+        "rl"
+      ],
+      "logo_estilo": "pico",
+      "flota": [
+        {
+          "unidad_id": "regiolis",
+          "nombre": "Régiolis",
+          "workshop_ref": "FR MU B 84500 Régiolis Regional",
+          "papel": "principal",
+          "unidades_estimadas": 40
+        },
+        {
+          "unidad_id": "wink",
+          "nombre": "FLIRT WINK",
+          "workshop_ref": "NL MU FLIRT WINK",
+          "papel": "principal",
+          "unidades_estimadas": 47
+        },
+        {
+          "unidad_id": "lint",
+          "nombre": "LINT 41",
+          "workshop_ref": "NL MU LINT 41H",
+          "papel": "principal",
+          "unidades_estimadas": 54
+        },
+        {
+          "unidad_id": "flirt3",
+          "nombre": "Stadler FLIRT 3",
+          "workshop_ref": "NL MU FLIRT 3",
+          "papel": "principal",
+          "unidades_estimadas": 21
+        },
+        {
+          "unidad_id": "coradia",
+          "nombre": "Alstom Coradia Nordic",
+          "workshop_ref": "Alstom Coradia Nordic",
+          "papel": "principal",
+          "unidades_estimadas": 28
+        },
+        {
+          "unidad_id": "virm",
+          "nombre": "VIRM Doble Piso",
+          "workshop_ref": "NL MU VIRM",
+          "papel": "secundario",
+          "unidades_estimadas": 31
+        }
+      ],
+      "logo": "assets/logos/har.svg"
+    },
+    {
+      "id": "rrw",
+      "nombre": "Renania Rodante",
+      "nombre_corto": "RRW",
+      "tipo": "regional",
+      "competencia": "dominante",
+      "color": "#9F1239",
+      "color_secundario": "#FFF1F2",
+      "lands": [
+        "nw"
+      ],
+      "sede": "Düsseldorf",
+      "eslogan": "La región más densa, la red más viva",
+      "servicios": [
+        "re",
+        "rb",
+        "ir",
+        "tt"
+      ],
+      "logo_estilo": "malla",
+      "flota": [
+        {
+          "unidad_id": "icetd",
+          "nombre": "ICE TD",
+          "workshop_ref": "DE MU ICE TD",
+          "papel": "secundario",
+          "unidades_estimadas": 37
+        },
+        {
+          "unidad_id": "tram_train",
+          "nombre": "Stadler Tram-Train",
+          "workshop_ref": "BR Class 398 / tram-train Stadler",
+          "papel": "secundario",
+          "unidades_estimadas": 44
+        },
+        {
+          "unidad_id": "flirt_ch",
+          "nombre": "FLIRT Suizo",
+          "workshop_ref": "CH MU RABe 522/523 FLIRT",
+          "papel": "principal",
+          "unidades_estimadas": 55
+        },
+        {
+          "unidad_id": "regiolis",
+          "nombre": "Régiolis",
+          "workshop_ref": "FR MU B 84500 Régiolis Regional",
+          "papel": "principal",
+          "unidades_estimadas": 22
+        },
+        {
+          "unidad_id": "wink",
+          "nombre": "FLIRT WINK",
+          "workshop_ref": "NL MU FLIRT WINK",
+          "papel": "secundario",
+          "unidades_estimadas": 25
+        },
+        {
+          "unidad_id": "lint",
+          "nombre": "LINT 41",
+          "workshop_ref": "NL MU LINT 41H",
+          "papel": "secundario",
+          "unidades_estimadas": 32
+        }
+      ],
+      "logo": "assets/logos/rrw.svg"
+    },
+    {
+      "id": "wex",
+      "nombre": "Westfalia Express",
+      "nombre_corto": "WEX",
+      "tipo": "regional",
+      "competencia": "competitiva",
+      "color": "#CA8A04",
+      "color_secundario": "#1F2937",
+      "lands": [
+        "nw"
+      ],
+      "sede": "Dortmund",
+      "eslogan": "Cuenca y campos unidos",
+      "servicios": [
+        "re",
+        "rb",
+        "ir"
+      ],
+      "logo_estilo": "hex",
+      "flota": [
+        {
+          "unidad_id": "regiolis",
+          "nombre": "Régiolis",
+          "workshop_ref": "FR MU B 84500 Régiolis Regional",
+          "papel": "principal",
+          "unidades_estimadas": 42
+        },
+        {
+          "unidad_id": "wink",
+          "nombre": "FLIRT WINK",
+          "workshop_ref": "NL MU FLIRT WINK",
+          "papel": "secundario",
+          "unidades_estimadas": 45
+        },
+        {
+          "unidad_id": "lint",
+          "nombre": "LINT 41",
+          "workshop_ref": "NL MU LINT 41H",
+          "papel": "secundario",
+          "unidades_estimadas": 12
+        },
+        {
+          "unidad_id": "twindexx",
+          "nombre": "Twindexx Swiss Express",
+          "workshop_ref": "CH MU RABe 502 Twindexx",
+          "papel": "principal",
+          "unidades_estimadas": 23
+        },
+        {
+          "unidad_id": "desiro_dd",
+          "nombre": "Desiro Doble Piso",
+          "workshop_ref": "CH MU RABe 514 Desiro Double Deck",
+          "papel": "secundario",
+          "unidades_estimadas": 26
+        }
+      ],
+      "logo": "assets/logos/wex.svg"
+    },
+    {
+      "id": "rur",
+      "nombre": "Ruhr Urbano Regional",
+      "nombre_corto": "RUR",
+      "tipo": "regional",
+      "competencia": "competitiva",
+      "color": "#1F2937",
+      "color_secundario": "#E39A00",
+      "lands": [
+        "nw"
+      ],
+      "sede": "Essen",
+      "eslogan": "Una metrópolis, mil estaciones",
+      "servicios": [
+        "re",
+        "rb",
+        "s",
+        "mc"
+      ],
+      "logo_estilo": "circulos",
+      "flota": [
+        {
+          "unidad_id": "gtw_e",
+          "nombre": "GTW Eléctrico",
+          "workshop_ref": "NL MU GTW Electric / AT MU Rh 4062",
+          "papel": "secundario",
+          "unidades_estimadas": 39
+        },
+        {
+          "unidad_id": "mi2n",
+          "nombre": "MI2N Altéo",
+          "workshop_ref": "FR MU Z 1500 MI2N Altéo",
+          "papel": "secundario",
+          "unidades_estimadas": 46
+        },
+        {
+          "unidad_id": "flirt3",
+          "nombre": "Stadler FLIRT 3",
+          "workshop_ref": "NL MU FLIRT 3",
+          "papel": "principal",
+          "unidades_estimadas": 21
+        },
+        {
+          "unidad_id": "coradia",
+          "nombre": "Alstom Coradia Nordic",
+          "workshop_ref": "Alstom Coradia Nordic",
+          "papel": "principal",
+          "unidades_estimadas": 28
+        },
+        {
+          "unidad_id": "virm",
+          "nombre": "VIRM Doble Piso",
+          "workshop_ref": "NL MU VIRM",
+          "papel": "principal",
+          "unidades_estimadas": 31
+        },
+        {
+          "unidad_id": "talent",
+          "nombre": "Talent",
+          "workshop_ref": "AT MU Rh 4024 Talent",
+          "papel": "secundario",
+          "unidades_estimadas": 34
+        }
+      ],
+      "logo": "assets/logos/rur.svg"
+    },
+    {
+      "id": "rpf",
+      "nombre": "Palatinado Ferries Riel",
+      "nombre_corto": "PFR",
+      "tipo": "regional",
+      "competencia": "dominante",
+      "color": "#C2410C",
+      "color_secundario": "#FFF7ED",
+      "lands": [
+        "rp"
+      ],
+      "sede": "Maguncia",
+      "eslogan": "Viñedos sobre raíles",
+      "servicios": [
+        "re",
+        "rb",
+        "tur",
+        "rl"
+      ],
+      "logo_estilo": "hoja",
+      "flota": [
+        {
+          "unidad_id": "kiss200",
+          "nombre": "Stadler KISS 200",
+          "workshop_ref": "Stadler KISS 200 / AT MU Rh 4010 KISS 200",
+          "papel": "secundario",
+          "unidades_estimadas": 40
+        },
+        {
+          "unidad_id": "desiro_ml",
+          "nombre": "Desiro ML",
+          "workshop_ref": "AT MU Rh 4746 Desiro ML",
+          "papel": "principal",
+          "unidades_estimadas": 51
+        },
+        {
+          "unidad_id": "regio2n",
+          "nombre": "Regio 2N Omneo",
+          "workshop_ref": "FR MU Z 55500 Regio 2N",
+          "papel": "secundario",
+          "unidades_estimadas": 14
+        },
+        {
+          "unidad_id": "gtw_e",
+          "nombre": "GTW Eléctrico",
+          "workshop_ref": "NL MU GTW Electric / AT MU Rh 4062",
+          "papel": "principal",
+          "unidades_estimadas": 25
+        },
+        {
+          "unidad_id": "scenic",
+          "nombre": "Composición panorámica",
+          "workshop_ref": "CH Coach Glacier Express / scenic coaches",
+          "papel": "secundario",
+          "unidades_estimadas": 28
+        },
+        {
+          "unidad_id": "flirt_ch",
+          "nombre": "FLIRT Suizo",
+          "workshop_ref": "CH MU RABe 522/523 FLIRT",
+          "papel": "principal",
+          "unidades_estimadas": 39
+        }
+      ],
+      "logo": "assets/logos/rpf.svg"
+    },
+    {
+      "id": "mos",
+      "nombre": "Mosela y Rin Sur",
+      "nombre_corto": "MRS",
+      "tipo": "regional",
+      "competencia": "competitiva",
+      "color": "#14532D",
+      "color_secundario": "#ECFDF5",
+      "lands": [
+        "rp",
+        "sl"
+      ],
+      "sede": "Coblenza",
+      "eslogan": "Curvas del Mosela",
+      "servicios": [
+        "re",
+        "rb",
+        "tur"
+      ],
+      "logo_estilo": "rio",
+      "flota": [
+        {
+          "unidad_id": "flirt3",
+          "nombre": "Stadler FLIRT 3",
+          "workshop_ref": "NL MU FLIRT 3",
+          "papel": "principal",
+          "unidades_estimadas": 45
+        },
+        {
+          "unidad_id": "coradia",
+          "nombre": "Alstom Coradia Nordic",
+          "workshop_ref": "Alstom Coradia Nordic",
+          "papel": "principal",
+          "unidades_estimadas": 52
+        },
+        {
+          "unidad_id": "virm",
+          "nombre": "VIRM Doble Piso",
+          "workshop_ref": "NL MU VIRM",
+          "papel": "secundario",
+          "unidades_estimadas": 15
+        },
+        {
+          "unidad_id": "talent",
+          "nombre": "Talent",
+          "workshop_ref": "AT MU Rh 4024 Talent",
+          "papel": "secundario",
+          "unidades_estimadas": 22
+        },
+        {
+          "unidad_id": "flirt4",
+          "nombre": "Stadler FLIRT 4",
+          "workshop_ref": "Stadler FLIRT 4 (D)EMU",
+          "papel": "principal",
+          "unidades_estimadas": 33
+        }
+      ],
+      "logo": "assets/logos/mos.svg"
+    },
+    {
+      "id": "sar",
+      "nombre": "Sarre Movilidad",
+      "nombre_corto": "SAM",
+      "tipo": "regional",
+      "competencia": "dominante",
+      "color": "#9D174D",
+      "color_secundario": "#FDF2F8",
+      "lands": [
+        "sl"
+      ],
+      "sede": "Sarrebruck",
+      "eslogan": "Pequeño Land, gran enlace",
+      "servicios": [
+        "re",
+        "rb",
+        "tt",
+        "rl"
+      ],
+      "logo_estilo": "diamante",
+      "flota": [
+        {
+          "unidad_id": "talent",
+          "nombre": "Talent",
+          "workshop_ref": "AT MU Rh 4024 Talent",
+          "papel": "principal",
+          "unidades_estimadas": 50
+        },
+        {
+          "unidad_id": "tram_train",
+          "nombre": "Stadler Tram-Train",
+          "workshop_ref": "BR Class 398 / tram-train Stadler",
+          "papel": "secundario",
+          "unidades_estimadas": 49
+        },
+        {
+          "unidad_id": "flirt_ch",
+          "nombre": "FLIRT Suizo",
+          "workshop_ref": "CH MU RABe 522/523 FLIRT",
+          "papel": "principal",
+          "unidades_estimadas": 20
+        },
+        {
+          "unidad_id": "regiolis",
+          "nombre": "Régiolis",
+          "workshop_ref": "FR MU B 84500 Régiolis Regional",
+          "papel": "principal",
+          "unidades_estimadas": 27
+        },
+        {
+          "unidad_id": "wink",
+          "nombre": "FLIRT WINK",
+          "workshop_ref": "NL MU FLIRT WINK",
+          "papel": "principal",
+          "unidades_estimadas": 34
+        },
+        {
+          "unidad_id": "lint",
+          "nombre": "LINT 41",
+          "workshop_ref": "NL MU LINT 41H",
+          "papel": "principal",
+          "unidades_estimadas": 41
+        }
+      ],
+      "logo": "assets/logos/sar.svg"
+    },
+    {
+      "id": "saj",
+      "nombre": "Sajonia Rieles",
+      "nombre_corto": "SJR",
+      "tipo": "regional",
+      "competencia": "dominante",
+      "color": "#1F8A81",
+      "color_secundario": "#FFF7ED",
+      "lands": [
+        "sn"
+      ],
+      "sede": "Dresde",
+      "eslogan": "Cultura sobre vías",
+      "servicios": [
+        "re",
+        "rb",
+        "ir",
+        "rl"
+      ],
+      "logo_estilo": "escudo",
+      "flota": [
+        {
+          "unidad_id": "twindexx",
+          "nombre": "Twindexx Swiss Express",
+          "workshop_ref": "CH MU RABe 502 Twindexx",
+          "papel": "principal",
+          "unidades_estimadas": 47
+        },
+        {
+          "unidad_id": "desiro_dd",
+          "nombre": "Desiro Doble Piso",
+          "workshop_ref": "CH MU RABe 514 Desiro Double Deck",
+          "papel": "secundario",
+          "unidades_estimadas": 50
+        },
+        {
+          "unidad_id": "m7",
+          "nombre": "M7 Doble Piso",
+          "workshop_ref": "BE Coach / EMU M7",
+          "papel": "principal",
+          "unidades_estimadas": 21
+        },
+        {
+          "unidad_id": "gtw_d",
+          "nombre": "GTW Diésel",
+          "workshop_ref": "NL MU GTW Diesel / AT MU Rh 5063",
+          "papel": "principal",
+          "unidades_estimadas": 28
+        },
+        {
+          "unidad_id": "icetd",
+          "nombre": "ICE TD",
+          "workshop_ref": "DE MU ICE TD",
+          "papel": "secundario",
+          "unidades_estimadas": 31
+        },
+        {
+          "unidad_id": "flirt3",
+          "nombre": "Stadler FLIRT 3",
+          "workshop_ref": "NL MU FLIRT 3",
+          "papel": "principal",
+          "unidades_estimadas": 42
+        }
+      ],
+      "logo": "assets/logos/saj.svg"
+    },
+    {
+      "id": "erz",
+      "nombre": "Montes Metálicos Tren",
+      "nombre_corto": "MMT",
+      "tipo": "regional",
+      "competencia": "competitiva",
+      "color": "#292524",
+      "color_secundario": "#D97706",
+      "lands": [
+        "sn"
+      ],
+      "sede": "Chemnitz",
+      "eslogan": "Valles industriales renacidos",
+      "servicios": [
+        "re",
+        "rb",
+        "tt",
+        "rl"
+      ],
+      "logo_estilo": "pico",
+      "flota": [
+        {
+          "unidad_id": "kiss200",
+          "nombre": "Stadler KISS 200",
+          "workshop_ref": "Stadler KISS 200 / AT MU Rh 4010 KISS 200",
+          "papel": "secundario",
+          "unidades_estimadas": 44
+        },
+        {
+          "unidad_id": "desiro_ml",
+          "nombre": "Desiro ML",
+          "workshop_ref": "AT MU Rh 4746 Desiro ML",
+          "papel": "principal",
+          "unidades_estimadas": 55
+        },
+        {
+          "unidad_id": "regio2n",
+          "nombre": "Regio 2N Omneo",
+          "workshop_ref": "FR MU Z 55500 Regio 2N",
+          "papel": "secundario",
+          "unidades_estimadas": 18
+        },
+        {
+          "unidad_id": "gtw_e",
+          "nombre": "GTW Eléctrico",
+          "workshop_ref": "NL MU GTW Electric / AT MU Rh 4062",
+          "papel": "principal",
+          "unidades_estimadas": 29
+        },
+        {
+          "unidad_id": "citadis",
+          "nombre": "Alstom Citadis",
+          "workshop_ref": "Alstom Citadis 401/402/502",
+          "papel": "secundario",
+          "unidades_estimadas": 32
+        },
+        {
+          "unidad_id": "twindexx",
+          "nombre": "Twindexx Swiss Express",
+          "workshop_ref": "CH MU RABe 502 Twindexx",
+          "papel": "secundario",
+          "unidades_estimadas": 39
+        }
+      ],
+      "logo": "assets/logos/erz.svg"
+    },
+    {
+      "id": "sah",
+      "nombre": "Sajonia-Anhalt Líneas",
+      "nombre_corto": "SAL",
+      "tipo": "regional",
+      "competencia": "dominante",
+      "color": "#365314",
+      "color_secundario": "#F7FEE7",
+      "lands": [
+        "st"
+      ],
+      "sede": "Magdeburgo",
+      "eslogan": "El Elba como eje",
+      "servicios": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "logo_estilo": "barra",
+      "flota": [
+        {
+          "unidad_id": "lint",
+          "nombre": "LINT 41",
+          "workshop_ref": "NL MU LINT 41H",
+          "papel": "principal",
+          "unidades_estimadas": 49
+        },
+        {
+          "unidad_id": "flirt_ch",
+          "nombre": "FLIRT Suizo",
+          "workshop_ref": "CH MU RABe 522/523 FLIRT",
+          "papel": "principal",
+          "unidades_estimadas": 16
+        },
+        {
+          "unidad_id": "regiolis",
+          "nombre": "Régiolis",
+          "workshop_ref": "FR MU B 84500 Régiolis Regional",
+          "papel": "principal",
+          "unidades_estimadas": 23
+        },
+        {
+          "unidad_id": "wink",
+          "nombre": "FLIRT WINK",
+          "workshop_ref": "NL MU FLIRT WINK",
+          "papel": "principal",
+          "unidades_estimadas": 30
+        }
+      ],
+      "logo": "assets/logos/sah.svg"
+    },
+    {
+      "id": "elb",
+      "nombre": "Elba Verde Regional",
+      "nombre_corto": "EVR",
+      "tipo": "regional",
+      "competencia": "competitiva",
+      "color": "#047857",
+      "color_secundario": "#ECFDF5",
+      "lands": [
+        "st",
+        "ni"
+      ],
+      "sede": "Dessau",
+      "eslogan": "Naturaleza y Bauhaus",
+      "servicios": [
+        "re",
+        "rb",
+        "tur"
+      ],
+      "logo_estilo": "hoja",
+      "flota": [
+        {
+          "unidad_id": "talent",
+          "nombre": "Talent",
+          "workshop_ref": "AT MU Rh 4024 Talent",
+          "papel": "secundario",
+          "unidades_estimadas": 46
+        },
+        {
+          "unidad_id": "flirt4",
+          "nombre": "Stadler FLIRT 4",
+          "workshop_ref": "Stadler FLIRT 4 (D)EMU",
+          "papel": "principal",
+          "unidades_estimadas": 17
+        },
+        {
+          "unidad_id": "civity",
+          "nombre": "CAF Civity",
+          "workshop_ref": "BR Class 397 Civity",
+          "papel": "secundario",
+          "unidades_estimadas": 20
+        },
+        {
+          "unidad_id": "kiss160",
+          "nombre": "KISS 160",
+          "workshop_ref": "CH MU RABe 511 KISS 160",
+          "papel": "secundario",
+          "unidades_estimadas": 27
+        },
+        {
+          "unidad_id": "desiro_classic",
+          "nombre": "Desiro Classic",
+          "workshop_ref": "AT MU Rh 5022 Desiro Classic",
+          "papel": "secundario",
+          "unidades_estimadas": 34
+        }
+      ],
+      "logo": "assets/logos/elb.svg"
+    },
+    {
+      "id": "shc",
+      "nombre": "Schleswig Conexión",
+      "nombre_corto": "SHC",
+      "tipo": "regional",
+      "competencia": "dominante",
+      "color": "#7BCCD2",
+      "color_secundario": "#EFF6FF",
+      "lands": [
+        "sh",
+        "hh"
+      ],
+      "sede": "Kiel",
+      "eslogan": "Dos mares, una red",
+      "servicios": [
+        "re",
+        "rb",
+        "tur",
+        "ae"
+      ],
+      "logo_estilo": "ola",
+      "flota": [
+        {
+          "unidad_id": "kiss200",
+          "nombre": "Stadler KISS 200",
+          "workshop_ref": "Stadler KISS 200 / AT MU Rh 4010 KISS 200",
+          "papel": "secundario",
+          "unidades_estimadas": 47
+        },
+        {
+          "unidad_id": "desiro_ml",
+          "nombre": "Desiro ML",
+          "workshop_ref": "AT MU Rh 4746 Desiro ML",
+          "papel": "principal",
+          "unidades_estimadas": 18
+        },
+        {
+          "unidad_id": "regio2n",
+          "nombre": "Regio 2N Omneo",
+          "workshop_ref": "FR MU Z 55500 Regio 2N",
+          "papel": "secundario",
+          "unidades_estimadas": 21
+        },
+        {
+          "unidad_id": "gtw_e",
+          "nombre": "GTW Eléctrico",
+          "workshop_ref": "NL MU GTW Electric / AT MU Rh 4062",
+          "papel": "secundario",
+          "unidades_estimadas": 28
+        },
+        {
+          "unidad_id": "scenic",
+          "nombre": "Composición panorámica",
+          "workshop_ref": "CH Coach Glacier Express / scenic coaches",
+          "papel": "secundario",
+          "unidades_estimadas": 35
+        },
+        {
+          "unidad_id": "flirt_ch",
+          "nombre": "FLIRT Suizo",
+          "workshop_ref": "CH MU RABe 522/523 FLIRT",
+          "papel": "principal",
+          "unidades_estimadas": 46
+        }
+      ],
+      "logo": "assets/logos/shc.svg"
+    },
+    {
+      "id": "hol",
+      "nombre": "Holstein Costero",
+      "nombre_corto": "HCO",
+      "tipo": "regional",
+      "competencia": "competitiva",
+      "color": "#0D9488",
+      "color_secundario": "#FFFFFF",
+      "lands": [
+        "sh"
+      ],
+      "sede": "Lübeck",
+      "eslogan": "Hanseáticos sobre raíles",
+      "servicios": [
+        "re",
+        "rb",
+        "tur"
+      ],
+      "logo_estilo": "ancla",
+      "flota": [
+        {
+          "unidad_id": "flirt3",
+          "nombre": "Stadler FLIRT 3",
+          "workshop_ref": "NL MU FLIRT 3",
+          "papel": "principal",
+          "unidades_estimadas": 52
+        },
+        {
+          "unidad_id": "coradia",
+          "nombre": "Alstom Coradia Nordic",
+          "workshop_ref": "Alstom Coradia Nordic",
+          "papel": "principal",
+          "unidades_estimadas": 19
+        },
+        {
+          "unidad_id": "virm",
+          "nombre": "VIRM Doble Piso",
+          "workshop_ref": "NL MU VIRM",
+          "papel": "secundario",
+          "unidades_estimadas": 22
+        },
+        {
+          "unidad_id": "talent",
+          "nombre": "Talent",
+          "workshop_ref": "AT MU Rh 4024 Talent",
+          "papel": "secundario",
+          "unidades_estimadas": 29
+        },
+        {
+          "unidad_id": "flirt4",
+          "nombre": "Stadler FLIRT 4",
+          "workshop_ref": "Stadler FLIRT 4 (D)EMU",
+          "papel": "principal",
+          "unidades_estimadas": 40
+        }
+      ],
+      "logo": "assets/logos/hol.svg"
+    },
+    {
+      "id": "tur",
+      "nombre": "Turingia Vías",
+      "nombre_corto": "TUV",
+      "tipo": "regional",
+      "competencia": "dominante",
+      "color": "#A242A5",
+      "color_secundario": "#FEF3C7",
+      "lands": [
+        "th"
+      ],
+      "sede": "Erfurt",
+      "eslogan": "El bosque en horario",
+      "servicios": [
+        "re",
+        "rb",
+        "ir",
+        "rl"
+      ],
+      "logo_estilo": "arbol",
+      "flota": [
+        {
+          "unidad_id": "lint",
+          "nombre": "LINT 41",
+          "workshop_ref": "NL MU LINT 41H",
+          "papel": "principal",
+          "unidades_estimadas": 53
+        },
+        {
+          "unidad_id": "twindexx",
+          "nombre": "Twindexx Swiss Express",
+          "workshop_ref": "CH MU RABe 502 Twindexx",
+          "papel": "principal",
+          "unidades_estimadas": 20
+        },
+        {
+          "unidad_id": "desiro_dd",
+          "nombre": "Desiro Doble Piso",
+          "workshop_ref": "CH MU RABe 514 Desiro Double Deck",
+          "papel": "secundario",
+          "unidades_estimadas": 23
+        },
+        {
+          "unidad_id": "m7",
+          "nombre": "M7 Doble Piso",
+          "workshop_ref": "BE Coach / EMU M7",
+          "papel": "principal",
+          "unidades_estimadas": 34
+        },
+        {
+          "unidad_id": "gtw_d",
+          "nombre": "GTW Diésel",
+          "workshop_ref": "NL MU GTW Diesel / AT MU Rh 5063",
+          "papel": "principal",
+          "unidades_estimadas": 41
+        },
+        {
+          "unidad_id": "icetd",
+          "nombre": "ICE TD",
+          "workshop_ref": "DE MU ICE TD",
+          "papel": "secundario",
+          "unidades_estimadas": 44
+        }
+      ],
+      "logo": "assets/logos/tur.svg"
+    },
+    {
+      "id": "thu",
+      "nombre": "Turingios del Sur",
+      "nombre_corto": "TDS",
+      "tipo": "regional",
+      "competencia": "competitiva",
+      "color": "#9A3412",
+      "color_secundario": "#FFF7ED",
+      "lands": [
+        "th",
+        "by"
+      ],
+      "sede": "Suhl",
+      "eslogan": "Entre Turingia y Baviera",
+      "servicios": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "logo_estilo": "valle",
+      "flota": [
+        {
+          "unidad_id": "wink",
+          "nombre": "FLIRT WINK",
+          "workshop_ref": "NL MU FLIRT WINK",
+          "papel": "principal",
+          "unidades_estimadas": 54
+        },
+        {
+          "unidad_id": "lint",
+          "nombre": "LINT 41",
+          "workshop_ref": "NL MU LINT 41H",
+          "papel": "principal",
+          "unidades_estimadas": 21
+        },
+        {
+          "unidad_id": "flirt_ch",
+          "nombre": "FLIRT Suizo",
+          "workshop_ref": "CH MU RABe 522/523 FLIRT",
+          "papel": "principal",
+          "unidades_estimadas": 28
+        },
+        {
+          "unidad_id": "regiolis",
+          "nombre": "Régiolis",
+          "workshop_ref": "FR MU B 84500 Régiolis Regional",
+          "papel": "principal",
+          "unidades_estimadas": 35
+        }
+      ],
+      "logo": "assets/logos/thu.svg"
+    },
+    {
+      "id": "sbe",
+      "nombre": "Cercanías Capital",
+      "nombre_corto": "CCA",
+      "tipo": "metropolitano",
+      "competencia": "dominante",
+      "color": "#0369A1",
+      "color_secundario": "#FFFFFF",
+      "lands": [
+        "be",
+        "bb"
+      ],
+      "sede": "Berlín",
+      "eslogan": "La red que late con Berlín",
+      "servicios": [
+        "s",
+        "or",
+        "mc",
+        "ae"
+      ],
+      "logo_estilo": "anillo",
+      "flota": [
+        {
+          "unidad_id": "kiss160",
+          "nombre": "KISS 160",
+          "workshop_ref": "CH MU RABe 511 KISS 160",
+          "papel": "secundario",
+          "unidades_estimadas": 51
+        },
+        {
+          "unidad_id": "flirt4",
+          "nombre": "Stadler FLIRT 4",
+          "workshop_ref": "Stadler FLIRT 4 (D)EMU",
+          "papel": "secundario",
+          "unidades_estimadas": 18
+        },
+        {
+          "unidad_id": "m7",
+          "nombre": "M7 Doble Piso",
+          "workshop_ref": "BE Coach / EMU M7",
+          "papel": "secundario",
+          "unidades_estimadas": 25
+        },
+        {
+          "unidad_id": "kiss200",
+          "nombre": "Stadler KISS 200",
+          "workshop_ref": "Stadler KISS 200 / AT MU Rh 4010 KISS 200",
+          "papel": "secundario",
+          "unidades_estimadas": 32
+        },
+        {
+          "unidad_id": "coradia",
+          "nombre": "Alstom Coradia Nordic",
+          "workshop_ref": "Alstom Coradia Nordic",
+          "papel": "secundario",
+          "unidades_estimadas": 39
+        },
+        {
+          "unidad_id": "z2n",
+          "nombre": "Z 24500 2N NG",
+          "workshop_ref": "FR MU Z 24500 2N NG",
+          "papel": "secundario",
+          "unidades_estimadas": 46
+        }
+      ],
+      "logo": "assets/logos/sbe.svg"
+    },
+    {
+      "id": "shh",
+      "nombre": "Cercanías Hanseáticas",
+      "nombre_corto": "CHA",
+      "tipo": "metropolitano",
+      "competencia": "dominante",
+      "color": "#172554",
+      "color_secundario": "#FDE68A",
+      "lands": [
+        "hh",
+        "sh",
+        "ni"
+      ],
+      "sede": "Hamburgo",
+      "eslogan": "Puerto y periferia al unísono",
+      "servicios": [
+        "s",
+        "or",
+        "ae",
+        "mc"
+      ],
+      "logo_estilo": "ancla",
+      "flota": [
+        {
+          "unidad_id": "z2n",
+          "nombre": "Z 24500 2N NG",
+          "workshop_ref": "FR MU Z 24500 2N NG",
+          "papel": "secundario",
+          "unidades_estimadas": 12
+        },
+        {
+          "unidad_id": "desiro_dd",
+          "nombre": "Desiro Doble Piso",
+          "workshop_ref": "CH MU RABe 514 Desiro Double Deck",
+          "papel": "secundario",
+          "unidades_estimadas": 19
+        },
+        {
+          "unidad_id": "mi2n",
+          "nombre": "MI2N Altéo",
+          "workshop_ref": "FR MU Z 1500 MI2N Altéo",
+          "papel": "principal",
+          "unidades_estimadas": 30
+        },
+        {
+          "unidad_id": "desiro_ml",
+          "nombre": "Desiro ML",
+          "workshop_ref": "AT MU Rh 4746 Desiro ML",
+          "papel": "secundario",
+          "unidades_estimadas": 33
+        },
+        {
+          "unidad_id": "virm",
+          "nombre": "VIRM Doble Piso",
+          "workshop_ref": "NL MU VIRM",
+          "papel": "secundario",
+          "unidades_estimadas": 40
+        },
+        {
+          "unidad_id": "flirt3",
+          "nombre": "Stadler FLIRT 3",
+          "workshop_ref": "NL MU FLIRT 3",
+          "papel": "secundario",
+          "unidades_estimadas": 47
+        }
+      ],
+      "logo": "assets/logos/shh.svg"
+    },
+    {
+      "id": "smu",
+      "nombre": "Cercanías Isar",
+      "nombre_corto": "CIS",
+      "tipo": "metropolitano",
+      "competencia": "dominante",
+      "color": "#AA90A7",
+      "color_secundario": "#0B3D91",
+      "lands": [
+        "by"
+      ],
+      "sede": "Múnich",
+      "eslogan": "Múnich en minutos",
+      "servicios": [
+        "s",
+        "or",
+        "ae",
+        "mc"
+      ],
+      "logo_estilo": "circulos",
+      "flota": [
+        {
+          "unidad_id": "flirt3",
+          "nombre": "Stadler FLIRT 3",
+          "workshop_ref": "NL MU FLIRT 3",
+          "papel": "secundario",
+          "unidades_estimadas": 13
+        },
+        {
+          "unidad_id": "kiss160",
+          "nombre": "KISS 160",
+          "workshop_ref": "CH MU RABe 511 KISS 160",
+          "papel": "secundario",
+          "unidades_estimadas": 20
+        },
+        {
+          "unidad_id": "flirt4",
+          "nombre": "Stadler FLIRT 4",
+          "workshop_ref": "Stadler FLIRT 4 (D)EMU",
+          "papel": "secundario",
+          "unidades_estimadas": 27
+        },
+        {
+          "unidad_id": "m7",
+          "nombre": "M7 Doble Piso",
+          "workshop_ref": "BE Coach / EMU M7",
+          "papel": "secundario",
+          "unidades_estimadas": 34
+        },
+        {
+          "unidad_id": "kiss200",
+          "nombre": "Stadler KISS 200",
+          "workshop_ref": "Stadler KISS 200 / AT MU Rh 4010 KISS 200",
+          "papel": "secundario",
+          "unidades_estimadas": 41
+        },
+        {
+          "unidad_id": "coradia",
+          "nombre": "Alstom Coradia Nordic",
+          "workshop_ref": "Alstom Coradia Nordic",
+          "papel": "secundario",
+          "unidades_estimadas": 48
+        }
+      ],
+      "logo": "assets/logos/smu.svg"
+    },
+    {
+      "id": "sfr",
+      "nombre": "Cercanías del Meno",
+      "nombre_corto": "CDM",
+      "tipo": "metropolitano",
+      "competencia": "dominante",
+      "color": "#E11D48",
+      "color_secundario": "#FFFFFF",
+      "lands": [
+        "he"
+      ],
+      "sede": "Fráncfort del Meno",
+      "eslogan": "El nudo metropolitano",
+      "servicios": [
+        "s",
+        "ae",
+        "mc",
+        "tt"
+      ],
+      "logo_estilo": "malla",
+      "flota": [
+        {
+          "unidad_id": "flexity_swift",
+          "nombre": "Flexity Swift",
+          "workshop_ref": "SE Tram SL A32 Bombardier Flexity Swift",
+          "papel": "secundario",
+          "unidades_estimadas": 14
+        },
+        {
+          "unidad_id": "desiro_ml",
+          "nombre": "Desiro ML",
+          "workshop_ref": "AT MU Rh 4746 Desiro ML",
+          "papel": "secundario",
+          "unidades_estimadas": 21
+        },
+        {
+          "unidad_id": "virm",
+          "nombre": "VIRM Doble Piso",
+          "workshop_ref": "NL MU VIRM",
+          "papel": "secundario",
+          "unidades_estimadas": 28
+        },
+        {
+          "unidad_id": "flexity",
+          "nombre": "Bombardier Flexity",
+          "workshop_ref": "Bombardier Flexity / Flexity Classic",
+          "papel": "secundario",
+          "unidades_estimadas": 35
+        },
+        {
+          "unidad_id": "flirt3",
+          "nombre": "Stadler FLIRT 3",
+          "workshop_ref": "NL MU FLIRT 3",
+          "papel": "secundario",
+          "unidades_estimadas": 42
+        },
+        {
+          "unidad_id": "kiss160",
+          "nombre": "KISS 160",
+          "workshop_ref": "CH MU RABe 511 KISS 160",
+          "papel": "secundario",
+          "unidades_estimadas": 49
+        }
+      ],
+      "logo": "assets/logos/sfr.svg"
+    },
+    {
+      "id": "sst",
+      "nombre": "Cercanías Suabia",
+      "nombre_corto": "CSU",
+      "tipo": "metropolitano",
+      "competencia": "dominante",
+      "color": "#F97316",
+      "color_secundario": "#1F2937",
+      "lands": [
+        "bw"
+      ],
+      "sede": "Stuttgart",
+      "eslogan": "Valle de Stuttgart enlazado",
+      "servicios": [
+        "s",
+        "tt",
+        "or",
+        "ae"
+      ],
+      "logo_estilo": "hex",
+      "flota": [
+        {
+          "unidad_id": "flirt4",
+          "nombre": "Stadler FLIRT 4",
+          "workshop_ref": "Stadler FLIRT 4 (D)EMU",
+          "papel": "secundario",
+          "unidades_estimadas": 15
+        },
+        {
+          "unidad_id": "m7",
+          "nombre": "M7 Doble Piso",
+          "workshop_ref": "BE Coach / EMU M7",
+          "papel": "secundario",
+          "unidades_estimadas": 22
+        },
+        {
+          "unidad_id": "talent",
+          "nombre": "Talent",
+          "workshop_ref": "AT MU Rh 4024 Talent",
+          "papel": "secundario",
+          "unidades_estimadas": 29
+        },
+        {
+          "unidad_id": "kiss200",
+          "nombre": "Stadler KISS 200",
+          "workshop_ref": "Stadler KISS 200 / AT MU Rh 4010 KISS 200",
+          "papel": "secundario",
+          "unidades_estimadas": 36
+        },
+        {
+          "unidad_id": "coradia",
+          "nombre": "Alstom Coradia Nordic",
+          "workshop_ref": "Alstom Coradia Nordic",
+          "papel": "secundario",
+          "unidades_estimadas": 43
+        },
+        {
+          "unidad_id": "z2n",
+          "nombre": "Z 24500 2N NG",
+          "workshop_ref": "FR MU Z 24500 2N NG",
+          "papel": "secundario",
+          "unidades_estimadas": 50
+        }
+      ],
+      "logo": "assets/logos/sst.svg"
+    },
+    {
+      "id": "sco",
+      "nombre": "Cercanías Colonia-Bonn",
+      "nombre_corto": "CCB",
+      "tipo": "metropolitano",
+      "competencia": "dominante",
+      "color": "#EF4444",
+      "color_secundario": "#FFFFFF",
+      "lands": [
+        "nw"
+      ],
+      "sede": "Colonia",
+      "eslogan": "Dos ciudades, una red",
+      "servicios": [
+        "s",
+        "tt",
+        "mc",
+        "ae"
+      ],
+      "logo_estilo": "puente",
+      "flota": [
+        {
+          "unidad_id": "desiro_dd",
+          "nombre": "Desiro Doble Piso",
+          "workshop_ref": "CH MU RABe 514 Desiro Double Deck",
+          "papel": "secundario",
+          "unidades_estimadas": 16
+        },
+        {
+          "unidad_id": "mi2n",
+          "nombre": "MI2N Altéo",
+          "workshop_ref": "FR MU Z 1500 MI2N Altéo",
+          "papel": "secundario",
+          "unidades_estimadas": 23
+        },
+        {
+          "unidad_id": "flexity_swift",
+          "nombre": "Flexity Swift",
+          "workshop_ref": "SE Tram SL A32 Bombardier Flexity Swift",
+          "papel": "secundario",
+          "unidades_estimadas": 30
+        },
+        {
+          "unidad_id": "desiro_ml",
+          "nombre": "Desiro ML",
+          "workshop_ref": "AT MU Rh 4746 Desiro ML",
+          "papel": "secundario",
+          "unidades_estimadas": 37
+        },
+        {
+          "unidad_id": "virm",
+          "nombre": "VIRM Doble Piso",
+          "workshop_ref": "NL MU VIRM",
+          "papel": "secundario",
+          "unidades_estimadas": 44
+        },
+        {
+          "unidad_id": "flexity",
+          "nombre": "Bombardier Flexity",
+          "workshop_ref": "Bombardier Flexity / Flexity Classic",
+          "papel": "secundario",
+          "unidades_estimadas": 51
+        }
+      ],
+      "logo": "assets/logos/sco.svg"
+    },
+    {
+      "id": "srh",
+      "nombre": "Cercanías Rin-Ruhr",
+      "nombre_corto": "CRR",
+      "tipo": "metropolitano",
+      "competencia": "competitiva",
+      "color": "#475569",
+      "color_secundario": "#E39A00",
+      "lands": [
+        "nw"
+      ],
+      "sede": "Dortmund",
+      "eslogan": "La metrópolis lineal",
+      "servicios": [
+        "s",
+        "or",
+        "mc",
+        "re"
+      ],
+      "logo_estilo": "barra",
+      "flota": [
+        {
+          "unidad_id": "kiss160",
+          "nombre": "KISS 160",
+          "workshop_ref": "CH MU RABe 511 KISS 160",
+          "papel": "principal",
+          "unidades_estimadas": 21
+        },
+        {
+          "unidad_id": "flirt_ch",
+          "nombre": "FLIRT Suizo",
+          "workshop_ref": "CH MU RABe 522/523 FLIRT",
+          "papel": "secundario",
+          "unidades_estimadas": 24
+        },
+        {
+          "unidad_id": "flirt4",
+          "nombre": "Stadler FLIRT 4",
+          "workshop_ref": "Stadler FLIRT 4 (D)EMU",
+          "papel": "principal",
+          "unidades_estimadas": 35
+        },
+        {
+          "unidad_id": "m7",
+          "nombre": "M7 Doble Piso",
+          "workshop_ref": "BE Coach / EMU M7",
+          "papel": "principal",
+          "unidades_estimadas": 42
+        },
+        {
+          "unidad_id": "twindexx",
+          "nombre": "Twindexx Swiss Express",
+          "workshop_ref": "CH MU RABe 502 Twindexx",
+          "papel": "secundario",
+          "unidades_estimadas": 45
+        },
+        {
+          "unidad_id": "kiss200",
+          "nombre": "Stadler KISS 200",
+          "workshop_ref": "Stadler KISS 200 / AT MU Rh 4010 KISS 200",
+          "papel": "principal",
+          "unidades_estimadas": 16
+        }
+      ],
+      "logo": "assets/logos/srh.svg"
+    },
+    {
+      "id": "sdn",
+      "nombre": "Cercanías del Elba",
+      "nombre_corto": "CDE",
+      "tipo": "metropolitano",
+      "competencia": "dominante",
+      "color": "#BBCB45",
+      "color_secundario": "#111827",
+      "lands": [
+        "sn"
+      ],
+      "sede": "Dresde",
+      "eslogan": "Dresde y alrededores",
+      "servicios": [
+        "s",
+        "mc",
+        "tt"
+      ],
+      "logo_estilo": "rio",
+      "flota": [
+        {
+          "unidad_id": "z2n",
+          "nombre": "Z 24500 2N NG",
+          "workshop_ref": "FR MU Z 24500 2N NG",
+          "papel": "secundario",
+          "unidades_estimadas": 18
+        },
+        {
+          "unidad_id": "tram_train",
+          "nombre": "Stadler Tram-Train",
+          "workshop_ref": "BR Class 398 / tram-train Stadler",
+          "papel": "secundario",
+          "unidades_estimadas": 25
+        },
+        {
+          "unidad_id": "desiro_dd",
+          "nombre": "Desiro Doble Piso",
+          "workshop_ref": "CH MU RABe 514 Desiro Double Deck",
+          "papel": "secundario",
+          "unidades_estimadas": 32
+        },
+        {
+          "unidad_id": "mi2n",
+          "nombre": "MI2N Altéo",
+          "workshop_ref": "FR MU Z 1500 MI2N Altéo",
+          "papel": "secundario",
+          "unidades_estimadas": 39
+        },
+        {
+          "unidad_id": "flexity_swift",
+          "nombre": "Flexity Swift",
+          "workshop_ref": "SE Tram SL A32 Bombardier Flexity Swift",
+          "papel": "secundario",
+          "unidades_estimadas": 46
+        }
+      ],
+      "logo": "assets/logos/sdn.svg"
+    },
+    {
+      "id": "slp",
+      "nombre": "Cercanías Sajona Norte",
+      "nombre_corto": "CSN",
+      "tipo": "metropolitano",
+      "competencia": "dominante",
+      "color": "#2563EB",
+      "color_secundario": "#EFF6FF",
+      "lands": [
+        "sn",
+        "st"
+      ],
+      "sede": "Leipzig",
+      "eslogan": "Leipzig como hub",
+      "servicios": [
+        "s",
+        "mc",
+        "ae"
+      ],
+      "logo_estilo": "circulos",
+      "flota": [
+        {
+          "unidad_id": "mi2n",
+          "nombre": "MI2N Altéo",
+          "workshop_ref": "FR MU Z 1500 MI2N Altéo",
+          "papel": "secundario",
+          "unidades_estimadas": 19
+        },
+        {
+          "unidad_id": "desiro_ml",
+          "nombre": "Desiro ML",
+          "workshop_ref": "AT MU Rh 4746 Desiro ML",
+          "papel": "secundario",
+          "unidades_estimadas": 26
+        },
+        {
+          "unidad_id": "virm",
+          "nombre": "VIRM Doble Piso",
+          "workshop_ref": "NL MU VIRM",
+          "papel": "secundario",
+          "unidades_estimadas": 33
+        },
+        {
+          "unidad_id": "flirt3",
+          "nombre": "Stadler FLIRT 3",
+          "workshop_ref": "NL MU FLIRT 3",
+          "papel": "secundario",
+          "unidades_estimadas": 40
+        },
+        {
+          "unidad_id": "kiss160",
+          "nombre": "KISS 160",
+          "workshop_ref": "CH MU RABe 511 KISS 160",
+          "papel": "secundario",
+          "unidades_estimadas": 47
+        }
+      ],
+      "logo": "assets/logos/slp.svg"
+    },
+    {
+      "id": "sha",
+      "nombre": "Cercanías Hannover",
+      "nombre_corto": "CHN",
+      "tipo": "metropolitano",
+      "competencia": "dominante",
+      "color": "#169CC8",
+      "color_secundario": "#FFFFFF",
+      "lands": [
+        "ni"
+      ],
+      "sede": "Hannover",
+      "eslogan": "La estrella de Baja Sajonia",
+      "servicios": [
+        "s",
+        "mc",
+        "ae"
+      ],
+      "logo_estilo": "estrella",
+      "flota": [
+        {
+          "unidad_id": "flirt4",
+          "nombre": "Stadler FLIRT 4",
+          "workshop_ref": "Stadler FLIRT 4 (D)EMU",
+          "papel": "secundario",
+          "unidades_estimadas": 20
+        },
+        {
+          "unidad_id": "m7",
+          "nombre": "M7 Doble Piso",
+          "workshop_ref": "BE Coach / EMU M7",
+          "papel": "secundario",
+          "unidades_estimadas": 27
+        },
+        {
+          "unidad_id": "kiss200",
+          "nombre": "Stadler KISS 200",
+          "workshop_ref": "Stadler KISS 200 / AT MU Rh 4010 KISS 200",
+          "papel": "secundario",
+          "unidades_estimadas": 34
+        },
+        {
+          "unidad_id": "coradia",
+          "nombre": "Alstom Coradia Nordic",
+          "workshop_ref": "Alstom Coradia Nordic",
+          "papel": "secundario",
+          "unidades_estimadas": 41
+        },
+        {
+          "unidad_id": "z2n",
+          "nombre": "Z 24500 2N NG",
+          "workshop_ref": "FR MU Z 24500 2N NG",
+          "papel": "secundario",
+          "unidades_estimadas": 48
+        }
+      ],
+      "logo": "assets/logos/sha.svg"
+    },
+    {
+      "id": "snr",
+      "nombre": "Cercanías Núremberg",
+      "nombre_corto": "CNU",
+      "tipo": "metropolitano",
+      "competencia": "dominante",
+      "color": "#1DBD63",
+      "color_secundario": "#FFF1F2",
+      "lands": [
+        "by"
+      ],
+      "sede": "Núremberg",
+      "eslogan": "Franconia metropolitana",
+      "servicios": [
+        "s",
+        "u",
+        "mc"
+      ],
+      "logo_estilo": "hex",
+      "flota": [
+        {
+          "unidad_id": "desiro_dd",
+          "nombre": "Desiro Doble Piso",
+          "workshop_ref": "CH MU RABe 514 Desiro Double Deck",
+          "papel": "secundario",
+          "unidades_estimadas": 21
+        },
+        {
+          "unidad_id": "mi2n",
+          "nombre": "MI2N Altéo",
+          "workshop_ref": "FR MU Z 1500 MI2N Altéo",
+          "papel": "secundario",
+          "unidades_estimadas": 28
+        },
+        {
+          "unidad_id": "flirt4",
+          "nombre": "Stadler FLIRT 4",
+          "workshop_ref": "Stadler FLIRT 4 (D)EMU",
+          "papel": "secundario",
+          "unidades_estimadas": 35
+        },
+        {
+          "unidad_id": "m7",
+          "nombre": "M7 Doble Piso",
+          "workshop_ref": "BE Coach / EMU M7",
+          "papel": "secundario",
+          "unidades_estimadas": 42
+        },
+        {
+          "unidad_id": "metro_mx",
+          "nombre": "Metro MX / Siemens",
+          "workshop_ref": "NO Metro MX3000 / BE Metro MIVB Mx",
+          "papel": "secundario",
+          "unidades_estimadas": 49
+        }
+      ],
+      "logo": "assets/logos/snr.svg"
+    },
+    {
+      "id": "skl",
+      "nombre": "Cercanías del Rin Medio",
+      "nombre_corto": "CRM",
+      "tipo": "metropolitano",
+      "competencia": "competitiva",
+      "color": "#0F766E",
+      "color_secundario": "#F0FDFA",
+      "lands": [
+        "rp",
+        "he"
+      ],
+      "sede": "Maguncia",
+      "eslogan": "Mainz-Wiesbaden-Fráncfort al detalle",
+      "servicios": [
+        "s",
+        "tt",
+        "mc"
+      ],
+      "logo_estilo": "rio",
+      "flota": [
+        {
+          "unidad_id": "m7",
+          "nombre": "M7 Doble Piso",
+          "workshop_ref": "BE Coach / EMU M7",
+          "papel": "secundario",
+          "unidades_estimadas": 22
+        },
+        {
+          "unidad_id": "talent",
+          "nombre": "Talent",
+          "workshop_ref": "AT MU Rh 4024 Talent",
+          "papel": "secundario",
+          "unidades_estimadas": 29
+        },
+        {
+          "unidad_id": "kiss200",
+          "nombre": "Stadler KISS 200",
+          "workshop_ref": "Stadler KISS 200 / AT MU Rh 4010 KISS 200",
+          "papel": "secundario",
+          "unidades_estimadas": 36
+        },
+        {
+          "unidad_id": "coradia",
+          "nombre": "Alstom Coradia Nordic",
+          "workshop_ref": "Alstom Coradia Nordic",
+          "papel": "secundario",
+          "unidades_estimadas": 43
+        },
+        {
+          "unidad_id": "z2n",
+          "nombre": "Z 24500 2N NG",
+          "workshop_ref": "FR MU Z 24500 2N NG",
+          "papel": "secundario",
+          "unidades_estimadas": 50
+        }
+      ],
+      "logo": "assets/logos/skl.svg"
+    },
+    {
+      "id": "ube",
+      "nombre": "Metro Capital",
+      "nombre_corto": "MCA",
+      "tipo": "urbano",
+      "competencia": "dominante",
+      "color": "#F59E0B",
+      "color_secundario": "#111827",
+      "lands": [
+        "be"
+      ],
+      "sede": "Berlín",
+      "eslogan": "Bajo la ciudad, sobre el tiempo",
+      "servicios": [
+        "u"
+      ],
+      "logo_estilo": "u",
+      "flota": [
+        {
+          "unidad_id": "metro_mp",
+          "nombre": "Metro MP89/MP05",
+          "workshop_ref": "Paris Metro MP 89 / MP 05",
+          "papel": "secundario",
+          "unidades_estimadas": 23
+        },
+        {
+          "unidad_id": "metro_mx",
+          "nombre": "Metro MX / Siemens",
+          "workshop_ref": "NO Metro MX3000 / BE Metro MIVB Mx",
+          "papel": "secundario",
+          "unidades_estimadas": 30
+        }
+      ],
+      "logo": "assets/logos/ube.svg"
+    },
+    {
+      "id": "umu",
+      "nombre": "Metro Isar",
+      "nombre_corto": "MIS",
+      "tipo": "urbano",
+      "competencia": "dominante",
+      "color": "#0065B0",
+      "color_secundario": "#FFFFFF",
+      "lands": [
+        "by"
+      ],
+      "sede": "Múnich",
+      "eslogan": "Profundidad bávara",
+      "servicios": [
+        "u"
+      ],
+      "logo_estilo": "u",
+      "flota": [
+        {
+          "unidad_id": "metro_mx",
+          "nombre": "Metro MX / Siemens",
+          "workshop_ref": "NO Metro MX3000 / BE Metro MIVB Mx",
+          "papel": "secundario",
+          "unidades_estimadas": 24
+        },
+        {
+          "unidad_id": "metro_mp",
+          "nombre": "Metro MP89/MP05",
+          "workshop_ref": "Paris Metro MP 89 / MP 05",
+          "papel": "secundario",
+          "unidades_estimadas": 31
+        }
+      ],
+      "logo": "assets/logos/umu.svg"
+    },
+    {
+      "id": "uhh",
+      "nombre": "Metro Hanseático",
+      "nombre_corto": "MHA",
+      "tipo": "urbano",
+      "competencia": "dominante",
+      "color": "#E30613",
+      "color_secundario": "#FFFFFF",
+      "lands": [
+        "hh"
+      ],
+      "sede": "Hamburgo",
+      "eslogan": "Túneles con brisa marina",
+      "servicios": [
+        "u"
+      ],
+      "logo_estilo": "u",
+      "flota": [
+        {
+          "unidad_id": "metro_mp",
+          "nombre": "Metro MP89/MP05",
+          "workshop_ref": "Paris Metro MP 89 / MP 05",
+          "papel": "secundario",
+          "unidades_estimadas": 25
+        },
+        {
+          "unidad_id": "metro_mx",
+          "nombre": "Metro MX / Siemens",
+          "workshop_ref": "NO Metro MX3000 / BE Metro MIVB Mx",
+          "papel": "secundario",
+          "unidades_estimadas": 32
+        }
+      ],
+      "logo": "assets/logos/uhh.svg"
+    },
+    {
+      "id": "unu",
+      "nombre": "Metro Franconia",
+      "nombre_corto": "MFRU",
+      "tipo": "urbano",
+      "competencia": "dominante",
+      "color": "#211BD5",
+      "color_secundario": "#FFFFFF",
+      "lands": [
+        "by"
+      ],
+      "sede": "Núremberg",
+      "eslogan": "La U de Núremberg",
+      "servicios": [
+        "u"
+      ],
+      "logo_estilo": "u",
+      "flota": [
+        {
+          "unidad_id": "metro_mx",
+          "nombre": "Metro MX / Siemens",
+          "workshop_ref": "NO Metro MX3000 / BE Metro MIVB Mx",
+          "papel": "secundario",
+          "unidades_estimadas": 26
+        },
+        {
+          "unidad_id": "metro_mp",
+          "nombre": "Metro MP89/MP05",
+          "workshop_ref": "Paris Metro MP 89 / MP 05",
+          "papel": "secundario",
+          "unidades_estimadas": 33
+        }
+      ],
+      "logo": "assets/logos/unu.svg"
+    },
+    {
+      "id": "tbe",
+      "nombre": "Tranvías Capital",
+      "nombre_corto": "TCA",
+      "tipo": "urbano",
+      "competencia": "dominante",
+      "color": "#71493B",
+      "color_secundario": "#FFFFFF",
+      "lands": [
+        "be"
+      ],
+      "sede": "Berlín",
+      "eslogan": "La superficie también mueve",
+      "servicios": [
+        "t"
+      ],
+      "logo_estilo": "t",
+      "flota": [
+        {
+          "unidad_id": "citadis",
+          "nombre": "Alstom Citadis",
+          "workshop_ref": "Alstom Citadis 401/402/502",
+          "papel": "secundario",
+          "unidades_estimadas": 27
+        }
+      ],
+      "logo": "assets/logos/tbe.svg"
+    },
+    {
+      "id": "tmd",
+      "nombre": "Tranvías Magdeburgo",
+      "nombre_corto": "TMD",
+      "tipo": "urbano",
+      "competencia": "dominante",
+      "color": "#166534",
+      "color_secundario": "#FFFFFF",
+      "lands": [
+        "st"
+      ],
+      "sede": "Magdeburgo",
+      "eslogan": "Elba urbano",
+      "servicios": [
+        "t"
+      ],
+      "logo_estilo": "t",
+      "flota": [
+        {
+          "unidad_id": "tram_train",
+          "nombre": "Stadler Tram-Train",
+          "workshop_ref": "BR Class 398 / tram-train Stadler",
+          "papel": "secundario",
+          "unidades_estimadas": 28
+        }
+      ],
+      "logo": "assets/logos/tmd.svg"
+    },
+    {
+      "id": "tdr",
+      "nombre": "Tranvías Dresde",
+      "nombre_corto": "TDR",
+      "tipo": "urbano",
+      "competencia": "dominante",
+      "color": "#FBBF24",
+      "color_secundario": "#111827",
+      "lands": [
+        "sn"
+      ],
+      "sede": "Dresde",
+      "eslogan": "Amarillo por la ciudad barroca",
+      "servicios": [
+        "t",
+        "tt"
+      ],
+      "logo_estilo": "t",
+      "flota": [
+        {
+          "unidad_id": "tram_train",
+          "nombre": "Stadler Tram-Train",
+          "workshop_ref": "BR Class 398 / tram-train Stadler",
+          "papel": "principal",
+          "unidades_estimadas": 33
+        },
+        {
+          "unidad_id": "flexity_swift",
+          "nombre": "Flexity Swift",
+          "workshop_ref": "SE Tram SL A32 Bombardier Flexity Swift",
+          "papel": "principal",
+          "unidades_estimadas": 40
+        },
+        {
+          "unidad_id": "flexity",
+          "nombre": "Bombardier Flexity",
+          "workshop_ref": "Bombardier Flexity / Flexity Classic",
+          "papel": "principal",
+          "unidades_estimadas": 47
+        },
+        {
+          "unidad_id": "citadis",
+          "nombre": "Alstom Citadis",
+          "workshop_ref": "Alstom Citadis 401/402/502",
+          "papel": "principal",
+          "unidades_estimadas": 54
+        }
+      ],
+      "logo": "assets/logos/tdr.svg"
+    },
+    {
+      "id": "tle",
+      "nombre": "Tranvías Leipzig",
+      "nombre_corto": "TLE",
+      "tipo": "urbano",
+      "competencia": "dominante",
+      "color": "#CFD17D",
+      "color_secundario": "#FFFFFF",
+      "lands": [
+        "sn"
+      ],
+      "sede": "Leipzig",
+      "eslogan": "La red azul de Leipzig",
+      "servicios": [
+        "t"
+      ],
+      "logo_estilo": "t",
+      "flota": [
+        {
+          "unidad_id": "albatros",
+          "nombre": "Tram Albatros",
+          "workshop_ref": "BE Tram De Lijn Albatros",
+          "papel": "secundario",
+          "unidades_estimadas": 30
+        }
+      ],
+      "logo": "assets/logos/tle.svg"
+    },
+    {
+      "id": "tko",
+      "nombre": "Tranvías Colonia",
+      "nombre_corto": "TKO",
+      "tipo": "urbano",
+      "competencia": "dominante",
+      "color": "#CFC919",
+      "color_secundario": "#FFFFFF",
+      "lands": [
+        "nw"
+      ],
+      "sede": "Colonia",
+      "eslogan": "Stadtbahn del Rin",
+      "servicios": [
+        "t",
+        "tt",
+        "u"
+      ],
+      "logo_estilo": "t",
+      "flota": [
+        {
+          "unidad_id": "flexity",
+          "nombre": "Bombardier Flexity",
+          "workshop_ref": "Bombardier Flexity / Flexity Classic",
+          "papel": "principal",
+          "unidades_estimadas": 35
+        },
+        {
+          "unidad_id": "metro_mx",
+          "nombre": "Metro MX / Siemens",
+          "workshop_ref": "NO Metro MX3000 / BE Metro MIVB Mx",
+          "papel": "secundario",
+          "unidades_estimadas": 38
+        },
+        {
+          "unidad_id": "tram_train",
+          "nombre": "Stadler Tram-Train",
+          "workshop_ref": "BR Class 398 / tram-train Stadler",
+          "papel": "principal",
+          "unidades_estimadas": 49
+        },
+        {
+          "unidad_id": "citadis",
+          "nombre": "Alstom Citadis",
+          "workshop_ref": "Alstom Citadis 401/402/502",
+          "papel": "principal",
+          "unidades_estimadas": 16
+        },
+        {
+          "unidad_id": "talent",
+          "nombre": "Talent",
+          "workshop_ref": "AT MU Rh 4024 Talent",
+          "papel": "secundario",
+          "unidades_estimadas": 19
+        }
+      ],
+      "logo": "assets/logos/tko.svg"
+    },
+    {
+      "id": "tst",
+      "nombre": "Tranvías Stuttgart",
+      "nombre_corto": "TST",
+      "tipo": "urbano",
+      "competencia": "dominante",
+      "color": "#356F6A",
+      "color_secundario": "#111827",
+      "lands": [
+        "bw"
+      ],
+      "sede": "Stuttgart",
+      "eslogan": "Zahnrad y Stadtbahn",
+      "servicios": [
+        "t",
+        "tt",
+        "u"
+      ],
+      "logo_estilo": "t",
+      "flota": [
+        {
+          "unidad_id": "albatros",
+          "nombre": "Tram Albatros",
+          "workshop_ref": "BE Tram De Lijn Albatros",
+          "papel": "secundario",
+          "unidades_estimadas": 32
+        },
+        {
+          "unidad_id": "flexity",
+          "nombre": "Bombardier Flexity",
+          "workshop_ref": "Bombardier Flexity / Flexity Classic",
+          "papel": "principal",
+          "unidades_estimadas": 43
+        },
+        {
+          "unidad_id": "metro_mx",
+          "nombre": "Metro MX / Siemens",
+          "workshop_ref": "NO Metro MX3000 / BE Metro MIVB Mx",
+          "papel": "secundario",
+          "unidades_estimadas": 46
+        },
+        {
+          "unidad_id": "tram_train",
+          "nombre": "Stadler Tram-Train",
+          "workshop_ref": "BR Class 398 / tram-train Stadler",
+          "papel": "principal",
+          "unidades_estimadas": 17
+        },
+        {
+          "unidad_id": "citadis",
+          "nombre": "Alstom Citadis",
+          "workshop_ref": "Alstom Citadis 401/402/502",
+          "papel": "principal",
+          "unidades_estimadas": 24
+        }
+      ],
+      "logo": "assets/logos/tst.svg"
+    },
+    {
+      "id": "tha",
+      "nombre": "Tranvías Hannover",
+      "nombre_corto": "THA",
+      "tipo": "urbano",
+      "competencia": "dominante",
+      "color": "#1A4DD1",
+      "color_secundario": "#FEF2F2",
+      "lands": [
+        "ni"
+      ],
+      "sede": "Hannover",
+      "eslogan": "Stadtbahn en estrella",
+      "servicios": [
+        "t",
+        "u"
+      ],
+      "logo_estilo": "estrella",
+      "flota": [
+        {
+          "unidad_id": "flexity",
+          "nombre": "Bombardier Flexity",
+          "workshop_ref": "Bombardier Flexity / Flexity Classic",
+          "papel": "secundario",
+          "unidades_estimadas": 33
+        },
+        {
+          "unidad_id": "metro_mp",
+          "nombre": "Metro MP89/MP05",
+          "workshop_ref": "Paris Metro MP 89 / MP 05",
+          "papel": "secundario",
+          "unidades_estimadas": 40
+        },
+        {
+          "unidad_id": "albatros",
+          "nombre": "Tram Albatros",
+          "workshop_ref": "BE Tram De Lijn Albatros",
+          "papel": "secundario",
+          "unidades_estimadas": 47
+        },
+        {
+          "unidad_id": "flexity_swift",
+          "nombre": "Flexity Swift",
+          "workshop_ref": "SE Tram SL A32 Bombardier Flexity Swift",
+          "papel": "secundario",
+          "unidades_estimadas": 14
+        }
+      ],
+      "logo": "assets/logos/tha.svg"
+    },
+    {
+      "id": "tfr",
+      "nombre": "Tranvías Francfort",
+      "nombre_corto": "TFR",
+      "tipo": "urbano",
+      "competencia": "dominante",
+      "color": "#678382",
+      "color_secundario": "#FFFFFF",
+      "lands": [
+        "he"
+      ],
+      "sede": "Fráncfort del Meno",
+      "eslogan": "Raíles entre rascacielos",
+      "servicios": [
+        "t",
+        "u"
+      ],
+      "logo_estilo": "t",
+      "flota": [
+        {
+          "unidad_id": "albatros",
+          "nombre": "Tram Albatros",
+          "workshop_ref": "BE Tram De Lijn Albatros",
+          "papel": "secundario",
+          "unidades_estimadas": 34
+        },
+        {
+          "unidad_id": "flexity_swift",
+          "nombre": "Flexity Swift",
+          "workshop_ref": "SE Tram SL A32 Bombardier Flexity Swift",
+          "papel": "secundario",
+          "unidades_estimadas": 41
+        },
+        {
+          "unidad_id": "citadis",
+          "nombre": "Alstom Citadis",
+          "workshop_ref": "Alstom Citadis 401/402/502",
+          "papel": "secundario",
+          "unidades_estimadas": 48
+        },
+        {
+          "unidad_id": "metro_mx",
+          "nombre": "Metro MX / Siemens",
+          "workshop_ref": "NO Metro MX3000 / BE Metro MIVB Mx",
+          "papel": "secundario",
+          "unidades_estimadas": 15
+        }
+      ],
+      "logo": "assets/logos/tfr.svg"
+    },
+    {
+      "id": "tmu",
+      "nombre": "Tranvías Múnich",
+      "nombre_corto": "TMU",
+      "tipo": "urbano",
+      "competencia": "dominante",
+      "color": "#0891B2",
+      "color_secundario": "#FFFFFF",
+      "lands": [
+        "by"
+      ],
+      "sede": "Múnich",
+      "eslogan": "Tram por la capital bávara",
+      "servicios": [
+        "t"
+      ],
+      "logo_estilo": "t",
+      "flota": [
+        {
+          "unidad_id": "albatros",
+          "nombre": "Tram Albatros",
+          "workshop_ref": "BE Tram De Lijn Albatros",
+          "papel": "secundario",
+          "unidades_estimadas": 35
+        }
+      ],
+      "logo": "assets/logos/tmu.svg"
+    },
+    {
+      "id": "tdu",
+      "nombre": "Tranvías Düsseldorf",
+      "nombre_corto": "TDU",
+      "tipo": "urbano",
+      "competencia": "dominante",
+      "color": "#69ADD7",
+      "color_secundario": "#FFF1F2",
+      "lands": [
+        "nw"
+      ],
+      "sede": "Düsseldorf",
+      "eslogan": "Rheinbahn en español",
+      "servicios": [
+        "t",
+        "tt"
+      ],
+      "logo_estilo": "rio",
+      "flota": [
+        {
+          "unidad_id": "citadis",
+          "nombre": "Alstom Citadis",
+          "workshop_ref": "Alstom Citadis 401/402/502",
+          "papel": "principal",
+          "unidades_estimadas": 40
+        },
+        {
+          "unidad_id": "talent",
+          "nombre": "Talent",
+          "workshop_ref": "AT MU Rh 4024 Talent",
+          "papel": "secundario",
+          "unidades_estimadas": 43
+        },
+        {
+          "unidad_id": "albatros",
+          "nombre": "Tram Albatros",
+          "workshop_ref": "BE Tram De Lijn Albatros",
+          "papel": "secundario",
+          "unidades_estimadas": 50
+        },
+        {
+          "unidad_id": "tram_train",
+          "nombre": "Stadler Tram-Train",
+          "workshop_ref": "BR Class 398 / tram-train Stadler",
+          "papel": "principal",
+          "unidades_estimadas": 21
+        }
+      ],
+      "logo": "assets/logos/tdu.svg"
+    },
+    {
+      "id": "tbr",
+      "nombre": "Tranvías Bremen",
+      "nombre_corto": "TBR",
+      "tipo": "urbano",
+      "competencia": "dominante",
+      "color": "#BA68B0",
+      "color_secundario": "#FFFFFF",
+      "lands": [
+        "hb"
+      ],
+      "sede": "Bremen",
+      "eslogan": "La ciudad hanseática sobre raíles",
+      "servicios": [
+        "t"
+      ],
+      "logo_estilo": "ancla",
+      "flota": [
+        {
+          "unidad_id": "citadis",
+          "nombre": "Alstom Citadis",
+          "workshop_ref": "Alstom Citadis 401/402/502",
+          "papel": "secundario",
+          "unidades_estimadas": 37
+        }
+      ],
+      "logo": "assets/logos/tbr.svg"
+    },
+    {
+      "id": "tro",
+      "nombre": "Tranvías Rostock",
+      "nombre_corto": "TRO",
+      "tipo": "urbano",
+      "competencia": "dominante",
+      "color": "#D49246",
+      "color_secundario": "#E0F2FE",
+      "lands": [
+        "mv"
+      ],
+      "sede": "Rostock",
+      "eslogan": "Báltico urbano",
+      "servicios": [
+        "t"
+      ],
+      "logo_estilo": "ola",
+      "flota": [
+        {
+          "unidad_id": "tram_train",
+          "nombre": "Stadler Tram-Train",
+          "workshop_ref": "BR Class 398 / tram-train Stadler",
+          "papel": "secundario",
+          "unidades_estimadas": 38
+        }
+      ],
+      "logo": "assets/logos/tro.svg"
+    },
+    {
+      "id": "aex",
+      "nombre": "AeroEnlace Alemania",
+      "nombre_corto": "AEA",
+      "tipo": "especializado",
+      "competencia": "nicho",
+      "color": "#26A874",
+      "color_secundario": "#FDE68A",
+      "lands": [
+        "be",
+        "hh",
+        "by",
+        "he",
+        "nw",
+        "bw",
+        "ni"
+      ],
+      "sede": "Fráncfort del Meno",
+      "eslogan": "Del andén a la puerta de embarque",
+      "servicios": [
+        "ae",
+        "px"
+      ],
+      "logo_estilo": "ala",
+      "flota": [
+        {
+          "unidad_id": "ice3",
+          "nombre": "ICE 3 Velaro D",
+          "workshop_ref": "DE MU ICE 3 Velaro D",
+          "papel": "secundario",
+          "unidades_estimadas": 39
+        }
+      ],
+      "logo": "assets/logos/aex.svg"
+    },
+    {
+      "id": "pan",
+      "nombre": "Panorámicos Alemanes",
+      "nombre_corto": "PAN",
+      "tipo": "especializado",
+      "competencia": "nicho",
+      "color": "#7E1979",
+      "color_secundario": "#FEF3C7",
+      "lands": [
+        "by",
+        "bw",
+        "rp",
+        "sh",
+        "mv",
+        "sn"
+      ],
+      "sede": "Friburgo",
+      "eslogan": "El paisaje es el destino",
+      "servicios": [
+        "tur"
+      ],
+      "logo_estilo": "marco",
+      "flota": [
+        {
+          "unidad_id": "gtw_d",
+          "nombre": "GTW Diésel",
+          "workshop_ref": "NL MU GTW Diesel / AT MU Rh 5063",
+          "papel": "secundario",
+          "unidades_estimadas": 40
+        },
+        {
+          "unidad_id": "scenic",
+          "nombre": "Composición panorámica",
+          "workshop_ref": "CH Coach Glacier Express / scenic coaches",
+          "papel": "secundario",
+          "unidades_estimadas": 47
+        }
+      ],
+      "logo": "assets/logos/pan.svg"
+    },
+    {
+      "id": "riv",
+      "nombre": "Riberas del Rin",
+      "nombre_corto": "RIR",
+      "tipo": "especializado",
+      "competencia": "nicho",
+      "color": "#813AC4",
+      "color_secundario": "#DBEAFE",
+      "lands": [
+        "nw",
+        "rp",
+        "he",
+        "bw"
+      ],
+      "sede": "Coblenza",
+      "eslogan": "Patrimonio sobre el Rin",
+      "servicios": [
+        "tur",
+        "re"
+      ],
+      "logo_estilo": "rio",
+      "flota": [
+        {
+          "unidad_id": "virm",
+          "nombre": "VIRM Doble Piso",
+          "workshop_ref": "NL MU VIRM",
+          "papel": "secundario",
+          "unidades_estimadas": 41
+        },
+        {
+          "unidad_id": "flirt4",
+          "nombre": "Stadler FLIRT 4",
+          "workshop_ref": "Stadler FLIRT 4 (D)EMU",
+          "papel": "secundario",
+          "unidades_estimadas": 48
+        },
+        {
+          "unidad_id": "civity",
+          "nombre": "CAF Civity",
+          "workshop_ref": "BR Class 397 Civity",
+          "papel": "secundario",
+          "unidades_estimadas": 15
+        },
+        {
+          "unidad_id": "kiss160",
+          "nombre": "KISS 160",
+          "workshop_ref": "CH MU RABe 511 KISS 160",
+          "papel": "secundario",
+          "unidades_estimadas": 22
+        }
+      ],
+      "logo": "assets/logos/riv.svg"
+    },
+    {
+      "id": "alp",
+      "nombre": "Alpes Express Sur",
+      "nombre_corto": "AES",
+      "tipo": "especializado",
+      "competencia": "nicho",
+      "color": "#A75BAC",
+      "color_secundario": "#E0F2FE",
+      "lands": [
+        "by"
+      ],
+      "sede": "Múnich",
+      "eslogan": "Hacia las cumbres",
+      "servicios": [
+        "tur",
+        "re",
+        "ld"
+      ],
+      "logo_estilo": "pico",
+      "flota": [
+        {
+          "unidad_id": "kiss160",
+          "nombre": "KISS 160",
+          "workshop_ref": "CH MU RABe 511 KISS 160",
+          "papel": "secundario",
+          "unidades_estimadas": 42
+        },
+        {
+          "unidad_id": "ice1",
+          "nombre": "ICE 1",
+          "workshop_ref": "DE MU ICE 1",
+          "papel": "secundario",
+          "unidades_estimadas": 49
+        },
+        {
+          "unidad_id": "giruno",
+          "nombre": "Stadler Giruno",
+          "workshop_ref": "CH MU RABe 501 Giruno",
+          "papel": "secundario",
+          "unidades_estimadas": 16
+        },
+        {
+          "unidad_id": "scenic",
+          "nombre": "Composición panorámica",
+          "workshop_ref": "CH Coach Glacier Express / scenic coaches",
+          "papel": "secundario",
+          "unidades_estimadas": 23
+        },
+        {
+          "unidad_id": "flirt_ch",
+          "nombre": "FLIRT Suizo",
+          "workshop_ref": "CH MU RABe 522/523 FLIRT",
+          "papel": "secundario",
+          "unidades_estimadas": 30
+        }
+      ],
+      "logo": "assets/logos/alp.svg"
+    },
+    {
+      "id": "cos",
+      "nombre": "Costa a Costa",
+      "nombre_corto": "CAC",
+      "tipo": "especializado",
+      "competencia": "nicho",
+      "color": "#C3B447",
+      "color_secundario": "#ECFEFF",
+      "lands": [
+        "sh",
+        "mv",
+        "hh",
+        "ni",
+        "hb"
+      ],
+      "sede": "Kiel",
+      "eslogan": "Mar del Norte ↔ Báltico",
+      "servicios": [
+        "tur",
+        "ir",
+        "ld"
+      ],
+      "logo_estilo": "ola",
+      "flota": [
+        {
+          "unidad_id": "icetd",
+          "nombre": "ICE TD",
+          "workshop_ref": "DE MU ICE TD",
+          "papel": "principal",
+          "unidades_estimadas": 47
+        },
+        {
+          "unidad_id": "regio2n",
+          "nombre": "Regio 2N Omneo",
+          "workshop_ref": "FR MU Z 55500 Regio 2N",
+          "papel": "principal",
+          "unidades_estimadas": 54
+        },
+        {
+          "unidad_id": "ice3b",
+          "nombre": "ICE 3",
+          "workshop_ref": "DE MU ICE 3",
+          "papel": "secundario",
+          "unidades_estimadas": 17
+        },
+        {
+          "unidad_id": "giruno",
+          "nombre": "Stadler Giruno",
+          "workshop_ref": "CH MU RABe 501 Giruno",
+          "papel": "secundario",
+          "unidades_estimadas": 24
+        },
+        {
+          "unidad_id": "icet",
+          "nombre": "ICE T",
+          "workshop_ref": "DE MU ICE T",
+          "papel": "principal",
+          "unidades_estimadas": 35
+        }
+      ],
+      "logo": "assets/logos/cos.svg"
+    },
+    {
+      "id": "lib",
+      "nombre": "Líneas Libres",
+      "nombre_corto": "LIB",
+      "tipo": "nacional",
+      "competencia": "competitiva",
+      "color": "#EA580C",
+      "color_secundario": "#FFF7ED",
+      "lands": [
+        "bw",
+        "by",
+        "be",
+        "bb",
+        "hb",
+        "hh",
+        "he",
+        "mv",
+        "ni",
+        "nw",
+        "rp",
+        "sl",
+        "sn",
+        "st",
+        "sh",
+        "th"
+      ],
+      "sede": "Berlín",
+      "eslogan": "Competencia abierta en los grandes ejes",
+      "servicios": [
+        "ld",
+        "px",
+        "ir"
+      ],
+      "logo_estilo": "rayo",
+      "flota": [
+        {
+          "unidad_id": "ice3",
+          "nombre": "ICE 3 Velaro D",
+          "workshop_ref": "DE MU ICE 3 Velaro D",
+          "papel": "secundario",
+          "unidades_estimadas": 44
+        },
+        {
+          "unidad_id": "ice3b",
+          "nombre": "ICE 3",
+          "workshop_ref": "DE MU ICE 3",
+          "papel": "secundario",
+          "unidades_estimadas": 51
+        },
+        {
+          "unidad_id": "tgv_duplex",
+          "nombre": "TGV EuroDuplex",
+          "workshop_ref": "FR MU TGV EuroDuplex",
+          "papel": "secundario",
+          "unidades_estimadas": 18
+        },
+        {
+          "unidad_id": "kiss200",
+          "nombre": "Stadler KISS 200",
+          "workshop_ref": "Stadler KISS 200 / AT MU Rh 4010 KISS 200",
+          "papel": "principal",
+          "unidades_estimadas": 29
+        }
+      ],
+      "logo": "assets/logos/lib.svg"
+    },
+    {
+      "id": "via",
+      "nombre": "Vía Abierta Regional",
+      "nombre_corto": "VAR",
+      "tipo": "regional",
+      "competencia": "competitiva",
+      "color": "#854D0E",
+      "color_secundario": "#FFFBEB",
+      "lands": [
+        "nw",
+        "he",
+        "ni",
+        "bw",
+        "by",
+        "sn"
+      ],
+      "sede": "Kassel",
+      "eslogan": "Entramos donde hay demanda",
+      "servicios": [
+        "re",
+        "rb",
+        "ir"
+      ],
+      "logo_estilo": "flecha",
+      "flota": [
+        {
+          "unidad_id": "kiss160",
+          "nombre": "KISS 160",
+          "workshop_ref": "CH MU RABe 511 KISS 160",
+          "papel": "secundario",
+          "unidades_estimadas": 45
+        },
+        {
+          "unidad_id": "desiro_classic",
+          "nombre": "Desiro Classic",
+          "workshop_ref": "AT MU Rh 5022 Desiro Classic",
+          "papel": "secundario",
+          "unidades_estimadas": 12
+        },
+        {
+          "unidad_id": "icn",
+          "nombre": "ICN",
+          "workshop_ref": "CH MU RABDe 500 ICN",
+          "papel": "secundario",
+          "unidades_estimadas": 19
+        },
+        {
+          "unidad_id": "flirt_ch",
+          "nombre": "FLIRT Suizo",
+          "workshop_ref": "CH MU RABe 522/523 FLIRT",
+          "papel": "principal",
+          "unidades_estimadas": 30
+        },
+        {
+          "unidad_id": "regiolis",
+          "nombre": "Régiolis",
+          "workshop_ref": "FR MU B 84500 Régiolis Regional",
+          "papel": "principal",
+          "unidades_estimadas": 37
+        }
+      ],
+      "logo": "assets/logos/via.svg"
+    },
+    {
+      "id": "nex",
+      "nombre": "Nexo Ciudades",
+      "nombre_corto": "NEX",
+      "tipo": "nacional",
+      "competencia": "competitiva",
+      "color": "#2ACC88",
+      "color_secundario": "#F8FAFC",
+      "lands": [
+        "be",
+        "hh",
+        "by",
+        "nw",
+        "he",
+        "bw",
+        "sn"
+      ],
+      "sede": "Fráncfort del Meno",
+      "eslogan": "Solo las rutas que importan",
+      "servicios": [
+        "px",
+        "ld",
+        "ae"
+      ],
+      "logo_estilo": "diamante",
+      "flota": [
+        {
+          "unidad_id": "ice3",
+          "nombre": "ICE 3 Velaro D",
+          "workshop_ref": "DE MU ICE 3 Velaro D",
+          "papel": "secundario",
+          "unidades_estimadas": 46
+        },
+        {
+          "unidad_id": "ice2",
+          "nombre": "ICE 2",
+          "workshop_ref": "DE MU ICE 2",
+          "papel": "secundario",
+          "unidades_estimadas": 13
+        },
+        {
+          "unidad_id": "giruno",
+          "nombre": "Stadler Giruno",
+          "workshop_ref": "CH MU RABe 501 Giruno",
+          "papel": "secundario",
+          "unidades_estimadas": 20
+        },
+        {
+          "unidad_id": "icn",
+          "nombre": "ICN",
+          "workshop_ref": "CH MU RABDe 500 ICN",
+          "papel": "secundario",
+          "unidades_estimadas": 27
+        },
+        {
+          "unidad_id": "railjet",
+          "nombre": "Railjet / Viaggio Comfort",
+          "workshop_ref": "AT Coach Viaggio Comfort",
+          "papel": "principal",
+          "unidades_estimadas": 38
+        }
+      ],
+      "logo": "assets/logos/nex.svg"
+    },
+    {
+      "id": "uni",
+      "nombre": "Universidad Express",
+      "nombre_corto": "UEX",
+      "tipo": "especializado",
+      "competencia": "nicho",
+      "color": "#7C2D12",
+      "color_secundario": "#FFEDD5",
+      "lands": [
+        "bw",
+        "by",
+        "ni",
+        "nw",
+        "sn",
+        "he",
+        "be"
+      ],
+      "sede": "Heidelberg",
+      "eslogan": "Campus a campus",
+      "servicios": [
+        "re",
+        "ir",
+        "mc"
+      ],
+      "logo_estilo": "libro",
+      "flota": [
+        {
+          "unidad_id": "flirt_ch",
+          "nombre": "FLIRT Suizo",
+          "workshop_ref": "CH MU RABe 522/523 FLIRT",
+          "papel": "secundario",
+          "unidades_estimadas": 47
+        },
+        {
+          "unidad_id": "regiolis",
+          "nombre": "Régiolis",
+          "workshop_ref": "FR MU B 84500 Régiolis Regional",
+          "papel": "secundario",
+          "unidades_estimadas": 14
+        },
+        {
+          "unidad_id": "icet",
+          "nombre": "ICE T",
+          "workshop_ref": "DE MU ICE T",
+          "papel": "secundario",
+          "unidades_estimadas": 21
+        },
+        {
+          "unidad_id": "flirt4",
+          "nombre": "Stadler FLIRT 4",
+          "workshop_ref": "Stadler FLIRT 4 (D)EMU",
+          "papel": "principal",
+          "unidades_estimadas": 32
+        },
+        {
+          "unidad_id": "civity",
+          "nombre": "CAF Civity",
+          "workshop_ref": "BR Class 397 Civity",
+          "papel": "principal",
+          "unidades_estimadas": 39
+        }
+      ],
+      "logo": "assets/logos/uni.svg"
+    },
+    {
+      "id": "fer",
+      "nombre": "Feria y Congresos Rail",
+      "nombre_corto": "FCR",
+      "tipo": "especializado",
+      "competencia": "nicho",
+      "color": "#BBD2CD",
+      "color_secundario": "#FFF1F2",
+      "lands": [
+        "nw",
+        "he",
+        "by",
+        "hh",
+        "be",
+        "ni"
+      ],
+      "sede": "Hannover",
+      "eslogan": "Llegamos cuando la feria abre",
+      "servicios": [
+        "px",
+        "ae",
+        "ld"
+      ],
+      "logo_estilo": "hex",
+      "flota": [
+        {
+          "unidad_id": "ice1",
+          "nombre": "ICE 1",
+          "workshop_ref": "DE MU ICE 1",
+          "papel": "secundario",
+          "unidades_estimadas": 48
+        },
+        {
+          "unidad_id": "kiss200",
+          "nombre": "Stadler KISS 200",
+          "workshop_ref": "Stadler KISS 200 / AT MU Rh 4010 KISS 200",
+          "papel": "secundario",
+          "unidades_estimadas": 15
+        },
+        {
+          "unidad_id": "ice4",
+          "nombre": "ICE 4",
+          "workshop_ref": "DE MU ICE 4",
+          "papel": "principal",
+          "unidades_estimadas": 26
+        },
+        {
+          "unidad_id": "ice3b",
+          "nombre": "ICE 3",
+          "workshop_ref": "DE MU ICE 3",
+          "papel": "secundario",
+          "unidades_estimadas": 29
+        },
+        {
+          "unidad_id": "thalys",
+          "nombre": "Thalys PBKA",
+          "workshop_ref": "FR MU Thalys PBKA",
+          "papel": "secundario",
+          "unidades_estimadas": 36
+        }
+      ],
+      "logo": "assets/logos/fer.svg"
+    },
+    {
+      "id": "val",
+      "nombre": "Valles Verdes",
+      "nombre_corto": "VVE",
+      "tipo": "regional",
+      "competencia": "nicho",
+      "color": "#556C46",
+      "color_secundario": "#DCFCE7",
+      "lands": [
+        "rp",
+        "he",
+        "bw",
+        "by",
+        "th",
+        "sn"
+      ],
+      "sede": "Friburgo",
+      "eslogan": "Ramales con alma",
+      "servicios": [
+        "rl",
+        "rb",
+        "tur"
+      ],
+      "logo_estilo": "hoja",
+      "flota": [
+        {
+          "unidad_id": "coradia",
+          "nombre": "Alstom Coradia Nordic",
+          "workshop_ref": "Alstom Coradia Nordic",
+          "papel": "secundario",
+          "unidades_estimadas": 49
+        },
+        {
+          "unidad_id": "gtw_d",
+          "nombre": "GTW Diésel",
+          "workshop_ref": "NL MU GTW Diesel / AT MU Rh 5063",
+          "papel": "principal",
+          "unidades_estimadas": 24
+        },
+        {
+          "unidad_id": "flirt3",
+          "nombre": "Stadler FLIRT 3",
+          "workshop_ref": "NL MU FLIRT 3",
+          "papel": "secundario",
+          "unidades_estimadas": 23
+        },
+        {
+          "unidad_id": "scenic",
+          "nombre": "Composición panorámica",
+          "workshop_ref": "CH Coach Glacier Express / scenic coaches",
+          "papel": "secundario",
+          "unidades_estimadas": 30
+        },
+        {
+          "unidad_id": "talent",
+          "nombre": "Talent",
+          "workshop_ref": "AT MU Rh 4024 Talent",
+          "papel": "principal",
+          "unidades_estimadas": 41
+        }
+      ],
+      "logo": "assets/logos/val.svg"
+    },
+    {
+      "id": "bor",
+      "nombre": "Borde Este",
+      "nombre_corto": "BES",
+      "tipo": "regional",
+      "competencia": "competitiva",
+      "color": "#75C4E8",
+      "color_secundario": "#CCFBF1",
+      "lands": [
+        "sn",
+        "bb",
+        "mv",
+        "by"
+      ],
+      "sede": "Görlitz",
+      "eslogan": "La frontera como oportunidad",
+      "servicios": [
+        "re",
+        "rb",
+        "ir",
+        "ld"
+      ],
+      "logo_estilo": "puente",
+      "flota": [
+        {
+          "unidad_id": "regio2n",
+          "nombre": "Regio 2N Omneo",
+          "workshop_ref": "FR MU Z 55500 Regio 2N",
+          "papel": "principal",
+          "unidades_estimadas": 58
+        },
+        {
+          "unidad_id": "gtw_e",
+          "nombre": "GTW Eléctrico",
+          "workshop_ref": "NL MU GTW Electric / AT MU Rh 4062",
+          "papel": "secundario",
+          "unidades_estimadas": 17
+        },
+        {
+          "unidad_id": "icet",
+          "nombre": "ICE T",
+          "workshop_ref": "DE MU ICE T",
+          "papel": "principal",
+          "unidades_estimadas": 28
+        },
+        {
+          "unidad_id": "ice2",
+          "nombre": "ICE 2",
+          "workshop_ref": "DE MU ICE 2",
+          "papel": "secundario",
+          "unidades_estimadas": 31
+        },
+        {
+          "unidad_id": "pendolino",
+          "nombre": "Pendolino New",
+          "workshop_ref": "CH MU RABe 503 New Pendolino",
+          "papel": "secundario",
+          "unidades_estimadas": 38
+        },
+        {
+          "unidad_id": "flirt3",
+          "nombre": "Stadler FLIRT 3",
+          "workshop_ref": "NL MU FLIRT 3",
+          "papel": "principal",
+          "unidades_estimadas": 49
+        }
+      ],
+      "logo": "assets/logos/bor.svg"
+    },
+    {
+      "id": "occ",
+      "nombre": "Occidente Atlántico",
+      "nombre_corto": "OAT",
+      "tipo": "regional",
+      "competencia": "competitiva",
+      "color": "#A9C3AE",
+      "color_secundario": "#DBEAFE",
+      "lands": [
+        "nw",
+        "rp",
+        "sl",
+        "bw"
+      ],
+      "sede": "Aquisgrán",
+      "eslogan": "Hacia Benelux y Francia",
+      "servicios": [
+        "re",
+        "ir",
+        "ld",
+        "av"
+      ],
+      "logo_estilo": "flecha",
+      "flota": [
+        {
+          "unidad_id": "virm",
+          "nombre": "VIRM Doble Piso",
+          "workshop_ref": "NL MU VIRM",
+          "papel": "principal",
+          "unidades_estimadas": 55
+        },
+        {
+          "unidad_id": "ice3b",
+          "nombre": "ICE 3",
+          "workshop_ref": "DE MU ICE 3",
+          "papel": "principal",
+          "unidades_estimadas": 22
+        },
+        {
+          "unidad_id": "giruno",
+          "nombre": "Stadler Giruno",
+          "workshop_ref": "CH MU RABe 501 Giruno",
+          "papel": "principal",
+          "unidades_estimadas": 29
+        },
+        {
+          "unidad_id": "kiss200",
+          "nombre": "Stadler KISS 200",
+          "workshop_ref": "Stadler KISS 200 / AT MU Rh 4010 KISS 200",
+          "papel": "principal",
+          "unidades_estimadas": 40
+        },
+        {
+          "unidad_id": "desiro_ml",
+          "nombre": "Desiro ML",
+          "workshop_ref": "AT MU Rh 4746 Desiro ML",
+          "papel": "secundario",
+          "unidades_estimadas": 39
+        },
+        {
+          "unidad_id": "regio2n",
+          "nombre": "Regio 2N Omneo",
+          "workshop_ref": "FR MU Z 55500 Regio 2N",
+          "papel": "principal",
+          "unidades_estimadas": 54
+        }
+      ],
+      "logo": "assets/logos/occ.svg"
+    },
+    {
+      "id": "mid",
+      "nombre": "Mediodía Alemán",
+      "nombre_corto": "MDA",
+      "tipo": "regional",
+      "competencia": "competitiva",
+      "color": "#961D6C",
+      "color_secundario": "#FFEDD5",
+      "lands": [
+        "by",
+        "bw"
+      ],
+      "sede": "Augsburgo",
+      "eslogan": "El sur en red propia",
+      "servicios": [
+        "re",
+        "rb",
+        "ir",
+        "ld"
+      ],
+      "logo_estilo": "sol",
+      "flota": [
+        {
+          "unidad_id": "gtw_d",
+          "nombre": "GTW Diésel",
+          "workshop_ref": "NL MU GTW Diesel / AT MU Rh 5063",
+          "papel": "secundario",
+          "unidades_estimadas": 12
+        },
+        {
+          "unidad_id": "icetd",
+          "nombre": "ICE TD",
+          "workshop_ref": "DE MU ICE TD",
+          "papel": "principal",
+          "unidades_estimadas": 23
+        },
+        {
+          "unidad_id": "ice1",
+          "nombre": "ICE 1",
+          "workshop_ref": "DE MU ICE 1",
+          "papel": "secundario",
+          "unidades_estimadas": 26
+        },
+        {
+          "unidad_id": "railjet",
+          "nombre": "Railjet / Viaggio Comfort",
+          "workshop_ref": "AT Coach Viaggio Comfort",
+          "papel": "secundario",
+          "unidades_estimadas": 33
+        },
+        {
+          "unidad_id": "flirt_ch",
+          "nombre": "FLIRT Suizo",
+          "workshop_ref": "CH MU RABe 522/523 FLIRT",
+          "papel": "principal",
+          "unidades_estimadas": 44
+        },
+        {
+          "unidad_id": "regiolis",
+          "nombre": "Régiolis",
+          "workshop_ref": "FR MU B 84500 Régiolis Regional",
+          "papel": "principal",
+          "unidades_estimadas": 51
+        }
+      ],
+      "logo": "assets/logos/mid.svg"
+    },
+    {
+      "id": "nor",
+      "nombre": "Norte Abierto",
+      "nombre_corto": "NOA",
+      "tipo": "regional",
+      "competencia": "competitiva",
+      "color": "#D87A86",
+      "color_secundario": "#E0F2FE",
+      "lands": [
+        "sh",
+        "hh",
+        "hb",
+        "ni",
+        "mv"
+      ],
+      "sede": "Hamburgo",
+      "eslogan": "Competencia en el norte",
+      "servicios": [
+        "re",
+        "rb",
+        "ir"
+      ],
+      "logo_estilo": "ola",
+      "flota": [
+        {
+          "unidad_id": "virm",
+          "nombre": "VIRM Doble Piso",
+          "workshop_ref": "NL MU VIRM",
+          "papel": "principal",
+          "unidades_estimadas": 17
+        },
+        {
+          "unidad_id": "talent",
+          "nombre": "Talent",
+          "workshop_ref": "AT MU Rh 4024 Talent",
+          "papel": "secundario",
+          "unidades_estimadas": 20
+        },
+        {
+          "unidad_id": "kiss200",
+          "nombre": "Stadler KISS 200",
+          "workshop_ref": "Stadler KISS 200 / AT MU Rh 4010 KISS 200",
+          "papel": "principal",
+          "unidades_estimadas": 31
+        },
+        {
+          "unidad_id": "desiro_ml",
+          "nombre": "Desiro ML",
+          "workshop_ref": "AT MU Rh 4746 Desiro ML",
+          "papel": "principal",
+          "unidades_estimadas": 38
+        },
+        {
+          "unidad_id": "regio2n",
+          "nombre": "Regio 2N Omneo",
+          "workshop_ref": "FR MU Z 55500 Regio 2N",
+          "papel": "principal",
+          "unidades_estimadas": 45
+        }
+      ],
+      "logo": "assets/logos/nor.svg"
+    }
+  ]
+}
