@@ -30,11 +30,14 @@ export function listSlots() {
   return slots;
 }
 
-export function saveToSlot(state, slot) {
+export function saveToSlot(state, slot, { silent = false } = {}) {
   state.meta.updatedAt = new Date().toISOString();
   state.version = SAVE_VERSION;
   localStorage.setItem(slotKey(slot), JSON.stringify(state));
-  state.ui.toast = `Partida guardada en hueco ${slot}`;
+  state.ui = state.ui || {};
+  state.ui.lastAutosaveAt = Date.now();
+  state.ui.lastAutosaveSlot = slot;
+  if (!silent) state.ui.toast = `Partida guardada en hueco ${slot}`;
   return state;
 }
 
@@ -96,13 +99,15 @@ export function newGame() {
 }
 
 /** Autosave periódico al hueco activo (o 1) */
-export function maybeAutosave(state, lastAutosaveRealMs, intervalMs = 120000) {
+export function maybeAutosave(state, lastAutosaveRealMs, intervalMs) {
+  const mins = state.settings?.autosaveMinutes || 2;
+  const wait = intervalMs ?? mins * 60 * 1000;
   const now = Date.now();
-  if (now - lastAutosaveRealMs < intervalMs) return lastAutosaveRealMs;
+  if (now - lastAutosaveRealMs < wait) return lastAutosaveRealMs;
   const slot = state.meta?.activeSlot || 1;
   try {
     state.meta.activeSlot = slot;
-    saveToSlot(state, slot);
+    saveToSlot(state, slot, { silent: true });
   } catch {
     /* ignore */
   }

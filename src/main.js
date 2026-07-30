@@ -57,11 +57,13 @@ import {
   setMusicEnabled,
   setSfxEnabled,
   isMusicEnabled,
+  setMusicVolume,
+  setSfxVolume,
 } from './game/sounds.js';
-import { ensureDrawsResolved, listDrawHistory } from './game/draws.js';
+import { ensureDrawsResolved, listDrawHistory, modeHint } from './game/draws.js';
 import { formatSelection } from './game/tickets.js';
 import { payTicketPrize, startPrizeManagement } from './game/prizes.js';
-import { downloadTicketPdf, downloadSaleReceiptPdf, downloadStatsPdf } from './game/pdf.js';
+import { downloadTicketPdf, downloadSaleReceiptPdf, downloadStatsPdf, downloadWeeklyPdf, downloadMonthlyPdf } from './game/pdf.js';
 import { eventOn } from './data/events.js';
 import { birthdayBanner } from './data/birthdays.js';
 import { GAME_VERSION } from './game/state.js';
@@ -87,6 +89,8 @@ import {
   dismissCancelPrompt,
   undoLastTpvLine,
   confirmAbonoOnTpv,
+  setLineFraction,
+  setLineSeries,
   CANCEL_REASONS,
 } from './game/tpv.js';
 import {
@@ -111,6 +115,9 @@ import {
   specialOrderDeadlines,
   createCalendarOrder,
 } from './game/notices.js';
+import { depositCashToBank, withdrawBankToCash } from './game/bank.js';
+import { buildTownBoard } from './data/board.js';
+import { currentMonthStatement } from './game/monthly.js';
 
 let state = null;
 let toastTimer = null;
@@ -140,12 +147,16 @@ function maybeStartMusic() {
     setMusicEnabled(false);
   }
   if (state?.settings?.sfx != null) setSfxEnabled(!!state.settings.sfx);
+  if (state?.settings?.musicVolume != null) setMusicVolume(state.settings.musicVolume);
+  if (state?.settings?.sfxVolume != null) setSfxVolume(state.settings.sfxVolume);
   applyTheme();
 }
 
 function applyTheme() {
   const theme = state?.settings?.theme === 'dark' ? 'dark' : 'light';
   document.documentElement.setAttribute('data-theme', theme);
+  const scale = Number(state?.settings?.fontScale) || 1;
+  document.documentElement.style.fontSize = `${16 * scale}px`;
 }
 
 function confirmImportant(message) {
@@ -237,6 +248,10 @@ function render() {
   if (state.ui.screen === 'arqueo') return renderArqueo();
   if (state.ui.screen === 'weekly') return renderWeekly();
   if (state.ui.screen === 'stats') return renderStats();
+  if (state.ui.screen === 'board') return renderBoard();
+  if (state.ui.screen === 'bank') return renderBank();
+  if (state.ui.screen === 'settings') return renderSettings();
+  if (state.ui.screen === 'monthly') return renderMonthly();
   return renderCounter();
 }
 
@@ -313,21 +328,7 @@ function bindHighPrizeAlert() {
 }
 
 function dictateHint(mode) {
-  const hints = {
-    nacional: '5 cifras (ej. 45821)',
-    triplex: '3 cifras (ej. 742)',
-    '6from49': '6 números 1–49 y reintegro (ej. 1 8 15 22 33 41 r3)',
-    euro: '5 números | 2 estrellas (ej. 1 2 3 4 5 | 6 7)',
-    eurojackpot: '5 números | 2 estrellas (ej. 1 2 3 4 5 | 6 7)',
-    gordo: '5 números 1–54 y clave (ej. 3 12 20 33 50 clave 7)',
-    quiniela: '14 signos 1/X/2 (ej. 1X2112X12X121)',
-    quinigol: '6 resultados 0/1/2/M',
-    superonce: '5 números del 1 al 49',
-    '5from40': '5 números del 1 al 40',
-    lototurf: '5 números del 1 al 49',
-    quintuple: '5 caballos 1–20 + suplementaria (ej. 3 7 11 14 18 5)',
-  };
-  return hints[mode] || 'Escribe la combinación dictada';
+  return modeHint(mode);
 }
 
 function renderMenu() {
@@ -383,7 +384,7 @@ function renderMenu() {
     maybeStartMusic();
     state.ui.screen = 'counter';
     lastAutosaveRealMs = Date.now();
-    showToast('Bienvenida, Miriam. Versión 0.4 lista. Abre el TPV para vender.');
+    showToast('Bienvenida, Miriam. Versión 0.5 lista. Abre el TPV para vender.');
     needsFullRender = true;
     render();
   };
@@ -491,23 +492,34 @@ function sideNav() {
   const openMgmt = (state.prizeManagement || []).filter((c) => c.status !== 'settled').length;
   const musicOn = state.settings?.music !== false && isMusicEnabled();
   const dark = state.settings?.theme === 'dark';
+  let autosaveLine = '';
+  if (state.ui?.lastAutosaveAt) {
+    const mins = Math.max(0, Math.round((Date.now() - state.ui.lastAutosaveAt) / 60000));
+    const slot = state.ui.lastAutosaveSlot || state.meta?.activeSlot || 1;
+    autosaveLine = `<div class="muted" id="autosave-hint">Guardado hace ${mins}m · hueco ${slot}</div>`;
+  }
   return `
     <aside class="panel nav-side">
       <h3>Oficina</h3>
       <button class="btn" data-nav="counter">Mostrador</button>
+      <button class="btn" data-nav="board">Tablón</button>
       <button class="btn" data-nav="fichas">Abonados / Peñas</button>
       <button class="btn" data-nav="draws">Sorteos</button>
       <button class="btn" data-nav="prize">Pagar premio</button>
       <button class="btn" data-nav="management">Gestión premios${openMgmt ? ` (${openMgmt})` : ''}</button>
       <button class="btn" data-nav="stock">Stock y pedidos</button>
       <button class="btn" data-nav="showcase">Escaparate</button>
+      <button class="btn" data-nav="bank">Caja↔Banco</button>
       <button class="btn" data-nav="arqueo">Arqueo</button>
       <button class="btn" data-nav="weekly">Extracto semanal</button>
+      <button class="btn" data-nav="monthly">Liquidación mensual</button>
       <button class="btn" data-nav="stats">Estadísticas</button>
       <button class="btn" data-nav="close">Cierre y balance</button>
+      <button class="btn" data-nav="settings">Ajustes</button>
       <button class="btn" data-nav="saves">Guardar / exportar</button>
       <button class="btn" id="btn-music-toggle">${musicOn ? '♪ Música: ON' : '♪ Música: OFF'}</button>
       <button class="btn" id="btn-theme-toggle">${dark ? 'Tema: oscuro' : 'Tema: claro'}</button>
+      ${autosaveLine}
       <hr style="border:none;border-top:1px solid var(--line);margin:14px 0" />
       <div class="stat-row"><span>Banco</span><strong>${formatEuro(state.finance.bankCents)}</strong></div>
       <div class="stat-row"><span>Caja</span><strong>${formatEuro(drawerTotalCents(state.finance.drawer))}</strong></div>
@@ -544,6 +556,8 @@ function bindNav() {
       state.settings = state.settings || {};
       state.settings.music = next;
       setMusicEnabled(next);
+      if (state.settings.musicVolume != null) setMusicVolume(state.settings.musicVolume);
+      if (state.settings.sfxVolume != null) setSfxVolume(state.settings.sfxVolume);
       if (next) startMusic();
       sfx.click();
       needsFullRender = true;
@@ -644,6 +658,41 @@ function bindCalendarOrderButtons(prefix, client) {
   if (nino) nino.onclick = () => make('nino');
 }
 
+function scratchOverlayHTML() {
+  const sr = state.ui?.scratchReveal;
+  if (!sr) return '';
+  if (sr.step === 'scratching') {
+    return `<div class="scratch-overlay" id="scratch-overlay">
+      <div class="scratch-card">
+        <div class="scratch-anim">✦</div>
+        <h2>Rascando…</h2>
+        <p class="muted">En mostrador, con la moneda</p>
+      </div>
+    </div>`;
+  }
+  const prize = sr.prizeCents || 0;
+  return `<div class="scratch-overlay" id="scratch-overlay">
+    <div class="scratch-card">
+      <h2>${prize > 0 ? '¡Premio!' : 'Sin premio'}</h2>
+      <p class="total-box" style="margin:12px 0">${prize > 0 ? formatEuro(prize) : 'Sigue jugando'}</p>
+      <div class="actions">
+        <button class="btn primary" id="btn-scratch-continue">Continuar</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function bindScratchOverlay() {
+  const cont = document.getElementById('btn-scratch-continue');
+  if (!cont) return;
+  cont.onclick = () => {
+    state.ui.scratchReveal = null;
+    sfx.click();
+    needsFullRender = true;
+    render();
+  };
+}
+
 function renderCounter() {
   const client = state.customers.current;
   const ev = eventBannerText();
@@ -713,6 +762,7 @@ function renderCounter() {
         </aside>
       </div>
     </div>
+    ${scratchOverlayHTML()}
     ${toastHTML()}
   `;
 
@@ -720,6 +770,7 @@ function renderCounter() {
   bindNav();
   bindHighPrizeAlert();
   bindClientActions();
+  bindScratchOverlay();
   bindCalendarOrderButtons('counter', state.customers.current);
   const arqueoOpen = document.getElementById('btn-arqueo-open');
   if (arqueoOpen) {
@@ -739,13 +790,19 @@ function renderClientPanel(client) {
   const kindLabel =
     client.kind === 'pena' ? 'Peña' : client.kind === 'abonado' ? 'Abonado' : client.regular ? 'Habitual' : 'Visitante';
 
-  if (intent === 'buy' || intent === 'reserve_special' || intent === 'abono') {
+  if (intent === 'buy' || intent === 'reserve_special' || intent === 'abono' || intent === 'pena_day') {
     const totalWish = (client.wishlist || []).reduce((s, w) => {
       const p = getProduct(w.productId);
       return s + (p?.priceCents || 0) * w.qty;
     }, 0);
     const title =
-      intent === 'reserve_special' ? 'Encargo / petición:' : intent === 'abono' ? 'Abono a confirmar en TPV:' : 'Quiere:';
+      intent === 'reserve_special'
+        ? 'Encargo / petición:'
+        : intent === 'abono'
+          ? 'Abono a confirmar en TPV:'
+          : intent === 'pena_day'
+            ? 'Pedido de peña:'
+            : 'Quiere:';
     return `
       <div class="client-card">
         <div class="muted">${kindLabel}${trait} · ${escapeHtml(client.street || '')}${
@@ -759,8 +816,12 @@ function renderClientPanel(client) {
         ${totalWish ? `<p class="muted">Estimado: ${formatEuro(totalWish)}</p>` : ''}
         <p class="muted">Pago preferido: ${payLabel(client.prefersPayment)}</p>
         <div class="actions">
-          <button class="btn primary" id="btn-open-tpv">${intent === 'abono' ? 'Abrir TPV y confirmar abono' : 'Abrir TPV'}</button>
-          <button class="btn" id="btn-load-wish">${intent === 'abono' ? 'Cargar abono' : 'Cargar petición'}</button>
+          <button class="btn primary" id="btn-open-tpv">${
+            intent === 'abono' ? 'Abrir TPV y confirmar abono' : intent === 'pena_day' ? 'Abrir TPV (cargar peña)' : 'Abrir TPV'
+          }</button>
+          <button class="btn" id="btn-load-wish">${
+            intent === 'abono' ? 'Cargar abono' : intent === 'pena_day' ? 'Cargar pedido peña' : 'Cargar petición'
+          }</button>
           <button class="btn" id="btn-reserve">Reservar sin pagar</button>
           <button class="btn ghost" id="btn-skip">Despedir</button>
         </div>
@@ -792,7 +853,9 @@ function renderClientPanel(client) {
         <div class="actions">
           ${
             !result
-              ? `<button class="btn primary" id="btn-check">Comprobar</button>`
+              ? t.kind === 'rasca'
+                ? `<button class="btn primary" id="btn-scratch">Rascar en mostrador</button>`
+                : `<button class="btn primary" id="btn-check">Comprobar</button>`
               : result.prizeCents > 0
                 ? `<button class="btn primary" id="btn-pay-now">Pagar ahora</button>
                    <button class="btn" id="btn-defer">Cobrar otro día</button>
@@ -861,7 +924,12 @@ function bindClientActions() {
       const client = state.customers.current;
       if (!client) return;
       sfx.tpv();
-      openTpv(state, client);
+      if (client.intent === 'pena_day' && (client.wishlist?.length || client.request)) {
+        loadWishlistIntoTpv(client);
+        if (state.ui.tpv?.message) showToast(state.ui.tpv.message);
+      } else {
+        openTpv(state, client);
+      }
       needsFullRender = true;
       render();
     };
@@ -907,6 +975,26 @@ function bindClientActions() {
       showToast(state.ui.toast);
       needsFullRender = true;
       render();
+    };
+  }
+  const scratchBtn = document.getElementById('btn-scratch');
+  if (scratchBtn) {
+    scratchBtn.onclick = () => {
+      const t = state.customers.current?.ticketFocus;
+      if (!t) return;
+      sfx.scan();
+      state.ui.scratchReveal = { ticketId: t.id, step: 'scratching', prizeCents: null };
+      needsFullRender = true;
+      render();
+      setTimeout(() => {
+        if (!state?.ui?.scratchReveal || state.ui.scratchReveal.ticketId !== t.id) return;
+        checkCurrentTicket(state);
+        const prize = state.customers.current?.checkResult?.prizeCents ?? 0;
+        state.ui.scratchReveal = { ticketId: t.id, step: 'done', prizeCents: prize };
+        showToast(state.ui.toast);
+        needsFullRender = true;
+        render();
+      }, 1400);
     };
   }
   const done = document.getElementById('btn-done-check');
@@ -1176,9 +1264,12 @@ function renderTpv() {
                   p.stockType === 'physical'
                     ? `Stock ${state.stock[p.id] ?? 0}`
                     : 'Terminal';
+                const rate = p.commissionRate ?? 0.05;
+                const meta = `Com. ${(rate * 100).toFixed(1)}%${p.trait ? ` · ${p.trait}` : ''}`;
                 return `<div class="tpv-product">
                   <strong>${escapeHtml(p.name)}</strong>
                   <span>${formatEuro(p.priceCents)} · ${escapeHtml(stock)}</span>
+                  <div class="product-meta">${escapeHtml(meta)}</div>
                   <div class="actions" style="margin-top:8px;gap:6px">
                     <button class="btn primary" style="flex:1;min-height:42px;padding:8px" data-add-random="${p.id}">Aleatorio</button>
                     ${
@@ -1209,6 +1300,18 @@ function renderTpv() {
                             <button class="btn" style="padding:6px 10px" data-qty="${l.id}" data-delta="-1">−</button>
                             <strong style="min-width:1.5rem;text-align:center">${l.qty}</strong>
                             <button class="btn" style="padding:6px 10px" data-qty="${l.id}" data-delta="1">+</button>
+                            ${
+                              (() => {
+                                const lp = getProduct(l.productId);
+                                if (lp && (lp.numberMode === 'nacional' || lp.fractionable)) {
+                                  return `<button class="btn" style="padding:6px 10px" data-frac="${l.id}" data-n="1">1 décimo</button>
+                                   <button class="btn" style="padding:6px 10px" data-frac="${l.id}" data-n="2">x2</button>
+                                   <button class="btn" style="padding:6px 10px" data-frac="${l.id}" data-n="5">x5</button>
+                                   <button class="btn" style="padding:6px 10px" data-series="${l.id}">serie</button>`;
+                                }
+                                return '';
+                              })()
+                            }
                             ${
                               l.needsNumbers
                                 ? `<button class="btn" style="padding:6px 10px" data-reroll="${l.id}">Aleat.</button>
@@ -1344,6 +1447,23 @@ function renderTpv() {
   app.querySelectorAll('[data-dictate-line]').forEach((btn) => {
     btn.onclick = () => {
       startDictateLine(state, btn.getAttribute('data-dictate-line'));
+      sfx.click();
+      needsFullRender = true;
+      render();
+    };
+  });
+
+  app.querySelectorAll('[data-frac]').forEach((btn) => {
+    btn.onclick = () => {
+      setLineFraction(state, btn.getAttribute('data-frac'), Number(btn.getAttribute('data-n')));
+      sfx.click();
+      needsFullRender = true;
+      render();
+    };
+  });
+  app.querySelectorAll('[data-series]').forEach((btn) => {
+    btn.onclick = () => {
+      setLineSeries(state, btn.getAttribute('data-series'));
       sfx.click();
       needsFullRender = true;
       render();
@@ -1919,6 +2039,9 @@ function renderWeekly() {
             <div class="stat-row"><span>Liquidaciones</span><strong>${w.settlements}</strong></div>
             <div class="stat-row"><span>Neto (comisión − gastos − faltantes)</span><strong>${formatEuro(w.net)}</strong></div>
           </div>
+          <div class="actions" style="margin-top:16px">
+            <button class="btn primary" id="btn-weekly-pdf">Descargar PDF</button>
+          </div>
         </section>
       </div>
     </div>
@@ -1926,6 +2049,11 @@ function renderWeekly() {
   `;
   bindTopbar();
   bindNav();
+  document.getElementById('btn-weekly-pdf').onclick = () => {
+    downloadWeeklyPdf(w);
+    sfx.success();
+    showToast('PDF del extracto semanal descargado');
+  };
 }
 
 function renderStats() {
@@ -2521,8 +2649,271 @@ function renderShowcase() {
 }
 
 
+function renderBoard() {
+  const ymd = gameYmd(state);
+  const items = buildTownBoard(state, ymd);
+  app.innerHTML = `
+    <div class="shell">
+      ${topbarHTML()}
+      <div class="layout" style="grid-template-columns:280px 1fr">
+        ${sideNav()}
+        <section class="panel">
+          <h2>Tablón del pueblo</h2>
+          <p class="muted">Álora · ${escapeHtml(ymd)}</p>
+          <div class="board-list" style="margin-top:12px;display:flex;flex-direction:column;gap:10px">
+            ${
+              items.length
+                ? items
+                    .map(
+                      (it) => `<article class="board-item" style="padding:12px;border:1px solid var(--line);border-radius:12px">
+                        <div class="muted" style="font-size:0.8rem;text-transform:uppercase">${escapeHtml(it.kind || '')}</div>
+                        <h3 style="margin:4px 0 6px;font-family:var(--font-display)">${escapeHtml(it.title)}</h3>
+                        <p style="margin:0">${escapeHtml(it.body || '')}</p>
+                      </article>`,
+                    )
+                    .join('')
+                : '<div class="muted">Nada en el tablón hoy.</div>'
+            }
+          </div>
+        </section>
+      </div>
+    </div>
+    ${toastHTML()}
+  `;
+  bindTopbar();
+  bindNav();
+}
+
+function renderBank() {
+  const cash = drawerTotalCents(state.finance.drawer);
+  const bank = state.finance.bankCents;
+  app.innerHTML = `
+    <div class="shell">
+      ${topbarHTML()}
+      <div class="layout" style="grid-template-columns:280px 1fr">
+        ${sideNav()}
+        <section class="panel">
+          <h2>Caja ↔ Banco</h2>
+          <p class="muted">Ingresa efectivo al banco o retira cambio a caja.</p>
+          <div class="close-summary" style="margin:12px 0">
+            <div class="stat-row"><span>Efectivo en caja</span><strong>${formatEuro(cash)}</strong></div>
+            <div class="stat-row"><span>Saldo banco</span><strong>${formatEuro(bank)}</strong></div>
+          </div>
+          <div class="actions" style="flex-wrap:wrap;align-items:flex-end;gap:12px">
+            <label>Ingresar a banco (€)<br/>
+              <input id="bank-deposit" type="number" min="0" step="0.01" placeholder="100" style="padding:8px;border-radius:10px;border:1px solid var(--line);width:140px" />
+            </label>
+            <button class="btn primary" id="btn-bank-deposit">Ingresar</button>
+          </div>
+          <div class="actions" style="flex-wrap:wrap;align-items:flex-end;gap:12px;margin-top:14px">
+            <label>Retirar a caja (€)<br/>
+              <input id="bank-withdraw" type="number" min="0" step="0.01" placeholder="50" style="padding:8px;border-radius:10px;border:1px solid var(--line);width:140px" />
+            </label>
+            <button class="btn" id="btn-bank-withdraw">Retirar cambio</button>
+          </div>
+        </section>
+      </div>
+    </div>
+    ${toastHTML()}
+  `;
+  bindTopbar();
+  bindNav();
+  const eurosToCents = (el) => Math.round((Number(el?.value) || 0) * 100);
+  document.getElementById('btn-bank-deposit').onclick = () => {
+    const ok = depositCashToBank(state, eurosToCents(document.getElementById('bank-deposit')));
+    if (ok) sfx.cash();
+    else sfx.error();
+    showToast(state.ui.toast);
+    needsFullRender = true;
+    render();
+  };
+  document.getElementById('btn-bank-withdraw').onclick = () => {
+    const ok = withdrawBankToCash(state, eurosToCents(document.getElementById('bank-withdraw')));
+    if (ok) sfx.cash();
+    else sfx.error();
+    showToast(state.ui.toast);
+    needsFullRender = true;
+    render();
+  };
+}
+
+function renderSettings() {
+  const s = state.settings || {};
+  const font = s.fontScale || 1;
+  const speed = s.defaultSpeed ?? 1;
+  app.innerHTML = `
+    <div class="shell">
+      ${topbarHTML()}
+      <div class="layout" style="grid-template-columns:280px 1fr">
+        ${sideNav()}
+        <section class="panel">
+          <h2>Ajustes</h2>
+          <p class="muted">Preferencias de Miriam · v${GAME_VERSION}</p>
+          <div style="display:flex;flex-direction:column;gap:14px;margin-top:12px;max-width:420px">
+            <label>Tema<br/>
+              <select id="set-theme" style="padding:8px;border-radius:10px;border:1px solid var(--line);width:100%">
+                <option value="light" ${s.theme !== 'dark' ? 'selected' : ''}>Claro</option>
+                <option value="dark" ${s.theme === 'dark' ? 'selected' : ''}>Oscuro</option>
+              </select>
+            </label>
+            <label style="display:flex;align-items:center;gap:8px">
+              <input type="checkbox" id="set-music" ${s.music !== false ? 'checked' : ''} /> Música
+            </label>
+            <label>Volumen música<br/>
+              <input id="set-music-vol" type="range" min="0" max="1" step="0.05" value="${s.musicVolume ?? 0.45}" style="width:100%" />
+            </label>
+            <label style="display:flex;align-items:center;gap:8px">
+              <input type="checkbox" id="set-sfx" ${s.sfx !== false ? 'checked' : ''} /> Efectos de sonido
+            </label>
+            <label>Volumen SFX<br/>
+              <input id="set-sfx-vol" type="range" min="0" max="1" step="0.05" value="${s.sfxVolume ?? 0.7}" style="width:100%" />
+            </label>
+            <label>Tamaño de letra<br/>
+              <select id="set-font" style="padding:8px;border-radius:10px;border:1px solid var(--line);width:100%">
+                <option value="0.9" ${font === 0.9 ? 'selected' : ''}>Pequeño (0.9)</option>
+                <option value="1" ${font === 1 ? 'selected' : ''}>Normal (1)</option>
+                <option value="1.1" ${font === 1.1 ? 'selected' : ''}>Grande (1.1)</option>
+                <option value="1.2" ${font === 1.2 ? 'selected' : ''}>Muy grande (1.2)</option>
+              </select>
+            </label>
+            <label>Velocidad por defecto<br/>
+              <select id="set-speed" style="padding:8px;border-radius:10px;border:1px solid var(--line);width:100%">
+                <option value="1" ${speed === 1 ? 'selected' : ''}>Normal</option>
+                <option value="15" ${speed === 15 ? 'selected' : ''}>Rápido</option>
+                <option value="60" ${speed === 60 ? 'selected' : ''}>Muy rápido</option>
+              </select>
+            </label>
+            <label>Autoguardado (minutos)<br/>
+              <input id="set-autosave" type="number" min="1" max="30" value="${s.autosaveMinutes || 2}" style="padding:8px;border-radius:10px;border:1px solid var(--line);width:100%" />
+            </label>
+            <button class="btn primary" id="btn-settings-save">Aplicar</button>
+          </div>
+        </section>
+      </div>
+    </div>
+    ${toastHTML()}
+  `;
+  bindTopbar();
+  bindNav();
+  document.getElementById('btn-settings-save').onclick = () => {
+    state.settings = state.settings || {};
+    state.settings.theme = document.getElementById('set-theme').value === 'dark' ? 'dark' : 'light';
+    state.settings.music = document.getElementById('set-music').checked;
+    state.settings.sfx = document.getElementById('set-sfx').checked;
+    state.settings.musicVolume = Number(document.getElementById('set-music-vol').value);
+    state.settings.sfxVolume = Number(document.getElementById('set-sfx-vol').value);
+    state.settings.fontScale = Number(document.getElementById('set-font').value) || 1;
+    state.settings.defaultSpeed = Number(document.getElementById('set-speed').value) || 1;
+    state.settings.autosaveMinutes = Math.max(1, Math.min(30, Number(document.getElementById('set-autosave').value) || 2));
+    setMusicEnabled(!!state.settings.music);
+    setSfxEnabled(!!state.settings.sfx);
+    setMusicVolume(state.settings.musicVolume);
+    setSfxVolume(state.settings.sfxVolume);
+    if (state.settings.music) startMusic();
+    applyTheme();
+    sfx.success();
+    showToast('Ajustes aplicados');
+    needsFullRender = true;
+    render();
+  };
+}
+
+function renderMonthly() {
+  const st = currentMonthStatement(state);
+  app.innerHTML = `
+    <div class="shell">
+      ${topbarHTML()}
+      <div class="layout" style="grid-template-columns:280px 1fr">
+        ${sideNav()}
+        <section class="panel">
+          <h2>Liquidación mensual</h2>
+          <p class="muted">${escapeHtml(st.label)}</p>
+          <div class="close-summary">
+            <div class="stat-row"><span>Ventas totales</span><strong>${formatEuro(st.totalSales)}</strong></div>
+            <div class="stat-row"><span>Comisiones</span><strong>${formatEuro(st.totalCommission)}</strong></div>
+            <div class="stat-row"><span>Premios pagados</span><strong>${formatEuro(st.totalPrizes)}</strong></div>
+            <div class="stat-row"><span>Gastos local</span><strong>${formatEuro(st.expenses)}</strong></div>
+            <div class="stat-row"><span>Proveedor</span><strong>${formatEuro(st.supplier)}</strong></div>
+            <div class="stat-row"><span>Faltantes</span><strong>${formatEuro(st.shortage)}</strong></div>
+          </div>
+          <h3 style="margin-top:16px">Por organización</h3>
+          ${['LAE', 'ONCE', 'Otros']
+            .map((org) => {
+              const o = st.orgs[org];
+              return `<div class="close-summary" style="margin-top:8px">
+                <strong>${org}</strong>
+                <div class="stat-row"><span>Ventas</span><strong>${formatEuro(o.sales)}</strong></div>
+                <div class="stat-row"><span>Comisión</span><strong>${formatEuro(o.commission)}</strong></div>
+                <div class="stat-row"><span>Remesa</span><strong>${formatEuro(o.remittance)}</strong></div>
+                <div class="stat-row"><span>Premios</span><strong>${formatEuro(o.prizes)}</strong></div>
+              </div>`;
+            })
+            .join('')}
+          <div class="actions" style="margin-top:16px">
+            <button class="btn primary" id="btn-monthly-pdf">Descargar PDF</button>
+          </div>
+        </section>
+      </div>
+    </div>
+    ${toastHTML()}
+  `;
+  bindTopbar();
+  bindNav();
+  document.getElementById('btn-monthly-pdf').onclick = () => {
+    downloadMonthlyPdf(st);
+    sfx.success();
+    showToast('PDF de liquidación mensual descargado');
+  };
+}
+
+let globalKeysBound = false;
+function ensureGlobalShortcuts() {
+  if (globalKeysBound) return;
+  globalKeysBound = true;
+  document.addEventListener('keydown', (e) => {
+    if (!state || state.ui.screen === 'menu') return;
+    const tag = (e.target?.tagName || '').toLowerCase();
+    const typing = tag === 'input' || tag === 'textarea' || e.target?.isContentEditable;
+    if (typing) return;
+    if (state.ui.screen === 'tpv') return; // leave F-keys / Enter / Esc to TPV handler
+    const key = e.key?.toLowerCase?.() || '';
+    if (key === 'n') {
+      const client = state.customers.current;
+      if (!client) return;
+      e.preventDefault();
+      sfx.tpv();
+      if (client.intent === 'pena_day' && (client.wishlist?.length || client.request)) {
+        loadWishlistIntoTpv(client);
+      } else {
+        openTpv(state, client);
+      }
+      needsFullRender = true;
+      render();
+      return;
+    }
+    if (key === 'a') {
+      e.preventDefault();
+      sfx.click();
+      startArqueo(state, 'midday');
+      needsFullRender = true;
+      render();
+      return;
+    }
+    if (key === 'c') {
+      e.preventDefault();
+      if (!confirmImportant('¿Ir a cierre y balance del día?')) return;
+      state.ui.screen = 'close';
+      sfx.click();
+      needsFullRender = true;
+      render();
+    }
+  });
+}
+
+
 // Boot
 state = null;
+ensureGlobalShortcuts();
 renderMenu();
 requestAnimationFrame(loop);
 window.__loterias = () => state;

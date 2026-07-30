@@ -9,8 +9,8 @@ import { ensureJackpots } from './jackpots.js';
 import { seedDefaultShowcase, ensureShowcase } from './showcase.js';
 
 export const STARTING_BANK_CENTS = 950000;
-export const SAVE_VERSION = 5;
-export const GAME_VERSION = '0.4';
+export const SAVE_VERSION = 6;
+export const GAME_VERSION = '0.5';
 export const SLOT_COUNT = 3;
 export const STORAGE_PREFIX = 'loterias-alora-slot-';
 export const HIGH_PRIZE_ALERT_CENTS = 200000; // 2.000 €
@@ -107,7 +107,16 @@ export function createNewGame(options = {}) {
       servedToday: 0,
       nextSpawnAtMs: start.getTime() + 10 * 1000,
     },
-    settings: { music: true, sfx: true, autosaveMinutes: 2, theme: 'light' },
+    settings: {
+      music: true,
+      sfx: true,
+      autosaveMinutes: 2,
+      theme: 'light',
+      musicVolume: 0.45,
+      sfxVolume: 0.7,
+      fontScale: 1,
+      defaultSpeed: 1,
+    },
     showcase: [],
     dayLog: [],
     holidays,
@@ -132,8 +141,14 @@ export function createNewGame(options = {}) {
       fichaId: null,
       highPrizeAlert: null,
       mondayScratchReport: null,
+      lastAutosaveAt: null,
+      lastAutosaveSlot: null,
+      scratchReveal: null,
+      penaDayYmd: null,
+      penaDayNotice: null,
     },
   };
+  game.clock.speed = game.settings.defaultSpeed;
   return finalizeNewGame(game);
 }
 
@@ -154,8 +169,17 @@ export function migrateState(data) {
   if (!data.events) data.events = buildAloraEvents(2025, 2032);
   else Object.assign(data.events, buildAloraEvents(2025, 2032));
   if (!data.nextIds) data.nextIds = { ticket: 1 };
-  if (!data.settings) data.settings = { music: true, sfx: true, autosaveMinutes: 2, theme: 'light' };
-  data.settings.theme = data.settings.theme || 'light';
+  if (!data.settings) data.settings = {};
+  data.settings = {
+    music: data.settings.music !== false,
+    sfx: data.settings.sfx !== false,
+    autosaveMinutes: data.settings.autosaveMinutes || 2,
+    theme: data.settings.theme || 'light',
+    musicVolume: data.settings.musicVolume ?? 0.45,
+    sfxVolume: data.settings.sfxVolume ?? 0.7,
+    fontScale: data.settings.fontScale || 1,
+    defaultSpeed: data.settings.defaultSpeed ?? 1,
+  };
   if (!data.customers.abonados || !data.customers.penas) {
     const { abonados, penas } = generateAbonadosAndPenas();
     data.customers.abonados = data.customers.abonados || abonados;

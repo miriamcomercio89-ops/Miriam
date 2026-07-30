@@ -3,6 +3,9 @@ import { hashSeed, mulberry32, pickUnique, pickInt, pad5 } from './rng.js';
 import { gameDate } from './time.js';
 
 const DEFAULT_DRAW_HOUR = 21;
+const COLORS = ['rojo', 'verde', 'azul', 'oro'];
+const PALOS = ['oros', 'copas', 'espadas', 'bastos'];
+const VALORES = [1, 2, 3, 4, 5, 6, 7, 10, 11, 12];
 
 function ymdFromDate(d) {
   return d.toISOString().slice(0, 10);
@@ -12,12 +15,12 @@ function drawKey(productId, ymd) {
   return `${productId}@${ymd}`;
 }
 
-export function generateDrawResult(productId, ymd) {
-  const rng = mulberry32(hashSeed('draw', productId, ymd));
-  const p = getProduct(productId);
-  if (!p) return null;
+function pad2(n) {
+  return String(n).padStart(2, '0');
+}
 
-  switch (p.numberMode || productId) {
+function genByMode(mode, productId, ymd, rng) {
+  switch (mode) {
     case '6from49':
       return {
         productId,
@@ -32,12 +35,9 @@ export function generateDrawResult(productId, ymd) {
     case 'gordo':
       return { productId, ymd, numbers: pickUnique(rng, 5, 54), clave: pickInt(rng, 1, 9) };
     case 'nacional':
-      return {
-        productId,
-        ymd,
-        winningNumber: productId === 'once-triplex' ? String(pickInt(rng, 0, 999)).padStart(3, '0') : pad5(pickInt(rng, 0, 99999)),
-      };
+      return { productId, ymd, winningNumber: pad5(pickInt(rng, 0, 99999)) };
     case 'triplex':
+    case 'serieLocal':
       return { productId, ymd, winningNumber: String(pickInt(rng, 0, 999)).padStart(3, '0') };
     case 'quiniela': {
       const column = Array.from({ length: 14 }, () => ['1', 'X', '2'][pickInt(rng, 0, 2)]);
@@ -60,62 +60,99 @@ export function generateDrawResult(productId, ymd) {
         plus: pickInt(rng, 1, 20),
       };
     case '5from40':
+      return { productId, ymd, numbers: pickUnique(rng, 5, 40) };
+    case '4from30':
+      return { productId, ymd, numbers: pickUnique(rng, 4, 30) };
+    case '6from36':
+      return { productId, ymd, numbers: pickUnique(rng, 6, 36) };
+    case '7from45':
+      return { productId, ymd, numbers: pickUnique(rng, 7, 45) };
+    case '2from20':
+      return { productId, ymd, numbers: pickUnique(rng, 2, 20) };
+    case 'bingo75':
+      return { productId, ymd, numbers: pickUnique(rng, 5, 75) };
+    case 'colorball':
+      return {
+        productId,
+        ymd,
+        numbers: pickUnique(rng, 4, 30),
+        color: COLORS[pickInt(rng, 0, COLORS.length - 1)],
+      };
+    case 'ruleta':
+      return { productId, ymd, roulette: pickInt(rng, 0, 36) };
+    case 'fecha':
+      return { productId, ymd, day: pickInt(rng, 1, 28), month: pickInt(rng, 1, 12) };
+    case 'horaSuerte':
+      return {
+        productId,
+        ymd,
+        hour: pickInt(rng, 0, 23),
+        minute: pickInt(rng, 0, 59),
+      };
+    case 'pares':
+      return {
+        productId,
+        ymd,
+        parity: Array.from({ length: 5 }, () => (rng() < 0.5 ? 'P' : 'I')),
+      };
+    case 'dados':
+      return {
+        productId,
+        ymd,
+        dice: Array.from({ length: 3 }, () => pickInt(rng, 1, 6)),
+      };
+    case 'carta':
+      return {
+        productId,
+        ymd,
+        cards: Array.from({ length: 3 }, () => ({
+          palo: PALOS[pickInt(rng, 0, 3)],
+          valor: VALORES[pickInt(rng, 0, VALORES.length - 1)],
+        })),
+      };
     default:
-      if (['once-cupon', 'once-cuponazo', 'once-sueldazo', 'lae-nacional', 'lae-nacional-jueves', 'lae-navidad', 'lae-nino'].includes(productId)) {
-        return { productId, ymd, winningNumber: pad5(pickInt(rng, 0, 99999)) };
-      }
       return { productId, ymd, numbers: pickUnique(rng, 5, 40) };
   }
+}
+
+export function generateDrawResult(productId, ymd) {
+  const rng = mulberry32(hashSeed('draw', productId, ymd));
+  const p = getProduct(productId);
+  if (!p) return null;
+  return genByMode(p.numberMode || productId, productId, ymd, rng);
 }
 
 export function generateBetSelection(productId, rng) {
   const p = getProduct(productId);
   if (!p) return {};
   const mode = p.numberMode;
-
-  if (mode === '6from49') {
-    return { numbers: pickUnique(rng, 6, 49), reintegro: pickInt(rng, 0, 9) };
+  const draw = genByMode(mode, productId, 'bet', rng);
+  // Convert draw-shaped result to selection shape
+  if (draw.winningNumber != null) return { number: draw.winningNumber };
+  if (draw.roulette != null) return { roulette: draw.roulette };
+  if (draw.day != null) return { day: draw.day, month: draw.month };
+  if (draw.hour != null) return { hour: draw.hour, minute: draw.minute };
+  if (draw.parity) return { parity: draw.parity };
+  if (draw.dice) return { dice: draw.dice };
+  if (draw.cards) return { cards: draw.cards };
+  if (draw.color) return { numbers: draw.numbers, color: draw.color };
+  if (draw.races) return { races: draw.races, plus: draw.plus };
+  if (draw.column) return { column: draw.column, pleno: draw.pleno };
+  if (draw.goals) return { goals: draw.goals };
+  if (draw.stars) return { numbers: draw.numbers, stars: draw.stars };
+  if (draw.clave != null) return { numbers: draw.numbers, clave: draw.clave };
+  if (draw.numbers) {
+    const sel = { numbers: draw.numbers };
+    if (draw.reintegro != null) sel.reintegro = draw.reintegro;
+    return sel;
   }
-  if (mode === 'euro' || mode === 'eurojackpot') {
-    return { numbers: pickUnique(rng, 5, 50), stars: pickUnique(rng, 2, 12) };
-  }
-  if (mode === 'gordo') {
-    return { numbers: pickUnique(rng, 5, 54), clave: pickInt(rng, 1, 9) };
-  }
-  if (mode === 'nacional') {
-    return { number: pad5(pickInt(rng, 0, 99999)) };
-  }
-  if (mode === 'triplex') {
-    return { number: String(pickInt(rng, 0, 999)).padStart(3, '0') };
-  }
-  if (mode === 'quiniela') {
-    return {
-      column: Array.from({ length: 14 }, () => ['1', 'X', '2'][pickInt(rng, 0, 2)]),
-      pleno: ['0', '1', '2', 'M'][pickInt(rng, 0, 3)],
-    };
-  }
-  if (mode === 'quinigol') {
-    return { goals: Array.from({ length: 6 }, () => ['0', '1', '2', 'M'][pickInt(rng, 0, 3)]) };
-  }
-  if (mode === 'superonce' || mode === 'lototurf') {
-    return { numbers: pickUnique(rng, 5, 49) };
-  }
-  if (mode === 'quintuple') {
-    return {
-      races: Array.from({ length: 5 }, () => pickInt(rng, 1, 20)),
-      plus: pickInt(rng, 1, 20),
-    };
-  }
-  if (mode === '5from40') {
-    return { numbers: pickUnique(rng, 5, 40) };
-  }
-  return { numbers: pickUnique(rng, 5, 40) };
+  return {};
 }
 
 export function nextDrawYmd(productId, fromDate) {
   const p = getProduct(productId);
   if (!p?.drawDays?.length) {
-    if (productId === 'lae-navidad') {
+    if (productId === 'lae-navidad' || productId === 'alo-navidad') {
       const y = fromDate.getUTCFullYear();
       const target = new Date(Date.UTC(y, 11, 22));
       if (fromDate > target) return `${y + 1}-12-22`;
@@ -166,7 +203,10 @@ export function ensureDrawsResolved(state) {
         const drawHour = p.drawHour ?? DEFAULT_DRAW_HOUR;
         if (ymd < today) shouldResolve = true;
         else if (ymd === today && hour >= drawHour) shouldResolve = true;
-      } else if (productId === 'lae-navidad' && ymd.endsWith('-12-22')) {
+      } else if (
+        (productId === 'lae-navidad' || productId === 'alo-navidad') &&
+        ymd.endsWith('-12-22')
+      ) {
         shouldResolve = ymd < today || (ymd === today && hour >= 21);
       } else if (productId === 'lae-nino' && ymd.endsWith('-01-06')) {
         shouldResolve = ymd < today || (ymd === today && hour >= 21);
@@ -189,4 +229,35 @@ export function listDrawHistory(state, limit = 60) {
     .slice(0, limit);
 }
 
-export { drawKey, ymdFromDate };
+export function modeHint(mode) {
+  const hints = {
+    nacional: '5 cifras (ej. 45821) · serie 45821 · 45821 x2',
+    triplex: '3 cifras (ej. 742)',
+    serieLocal: '3 cifras 000–999',
+    '6from49': '6 números 1–49 y reintegro',
+    euro: '5 números | 2 estrellas',
+    eurojackpot: '5 números | 2 estrellas',
+    gordo: '5 números 1–54 y clave',
+    quiniela: '14 signos 1/X/2',
+    quinigol: '6 resultados 0/1/2/M',
+    superonce: '5 números del 1 al 49',
+    lototurf: '5 números del 1 al 49',
+    quintuple: '5 caballos 1–20 + suplementaria',
+    '5from40': '5 números del 1 al 40',
+    '4from30': '4 números del 1 al 30',
+    '6from36': '6 números del 1 al 36',
+    '7from45': '7 números del 1 al 45',
+    '2from20': '2 números del 1 al 20',
+    bingo75: '5 números del 1 al 75',
+    colorball: '4 números 1–30 y color (rojo/verde/azul/oro)',
+    ruleta: 'Un número 0–36',
+    fecha: 'Día y mes (ej. 8 9 o 08/09)',
+    horaSuerte: 'Hora HH:MM (ej. 19:30)',
+    pares: '5 letras P o I (ej. PIPII)',
+    dados: '3 dados 1–6 (ej. 3 5 1)',
+    carta: '3 cartas palo-valor (ej. oros-1 copas-10 bastos-12)',
+  };
+  return hints[mode] || 'Escribe la combinación dictada';
+}
+
+export { drawKey, ymdFromDate, pad2, COLORS, PALOS, VALORES };

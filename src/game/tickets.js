@@ -184,9 +184,98 @@ export function evaluateDrawPrize(ticket, draw) {
     return { prizeCents: prize, detail };
   }
 
-  // inventadas
+  // inventadas / modos especiales
+  if (draw.winningNumber != null || sel.number != null) {
+    const mine = String(sel.number || '');
+    const win = String(draw.winningNumber || '');
+    const price = getProduct(id)?.priceCents || 100;
+    if (mine && mine === win) return { prizeCents: price * 5000, detail: 'Número completo' };
+    if (mine && win && mine.slice(-2) === win.slice(-2)) {
+      return { prizeCents: price * 20, detail: '2 últimas cifras' };
+    }
+    if (mine && win && mine.slice(-1) === win.slice(-1)) {
+      return { prizeCents: price, detail: 'Reintegro' };
+    }
+    return { prizeCents: 0, detail: 'Sin premio' };
+  }
+  if (sel.color != null || draw.color != null) {
+    const hits = (sel.numbers || []).filter((n) => (draw.numbers || []).includes(n)).length;
+    const colorOk = sel.color && sel.color === draw.color;
+    let prize = 0;
+    if (hits === 4 && colorOk) prize = 800000;
+    else if (hits === 4) prize = 40000;
+    else if (hits === 3 && colorOk) prize = 8000;
+    else if (hits === 3) prize = 1500;
+    else if (colorOk) prize = getProduct(id)?.priceCents || 100;
+    return { prizeCents: prize, detail: prize ? `${hits} + color` : 'Sin premio' };
+  }
+  if (sel.roulette != null || draw.roulette != null) {
+    const ok = sel.roulette === draw.roulette;
+    return { prizeCents: ok ? 1200000 : 0, detail: ok ? 'Pleno ruleta' : 'Sin premio' };
+  }
+  if (sel.day != null || draw.day != null) {
+    const dayOk = sel.day === draw.day;
+    const monthOk = sel.month === draw.month;
+    let prize = 0;
+    if (dayOk && monthOk) prize = 250000;
+    else if (dayOk || monthOk) prize = 2000;
+    return { prizeCents: prize, detail: prize ? 'Fecha' : 'Sin premio' };
+  }
+  if (sel.hour != null || draw.hour != null) {
+    const ok = sel.hour === draw.hour && sel.minute === draw.minute;
+    const hourOk = sel.hour === draw.hour;
+    return {
+      prizeCents: ok ? 500000 : hourOk ? 3000 : 0,
+      detail: ok ? 'Hora exacta' : hourOk ? 'Hora' : 'Sin premio',
+    };
+  }
+  if (sel.parity || draw.parity) {
+    const hits = (sel.parity || []).filter((v, i) => v === (draw.parity || [])[i]).length;
+    const prize = hits === 5 ? 100000 : hits === 4 ? 5000 : hits === 3 ? 500 : 0;
+    return { prizeCents: prize, detail: `${hits}/5 paridad` };
+  }
+  if (sel.dice || draw.dice) {
+    const hits = (sel.dice || []).filter((v, i) => v === (draw.dice || [])[i]).length;
+    const prize = hits === 3 ? 200000 : hits === 2 ? 4000 : 0;
+    return { prizeCents: prize, detail: `${hits} dados` };
+  }
+  if (sel.cards || draw.cards) {
+    const hits = (sel.cards || []).filter((c, i) => {
+      const d = (draw.cards || [])[i];
+      return d && c.palo === d.palo && c.valor === d.valor;
+    }).length;
+    const prize = hits === 3 ? 300000 : hits === 2 ? 8000 : hits === 1 ? 500 : 0;
+    return { prizeCents: prize, detail: `${hits} cartas` };
+  }
+  if (sel.races || draw.races) {
+    const hits = (sel.races || []).filter((v, i) => v === (draw.races || [])[i]).length;
+    const plus = sel.plus === draw.plus;
+    let prize = 0;
+    if (hits === 5 && plus) prize = 1000000;
+    else if (hits === 5) prize = 80000;
+    else if (hits >= 3) prize = 2000 * hits;
+    return { prizeCents: prize, detail: `${hits} carreras${plus ? ' +plus' : ''}` };
+  }
+  if (sel.stars || draw.stars) {
+    const hits = (sel.numbers || []).filter((n) => (draw.numbers || []).includes(n)).length;
+    const stars = (sel.stars || []).filter((n) => (draw.stars || []).includes(n)).length;
+    let prize = 0;
+    if (hits === 5 && stars === 2) prize = 2000000;
+    else if (hits >= 3) prize = 1000 * hits;
+    return { prizeCents: prize, detail: `${hits}+${stars}` };
+  }
   const hits = (sel.numbers || []).filter((n) => (draw.numbers || []).includes(n)).length;
-  const table = { 5: 500000, 4: 20000, 3: 2000, 2: 200 };
+  const need = (draw.numbers || []).length || 5;
+  const table =
+    need >= 7
+      ? { 7: 900000, 6: 80000, 5: 8000, 4: 800 }
+      : need === 6
+        ? { 6: 700000, 5: 40000, 4: 4000, 3: 400 }
+        : need === 4
+          ? { 4: 400000, 3: 15000, 2: 800 }
+          : need === 2
+            ? { 2: 150000, 1: 1500 }
+            : { 5: 500000, 4: 20000, 3: 2000, 2: 200 };
   const prize = table[hits] || 0;
   return { prizeCents: prize, detail: prize ? `${hits} aciertos` : 'Sin premio', hits };
 }
@@ -252,6 +341,15 @@ export function formatSelection(ticket) {
   if (ticket.kind === 'rasca') return `Código ${s.code || '—'}`;
   if (s.number) return `Nº ${s.number}`;
   if (s.races) return `Carreras ${s.races.join('-')}${s.plus != null ? ` +${s.plus}` : ''}`;
+  if (s.color) return `${(s.numbers || []).join(', ')} · ${s.color}`;
+  if (s.roulette != null) return `Ruleta ${s.roulette}`;
+  if (s.day != null) return `Fecha ${s.day}/${s.month}`;
+  if (s.hour != null) {
+    return `Hora ${String(s.hour).padStart(2, '0')}:${String(s.minute).padStart(2, '0')}`;
+  }
+  if (s.parity) return `Par/Impar ${s.parity.join('')}`;
+  if (s.dice) return `Dados ${s.dice.join('-')}`;
+  if (s.cards) return `Cartas ${s.cards.map((c) => `${c.palo}${c.valor}`).join(' ')}`;
   if (s.stars) return `${(s.numbers || []).join(', ')} ★ ${(s.stars || []).join(', ')}`;
   if (s.clave != null) return `${(s.numbers || []).join(', ')} clave ${s.clave}`;
   if (s.column) return `Columna ${s.column.join('')}`;

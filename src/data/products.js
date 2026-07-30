@@ -427,3 +427,15 @@ export const CORE_DRAW_IDS = [
 export function inventedLotteryCount() {
   return REGIONAL_LOTTERIES.length;
 }
+
+/** Etiqueta corta para TPV: mecánica + comisión */
+export function productMetaLabel(p) {
+  if (!p) return '';
+  const parts = [];
+  if (p.trait) parts.push(p.trait);
+  else if (p.numberMode) parts.push(p.numberMode);
+  if (p.commissionRate != null) parts.push(`Com. ${(p.commissionRate * 100).toFixed(1)}%`);
+  if (p.topPrizeHint) parts.push(p.topPrizeHint);
+  return parts.join(' · ');
+}
+

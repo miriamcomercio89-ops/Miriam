@@ -77,7 +77,52 @@ function scheduleNextSpawn(state) {
   state.customers.nextSpawnAtMs = state.clock.gameTimeMs + minMs + Math.random() * (maxMs - minMs);
 }
 
+/** Viernes: turno de peña (pedido grande, transferencia). */
+export function maybeSpawnPenaDay(state) {
+  const d = gameDate(state);
+  if (d.getUTCDay() !== 5) return null; // viernes
+  const ymd = gameYmd(state);
+  if (state.ui.penaDayYmd === ymd) return null;
+  if (!state.customers.penas?.length) return null;
+  if (rngGate(0.55) === false) return null;
+  state.ui.penaDayYmd = ymd;
+  const pena = state.customers.penas[Math.floor(Math.random() * state.customers.penas.length)];
+  const client = { ...pena, intent: 'pena_day', prefersPayment: 'transfer' };
+  const prefs = pena.preferredProducts?.length ? pena.preferredProducts : ['lae-euromillones'];
+  client.wishlist = prefs.map((productId) => {
+    const p = getProduct(productId);
+    return {
+      productId,
+      productName: p?.name || productId,
+      qty: 4 + Math.floor(Math.random() * 6),
+      preferDictate: Math.random() < 0.3,
+    };
+  });
+  client.wishlist.push({
+    productId: 'lae-nacional',
+    productName: getProduct('lae-nacional')?.name || 'Nacional',
+    qty: 2,
+    preferDictate: false,
+  });
+  client.note = `Turno de peña: ${pena.subscription || 'pedido semanal'}. Pagan por transferencia.`;
+  client.line = 'Venimos a por lo de la peña.';
+  state.ui.penaDayNotice = {
+    title: `Hoy: turno ${pena.name}`,
+    body: 'Pedido grande · preferencia transferencia. Confirma en TPV.',
+  };
+  return client;
+}
+
+function rngGate(p) {
+  return Math.random() < p;
+}
+
 function pickArrivingClient(state) {
+  const penaDay = maybeSpawnPenaDay(state);
+  if (penaDay && !state.customers.current && !(state.customers.queue || []).some((c) => c.intent === 'pena_day')) {
+    return penaDay;
+  }
+
   const rng = Math.random;
   const ymd = gameYmd(state);
   // Cumpleaños / santoral: prioridad suave
@@ -163,6 +208,11 @@ export function attachIntent(state, client) {
     const qty = 1 + Math.floor(rng() * 4);
     client.wishlist = [{ productId: p.id, productName: p.name, qty, preferDictate: false }];
     client.note = `Encargo de ${p.name} ×${qty}`;
+    return client;
+  }
+
+  if (client.intent === 'pena_day') {
+    client.note = client.note || 'Turno de peña.';
     return client;
   }
 

@@ -236,21 +236,19 @@ function parseDictatedNumbers(mode, text) {
   const raw = String(text || '').trim();
   if (!raw) return { ok: false, error: 'Escribe los números que dicta el cliente' };
 
-  if (mode === 'nacional' || mode === 'triplex') {
-    // Serie entera: "serie 12345" → 10 décimos del número
-    const serie = raw.match(/serie\s*(\d{5})/i);
+  if (mode === 'nacional' || mode === 'triplex' || mode === 'serieLocal') {
+    const need = mode === 'nacional' ? 5 : 3;
+    const serie = raw.match(/serie\s*(\d{3,5})/i);
     if (serie && mode === 'nacional') {
       return {
         ok: true,
-        selection: { number: serie[1], series: true, fractions: 10 },
+        selection: { number: serie[1].padStart(5, '0').slice(-5), series: true, fractions: 10 },
       };
     }
-    // Pedrea: "12345 x2" o "12345 2 décimos"
-    const pedrea = raw.match(/(\d{5})\s*(?:x|×|\*|decimos?|décimos?)?\s*(\d+)?/i);
+    const pedrea = raw.match(/(\d{3,5})\s*(?:x|×|\*|decimos?|décimos?)?\s*(\d+)?/i);
     const digits = raw.replace(/\D/g, '');
-    const need = mode === 'triplex' ? 3 : 5;
     if (digits.length < need && !pedrea) return { ok: false, error: `Haz falta ${need} cifras` };
-    const number = (pedrea ? pedrea[1] : digits.slice(0, need)).padStart(need, '0');
+    const number = (pedrea ? pedrea[1] : digits.slice(0, need)).padStart(need, '0').slice(-need);
     const fractions = pedrea && pedrea[2] ? Math.max(1, Math.min(10, Number(pedrea[2]))) : 1;
     return { ok: true, selection: { number, fractions, series: false } };
   }
@@ -314,12 +312,21 @@ function parseDictatedNumbers(mode, text) {
     return { ok: true, selection: { goals: g.slice(0, 6).split('') } };
   }
 
-  if (mode === 'superonce' || mode === '5from40' || mode === 'lototurf') {
-    const max = mode === '5from40' ? 40 : 49;
-    const need = 5;
+  const poolModes = {
+    superonce: [5, 49],
+    lototurf: [5, 49],
+    '5from40': [5, 40],
+    '4from30': [4, 30],
+    '6from36': [6, 36],
+    '7from45': [7, 45],
+    '2from20': [2, 20],
+    bingo75: [5, 75],
+  };
+  if (poolModes[mode]) {
+    const [need, max] = poolModes[mode];
     const nums = raw.split(/[\s,;.-]+/).map(Number).filter((n) => n >= 1 && n <= max);
     const unique = [...new Set(nums)];
-    if (unique.length < need) return { ok: false, error: `${need} numbers del 1 al ${max}` };
+    if (unique.length < need) return { ok: false, error: `${need} números del 1 al ${max}` };
     return { ok: true, selection: { numbers: unique.slice(0, need).sort((a, b) => a - b) } };
   }
 
@@ -332,7 +339,90 @@ function parseDictatedNumbers(mode, text) {
     };
   }
 
+  if (mode === 'colorball') {
+    const colorMatch = raw.match(/(rojo|verde|azul|oro)/i);
+    const nums = raw.split(/[\s,;.-]+/).map(Number).filter((n) => n >= 1 && n <= 30);
+    const unique = [...new Set(nums)];
+    if (unique.length < 4 || !colorMatch) {
+      return { ok: false, error: '4 números 1–30 y color (rojo/verde/azul/oro)' };
+    }
+    return {
+      ok: true,
+      selection: { numbers: unique.slice(0, 4).sort((a, b) => a - b), color: colorMatch[1].toLowerCase() },
+    };
+  }
+
+  if (mode === 'ruleta') {
+    const n = Number(raw.replace(/\D/g, ''));
+    if (Number.isNaN(n) || n < 0 || n > 36) return { ok: false, error: 'Número 0–36' };
+    return { ok: true, selection: { roulette: n } };
+  }
+
+  if (mode === 'fecha') {
+    const m = raw.match(/(\d{1,2})\D+(\d{1,2})/);
+    if (!m) return { ok: false, error: 'Día y mes (ej. 8 9)' };
+    const day = Math.min(31, Math.max(1, Number(m[1])));
+    const month = Math.min(12, Math.max(1, Number(m[2])));
+    return { ok: true, selection: { day, month } };
+  }
+
+  if (mode === 'horaSuerte') {
+    const m = raw.match(/(\d{1,2})\D+(\d{1,2})/);
+    if (!m) return { ok: false, error: 'Hora HH:MM (ej. 19:30)' };
+    const hour = Math.min(23, Math.max(0, Number(m[1])));
+    const minute = Math.min(59, Math.max(0, Number(m[2])));
+    return { ok: true, selection: { hour, minute } };
+  }
+
+  if (mode === 'pares') {
+    const signs = raw.toUpperCase().replace(/[^PI]/g, '');
+    if (signs.length < 5) return { ok: false, error: '5 letras P o I (ej. PIPII)' };
+    return { ok: true, selection: { parity: signs.slice(0, 5).split('') } };
+  }
+
+  if (mode === 'dados') {
+    const nums = raw.split(/[\s,;.-]+/).map(Number).filter((n) => n >= 1 && n <= 6);
+    if (nums.length < 3) return { ok: false, error: '3 dados 1–6' };
+    return { ok: true, selection: { dice: nums.slice(0, 3) } };
+  }
+
+  if (mode === 'carta') {
+    const parts = raw.toLowerCase().match(/(oros|copas|espadas|bastos)\s*[-:]?\s*(\d{1,2})/g);
+    if (!parts || parts.length < 3) {
+      return { ok: false, error: '3 cartas (ej. oros-1 copas-10 bastos-12)' };
+    }
+    const cards = parts.slice(0, 3).map((p) => {
+      const m = p.match(/(oros|copas|espadas|bastos)\s*[-:]?\s*(\d{1,2})/);
+      return { palo: m[1], valor: Number(m[2]) };
+    });
+    return { ok: true, selection: { cards } };
+  }
+
   return { ok: false, error: 'No se entiende la combinación' };
+}
+
+/** Fracciones / serie / pedrea en líneas de décimo. */
+export function setLineFraction(state, lineId, fractions) {
+  const tpv = state.ui.tpv;
+  if (!tpv) return state;
+  const line = tpv.lines.find((l) => l.id === lineId);
+  if (!line) return state;
+  const p = getProduct(line.productId);
+  if (!p || (p.numberMode !== 'nacional' && !p.fractionable)) {
+    tpv.message = 'Este producto no admite fracciones';
+    return state;
+  }
+  if (!line.selection) line.selection = { number: '00000' };
+  const f = Math.max(1, Math.min(10, Number(fractions) || 1));
+  line.selection.fractions = f;
+  line.selection.series = f === 10;
+  line.qty = f;
+  tpv.message = f === 10 ? 'Serie entera (10 décimos)' : f === 1 ? '1 décimo' : `Pedrea ×${f}`;
+  return state;
+}
+
+export function setLineSeries(state, lineId) {
+  return setLineFraction(state, lineId, 10);
 }
 
 /** Deshacer la última línea del ticket (sin motivo de cancelación). */
@@ -457,9 +547,18 @@ export function formatLineSelection(line) {
   }
   if (s.column) return `Columna ${s.column.join('')}`;
   if (s.goals) return `Goles ${s.goals.join('')}`;
+  if (s.races) return `Carreras ${s.races.join('-')}${s.plus != null ? ` +${s.plus}` : ''}`;
+  if (s.color) return `${(s.numbers || []).join(',')} · ${s.color}`;
+  if (s.roulette != null) return `Ruleta ${s.roulette}`;
+  if (s.day != null) return `Fecha ${s.day}/${s.month}`;
+  if (s.hour != null) {
+    return `Hora ${String(s.hour).padStart(2, '0')}:${String(s.minute).padStart(2, '0')}`;
+  }
+  if (s.parity) return `Par/Impar ${s.parity.join('')}`;
+  if (s.dice) return `Dados ${s.dice.join('-')}`;
+  if (s.cards) return `Cartas ${s.cards.map((c) => `${c.palo}-${c.valor}`).join(' ')}`;
   if (s.stars) return `${(s.numbers || []).join(',')} ★ ${s.stars.join(',')}`;
   if (s.clave != null) return `${(s.numbers || []).join(',')} clave ${s.clave}`;
-  if (s.races) return `Carreras ${s.races.join('-')}${s.plus != null ? ` +${s.plus}` : ''}`;
   if (s.numbers) {
     const r = s.reintegro != null ? ` R${s.reintegro}` : '';
     return `${s.numbers.join(',')}${r}`;

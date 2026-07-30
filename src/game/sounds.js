@@ -4,6 +4,8 @@ let ctx;
 let musicNodes = null;
 let musicOn = true;
 let sfxOn = true;
+let musicVol = 0.45;
+let sfxVol = 0.7;
 
 function ac() {
   if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -20,7 +22,7 @@ function beep({ freq = 880, dur = 0.08, type = 'sine', gain = 0.04, slideTo } = 
     o.type = type;
     o.frequency.value = freq;
     if (slideTo) o.frequency.exponentialRampToValueAtTime(Math.max(1, slideTo), c.currentTime + dur);
-    g.gain.value = gain;
+    g.gain.value = gain * sfxVol;
     g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + dur);
     o.connect(g);
     g.connect(c.destination);
@@ -63,7 +65,7 @@ export function startMusic() {
   try {
     const c = ac();
     const master = c.createGain();
-    master.gain.value = 0.035;
+    master.gain.value = 0.035 * musicVol;
     master.connect(c.destination);
     const notes = [196, 247, 294, 330, 294, 247];
     const oscs = notes.map((freq, i) => {
@@ -111,6 +113,15 @@ export function setMusicEnabled(on) {
 
 export function setSfxEnabled(on) {
   sfxOn = on;
+}
+
+export function setMusicVolume(v) {
+  musicVol = Math.max(0, Math.min(1, Number(v) || 0));
+  if (musicNodes?.master) musicNodes.master.gain.value = 0.035 * musicVol;
+}
+
+export function setSfxVolume(v) {
+  sfxVol = Math.max(0, Math.min(1, Number(v) || 0));
 }
 
 export function isMusicEnabled() {

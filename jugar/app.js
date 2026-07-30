@@ -345,7 +345,6 @@
 
   // src/data/regionalLotteries.js
   function L(id, name, org, tpvCategory, priceCents, drawDays, extra = {}) {
-    var _a, _b;
     return {
       id,
       name,
@@ -355,82 +354,404 @@
       priceCents,
       commissionRate: org === "Local" ? 0.12 : org === "Provincial" ? 0.1 : 0.08,
       drawDays,
-      drawHour: (_a = extra.drawHour) != null ? _a : 20,
-      orderDays: (_b = extra.orderDays) != null ? _b : 2,
+      drawHour: 20,
+      orderDays: 2,
       stockType: "physical",
       checkable: true,
       needsNumbers: true,
-      numberMode: extra.numberMode || "5from40",
-      description: extra.description || `${name} (inventada \xB7 ${org}).`,
+      numberMode: "5from40",
+      description: `${name} (inventada \xB7 ${org}).`,
+      trait: "",
+      topPrizeHint: "",
+      fractionable: false,
       ...extra
     };
   }
   var AUTONOMICAS = [
-    L("and-fortuna", "Andaluc\xEDa Fortuna", "Auton\xF3mica", "Auton\xF3micas", 100, [5]),
-    L("and-olivo", "El Olivo de la Suerte", "Auton\xF3mica", "Auton\xF3micas", 150, [2]),
-    L("and-costa", "Sorteo Costa del Sol", "Auton\xF3mica", "Auton\xF3micas", 200, [6]),
-    L("and-guadalquivir", "Guadalquivir Oro", "Auton\xF3mica", "Auton\xF3micas", 100, [3]),
-    L("and-sierra", "Sierra Nevada Suerte", "Auton\xF3mica", "Auton\xF3micas", 150, [4]),
-    L("and-alhambra", "Alhambra Premia", "Auton\xF3mica", "Auton\xF3micas", 200, [5]),
-    L("and-rocio", "Roc\xEDo de la Fortuna", "Auton\xF3mica", "Auton\xF3micas", 100, [1]),
-    L("and-feria", "Feria Andaluza", "Auton\xF3mica", "Auton\xF3micas", 150, [6]),
-    L("and-levante", "Levante Andaluz", "Auton\xF3mica", "Auton\xF3micas", 100, [2]),
-    L("and-poniente", "Poniente de Suerte", "Auton\xF3mica", "Auton\xF3micas", 100, [4]),
-    L("and-azahar", "Azahar Premiado", "Auton\xF3mica", "Auton\xF3micas", 150, [3]),
-    L("and-duende", "Duende Andaluz", "Auton\xF3mica", "Auton\xF3micas", 200, [5]),
-    L("and-sol", "Sol de Andaluc\xEDa", "Auton\xF3mica", "Auton\xF3micas", 100, [1, 4]),
-    L("and-luna", "Luna Mora", "Auton\xF3mica", "Auton\xF3micas", 150, [6]),
-    L("and-patio", "Patio Cordob\xE9s", "Auton\xF3mica", "Auton\xF3micas", 100, [2])
+    L("and-fortuna", "Andaluc\xEDa Fortuna", "Auton\xF3mica", "Auton\xF3micas", 100, [5], {
+      numberMode: "5from40",
+      trait: "Cl\xE1sico 5/40",
+      topPrizeHint: "Bote semanal",
+      description: "5 n\xFAmeros del 1 al 40. Viernes 20:00."
+    }),
+    L("and-olivo", "El Olivo de la Suerte", "Auton\xF3mica", "Auton\xF3micas", 150, [2], {
+      numberMode: "6from36",
+      commissionRate: 0.09,
+      trait: "6/36",
+      topPrizeHint: "Aceite de oro",
+      description: "6 del 1\u201336. Martes."
+    }),
+    L("and-costa", "Sorteo Costa del Sol", "Auton\xF3mica", "Auton\xF3micas", 200, [6], {
+      numberMode: "nacional",
+      fractionable: true,
+      trait: "D\xE9cimo 5 cifras",
+      topPrizeHint: "Costa Gold",
+      description: "N\xFAmero de 5 cifras. S\xE1bados."
+    }),
+    L("and-guadalquivir", "Guadalquivir Oro", "Auton\xF3mica", "Auton\xF3micas", 120, [3], {
+      numberMode: "4from30",
+      drawHour: 19,
+      trait: "4/30",
+      topPrizeHint: "Lingote",
+      description: "4 n\xFAmeros del 1 al 30. Mi\xE9rcoles 19:00."
+    }),
+    L("and-sierra", "Sierra Nevada Suerte", "Auton\xF3mica", "Auton\xF3micas", 180, [4], {
+      numberMode: "7from45",
+      commissionRate: 0.085,
+      trait: "7/45",
+      topPrizeHint: "Cumbre",
+      description: "7 n\xFAmeros del 1 al 45. Jueves."
+    }),
+    L("and-alhambra", "Alhambra Premia", "Auton\xF3mica", "Auton\xF3micas", 250, [5], {
+      numberMode: "colorball",
+      trait: "4/30 + color",
+      topPrizeHint: "Nasr\xED",
+      description: "4 del 1\u201330 y bola de color (rojo/verde/azul/oro)."
+    }),
+    L("and-rocio", "Roc\xEDo de la Fortuna", "Auton\xF3mica", "Auton\xF3micas", 100, [1], {
+      numberMode: "triplex",
+      trait: "3 cifras",
+      topPrizeHint: "Romer\xEDa",
+      description: "3 cifras. Lunes."
+    }),
+    L("and-feria", "Feria Andaluza", "Auton\xF3mica", "Auton\xF3micas", 150, [6], {
+      numberMode: "carta",
+      trait: "Baraja espa\xF1ola",
+      topPrizeHint: "Reyes de oros",
+      description: "3 cartas (palo + valor). S\xE1bados."
+    }),
+    L("and-levante", "Levante Andaluz", "Auton\xF3mica", "Auton\xF3micas", 90, [2], {
+      numberMode: "2from20",
+      stockType: "terminal",
+      orderDays: 0,
+      trait: "Doble 1\u201320",
+      topPrizeHint: "Levante",
+      description: "2 n\xFAmeros del 1 al 20. Terminal."
+    }),
+    L("and-poniente", "Poniente de Suerte", "Auton\xF3mica", "Auton\xF3micas", 110, [4], {
+      numberMode: "ruleta",
+      trait: "Ruleta 0\u201336",
+      topPrizeHint: "Pleno",
+      description: "Un n\xFAmero de ruleta (0\u201336). Jueves."
+    }),
+    L("and-azahar", "Azahar Premiado", "Auton\xF3mica", "Auton\xF3micas", 160, [3], {
+      numberMode: "fecha",
+      trait: "D\xEDa + mes",
+      topPrizeHint: "Flor",
+      description: "Elige d\xEDa (1\u201331) y mes (1\u201312)."
+    }),
+    L("and-duende", "Duende Andaluz", "Auton\xF3mica", "Auton\xF3micas", 220, [5], {
+      numberMode: "bingo75",
+      commissionRate: 0.075,
+      trait: "Bingo 5/75",
+      topPrizeHint: "Duende mayor",
+      description: "5 n\xFAmeros del 1 al 75."
+    }),
+    L("and-sol", "Sol de Andaluc\xEDa", "Auton\xF3mica", "Auton\xF3micas", 100, [1, 4], {
+      numberMode: "horaSuerte",
+      trait: "Hora HH:MM",
+      topPrizeHint: "Mediod\xEDa",
+      description: "Marca una hora (00:00\u201323:59). Lunes y jueves."
+    }),
+    L("and-luna", "Luna Mora", "Auton\xF3mica", "Auton\xF3micas", 140, [6], {
+      numberMode: "pares",
+      trait: "Par / impar",
+      topPrizeHint: "Luna llena",
+      description: "5 casillas par/impar. S\xE1bados."
+    }),
+    L("and-patio", "Patio Cordob\xE9s", "Auton\xF3mica", "Auton\xF3micas", 130, [2], {
+      numberMode: "dados",
+      trait: "3 dados",
+      topPrizeHint: "Patio de flores",
+      description: "3 dados (1\u20136). Martes."
+    })
   ];
   var PROVINCIALES = [
-    L("mal-premio", "Premio M\xE1laga", "Provincial", "Provinciales", 100, [4]),
-    L("mal-axarquia", "Axarqu\xEDa Premia", "Provincial", "Provinciales", 100, [3]),
-    L("mal-antequera", "Antequera Fortuna", "Provincial", "Provinciales", 100, [2]),
-    L("mal-ronda", "Ronda de la Suerte", "Provincial", "Provinciales", 150, [5]),
-    L("mal-marbella", "Marbella Gold", "Provincial", "Provinciales", 200, [6]),
-    L("mal-nerja", "Nerja Balc\xF3n", "Provincial", "Provinciales", 100, [1]),
-    L("mal-torre", "Torremolinos Sol", "Provincial", "Provinciales", 100, [3]),
-    L("mal-estepona", "Estepona Orqu\xEDdea", "Provincial", "Provinciales", 150, [4]),
-    L("mal-fuengirola", "Fuengirola Playa", "Provincial", "Provinciales", 100, [5]),
-    L("mal-velez", "V\xE9lez-M\xE1laga", "Provincial", "Provinciales", 100, [2]),
-    L("mal-coin", "Co\xEDn Valle", "Provincial", "Provinciales", 100, [6]),
-    L("mal-alhaurin", "Alhaur\xEDn Suerte", "Provincial", "Provinciales", 100, [3]),
-    L("mal-cartama", "C\xE1rtama Guadalhorce", "Provincial", "Provinciales", 100, [1]),
-    L("mal-archidona", "Archidona Pe\xF1a", "Provincial", "Provinciales", 100, [4]),
-    L("mal-torcal", "Torcal M\xE1gico", "Provincial", "Provinciales", 150, [5]),
-    L("mal-caminito", "Caminito del Rey", "Provincial", "Provinciales", 200, [6]),
-    L("mal-chorro", "Desfiladero del Chorro", "Provincial", "Provinciales", 150, [2]),
-    L("mal-montes", "Montes de M\xE1laga", "Provincial", "Provinciales", 100, [3])
+    L("mal-premio", "Premio M\xE1laga", "Provincial", "Provinciales", 100, [4], {
+      numberMode: "5from40",
+      trait: "Provincial 5/40",
+      topPrizeHint: "Capital",
+      description: "5/40 provincial. Jueves."
+    }),
+    L("mal-axarquia", "Axarqu\xEDa Premia", "Provincial", "Provinciales", 120, [3], {
+      numberMode: "4from30",
+      drawHour: 18,
+      trait: "4/30 comarcal",
+      topPrizeHint: "Uva moscatel",
+      description: "4 del 1\u201330. Mi\xE9rcoles 18:00."
+    }),
+    L("mal-antequera", "Antequera Fortuna", "Provincial", "Provinciales", 150, [2], {
+      numberMode: "nacional",
+      fractionable: true,
+      trait: "D\xE9cimo antequerano",
+      topPrizeHint: "Torcal",
+      description: "5 cifras. Martes."
+    }),
+    L("mal-ronda", "Ronda de la Suerte", "Provincial", "Provinciales", 180, [5], {
+      numberMode: "6from36",
+      trait: "6/36 serran\xEDa",
+      topPrizeHint: "Puente nuevo",
+      description: "6 del 1\u201336. Viernes."
+    }),
+    L("mal-marbella", "Marbella Gold", "Provincial", "Provinciales", 300, [6], {
+      numberMode: "euro",
+      stockType: "terminal",
+      orderDays: 0,
+      commissionRate: 0.07,
+      trait: "5/50 + 2 estrellas",
+      topPrizeHint: "Gold Mile",
+      description: "Estilo Euromillones local (terminal)."
+    }),
+    L("mal-nerja", "Nerja Balc\xF3n", "Provincial", "Provinciales", 90, [1], {
+      numberMode: "triplex",
+      trait: "3 cifras cuevas",
+      topPrizeHint: "Balc\xF3n de Europa",
+      description: "3 cifras. Lunes."
+    }),
+    L("mal-torre", "Torremolinos Sol", "Provincial", "Provinciales", 110, [3], {
+      numberMode: "2from20",
+      stockType: "terminal",
+      orderDays: 0,
+      trait: "Doble playa",
+      topPrizeHint: "Paseo",
+      description: "2 del 1\u201320. Terminal."
+    }),
+    L("mal-estepona", "Estepona Orqu\xEDdea", "Provincial", "Provinciales", 170, [4], {
+      numberMode: "colorball",
+      trait: "4/30 + orqu\xEDdea",
+      topPrizeHint: "Orqu\xEDdea de oro",
+      description: "4 n\xFAmeros + color."
+    }),
+    L("mal-fuengirola", "Fuengirola Playa", "Provincial", "Provinciales", 100, [5], {
+      numberMode: "ruleta",
+      trait: "Ruleta costa",
+      topPrizeHint: "Sohail",
+      description: "N\xFAmero 0\u201336. Viernes."
+    }),
+    L("mal-velez", "V\xE9lez-M\xE1laga", "Provincial", "Provinciales", 130, [2], {
+      numberMode: "fecha",
+      trait: "Fecha Axarqu\xEDa",
+      topPrizeHint: "Fortaleza",
+      description: "D\xEDa y mes. Martes."
+    }),
+    L("mal-coin", "Co\xEDn Valle", "Provincial", "Provinciales", 80, [6], {
+      numberMode: "dados",
+      trait: "Dados del valle",
+      topPrizeHint: "Huerta",
+      description: "3 dados. S\xE1bados."
+    }),
+    L("mal-alhaurin", "Alhaur\xEDn Suerte", "Provincial", "Provinciales", 140, [3], {
+      numberMode: "7from45",
+      trait: "7/45 sierra",
+      topPrizeHint: "Jard\xEDn",
+      description: "7 del 1\u201345. Mi\xE9rcoles."
+    }),
+    L("mal-cartama", "C\xE1rtama Guadalhorce", "Provincial", "Provinciales", 95, [1], {
+      numberMode: "pares",
+      trait: "Par/impar r\xEDo",
+      topPrizeHint: "Guadalhorce",
+      description: "5 casillas par/impar. Lunes."
+    }),
+    L("mal-archidona", "Archidona Pe\xF1a", "Provincial", "Provinciales", 160, [4], {
+      numberMode: "carta",
+      trait: "Baraja pe\xF1era",
+      topPrizeHint: "Ochavada",
+      description: "3 cartas espa\xF1olas. Jueves."
+    }),
+    L("mal-torcal", "Torcal M\xE1gico", "Provincial", "Provinciales", 200, [5], {
+      numberMode: "bingo75",
+      trait: "Bingo k\xE1rstico",
+      topPrizeHint: "Formaciones",
+      description: "5/75. Viernes."
+    }),
+    L("mal-caminito", "Caminito del Rey", "Provincial", "Provinciales", 250, [6], {
+      numberMode: "horaSuerte",
+      commissionRate: 0.11,
+      trait: "Hora desfiladero",
+      topPrizeHint: "Pasarela",
+      description: "Marca la hora de tu paseo. S\xE1bados."
+    }),
+    L("mal-chorro", "Desfiladero del Chorro", "Provincial", "Provinciales", 150, [2], {
+      numberMode: "6from36",
+      drawHour: 21,
+      trait: "6/36 embalse",
+      topPrizeHint: "Embalse",
+      description: "6/36. Martes 21:00."
+    }),
+    L("mal-montes", "Montes de M\xE1laga", "Provincial", "Provinciales", 115, [3], {
+      numberMode: "4from30",
+      trait: "4/30 montes",
+      topPrizeHint: "Mirador",
+      description: "4 del 1\u201330. Mi\xE9rcoles."
+    })
   ];
   var LOCALES = [
-    L("alo-local", "\xC1lora Local", "Local", "Locales", 50, [5], { drawHour: 19 }),
-    L("alo-hoya", "Hoya de M\xE1laga", "Local", "Locales", 100, [3]),
-    L("alo-chorro", "Suerte del Chorro", "Local", "Locales", 100, [6]),
-    L("alo-castillo", "Castillo de \xC1lora", "Local", "Locales", 100, [4]),
-    L("alo-flores", "Virgen de Flores Loter\xEDa", "Local", "Locales", 150, [1], { description: "Rifa local inventada (patrona)." }),
-    L("alo-sanjuan", "San Juan de \xC1lora", "Local", "Locales", 100, [2]),
-    L("alo-estacion", "Estaci\xF3n Guadalhorce", "Local", "Locales", 50, [5]),
-    L("alo-plaza", "Plaza Baja Premia", "Local", "Locales", 50, [3]),
-    L("alo-real", "Calle Real Suerte", "Local", "Locales", 50, [4]),
-    L("alo-puente", "Puente de \xC1lora", "Local", "Locales", 100, [6]),
-    L("alo-mirador", "Mirador del Valle", "Local", "Locales", 100, [1]),
-    L("alo-naranjo", "Naranjo Dulce", "Local", "Locales", 50, [2]),
-    L("alo-aceite", "Aceite de la Hoya", "Local", "Locales", 100, [5]),
-    L("alo-feria", "Feria de \xC1lora Rifa", "Local", "Locales", 150, [6]),
-    L("alo-verano", "Verano en el Pueblo", "Local", "Locales", 100, [3]),
-    L("alo-navidad", "Navidad Alore\xF1a", "Local", "Locales", 200, [], { seasonMonths: [11, 12], orderDays: 3 }),
-    L("pue-pizarra", "Pizarra Vecina", "Local", "Locales", 50, [4]),
-    L("pue-carratraca", "Carratraca Termal", "Local", "Locales", 100, [2]),
-    L("pue-ardales", "Ardales Embalse", "Local", "Locales", 100, [5]),
-    L("pue-elburgo", "El Burgo Sierra", "Local", "Locales", 50, [1]),
-    L("pue-yunquera", "Yunquera Pinsapo", "Local", "Locales", 100, [3]),
-    L("pue-tolox", "Tolox Fuente", "Local", "Locales", 50, [6]),
-    L("pue-casarabonela", "Casarabonela", "Local", "Locales", 50, [4]),
-    L("pue-alozaima", "Alozaina Pasera", "Local", "Locales", 50, [2]),
-    L("pue-guaro", "Guaro Luna", "Local", "Locales", 50, [5])
+    L("alo-local", "\xC1lora Local", "Local", "Locales", 50, [5], {
+      numberMode: "serieLocal",
+      drawHour: 19,
+      trait: "Serie 000\u2013999",
+      topPrizeHint: "Pueblo",
+      description: "N\xFAmero local de 3 cifras. Viernes 19:00."
+    }),
+    L("alo-hoya", "Hoya de M\xE1laga", "Local", "Locales", 100, [3], {
+      numberMode: "5from40",
+      trait: "5/40 valle",
+      topPrizeHint: "Hoya dulce",
+      description: "5/40 de la Hoya. Mi\xE9rcoles."
+    }),
+    L("alo-chorro", "Suerte del Chorro", "Local", "Locales", 120, [6], {
+      numberMode: "nacional",
+      fractionable: true,
+      trait: "D\xE9cimo tur\xEDstico",
+      topPrizeHint: "Caminito",
+      description: "5 cifras. Ideal turistas. S\xE1bados."
+    }),
+    L("alo-castillo", "Castillo de \xC1lora", "Local", "Locales", 100, [4], {
+      numberMode: "triplex",
+      drawHour: 18,
+      trait: "3 cifras castillo",
+      topPrizeHint: "Torre",
+      description: "3 cifras. Jueves 18:00."
+    }),
+    L("alo-flores", "Virgen de Flores Loter\xEDa", "Local", "Locales", 150, [1], {
+      numberMode: "fecha",
+      trait: "Fecha patronal",
+      topPrizeHint: "Patrona",
+      description: "Rifa inventada de la patrona: d\xEDa + mes."
+    }),
+    L("alo-sanjuan", "San Juan de \xC1lora", "Local", "Locales", 80, [2], {
+      numberMode: "dados",
+      trait: "Dados de hogueras",
+      topPrizeHint: "Hoguera",
+      description: "3 dados. Martes."
+    }),
+    L("alo-estacion", "Estaci\xF3n Guadalhorce", "Local", "Locales", 50, [5], {
+      numberMode: "2from20",
+      stockType: "terminal",
+      orderDays: 0,
+      trait: "And\xE9n 1\u201320",
+      topPrizeHint: "Tren",
+      description: "2 n\xFAmeros. Terminal de estaci\xF3n."
+    }),
+    L("alo-plaza", "Plaza Baja Premia", "Local", "Locales", 60, [3], {
+      numberMode: "ruleta",
+      trait: "Ruleta de plaza",
+      topPrizeHint: "Caf\xE9",
+      description: "0\u201336. Mi\xE9rcoles."
+    }),
+    L("alo-real", "Calle Real Suerte", "Local", "Locales", 70, [4], {
+      numberMode: "pares",
+      trait: "Par/impar calle",
+      topPrizeHint: "Portal",
+      description: "5 casillas par/impar. Jueves."
+    }),
+    L("alo-puente", "Puente de \xC1lora", "Local", "Locales", 110, [6], {
+      numberMode: "4from30",
+      trait: "4/30 puente",
+      topPrizeHint: "Arco",
+      description: "4 del 1\u201330. S\xE1bados."
+    }),
+    L("alo-mirador", "Mirador del Valle", "Local", "Locales", 130, [1], {
+      numberMode: "horaSuerte",
+      trait: "Hora del mirador",
+      topPrizeHint: "Atardecer",
+      description: "Elige la hora del atardecer."
+    }),
+    L("alo-naranjo", "Naranjo Dulce", "Local", "Locales", 40, [2], {
+      numberMode: "serieLocal",
+      commissionRate: 0.14,
+      trait: "Serie barata",
+      topPrizeHint: "Naranja",
+      description: "Serie 000\u2013999 a 0,40 \u20AC."
+    }),
+    L("alo-aceite", "Aceite de la Hoya", "Local", "Locales", 90, [5], {
+      numberMode: "colorball",
+      trait: "4/30 + verde oliva",
+      topPrizeHint: "AOVE",
+      description: "4 n\xFAmeros + color (aceite)."
+    }),
+    L("alo-feria", "Feria de \xC1lora Rifa", "Local", "Locales", 150, [6], {
+      numberMode: "carta",
+      trait: "Baraja de feria",
+      topPrizeHint: "Caseta",
+      description: "3 cartas. S\xE1bado de feria."
+    }),
+    L("alo-verano", "Verano en el Pueblo", "Local", "Locales", 100, [3], {
+      numberMode: "bingo75",
+      seasonMonths: [6, 7, 8],
+      trait: "Bingo verano",
+      topPrizeHint: "Terraza",
+      description: "5/75. M\xE1s stock en verano."
+    }),
+    L("alo-navidad", "Navidad Alore\xF1a", "Local", "Locales", 200, [], {
+      numberMode: "nacional",
+      fractionable: true,
+      seasonMonths: [11, 12],
+      orderDays: 3,
+      trait: "D\xE9cimo navide\xF1o local",
+      topPrizeHint: "Gordo del pueblo",
+      description: "Sorteo local de Navidad (22 dic. inventado)."
+    }),
+    L("pue-pizarra", "Pizarra Vecina", "Local", "Locales", 50, [4], {
+      numberMode: "triplex",
+      trait: "3 cifras vecina",
+      topPrizeHint: "Pizarra",
+      description: "3 cifras. Jueves."
+    }),
+    L("pue-carratraca", "Carratraca Termal", "Local", "Locales", 100, [2], {
+      numberMode: "6from36",
+      trait: "6/36 termal",
+      topPrizeHint: "Ba\xF1os",
+      description: "6/36. Martes."
+    }),
+    L("pue-ardales", "Ardales Embalse", "Local", "Locales", 110, [5], {
+      numberMode: "7from45",
+      trait: "7/45 embalse",
+      topPrizeHint: "Conde",
+      description: "7 del 1\u201345. Viernes."
+    }),
+    L("pue-elburgo", "El Burgo Sierra", "Local", "Locales", 55, [1], {
+      numberMode: "2from20",
+      stockType: "terminal",
+      orderDays: 0,
+      trait: "Doble sierra",
+      topPrizeHint: "Pinsapar",
+      description: "2 del 1\u201320. Terminal."
+    }),
+    L("pue-yunquera", "Yunquera Pinsapo", "Local", "Locales", 100, [3], {
+      numberMode: "dados",
+      trait: "Dados pinsapo",
+      topPrizeHint: "Sierra de las Nieves",
+      description: "3 dados. Mi\xE9rcoles."
+    }),
+    L("pue-tolox", "Tolox Fuente", "Local", "Locales", 45, [6], {
+      numberMode: "serieLocal",
+      trait: "Serie fuente",
+      topPrizeHint: "Agua",
+      description: "000\u2013999. S\xE1bados."
+    }),
+    L("pue-casarabonela", "Casarabonela", "Local", "Locales", 75, [4], {
+      numberMode: "pares",
+      trait: "Par/impar blanca",
+      topPrizeHint: "Blanca",
+      description: "5 casillas. Jueves."
+    }),
+    L("pue-alozaima", "Alozaina Pasera", "Local", "Locales", 85, [2], {
+      numberMode: "fecha",
+      trait: "Fecha de pasera",
+      topPrizeHint: "Uva pasa",
+      description: "D\xEDa + mes. Martes."
+    }),
+    L("pue-guaro", "Guaro Luna", "Local", "Locales", 95, [5], {
+      numberMode: "horaSuerte",
+      trait: "Hora lunar",
+      topPrizeHint: "Luna de Guaro",
+      description: "Marca una hora. Viernes."
+    })
   ];
   var REGIONAL_LOTTERIES = [...AUTONOMICAS, ...PROVINCIALES, ...LOCALES];
   var REGIONAL_IDS = REGIONAL_LOTTERIES.map((p) => p.id);
+  var REGIONAL_NUMBER_MODES = [...new Set(REGIONAL_LOTTERIES.map((p) => p.numberMode))];
 
   // src/data/products.js
   var PRODUCTS = [
@@ -1694,8 +2015,8 @@
 
   // src/game/state.js
   var STARTING_BANK_CENTS = 95e4;
-  var SAVE_VERSION = 5;
-  var GAME_VERSION = "0.4";
+  var SAVE_VERSION = 6;
+  var GAME_VERSION = "0.5";
   var SLOT_COUNT = 3;
   var STORAGE_PREFIX = "loterias-alora-slot-";
   var OFFICE = {
@@ -1784,7 +2105,16 @@
         servedToday: 0,
         nextSpawnAtMs: start.getTime() + 10 * 1e3
       },
-      settings: { music: true, sfx: true, autosaveMinutes: 2, theme: "light" },
+      settings: {
+        music: true,
+        sfx: true,
+        autosaveMinutes: 2,
+        theme: "light",
+        musicVolume: 0.45,
+        sfxVolume: 0.7,
+        fontScale: 1,
+        defaultSpeed: 1
+      },
       showcase: [],
       dayLog: [],
       holidays,
@@ -1808,9 +2138,15 @@
         lastCloseSummary: null,
         fichaId: null,
         highPrizeAlert: null,
-        mondayScratchReport: null
+        mondayScratchReport: null,
+        lastAutosaveAt: null,
+        lastAutosaveSlot: null,
+        scratchReveal: null,
+        penaDayYmd: null,
+        penaDayNotice: null
       }
     };
+    game.clock.speed = game.settings.defaultSpeed;
     return finalizeNewGame(game);
   }
   function finalizeNewGame(state2) {
@@ -1822,6 +2158,7 @@
     return state2;
   }
   function migrateState(data) {
+    var _a, _b, _c;
     if (!data) return createNewGame();
     if (!data.tickets) data.tickets = [];
     if (!data.draws) data.draws = {};
@@ -1829,8 +2166,17 @@
     if (!data.events) data.events = buildAloraEvents(2025, 2032);
     else Object.assign(data.events, buildAloraEvents(2025, 2032));
     if (!data.nextIds) data.nextIds = { ticket: 1 };
-    if (!data.settings) data.settings = { music: true, sfx: true, autosaveMinutes: 2, theme: "light" };
-    data.settings.theme = data.settings.theme || "light";
+    if (!data.settings) data.settings = {};
+    data.settings = {
+      music: data.settings.music !== false,
+      sfx: data.settings.sfx !== false,
+      autosaveMinutes: data.settings.autosaveMinutes || 2,
+      theme: data.settings.theme || "light",
+      musicVolume: (_a = data.settings.musicVolume) != null ? _a : 0.45,
+      sfxVolume: (_b = data.settings.sfxVolume) != null ? _b : 0.7,
+      fontScale: data.settings.fontScale || 1,
+      defaultSpeed: (_c = data.settings.defaultSpeed) != null ? _c : 1
+    };
     if (!data.customers.abonados || !data.customers.penas) {
       const { abonados, penas } = generateAbonadosAndPenas();
       data.customers.abonados = data.customers.abonados || abonados;
@@ -1978,11 +2324,14 @@
     }
     return slots;
   }
-  function saveToSlot(state2, slot) {
+  function saveToSlot(state2, slot, { silent = false } = {}) {
     state2.meta.updatedAt = (/* @__PURE__ */ new Date()).toISOString();
     state2.version = SAVE_VERSION;
     localStorage.setItem(slotKey(slot), JSON.stringify(state2));
-    state2.ui.toast = `Partida guardada en hueco ${slot}`;
+    state2.ui = state2.ui || {};
+    state2.ui.lastAutosaveAt = Date.now();
+    state2.ui.lastAutosaveSlot = slot;
+    if (!silent) state2.ui.toast = `Partida guardada en hueco ${slot}`;
     return state2;
   }
   function loadFromSlot(slot) {
@@ -2034,14 +2383,16 @@
   function newGame() {
     return createNewGame();
   }
-  function maybeAutosave(state2, lastAutosaveRealMs2, intervalMs = 12e4) {
-    var _a;
+  function maybeAutosave(state2, lastAutosaveRealMs2, intervalMs) {
+    var _a, _b;
+    const mins = ((_a = state2.settings) == null ? void 0 : _a.autosaveMinutes) || 2;
+    const wait = intervalMs != null ? intervalMs : mins * 60 * 1e3;
     const now = Date.now();
-    if (now - lastAutosaveRealMs2 < intervalMs) return lastAutosaveRealMs2;
-    const slot = ((_a = state2.meta) == null ? void 0 : _a.activeSlot) || 1;
+    if (now - lastAutosaveRealMs2 < wait) return lastAutosaveRealMs2;
+    const slot = ((_b = state2.meta) == null ? void 0 : _b.activeSlot) || 1;
     try {
       state2.meta.activeSlot = slot;
-      saveToSlot(state2, slot);
+      saveToSlot(state2, slot, { silent: true });
     } catch (e) {
     }
     return now;
@@ -2049,17 +2400,17 @@
 
   // src/game/draws.js
   var DEFAULT_DRAW_HOUR = 21;
+  var COLORS = ["rojo", "verde", "azul", "oro"];
+  var PALOS = ["oros", "copas", "espadas", "bastos"];
+  var VALORES = [1, 2, 3, 4, 5, 6, 7, 10, 11, 12];
   function ymdFromDate(d) {
     return d.toISOString().slice(0, 10);
   }
   function drawKey(productId, ymd2) {
     return `${productId}@${ymd2}`;
   }
-  function generateDrawResult(productId, ymd2) {
-    const rng = mulberry322(hashSeed("draw", productId, ymd2));
-    const p = getProduct(productId);
-    if (!p) return null;
-    switch (p.numberMode || productId) {
+  function genByMode(mode, productId, ymd2, rng) {
+    switch (mode) {
       case "6from49":
         return {
           productId,
@@ -2074,12 +2425,9 @@
       case "gordo":
         return { productId, ymd: ymd2, numbers: pickUnique(rng, 5, 54), clave: pickInt(rng, 1, 9) };
       case "nacional":
-        return {
-          productId,
-          ymd: ymd2,
-          winningNumber: productId === "once-triplex" ? String(pickInt(rng, 0, 999)).padStart(3, "0") : pad5(pickInt(rng, 0, 99999))
-        };
+        return { productId, ymd: ymd2, winningNumber: pad5(pickInt(rng, 0, 99999)) };
       case "triplex":
+      case "serieLocal":
         return { productId, ymd: ymd2, winningNumber: String(pickInt(rng, 0, 999)).padStart(3, "0") };
       case "quiniela": {
         const column = Array.from({ length: 14 }, () => ["1", "X", "2"][pickInt(rng, 0, 2)]);
@@ -2102,60 +2450,96 @@
           plus: pickInt(rng, 1, 20)
         };
       case "5from40":
+        return { productId, ymd: ymd2, numbers: pickUnique(rng, 5, 40) };
+      case "4from30":
+        return { productId, ymd: ymd2, numbers: pickUnique(rng, 4, 30) };
+      case "6from36":
+        return { productId, ymd: ymd2, numbers: pickUnique(rng, 6, 36) };
+      case "7from45":
+        return { productId, ymd: ymd2, numbers: pickUnique(rng, 7, 45) };
+      case "2from20":
+        return { productId, ymd: ymd2, numbers: pickUnique(rng, 2, 20) };
+      case "bingo75":
+        return { productId, ymd: ymd2, numbers: pickUnique(rng, 5, 75) };
+      case "colorball":
+        return {
+          productId,
+          ymd: ymd2,
+          numbers: pickUnique(rng, 4, 30),
+          color: COLORS[pickInt(rng, 0, COLORS.length - 1)]
+        };
+      case "ruleta":
+        return { productId, ymd: ymd2, roulette: pickInt(rng, 0, 36) };
+      case "fecha":
+        return { productId, ymd: ymd2, day: pickInt(rng, 1, 28), month: pickInt(rng, 1, 12) };
+      case "horaSuerte":
+        return {
+          productId,
+          ymd: ymd2,
+          hour: pickInt(rng, 0, 23),
+          minute: pickInt(rng, 0, 59)
+        };
+      case "pares":
+        return {
+          productId,
+          ymd: ymd2,
+          parity: Array.from({ length: 5 }, () => rng() < 0.5 ? "P" : "I")
+        };
+      case "dados":
+        return {
+          productId,
+          ymd: ymd2,
+          dice: Array.from({ length: 3 }, () => pickInt(rng, 1, 6))
+        };
+      case "carta":
+        return {
+          productId,
+          ymd: ymd2,
+          cards: Array.from({ length: 3 }, () => ({
+            palo: PALOS[pickInt(rng, 0, 3)],
+            valor: VALORES[pickInt(rng, 0, VALORES.length - 1)]
+          }))
+        };
       default:
-        if (["once-cupon", "once-cuponazo", "once-sueldazo", "lae-nacional", "lae-nacional-jueves", "lae-navidad", "lae-nino"].includes(productId)) {
-          return { productId, ymd: ymd2, winningNumber: pad5(pickInt(rng, 0, 99999)) };
-        }
         return { productId, ymd: ymd2, numbers: pickUnique(rng, 5, 40) };
     }
+  }
+  function generateDrawResult(productId, ymd2) {
+    const rng = mulberry322(hashSeed("draw", productId, ymd2));
+    const p = getProduct(productId);
+    if (!p) return null;
+    return genByMode(p.numberMode || productId, productId, ymd2, rng);
   }
   function generateBetSelection(productId, rng) {
     const p = getProduct(productId);
     if (!p) return {};
     const mode = p.numberMode;
-    if (mode === "6from49") {
-      return { numbers: pickUnique(rng, 6, 49), reintegro: pickInt(rng, 0, 9) };
+    const draw = genByMode(mode, productId, "bet", rng);
+    if (draw.winningNumber != null) return { number: draw.winningNumber };
+    if (draw.roulette != null) return { roulette: draw.roulette };
+    if (draw.day != null) return { day: draw.day, month: draw.month };
+    if (draw.hour != null) return { hour: draw.hour, minute: draw.minute };
+    if (draw.parity) return { parity: draw.parity };
+    if (draw.dice) return { dice: draw.dice };
+    if (draw.cards) return { cards: draw.cards };
+    if (draw.color) return { numbers: draw.numbers, color: draw.color };
+    if (draw.races) return { races: draw.races, plus: draw.plus };
+    if (draw.column) return { column: draw.column, pleno: draw.pleno };
+    if (draw.goals) return { goals: draw.goals };
+    if (draw.stars) return { numbers: draw.numbers, stars: draw.stars };
+    if (draw.clave != null) return { numbers: draw.numbers, clave: draw.clave };
+    if (draw.numbers) {
+      const sel = { numbers: draw.numbers };
+      if (draw.reintegro != null) sel.reintegro = draw.reintegro;
+      return sel;
     }
-    if (mode === "euro" || mode === "eurojackpot") {
-      return { numbers: pickUnique(rng, 5, 50), stars: pickUnique(rng, 2, 12) };
-    }
-    if (mode === "gordo") {
-      return { numbers: pickUnique(rng, 5, 54), clave: pickInt(rng, 1, 9) };
-    }
-    if (mode === "nacional") {
-      return { number: pad5(pickInt(rng, 0, 99999)) };
-    }
-    if (mode === "triplex") {
-      return { number: String(pickInt(rng, 0, 999)).padStart(3, "0") };
-    }
-    if (mode === "quiniela") {
-      return {
-        column: Array.from({ length: 14 }, () => ["1", "X", "2"][pickInt(rng, 0, 2)]),
-        pleno: ["0", "1", "2", "M"][pickInt(rng, 0, 3)]
-      };
-    }
-    if (mode === "quinigol") {
-      return { goals: Array.from({ length: 6 }, () => ["0", "1", "2", "M"][pickInt(rng, 0, 3)]) };
-    }
-    if (mode === "superonce" || mode === "lototurf") {
-      return { numbers: pickUnique(rng, 5, 49) };
-    }
-    if (mode === "quintuple") {
-      return {
-        races: Array.from({ length: 5 }, () => pickInt(rng, 1, 20)),
-        plus: pickInt(rng, 1, 20)
-      };
-    }
-    if (mode === "5from40") {
-      return { numbers: pickUnique(rng, 5, 40) };
-    }
-    return { numbers: pickUnique(rng, 5, 40) };
+    return {};
   }
   function nextDrawYmd(productId, fromDate) {
     var _a, _b;
     const p = getProduct(productId);
     if (!((_a = p == null ? void 0 : p.drawDays) == null ? void 0 : _a.length)) {
-      if (productId === "lae-navidad") {
+      if (productId === "lae-navidad" || productId === "alo-navidad") {
         const y = fromDate.getUTCFullYear();
         const target = new Date(Date.UTC(y, 11, 22));
         if (fromDate > target) return `${y + 1}-12-22`;
@@ -2201,7 +2585,7 @@
           const drawHour = (_b = p.drawHour) != null ? _b : DEFAULT_DRAW_HOUR;
           if (ymd2 < today) shouldResolve = true;
           else if (ymd2 === today && hour >= drawHour) shouldResolve = true;
-        } else if (productId === "lae-navidad" && ymd2.endsWith("-12-22")) {
+        } else if ((productId === "lae-navidad" || productId === "alo-navidad") && ymd2.endsWith("-12-22")) {
           shouldResolve = ymd2 < today || ymd2 === today && hour >= 21;
         } else if (productId === "lae-nino" && ymd2.endsWith("-01-06")) {
           shouldResolve = ymd2 < today || ymd2 === today && hour >= 21;
@@ -2219,6 +2603,36 @@
   }
   function listDrawHistory(state2, limit = 60) {
     return Object.values(state2.draws || {}).sort((a, b) => a.ymd < b.ymd ? 1 : a.ymd > b.ymd ? -1 : a.productId.localeCompare(b.productId)).slice(0, limit);
+  }
+  function modeHint(mode) {
+    const hints = {
+      nacional: "5 cifras (ej. 45821) \xB7 serie 45821 \xB7 45821 x2",
+      triplex: "3 cifras (ej. 742)",
+      serieLocal: "3 cifras 000\u2013999",
+      "6from49": "6 n\xFAmeros 1\u201349 y reintegro",
+      euro: "5 n\xFAmeros | 2 estrellas",
+      eurojackpot: "5 n\xFAmeros | 2 estrellas",
+      gordo: "5 n\xFAmeros 1\u201354 y clave",
+      quiniela: "14 signos 1/X/2",
+      quinigol: "6 resultados 0/1/2/M",
+      superonce: "5 n\xFAmeros del 1 al 49",
+      lototurf: "5 n\xFAmeros del 1 al 49",
+      quintuple: "5 caballos 1\u201320 + suplementaria",
+      "5from40": "5 n\xFAmeros del 1 al 40",
+      "4from30": "4 n\xFAmeros del 1 al 30",
+      "6from36": "6 n\xFAmeros del 1 al 36",
+      "7from45": "7 n\xFAmeros del 1 al 45",
+      "2from20": "2 n\xFAmeros del 1 al 20",
+      bingo75: "5 n\xFAmeros del 1 al 75",
+      colorball: "4 n\xFAmeros 1\u201330 y color (rojo/verde/azul/oro)",
+      ruleta: "Un n\xFAmero 0\u201336",
+      fecha: "D\xEDa y mes (ej. 8 9 o 08/09)",
+      horaSuerte: "Hora HH:MM (ej. 19:30)",
+      pares: "5 letras P o I (ej. PIPII)",
+      dados: "3 dados 1\u20136 (ej. 3 5 1)",
+      carta: "3 cartas palo-valor (ej. oros-1 copas-10 bastos-12)"
+    };
+    return hints[mode] || "Escribe la combinaci\xF3n dictada";
   }
 
   // src/game/tickets.js
@@ -2283,6 +2697,7 @@
     };
   }
   function evaluateDrawPrize(ticket, draw) {
+    var _a, _b;
     if (!draw) return { prizeCents: 0, detail: "Sorteo a\xFAn no celebrado" };
     const id = ticket.productId;
     const sel = ticket.selection || {};
@@ -2370,8 +2785,88 @@
       }
       return { prizeCents: prize2, detail };
     }
+    if (draw.winningNumber != null || sel.number != null) {
+      const mine = String(sel.number || "");
+      const win = String(draw.winningNumber || "");
+      const price = ((_a = getProduct(id)) == null ? void 0 : _a.priceCents) || 100;
+      if (mine && mine === win) return { prizeCents: price * 5e3, detail: "N\xFAmero completo" };
+      if (mine && win && mine.slice(-2) === win.slice(-2)) {
+        return { prizeCents: price * 20, detail: "2 \xFAltimas cifras" };
+      }
+      if (mine && win && mine.slice(-1) === win.slice(-1)) {
+        return { prizeCents: price, detail: "Reintegro" };
+      }
+      return { prizeCents: 0, detail: "Sin premio" };
+    }
+    if (sel.color != null || draw.color != null) {
+      const hits2 = (sel.numbers || []).filter((n) => (draw.numbers || []).includes(n)).length;
+      const colorOk = sel.color && sel.color === draw.color;
+      let prize2 = 0;
+      if (hits2 === 4 && colorOk) prize2 = 8e5;
+      else if (hits2 === 4) prize2 = 4e4;
+      else if (hits2 === 3 && colorOk) prize2 = 8e3;
+      else if (hits2 === 3) prize2 = 1500;
+      else if (colorOk) prize2 = ((_b = getProduct(id)) == null ? void 0 : _b.priceCents) || 100;
+      return { prizeCents: prize2, detail: prize2 ? `${hits2} + color` : "Sin premio" };
+    }
+    if (sel.roulette != null || draw.roulette != null) {
+      const ok = sel.roulette === draw.roulette;
+      return { prizeCents: ok ? 12e5 : 0, detail: ok ? "Pleno ruleta" : "Sin premio" };
+    }
+    if (sel.day != null || draw.day != null) {
+      const dayOk = sel.day === draw.day;
+      const monthOk = sel.month === draw.month;
+      let prize2 = 0;
+      if (dayOk && monthOk) prize2 = 25e4;
+      else if (dayOk || monthOk) prize2 = 2e3;
+      return { prizeCents: prize2, detail: prize2 ? "Fecha" : "Sin premio" };
+    }
+    if (sel.hour != null || draw.hour != null) {
+      const ok = sel.hour === draw.hour && sel.minute === draw.minute;
+      const hourOk = sel.hour === draw.hour;
+      return {
+        prizeCents: ok ? 5e5 : hourOk ? 3e3 : 0,
+        detail: ok ? "Hora exacta" : hourOk ? "Hora" : "Sin premio"
+      };
+    }
+    if (sel.parity || draw.parity) {
+      const hits2 = (sel.parity || []).filter((v, i) => v === (draw.parity || [])[i]).length;
+      const prize2 = hits2 === 5 ? 1e5 : hits2 === 4 ? 5e3 : hits2 === 3 ? 500 : 0;
+      return { prizeCents: prize2, detail: `${hits2}/5 paridad` };
+    }
+    if (sel.dice || draw.dice) {
+      const hits2 = (sel.dice || []).filter((v, i) => v === (draw.dice || [])[i]).length;
+      const prize2 = hits2 === 3 ? 2e5 : hits2 === 2 ? 4e3 : 0;
+      return { prizeCents: prize2, detail: `${hits2} dados` };
+    }
+    if (sel.cards || draw.cards) {
+      const hits2 = (sel.cards || []).filter((c, i) => {
+        const d = (draw.cards || [])[i];
+        return d && c.palo === d.palo && c.valor === d.valor;
+      }).length;
+      const prize2 = hits2 === 3 ? 3e5 : hits2 === 2 ? 8e3 : hits2 === 1 ? 500 : 0;
+      return { prizeCents: prize2, detail: `${hits2} cartas` };
+    }
+    if (sel.races || draw.races) {
+      const hits2 = (sel.races || []).filter((v, i) => v === (draw.races || [])[i]).length;
+      const plus = sel.plus === draw.plus;
+      let prize2 = 0;
+      if (hits2 === 5 && plus) prize2 = 1e6;
+      else if (hits2 === 5) prize2 = 8e4;
+      else if (hits2 >= 3) prize2 = 2e3 * hits2;
+      return { prizeCents: prize2, detail: `${hits2} carreras${plus ? " +plus" : ""}` };
+    }
+    if (sel.stars || draw.stars) {
+      const hits2 = (sel.numbers || []).filter((n) => (draw.numbers || []).includes(n)).length;
+      const stars = (sel.stars || []).filter((n) => (draw.stars || []).includes(n)).length;
+      let prize2 = 0;
+      if (hits2 === 5 && stars === 2) prize2 = 2e6;
+      else if (hits2 >= 3) prize2 = 1e3 * hits2;
+      return { prizeCents: prize2, detail: `${hits2}+${stars}` };
+    }
     const hits = (sel.numbers || []).filter((n) => (draw.numbers || []).includes(n)).length;
-    const table = { 5: 5e5, 4: 2e4, 3: 2e3, 2: 200 };
+    const need = (draw.numbers || []).length || 5;
+    const table = need >= 7 ? { 7: 9e5, 6: 8e4, 5: 8e3, 4: 800 } : need === 6 ? { 6: 7e5, 5: 4e4, 4: 4e3, 3: 400 } : need === 4 ? { 4: 4e5, 3: 15e3, 2: 800 } : need === 2 ? { 2: 15e4, 1: 1500 } : { 5: 5e5, 4: 2e4, 3: 2e3, 2: 200 };
     const prize = table[hits] || 0;
     return { prizeCents: prize, detail: prize ? `${hits} aciertos` : "Sin premio", hits };
   }
@@ -2425,6 +2920,15 @@
     if (ticket.kind === "rasca") return `C\xF3digo ${s.code || "\u2014"}`;
     if (s.number) return `N\xBA ${s.number}`;
     if (s.races) return `Carreras ${s.races.join("-")}${s.plus != null ? ` +${s.plus}` : ""}`;
+    if (s.color) return `${(s.numbers || []).join(", ")} \xB7 ${s.color}`;
+    if (s.roulette != null) return `Ruleta ${s.roulette}`;
+    if (s.day != null) return `Fecha ${s.day}/${s.month}`;
+    if (s.hour != null) {
+      return `Hora ${String(s.hour).padStart(2, "0")}:${String(s.minute).padStart(2, "0")}`;
+    }
+    if (s.parity) return `Par/Impar ${s.parity.join("")}`;
+    if (s.dice) return `Dados ${s.dice.join("-")}`;
+    if (s.cards) return `Cartas ${s.cards.map((c) => `${c.palo}${c.valor}`).join(" ")}`;
     if (s.stars) return `${(s.numbers || []).join(", ")} \u2605 ${(s.stars || []).join(", ")}`;
     if (s.clave != null) return `${(s.numbers || []).join(", ")} clave ${s.clave}`;
     if (s.column) return `Columna ${s.column.join("")}`;
@@ -2727,8 +3231,50 @@
     const maxMs = 70 * 1e3 / factor;
     state2.customers.nextSpawnAtMs = state2.clock.gameTimeMs + minMs + Math.random() * (maxMs - minMs);
   }
+  function maybeSpawnPenaDay(state2) {
+    var _a, _b, _c;
+    const d = gameDate(state2);
+    if (d.getUTCDay() !== 5) return null;
+    const ymd2 = gameYmd(state2);
+    if (state2.ui.penaDayYmd === ymd2) return null;
+    if (!((_a = state2.customers.penas) == null ? void 0 : _a.length)) return null;
+    if (rngGate(0.55) === false) return null;
+    state2.ui.penaDayYmd = ymd2;
+    const pena = state2.customers.penas[Math.floor(Math.random() * state2.customers.penas.length)];
+    const client = { ...pena, intent: "pena_day", prefersPayment: "transfer" };
+    const prefs = ((_b = pena.preferredProducts) == null ? void 0 : _b.length) ? pena.preferredProducts : ["lae-euromillones"];
+    client.wishlist = prefs.map((productId) => {
+      const p = getProduct(productId);
+      return {
+        productId,
+        productName: (p == null ? void 0 : p.name) || productId,
+        qty: 4 + Math.floor(Math.random() * 6),
+        preferDictate: Math.random() < 0.3
+      };
+    });
+    client.wishlist.push({
+      productId: "lae-nacional",
+      productName: ((_c = getProduct("lae-nacional")) == null ? void 0 : _c.name) || "Nacional",
+      qty: 2,
+      preferDictate: false
+    });
+    client.note = `Turno de pe\xF1a: ${pena.subscription || "pedido semanal"}. Pagan por transferencia.`;
+    client.line = "Venimos a por lo de la pe\xF1a.";
+    state2.ui.penaDayNotice = {
+      title: `Hoy: turno ${pena.name}`,
+      body: "Pedido grande \xB7 preferencia transferencia. Confirma en TPV."
+    };
+    return client;
+  }
+  function rngGate(p) {
+    return Math.random() < p;
+  }
   function pickArrivingClient(state2) {
     var _a, _b;
+    const penaDay = maybeSpawnPenaDay(state2);
+    if (penaDay && !state2.customers.current && !(state2.customers.queue || []).some((c) => c.intent === "pena_day")) {
+      return penaDay;
+    }
     const rng = Math.random;
     const ymd2 = gameYmd(state2);
     if (rng() < 0.12) {
@@ -2811,6 +3357,10 @@
       const qty = 1 + Math.floor(rng() * 4);
       client.wishlist = [{ productId: p.id, productName: p.name, qty, preferDictate: false }];
       client.note = `Encargo de ${p.name} \xD7${qty}`;
+      return client;
+    }
+    if (client.intent === "pena_day") {
+      client.note = client.note || "Turno de pe\xF1a.";
       return client;
     }
     if ((client.kind === "abonado" || client.kind === "pena") && rng() < 0.55) {
@@ -3350,6 +3900,8 @@
   var musicNodes = null;
   var musicOn = true;
   var sfxOn = true;
+  var musicVol = 0.45;
+  var sfxVol = 0.7;
   function ac() {
     if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
     if (ctx.state === "suspended") ctx.resume();
@@ -3364,7 +3916,7 @@
       o.type = type;
       o.frequency.value = freq;
       if (slideTo) o.frequency.exponentialRampToValueAtTime(Math.max(1, slideTo), c.currentTime + dur);
-      g.gain.value = gain;
+      g.gain.value = gain * sfxVol;
       g.gain.exponentialRampToValueAtTime(1e-3, c.currentTime + dur);
       o.connect(g);
       g.connect(c.destination);
@@ -3404,7 +3956,7 @@
     try {
       const c = ac();
       const master = c.createGain();
-      master.gain.value = 0.035;
+      master.gain.value = 0.035 * musicVol;
       master.connect(c.destination);
       const notes = [196, 247, 294, 330, 294, 247];
       const oscs = notes.map((freq, i) => {
@@ -3448,6 +4000,13 @@
   function setSfxEnabled(on) {
     sfxOn = on;
   }
+  function setMusicVolume(v) {
+    musicVol = Math.max(0, Math.min(1, Number(v) || 0));
+    if (musicNodes == null ? void 0 : musicNodes.master) musicNodes.master.gain.value = 0.035 * musicVol;
+  }
+  function setSfxVolume(v) {
+    sfxVol = Math.max(0, Math.min(1, Number(v) || 0));
+  }
   function isMusicEnabled() {
     return musicOn;
   }
@@ -3460,15 +4019,19 @@
       "--------------------------------",
       `Ticket ${ticket.id}`,
       ticket.productName,
+      `Org: ${ticket.org || "\u2014"}`,
       `Cliente: ${ticket.clientName || "\u2014"}`,
       `Apuesta: ${formatSelection(ticket)}`,
+      ticket.numberSource ? `Origen n\xFAmeros: ${ticket.numberSource}` : null,
       ticket.drawYmd ? `Sorteo: ${ticket.drawYmd}` : "Rasca / instant\xE1neo",
       `Precio: ${formatEuro(ticket.priceCents)}`,
+      ticket.saleMethod ? `Venta: ${ticket.saleMethod}` : null,
       ticket.checkedAt != null ? `Comprobado: ${ticket.checkDetail || ""} \xB7 ${formatEuro(ticket.prizeCents || 0)}` : "Pendiente de comprobar",
+      ticket.paidAt != null ? `Pagado: ${formatEuro(ticket.prizeCents || 0)}` : null,
       "--------------------------------",
       "Fan-made / no oficial \xB7 +18",
       "Juego responsable"
-    ];
+    ].filter(Boolean);
     const pdf = buildSimplePdf(lines);
     const blob = new Blob([pdf], { type: "application/pdf" });
     const url = URL.createObjectURL(blob);
@@ -3556,6 +4119,18 @@ ${xrefPos}
   function escapePdfText(s) {
     return s.replace(/\\/g, "\\\\").replace(/\(/g, "\\(").replace(/\)/g, "\\)");
   }
+  function downloadLinesPdf(lines, filename) {
+    const pdf = buildSimplePdf(lines);
+    const blob = new Blob([pdf], { type: "application/pdf" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
   function downloadStatsPdf(state2) {
     var _a, _b, _c, _d, _e, _f;
     const s = state2.stats || {};
@@ -3583,16 +4158,47 @@ ${xrefPos}
       "Fan-made / no oficial \xB7 +18",
       "Juego responsable"
     ];
-    const pdf = buildSimplePdf(lines);
-    const blob = new Blob([pdf], { type: "application/pdf" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `estadisticas-alora-${Date.now()}.pdf`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
+    downloadLinesPdf(lines, `estadisticas-alora-${Date.now()}.pdf`);
+  }
+  function downloadWeeklyPdf(weekly) {
+    const lines = [
+      OFFICE.businessName,
+      "===== EXTRACTO SEMANAL =====",
+      `${weekly.fromYmd} \u2192 ${weekly.toYmd}`,
+      "--------------------------------",
+      `Ventas: ${formatEuro(weekly.sales)}`,
+      `Comisiones: ${formatEuro(weekly.commission)}`,
+      `Premios: ${formatEuro(weekly.prizes)}`,
+      `Gastos: ${formatEuro(weekly.expenses)}`,
+      `Faltantes: ${formatEuro(weekly.shortage)}`,
+      `Liquidaciones: ${weekly.settlements}`,
+      `Neto (com.\u2212gastos\u2212falt.): ${formatEuro(weekly.net)}`,
+      "--------------------------------",
+      "Fan-made / no oficial \xB7 +18"
+    ];
+    downloadLinesPdf(lines, `extracto-semanal-${weekly.toYmd}.pdf`);
+  }
+  function downloadMonthlyPdf(statement) {
+    const lines = [
+      OFFICE.businessName,
+      `Liquidaci\xF3n mensual \u2014 ${statement.label}`,
+      "--------------------------------",
+      `Ventas totales: ${formatEuro(statement.totalSales)}`,
+      `Comisiones: ${formatEuro(statement.totalCommission)}`,
+      `Premios pagados: ${formatEuro(statement.totalPrizes)}`,
+      `Gastos local: ${formatEuro(statement.expenses)}`,
+      `Proveedor: ${formatEuro(statement.supplier)}`,
+      `Faltantes: ${formatEuro(statement.shortage)}`,
+      "--------------------------------"
+    ];
+    for (const org of ["LAE", "ONCE", "Otros"]) {
+      const o = statement.orgs[org];
+      lines.push(`${org}`);
+      lines.push(`  Ventas ${formatEuro(o.sales)} \xB7 Com. ${formatEuro(o.commission)}`);
+      lines.push(`  Remesa ${formatEuro(o.remittance)} \xB7 Premios ${formatEuro(o.prizes)}`);
+    }
+    lines.push("--------------------------------", "Fan-made / no oficial \xB7 +18");
+    downloadLinesPdf(lines, `liquidacion-mensual-${statement.year}-${statement.month + 1}.pdf`);
   }
 
   // src/game/tpv.js
@@ -3800,19 +4406,19 @@ ${xrefPos}
   function parseDictatedNumbers(mode, text) {
     const raw = String(text || "").trim();
     if (!raw) return { ok: false, error: "Escribe los n\xFAmeros que dicta el cliente" };
-    if (mode === "nacional" || mode === "triplex") {
-      const serie = raw.match(/serie\s*(\d{5})/i);
+    if (mode === "nacional" || mode === "triplex" || mode === "serieLocal") {
+      const need = mode === "nacional" ? 5 : 3;
+      const serie = raw.match(/serie\s*(\d{3,5})/i);
       if (serie && mode === "nacional") {
         return {
           ok: true,
-          selection: { number: serie[1], series: true, fractions: 10 }
+          selection: { number: serie[1].padStart(5, "0").slice(-5), series: true, fractions: 10 }
         };
       }
-      const pedrea = raw.match(/(\d{5})\s*(?:x|×|\*|decimos?|décimos?)?\s*(\d+)?/i);
+      const pedrea = raw.match(/(\d{3,5})\s*(?:x|×|\*|decimos?|décimos?)?\s*(\d+)?/i);
       const digits = raw.replace(/\D/g, "");
-      const need = mode === "triplex" ? 3 : 5;
       if (digits.length < need && !pedrea) return { ok: false, error: `Haz falta ${need} cifras` };
-      const number = (pedrea ? pedrea[1] : digits.slice(0, need)).padStart(need, "0");
+      const number = (pedrea ? pedrea[1] : digits.slice(0, need)).padStart(need, "0").slice(-need);
       const fractions = pedrea && pedrea[2] ? Math.max(1, Math.min(10, Number(pedrea[2]))) : 1;
       return { ok: true, selection: { number, fractions, series: false } };
     }
@@ -3864,12 +4470,21 @@ ${xrefPos}
       if (g.length < 6) return { ok: false, error: "6 resultados 0/1/2/M" };
       return { ok: true, selection: { goals: g.slice(0, 6).split("") } };
     }
-    if (mode === "superonce" || mode === "5from40" || mode === "lototurf") {
-      const max = mode === "5from40" ? 40 : 49;
-      const need = 5;
+    const poolModes = {
+      superonce: [5, 49],
+      lototurf: [5, 49],
+      "5from40": [5, 40],
+      "4from30": [4, 30],
+      "6from36": [6, 36],
+      "7from45": [7, 45],
+      "2from20": [2, 20],
+      bingo75: [5, 75]
+    };
+    if (poolModes[mode]) {
+      const [need, max] = poolModes[mode];
       const nums = raw.split(/[\s,;.-]+/).map(Number).filter((n) => n >= 1 && n <= max);
       const unique = [...new Set(nums)];
-      if (unique.length < need) return { ok: false, error: `${need} numbers del 1 al ${max}` };
+      if (unique.length < need) return { ok: false, error: `${need} n\xFAmeros del 1 al ${max}` };
       return { ok: true, selection: { numbers: unique.slice(0, need).sort((a, b) => a - b) } };
     }
     if (mode === "quintuple") {
@@ -3880,7 +4495,80 @@ ${xrefPos}
         selection: { races: nums.slice(0, 5), plus: nums[5] }
       };
     }
+    if (mode === "colorball") {
+      const colorMatch = raw.match(/(rojo|verde|azul|oro)/i);
+      const nums = raw.split(/[\s,;.-]+/).map(Number).filter((n) => n >= 1 && n <= 30);
+      const unique = [...new Set(nums)];
+      if (unique.length < 4 || !colorMatch) {
+        return { ok: false, error: "4 n\xFAmeros 1\u201330 y color (rojo/verde/azul/oro)" };
+      }
+      return {
+        ok: true,
+        selection: { numbers: unique.slice(0, 4).sort((a, b) => a - b), color: colorMatch[1].toLowerCase() }
+      };
+    }
+    if (mode === "ruleta") {
+      const n = Number(raw.replace(/\D/g, ""));
+      if (Number.isNaN(n) || n < 0 || n > 36) return { ok: false, error: "N\xFAmero 0\u201336" };
+      return { ok: true, selection: { roulette: n } };
+    }
+    if (mode === "fecha") {
+      const m = raw.match(/(\d{1,2})\D+(\d{1,2})/);
+      if (!m) return { ok: false, error: "D\xEDa y mes (ej. 8 9)" };
+      const day = Math.min(31, Math.max(1, Number(m[1])));
+      const month = Math.min(12, Math.max(1, Number(m[2])));
+      return { ok: true, selection: { day, month } };
+    }
+    if (mode === "horaSuerte") {
+      const m = raw.match(/(\d{1,2})\D+(\d{1,2})/);
+      if (!m) return { ok: false, error: "Hora HH:MM (ej. 19:30)" };
+      const hour = Math.min(23, Math.max(0, Number(m[1])));
+      const minute = Math.min(59, Math.max(0, Number(m[2])));
+      return { ok: true, selection: { hour, minute } };
+    }
+    if (mode === "pares") {
+      const signs = raw.toUpperCase().replace(/[^PI]/g, "");
+      if (signs.length < 5) return { ok: false, error: "5 letras P o I (ej. PIPII)" };
+      return { ok: true, selection: { parity: signs.slice(0, 5).split("") } };
+    }
+    if (mode === "dados") {
+      const nums = raw.split(/[\s,;.-]+/).map(Number).filter((n) => n >= 1 && n <= 6);
+      if (nums.length < 3) return { ok: false, error: "3 dados 1\u20136" };
+      return { ok: true, selection: { dice: nums.slice(0, 3) } };
+    }
+    if (mode === "carta") {
+      const parts = raw.toLowerCase().match(/(oros|copas|espadas|bastos)\s*[-:]?\s*(\d{1,2})/g);
+      if (!parts || parts.length < 3) {
+        return { ok: false, error: "3 cartas (ej. oros-1 copas-10 bastos-12)" };
+      }
+      const cards = parts.slice(0, 3).map((p) => {
+        const m = p.match(/(oros|copas|espadas|bastos)\s*[-:]?\s*(\d{1,2})/);
+        return { palo: m[1], valor: Number(m[2]) };
+      });
+      return { ok: true, selection: { cards } };
+    }
     return { ok: false, error: "No se entiende la combinaci\xF3n" };
+  }
+  function setLineFraction(state2, lineId2, fractions) {
+    const tpv = state2.ui.tpv;
+    if (!tpv) return state2;
+    const line = tpv.lines.find((l) => l.id === lineId2);
+    if (!line) return state2;
+    const p = getProduct(line.productId);
+    if (!p || p.numberMode !== "nacional" && !p.fractionable) {
+      tpv.message = "Este producto no admite fracciones";
+      return state2;
+    }
+    if (!line.selection) line.selection = { number: "00000" };
+    const f = Math.max(1, Math.min(10, Number(fractions) || 1));
+    line.selection.fractions = f;
+    line.selection.series = f === 10;
+    line.qty = f;
+    tpv.message = f === 10 ? "Serie entera (10 d\xE9cimos)" : f === 1 ? "1 d\xE9cimo" : `Pedrea \xD7${f}`;
+    return state2;
+  }
+  function setLineSeries(state2, lineId2) {
+    return setLineFraction(state2, lineId2, 10);
   }
   function undoLastTpvLine(state2) {
     var _a, _b, _c;
@@ -3991,9 +4679,18 @@ ${xrefPos}
     }
     if (s.column) return `Columna ${s.column.join("")}`;
     if (s.goals) return `Goles ${s.goals.join("")}`;
+    if (s.races) return `Carreras ${s.races.join("-")}${s.plus != null ? ` +${s.plus}` : ""}`;
+    if (s.color) return `${(s.numbers || []).join(",")} \xB7 ${s.color}`;
+    if (s.roulette != null) return `Ruleta ${s.roulette}`;
+    if (s.day != null) return `Fecha ${s.day}/${s.month}`;
+    if (s.hour != null) {
+      return `Hora ${String(s.hour).padStart(2, "0")}:${String(s.minute).padStart(2, "0")}`;
+    }
+    if (s.parity) return `Par/Impar ${s.parity.join("")}`;
+    if (s.dice) return `Dados ${s.dice.join("-")}`;
+    if (s.cards) return `Cartas ${s.cards.map((c) => `${c.palo}-${c.valor}`).join(" ")}`;
     if (s.stars) return `${(s.numbers || []).join(",")} \u2605 ${s.stars.join(",")}`;
     if (s.clave != null) return `${(s.numbers || []).join(",")} clave ${s.clave}`;
-    if (s.races) return `Carreras ${s.races.join("-")}${s.plus != null ? ` +${s.plus}` : ""}`;
     if (s.numbers) {
       const r = s.reintegro != null ? ` R${s.reintegro}` : "";
       return `${s.numbers.join(",")}${r}`;
@@ -4201,6 +4898,214 @@ ${xrefPos}
     return gameDate(state2).getUTCDay() === 1;
   }
 
+  // src/game/bank.js
+  function bankVaultDrawer() {
+    const d = emptyDrawer();
+    for (const x of ALL_DENOMS) d[x.id] = 500;
+    return d;
+  }
+  function depositCashToBank(state2, amountCents) {
+    const amt = Math.max(0, Math.round(amountCents));
+    if (amt <= 0) {
+      state2.ui.toast = "Importe no v\xE1lido";
+      return false;
+    }
+    if (drawerTotalCents(state2.finance.drawer) < amt) {
+      state2.ui.toast = "No hay tanto efectivo en caja";
+      return false;
+    }
+    const give = makeChange(state2.finance.drawer, amt);
+    if (!give) {
+      state2.ui.toast = "No se puede componer ese importe con las denominaciones de caja";
+      return false;
+    }
+    const next = removeFromDrawer(state2.finance.drawer, give);
+    if (!next) return false;
+    state2.finance.drawer = next;
+    state2.finance.bankCents += amt;
+    state2.finance.ledger.push({
+      id: `dep-${Date.now()}`,
+      at: state2.clock.gameTimeMs,
+      type: "bank-deposit",
+      label: "Ingreso caja \u2192 banco",
+      totalCents: amt
+    });
+    state2.dayLog.push({ at: state2.clock.gameTimeMs, text: `Ingreso a banco: ${formatEuro(amt)}` });
+    state2.ui.toast = `Ingresados ${formatEuro(amt)} al banco`;
+    return true;
+  }
+  function withdrawBankToCash(state2, amountCents) {
+    const amt = Math.max(0, Math.round(amountCents));
+    if (amt <= 0) {
+      state2.ui.toast = "Importe no v\xE1lido";
+      return false;
+    }
+    if (state2.finance.bankCents < amt) {
+      state2.ui.toast = "Saldo de banco insuficiente";
+      return false;
+    }
+    const give = makeChange(bankVaultDrawer(), amt);
+    if (!give) {
+      state2.ui.toast = "No se pudo preparar el cambio";
+      return false;
+    }
+    state2.finance.bankCents -= amt;
+    state2.finance.drawer = addToDrawer(state2.finance.drawer, give);
+    state2.finance.ledger.push({
+      id: `wd-${Date.now()}`,
+      at: state2.clock.gameTimeMs,
+      type: "bank-withdraw",
+      label: "Retirada banco \u2192 caja (cambio)",
+      totalCents: -amt
+    });
+    state2.dayLog.push({
+      at: state2.clock.gameTimeMs,
+      text: `Retirada a caja (cambio): ${formatEuro(amt)}`
+    });
+    state2.ui.toast = `Cambio recibido: ${formatEuro(amt)}`;
+    return true;
+  }
+
+  // src/data/board.js
+  function buildTownBoard(state2, ymd2) {
+    var _a;
+    const items = [];
+    const ev = eventOn(ymd2, state2.events);
+    if (ev) {
+      items.push({
+        id: `ev-${ymd2}`,
+        kind: "evento",
+        title: ev.name,
+        body: "Hay m\xE1s afluencia en la administraci\xF3n. Prepara cambio y stock."
+      });
+    }
+    const santos = santosToday(ymd2);
+    if (santos.length) {
+      items.push({
+        id: `santo-${ymd2}`,
+        kind: "santoral",
+        title: `Santoral: ${santos.join(", ")}`,
+        body: "Pueden pasar vecinos a por \u201Clo del santo\u201D."
+      });
+    }
+    const bday = birthdayBanner(state2, ymd2);
+    if (bday.includes("Cumplea\xF1os")) {
+      items.push({
+        id: `bday-${ymd2}`,
+        kind: "cumple",
+        title: "Cumplea\xF1os en el pueblo",
+        body: bday
+      });
+    }
+    const dow = (/* @__PURE__ */ new Date(`${ymd2}T12:00:00Z`)).getUTCDay();
+    const drawsToday = [];
+    for (const p2 of state2._productsCache || []) {
+    }
+    void drawsToday;
+    items.push({
+      id: "aviso-responsable",
+      kind: "aviso",
+      title: "Juego responsable",
+      body: "Solo mayores de 18. Fan-made / no oficial."
+    });
+    const month = Number(ymd2.slice(5, 7));
+    if (month === 12 || month === 11) {
+      items.push({
+        id: "navidad-board",
+        kind: "rifa",
+        title: "Encargos de Navidad",
+        body: "Recuerda los plazos de d\xE9cimos de Navidad y El Ni\xF1o."
+      });
+    }
+    if (month >= 6 && month <= 9) {
+      items.push({
+        id: "turismo",
+        kind: "turismo",
+        title: "Temporada Caminito / El Chorro",
+        body: "Turistas piden rascas y Suerte del Chorro. Tarjeta al d\xEDa."
+      });
+    }
+    const localIds = ["alo-feria", "alo-flores", "alo-local", "mal-caminito"];
+    const idx = Number(ymd2.replace(/\D/g, "")) % localIds.length;
+    const pid = localIds[idx];
+    const p = getProduct(pid);
+    if (p) {
+      items.push({
+        id: `rifa-${pid}`,
+        kind: "rifa",
+        title: `Rifa / sorteo: ${p.name}`,
+        body: `${p.description || p.trait || ""} \xB7 ${p.topPrizeHint ? `Premio orientativo: ${p.topPrizeHint}` : ""}`
+      });
+    }
+    if ((_a = state2.ui) == null ? void 0 : _a.penaDayNotice) {
+      items.push({
+        id: "pena-day",
+        kind: "pena",
+        title: state2.ui.penaDayNotice.title,
+        body: state2.ui.penaDayNotice.body
+      });
+    }
+    return items;
+  }
+
+  // src/game/monthly.js
+  function buildMonthlyStatement(state2, year, month) {
+    const start = Date.UTC(year, month, 1, 0, 0, 0);
+    const end = Date.UTC(year, month + 1, 1, 0, 0, 0);
+    const orgs = {
+      LAE: { sales: 0, commission: 0, prizes: 0, remittance: 0 },
+      ONCE: { sales: 0, commission: 0, prizes: 0, remittance: 0 },
+      Otros: { sales: 0, commission: 0, prizes: 0, remittance: 0 }
+    };
+    let expenses = 0;
+    let supplier = 0;
+    let shortage = 0;
+    for (const e of state2.finance.ledger || []) {
+      if (e.at < start || e.at >= end) continue;
+      if (e.type === "sale" && e.items) {
+        for (const item of e.items) {
+          const p = getProduct(item.productId);
+          const org = (p == null ? void 0 : p.org) === "LAE" || (p == null ? void 0 : p.org) === "ONCE" ? p.org : "Otros";
+          const total = item.unitCents * item.qty;
+          const comm = Math.round(total * ((p == null ? void 0 : p.commissionRate) || 0.05));
+          orgs[org].sales += total;
+          orgs[org].commission += comm;
+        }
+      }
+      if (e.type === "prize") {
+        const org = e.org === "LAE" || e.org === "ONCE" ? e.org : "Otros";
+        orgs[org].prizes += e.totalCents || 0;
+      }
+      if (e.type === "expense") expenses += Math.abs(e.totalCents || 0);
+      if (e.type === "supplier") supplier += Math.abs(e.totalCents || 0);
+      if (e.type === "shortage") shortage += Math.abs(e.totalCents || 0);
+    }
+    for (const org of Object.keys(orgs)) {
+      orgs[org].remittance = orgs[org].sales - orgs[org].commission;
+    }
+    const label = new Date(Date.UTC(year, month, 1)).toLocaleString("es-ES", {
+      month: "long",
+      year: "numeric",
+      timeZone: "UTC"
+    });
+    return {
+      year,
+      month,
+      label,
+      orgs,
+      expenses,
+      supplier,
+      shortage,
+      totalSales: orgs.LAE.sales + orgs.ONCE.sales + orgs.Otros.sales,
+      totalCommission: orgs.LAE.commission + orgs.ONCE.commission + orgs.Otros.commission,
+      totalPrizes: orgs.LAE.prizes + orgs.ONCE.prizes + orgs.Otros.prizes
+    };
+  }
+  function currentMonthStatement(state2) {
+    const d = gameDate(state2);
+    return buildMonthlyStatement(state2, d.getUTCFullYear(), d.getUTCMonth());
+  }
+
   // src/main.js
   var state = null;
   var toastTimer = null;
@@ -4220,7 +5125,7 @@ ${xrefPos}
     }, 3500);
   }
   function maybeStartMusic() {
-    var _a, _b;
+    var _a, _b, _c, _d;
     if ((_a = state == null ? void 0 : state.settings) == null ? void 0 : _a.music) {
       setMusicEnabled(true);
       startMusic();
@@ -4228,12 +5133,16 @@ ${xrefPos}
       setMusicEnabled(false);
     }
     if (((_b = state == null ? void 0 : state.settings) == null ? void 0 : _b.sfx) != null) setSfxEnabled(!!state.settings.sfx);
+    if (((_c = state == null ? void 0 : state.settings) == null ? void 0 : _c.musicVolume) != null) setMusicVolume(state.settings.musicVolume);
+    if (((_d = state == null ? void 0 : state.settings) == null ? void 0 : _d.sfxVolume) != null) setSfxVolume(state.settings.sfxVolume);
     applyTheme();
   }
   function applyTheme() {
-    var _a;
+    var _a, _b;
     const theme = ((_a = state == null ? void 0 : state.settings) == null ? void 0 : _a.theme) === "dark" ? "dark" : "light";
     document.documentElement.setAttribute("data-theme", theme);
+    const scale = Number((_b = state == null ? void 0 : state.settings) == null ? void 0 : _b.fontScale) || 1;
+    document.documentElement.style.fontSize = `${16 * scale}px`;
   }
   function confirmImportant(message) {
     return window.confirm(message);
@@ -4317,6 +5226,10 @@ ${xrefPos}
     if (state.ui.screen === "arqueo") return renderArqueo();
     if (state.ui.screen === "weekly") return renderWeekly();
     if (state.ui.screen === "stats") return renderStats();
+    if (state.ui.screen === "board") return renderBoard();
+    if (state.ui.screen === "bank") return renderBank();
+    if (state.ui.screen === "settings") return renderSettings();
+    if (state.ui.screen === "monthly") return renderMonthly();
     return renderCounter();
   }
   function escapeHtml(s) {
@@ -4384,21 +5297,7 @@ ${xrefPos}
     }
   }
   function dictateHint(mode) {
-    const hints = {
-      nacional: "5 cifras (ej. 45821)",
-      triplex: "3 cifras (ej. 742)",
-      "6from49": "6 n\xFAmeros 1\u201349 y reintegro (ej. 1 8 15 22 33 41 r3)",
-      euro: "5 n\xFAmeros | 2 estrellas (ej. 1 2 3 4 5 | 6 7)",
-      eurojackpot: "5 n\xFAmeros | 2 estrellas (ej. 1 2 3 4 5 | 6 7)",
-      gordo: "5 n\xFAmeros 1\u201354 y clave (ej. 3 12 20 33 50 clave 7)",
-      quiniela: "14 signos 1/X/2 (ej. 1X2112X12X121)",
-      quinigol: "6 resultados 0/1/2/M",
-      superonce: "5 n\xFAmeros del 1 al 49",
-      "5from40": "5 n\xFAmeros del 1 al 40",
-      lototurf: "5 n\xFAmeros del 1 al 49",
-      quintuple: "5 caballos 1\u201320 + suplementaria (ej. 3 7 11 14 18 5)"
-    };
-    return hints[mode] || "Escribe la combinaci\xF3n dictada";
+    return modeHint(mode);
   }
   function renderMenu() {
     const slots = listSlots();
@@ -4449,7 +5348,7 @@ ${xrefPos}
       maybeStartMusic();
       state.ui.screen = "counter";
       lastAutosaveRealMs = Date.now();
-      showToast("Bienvenida, Miriam. Versi\xF3n 0.4 lista. Abre el TPV para vender.");
+      showToast("Bienvenida, Miriam. Versi\xF3n 0.5 lista. Abre el TPV para vender.");
       needsFullRender = true;
       render();
     };
@@ -4542,28 +5441,39 @@ ${xrefPos}
     });
   }
   function sideNav() {
-    var _a, _b, _c;
+    var _a, _b, _c, _d, _e;
     const profit = dayProfitBreakdown(state);
     const openMgmt = (state.prizeManagement || []).filter((c) => c.status !== "settled").length;
     const musicOn2 = ((_a = state.settings) == null ? void 0 : _a.music) !== false && isMusicEnabled();
     const dark = ((_b = state.settings) == null ? void 0 : _b.theme) === "dark";
+    let autosaveLine = "";
+    if ((_c = state.ui) == null ? void 0 : _c.lastAutosaveAt) {
+      const mins = Math.max(0, Math.round((Date.now() - state.ui.lastAutosaveAt) / 6e4));
+      const slot = state.ui.lastAutosaveSlot || ((_d = state.meta) == null ? void 0 : _d.activeSlot) || 1;
+      autosaveLine = `<div class="muted" id="autosave-hint">Guardado hace ${mins}m \xB7 hueco ${slot}</div>`;
+    }
     return `
     <aside class="panel nav-side">
       <h3>Oficina</h3>
       <button class="btn" data-nav="counter">Mostrador</button>
+      <button class="btn" data-nav="board">Tabl\xF3n</button>
       <button class="btn" data-nav="fichas">Abonados / Pe\xF1as</button>
       <button class="btn" data-nav="draws">Sorteos</button>
       <button class="btn" data-nav="prize">Pagar premio</button>
       <button class="btn" data-nav="management">Gesti\xF3n premios${openMgmt ? ` (${openMgmt})` : ""}</button>
       <button class="btn" data-nav="stock">Stock y pedidos</button>
       <button class="btn" data-nav="showcase">Escaparate</button>
+      <button class="btn" data-nav="bank">Caja\u2194Banco</button>
       <button class="btn" data-nav="arqueo">Arqueo</button>
       <button class="btn" data-nav="weekly">Extracto semanal</button>
+      <button class="btn" data-nav="monthly">Liquidaci\xF3n mensual</button>
       <button class="btn" data-nav="stats">Estad\xEDsticas</button>
       <button class="btn" data-nav="close">Cierre y balance</button>
+      <button class="btn" data-nav="settings">Ajustes</button>
       <button class="btn" data-nav="saves">Guardar / exportar</button>
       <button class="btn" id="btn-music-toggle">${musicOn2 ? "\u266A M\xFAsica: ON" : "\u266A M\xFAsica: OFF"}</button>
       <button class="btn" id="btn-theme-toggle">${dark ? "Tema: oscuro" : "Tema: claro"}</button>
+      ${autosaveLine}
       <hr style="border:none;border-top:1px solid var(--line);margin:14px 0" />
       <div class="stat-row"><span>Banco</span><strong>${formatEuro(state.finance.bankCents)}</strong></div>
       <div class="stat-row"><span>Caja</span><strong>${formatEuro(drawerTotalCents(state.finance.drawer))}</strong></div>
@@ -4571,7 +5481,7 @@ ${xrefPos}
       <div class="stat-row"><span>Comisi\xF3n hoy</span><strong>${formatEuro(profit.commissionCents)}</strong></div>
       <div class="stat-row"><span>Beneficio hoy*</span><strong>${formatEuro(profit.profitCents)}</strong></div>
       <div class="stat-row"><span>Clientes hoy</span><strong>${state.customers.servedToday}</strong></div>
-      <div class="stat-row"><span>En cola</span><strong>${((_c = state.customers.queue) == null ? void 0 : _c.length) || 0}</strong></div>
+      <div class="stat-row"><span>En cola</span><strong>${((_e = state.customers.queue) == null ? void 0 : _e.length) || 0}</strong></div>
       <div class="stat-row"><span>Velocidad</span><strong>${speedLabel(state.clock.speed, state.clock.paused)}</strong></div>
       <p class="muted" style="font-size:0.78rem;margin-top:8px">*Comisiones \u2212 gastos del d\xEDa</p>
     </aside>
@@ -4600,6 +5510,8 @@ ${xrefPos}
         state.settings = state.settings || {};
         state.settings.music = next;
         setMusicEnabled(next);
+        if (state.settings.musicVolume != null) setMusicVolume(state.settings.musicVolume);
+        if (state.settings.sfxVolume != null) setSfxVolume(state.settings.sfxVolume);
         if (next) startMusic();
         sfx.click();
         needsFullRender = true;
@@ -4681,6 +5593,40 @@ ${xrefPos}
     if (nav) nav.onclick = () => make("navidad");
     if (nino) nino.onclick = () => make("nino");
   }
+  function scratchOverlayHTML() {
+    var _a;
+    const sr = (_a = state.ui) == null ? void 0 : _a.scratchReveal;
+    if (!sr) return "";
+    if (sr.step === "scratching") {
+      return `<div class="scratch-overlay" id="scratch-overlay">
+      <div class="scratch-card">
+        <div class="scratch-anim">\u2726</div>
+        <h2>Rascando\u2026</h2>
+        <p class="muted">En mostrador, con la moneda</p>
+      </div>
+    </div>`;
+    }
+    const prize = sr.prizeCents || 0;
+    return `<div class="scratch-overlay" id="scratch-overlay">
+    <div class="scratch-card">
+      <h2>${prize > 0 ? "\xA1Premio!" : "Sin premio"}</h2>
+      <p class="total-box" style="margin:12px 0">${prize > 0 ? formatEuro(prize) : "Sigue jugando"}</p>
+      <div class="actions">
+        <button class="btn primary" id="btn-scratch-continue">Continuar</button>
+      </div>
+    </div>
+  </div>`;
+  }
+  function bindScratchOverlay() {
+    const cont = document.getElementById("btn-scratch-continue");
+    if (!cont) return;
+    cont.onclick = () => {
+      state.ui.scratchReveal = null;
+      sfx.click();
+      needsFullRender = true;
+      render();
+    };
+  }
   function renderCounter() {
     var _a;
     const client = state.customers.current;
@@ -4740,12 +5686,14 @@ ${xrefPos}
         </aside>
       </div>
     </div>
+    ${scratchOverlayHTML()}
     ${toastHTML()}
   `;
     bindTopbar();
     bindNav();
     bindHighPrizeAlert();
     bindClientActions();
+    bindScratchOverlay();
     bindCalendarOrderButtons("counter", state.customers.current);
     const arqueoOpen = document.getElementById("btn-arqueo-open");
     if (arqueoOpen) {
@@ -4762,12 +5710,12 @@ ${xrefPos}
     const trait = client.trait ? ` \xB7 ${client.trait}` : "";
     const quote = client.line || client.note || "";
     const kindLabel = client.kind === "pena" ? "Pe\xF1a" : client.kind === "abonado" ? "Abonado" : client.regular ? "Habitual" : "Visitante";
-    if (intent === "buy" || intent === "reserve_special" || intent === "abono") {
+    if (intent === "buy" || intent === "reserve_special" || intent === "abono" || intent === "pena_day") {
       const totalWish = (client.wishlist || []).reduce((s, w) => {
         const p = getProduct(w.productId);
         return s + ((p == null ? void 0 : p.priceCents) || 0) * w.qty;
       }, 0);
-      const title = intent === "reserve_special" ? "Encargo / petici\xF3n:" : intent === "abono" ? "Abono a confirmar en TPV:" : "Quiere:";
+      const title = intent === "reserve_special" ? "Encargo / petici\xF3n:" : intent === "abono" ? "Abono a confirmar en TPV:" : intent === "pena_day" ? "Pedido de pe\xF1a:" : "Quiere:";
       return `
       <div class="client-card">
         <div class="muted">${kindLabel}${trait} \xB7 ${escapeHtml(client.street || "")}${client.specialDay === "birthday" ? " \xB7 Cumplea\xF1os" : client.specialDay === "santo" ? " \xB7 Santo" : ""}</div>
@@ -4779,8 +5727,8 @@ ${xrefPos}
         ${totalWish ? `<p class="muted">Estimado: ${formatEuro(totalWish)}</p>` : ""}
         <p class="muted">Pago preferido: ${payLabel(client.prefersPayment)}</p>
         <div class="actions">
-          <button class="btn primary" id="btn-open-tpv">${intent === "abono" ? "Abrir TPV y confirmar abono" : "Abrir TPV"}</button>
-          <button class="btn" id="btn-load-wish">${intent === "abono" ? "Cargar abono" : "Cargar petici\xF3n"}</button>
+          <button class="btn primary" id="btn-open-tpv">${intent === "abono" ? "Abrir TPV y confirmar abono" : intent === "pena_day" ? "Abrir TPV (cargar pe\xF1a)" : "Abrir TPV"}</button>
+          <button class="btn" id="btn-load-wish">${intent === "abono" ? "Cargar abono" : intent === "pena_day" ? "Cargar pedido pe\xF1a" : "Cargar petici\xF3n"}</button>
           <button class="btn" id="btn-reserve">Reservar sin pagar</button>
           <button class="btn ghost" id="btn-skip">Despedir</button>
         </div>
@@ -4799,7 +5747,7 @@ ${xrefPos}
                 ${result.pending ? escapeHtml(result.detail) : result.prizeCents ? `\xA1Premio: ${formatEuro(result.prizeCents)}! (${escapeHtml(result.detail || "")})` : `Sin premio. ${escapeHtml(result.detail || "")}`}
               </div>` : ""}
         <div class="actions">
-          ${!result ? `<button class="btn primary" id="btn-check">Comprobar</button>` : result.prizeCents > 0 ? `<button class="btn primary" id="btn-pay-now">Pagar ahora</button>
+          ${!result ? t.kind === "rasca" ? `<button class="btn primary" id="btn-scratch">Rascar en mostrador</button>` : `<button class="btn primary" id="btn-check">Comprobar</button>` : result.prizeCents > 0 ? `<button class="btn primary" id="btn-pay-now">Pagar ahora</button>
                    <button class="btn" id="btn-defer">Cobrar otro d\xEDa</button>
                    <button class="btn accent" id="btn-manage">Gestionar (premio grande)</button>` : `<button class="btn primary" id="btn-done-check">Listo</button>`}
           <button class="btn" id="btn-pdf-ticket">PDF ticket</button>
@@ -4853,10 +5801,16 @@ ${xrefPos}
     const openTpvBtn = document.getElementById("btn-open-tpv");
     if (openTpvBtn) {
       openTpvBtn.onclick = () => {
+        var _a, _b;
         const client = state.customers.current;
         if (!client) return;
         sfx.tpv();
-        openTpv(state, client);
+        if (client.intent === "pena_day" && (((_a = client.wishlist) == null ? void 0 : _a.length) || client.request)) {
+          loadWishlistIntoTpv(client);
+          if ((_b = state.ui.tpv) == null ? void 0 : _b.message) showToast(state.ui.tpv.message);
+        } else {
+          openTpv(state, client);
+        }
         needsFullRender = true;
         render();
       };
@@ -4904,6 +5858,28 @@ ${xrefPos}
         showToast(state.ui.toast);
         needsFullRender = true;
         render();
+      };
+    }
+    const scratchBtn = document.getElementById("btn-scratch");
+    if (scratchBtn) {
+      scratchBtn.onclick = () => {
+        var _a;
+        const t = (_a = state.customers.current) == null ? void 0 : _a.ticketFocus;
+        if (!t) return;
+        sfx.scan();
+        state.ui.scratchReveal = { ticketId: t.id, step: "scratching", prizeCents: null };
+        needsFullRender = true;
+        render();
+        setTimeout(() => {
+          var _a2, _b, _c, _d;
+          if (!((_a2 = state == null ? void 0 : state.ui) == null ? void 0 : _a2.scratchReveal) || state.ui.scratchReveal.ticketId !== t.id) return;
+          checkCurrentTicket(state);
+          const prize = (_d = (_c = (_b = state.customers.current) == null ? void 0 : _b.checkResult) == null ? void 0 : _c.prizeCents) != null ? _d : 0;
+          state.ui.scratchReveal = { ticketId: t.id, step: "done", prizeCents: prize };
+          showToast(state.ui.toast);
+          needsFullRender = true;
+          render();
+        }, 1400);
       };
     }
     const done = document.getElementById("btn-done-check");
@@ -5154,11 +6130,14 @@ ${xrefPos}
           </div>
           <div class="tpv-products">
             ${products.map((p) => {
-      var _a2;
+      var _a2, _b2;
       const stock = p.stockType === "physical" ? `Stock ${(_a2 = state.stock[p.id]) != null ? _a2 : 0}` : "Terminal";
+      const rate = (_b2 = p.commissionRate) != null ? _b2 : 0.05;
+      const meta = `Com. ${(rate * 100).toFixed(1)}%${p.trait ? ` \xB7 ${p.trait}` : ""}`;
       return `<div class="tpv-product">
                   <strong>${escapeHtml(p.name)}</strong>
                   <span>${formatEuro(p.priceCents)} \xB7 ${escapeHtml(stock)}</span>
+                  <div class="product-meta">${escapeHtml(meta)}</div>
                   <div class="actions" style="margin-top:8px;gap:6px">
                     <button class="btn primary" style="flex:1;min-height:42px;padding:8px" data-add-random="${p.id}">Aleatorio</button>
                     ${p.needsNumbers ? `<button class="btn" style="flex:1;min-height:42px;padding:8px" data-add-dictate="${p.id}">Dictado</button>` : `<button class="btn" style="flex:1;min-height:42px;padding:8px" data-add-random="${p.id}">+1</button>`}
@@ -5177,6 +6156,16 @@ ${xrefPos}
                             <button class="btn" style="padding:6px 10px" data-qty="${l.id}" data-delta="-1">\u2212</button>
                             <strong style="min-width:1.5rem;text-align:center">${l.qty}</strong>
                             <button class="btn" style="padding:6px 10px" data-qty="${l.id}" data-delta="1">+</button>
+                            ${(() => {
+        const lp = getProduct(l.productId);
+        if (lp && (lp.numberMode === "nacional" || lp.fractionable)) {
+          return `<button class="btn" style="padding:6px 10px" data-frac="${l.id}" data-n="1">1 d\xE9cimo</button>
+                                   <button class="btn" style="padding:6px 10px" data-frac="${l.id}" data-n="2">x2</button>
+                                   <button class="btn" style="padding:6px 10px" data-frac="${l.id}" data-n="5">x5</button>
+                                   <button class="btn" style="padding:6px 10px" data-series="${l.id}">serie</button>`;
+        }
+        return "";
+      })()}
                             ${l.needsNumbers ? `<button class="btn" style="padding:6px 10px" data-reroll="${l.id}">Aleat.</button>
                                    <button class="btn" style="padding:6px 10px" data-dictate-line="${l.id}">Dictar</button>` : ""}
                             <button class="btn danger" style="padding:6px 10px" data-remove="${l.id}">Quitar</button>
@@ -5283,6 +6272,22 @@ ${xrefPos}
     app.querySelectorAll("[data-dictate-line]").forEach((btn) => {
       btn.onclick = () => {
         startDictateLine(state, btn.getAttribute("data-dictate-line"));
+        sfx.click();
+        needsFullRender = true;
+        render();
+      };
+    });
+    app.querySelectorAll("[data-frac]").forEach((btn) => {
+      btn.onclick = () => {
+        setLineFraction(state, btn.getAttribute("data-frac"), Number(btn.getAttribute("data-n")));
+        sfx.click();
+        needsFullRender = true;
+        render();
+      };
+    });
+    app.querySelectorAll("[data-series]").forEach((btn) => {
+      btn.onclick = () => {
+        setLineSeries(state, btn.getAttribute("data-series"));
         sfx.click();
         needsFullRender = true;
         render();
@@ -5814,6 +6819,9 @@ ${xrefPos}
             <div class="stat-row"><span>Liquidaciones</span><strong>${w.settlements}</strong></div>
             <div class="stat-row"><span>Neto (comisi\xF3n \u2212 gastos \u2212 faltantes)</span><strong>${formatEuro(w.net)}</strong></div>
           </div>
+          <div class="actions" style="margin-top:16px">
+            <button class="btn primary" id="btn-weekly-pdf">Descargar PDF</button>
+          </div>
         </section>
       </div>
     </div>
@@ -5821,6 +6829,11 @@ ${xrefPos}
   `;
     bindTopbar();
     bindNav();
+    document.getElementById("btn-weekly-pdf").onclick = () => {
+      downloadWeeklyPdf(w);
+      sfx.success();
+      showToast("PDF del extracto semanal descargado");
+    };
   }
   function renderStats() {
     var _a, _b, _c;
@@ -6333,7 +7346,258 @@ ${xrefPos}
       };
     });
   }
+  function renderBoard() {
+    const ymd2 = gameYmd(state);
+    const items = buildTownBoard(state, ymd2);
+    app.innerHTML = `
+    <div class="shell">
+      ${topbarHTML()}
+      <div class="layout" style="grid-template-columns:280px 1fr">
+        ${sideNav()}
+        <section class="panel">
+          <h2>Tabl\xF3n del pueblo</h2>
+          <p class="muted">\xC1lora \xB7 ${escapeHtml(ymd2)}</p>
+          <div class="board-list" style="margin-top:12px;display:flex;flex-direction:column;gap:10px">
+            ${items.length ? items.map(
+      (it) => `<article class="board-item" style="padding:12px;border:1px solid var(--line);border-radius:12px">
+                        <div class="muted" style="font-size:0.8rem;text-transform:uppercase">${escapeHtml(it.kind || "")}</div>
+                        <h3 style="margin:4px 0 6px;font-family:var(--font-display)">${escapeHtml(it.title)}</h3>
+                        <p style="margin:0">${escapeHtml(it.body || "")}</p>
+                      </article>`
+    ).join("") : '<div class="muted">Nada en el tabl\xF3n hoy.</div>'}
+          </div>
+        </section>
+      </div>
+    </div>
+    ${toastHTML()}
+  `;
+    bindTopbar();
+    bindNav();
+  }
+  function renderBank() {
+    const cash = drawerTotalCents(state.finance.drawer);
+    const bank = state.finance.bankCents;
+    app.innerHTML = `
+    <div class="shell">
+      ${topbarHTML()}
+      <div class="layout" style="grid-template-columns:280px 1fr">
+        ${sideNav()}
+        <section class="panel">
+          <h2>Caja \u2194 Banco</h2>
+          <p class="muted">Ingresa efectivo al banco o retira cambio a caja.</p>
+          <div class="close-summary" style="margin:12px 0">
+            <div class="stat-row"><span>Efectivo en caja</span><strong>${formatEuro(cash)}</strong></div>
+            <div class="stat-row"><span>Saldo banco</span><strong>${formatEuro(bank)}</strong></div>
+          </div>
+          <div class="actions" style="flex-wrap:wrap;align-items:flex-end;gap:12px">
+            <label>Ingresar a banco (\u20AC)<br/>
+              <input id="bank-deposit" type="number" min="0" step="0.01" placeholder="100" style="padding:8px;border-radius:10px;border:1px solid var(--line);width:140px" />
+            </label>
+            <button class="btn primary" id="btn-bank-deposit">Ingresar</button>
+          </div>
+          <div class="actions" style="flex-wrap:wrap;align-items:flex-end;gap:12px;margin-top:14px">
+            <label>Retirar a caja (\u20AC)<br/>
+              <input id="bank-withdraw" type="number" min="0" step="0.01" placeholder="50" style="padding:8px;border-radius:10px;border:1px solid var(--line);width:140px" />
+            </label>
+            <button class="btn" id="btn-bank-withdraw">Retirar cambio</button>
+          </div>
+        </section>
+      </div>
+    </div>
+    ${toastHTML()}
+  `;
+    bindTopbar();
+    bindNav();
+    const eurosToCents = (el) => Math.round((Number(el == null ? void 0 : el.value) || 0) * 100);
+    document.getElementById("btn-bank-deposit").onclick = () => {
+      const ok = depositCashToBank(state, eurosToCents(document.getElementById("bank-deposit")));
+      if (ok) sfx.cash();
+      else sfx.error();
+      showToast(state.ui.toast);
+      needsFullRender = true;
+      render();
+    };
+    document.getElementById("btn-bank-withdraw").onclick = () => {
+      const ok = withdrawBankToCash(state, eurosToCents(document.getElementById("bank-withdraw")));
+      if (ok) sfx.cash();
+      else sfx.error();
+      showToast(state.ui.toast);
+      needsFullRender = true;
+      render();
+    };
+  }
+  function renderSettings() {
+    var _a, _b, _c;
+    const s = state.settings || {};
+    const font = s.fontScale || 1;
+    const speed = (_a = s.defaultSpeed) != null ? _a : 1;
+    app.innerHTML = `
+    <div class="shell">
+      ${topbarHTML()}
+      <div class="layout" style="grid-template-columns:280px 1fr">
+        ${sideNav()}
+        <section class="panel">
+          <h2>Ajustes</h2>
+          <p class="muted">Preferencias de Miriam \xB7 v${GAME_VERSION}</p>
+          <div style="display:flex;flex-direction:column;gap:14px;margin-top:12px;max-width:420px">
+            <label>Tema<br/>
+              <select id="set-theme" style="padding:8px;border-radius:10px;border:1px solid var(--line);width:100%">
+                <option value="light" ${s.theme !== "dark" ? "selected" : ""}>Claro</option>
+                <option value="dark" ${s.theme === "dark" ? "selected" : ""}>Oscuro</option>
+              </select>
+            </label>
+            <label style="display:flex;align-items:center;gap:8px">
+              <input type="checkbox" id="set-music" ${s.music !== false ? "checked" : ""} /> M\xFAsica
+            </label>
+            <label>Volumen m\xFAsica<br/>
+              <input id="set-music-vol" type="range" min="0" max="1" step="0.05" value="${(_b = s.musicVolume) != null ? _b : 0.45}" style="width:100%" />
+            </label>
+            <label style="display:flex;align-items:center;gap:8px">
+              <input type="checkbox" id="set-sfx" ${s.sfx !== false ? "checked" : ""} /> Efectos de sonido
+            </label>
+            <label>Volumen SFX<br/>
+              <input id="set-sfx-vol" type="range" min="0" max="1" step="0.05" value="${(_c = s.sfxVolume) != null ? _c : 0.7}" style="width:100%" />
+            </label>
+            <label>Tama\xF1o de letra<br/>
+              <select id="set-font" style="padding:8px;border-radius:10px;border:1px solid var(--line);width:100%">
+                <option value="0.9" ${font === 0.9 ? "selected" : ""}>Peque\xF1o (0.9)</option>
+                <option value="1" ${font === 1 ? "selected" : ""}>Normal (1)</option>
+                <option value="1.1" ${font === 1.1 ? "selected" : ""}>Grande (1.1)</option>
+                <option value="1.2" ${font === 1.2 ? "selected" : ""}>Muy grande (1.2)</option>
+              </select>
+            </label>
+            <label>Velocidad por defecto<br/>
+              <select id="set-speed" style="padding:8px;border-radius:10px;border:1px solid var(--line);width:100%">
+                <option value="1" ${speed === 1 ? "selected" : ""}>Normal</option>
+                <option value="15" ${speed === 15 ? "selected" : ""}>R\xE1pido</option>
+                <option value="60" ${speed === 60 ? "selected" : ""}>Muy r\xE1pido</option>
+              </select>
+            </label>
+            <label>Autoguardado (minutos)<br/>
+              <input id="set-autosave" type="number" min="1" max="30" value="${s.autosaveMinutes || 2}" style="padding:8px;border-radius:10px;border:1px solid var(--line);width:100%" />
+            </label>
+            <button class="btn primary" id="btn-settings-save">Aplicar</button>
+          </div>
+        </section>
+      </div>
+    </div>
+    ${toastHTML()}
+  `;
+    bindTopbar();
+    bindNav();
+    document.getElementById("btn-settings-save").onclick = () => {
+      state.settings = state.settings || {};
+      state.settings.theme = document.getElementById("set-theme").value === "dark" ? "dark" : "light";
+      state.settings.music = document.getElementById("set-music").checked;
+      state.settings.sfx = document.getElementById("set-sfx").checked;
+      state.settings.musicVolume = Number(document.getElementById("set-music-vol").value);
+      state.settings.sfxVolume = Number(document.getElementById("set-sfx-vol").value);
+      state.settings.fontScale = Number(document.getElementById("set-font").value) || 1;
+      state.settings.defaultSpeed = Number(document.getElementById("set-speed").value) || 1;
+      state.settings.autosaveMinutes = Math.max(1, Math.min(30, Number(document.getElementById("set-autosave").value) || 2));
+      setMusicEnabled(!!state.settings.music);
+      setSfxEnabled(!!state.settings.sfx);
+      setMusicVolume(state.settings.musicVolume);
+      setSfxVolume(state.settings.sfxVolume);
+      if (state.settings.music) startMusic();
+      applyTheme();
+      sfx.success();
+      showToast("Ajustes aplicados");
+      needsFullRender = true;
+      render();
+    };
+  }
+  function renderMonthly() {
+    const st = currentMonthStatement(state);
+    app.innerHTML = `
+    <div class="shell">
+      ${topbarHTML()}
+      <div class="layout" style="grid-template-columns:280px 1fr">
+        ${sideNav()}
+        <section class="panel">
+          <h2>Liquidaci\xF3n mensual</h2>
+          <p class="muted">${escapeHtml(st.label)}</p>
+          <div class="close-summary">
+            <div class="stat-row"><span>Ventas totales</span><strong>${formatEuro(st.totalSales)}</strong></div>
+            <div class="stat-row"><span>Comisiones</span><strong>${formatEuro(st.totalCommission)}</strong></div>
+            <div class="stat-row"><span>Premios pagados</span><strong>${formatEuro(st.totalPrizes)}</strong></div>
+            <div class="stat-row"><span>Gastos local</span><strong>${formatEuro(st.expenses)}</strong></div>
+            <div class="stat-row"><span>Proveedor</span><strong>${formatEuro(st.supplier)}</strong></div>
+            <div class="stat-row"><span>Faltantes</span><strong>${formatEuro(st.shortage)}</strong></div>
+          </div>
+          <h3 style="margin-top:16px">Por organizaci\xF3n</h3>
+          ${["LAE", "ONCE", "Otros"].map((org) => {
+      const o = st.orgs[org];
+      return `<div class="close-summary" style="margin-top:8px">
+                <strong>${org}</strong>
+                <div class="stat-row"><span>Ventas</span><strong>${formatEuro(o.sales)}</strong></div>
+                <div class="stat-row"><span>Comisi\xF3n</span><strong>${formatEuro(o.commission)}</strong></div>
+                <div class="stat-row"><span>Remesa</span><strong>${formatEuro(o.remittance)}</strong></div>
+                <div class="stat-row"><span>Premios</span><strong>${formatEuro(o.prizes)}</strong></div>
+              </div>`;
+    }).join("")}
+          <div class="actions" style="margin-top:16px">
+            <button class="btn primary" id="btn-monthly-pdf">Descargar PDF</button>
+          </div>
+        </section>
+      </div>
+    </div>
+    ${toastHTML()}
+  `;
+    bindTopbar();
+    bindNav();
+    document.getElementById("btn-monthly-pdf").onclick = () => {
+      downloadMonthlyPdf(st);
+      sfx.success();
+      showToast("PDF de liquidaci\xF3n mensual descargado");
+    };
+  }
+  var globalKeysBound = false;
+  function ensureGlobalShortcuts() {
+    if (globalKeysBound) return;
+    globalKeysBound = true;
+    document.addEventListener("keydown", (e) => {
+      var _a, _b, _c, _d, _e;
+      if (!state || state.ui.screen === "menu") return;
+      const tag = (((_a = e.target) == null ? void 0 : _a.tagName) || "").toLowerCase();
+      const typing = tag === "input" || tag === "textarea" || ((_b = e.target) == null ? void 0 : _b.isContentEditable);
+      if (typing) return;
+      if (state.ui.screen === "tpv") return;
+      const key = ((_d = (_c = e.key) == null ? void 0 : _c.toLowerCase) == null ? void 0 : _d.call(_c)) || "";
+      if (key === "n") {
+        const client = state.customers.current;
+        if (!client) return;
+        e.preventDefault();
+        sfx.tpv();
+        if (client.intent === "pena_day" && (((_e = client.wishlist) == null ? void 0 : _e.length) || client.request)) {
+          loadWishlistIntoTpv(client);
+        } else {
+          openTpv(state, client);
+        }
+        needsFullRender = true;
+        render();
+        return;
+      }
+      if (key === "a") {
+        e.preventDefault();
+        sfx.click();
+        startArqueo(state, "midday");
+        needsFullRender = true;
+        render();
+        return;
+      }
+      if (key === "c") {
+        e.preventDefault();
+        if (!confirmImportant("\xBFIr a cierre y balance del d\xEDa?")) return;
+        state.ui.screen = "close";
+        sfx.click();
+        needsFullRender = true;
+        render();
+      }
+    });
+  }
   state = null;
+  ensureGlobalShortcuts();
   renderMenu();
   requestAnimationFrame(loop);
   window.__loterias = () => state;

@@ -13,17 +13,21 @@ export function downloadTicketPdf(ticket, business = OFFICE) {
     '--------------------------------',
     `Ticket ${ticket.id}`,
     ticket.productName,
+    `Org: ${ticket.org || '—'}`,
     `Cliente: ${ticket.clientName || '—'}`,
     `Apuesta: ${formatSelection(ticket)}`,
+    ticket.numberSource ? `Origen números: ${ticket.numberSource}` : null,
     ticket.drawYmd ? `Sorteo: ${ticket.drawYmd}` : 'Rasca / instantáneo',
     `Precio: ${formatEuro(ticket.priceCents)}`,
+    ticket.saleMethod ? `Venta: ${ticket.saleMethod}` : null,
     ticket.checkedAt != null
       ? `Comprobado: ${ticket.checkDetail || ''} · ${formatEuro(ticket.prizeCents || 0)}`
       : 'Pendiente de comprobar',
+    ticket.paidAt != null ? `Pagado: ${formatEuro(ticket.prizeCents || 0)}` : null,
     '--------------------------------',
     'Fan-made / no oficial · +18',
     'Juego responsable',
-  ];
+  ].filter(Boolean);
 
   const pdf = buildSimplePdf(lines);
   const blob = new Blob([pdf], { type: 'application/pdf' });
@@ -109,6 +113,19 @@ function escapePdfText(s) {
   return s.replace(/\\/g, '\\\\').replace(/\(/g, '\\(').replace(/\)/g, '\\)');
 }
 
+function downloadLinesPdf(lines, filename) {
+  const pdf = buildSimplePdf(lines);
+  const blob = new Blob([pdf], { type: 'application/pdf' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
 export function downloadStatsPdf(state) {
   const s = state.stats || {};
   const f = state.finance || {};
@@ -135,14 +152,47 @@ export function downloadStatsPdf(state) {
     'Fan-made / no oficial · +18',
     'Juego responsable',
   ];
-  const pdf = buildSimplePdf(lines);
-  const blob = new Blob([pdf], { type: 'application/pdf' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `estadisticas-alora-${Date.now()}.pdf`;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
+  downloadLinesPdf(lines, `estadisticas-alora-${Date.now()}.pdf`);
+}
+
+export function downloadWeeklyPdf(weekly) {
+  const lines = [
+    OFFICE.businessName,
+    '===== EXTRACTO SEMANAL =====',
+    `${weekly.fromYmd} → ${weekly.toYmd}`,
+    '--------------------------------',
+    `Ventas: ${formatEuro(weekly.sales)}`,
+    `Comisiones: ${formatEuro(weekly.commission)}`,
+    `Premios: ${formatEuro(weekly.prizes)}`,
+    `Gastos: ${formatEuro(weekly.expenses)}`,
+    `Faltantes: ${formatEuro(weekly.shortage)}`,
+    `Liquidaciones: ${weekly.settlements}`,
+    `Neto (com.−gastos−falt.): ${formatEuro(weekly.net)}`,
+    '--------------------------------',
+    'Fan-made / no oficial · +18',
+  ];
+  downloadLinesPdf(lines, `extracto-semanal-${weekly.toYmd}.pdf`);
+}
+
+export function downloadMonthlyPdf(statement) {
+  const lines = [
+    OFFICE.businessName,
+    `Liquidación mensual — ${statement.label}`,
+    '--------------------------------',
+    `Ventas totales: ${formatEuro(statement.totalSales)}`,
+    `Comisiones: ${formatEuro(statement.totalCommission)}`,
+    `Premios pagados: ${formatEuro(statement.totalPrizes)}`,
+    `Gastos local: ${formatEuro(statement.expenses)}`,
+    `Proveedor: ${formatEuro(statement.supplier)}`,
+    `Faltantes: ${formatEuro(statement.shortage)}`,
+    '--------------------------------',
+  ];
+  for (const org of ['LAE', 'ONCE', 'Otros']) {
+    const o = statement.orgs[org];
+    lines.push(`${org}`);
+    lines.push(`  Ventas ${formatEuro(o.sales)} · Com. ${formatEuro(o.commission)}`);
+    lines.push(`  Remesa ${formatEuro(o.remittance)} · Premios ${formatEuro(o.prizes)}`);
+  }
+  lines.push('--------------------------------', 'Fan-made / no oficial · +18');
+  downloadLinesPdf(lines, `liquidacion-mensual-${statement.year}-${statement.month + 1}.pdf`);
 }
