@@ -1797,3 +1797,120 @@ select {
       rgba(153, 102, 255, 0.12),
       rgba(255, 140, 60, 0.12));
 }
+.number-entry-box {
+  background:
+    linear-gradient(
+      160deg,
+      rgba(255, 255, 255, 0.96),
+      rgba(232, 248, 246, 0.9));
+  border: 2px solid rgba(12, 138, 138, 0.28);
+  border-radius: 16px;
+  padding: 14px 16px;
+}
+.slot-group {
+  margin-top: 10px;
+}
+.slot-group-title {
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--brand-deep);
+  margin-bottom: 6px;
+}
+.number-slots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.number-slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 6px;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid var(--line);
+  min-width: 64px;
+}
+.number-slot[data-group=estrellas] {
+  border-color: rgba(240, 162, 2, 0.55);
+  background:
+    linear-gradient(
+      160deg,
+      #fff9e8,
+      #fff);
+}
+.number-slot[data-group=reintegro],
+.number-slot[data-group=clave],
+.number-slot[data-group=plus] {
+  border-color: rgba(122, 62, 176, 0.4);
+  background:
+    linear-gradient(
+      160deg,
+      #f6f0ff,
+      #fff);
+}
+.number-slot[data-group=n\famero] {
+  border-color: rgba(12, 138, 138, 0.35);
+}
+.number-slot label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+.slot-input {
+  width: 52px;
+  height: 44px;
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 800;
+  font-family: var(--font-display);
+  border: 2px solid var(--brand);
+  border-radius: 10px;
+  color: var(--ink);
+  background: #f7fffe;
+}
+.slot-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(12, 138, 138, 0.25);
+  border-color: var(--accent);
+}
+.slot-choice {
+  width: 64px;
+  font-size: 1rem;
+  padding: 0 4px;
+}
+.slot-rand {
+  padding: 2px 8px !important;
+  min-height: 28px !important;
+  font-size: 0.9rem !important;
+  line-height: 1;
+}
+.slot-advanced summary {
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+.slot-advanced textarea {
+  width: 100%;
+  margin-top: 6px;
+  min-height: 56px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  padding: 8px;
+  font: inherit;
+}
+.number-slot[data-group=columna],
+.number-slot[data-group=goles],
+.number-slot[data-group=paridad] {
+  min-width: 48px;
+  padding: 6px 4px;
+}
+.number-slot[data-group=columna] .slot-input,
+.number-slot[data-group=goles] .slot-input,
+.number-slot[data-group=paridad] .slot-input {
+  width: 44px;
+  height: 38px;
+  font-size: 1.05rem;
+}

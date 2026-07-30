@@ -2428,7 +2428,7 @@
   // src/game/state.js
   var STARTING_BANK_CENTS = 95e4;
   var SAVE_VERSION = 12;
-  var GAME_VERSION = "1.1";
+  var GAME_VERSION = "1.2";
   var SLOT_COUNT = 3;
   var STORAGE_PREFIX = "loterias-alora-slot-";
   var OFFICE = {
@@ -6067,6 +6067,566 @@ ${xrefPos}
     return `Stock cr\xEDtico: ${names}${crit.length > 3 ? ` (+${crit.length - 3})` : ""}`;
   }
 
+  // src/game/numberSlots.js
+  var COLORS2 = ["rojo", "verde", "azul", "oro"];
+  var PALOS2 = ["oros", "copas", "espadas", "bastos"];
+  var SIGN_1X2 = ["1", "X", "2"];
+  var SIGN_GOL = ["0", "1", "2", "M"];
+  var SIGN_PI = ["P", "I"];
+  function slotSchemaForMode(mode, productId = "") {
+    switch (mode) {
+      case "nacional":
+        return Array.from({ length: 5 }, (_, i) => ({
+          id: `d${i}`,
+          label: `Cifra ${i + 1}`,
+          group: "n\xFAmero",
+          type: "digit",
+          min: 0,
+          max: 9
+        }));
+      case "triplex":
+      case "serieLocal":
+        return Array.from({ length: 3 }, (_, i) => ({
+          id: `d${i}`,
+          label: `Cifra ${i + 1}`,
+          group: "n\xFAmero",
+          type: "digit",
+          min: 0,
+          max: 9
+        }));
+      case "6from49":
+        return [
+          ...Array.from({ length: 6 }, (_, i) => ({
+            id: `n${i}`,
+            label: `N${i + 1}`,
+            group: "n\xFAmeros",
+            type: "int",
+            min: 1,
+            max: 49,
+            uniqueGroup: "main"
+          })),
+          {
+            id: "reintegro",
+            label: "R",
+            group: "reintegro",
+            type: "digit",
+            min: 0,
+            max: 9
+          }
+        ];
+      case "euro":
+      case "eurojackpot":
+        return [
+          ...Array.from({ length: 5 }, (_, i) => ({
+            id: `n${i}`,
+            label: `N${i + 1}`,
+            group: "n\xFAmeros",
+            type: "int",
+            min: 1,
+            max: 50,
+            uniqueGroup: "main"
+          })),
+          ...Array.from({ length: 2 }, (_, i) => ({
+            id: `s${i}`,
+            label: `\u2605${i + 1}`,
+            group: "estrellas",
+            type: "int",
+            min: 1,
+            max: 12,
+            uniqueGroup: "stars"
+          }))
+        ];
+      case "gordo":
+        return [
+          ...Array.from({ length: 5 }, (_, i) => ({
+            id: `n${i}`,
+            label: `N${i + 1}`,
+            group: "n\xFAmeros",
+            type: "int",
+            min: 1,
+            max: 54,
+            uniqueGroup: "main"
+          })),
+          { id: "clave", label: "Clave", group: "clave", type: "int", min: 1, max: 9 }
+        ];
+      case "quiniela":
+        return [
+          ...Array.from({ length: 14 }, (_, i) => ({
+            id: `c${i}`,
+            label: `P${i + 1}`,
+            group: "columna",
+            type: "choice",
+            choices: SIGN_1X2
+          })),
+          {
+            id: "pleno",
+            label: "Pleno",
+            group: "pleno",
+            type: "choice",
+            choices: ["0", "1", "2", "M"]
+          }
+        ];
+      case "quinigol":
+        return Array.from({ length: 6 }, (_, i) => ({
+          id: `g${i}`,
+          label: `P${i + 1}`,
+          group: "goles",
+          type: "choice",
+          choices: SIGN_GOL
+        }));
+      case "superonce":
+      case "lototurf":
+        return Array.from({ length: 5 }, (_, i) => ({
+          id: `n${i}`,
+          label: `N${i + 1}`,
+          group: "n\xFAmeros",
+          type: "int",
+          min: 1,
+          max: 49,
+          uniqueGroup: "main"
+        }));
+      case "quintuple":
+        return [
+          ...Array.from({ length: 5 }, (_, i) => ({
+            id: `r${i}`,
+            label: `C${i + 1}`,
+            group: "carreras",
+            type: "int",
+            min: 1,
+            max: 20
+          })),
+          { id: "plus", label: "+", group: "plus", type: "int", min: 1, max: 20 }
+        ];
+      case "5from40":
+        return poolSlots(5, 40);
+      case "4from30":
+        return poolSlots(4, 30);
+      case "6from36":
+        return poolSlots(6, 36);
+      case "7from45":
+        return poolSlots(7, 45);
+      case "2from20":
+        return poolSlots(2, 20);
+      case "bingo75":
+        return poolSlots(5, 75);
+      case "colorball":
+        return [
+          ...poolSlots(4, 30),
+          {
+            id: "color",
+            label: "Color",
+            group: "color",
+            type: "choice",
+            choices: COLORS2
+          }
+        ];
+      case "ruleta":
+        return [{ id: "roulette", label: "N\xBA", group: "ruleta", type: "int", min: 0, max: 36 }];
+      case "fecha":
+        return [
+          { id: "day", label: "D\xEDa", group: "fecha", type: "int", min: 1, max: 28 },
+          { id: "month", label: "Mes", group: "fecha", type: "int", min: 1, max: 12 }
+        ];
+      case "horaSuerte":
+        return [
+          { id: "hour", label: "Hora", group: "hora", type: "int", min: 0, max: 23 },
+          { id: "minute", label: "Min", group: "hora", type: "int", min: 0, max: 59 }
+        ];
+      case "pares":
+        return Array.from({ length: 5 }, (_, i) => ({
+          id: `p${i}`,
+          label: `${i + 1}`,
+          group: "paridad",
+          type: "choice",
+          choices: SIGN_PI
+        }));
+      case "dados":
+        return Array.from({ length: 3 }, (_, i) => ({
+          id: `d${i}`,
+          label: `D${i + 1}`,
+          group: "dados",
+          type: "int",
+          min: 1,
+          max: 6
+        }));
+      case "carta":
+        return Array.from({ length: 3 }, (_, i) => [
+          {
+            id: `palo${i}`,
+            label: `Palo ${i + 1}`,
+            group: `carta${i + 1}`,
+            type: "choice",
+            choices: PALOS2
+          },
+          {
+            id: `val${i}`,
+            label: `Valor ${i + 1}`,
+            group: `carta${i + 1}`,
+            type: "choice",
+            choices: ["1", "2", "3", "4", "5", "6", "7", "10", "11", "12"]
+          }
+        ]).flat();
+      default:
+        return [{ id: "raw", label: "Valor", group: "dato", type: "text" }];
+    }
+  }
+  function poolSlots(count, max) {
+    return Array.from({ length: count }, (_, i) => ({
+      id: `n${i}`,
+      label: `N${i + 1}`,
+      group: "n\xFAmeros",
+      type: "int",
+      min: 1,
+      max,
+      uniqueGroup: "main"
+    }));
+  }
+  function emptySlots(mode, productId) {
+    return slotSchemaForMode(mode, productId).map((s) => ({ ...s, value: "" }));
+  }
+  function slotsFromSelection(mode, productId, selection) {
+    var _a;
+    const slots = emptySlots(mode, productId);
+    if (!selection) return slots;
+    if (mode === "nacional" || mode === "triplex" || mode === "serieLocal") {
+      const num = String(selection.number || "").replace(/\D/g, "");
+      const need = mode === "nacional" ? 5 : 3;
+      const padded = num.padStart(need, "0").slice(-need);
+      for (let i = 0; i < need; i++) slots[i].value = (_a = padded[i]) != null ? _a : "";
+      return slots;
+    }
+    if (selection.numbers && Array.isArray(selection.numbers)) {
+      const main = slots.filter((s) => s.uniqueGroup === "main" || s.id.startsWith("n") && s.group === "n\xFAmeros");
+      selection.numbers.forEach((n, i) => {
+        if (main[i]) main[i].value = String(n);
+      });
+    }
+    if (selection.stars) {
+      selection.stars.forEach((n, i) => {
+        const s = slots.find((x) => x.id === `s${i}`);
+        if (s) s.value = String(n);
+      });
+    }
+    if (selection.reintegro != null) {
+      const s = slots.find((x) => x.id === "reintegro");
+      if (s) s.value = String(selection.reintegro);
+    }
+    if (selection.clave != null) {
+      const s = slots.find((x) => x.id === "clave");
+      if (s) s.value = String(selection.clave);
+    }
+    if (selection.column) {
+      selection.column.forEach((c, i) => {
+        const s = slots.find((x) => x.id === `c${i}`);
+        if (s) s.value = String(c);
+      });
+    }
+    if (selection.pleno != null) {
+      const s = slots.find((x) => x.id === "pleno");
+      if (s) s.value = String(selection.pleno);
+    }
+    if (selection.goals) {
+      selection.goals.forEach((g, i) => {
+        const s = slots.find((x) => x.id === `g${i}`);
+        if (s) s.value = String(g);
+      });
+    }
+    if (selection.races) {
+      selection.races.forEach((r, i) => {
+        const s = slots.find((x) => x.id === `r${i}`);
+        if (s) s.value = String(r);
+      });
+    }
+    if (selection.plus != null) {
+      const s = slots.find((x) => x.id === "plus");
+      if (s) s.value = String(selection.plus);
+    }
+    if (selection.color) {
+      const s = slots.find((x) => x.id === "color");
+      if (s) s.value = selection.color;
+    }
+    if (selection.roulette != null) {
+      const s = slots.find((x) => x.id === "roulette");
+      if (s) s.value = String(selection.roulette);
+    }
+    if (selection.day != null) {
+      const d = slots.find((x) => x.id === "day");
+      const m = slots.find((x) => x.id === "month");
+      if (d) d.value = String(selection.day);
+      if (m) m.value = String(selection.month);
+    }
+    if (selection.hour != null) {
+      const h = slots.find((x) => x.id === "hour");
+      const mi = slots.find((x) => x.id === "minute");
+      if (h) h.value = String(selection.hour);
+      if (mi) mi.value = String(selection.minute);
+    }
+    if (selection.parity) {
+      selection.parity.forEach((p, i) => {
+        const s = slots.find((x) => x.id === `p${i}`);
+        if (s) s.value = String(p);
+      });
+    }
+    if (selection.dice) {
+      selection.dice.forEach((d, i) => {
+        const s = slots.find((x) => x.id === `d${i}`);
+        if (s) s.value = String(d);
+      });
+    }
+    if (selection.cards) {
+      selection.cards.forEach((c, i) => {
+        const palo = slots.find((x) => x.id === `palo${i}`);
+        const val = slots.find((x) => x.id === `val${i}`);
+        if (palo) palo.value = c.palo;
+        if (val) val.value = String(c.valor);
+      });
+    }
+    return slots;
+  }
+  function slotsFromDraft(mode, productId, draft) {
+    const text = String(draft || "").trim();
+    if (!text) return emptySlots(mode, productId);
+    if (mode === "nacional" || mode === "triplex" || mode === "serieLocal") {
+      const digits2 = text.replace(/\D/g, "");
+      const need = mode === "nacional" ? 5 : 3;
+      if (digits2.length >= need) {
+        return slotsFromSelection(mode, productId, { number: digits2.slice(0, need) });
+      }
+    }
+    const nums = text.split(/[\s,;|★*]+/).map(Number).filter((n) => !Number.isNaN(n));
+    if (nums.length) {
+      const slots = emptySlots(mode, productId);
+      let ni = 0;
+      for (const s of slots) {
+        if (s.type === "int" || s.type === "digit") {
+          if (nums[ni] != null) {
+            s.value = String(nums[ni]);
+            ni += 1;
+          }
+        }
+      }
+      return slots;
+    }
+    return emptySlots(mode, productId);
+  }
+  function selectionFromSlots(mode, productId, slots) {
+    const byId = Object.fromEntries(slots.map((s) => [s.id, s]));
+    const val = (id) => {
+      var _a, _b;
+      return String((_b = (_a = byId[id]) == null ? void 0 : _a.value) != null ? _b : "").trim();
+    };
+    const intVal = (id) => {
+      const n = Number(val(id));
+      return Number.isFinite(n) ? n : NaN;
+    };
+    const requireFilled = () => {
+      for (const s of slots) {
+        if (s.value === "" || s.value == null) {
+          return { ok: false, error: `Falta rellenar: ${s.label}` };
+        }
+      }
+      return null;
+    };
+    if (mode === "nacional" || mode === "triplex" || mode === "serieLocal") {
+      const miss = requireFilled();
+      if (miss) return miss;
+      const number = slots.map((s) => s.value).join("");
+      return { ok: true, selection: { number, fractions: 1, series: false } };
+    }
+    if (mode === "6from49") {
+      const miss = requireFilled();
+      if (miss) return miss;
+      const numbers = [];
+      for (let i = 0; i < 6; i++) {
+        const n = intVal(`n${i}`);
+        if (n < 1 || n > 49) return { ok: false, error: "N\xFAmeros entre 1 y 49" };
+        numbers.push(n);
+      }
+      if (new Set(numbers).size < 6) return { ok: false, error: "Los 6 n\xFAmeros deben ser distintos" };
+      const reintegro = intVal("reintegro");
+      if (reintegro < 0 || reintegro > 9) return { ok: false, error: "Reintegro 0\u20139" };
+      return {
+        ok: true,
+        selection: { numbers: [...numbers].sort((a, b) => a - b), reintegro }
+      };
+    }
+    if (mode === "euro" || mode === "eurojackpot") {
+      const miss = requireFilled();
+      if (miss) return miss;
+      const numbers = [];
+      for (let i = 0; i < 5; i++) {
+        const n = intVal(`n${i}`);
+        if (n < 1 || n > 50) return { ok: false, error: "N\xFAmeros entre 1 y 50" };
+        numbers.push(n);
+      }
+      const stars = [];
+      for (let i = 0; i < 2; i++) {
+        const n = intVal(`s${i}`);
+        if (n < 1 || n > 12) return { ok: false, error: "Estrellas entre 1 y 12" };
+        stars.push(n);
+      }
+      if (new Set(numbers).size < 5) return { ok: false, error: "Los 5 n\xFAmeros deben ser distintos" };
+      if (new Set(stars).size < 2) return { ok: false, error: "Las 2 estrellas deben ser distintas" };
+      return {
+        ok: true,
+        selection: {
+          numbers: [...numbers].sort((a, b) => a - b),
+          stars: [...stars].sort((a, b) => a - b)
+        }
+      };
+    }
+    if (mode === "gordo") {
+      const miss = requireFilled();
+      if (miss) return miss;
+      const numbers = [];
+      for (let i = 0; i < 5; i++) {
+        const n = intVal(`n${i}`);
+        if (n < 1 || n > 54) return { ok: false, error: "N\xFAmeros 1\u201354" };
+        numbers.push(n);
+      }
+      if (new Set(numbers).size < 5) return { ok: false, error: "N\xFAmeros distintos" };
+      const clave = intVal("clave");
+      if (clave < 1 || clave > 9) return { ok: false, error: "Clave 1\u20139" };
+      return { ok: true, selection: { numbers: [...numbers].sort((a, b) => a - b), clave } };
+    }
+    if (mode === "quiniela") {
+      const miss = requireFilled();
+      if (miss) return miss;
+      const column = [];
+      for (let i = 0; i < 14; i++) column.push(val(`c${i}`).toUpperCase());
+      return { ok: true, selection: { column, pleno: val("pleno").toUpperCase() } };
+    }
+    if (mode === "quinigol") {
+      const miss = requireFilled();
+      if (miss) return miss;
+      return { ok: true, selection: { goals: slots.map((s) => s.value.toUpperCase()) } };
+    }
+    const pools = {
+      superonce: [5, 49],
+      lototurf: [5, 49],
+      "5from40": [5, 40],
+      "4from30": [4, 30],
+      "6from36": [6, 36],
+      "7from45": [7, 45],
+      "2from20": [2, 20],
+      bingo75: [5, 75]
+    };
+    if (pools[mode]) {
+      const [need, max] = pools[mode];
+      const miss = requireFilled();
+      if (miss) return miss;
+      const numbers = [];
+      for (let i = 0; i < need; i++) {
+        const n = intVal(`n${i}`);
+        if (n < 1 || n > max) return { ok: false, error: `N\xFAmeros 1\u2013${max}` };
+        numbers.push(n);
+      }
+      if (new Set(numbers).size < need) return { ok: false, error: "N\xFAmeros distintos" };
+      return { ok: true, selection: { numbers: [...numbers].sort((a, b) => a - b) } };
+    }
+    if (mode === "quintuple") {
+      const miss = requireFilled();
+      if (miss) return miss;
+      const races = [];
+      for (let i = 0; i < 5; i++) {
+        const n = intVal(`r${i}`);
+        if (n < 1 || n > 20) return { ok: false, error: "Caballos 1\u201320" };
+        races.push(n);
+      }
+      const plus = intVal("plus");
+      if (plus < 1 || plus > 20) return { ok: false, error: "Suplementaria 1\u201320" };
+      return { ok: true, selection: { races, plus } };
+    }
+    if (mode === "colorball") {
+      const miss = requireFilled();
+      if (miss) return miss;
+      const numbers = [];
+      for (let i = 0; i < 4; i++) {
+        const n = intVal(`n${i}`);
+        if (n < 1 || n > 30) return { ok: false, error: "N\xFAmeros 1\u201330" };
+        numbers.push(n);
+      }
+      if (new Set(numbers).size < 4) return { ok: false, error: "N\xFAmeros distintos" };
+      return {
+        ok: true,
+        selection: { numbers: [...numbers].sort((a, b) => a - b), color: val("color").toLowerCase() }
+      };
+    }
+    if (mode === "ruleta") {
+      const miss = requireFilled();
+      if (miss) return miss;
+      const n = intVal("roulette");
+      if (n < 0 || n > 36) return { ok: false, error: "0\u201336" };
+      return { ok: true, selection: { roulette: n } };
+    }
+    if (mode === "fecha") {
+      const miss = requireFilled();
+      if (miss) return miss;
+      return { ok: true, selection: { day: intVal("day"), month: intVal("month") } };
+    }
+    if (mode === "horaSuerte") {
+      const miss = requireFilled();
+      if (miss) return miss;
+      return { ok: true, selection: { hour: intVal("hour"), minute: intVal("minute") } };
+    }
+    if (mode === "pares") {
+      const miss = requireFilled();
+      if (miss) return miss;
+      return { ok: true, selection: { parity: slots.map((s) => s.value.toUpperCase()) } };
+    }
+    if (mode === "dados") {
+      const miss = requireFilled();
+      if (miss) return miss;
+      return { ok: true, selection: { dice: slots.map((s) => Number(s.value)) } };
+    }
+    if (mode === "carta") {
+      const miss = requireFilled();
+      if (miss) return miss;
+      const cards = [];
+      for (let i = 0; i < 3; i++) {
+        cards.push({ palo: val(`palo${i}`), valor: Number(val(`val${i}`)) });
+      }
+      return { ok: true, selection: { cards } };
+    }
+    return { ok: false, error: "Modo no soportado en casillas" };
+  }
+  function usedInGroup(slots, uniqueGroup, exceptId) {
+    return new Set(
+      slots.filter((s) => s.uniqueGroup === uniqueGroup && s.id !== exceptId && s.value !== "").map((s) => Number(s.value))
+    );
+  }
+  function randomizeOneSlot(slots, index, rng = Math.random) {
+    var _a, _b, _c;
+    const s = slots[index];
+    if (!s) return slots;
+    const next = slots.map((x) => ({ ...x }));
+    const target = next[index];
+    if (target.type === "choice" && ((_a = target.choices) == null ? void 0 : _a.length)) {
+      target.value = target.choices[Math.floor(rng() * target.choices.length)];
+      return next;
+    }
+    const min = (_b = target.min) != null ? _b : 0;
+    const max = (_c = target.max) != null ? _c : 9;
+    const used = target.uniqueGroup ? usedInGroup(next, target.uniqueGroup, target.id) : /* @__PURE__ */ new Set();
+    const pool = [];
+    for (let n = min; n <= max; n++) {
+      if (!used.has(n)) pool.push(n);
+    }
+    if (!pool.length) {
+      target.value = String(min + Math.floor(rng() * (max - min + 1)));
+    } else {
+      target.value = String(pool[Math.floor(rng() * pool.length)]);
+    }
+    return next;
+  }
+  function randomizeAllSlots(slots, rng = Math.random) {
+    let next = slots.map((x) => ({ ...x, value: "" }));
+    for (let i = 0; i < next.length; i++) {
+      next = randomizeOneSlot(next, i, rng);
+    }
+    return next;
+  }
+
   // src/game/tpv.js
   var CANCEL_REASONS = ["error", "sin stock", "cambio de idea", "otro"];
   function openTpv(state2, client) {
@@ -6136,12 +6696,8 @@ ${xrefPos}
     const next = line.nextDraw ? ` \xB7 pr\xF3ximo ${line.nextDraw}` : "";
     tpv.message = `A\xF1adido: ${p.name} \xD7${qty}${next}`;
     if (p.needsNumbers && numberSource === "dictate" && !forcedSelection) {
-      tpv.numberEntry = {
-        lineId: line.id,
-        mode: p.numberMode,
-        draft: "",
-        productName: p.name
-      };
+      tpv.numberEntry = makeNumberEntry(line, p.numberMode, null, "");
+    } else if (p.needsNumbers && forcedSelection && numberSource === "dictate") {
     }
     return state2;
   }
@@ -6276,23 +6832,107 @@ ${xrefPos}
     line.qty = q;
     return state2;
   }
+  function makeNumberEntry(line, mode, selection, draft) {
+    let slots;
+    if (selection) slots = slotsFromSelection(mode, line.productId, selection);
+    else if (draft) slots = slotsFromDraft(mode, line.productId, draft);
+    else slots = emptySlots(mode, line.productId);
+    return {
+      lineId: line.id,
+      mode,
+      draft: draft || "",
+      productName: line.name,
+      productId: line.productId,
+      slots
+    };
+  }
   function applyDictatedNumbers(state2, text) {
+    var _a;
     const tpv = state2.ui.tpv;
     if (!(tpv == null ? void 0 : tpv.numberEntry)) return state2;
     const line = tpv.lines.find((l) => l.id === tpv.numberEntry.lineId);
     if (!line) return state2;
+    if (((_a = tpv.numberEntry.slots) == null ? void 0 : _a.length) && !text) {
+      return applyNumberSlots(state2);
+    }
     const parsed = parseDictatedNumbers(line.numberMode, text);
     if (!parsed.ok) {
       tpv.message = parsed.error;
       return state2;
     }
     line.selection = parsed.selection;
+    line.numberSource = "dictate";
     if (parsed.selection.series) line.qty = 10;
     else if (parsed.selection.fractions && parsed.selection.fractions > 1) {
       line.qty = parsed.selection.fractions;
     }
     tpv.numberEntry = null;
     tpv.message = parsed.selection.series ? "Serie entera marcada (10 d\xE9cimos)" : "N\xFAmeros marcados";
+    return state2;
+  }
+  function applyNumberSlots(state2) {
+    var _a;
+    const tpv = state2.ui.tpv;
+    if (!((_a = tpv == null ? void 0 : tpv.numberEntry) == null ? void 0 : _a.slots)) return state2;
+    const line = tpv.lines.find((l) => l.id === tpv.numberEntry.lineId);
+    if (!line) return state2;
+    const parsed = selectionFromSlots(line.numberMode, line.productId, tpv.numberEntry.slots);
+    if (!parsed.ok) {
+      tpv.message = parsed.error;
+      return state2;
+    }
+    line.selection = parsed.selection;
+    line.numberSource = "dictate";
+    if (parsed.selection.series) line.qty = 10;
+    else if (parsed.selection.fractions && parsed.selection.fractions > 1) {
+      line.qty = parsed.selection.fractions;
+    }
+    tpv.numberEntry = null;
+    tpv.message = "N\xFAmeros marcados en casillas";
+    return state2;
+  }
+  function setNumberEntrySlot(state2, slotIndex, value) {
+    var _a;
+    const tpv = state2.ui.tpv;
+    if (!((_a = tpv == null ? void 0 : tpv.numberEntry) == null ? void 0 : _a.slots)) return state2;
+    const slots = tpv.numberEntry.slots.map((s2) => ({ ...s2 }));
+    const s = slots[slotIndex];
+    if (!s) return state2;
+    let v = String(value != null ? value : "");
+    if (s.type === "digit") v = v.replace(/\D/g, "").slice(-1);
+    else if (s.type === "int") v = v.replace(/[^\d]/g, "").slice(0, 3);
+    else if (s.type === "choice") v = v;
+    s.value = v;
+    tpv.numberEntry.slots = slots;
+    tpv.numberEntry.draft = slots.map((x) => x.value).filter(Boolean).join(" ");
+    return state2;
+  }
+  function randomizeNumberEntrySlot(state2, slotIndex) {
+    var _a, _b;
+    const tpv = state2.ui.tpv;
+    if (!((_a = tpv == null ? void 0 : tpv.numberEntry) == null ? void 0 : _a.slots)) return state2;
+    const rng = mulberry322(hashSeed("slot", state2.clock.gameTimeMs, slotIndex, Math.random()));
+    tpv.numberEntry.slots = randomizeOneSlot(tpv.numberEntry.slots, slotIndex, rng);
+    tpv.numberEntry.draft = tpv.numberEntry.slots.map((x) => x.value).filter(Boolean).join(" ");
+    tpv.message = `Casilla ${((_b = tpv.numberEntry.slots[slotIndex]) == null ? void 0 : _b.label) || ""} aleatoria`;
+    return state2;
+  }
+  function randomizeAllNumberEntrySlots(state2) {
+    var _a;
+    const tpv = state2.ui.tpv;
+    if (!((_a = tpv == null ? void 0 : tpv.numberEntry) == null ? void 0 : _a.slots)) return state2;
+    const rng = mulberry322(hashSeed("slots-all", state2.clock.gameTimeMs, Math.random()));
+    tpv.numberEntry.slots = randomizeAllSlots(tpv.numberEntry.slots, rng);
+    tpv.numberEntry.draft = tpv.numberEntry.slots.map((x) => x.value).join(" ");
+    tpv.message = "Combinaci\xF3n generada casilla a casilla";
+    return state2;
+  }
+  function clearNumberEntrySlots(state2) {
+    const tpv = state2.ui.tpv;
+    if (!(tpv == null ? void 0 : tpv.numberEntry)) return state2;
+    tpv.numberEntry.slots = emptySlots(tpv.numberEntry.mode, tpv.numberEntry.productId);
+    tpv.numberEntry.draft = "";
+    tpv.message = "Casillas vac\xEDas";
     return state2;
   }
   function cancelNumberEntry(state2) {
@@ -6311,16 +6951,15 @@ ${xrefPos}
     return state2;
   }
   function startDictateLine(state2, id) {
+    var _a, _b;
     const tpv = state2.ui.tpv;
     if (!tpv) return state2;
     const line = tpv.lines.find((l) => l.id === id);
     if (!(line == null ? void 0 : line.needsNumbers)) return state2;
-    tpv.numberEntry = {
-      lineId: line.id,
-      mode: line.numberMode,
-      draft: "",
-      productName: line.name
-    };
+    const wish = (tpv.wishlist || []).find((w) => w.productId === line.productId);
+    const draft = ((_a = wish == null ? void 0 : wish.numberAsk) == null ? void 0 : _a.draftHint) || (wish == null ? void 0 : wish.askLabel) || "";
+    const preselect = ((_b = wish == null ? void 0 : wish.numberAsk) == null ? void 0 : _b.selection) || line.selection || null;
+    tpv.numberEntry = makeNumberEntry(line, line.numberMode, preselect, draft);
     return state2;
   }
   function parseDictatedNumbers(mode, text) {
@@ -7569,7 +8208,7 @@ ${xrefPos}
       maybeStartMusic();
       state.ui.screen = "counter";
       lastAutosaveRealMs = Date.now();
-      showToast("Bienvenida, Miriam. Versi\xF3n 1.1: cifras del cliente, atajos y m\xE1s color.");
+      showToast("Bienvenida, Miriam. Versi\xF3n 1.2: casillas por n\xFAmero en cada loter\xEDa.");
       needsFullRender = true;
       render();
     };
@@ -8172,8 +8811,11 @@ ${xrefPos}
           qty: 1,
           numberSource: src
         });
-        if (src === "dictate" && (ask == null ? void 0 : ask.draftHint) && ((_b = state.ui.tpv) == null ? void 0 : _b.numberEntry)) {
-          state.ui.tpv.numberEntry.draft = ask.draftHint;
+        if (src === "dictate" && ((_b = state.ui.tpv) == null ? void 0 : _b.numberEntry)) {
+          const line = state.ui.tpv.lines[state.ui.tpv.lines.length - 1];
+          if (line && ask) {
+            startDictateLine(state, line.id);
+          }
         }
       }
     }
@@ -8351,6 +8993,54 @@ ${xrefPos}
         showToast("PDF del ticket descargado");
       };
     }
+  }
+  function numberEntryHTML(entry) {
+    const slots = entry.slots || [];
+    const groups = [];
+    let cur = null;
+    for (let i = 0; i < slots.length; i++) {
+      const s = slots[i];
+      if (!cur || cur.name !== s.group) {
+        cur = { name: s.group, items: [] };
+        groups.push(cur);
+      }
+      cur.items.push({ slot: s, index: i });
+    }
+    const slotsHtml = groups.map(
+      (g) => `<div class="slot-group">
+        <div class="slot-group-title">${escapeHtml2(g.name)}</div>
+        <div class="number-slots">
+          ${g.items.map(({ slot: s, index: i }) => {
+        const input = s.type === "choice" ? `<select class="slot-input slot-choice" data-slot-idx="${i}" aria-label="${escapeHtml2(s.label)}">
+                      <option value="">\u2014</option>
+                      ${(s.choices || []).map(
+          (c) => `<option value="${escapeHtml2(c)}" ${String(s.value) === String(c) ? "selected" : ""}>${escapeHtml2(c)}</option>`
+        ).join("")}
+                    </select>` : `<input class="slot-input" data-slot-idx="${i}" inputmode="numeric" maxlength="${s.type === "digit" ? 1 : 3}" value="${escapeHtml2(s.value || "")}" aria-label="${escapeHtml2(s.label)}" />`;
+        return `<div class="number-slot" data-group="${escapeHtml2(s.group)}">
+                <label>${escapeHtml2(s.label)}</label>
+                ${input}
+                <button type="button" class="btn slot-rand" data-slot-rand="${i}" title="Generar esta casilla">\u{1F3B2}</button>
+              </div>`;
+      }).join("")}
+        </div>
+      </div>`
+    ).join("");
+    return `<div class="dictate-box number-entry-box">
+    <strong>Marcar: ${escapeHtml2(entry.productName || "")}</strong>
+    <p class="muted">${escapeHtml2(dictateHint(entry.mode))} \xB7 Escribe en cada casilla o genera una a una</p>
+    ${slotsHtml}
+    <div class="actions" style="margin-top:10px;flex-wrap:wrap">
+      <button class="btn primary" id="btn-dictate-ok">Confirmar n\xFAmeros</button>
+      <button class="btn" id="btn-slots-all">Generar todas</button>
+      <button class="btn ghost" id="btn-slots-clear">Vaciar</button>
+      <button class="btn ghost" id="btn-dictate-cancel">Cancelar</button>
+    </div>
+    <details class="slot-advanced" style="margin-top:8px">
+      <summary class="muted">Texto libre (avanzado)</summary>
+      <textarea id="dictate-input" placeholder="N\xFAmeros en una sola l\xEDnea\u2026">${escapeHtml2(entry.draft || "")}</textarea>
+    </details>
+  </div>`;
   }
   function wishlistValidationHTML(tpv) {
     var _a;
@@ -8544,15 +9234,7 @@ ${xrefPos}
       (s, i) => `<button class="btn tpv-shortcut" data-shortcut="${s.id}" style="--sh-hue:${(i * 47 + 20) % 360}" title="${escapeHtml2(s.fullName)}">${escapeHtml2(s.name)}</button>`
     ).join("")}
         </div>
-        ${entry ? `<div class="dictate-box">
-                <strong>Dictado: ${escapeHtml2(entry.productName || "")}</strong>
-                <p class="muted">${escapeHtml2(dictateHint(entry.mode))}</p>
-                <textarea id="dictate-input" placeholder="N\xFAmeros que dicta el cliente\u2026">${escapeHtml2(entry.draft || "")}</textarea>
-                <div class="actions" style="margin-top:8px">
-                  <button class="btn primary" id="btn-dictate-ok">Marcar n\xFAmeros</button>
-                  <button class="btn ghost" id="btn-dictate-cancel">Cancelar dictado</button>
-                </div>
-              </div>` : ""}
+        ${entry ? numberEntryHTML(entry) : ""}
         <div class="tpv-wrap">
           <div class="tpv-cats">
             ${TPV_CATEGORIES.map((c, i) => {
@@ -8761,14 +9443,17 @@ ${xrefPos}
     const dictateOk = document.getElementById("btn-dictate-ok");
     if (dictateOk) {
       dictateOk.onclick = () => {
-        var _a2, _b2, _c, _d, _e, _f, _g, _h, _i, _j;
-        const text = ((_a2 = document.getElementById("dictate-input")) == null ? void 0 : _a2.value) || "";
-        applyDictatedNumbers(state, text);
-        if (((_c = (_b2 = state.ui.tpv) == null ? void 0 : _b2.message) == null ? void 0 : _c.includes("Falta")) || ((_e = (_d = state.ui.tpv) == null ? void 0 : _d.message) == null ? void 0 : _e.includes("Indica")) || ((_g = (_f = state.ui.tpv) == null ? void 0 : _f.message) == null ? void 0 : _g.includes("Formato")) || ((_i = (_h = state.ui.tpv) == null ? void 0 : _h.message) == null ? void 0 : _i.includes("n\xFAmeros")) || ((_j = state.ui.tpv) == null ? void 0 : _j.numberEntry)) {
-          sfx.error();
+        var _a2, _b2, _c, _d;
+        const details = document.querySelector(".slot-advanced");
+        const usingText = (details == null ? void 0 : details.open) && ((_b2 = (_a2 = document.getElementById("dictate-input")) == null ? void 0 : _a2.value) == null ? void 0 : _b2.trim());
+        if (usingText) {
+          applyDictatedNumbers(state, document.getElementById("dictate-input").value);
         } else {
-          sfx.success();
+          applyNumberSlots(state);
         }
+        if ((_c = state.ui.tpv) == null ? void 0 : _c.numberEntry) sfx.error();
+        else sfx.success();
+        if ((_d = state.ui.tpv) == null ? void 0 : _d.message) showToast(state.ui.tpv.message);
         needsFullRender = true;
         render();
       };
@@ -8777,6 +9462,60 @@ ${xrefPos}
     if (dictateCancel) {
       dictateCancel.onclick = () => {
         cancelNumberEntry(state);
+        sfx.click();
+        needsFullRender = true;
+        render();
+      };
+    }
+    app.querySelectorAll("[data-slot-idx]").forEach((el) => {
+      const idx = Number(el.getAttribute("data-slot-idx"));
+      const commit = () => {
+        setNumberEntrySlot(state, idx, el.value);
+        const inputs = [...app.querySelectorAll("[data-slot-idx]")];
+        const next = inputs.find((inp, i) => i > idx && !inp.value);
+        if (next && el.value !== "") next.focus();
+      };
+      el.oninput = () => {
+        var _a2, _b2, _c;
+        setNumberEntrySlot(state, idx, el.value);
+        const slot = (_c = (_b2 = (_a2 = state.ui.tpv) == null ? void 0 : _a2.numberEntry) == null ? void 0 : _b2.slots) == null ? void 0 : _c[idx];
+        if ((slot == null ? void 0 : slot.type) === "digit" && el.value) {
+          const inputs = [...app.querySelectorAll("[data-slot-idx]")];
+          const next = inputs[idx + 1];
+          if (next) next.focus();
+        }
+      };
+      el.onchange = commit;
+      el.onkeydown = (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          dictateOk == null ? void 0 : dictateOk.click();
+        }
+      };
+    });
+    app.querySelectorAll("[data-slot-rand]").forEach((btn) => {
+      btn.onclick = () => {
+        randomizeNumberEntrySlot(state, Number(btn.getAttribute("data-slot-rand")));
+        sfx.tpv();
+        needsFullRender = true;
+        render();
+      };
+    });
+    const allBtn = document.getElementById("btn-slots-all");
+    if (allBtn) {
+      allBtn.onclick = () => {
+        var _a2;
+        randomizeAllNumberEntrySlots(state);
+        sfx.success();
+        showToast((_a2 = state.ui.tpv) == null ? void 0 : _a2.message);
+        needsFullRender = true;
+        render();
+      };
+    }
+    const clearBtn = document.getElementById("btn-slots-clear");
+    if (clearBtn) {
+      clearBtn.onclick = () => {
+        clearNumberEntrySlots(state);
         sfx.click();
         needsFullRender = true;
         render();

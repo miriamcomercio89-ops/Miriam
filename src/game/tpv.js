@@ -7,6 +7,14 @@ import { gameDate } from './time.js';
 import { numberAskSatisfied } from './numberAsks.js';
 import { hotJackpots } from './jackpots.js';
 import { onceExtraToday } from './notices.js';
+import {
+  emptySlots,
+  slotsFromSelection,
+  slotsFromDraft,
+  selectionFromSlots,
+  randomizeOneSlot,
+  randomizeAllSlots,
+} from './numberSlots.js';
 
 /**
  * Sesión TPV: carrito multi-línea.
@@ -94,12 +102,9 @@ export function addTpvProduct(
   tpv.message = `Añadido: ${p.name} ×${qty}${next}`;
 
   if (p.needsNumbers && numberSource === 'dictate' && !forcedSelection) {
-    tpv.numberEntry = {
-      lineId: line.id,
-      mode: p.numberMode,
-      draft: '',
-      productName: p.name,
-    };
+    tpv.numberEntry = makeNumberEntry(line, p.numberMode, null, '');
+  } else if (p.needsNumbers && forcedSelection && numberSource === 'dictate') {
+    // Ya tiene selection; no abrir casillas salvo que falte algo
   }
   return state;
 }
@@ -249,17 +254,37 @@ export function setLineQty(state, id, qty) {
   return state;
 }
 
+function makeNumberEntry(line, mode, selection, draft) {
+  let slots;
+  if (selection) slots = slotsFromSelection(mode, line.productId, selection);
+  else if (draft) slots = slotsFromDraft(mode, line.productId, draft);
+  else slots = emptySlots(mode, line.productId);
+  return {
+    lineId: line.id,
+    mode,
+    draft: draft || '',
+    productName: line.name,
+    productId: line.productId,
+    slots,
+  };
+}
+
 export function applyDictatedNumbers(state, text) {
   const tpv = state.ui.tpv;
   if (!tpv?.numberEntry) return state;
   const line = tpv.lines.find((l) => l.id === tpv.numberEntry.lineId);
   if (!line) return state;
+  // Preferir casillas si existen
+  if (tpv.numberEntry.slots?.length && !text) {
+    return applyNumberSlots(state);
+  }
   const parsed = parseDictatedNumbers(line.numberMode, text);
   if (!parsed.ok) {
     tpv.message = parsed.error;
     return state;
   }
   line.selection = parsed.selection;
+  line.numberSource = 'dictate';
   if (parsed.selection.series) line.qty = 10;
   else if (parsed.selection.fractions && parsed.selection.fractions > 1) {
     line.qty = parsed.selection.fractions;
@@ -268,6 +293,73 @@ export function applyDictatedNumbers(state, text) {
   tpv.message = parsed.selection.series
     ? 'Serie entera marcada (10 décimos)'
     : 'Números marcados';
+  return state;
+}
+
+/** Confirma la combinación desde las casillas. */
+export function applyNumberSlots(state) {
+  const tpv = state.ui.tpv;
+  if (!tpv?.numberEntry?.slots) return state;
+  const line = tpv.lines.find((l) => l.id === tpv.numberEntry.lineId);
+  if (!line) return state;
+  const parsed = selectionFromSlots(line.numberMode, line.productId, tpv.numberEntry.slots);
+  if (!parsed.ok) {
+    tpv.message = parsed.error;
+    return state;
+  }
+  line.selection = parsed.selection;
+  line.numberSource = 'dictate';
+  if (parsed.selection.series) line.qty = 10;
+  else if (parsed.selection.fractions && parsed.selection.fractions > 1) {
+    line.qty = parsed.selection.fractions;
+  }
+  tpv.numberEntry = null;
+  tpv.message = 'Números marcados en casillas';
+  return state;
+}
+
+export function setNumberEntrySlot(state, slotIndex, value) {
+  const tpv = state.ui.tpv;
+  if (!tpv?.numberEntry?.slots) return state;
+  const slots = tpv.numberEntry.slots.map((s) => ({ ...s }));
+  const s = slots[slotIndex];
+  if (!s) return state;
+  let v = String(value ?? '');
+  if (s.type === 'digit') v = v.replace(/\D/g, '').slice(-1);
+  else if (s.type === 'int') v = v.replace(/[^\d]/g, '').slice(0, 3);
+  else if (s.type === 'choice') v = v;
+  s.value = v;
+  tpv.numberEntry.slots = slots;
+  tpv.numberEntry.draft = slots.map((x) => x.value).filter(Boolean).join(' ');
+  return state;
+}
+
+export function randomizeNumberEntrySlot(state, slotIndex) {
+  const tpv = state.ui.tpv;
+  if (!tpv?.numberEntry?.slots) return state;
+  const rng = mulberry32(hashSeed('slot', state.clock.gameTimeMs, slotIndex, Math.random()));
+  tpv.numberEntry.slots = randomizeOneSlot(tpv.numberEntry.slots, slotIndex, rng);
+  tpv.numberEntry.draft = tpv.numberEntry.slots.map((x) => x.value).filter(Boolean).join(' ');
+  tpv.message = `Casilla ${tpv.numberEntry.slots[slotIndex]?.label || ''} aleatoria`;
+  return state;
+}
+
+export function randomizeAllNumberEntrySlots(state) {
+  const tpv = state.ui.tpv;
+  if (!tpv?.numberEntry?.slots) return state;
+  const rng = mulberry32(hashSeed('slots-all', state.clock.gameTimeMs, Math.random()));
+  tpv.numberEntry.slots = randomizeAllSlots(tpv.numberEntry.slots, rng);
+  tpv.numberEntry.draft = tpv.numberEntry.slots.map((x) => x.value).join(' ');
+  tpv.message = 'Combinación generada casilla a casilla';
+  return state;
+}
+
+export function clearNumberEntrySlots(state) {
+  const tpv = state.ui.tpv;
+  if (!tpv?.numberEntry) return state;
+  tpv.numberEntry.slots = emptySlots(tpv.numberEntry.mode, tpv.numberEntry.productId);
+  tpv.numberEntry.draft = '';
+  tpv.message = 'Casillas vacías';
   return state;
 }
 
@@ -293,12 +385,11 @@ export function startDictateLine(state, id) {
   if (!tpv) return state;
   const line = tpv.lines.find((l) => l.id === id);
   if (!line?.needsNumbers) return state;
-  tpv.numberEntry = {
-    lineId: line.id,
-    mode: line.numberMode,
-    draft: '',
-    productName: line.name,
-  };
+  // Preferencia del wishlist si hay numberAsk
+  const wish = (tpv.wishlist || []).find((w) => w.productId === line.productId);
+  const draft = wish?.numberAsk?.draftHint || wish?.askLabel || '';
+  const preselect = wish?.numberAsk?.selection || line.selection || null;
+  tpv.numberEntry = makeNumberEntry(line, line.numberMode, preselect, draft);
   return state;
 }
 

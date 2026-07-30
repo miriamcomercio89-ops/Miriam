@@ -143,6 +143,11 @@ import {
   confirmAbonoOnTpv,
   setLineFraction,
   setLineSeries,
+  applyNumberSlots,
+  setNumberEntrySlot,
+  randomizeNumberEntrySlot,
+  randomizeAllNumberEntrySlots,
+  clearNumberEntrySlots,
   CANCEL_REASONS,
 } from './game/tpv.js';
 import {
@@ -561,7 +566,7 @@ function renderMenu() {
     maybeStartMusic();
     state.ui.screen = 'counter';
     lastAutosaveRealMs = Date.now();
-    showToast('Bienvenida, Miriam. Versión 1.1: cifras del cliente, atajos y más color.');
+    showToast('Bienvenida, Miriam. Versión 1.2: casillas por número en cada lotería.');
     needsFullRender = true;
     render();
   };
@@ -1284,8 +1289,12 @@ function loadWishlistIntoTpv(client) {
         numberSource: src,
       });
       // Prefill draft hint on last line
-      if (src === 'dictate' && ask?.draftHint && state.ui.tpv?.numberEntry) {
-        state.ui.tpv.numberEntry.draft = ask.draftHint;
+      if (src === 'dictate' && state.ui.tpv?.numberEntry) {
+        // Reiniciar casillas con pista del cliente
+        const line = state.ui.tpv.lines[state.ui.tpv.lines.length - 1];
+        if (line && ask) {
+          startDictateLine(state, line.id);
+        }
       }
     }
   }
@@ -1457,6 +1466,70 @@ function bindClientActions() {
       showToast('PDF del ticket descargado');
     };
   }
+}
+
+function numberEntryHTML(entry) {
+  const slots = entry.slots || [];
+  const groups = [];
+  let cur = null;
+  for (let i = 0; i < slots.length; i++) {
+    const s = slots[i];
+    if (!cur || cur.name !== s.group) {
+      cur = { name: s.group, items: [] };
+      groups.push(cur);
+    }
+    cur.items.push({ slot: s, index: i });
+  }
+  const slotsHtml = groups
+    .map(
+      (g) => `<div class="slot-group">
+        <div class="slot-group-title">${escapeHtml(g.name)}</div>
+        <div class="number-slots">
+          ${g.items
+            .map(({ slot: s, index: i }) => {
+              const input =
+                s.type === 'choice'
+                  ? `<select class="slot-input slot-choice" data-slot-idx="${i}" aria-label="${escapeHtml(s.label)}">
+                      <option value="">—</option>
+                      ${(s.choices || [])
+                        .map(
+                          (c) =>
+                            `<option value="${escapeHtml(c)}" ${
+                              String(s.value) === String(c) ? 'selected' : ''
+                            }>${escapeHtml(c)}</option>`,
+                        )
+                        .join('')}
+                    </select>`
+                  : `<input class="slot-input" data-slot-idx="${i}" inputmode="numeric" maxlength="${
+                      s.type === 'digit' ? 1 : 3
+                    }" value="${escapeHtml(s.value || '')}" aria-label="${escapeHtml(s.label)}" />`;
+              return `<div class="number-slot" data-group="${escapeHtml(s.group)}">
+                <label>${escapeHtml(s.label)}</label>
+                ${input}
+                <button type="button" class="btn slot-rand" data-slot-rand="${i}" title="Generar esta casilla">🎲</button>
+              </div>`;
+            })
+            .join('')}
+        </div>
+      </div>`,
+    )
+    .join('');
+
+  return `<div class="dictate-box number-entry-box">
+    <strong>Marcar: ${escapeHtml(entry.productName || '')}</strong>
+    <p class="muted">${escapeHtml(dictateHint(entry.mode))} · Escribe en cada casilla o genera una a una</p>
+    ${slotsHtml}
+    <div class="actions" style="margin-top:10px;flex-wrap:wrap">
+      <button class="btn primary" id="btn-dictate-ok">Confirmar números</button>
+      <button class="btn" id="btn-slots-all">Generar todas</button>
+      <button class="btn ghost" id="btn-slots-clear">Vaciar</button>
+      <button class="btn ghost" id="btn-dictate-cancel">Cancelar</button>
+    </div>
+    <details class="slot-advanced" style="margin-top:8px">
+      <summary class="muted">Texto libre (avanzado)</summary>
+      <textarea id="dictate-input" placeholder="Números en una sola línea…">${escapeHtml(entry.draft || '')}</textarea>
+    </details>
+  </div>`;
 }
 
 function wishlistValidationHTML(tpv) {
@@ -1670,19 +1743,7 @@ function renderTpv() {
             )
             .join('')}
         </div>
-        ${
-          entry
-            ? `<div class="dictate-box">
-                <strong>Dictado: ${escapeHtml(entry.productName || '')}</strong>
-                <p class="muted">${escapeHtml(dictateHint(entry.mode))}</p>
-                <textarea id="dictate-input" placeholder="Números que dicta el cliente…">${escapeHtml(entry.draft || '')}</textarea>
-                <div class="actions" style="margin-top:8px">
-                  <button class="btn primary" id="btn-dictate-ok">Marcar números</button>
-                  <button class="btn ghost" id="btn-dictate-cancel">Cancelar dictado</button>
-                </div>
-              </div>`
-            : ''
-        }
+        ${entry ? numberEntryHTML(entry) : ''}
         <div class="tpv-wrap">
           <div class="tpv-cats">
             ${TPV_CATEGORIES.map((c, i) => {
@@ -1942,19 +2003,16 @@ function renderTpv() {
   const dictateOk = document.getElementById('btn-dictate-ok');
   if (dictateOk) {
     dictateOk.onclick = () => {
-      const text = document.getElementById('dictate-input')?.value || '';
-      applyDictatedNumbers(state, text);
-      if (
-        state.ui.tpv?.message?.includes('Falta') ||
-        state.ui.tpv?.message?.includes('Indica') ||
-        state.ui.tpv?.message?.includes('Formato') ||
-        state.ui.tpv?.message?.includes('números') ||
-        state.ui.tpv?.numberEntry
-      ) {
-        sfx.error();
+      const details = document.querySelector('.slot-advanced');
+      const usingText = details?.open && document.getElementById('dictate-input')?.value?.trim();
+      if (usingText) {
+        applyDictatedNumbers(state, document.getElementById('dictate-input').value);
       } else {
-        sfx.success();
+        applyNumberSlots(state);
       }
+      if (state.ui.tpv?.numberEntry) sfx.error();
+      else sfx.success();
+      if (state.ui.tpv?.message) showToast(state.ui.tpv.message);
       needsFullRender = true;
       render();
     };
@@ -1963,6 +2021,61 @@ function renderTpv() {
   if (dictateCancel) {
     dictateCancel.onclick = () => {
       cancelNumberEntry(state);
+      sfx.click();
+      needsFullRender = true;
+      render();
+    };
+  }
+  app.querySelectorAll('[data-slot-idx]').forEach((el) => {
+    const idx = Number(el.getAttribute('data-slot-idx'));
+    const commit = () => {
+      setNumberEntrySlot(state, idx, el.value);
+      // Auto-avance a la siguiente casilla vacía
+      const inputs = [...app.querySelectorAll('[data-slot-idx]')];
+      const next = inputs.find((inp, i) => i > idx && !inp.value);
+      if (next && el.value !== '') next.focus();
+    };
+    el.oninput = () => {
+      setNumberEntrySlot(state, idx, el.value);
+      // Digito: avanzar al escribir
+      const slot = state.ui.tpv?.numberEntry?.slots?.[idx];
+      if (slot?.type === 'digit' && el.value) {
+        const inputs = [...app.querySelectorAll('[data-slot-idx]')];
+        const next = inputs[idx + 1];
+        if (next) next.focus();
+      }
+    };
+    el.onchange = commit;
+    el.onkeydown = (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        dictateOk?.click();
+      }
+    };
+  });
+  app.querySelectorAll('[data-slot-rand]').forEach((btn) => {
+    btn.onclick = () => {
+      randomizeNumberEntrySlot(state, Number(btn.getAttribute('data-slot-rand')));
+      sfx.tpv();
+      needsFullRender = true;
+      render();
+      // Refocus same index after re-render roughly
+    };
+  });
+  const allBtn = document.getElementById('btn-slots-all');
+  if (allBtn) {
+    allBtn.onclick = () => {
+      randomizeAllNumberEntrySlots(state);
+      sfx.success();
+      showToast(state.ui.tpv?.message);
+      needsFullRender = true;
+      render();
+    };
+  }
+  const clearBtn = document.getElementById('btn-slots-clear');
+  if (clearBtn) {
+    clearBtn.onclick = () => {
+      clearNumberEntrySlots(state);
       sfx.click();
       needsFullRender = true;
       render();
