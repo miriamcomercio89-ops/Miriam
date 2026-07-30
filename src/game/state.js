@@ -9,8 +9,8 @@ import { ensureJackpots } from './jackpots.js';
 import { seedDefaultShowcase, ensureShowcase } from './showcase.js';
 
 export const STARTING_BANK_CENTS = 950000;
-export const SAVE_VERSION = 10;
-export const GAME_VERSION = '0.9';
+export const SAVE_VERSION = 11;
+export const GAME_VERSION = '1.0';
 export const SLOT_COUNT = 3;
 export const STORAGE_PREFIX = 'loterias-alora-slot-';
 export const HIGH_PRIZE_ALERT_CENTS = 200000; // 2.000 €
@@ -207,11 +207,12 @@ export function migrateState(data) {
     data.finance.daySurplusCents = data.finance.daySurplusCents || 0;
     data.finance.arqueoLog = data.finance.arqueoLog || [];
   }
-  // Migrar casos de gestión antiguos (open → sigue válido; pasos nuevos documentados)
+  // Migrar casos de gestión antiguos + papeleo v1.0
   for (const c of data.prizeManagement || []) {
     if (c.status === 'open' && !c.note) {
       c.note = 'Pendiente documentar y presentar.';
     }
+    if (!c.paperwork) c.paperwork = {};
   }
   data.ui = data.ui || {};
   data.ui.bankWithdrawCounts = data.ui.bankWithdrawCounts || null;
@@ -236,8 +237,15 @@ export function migrateState(data) {
     if (a.abonosConfirmed == null) a.abonosConfirmed = 0;
   }
   data.ui = data.ui || {};
-  data.ui.tpv = null;
-  data.ui.arqueo = null;
+  // v1.0: no borrar TPV / arqueo / cobro / cola — el guardado es absoluto
+  if (data.ui.tpv === undefined) data.ui.tpv = null;
+  if (data.ui.arqueo === undefined) data.ui.arqueo = null;
+  if (data.ui.paymentSession === undefined) data.ui.paymentSession = null;
+  if (!data.customers.current && data.customers.current !== null) data.customers.current = null;
+  if (!Array.isArray(data.dayLog)) data.dayLog = [];
+  if (!Array.isArray(data.reservations)) data.reservations = [];
+  if (!Array.isArray(data.weeklySnapshots)) data.weeklySnapshots = [];
+  if (!data.archive) data.archive = { tickets: [], ledger: [] };
   data.version = SAVE_VERSION;
   data.gameVersion = GAME_VERSION;
   ensureOnceExtras(data);

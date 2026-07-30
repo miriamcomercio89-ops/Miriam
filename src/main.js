@@ -83,8 +83,18 @@ import {
   startPrizeManagement,
   advancePrizeCase,
   PRIZE_MGMT_STATUS,
+  PAPERWORK_BY_STATUS,
+  ensureCasePaperwork,
+  togglePrizePaperwork,
+  paperworkDone,
   dismissHighPrizeAlert,
 } from './game/prizes.js';
+import { logoHTML } from './data/logos.js';
+import {
+  encyclopediaFamilies,
+  encyclopediaStats,
+  renderEncyclopediaDetail,
+} from './game/encyclopedia.js';
 import {
   downloadTicketPdf,
   downloadSaleReceiptPdf,
@@ -298,6 +308,7 @@ function render() {
   if (state.ui.screen === 'bank') return renderBank();
   if (state.ui.screen === 'settings') return renderSettings();
   if (state.ui.screen === 'monthly') return renderMonthly();
+  if (state.ui.screen === 'encyclopedia') return renderEncyclopedia();
   return renderCounter();
 }
 
@@ -457,32 +468,52 @@ function dictateHint(mode) {
 function renderMenu() {
   const slots = listSlots();
   app.innerHTML = `
-    <div class="menu-screen">
-      <div class="menu-card">
-        <div class="muted">Álora · Málaga · v${GAME_VERSION}</div>
-        <h1>Loterías Álora</h1>
-        <p class="tagline">Simulador realista de mostrador. Tú eres Miriam, la única empleada.</p>
+    <div class="menu-screen menu-v1">
+      <div class="menu-blobs" aria-hidden="true">
+        <span class="blob b1"></span>
+        <span class="blob b2"></span>
+        <span class="blob b3"></span>
+        <span class="blob b4"></span>
+      </div>
+      <div class="menu-card menu-card-color">
+        <div class="menu-brand-row">
+          <span class="menu-logo-mark" aria-hidden="true">LA</span>
+          <div>
+            <div class="menu-kicker">Álora · Málaga · v${GAME_VERSION}</div>
+            <h1>Loterías Álora</h1>
+          </div>
+        </div>
+        <p class="tagline">Simulador estricto de mostrador. Tú eres Miriam: cobras, documentas y eliges cada décimo a mano.</p>
+        <div class="menu-chip-row" aria-hidden="true">
+          <span class="menu-chip c-teal">Mostrador</span>
+          <span class="menu-chip c-amber">TPV</span>
+          <span class="menu-chip c-coral">Premios</span>
+          <span class="menu-chip c-sky">Enciclopedia</span>
+        </div>
         <div class="actions">
-          <button class="btn primary" id="btn-new">Nueva partida</button>
+          <button class="btn primary menu-cta" id="btn-new">Nueva partida</button>
           <label class="btn ghost" style="cursor:pointer">
             Importar archivo
             <input id="import-file" type="file" accept="application/json" hidden />
           </label>
         </div>
-        <h3 style="margin-top:22px;font-family:var(--font-display);color:var(--brand-deep)">Partidas guardadas</h3>
+        <h3 class="menu-slots-title">Partidas guardadas</h3>
+        <p class="muted" style="margin:0 0 8px;font-size:0.88rem">Guardado absoluto: TPV, caja, cola, premios y todo el estado.</p>
         <div class="slot-grid">
           ${slots
             .map((s) => {
               if (s.empty) {
-                return `<div class="slot"><div><strong>Hueco ${s.slot}</strong><div class="muted">Vacío</div></div></div>`;
+                return `<div class="slot slot-empty"><div><strong>Hueco ${s.slot}</strong><div class="muted">Vacío</div></div></div>`;
               }
               const when = s.gameTimeMs
                 ? new Date(s.gameTimeMs).toLocaleString('es-ES', { timeZone: 'UTC' })
                 : '';
-              return `<div class="slot">
+              return `<div class="slot slot-filled">
                 <div>
                   <strong>Hueco ${s.slot}</strong>
-                  <div class="muted">${when} · Día ${s.daysPlayed ?? 0} · v${s.gameVersion || '?'}</div>
+                  <div class="muted">${when} · Día ${s.daysPlayed ?? 0} · v${s.gameVersion || '?'}${
+                    s.complete ? ' · completa' : ''
+                  }</div>
                 </div>
                 <div class="actions">
                   <button class="btn primary" data-load="${s.slot}">Continuar</button>
@@ -493,7 +524,7 @@ function renderMenu() {
         </div>
         <p class="disclaimer">
           Fan-made / no oficial. Nombres de Loterías y Apuestas del Estado y ONCE usados solo con fines de simulación.
-          Juego responsable · +18. Versión ${GAME_VERSION}: encargos, vitrina, hora del sorteo, 5+C, ONCE extras, botes que caen y UI renovada.
+          Juego responsable · +18. Versión ${GAME_VERSION}: guardado total, logos, enciclopedia, TPV manual y más papeleo en premios.
         </p>
       </div>
     </div>
@@ -507,7 +538,7 @@ function renderMenu() {
     maybeStartMusic();
     state.ui.screen = 'counter';
     lastAutosaveRealMs = Date.now();
-    showToast('Bienvenida, Miriam. Versión 0.9 lista. ¡A por el mostrador!');
+    showToast('Bienvenida, Miriam. Versión 1.0: tú eliges cada producto en el TPV.');
     needsFullRender = true;
     render();
   };
@@ -691,6 +722,7 @@ function sideNav() {
       </div>
       <div class="nav-group">
         <div class="nav-group-title">Oficina</div>
+        ${navBtn('encyclopedia', 'Enciclopedia')}
         ${navBtn('stock', 'Stock y pedidos')}
         ${navBtn('showcase', 'Escaparate')}
         ${navBtn('close', 'Cierre y balance')}
@@ -1041,29 +1073,10 @@ function renderClientPanel(client) {
         ${client.subscription ? `<p class="muted">Suscripción: ${escapeHtml(client.subscription)}</p>` : ''}
         ${totalWish ? `<p class="muted">Estimado: ${formatEuro(totalWish)}</p>` : ''}
         <p class="muted">Pago preferido: ${payLabel(client.prefersPayment)}</p>
+        <p class="tip" style="margin:8px 0 0">La petición no se carga sola: ábrela en el TPV y selecciona tú cada producto.</p>
         <div class="actions">
-          <button class="btn primary" id="btn-open-tpv">${
-            intent === 'abono'
-              ? 'Abrir TPV y confirmar abono'
-              : intent === 'pena_day'
-                ? 'Abrir TPV (cargar peña)'
-                : intent === 'pickup'
-                  ? 'Abrir TPV (entregar)'
-                  : intent === 'showcase_ask'
-                    ? 'Abrir TPV (vitrina)'
-                    : 'Abrir TPV'
-          }</button>
-          <button class="btn" id="btn-load-wish">${
-            intent === 'abono'
-              ? 'Cargar abono'
-              : intent === 'pena_day'
-                ? 'Cargar pedido peña'
-                : intent === 'pickup'
-                  ? 'Cargar encargo'
-                  : intent === 'showcase_ask'
-                    ? 'Cargar nº vitrina'
-                    : 'Cargar petición'
-          }</button>
+          <button class="btn primary" id="btn-open-tpv">Abrir TPV</button>
+          <button class="btn ghost" id="btn-load-wish" title="Opcional: solo si quieres meter la petición de golpe">Cargar petición (opcional)</button>
           ${
             intent === 'pickup' || intent === 'showcase_ask'
               ? ''
@@ -1213,18 +1226,8 @@ function bindClientActions() {
       if (!client) return;
       if (client.intent === 'pena_day') sfx.pena();
       else sfx.tpv();
-      if (
-        ['pena_day', 'pickup', 'showcase_ask', 'abono'].includes(client.intent) &&
-        (client.wishlist?.length || client.request)
-      ) {
-        loadWishlistIntoTpv(client);
-        if (state.ui.tpv?.message) showToast(state.ui.tpv.message);
-      } else if (client.wishlist?.length) {
-        loadWishlistIntoTpv(client);
-        if (state.ui.tpv?.message) showToast(state.ui.tpv.message);
-      } else {
-        openTpv(state, client);
-      }
+      // v1.0: nunca auto-cargar la petición; Miriam selecciona a mano
+      openTpv(state, client);
       needsFullRender = true;
       render();
     };
@@ -1558,14 +1561,15 @@ function renderTpv() {
   const total = tpvTotalCents(tpv);
   const entry = tpv.numberEntry;
 
+  const catHue = { LAE: 195, ONCE: 28, Rascas: 310, Autonómicas: 155, Provinciales: 210, Locales: 340 };
   app.innerHTML = `
-    <div class="shell">
+    <div class="shell tpv-shell">
       ${topbarHTML()}
-      <div class="panel" style="margin-top:16px">
+      <div class="panel tpv-panel" style="margin-top:16px">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
           <div>
             <h2 style="margin:0">TPV · ${escapeHtml(tpv.clientName || 'Cliente')}</h2>
-            <p class="muted" style="margin:4px 0 0">F1–F6 categorías · Enter cobrar · Esc atrás</p>
+            <p class="muted" style="margin:4px 0 0">F1–F6 categorías · Enter cobrar · Esc atrás · Selección manual</p>
           </div>
           <button class="btn ghost" id="btn-tpv-back">Volver al mostrador</button>
         </div>
@@ -1587,10 +1591,10 @@ function renderTpv() {
         }
         <div class="tpv-wrap">
           <div class="tpv-cats">
-            ${TPV_CATEGORIES.map(
-              (c, i) =>
-                `<button class="btn ${c === cat ? 'primary' : ''}" data-tpv-cat="${c}">F${i + 1} ${escapeHtml(c)}</button>`,
-            ).join('')}
+            ${TPV_CATEGORIES.map((c, i) => {
+              const hue = catHue[c] ?? 180;
+              return `<button class="btn tpv-cat-btn ${c === cat ? 'primary' : ''}" data-tpv-cat="${c}" style="--cat-hue:${hue}">F${i + 1} ${escapeHtml(c)}</button>`;
+            }).join('')}
           </div>
           <div class="tpv-products">
             ${products
@@ -1603,12 +1607,17 @@ function renderTpv() {
                   productMetaLabel(p) ||
                   `Com. ${((p.commissionRate ?? 0.05) * 100).toFixed(1)}%${p.trait ? ` · ${p.trait}` : ''}`;
                 const next = nextDrawLabel(p.id, gameDate(state));
-                return `<div class="tpv-product">
-                  <div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start">
-                    <strong>${escapeHtml(p.name)}</strong>
-                    <button class="btn ghost" style="padding:2px 8px;font-size:0.8rem" data-detail="${p.id}" title="Ficha">Info</button>
+                return `<div class="tpv-product tpv-product-rich" data-org="${escapeHtml(p.org || '')}">
+                  <div class="tpv-product-head">
+                    ${logoHTML(p, 'md')}
+                    <div style="flex:1;min-width:0">
+                      <div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start">
+                        <strong>${escapeHtml(p.name)}</strong>
+                        <button class="btn ghost" style="padding:2px 8px;font-size:0.8rem" data-detail="${p.id}" title="Ficha">Info</button>
+                      </div>
+                      <span>${formatEuro(p.priceCents)} · ${escapeHtml(stock)}</span>
+                    </div>
                   </div>
-                  <span>${formatEuro(p.priceCents)} · ${escapeHtml(stock)}</span>
                   ${next ? `<div class="muted product-next">Próximo: ${escapeHtml(next)}</div>` : ''}
                   <div class="product-meta">${escapeHtml(meta)}</div>
                   <div class="actions" style="margin-top:8px;gap:6px">
@@ -1623,7 +1632,7 @@ function renderTpv() {
               })
               .join('')}
           </div>
-          <aside class="tpv-cart">
+          <aside class="tpv-cart tpv-cart-rich">
             <h3 style="margin:0 0 8px">Ticket</h3>
             <div style="flex:1;overflow:auto;display:flex;flex-direction:column;gap:8px">
               ${
@@ -1910,9 +1919,12 @@ function productSheetHTML() {
     <div class="product-sheet-overlay" id="product-sheet">
       <div class="product-sheet panel">
         <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start">
-          <div>
-            <div class="muted">${escapeHtml(p.org || '')} · ${escapeHtml(p.tpvCategory || '')}</div>
-            <h2 style="margin:4px 0 8px">${escapeHtml(p.name)}</h2>
+          <div style="display:flex;gap:12px;align-items:flex-start">
+            ${logoHTML(p, 'lg')}
+            <div>
+              <div class="muted">${escapeHtml(p.org || '')} · ${escapeHtml(p.tpvCategory || '')}</div>
+              <h2 style="margin:4px 0 8px">${escapeHtml(p.name)}</h2>
+            </div>
           </div>
           <button class="btn ghost" id="btn-sheet-close">Cerrar</button>
         </div>
@@ -2618,6 +2630,7 @@ function renderSavesInGame() {
         ${sideNav()}
         <section class="panel">
           <h2>Guardar / exportar</h2>
+          <p class="muted">Se guarda <strong>absolutamente todo</strong>: TPV a medias, cobro, cola, tickets, premios, escaparate, arqueo, ajustes…</p>
           <div class="slot-grid">
             ${slots
               .map(
@@ -2625,7 +2638,13 @@ function renderSavesInGame() {
               <div class="slot">
                 <div>
                   <strong>Hueco ${s.slot}</strong>
-                  <div class="muted">${s.empty ? 'Vacío' : `Días ${s.daysPlayed ?? 0} · v${s.gameVersion || '?'}`}</div>
+                  <div class="muted">${
+                    s.empty
+                      ? 'Vacío'
+                      : `Días ${s.daysPlayed ?? 0} · v${s.gameVersion || '?'}${s.tickets != null ? ` · ${s.tickets} tickets` : ''}${
+                          s.complete ? ' · completa' : ''
+                        }`
+                  }</div>
                 </div>
                 <div class="actions">
                   <button class="btn primary" data-save="${s.slot}">Guardar aquí</button>
@@ -2636,7 +2655,7 @@ function renderSavesInGame() {
               .join('')}
           </div>
           <div class="actions" style="margin-top:12px">
-            <button class="btn" id="btn-export">Exportar JSON</button>
+            <button class="btn" id="btn-export">Exportar partida completa</button>
             <button class="btn accent" id="btn-day-package">Paquete del día</button>
             <label class="btn ghost" style="cursor:pointer">Importar<input id="import-file" type="file" accept="application/json" hidden /></label>
             <button class="btn danger" id="btn-menu">Volver al menú</button>
@@ -2956,10 +2975,40 @@ function renderDraws() {
   bindNav();
 }
 
+function paperworkHTML(c) {
+  ensureCasePaperwork(c);
+  if (c.status === 'settled') {
+    return `<p class="muted" style="margin-top:8px">Expediente cerrado. Papeleo archivado.</p>`;
+  }
+  const items = PAPERWORK_BY_STATUS[c.status] || [];
+  const done = paperworkDone(c, c.status);
+  return `
+    <div class="paperwork-box">
+      <div class="paperwork-title">Papeleo del paso · ${escapeHtml(PRIZE_MGMT_STATUS[c.status] || c.status)} ${
+        done ? '✓' : '(incompleto)'
+      }</div>
+      <ul class="paperwork-list">
+        ${items
+          .map((item) => {
+            const checked = !!c.paperwork[c.status]?.[item.id];
+            return `<li>
+              <label class="paperwork-item">
+                <input type="checkbox" data-paper-case="${escapeHtml(c.id)}" data-paper-status="${escapeHtml(
+                  c.status,
+                )}" data-paper-item="${escapeHtml(item.id)}" ${checked ? 'checked' : ''} />
+                <span>${escapeHtml(item.label)}</span>
+              </label>
+            </li>`;
+          })
+          .join('')}
+      </ul>
+    </div>`;
+}
+
 function renderManagement() {
   const list = [...(state.prizeManagement || [])].reverse();
   const nextLabel = {
-    open: 'Documentar (DNI / ticket)',
+    open: 'Documentar (tras papeleo)',
     documented: 'Presentar a organismo',
     submitted: 'Marcar liquidado',
   };
@@ -2970,24 +3019,27 @@ function renderManagement() {
         ${sideNav()}
         <section class="panel">
           <h2>Gestión de premios grandes</h2>
-          <p class="muted">No salen de tu caja. Tú avanzas los pasos: abierto → documentado → presentado → liquidado (paga LAE/ONCE).</p>
+          <p class="muted">No salen de tu caja. Cada paso exige papeleo completo: abierto → documentado → presentado → liquidado (paga LAE/ONCE).</p>
           <div class="log">
             ${
               list.length
                 ? list
                     .map((c) => {
+                      ensureCasePaperwork(c);
                       const st = PRIZE_MGMT_STATUS[c.status] || c.status;
+                      const ready = c.status === 'settled' || paperworkDone(c, c.status);
                       const btn =
                         c.status !== 'settled'
-                          ? `<button class="btn primary" style="margin-top:8px;padding:6px 12px" data-adv-case="${c.id}">${
-                              nextLabel[c.status] || 'Avanzar'
-                            }</button>`
+                          ? `<button class="btn primary" style="margin-top:8px;padding:6px 12px" data-adv-case="${c.id}" ${
+                              ready ? '' : 'disabled title="Completa el papeleo"'
+                            }>${nextLabel[c.status] || 'Avanzar'}${ready ? '' : ' · falta papeleo'}</button>`
                           : '';
-                      return `<div class="log-item">
+                      return `<div class="log-item prize-case-card">
                         <strong>${escapeHtml(c.clientName)}</strong> · ${formatEuro(c.amountCents)} · ${escapeHtml(c.productName)}
                         <br/>Ticket ${escapeHtml(c.ticketId || '—')} · ${escapeHtml(c.org || '')} · ${c.level}
                         <br/>Estado: <strong>${escapeHtml(st)}</strong>
                         <br/><span class="muted">${escapeHtml(c.note || '')}</span>
+                        ${paperworkHTML(c)}
                         ${btn}
                       </div>`;
                     })
@@ -3002,11 +3054,88 @@ function renderManagement() {
   `;
   bindTopbar();
   bindNav();
+  app.querySelectorAll('[data-paper-case]').forEach((inp) => {
+    inp.onchange = () => {
+      const res = togglePrizePaperwork(
+        state,
+        inp.getAttribute('data-paper-case'),
+        inp.getAttribute('data-paper-status'),
+        inp.getAttribute('data-paper-item'),
+      );
+      res.ok ? sfx.click() : sfx.error();
+      showToast(res.message || state.ui.toast);
+      needsFullRender = true;
+      render();
+    };
+  });
   app.querySelectorAll('[data-adv-case]').forEach((btn) => {
     btn.onclick = () => {
       const res = advancePrizeCase(state, btn.getAttribute('data-adv-case'));
       res.ok ? sfx.success() : sfx.error();
       showToast(res.message || state.ui.toast);
+      needsFullRender = true;
+      render();
+    };
+  });
+}
+
+function renderEncyclopedia() {
+  const families = encyclopediaFamilies();
+  const stats = encyclopediaStats();
+  const selected = state.ui.encyclopediaId || null;
+  const familyOrder = ['LAE', 'ONCE', 'Rascas', 'Autonómicas', 'Provinciales', 'Locales'];
+  const keys = [
+    ...familyOrder.filter((k) => families.has(k)),
+    ...[...families.keys()].filter((k) => !familyOrder.includes(k)),
+  ];
+  app.innerHTML = `
+    <div class="shell">
+      ${topbarHTML()}
+      <div class="layout" style="grid-template-columns:280px 1fr">
+        ${sideNav()}
+        <section class="panel ency-panel">
+          <h2>Enciclopedia de loterías</h2>
+          <p class="muted">${stats.total} productos · LAE ${stats.lae} · ONCE ${stats.once} · regionales ${stats.regional}</p>
+          <div class="ency-layout">
+            <div class="ency-catalog">
+              ${keys
+                .map((fam) => {
+                  const entries = families.get(fam) || [];
+                  return `<div class="ency-family">
+                    <h3 class="ency-family-title">${escapeHtml(fam)}</h3>
+                    <div class="ency-grid-cards">
+                      ${entries
+                        .map(
+                          (e) => `<button class="ency-card ${selected === e.id ? 'active' : ''}" data-ency="${e.id}">
+                            ${e.logoSm || logoHTML(e.product, 'sm')}
+                            <span class="ency-card-name">${escapeHtml(e.short || e.name)}</span>
+                          </button>`,
+                        )
+                        .join('')}
+                    </div>
+                  </div>`;
+                })
+                .join('')}
+            </div>
+            <div class="ency-detail-pane">
+              ${
+                selected
+                  ? renderEncyclopediaDetail(selected)
+                  : '<p class="muted">Elige una lotería para consultar precio, mecánica, sorteos y sabor.</p>'
+              }
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+    ${toastHTML()}
+  `;
+  bindTopbar();
+  bindNav();
+  app.querySelectorAll('[data-ency]').forEach((btn) => {
+    btn.onclick = () => {
+      sfx.click();
+      state.ui.encyclopediaId = btn.getAttribute('data-ency');
       needsFullRender = true;
       render();
     };
@@ -3662,11 +3791,7 @@ function ensureGlobalShortcuts() {
       e.preventDefault();
       if (client.intent === 'pena_day') sfx.pena();
       else sfx.tpv();
-      if (client.intent === 'pena_day' && (client.wishlist?.length || client.request)) {
-        loadWishlistIntoTpv(client);
-      } else {
-        openTpv(state, client);
-      }
+      openTpv(state, client);
       needsFullRender = true;
       render();
       return;

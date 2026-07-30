@@ -2,7 +2,7 @@
 
 Simulador realista de administración de loterías en **Álora**. Tú eres **Miriam**.
 
-**Versión: 0.9**
+**Versión: 1.0**
 
 ## Cómo jugar
 
@@ -11,24 +11,22 @@ Simulador realista de administración de loterías en **Álora**. Tú eres **Mir
 
 No abras `index.html` de la raíz.
 
-## Novedades v0.9
+## Novedades v1.0
 
-- Recogida de encargos cuando llegan
-- Clientes que piden un número concreto del escaparate
-- Retirada banco→caja eligiendo billetes y monedas
-- Primitiva **5 + complementario** con premio propio
-- Extraordinarios ONCE vendibles el día (y víspera)
-- Bote que cae y se reinicia al tocar categoría 1
-- Hora del sorteo: banner y más comprobaciones
-- UI más colorida y moderna, con transiciones suaves
-- Loterías con descripciones y sabor reforzados
+- **Guardado / exportación absolutos**: se conserva todo el estado (TPV, cobro, cola, premios, escaparate, arqueo…)
+- Menú y TPV **más coloridos**
+- **Logo propio** por cada lotería
+- **Enciclopedia** para consultar todas las loterías
+- La petición del cliente **no se carga sola** al TPV: Miriam selecciona a mano
+- Gestión de premios con **más papeleo** por paso
+- Escritorio · solo español · simulación estricta · un solo ritmo
 
 ## Desarrollo
 
 ```bash
 npm install
 npm run dev
-npm run build:play
+npm run build
 ```
 
 Fan-made / no oficial · +18

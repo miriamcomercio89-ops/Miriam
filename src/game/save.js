@@ -1,7 +1,40 @@
-import { createNewGame, SAVE_VERSION, SLOT_COUNT, STORAGE_PREFIX, migrateState } from './state.js';
+import { createNewGame, SAVE_VERSION, SLOT_COUNT, STORAGE_PREFIX, migrateState, GAME_VERSION } from './state.js';
 
 export function slotKey(slot) {
   return `${STORAGE_PREFIX}${slot}`;
+}
+
+/** Clona profundo para no mutar referencias al serializar. */
+function cloneState(state) {
+  return JSON.parse(JSON.stringify(state));
+}
+
+/** Snapshot completo: absolutamente todo el estado jugable. */
+export function fullSavePayload(state, extraMeta = {}) {
+  const payload = cloneState(state);
+  payload.version = SAVE_VERSION;
+  payload.gameVersion = GAME_VERSION;
+  payload.meta = {
+    ...(payload.meta || {}),
+    updatedAt: new Date().toISOString(),
+    ...extraMeta,
+    complete: true,
+    counts: {
+      tickets: (payload.tickets || []).length,
+      orders: (payload.orders || []).length,
+      draws: Object.keys(payload.draws || {}).length,
+      ledger: (payload.finance?.ledger || []).length,
+      prizeManagement: (payload.prizeManagement || []).length,
+      showcase: (payload.showcase || []).length,
+      closeHistory: (payload.closeHistory || []).length,
+      dayLog: (payload.dayLog || []).length,
+      queue: (payload.customers?.queue || []).length,
+      regulars: (payload.customers?.regulars || []).length,
+    },
+  };
+  // Asegurar que UI en curso se incluye
+  payload.ui = payload.ui || {};
+  return payload;
 }
 
 export function listSlots() {
@@ -22,6 +55,8 @@ export function listSlots() {
         bankCents: data.finance?.bankCents,
         daysPlayed: data.stats?.daysPlayed,
         gameVersion: data.gameVersion || '0.0',
+        tickets: data.tickets?.length,
+        complete: !!data.meta?.complete,
       });
     } catch {
       slots.push({ slot: i, empty: true, corrupt: true });
@@ -31,13 +66,23 @@ export function listSlots() {
 }
 
 export function saveToSlot(state, slot, { silent = false } = {}) {
-  state.meta.updatedAt = new Date().toISOString();
+  const payload = fullSavePayload(state);
+  payload.meta.activeSlot = slot;
+  try {
+    localStorage.setItem(slotKey(slot), JSON.stringify(payload));
+  } catch (e) {
+    state.ui = state.ui || {};
+    state.ui.toast = 'No se pudo guardar (almacenamiento lleno). Exporta JSON.';
+    throw e;
+  }
+  // Reflejar meta en estado vivo
+  state.meta = { ...state.meta, ...payload.meta, activeSlot: slot };
   state.version = SAVE_VERSION;
-  localStorage.setItem(slotKey(slot), JSON.stringify(state));
+  state.gameVersion = GAME_VERSION;
   state.ui = state.ui || {};
   state.ui.lastAutosaveAt = Date.now();
   state.ui.lastAutosaveSlot = slot;
-  if (!silent) state.ui.toast = `Partida guardada en hueco ${slot}`;
+  if (!silent) state.ui.toast = `Partida completa guardada en hueco ${slot}`;
   return state;
 }
 
@@ -46,9 +91,35 @@ export function loadFromSlot(slot) {
   if (!raw) return null;
   const data = migrateState(JSON.parse(raw));
   data.clock.lastRealMs = Date.now();
-  data.ui = data.ui || { screen: 'counter', toast: null, paymentSession: null };
-  data.ui.paymentSession = null;
-  data.ui.screen = 'counter';
+  data.ui = data.ui || { screen: 'counter', toast: null };
+  data.meta = data.meta || {};
+  data.meta.activeSlot = slot;
+  // Restaurar pantalla si era jugable; si no, mostrador
+  const okScreens = new Set([
+    'counter',
+    'tpv',
+    'cash',
+    'stock',
+    'showcase',
+    'bank',
+    'draws',
+    'prize',
+    'management',
+    'close',
+    'closes',
+    'stats',
+    'weekly',
+    'monthly',
+    'settings',
+    'saves',
+    'board',
+    'fichas',
+    'encyclopedia',
+    'arqueo',
+    'day-results',
+  ]);
+  if (!okScreens.has(data.ui.screen)) data.ui.screen = 'counter';
+  // Si había TPV/caja a medias, se restauran tal cual (guardado absoluto)
   return data;
 }
 
@@ -68,33 +139,27 @@ function downloadBlob(blob, filename) {
 }
 
 export function exportGame(state) {
-  const payload = {
-    ...state,
-    meta: { ...state.meta, exportedAt: new Date().toISOString() },
-  };
+  const payload = fullSavePayload(state, { exportedAt: new Date().toISOString(), exportKind: 'full' });
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
   const ymd = new Date().toISOString().slice(0, 10);
-  downloadBlob(blob, `loterias-alora-${ymd}.json`);
+  downloadBlob(blob, `loterias-alora-completa-${ymd}.json`);
+  state.ui.toast = 'Exportación completa: absolutamente todo el estado';
 }
 
 /**
- * Paquete del día: JSON de partida + PDF de cierre (si hay resumen).
- * Dos descargas seguidas (sin dependencia de ZIP).
+ * Paquete del día: JSON de partida completa + PDF de cierre (si hay resumen).
  */
 export async function exportDayPackage(state, { downloadDayClosePdf } = {}) {
   const summary = state.ui?.lastCloseSummary;
   const ymd = summary?.date || new Date(state.clock?.gameTimeMs || Date.now()).toISOString().slice(0, 10);
-  const payload = {
-    ...state,
-    meta: {
-      ...state.meta,
-      exportedAt: new Date().toISOString(),
-      dayPackage: ymd,
-    },
-    dayPackage: {
-      closeSummary: summary || null,
-      exportedAt: new Date().toISOString(),
-    },
+  const payload = fullSavePayload(state, {
+    exportedAt: new Date().toISOString(),
+    dayPackage: ymd,
+    exportKind: 'day-package',
+  });
+  payload.dayPackage = {
+    closeSummary: summary || null,
+    exportedAt: new Date().toISOString(),
   };
   downloadBlob(
     new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' }),
@@ -105,8 +170,8 @@ export async function exportDayPackage(state, { downloadDayClosePdf } = {}) {
     downloadDayClosePdf(summary);
   }
   state.ui.toast = summary
-    ? `Paquete del día ${ymd}: partida + PDF de cierre`
-    : `Paquete del día ${ymd}: partida (sin cierre reciente)`;
+    ? `Paquete del día ${ymd}: partida completa + PDF de cierre`
+    : `Paquete del día ${ymd}: partida completa (sin cierre reciente)`;
   return { ymd, hasPdf: !!summary };
 }
 
@@ -119,8 +184,8 @@ export function importGame(file) {
         if (!data.clock || !data.finance) throw new Error('Archivo no válido');
         data.clock.lastRealMs = Date.now();
         data.ui = data.ui || {};
-        data.ui.paymentSession = null;
-        data.ui.screen = 'counter';
+        // Restaurar pantalla guardada si existe
+        if (!data.ui.screen) data.ui.screen = 'counter';
         resolve(data);
       } catch (e) {
         reject(e);
