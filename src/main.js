@@ -46,6 +46,8 @@ import {
   startPayment,
   countTotalCents,
   drawerTotalCents,
+  confirmElectronicPayment,
+  clientSwitchPayment,
 } from './game/cash.js';
 import {
   buildDayCloseSummary,
@@ -566,7 +568,7 @@ function renderMenu() {
     maybeStartMusic();
     state.ui.screen = 'counter';
     lastAutosaveRealMs = Date.now();
-    showToast('Bienvenida, Miriam. Versión 1.2: casillas por número en cada lotería.');
+    showToast('Bienvenida, Miriam. Versión 1.3: el cliente elige cómo pagar; en efectivo tú das el cambio.');
     needsFullRender = true;
     render();
   };
@@ -2282,6 +2284,36 @@ function ensureTpvKeyboard() {
   });
 }
 
+function tenderReadonlyHTML(tendered) {
+  const parts = [...BILLS, ...COINS]
+    .filter((d) => (tendered[d.id] || 0) > 0)
+    .map((d) => `${d.label} ×${tendered[d.id]}`);
+  if (!parts.length) return '<p class="muted">Sin dinero entregado.</p>';
+  return `<div class="tender-readonly">
+    <div class="tender-readonly-title">El cliente entrega</div>
+    <div class="tender-chips">${parts.map((p) => `<span class="tender-chip">${escapeHtml(p)}</span>`).join('')}</div>
+    <div class="total-box" style="margin-top:8px">Total entregado<strong>${formatEuro(countTotalCents(tendered))}</strong></div>
+  </div>`;
+}
+
+function clientMethodSwitchHTML(current) {
+  const methods = [
+    ['cash', 'Efectivo'],
+    ['card', 'Tarjeta'],
+    ['bizum', 'Bizum'],
+    ['transfer', 'Transferencia'],
+  ];
+  return `<div class="client-switch-pay" style="margin-top:14px">
+    <p class="muted" style="margin:0 0 6px">Si el cliente cambia de idea o falla el cobro:</p>
+    <div class="actions" style="flex-wrap:wrap">
+      ${methods
+        .filter(([id]) => id !== current)
+        .map(([id, label]) => `<button class="btn ghost" data-client-method="${id}">Paga con ${label}</button>`)
+        .join('')}
+    </div>
+  </div>`;
+}
+
 function renderCash() {
   const ps = state.ui.paymentSession;
   if (!ps) {
@@ -2289,50 +2321,74 @@ function renderCash() {
     return render();
   }
 
-  const tendered = countTotalCents(ps.tendered);
+  const tendered = countTotalCents(ps.tendered || {});
   const changeSum = countTotalCents(ps.changeGiven || {});
   let body = '';
+  let title = 'Caja';
 
-  if (ps.step === 'method') {
+  if (ps.step === 'electronic') {
+    title = `Cobro · ${payLabel(ps.method)}`;
     body = `
-      <p>Cliente: <strong>${escapeHtml(ps.clientName)}</strong> · Prefiere ${payLabel(ps.preferredPayment)}</p>
+      <div class="pay-window pay-electronic">
+        <p><strong>${escapeHtml(ps.clientName)}</strong> ha decidido pagar con <strong>${payLabel(ps.method)}</strong>.</p>
+        <div class="totals" style="margin:12px 0">
+          <div class="total-box">Total<strong>${formatEuro(ps.totalCents)}</strong></div>
+        </div>
+        <p class="muted">Pulsa para procesar el cobro en el TPV / app.</p>
+        <div class="actions">
+          <button class="btn primary" id="btn-confirm-electronic">Cobrar con ${payLabel(ps.method)}</button>
+          <button class="btn danger" id="btn-cancel-pay">Cancelar</button>
+        </div>
+        ${clientMethodSwitchHTML(ps.method)}
+      </div>`;
+  } else if (ps.step === 'cash-change') {
+    title = 'Cobro · Efectivo';
+    const need = ps.changeNeededCents || 0;
+    body = `
+      <div class="pay-window pay-cash">
+        <p><strong>${escapeHtml(ps.clientName)}</strong> paga en efectivo. Ya ha puesto el dinero en el mostrador.</p>
+        <div class="totals" style="margin:12px 0">
+          <div class="total-box">A cobrar<strong>${formatEuro(ps.totalCents)}</strong></div>
+          <div class="total-box">Entregado<strong>${formatEuro(tendered)}</strong></div>
+          <div class="total-box">Cambio a dar<strong>${formatEuro(need)}</strong></div>
+        </div>
+        ${tenderReadonlyHTML(ps.tendered || {})}
+        ${
+          need > 0
+            ? `<h3 style="margin-top:16px">Tu turno: calcula el cambio</h3>
+               <p class="muted">Debes devolver exactamente ${formatEuro(need)}. Usa la caja (sin ayuda automática).</p>
+               <div class="totals">
+                 <div class="total-box">A devolver<strong>${formatEuro(need)}</strong></div>
+                 <div class="total-box">Tu selección<strong>${formatEuro(changeSum)}</strong></div>
+                 <div class="total-box">En caja<strong>${formatEuro(drawerTotalCents(state.finance.drawer))}</strong></div>
+               </div>
+               <p class="muted cash-keys-hint">Atajos: 1–7 billetes · Q–I monedas · Shift=restar · Enter=confirmar</p>
+               ${denomEditor('change')}`
+            : `<div class="alert-banner" style="margin-top:12px"><strong>Importe exacto</strong> — no hay cambio que devolver.</div>`
+        }
+        <div class="actions" style="margin-top:12px">
+          <button class="btn primary" id="btn-confirm-change">${need > 0 ? 'Confirmar cobro y cambio' : 'Confirmar cobro'}</button>
+          <button class="btn danger" id="btn-cancel-pay">Cancelar</button>
+        </div>
+        ${clientMethodSwitchHTML('cash')}
+      </div>`;
+  } else if (ps.step === 'method') {
+    // Fallback raro: el cliente aún no ha elegido
+    title = 'Cobro · ¿Cómo paga?';
+    body = `
+      <p>Cliente: <strong>${escapeHtml(ps.clientName)}</strong></p>
+      <p class="muted">El cliente decide cómo pagar:</p>
       <div class="totals" style="margin:12px 0">
         <div class="total-box">Total a cobrar<strong>${formatEuro(ps.totalCents)}</strong></div>
       </div>
       <div class="method-grid">
-        <button class="btn primary" data-method="cash">Efectivo</button>
-        <button class="btn" data-method="card">Tarjeta</button>
-        <button class="btn" data-method="bizum">Bizum</button>
-        <button class="btn" data-method="transfer">Transferencia</button>
-      </div>`;
-  } else if (ps.step === 'cash-tender') {
-    body = `
-      <p>Marca lo que entrega el cliente.</p>
-      <div class="totals">
-        <div class="total-box">A cobrar<strong>${formatEuro(ps.totalCents)}</strong></div>
-        <div class="total-box">Entregado<strong>${formatEuro(tendered)}</strong></div>
-        <div class="total-box">Cambio<strong>${formatEuro(Math.max(0, tendered - ps.totalCents))}</strong></div>
-      </div>
-      ${denomEditor('tender')}
-      <div class="actions" style="margin-top:12px">
-        <button class="btn primary" id="btn-confirm-tender">Continuar al cambio</button>
-        <button class="btn danger" id="btn-cancel-pay">Cancelar</button>
-      </div>`;
-  } else if (ps.step === 'cash-change') {
-    body = `
-      <p>Elige el cambio exacto.</p>
-      <div class="totals">
-        <div class="total-box">A devolver<strong>${formatEuro(ps.changeNeededCents || 0)}</strong></div>
-        <div class="total-box">Selección<strong>${formatEuro(changeSum)}</strong></div>
-        <div class="total-box">En caja<strong>${formatEuro(drawerTotalCents(state.finance.drawer))}</strong></div>
-      </div>
-      ${denomEditor('change')}
-      <div class="actions" style="margin-top:12px">
-        <button class="btn primary" id="btn-confirm-change">Confirmar cobro</button>
-        <button class="btn" id="btn-back-tender">Volver</button>
-        <button class="btn danger" id="btn-cancel-pay">Cancelar</button>
+        <button class="btn primary" data-client-method="cash">Efectivo</button>
+        <button class="btn" data-client-method="card">Tarjeta</button>
+        <button class="btn" data-client-method="bizum">Bizum</button>
+        <button class="btn" data-client-method="transfer">Transferencia</button>
       </div>`;
   } else if (ps.step === 'done') {
+    title = 'Cobro completado';
     const tickets = ps.createdTickets || [];
     body = `
       <div class="hero-counter">
@@ -2363,14 +2419,9 @@ function renderCash() {
   app.innerHTML = `
     <div class="shell">
       ${topbarHTML()}
-      <div class="panel cash-screen" style="margin-top:16px">
-        <h2>Caja</h2>
+      <div class="panel cash-screen pay-${escapeHtml(ps.method || 'cash')}" style="margin-top:16px">
+        <h2>${escapeHtml(title)}</h2>
         <div class="muted">${ps.items.map((i) => `${i.name} ×${i.qty}`).join(' · ')}</div>
-        ${
-          ps.step === 'cash-tender' || ps.step === 'cash-change'
-            ? `<p class="muted cash-keys-hint">Atajos: 1–7 billetes (5–500€) · Q–I monedas (2€→1c) · Shift=restar · Enter=continuar</p>`
-            : ''
-        }
         ${ps.error ? `<div class="error-box" style="margin:10px 0">${escapeHtml(ps.error)}</div>` : ''}
         ${body}
       </div>
@@ -2380,24 +2431,34 @@ function renderCash() {
 
   bindTopbar();
   ensureCashKeyboard();
+
+  app.querySelectorAll('[data-client-method]').forEach((btn) => {
+    btn.onclick = () => {
+      clientSwitchPayment(state, btn.getAttribute('data-client-method'));
+      if (state.ui.paymentSession?.step === 'cash-change') sfx.drawerOpen();
+      else sfx.click();
+      if (state.ui.toast) showToast(state.ui.toast);
+      needsFullRender = true;
+      render();
+    };
+  });
+  // Compat botones antiguos
   app.querySelectorAll('[data-method]').forEach((btn) => {
     btn.onclick = () => {
-      const before = state.ui.paymentSession?.step;
-      selectPaymentMethod(state, btn.getAttribute('data-method'));
-      if (state.ui.paymentSession?.error && state.ui.paymentSession?.step === 'method') sfx.deny();
-      else if (state.ui.paymentSession?.step === 'done') sfx.cash();
-      else if (before === 'method' && state.ui.paymentSession?.method === 'cash') sfx.drawerOpen();
+      clientSwitchPayment(state, btn.getAttribute('data-method'));
       sfx.click();
       if (state.ui.toast) showToast(state.ui.toast);
       needsFullRender = true;
       render();
     };
   });
+
   app.querySelectorAll('[data-adj]').forEach((btn) => {
     btn.onclick = () => {
       const kind = btn.getAttribute('data-adj');
       const id = btn.getAttribute('data-id');
       const delta = Number(btn.getAttribute('data-delta'));
+      if (kind === 'tender' && ps.tenderLocked) return;
       if (kind === 'tender') adjustTender(state, id, delta);
       else adjustChange(state, id, delta);
       sfx.click();
@@ -2405,16 +2466,22 @@ function renderCash() {
       render();
     };
   });
-  const ct = document.getElementById('btn-confirm-tender');
-  if (ct)
-    ct.onclick = () => {
-      confirmTender(state);
-      state.ui.paymentSession?.error ? sfx.error() : sfx.scan();
+
+  const elec = document.getElementById('btn-confirm-electronic');
+  if (elec) {
+    elec.onclick = () => {
+      confirmElectronicPayment(state);
+      if (state.ui.paymentSession?.step === 'done') sfx.cash();
+      else if (state.ui.paymentSession?.error) sfx.deny();
+      else sfx.click();
+      if (state.ui.toast) showToast(state.ui.toast);
       needsFullRender = true;
       render();
     };
+  }
+
   const cc = document.getElementById('btn-confirm-change');
-  if (cc)
+  if (cc) {
     cc.onclick = () => {
       confirmChange(state);
       if (state.ui.paymentSession?.error) sfx.error();
@@ -2425,31 +2492,27 @@ function renderCash() {
       needsFullRender = true;
       render();
     };
-  const back = document.getElementById('btn-back-tender');
-  if (back)
-    back.onclick = () => {
-      state.ui.paymentSession.step = 'cash-tender';
-      state.ui.paymentSession.error = null;
-      needsFullRender = true;
-      render();
-    };
+  }
+
   const cancel = document.getElementById('btn-cancel-pay');
-  if (cancel)
+  if (cancel) {
     cancel.onclick = () => {
       cancelPayment(state);
       needsFullRender = true;
       render();
     };
+  }
   const next = document.getElementById('btn-next-client');
-  if (next)
+  if (next) {
     next.onclick = () => {
       closePaymentSession(state);
       sfx.success();
       needsFullRender = true;
       render();
     };
+  }
   const pdfSale = document.getElementById('btn-pdf-sale');
-  if (pdfSale)
+  if (pdfSale) {
     pdfSale.onclick = () => {
       downloadSaleReceiptPdf({
         items: ps.items,
@@ -2458,15 +2521,18 @@ function renderCash() {
         method: payLabel(ps.method),
         tickets: ps.createdTickets,
       });
-      sfx.click();
+      sfx.printer();
       showToast('PDF de venta descargado');
     };
+  }
   app.querySelectorAll('[data-pdf]').forEach((btn) => {
     btn.onclick = () => {
       const id = btn.getAttribute('data-pdf');
       const t = (ps.createdTickets || []).find((x) => x.id === id);
-      if (t) downloadTicketPdf(t);
-      sfx.click();
+      if (t) {
+        downloadTicketPdf(t);
+        sfx.printer();
+      }
     };
   });
 }
@@ -2497,21 +2563,17 @@ function ensureCashKeyboard() {
   document.addEventListener('keydown', (ev) => {
     if (!state || state.ui.screen !== 'cash') return;
     const ps = state.ui.paymentSession;
-    if (!ps || (ps.step !== 'cash-tender' && ps.step !== 'cash-change')) return;
+    // Solo en cambio: el cliente ya entregó el dinero
+    if (!ps || ps.step !== 'cash-change') return;
     const tag = (ev.target?.tagName || '').toLowerCase();
     if (tag === 'input' || tag === 'textarea') return;
     if (ev.key === 'Enter') {
       ev.preventDefault();
-      if (ps.step === 'cash-tender') {
-        confirmTender(state);
-        state.ui.paymentSession?.error ? sfx.error() : sfx.scan();
-      } else {
-        confirmChange(state);
-        if (state.ui.paymentSession?.error) sfx.error();
-        else {
-          sfx.cash();
-          if (state.ui.toast) showToast(state.ui.toast);
-        }
+      confirmChange(state);
+      if (state.ui.paymentSession?.error) sfx.error();
+      else {
+        sfx.cash();
+        if (state.ui.toast) showToast(state.ui.toast);
       }
       needsFullRender = true;
       render();
@@ -2522,8 +2584,7 @@ function ensureCashKeyboard() {
     if (!denomId) return;
     ev.preventDefault();
     const delta = ev.shiftKey ? -1 : 1;
-    if (ps.step === 'cash-tender') adjustTender(state, denomId, delta);
-    else adjustChange(state, denomId, delta);
+    adjustChange(state, denomId, delta);
     sfx.click();
     needsFullRender = true;
     render();

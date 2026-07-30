@@ -2,7 +2,7 @@
 
 Simulador realista de administración de loterías en **Álora**. Tú eres **Miriam**.
 
-**Versión: 1.2**
+**Versión: 1.3**
 
 ## Cómo jugar
 
@@ -11,17 +11,18 @@ Simulador realista de administración de loterías en **Álora**. Tú eres **Mir
 
 No abras `index.html` de la raíz.
 
+## Novedades v1.3
+
+- El **cliente decide** cómo pagar → se abre su ventana (efectivo / tarjeta / Bizum / transferencia)
+- En **efectivo**, el cliente entrega el dinero solo; tú **calculas el cambio** a mano
+
 ## Novedades v1.2
 
-- **Casillas por número** en cada lotería (ej. Euromillones: 5 + 2 estrellas)
-- Escribe cifra a cifra o **genera una a una** / todas
-- Texto libre sigue disponible como opción avanzada
+- Casillas por número en cada lotería; generar una a una / todas
 
 ## Novedades v1.1
 
-- El cliente pide **aleatorio, terminaciones, fechas, series…**
-- Atajos del día, checklist, fallos de cobro, PDF expediente
-- Premios medianos, enciclopedia, tablón, stock crítico, más color
+- Peticiones de cifras, atajos TPV, fallos de cobro, PDF expediente, más color
 
 ## Desarrollo
 

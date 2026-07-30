@@ -10,7 +10,7 @@ import { seedDefaultShowcase, ensureShowcase } from './showcase.js';
 
 export const STARTING_BANK_CENTS = 950000;
 export const SAVE_VERSION = 12;
-export const GAME_VERSION = '1.2';
+export const GAME_VERSION = '1.3';
 export const SLOT_COUNT = 3;
 export const STORAGE_PREFIX = 'loterias-alora-slot-';
 export const HIGH_PRIZE_ALERT_CENTS = 200000; // 2.000 €

@@ -1924,6 +1924,63 @@ select {
   height: 38px;
   font-size: 1.05rem;
 }
+.pay-window.pay-cash {
+  border-left: 4px solid var(--accent);
+  padding-left: 12px;
+}
+.pay-window.pay-electronic {
+  border-left: 4px solid var(--sky);
+  padding-left: 12px;
+}
+.tender-readonly {
+  margin-top: 10px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(240, 162, 2, 0.14),
+      rgba(12, 138, 138, 0.08));
+  border: 1px solid rgba(240, 162, 2, 0.4);
+}
+.tender-readonly-title {
+  font-weight: 800;
+  color: var(--accent-ink);
+  margin-bottom: 8px;
+}
+.tender-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.tender-chip {
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid rgba(240, 162, 2, 0.45);
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+.cash-screen.pay-card,
+.cash-screen.pay-bizum,
+.cash-screen.pay-transfer {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(58, 168, 193, 0.08),
+      var(--panel));
+}
+.cash-screen.pay-cash {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(240, 162, 2, 0.1),
+      var(--panel));
+}
+.client-switch-pay {
+  padding-top: 8px;
+  border-top: 1px dashed var(--line);
+}
 
 </style>
 </head>
@@ -4361,7 +4418,7 @@ try {
   // src/game/state.js
   var STARTING_BANK_CENTS = 95e4;
   var SAVE_VERSION = 12;
-  var GAME_VERSION = "1.2";
+  var GAME_VERSION = "1.3";
   var SLOT_COUNT = 3;
   var STORAGE_PREFIX = "loterias-alora-slot-";
   var OFFICE = {
@@ -5556,69 +5613,157 @@ try {
   // src/game/cash.js
   function startPayment(state2, { items, client, purpose = "sale" }) {
     const totalCents = items.reduce((s, i) => s + i.unitCents * i.qty, 0);
+    const method = resolveClientPaymentMethod(client);
     state2.ui.paymentSession = {
       purpose,
       clientId: (client == null ? void 0 : client.id) || null,
       clientName: (client == null ? void 0 : client.name) || "Cliente",
-      preferredPayment: (client == null ? void 0 : client.prefersPayment) || "cash",
+      preferredPayment: method,
+      clientChose: true,
       items,
       totalCents,
-      method: null,
-      // cash | card | bizum | transfer
+      method,
       tendered: emptyDrawer(),
-      // lo que da el cliente
       changeGiven: emptyDrawer(),
-      // lo que eliges devolver
+      changeNeededCents: 0,
+      tenderLocked: false,
       step: "method",
-      // method | cash-tender | cash-change | done
-      error: null
+      // se sustituye abajo
+      error: null,
+      failCount: 0
     };
     state2.ui.screen = "cash";
+    openClientPaymentWindow(state2);
     return state2;
   }
-  function selectPaymentMethod(state2, method) {
+  function resolveClientPaymentMethod(client) {
+    const m = client == null ? void 0 : client.prefersPayment;
+    if (["cash", "card", "bizum", "transfer"].includes(m)) return m;
+    return "cash";
+  }
+  function openClientPaymentWindow(state2) {
     const ps = state2.ui.paymentSession;
     if (!ps) return state2;
+    const method = ps.method || ps.preferredPayment || "cash";
     ps.method = method;
     ps.error = null;
     if (method === "cash") {
-      ps.step = "cash-tender";
-      ps.tendered = emptyDrawer();
+      const rng = mulberry322(
+        hashSeed("tender", state2.clock.gameTimeMs, ps.clientId || "x", ps.totalCents)
+      );
+      ps.tendered = generateClientTender(ps.totalCents, rng);
+      ps.tenderLocked = true;
+      const given = countTotalCents(ps.tendered);
+      ps.changeNeededCents = Math.max(0, given - ps.totalCents);
       ps.changeGiven = emptyDrawer();
+      ps.step = "cash-change";
+      state2.ui.toast = ps.changeNeededCents > 0 ? `${ps.clientName} entrega ${formatEuro(given)}. Calcula el cambio.` : `${ps.clientName} entrega el importe exacto.`;
     } else {
-      const fail = rollPaymentFailure(method, ps.totalCents);
-      if (fail) {
-        ps.method = null;
-        ps.step = "method";
-        ps.error = fail;
-        ps.failCount = (ps.failCount || 0) + 1;
-        state2.finance.paymentFailsToday = (state2.finance.paymentFailsToday || 0) + 1;
-        state2.dayLog.push({
-          at: state2.clock.gameTimeMs,
-          text: `Cobro fallido (${labelMethod(method)}): ${fail}`
-        });
-        state2.ui.toast = fail;
-        return state2;
-      }
-      completeNonCash(state2);
+      ps.tenderLocked = false;
+      ps.step = "electronic";
+      state2.ui.toast = `${ps.clientName} quiere pagar con ${labelMethod(method)}.`;
     }
     return state2;
   }
-  function rollPaymentFailure(method, totalCents) {
+  function clientSwitchPayment(state2, method) {
+    const ps = state2.ui.paymentSession;
+    if (!ps) return state2;
+    if (!["cash", "card", "bizum", "transfer"].includes(method)) return state2;
+    ps.preferredPayment = method;
+    ps.method = method;
+    ps.failCount = ps.failCount || 0;
+    return openClientPaymentWindow(state2);
+  }
+  function confirmElectronicPayment(state2) {
+    const ps = state2.ui.paymentSession;
+    if (!ps || ps.step !== "electronic") return state2;
+    const method = ps.method;
+    const fail = rollPaymentFailure(method, ps.totalCents, ps.failCount || 0);
+    if (fail) {
+      ps.failCount = (ps.failCount || 0) + 1;
+      ps.error = fail;
+      state2.finance.paymentFailsToday = (state2.finance.paymentFailsToday || 0) + 1;
+      state2.dayLog.push({
+        at: state2.clock.gameTimeMs,
+        text: `Cobro fallido (${labelMethod(method)}): ${fail}`
+      });
+      state2.ui.toast = fail;
+      return state2;
+    }
+    completeNonCash(state2);
+    return state2;
+  }
+  function generateClientTender(totalCents, rng = Math.random) {
+    const result = emptyDrawer();
+    if (totalCents <= 0) return result;
+    const r = typeof rng === "function" ? rng : () => Math.random();
+    let payCents = totalCents;
+    const exactOk = totalCents <= 1e4 || totalCents % 100 === 0;
+    if (exactOk && r() < 0.25) {
+      payCents = totalCents;
+    } else {
+      const ceilings = [100, 200, 500, 1e3, 2e3, 5e3, 1e4, 2e4, 5e4];
+      let chosen = null;
+      for (const c of ceilings) {
+        if (c >= totalCents) {
+          chosen = c;
+          break;
+        }
+      }
+      if (!chosen) {
+        chosen = Math.ceil(totalCents / 1e4) * 1e4;
+      }
+      if (r() < 0.2 && chosen < 5e4) {
+        const idx = ceilings.indexOf(chosen);
+        if (idx >= 0 && idx < ceilings.length - 1 && ceilings[idx + 1] >= totalCents) {
+          chosen = ceilings[idx + 1];
+        }
+      }
+      payCents = Math.max(totalCents, chosen);
+    }
+    let remaining = payCents;
+    const denoms = [...BILLS, ...COINS].sort((a, b) => b.cents - a.cents);
+    for (const d of denoms) {
+      if (remaining <= 0) break;
+      if (d.kind === "coin" && remaining >= 500 && d.cents < 100) continue;
+      const n = Math.floor(remaining / d.cents);
+      if (n <= 0) continue;
+      const take = d.kind === "bill" ? Math.min(n, d.cents >= 1e4 ? 2 : 4) : Math.min(n, 8);
+      if (take > 0) {
+        result[d.id] = (result[d.id] || 0) + take;
+        remaining -= take * d.cents;
+      }
+    }
+    if (remaining > 0) {
+      for (const d of [...COINS].sort((a, b) => b.cents - a.cents)) {
+        const n = Math.floor(remaining / d.cents);
+        if (n > 0) {
+          result[d.id] = (result[d.id] || 0) + n;
+          remaining -= n * d.cents;
+        }
+      }
+    }
+    if (countTotalCents(result) < totalCents) {
+      result.b50 = (result.b50 || 0) + Math.ceil((totalCents - countTotalCents(result)) / 5e3);
+    }
+    return result;
+  }
+  function rollPaymentFailure(method, totalCents, failCount = 0) {
+    const ease = Math.max(0.35, 1 - failCount * 0.25);
     const r = Math.random();
     if (method === "card") {
-      if (r < 0.08) return "Tarjeta rechazada: contacte con su banco.";
-      if (r < 0.12) return "TPV sin cobertura. Prueba otra vez o efectivo.";
-      if (r < 0.15 && totalCents >= 1e4) return "Tarjeta denegada por l\xEDmite.";
+      if (r < 0.08 * ease) return "Tarjeta rechazada: contacte con su banco.";
+      if (r < 0.12 * ease) return "TPV sin cobertura. Prueba otra vez o efectivo.";
+      if (r < 0.15 * ease && totalCents >= 1e4) return "Tarjeta denegada por l\xEDmite.";
     }
     if (method === "bizum") {
-      if (r < 0.1) return "Bizum no recibido. El cliente debe repetir el env\xEDo.";
-      if (r < 0.14) return "Bizum: usuario no encontrado. Revisa el m\xF3vil.";
-      if (r < 0.17) return "Bizum caducado. Pide uno nuevo.";
+      if (r < 0.1 * ease) return "Bizum no recibido. El cliente debe repetir el env\xEDo.";
+      if (r < 0.14 * ease) return "Bizum: usuario no encontrado. Revisa el m\xF3vil.";
+      if (r < 0.17 * ease) return "Bizum caducado. Pide uno nuevo.";
     }
     if (method === "transfer") {
-      if (r < 0.06) return "Transferencia no llegada. Espera o cobra en efectivo.";
-      if (r < 0.09) return "IBAN incorrecto. Corrige y reintenta.";
+      if (r < 0.06 * ease) return "Transferencia no llegada. Espera o cobra en efectivo.";
+      if (r < 0.09 * ease) return "IBAN incorrecto. Corrige y reintenta.";
     }
     return null;
   }
@@ -5635,25 +5780,6 @@ try {
     const next = Math.max(0, (ps.tendered[denomId] || 0) + delta);
     ps.tendered[denomId] = next;
     ps.error = null;
-    return state2;
-  }
-  function confirmTender(state2) {
-    const ps = state2.ui.paymentSession;
-    if (!ps) return state2;
-    const given = countTotalCents(ps.tendered);
-    if (given < ps.totalCents) {
-      ps.error = `Falta dinero. Entregado ${formatEuro(given)}, total ${formatEuro(ps.totalCents)}.`;
-      return state2;
-    }
-    const changeNeeded = given - ps.totalCents;
-    ps.changeNeededCents = changeNeeded;
-    const suggestion = makeChange(state2.finance.drawer, changeNeeded);
-    ps.changeGiven = suggestion || emptyDrawer();
-    ps.step = "cash-change";
-    ps.error = null;
-    if (!suggestion && changeNeeded > 0) {
-      ps.error = "No hay suficiente cambio en caja para la sugerencia. Elige el cambio a mano.";
-    }
     return state2;
   }
   function adjustChange(state2, denomId, delta) {
@@ -10134,7 +10260,7 @@ ${xrefPos}
       maybeStartMusic();
       state.ui.screen = "counter";
       lastAutosaveRealMs = Date.now();
-      showToast("Bienvenida, Miriam. Versi\xF3n 1.2: casillas por n\xFAmero en cada loter\xEDa.");
+      showToast("Bienvenida, Miriam. Versi\xF3n 1.3: el cliente elige c\xF3mo pagar; en efectivo t\xFA das el cambio.");
       needsFullRender = true;
       render();
     };
@@ -11640,55 +11766,97 @@ ${xrefPos}
       }
     });
   }
+  function tenderReadonlyHTML(tendered) {
+    const parts = [...BILLS, ...COINS].filter((d) => (tendered[d.id] || 0) > 0).map((d) => `${d.label} \xD7${tendered[d.id]}`);
+    if (!parts.length) return '<p class="muted">Sin dinero entregado.</p>';
+    return `<div class="tender-readonly">
+    <div class="tender-readonly-title">El cliente entrega</div>
+    <div class="tender-chips">${parts.map((p) => `<span class="tender-chip">${escapeHtml2(p)}</span>`).join("")}</div>
+    <div class="total-box" style="margin-top:8px">Total entregado<strong>${formatEuro(countTotalCents(tendered))}</strong></div>
+  </div>`;
+  }
+  function clientMethodSwitchHTML(current) {
+    const methods = [
+      ["cash", "Efectivo"],
+      ["card", "Tarjeta"],
+      ["bizum", "Bizum"],
+      ["transfer", "Transferencia"]
+    ];
+    return `<div class="client-switch-pay" style="margin-top:14px">
+    <p class="muted" style="margin:0 0 6px">Si el cliente cambia de idea o falla el cobro:</p>
+    <div class="actions" style="flex-wrap:wrap">
+      ${methods.filter(([id]) => id !== current).map(([id, label]) => `<button class="btn ghost" data-client-method="${id}">Paga con ${label}</button>`).join("")}
+    </div>
+  </div>`;
+  }
   function renderCash() {
     const ps = state.ui.paymentSession;
     if (!ps) {
       state.ui.screen = "counter";
       return render();
     }
-    const tendered = countTotalCents(ps.tendered);
+    const tendered = countTotalCents(ps.tendered || {});
     const changeSum = countTotalCents(ps.changeGiven || {});
     let body = "";
-    if (ps.step === "method") {
+    let title = "Caja";
+    if (ps.step === "electronic") {
+      title = `Cobro \xB7 ${payLabel(ps.method)}`;
       body = `
-      <p>Cliente: <strong>${escapeHtml2(ps.clientName)}</strong> \xB7 Prefiere ${payLabel(ps.preferredPayment)}</p>
+      <div class="pay-window pay-electronic">
+        <p><strong>${escapeHtml2(ps.clientName)}</strong> ha decidido pagar con <strong>${payLabel(ps.method)}</strong>.</p>
+        <div class="totals" style="margin:12px 0">
+          <div class="total-box">Total<strong>${formatEuro(ps.totalCents)}</strong></div>
+        </div>
+        <p class="muted">Pulsa para procesar el cobro en el TPV / app.</p>
+        <div class="actions">
+          <button class="btn primary" id="btn-confirm-electronic">Cobrar con ${payLabel(ps.method)}</button>
+          <button class="btn danger" id="btn-cancel-pay">Cancelar</button>
+        </div>
+        ${clientMethodSwitchHTML(ps.method)}
+      </div>`;
+    } else if (ps.step === "cash-change") {
+      title = "Cobro \xB7 Efectivo";
+      const need = ps.changeNeededCents || 0;
+      body = `
+      <div class="pay-window pay-cash">
+        <p><strong>${escapeHtml2(ps.clientName)}</strong> paga en efectivo. Ya ha puesto el dinero en el mostrador.</p>
+        <div class="totals" style="margin:12px 0">
+          <div class="total-box">A cobrar<strong>${formatEuro(ps.totalCents)}</strong></div>
+          <div class="total-box">Entregado<strong>${formatEuro(tendered)}</strong></div>
+          <div class="total-box">Cambio a dar<strong>${formatEuro(need)}</strong></div>
+        </div>
+        ${tenderReadonlyHTML(ps.tendered || {})}
+        ${need > 0 ? `<h3 style="margin-top:16px">Tu turno: calcula el cambio</h3>
+               <p class="muted">Debes devolver exactamente ${formatEuro(need)}. Usa la caja (sin ayuda autom\xE1tica).</p>
+               <div class="totals">
+                 <div class="total-box">A devolver<strong>${formatEuro(need)}</strong></div>
+                 <div class="total-box">Tu selecci\xF3n<strong>${formatEuro(changeSum)}</strong></div>
+                 <div class="total-box">En caja<strong>${formatEuro(drawerTotalCents(state.finance.drawer))}</strong></div>
+               </div>
+               <p class="muted cash-keys-hint">Atajos: 1\u20137 billetes \xB7 Q\u2013I monedas \xB7 Shift=restar \xB7 Enter=confirmar</p>
+               ${denomEditor("change")}` : `<div class="alert-banner" style="margin-top:12px"><strong>Importe exacto</strong> \u2014 no hay cambio que devolver.</div>`}
+        <div class="actions" style="margin-top:12px">
+          <button class="btn primary" id="btn-confirm-change">${need > 0 ? "Confirmar cobro y cambio" : "Confirmar cobro"}</button>
+          <button class="btn danger" id="btn-cancel-pay">Cancelar</button>
+        </div>
+        ${clientMethodSwitchHTML("cash")}
+      </div>`;
+    } else if (ps.step === "method") {
+      title = "Cobro \xB7 \xBFC\xF3mo paga?";
+      body = `
+      <p>Cliente: <strong>${escapeHtml2(ps.clientName)}</strong></p>
+      <p class="muted">El cliente decide c\xF3mo pagar:</p>
       <div class="totals" style="margin:12px 0">
         <div class="total-box">Total a cobrar<strong>${formatEuro(ps.totalCents)}</strong></div>
       </div>
       <div class="method-grid">
-        <button class="btn primary" data-method="cash">Efectivo</button>
-        <button class="btn" data-method="card">Tarjeta</button>
-        <button class="btn" data-method="bizum">Bizum</button>
-        <button class="btn" data-method="transfer">Transferencia</button>
-      </div>`;
-    } else if (ps.step === "cash-tender") {
-      body = `
-      <p>Marca lo que entrega el cliente.</p>
-      <div class="totals">
-        <div class="total-box">A cobrar<strong>${formatEuro(ps.totalCents)}</strong></div>
-        <div class="total-box">Entregado<strong>${formatEuro(tendered)}</strong></div>
-        <div class="total-box">Cambio<strong>${formatEuro(Math.max(0, tendered - ps.totalCents))}</strong></div>
-      </div>
-      ${denomEditor("tender")}
-      <div class="actions" style="margin-top:12px">
-        <button class="btn primary" id="btn-confirm-tender">Continuar al cambio</button>
-        <button class="btn danger" id="btn-cancel-pay">Cancelar</button>
-      </div>`;
-    } else if (ps.step === "cash-change") {
-      body = `
-      <p>Elige el cambio exacto.</p>
-      <div class="totals">
-        <div class="total-box">A devolver<strong>${formatEuro(ps.changeNeededCents || 0)}</strong></div>
-        <div class="total-box">Selecci\xF3n<strong>${formatEuro(changeSum)}</strong></div>
-        <div class="total-box">En caja<strong>${formatEuro(drawerTotalCents(state.finance.drawer))}</strong></div>
-      </div>
-      ${denomEditor("change")}
-      <div class="actions" style="margin-top:12px">
-        <button class="btn primary" id="btn-confirm-change">Confirmar cobro</button>
-        <button class="btn" id="btn-back-tender">Volver</button>
-        <button class="btn danger" id="btn-cancel-pay">Cancelar</button>
+        <button class="btn primary" data-client-method="cash">Efectivo</button>
+        <button class="btn" data-client-method="card">Tarjeta</button>
+        <button class="btn" data-client-method="bizum">Bizum</button>
+        <button class="btn" data-client-method="transfer">Transferencia</button>
       </div>`;
     } else if (ps.step === "done") {
+      title = "Cobro completado";
       const tickets = ps.createdTickets || [];
       body = `
       <div class="hero-counter">
@@ -11711,10 +11879,9 @@ ${xrefPos}
     app.innerHTML = `
     <div class="shell">
       ${topbarHTML()}
-      <div class="panel cash-screen" style="margin-top:16px">
-        <h2>Caja</h2>
+      <div class="panel cash-screen pay-${escapeHtml2(ps.method || "cash")}" style="margin-top:16px">
+        <h2>${escapeHtml2(title)}</h2>
         <div class="muted">${ps.items.map((i) => `${i.name} \xD7${i.qty}`).join(" \xB7 ")}</div>
-        ${ps.step === "cash-tender" || ps.step === "cash-change" ? `<p class="muted cash-keys-hint">Atajos: 1\u20137 billetes (5\u2013500\u20AC) \xB7 Q\u2013I monedas (2\u20AC\u21921c) \xB7 Shift=restar \xB7 Enter=continuar</p>` : ""}
         ${ps.error ? `<div class="error-box" style="margin:10px 0">${escapeHtml2(ps.error)}</div>` : ""}
         ${body}
       </div>
@@ -11723,14 +11890,20 @@ ${xrefPos}
   `;
     bindTopbar();
     ensureCashKeyboard();
+    app.querySelectorAll("[data-client-method]").forEach((btn) => {
+      btn.onclick = () => {
+        var _a;
+        clientSwitchPayment(state, btn.getAttribute("data-client-method"));
+        if (((_a = state.ui.paymentSession) == null ? void 0 : _a.step) === "cash-change") sfx.drawerOpen();
+        else sfx.click();
+        if (state.ui.toast) showToast(state.ui.toast);
+        needsFullRender = true;
+        render();
+      };
+    });
     app.querySelectorAll("[data-method]").forEach((btn) => {
       btn.onclick = () => {
-        var _a, _b, _c, _d, _e;
-        const before = (_a = state.ui.paymentSession) == null ? void 0 : _a.step;
-        selectPaymentMethod(state, btn.getAttribute("data-method"));
-        if (((_b = state.ui.paymentSession) == null ? void 0 : _b.error) && ((_c = state.ui.paymentSession) == null ? void 0 : _c.step) === "method") sfx.deny();
-        else if (((_d = state.ui.paymentSession) == null ? void 0 : _d.step) === "done") sfx.cash();
-        else if (before === "method" && ((_e = state.ui.paymentSession) == null ? void 0 : _e.method) === "cash") sfx.drawerOpen();
+        clientSwitchPayment(state, btn.getAttribute("data-method"));
         sfx.click();
         if (state.ui.toast) showToast(state.ui.toast);
         needsFullRender = true;
@@ -11742,6 +11915,7 @@ ${xrefPos}
         const kind = btn.getAttribute("data-adj");
         const id = btn.getAttribute("data-id");
         const delta = Number(btn.getAttribute("data-delta"));
+        if (kind === "tender" && ps.tenderLocked) return;
         if (kind === "tender") adjustTender(state, id, delta);
         else adjustChange(state, id, delta);
         sfx.click();
@@ -11749,17 +11923,21 @@ ${xrefPos}
         render();
       };
     });
-    const ct = document.getElementById("btn-confirm-tender");
-    if (ct)
-      ct.onclick = () => {
-        var _a;
-        confirmTender(state);
-        ((_a = state.ui.paymentSession) == null ? void 0 : _a.error) ? sfx.error() : sfx.scan();
+    const elec = document.getElementById("btn-confirm-electronic");
+    if (elec) {
+      elec.onclick = () => {
+        var _a, _b;
+        confirmElectronicPayment(state);
+        if (((_a = state.ui.paymentSession) == null ? void 0 : _a.step) === "done") sfx.cash();
+        else if ((_b = state.ui.paymentSession) == null ? void 0 : _b.error) sfx.deny();
+        else sfx.click();
+        if (state.ui.toast) showToast(state.ui.toast);
         needsFullRender = true;
         render();
       };
+    }
     const cc = document.getElementById("btn-confirm-change");
-    if (cc)
+    if (cc) {
       cc.onclick = () => {
         var _a;
         confirmChange(state);
@@ -11771,31 +11949,26 @@ ${xrefPos}
         needsFullRender = true;
         render();
       };
-    const back = document.getElementById("btn-back-tender");
-    if (back)
-      back.onclick = () => {
-        state.ui.paymentSession.step = "cash-tender";
-        state.ui.paymentSession.error = null;
-        needsFullRender = true;
-        render();
-      };
+    }
     const cancel = document.getElementById("btn-cancel-pay");
-    if (cancel)
+    if (cancel) {
       cancel.onclick = () => {
         cancelPayment(state);
         needsFullRender = true;
         render();
       };
+    }
     const next = document.getElementById("btn-next-client");
-    if (next)
+    if (next) {
       next.onclick = () => {
         closePaymentSession(state);
         sfx.success();
         needsFullRender = true;
         render();
       };
+    }
     const pdfSale = document.getElementById("btn-pdf-sale");
-    if (pdfSale)
+    if (pdfSale) {
       pdfSale.onclick = () => {
         downloadSaleReceiptPdf({
           items: ps.items,
@@ -11804,15 +11977,18 @@ ${xrefPos}
           method: payLabel(ps.method),
           tickets: ps.createdTickets
         });
-        sfx.click();
+        sfx.printer();
         showToast("PDF de venta descargado");
       };
+    }
     app.querySelectorAll("[data-pdf]").forEach((btn) => {
       btn.onclick = () => {
         const id = btn.getAttribute("data-pdf");
         const t = (ps.createdTickets || []).find((x) => x.id === id);
-        if (t) downloadTicketPdf(t);
-        sfx.click();
+        if (t) {
+          downloadTicketPdf(t);
+          sfx.printer();
+        }
       };
     });
   }
@@ -11840,36 +12016,30 @@ ${xrefPos}
       i: "c1"
     };
     document.addEventListener("keydown", (ev) => {
-      var _a, _b, _c, _d, _e;
+      var _a, _b, _c, _d;
       if (!state || state.ui.screen !== "cash") return;
       const ps = state.ui.paymentSession;
-      if (!ps || ps.step !== "cash-tender" && ps.step !== "cash-change") return;
+      if (!ps || ps.step !== "cash-change") return;
       const tag = (((_a = ev.target) == null ? void 0 : _a.tagName) || "").toLowerCase();
       if (tag === "input" || tag === "textarea") return;
       if (ev.key === "Enter") {
         ev.preventDefault();
-        if (ps.step === "cash-tender") {
-          confirmTender(state);
-          ((_b = state.ui.paymentSession) == null ? void 0 : _b.error) ? sfx.error() : sfx.scan();
-        } else {
-          confirmChange(state);
-          if ((_c = state.ui.paymentSession) == null ? void 0 : _c.error) sfx.error();
-          else {
-            sfx.cash();
-            if (state.ui.toast) showToast(state.ui.toast);
-          }
+        confirmChange(state);
+        if ((_b = state.ui.paymentSession) == null ? void 0 : _b.error) sfx.error();
+        else {
+          sfx.cash();
+          if (state.ui.toast) showToast(state.ui.toast);
         }
         needsFullRender = true;
         render();
         return;
       }
-      const k = ((_e = (_d = ev.key) == null ? void 0 : _d.toLowerCase) == null ? void 0 : _e.call(_d)) || "";
+      const k = ((_d = (_c = ev.key) == null ? void 0 : _c.toLowerCase) == null ? void 0 : _d.call(_c)) || "";
       const denomId = BILL_KEYS[ev.key] || COIN_KEYS[k];
       if (!denomId) return;
       ev.preventDefault();
       const delta = ev.shiftKey ? -1 : 1;
-      if (ps.step === "cash-tender") adjustTender(state, denomId, delta);
-      else adjustChange(state, denomId, delta);
+      adjustChange(state, denomId, delta);
       sfx.click();
       needsFullRender = true;
       render();

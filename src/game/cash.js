@@ -1,5 +1,7 @@
 import {
   ALL_DENOMS,
+  BILLS,
+  COINS,
   countTotalCents,
   addToDrawer,
   removeFromDrawer,
@@ -10,85 +12,220 @@ import {
 } from '../data/money.js';
 import { getProduct } from '../data/products.js';
 import { createTicketsFromSale } from './tickets.js';
+import { hashSeed, mulberry32 } from './rng.js';
 
 export { formatEuro, ALL_DENOMS, emptyDrawer, drawerTotalCents, countTotalCents };
 
 /**
- * Inicia sesión de cobro en mostrador.
- * items: [{ productId, qty, unitCents }]
+ * Inicia sesión de cobro. El CLIENTE decide el método → se abre su ventana.
+ * En efectivo: el cliente entrega el dinero solo; Miriam solo calcula el cambio.
  */
 export function startPayment(state, { items, client, purpose = 'sale' }) {
   const totalCents = items.reduce((s, i) => s + i.unitCents * i.qty, 0);
+  const method = resolveClientPaymentMethod(client);
   state.ui.paymentSession = {
     purpose,
     clientId: client?.id || null,
     clientName: client?.name || 'Cliente',
-    preferredPayment: client?.prefersPayment || 'cash',
+    preferredPayment: method,
+    clientChose: true,
     items,
     totalCents,
-    method: null, // cash | card | bizum | transfer
-    tendered: emptyDrawer(), // lo que da el cliente
-    changeGiven: emptyDrawer(), // lo que eliges devolver
-    step: 'method', // method | cash-tender | cash-change | done
+    method,
+    tendered: emptyDrawer(),
+    changeGiven: emptyDrawer(),
+    changeNeededCents: 0,
+    tenderLocked: false,
+    step: 'method', // se sustituye abajo
     error: null,
+    failCount: 0,
   };
   state.ui.screen = 'cash';
+  openClientPaymentWindow(state);
   return state;
 }
 
-export function selectPaymentMethod(state, method) {
+/** Método que elige el cliente para esta venta (su preferencia). */
+function resolveClientPaymentMethod(client) {
+  const m = client?.prefersPayment;
+  if (['cash', 'card', 'bizum', 'transfer'].includes(m)) return m;
+  return 'cash';
+}
+
+/**
+ * Abre la ventana según cómo paga el cliente.
+ * cash → entrega automática + pantalla de cambio
+ * card/bizum/transfer → pantalla electrónica de confirmación
+ */
+export function openClientPaymentWindow(state) {
   const ps = state.ui.paymentSession;
   if (!ps) return state;
+  const method = ps.method || ps.preferredPayment || 'cash';
   ps.method = method;
   ps.error = null;
+
   if (method === 'cash') {
-    ps.step = 'cash-tender';
-    ps.tendered = emptyDrawer();
+    const rng = mulberry32(
+      hashSeed('tender', state.clock.gameTimeMs, ps.clientId || 'x', ps.totalCents),
+    );
+    ps.tendered = generateClientTender(ps.totalCents, rng);
+    ps.tenderLocked = true;
+    const given = countTotalCents(ps.tendered);
+    ps.changeNeededCents = Math.max(0, given - ps.totalCents);
+    // Miriam calcula el cambio a mano: sin sugerencia automática
     ps.changeGiven = emptyDrawer();
+    ps.step = 'cash-change';
+    state.ui.toast =
+      ps.changeNeededCents > 0
+        ? `${ps.clientName} entrega ${formatEuro(given)}. Calcula el cambio.`
+        : `${ps.clientName} entrega el importe exacto.`;
   } else {
-    // Fallos realistas de cobro electrónico
-    const fail = rollPaymentFailure(method, ps.totalCents);
-    if (fail) {
-      ps.method = null;
-      ps.step = 'method';
-      ps.error = fail;
-      ps.failCount = (ps.failCount || 0) + 1;
-      state.finance.paymentFailsToday = (state.finance.paymentFailsToday || 0) + 1;
-      state.dayLog.push({
-        at: state.clock.gameTimeMs,
-        text: `Cobro fallido (${labelMethod(method)}): ${fail}`,
-      });
-      state.ui.toast = fail;
-      return state;
-    }
-    completeNonCash(state);
+    ps.tenderLocked = false;
+    ps.step = 'electronic';
+    state.ui.toast = `${ps.clientName} quiere pagar con ${labelMethod(method)}.`;
   }
   return state;
+}
+
+/**
+ * El cliente cambia de forma de pago (p. ej. tras un fallo electrónico).
+ */
+export function clientSwitchPayment(state, method) {
+  const ps = state.ui.paymentSession;
+  if (!ps) return state;
+  if (!['cash', 'card', 'bizum', 'transfer'].includes(method)) return state;
+  ps.preferredPayment = method;
+  ps.method = method;
+  ps.failCount = ps.failCount || 0;
+  return openClientPaymentWindow(state);
+}
+
+/** Miriam confirma el cobro electrónico que eligió el cliente. */
+export function confirmElectronicPayment(state) {
+  const ps = state.ui.paymentSession;
+  if (!ps || ps.step !== 'electronic') return state;
+  const method = ps.method;
+  const fail = rollPaymentFailure(method, ps.totalCents, ps.failCount || 0);
+  if (fail) {
+    ps.failCount = (ps.failCount || 0) + 1;
+    ps.error = fail;
+    state.finance.paymentFailsToday = (state.finance.paymentFailsToday || 0) + 1;
+    state.dayLog.push({
+      at: state.clock.gameTimeMs,
+      text: `Cobro fallido (${labelMethod(method)}): ${fail}`,
+    });
+    state.ui.toast = fail;
+    // Permanece en electronic; el cliente puede probar otra forma
+    return state;
+  }
+  completeNonCash(state);
+  return state;
+}
+
+/**
+ * Compat: si se llama selectPaymentMethod, es el cliente quien cambia de vía.
+ */
+export function selectPaymentMethod(state, method) {
+  return clientSwitchPayment(state, method);
+}
+
+/**
+ * Genera lo que entrega el cliente en efectivo (≥ total).
+ * Suele pagar con billetes redondos; a veces exacto.
+ */
+export function generateClientTender(totalCents, rng = Math.random) {
+  const result = emptyDrawer();
+  if (totalCents <= 0) return result;
+
+  const r = typeof rng === 'function' ? rng : () => Math.random();
+  let payCents = totalCents;
+
+  // ~25% entrega exacta si es razonable
+  const exactOk = totalCents <= 10000 || totalCents % 100 === 0;
+  if (exactOk && r() < 0.25) {
+    payCents = totalCents;
+  } else {
+    // Redondear al alza a un billete/cantidad típica
+    const ceilings = [100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000];
+    let chosen = null;
+    for (const c of ceilings) {
+      if (c >= totalCents) {
+        chosen = c;
+        break;
+      }
+    }
+    if (!chosen) {
+      // Totales grandes: 1–3 billetes de 50/100/200
+      chosen = Math.ceil(totalCents / 10000) * 10000;
+    }
+    // A veces pagan “de más” con el siguiente techo
+    if (r() < 0.2 && chosen < 50000) {
+      const idx = ceilings.indexOf(chosen);
+      if (idx >= 0 && idx < ceilings.length - 1 && ceilings[idx + 1] >= totalCents) {
+        chosen = ceilings[idx + 1];
+      }
+    }
+    payCents = Math.max(totalCents, chosen);
+  }
+
+  // Componer payCents con pocas piezas grandes (como entrega un cliente)
+  let remaining = payCents;
+  const denoms = [...BILLS, ...COINS].sort((a, b) => b.cents - a.cents);
+  for (const d of denoms) {
+    if (remaining <= 0) break;
+    // Evitar llenar de monedas pequeñas salvo lo necesario
+    if (d.kind === 'coin' && remaining >= 500 && d.cents < 100) continue;
+    const n = Math.floor(remaining / d.cents);
+    if (n <= 0) continue;
+    // Como mucho unas pocas piezas de cada billete
+    const take = d.kind === 'bill' ? Math.min(n, d.cents >= 10000 ? 2 : 4) : Math.min(n, 8);
+    if (take > 0) {
+      result[d.id] = (result[d.id] || 0) + take;
+      remaining -= take * d.cents;
+    }
+  }
+  // Ajuste final con monedas si falta
+  if (remaining > 0) {
+    for (const d of [...COINS].sort((a, b) => b.cents - a.cents)) {
+      const n = Math.floor(remaining / d.cents);
+      if (n > 0) {
+        result[d.id] = (result[d.id] || 0) + n;
+        remaining -= n * d.cents;
+      }
+    }
+  }
+  // Garantía: nunca menos que el total
+  if (countTotalCents(result) < totalCents) {
+    result.b50 = (result.b50 || 0) + Math.ceil((totalCents - countTotalCents(result)) / 5000);
+  }
+  return result;
 }
 
 /** Simula rechazos de tarjeta / Bizum / transferencia */
-function rollPaymentFailure(method, totalCents) {
+function rollPaymentFailure(method, totalCents, failCount = 0) {
+  // Tras varios fallos, baja la probabilidad (el cliente insiste)
+  const ease = Math.max(0.35, 1 - failCount * 0.25);
   const r = Math.random();
   if (method === 'card') {
-    if (r < 0.08) return 'Tarjeta rechazada: contacte con su banco.';
-    if (r < 0.12) return 'TPV sin cobertura. Prueba otra vez o efectivo.';
-    if (r < 0.15 && totalCents >= 10000) return 'Tarjeta denegada por límite.';
+    if (r < 0.08 * ease) return 'Tarjeta rechazada: contacte con su banco.';
+    if (r < 0.12 * ease) return 'TPV sin cobertura. Prueba otra vez o efectivo.';
+    if (r < 0.15 * ease && totalCents >= 10000) return 'Tarjeta denegada por límite.';
   }
   if (method === 'bizum') {
-    if (r < 0.1) return 'Bizum no recibido. El cliente debe repetir el envío.';
-    if (r < 0.14) return 'Bizum: usuario no encontrado. Revisa el móvil.';
-    if (r < 0.17) return 'Bizum caducado. Pide uno nuevo.';
+    if (r < 0.1 * ease) return 'Bizum no recibido. El cliente debe repetir el envío.';
+    if (r < 0.14 * ease) return 'Bizum: usuario no encontrado. Revisa el móvil.';
+    if (r < 0.17 * ease) return 'Bizum caducado. Pide uno nuevo.';
   }
   if (method === 'transfer') {
-    if (r < 0.06) return 'Transferencia no llegada. Espera o cobra en efectivo.';
-    if (r < 0.09) return 'IBAN incorrecto. Corrige y reintenta.';
+    if (r < 0.06 * ease) return 'Transferencia no llegada. Espera o cobra en efectivo.';
+    if (r < 0.09 * ease) return 'IBAN incorrecto. Corrige y reintenta.';
   }
   return null;
 }
 
-/** Reintento manual tras fallo (misma vía) */
+/** Reintento manual tras fallo (misma vía o otra) */
 export function retryPaymentMethod(state, method) {
-  return selectPaymentMethod(state, method);
+  return clientSwitchPayment(state, method || state.ui.paymentSession?.method || 'cash');
 }
 
 function completeNonCash(state) {
@@ -108,6 +245,7 @@ export function adjustTender(state, denomId, delta) {
   return state;
 }
 
+/** @deprecated El cliente ya entrega solo; se mantiene por compat. */
 export function confirmTender(state) {
   const ps = state.ui.paymentSession;
   if (!ps) return state;
@@ -116,16 +254,10 @@ export function confirmTender(state) {
     ps.error = `Falta dinero. Entregado ${formatEuro(given)}, total ${formatEuro(ps.totalCents)}.`;
     return state;
   }
-  const changeNeeded = given - ps.totalCents;
-  ps.changeNeededCents = changeNeeded;
-  // Sugerencia automática (opcional, el jugador puede editar)
-  const suggestion = makeChange(state.finance.drawer, changeNeeded);
-  ps.changeGiven = suggestion || emptyDrawer();
+  ps.changeNeededCents = given - ps.totalCents;
+  ps.changeGiven = emptyDrawer(); // Miriam calcula a mano
   ps.step = 'cash-change';
   ps.error = null;
-  if (!suggestion && changeNeeded > 0) {
-    ps.error = 'No hay suficiente cambio en caja para la sugerencia. Elige el cambio a mano.';
-  }
   return state;
 }
 

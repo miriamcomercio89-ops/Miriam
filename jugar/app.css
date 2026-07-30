@@ -1914,3 +1914,60 @@ select {
   height: 38px;
   font-size: 1.05rem;
 }
+.pay-window.pay-cash {
+  border-left: 4px solid var(--accent);
+  padding-left: 12px;
+}
+.pay-window.pay-electronic {
+  border-left: 4px solid var(--sky);
+  padding-left: 12px;
+}
+.tender-readonly {
+  margin-top: 10px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(240, 162, 2, 0.14),
+      rgba(12, 138, 138, 0.08));
+  border: 1px solid rgba(240, 162, 2, 0.4);
+}
+.tender-readonly-title {
+  font-weight: 800;
+  color: var(--accent-ink);
+  margin-bottom: 8px;
+}
+.tender-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.tender-chip {
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid rgba(240, 162, 2, 0.45);
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+.cash-screen.pay-card,
+.cash-screen.pay-bizum,
+.cash-screen.pay-transfer {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(58, 168, 193, 0.08),
+      var(--panel));
+}
+.cash-screen.pay-cash {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(240, 162, 2, 0.1),
+      var(--panel));
+}
+.client-switch-pay {
+  padding-top: 8px;
+  border-top: 1px dashed var(--line);
+}
