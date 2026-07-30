@@ -1,0 +1,7 @@
+ABRE EL ARCHIVO:
+
+  LOTERIAS-ALORA.html
+
+(doble clic)
+
+No abras index.html — ese es solo para programadores y sale en blanco.
