@@ -186,10 +186,12 @@
 
   // src/data/products.js
   var PRODUCTS = [
+    // ——— LAE ———
     {
       id: "lae-nacional",
       name: "Loter\xEDa Nacional",
       org: "LAE",
+      tpvCategory: "LAE",
       category: "sorteo",
       priceCents: 3e3,
       commissionRate: 0.04,
@@ -198,12 +200,32 @@
       orderDays: 2,
       stockType: "physical",
       checkable: true,
-      description: "D\xE9cimos de Loter\xEDa Nacional (jueves y s\xE1bado)."
+      needsNumbers: true,
+      numberMode: "nacional",
+      description: "D\xE9cimos jueves y s\xE1bado."
+    },
+    {
+      id: "lae-nacional-jueves",
+      name: "Nacional (solo jueves)",
+      org: "LAE",
+      tpvCategory: "LAE",
+      category: "sorteo",
+      priceCents: 3e3,
+      commissionRate: 0.04,
+      drawDays: [4],
+      drawHour: 21,
+      orderDays: 2,
+      stockType: "physical",
+      checkable: true,
+      needsNumbers: true,
+      numberMode: "nacional",
+      description: "D\xE9cimo del sorteo del jueves."
     },
     {
       id: "lae-navidad",
       name: "Sorteo de Navidad",
       org: "LAE",
+      tpvCategory: "LAE",
       category: "especial",
       priceCents: 2e4,
       commissionRate: 0.04,
@@ -212,12 +234,15 @@
       orderDays: 3,
       stockType: "physical",
       checkable: true,
-      description: "El Gordo de Navidad (20 \u20AC el d\xE9cimo)."
+      needsNumbers: true,
+      numberMode: "nacional",
+      description: "El Gordo de Navidad."
     },
     {
       id: "lae-nino",
       name: "Sorteo del Ni\xF1o",
       org: "LAE",
+      tpvCategory: "LAE",
       category: "especial",
       priceCents: 2e4,
       commissionRate: 0.04,
@@ -226,12 +251,15 @@
       orderDays: 3,
       stockType: "physical",
       checkable: true,
-      description: "Sorteo Extraordinario del Ni\xF1o."
+      needsNumbers: true,
+      numberMode: "nacional",
+      description: "Sorteo del Ni\xF1o."
     },
     {
       id: "lae-primitiva",
       name: "La Primitiva",
       org: "LAE",
+      tpvCategory: "LAE",
       category: "sorteo",
       priceCents: 100,
       commissionRate: 0.055,
@@ -240,13 +268,16 @@
       orderDays: 0,
       stockType: "terminal",
       checkable: true,
-      description: "6 n\xFAmeros del 1 al 49 + reintegro. Mi\xE9rcoles y s\xE1bado.",
+      needsNumbers: true,
+      numberMode: "6from49",
+      description: "6/49 + reintegro.",
       bet: { pick: 6, from: 49, reintegro: true }
     },
     {
       id: "lae-bonoloto",
       name: "Bonoloto",
       org: "LAE",
+      tpvCategory: "LAE",
       category: "sorteo",
       priceCents: 50,
       commissionRate: 0.055,
@@ -255,13 +286,16 @@
       orderDays: 0,
       stockType: "terminal",
       checkable: true,
-      description: "6/49 de lunes a s\xE1bado. Precio 0,50 \u20AC.",
+      needsNumbers: true,
+      numberMode: "6from49",
+      description: "6/49 L\u2013S.",
       bet: { pick: 6, from: 49, reintegro: true }
     },
     {
       id: "lae-euromillones",
       name: "Euromillones",
       org: "LAE",
+      tpvCategory: "LAE",
       category: "sorteo",
       priceCents: 250,
       commissionRate: 0.055,
@@ -270,13 +304,86 @@
       orderDays: 0,
       stockType: "terminal",
       checkable: true,
-      description: "5/50 + 2 estrellas. Martes y viernes. 2,50 \u20AC.",
+      needsNumbers: true,
+      numberMode: "euro",
+      description: "5/50 + 2 estrellas.",
       bet: { pickMain: 5, fromMain: 50, pickStars: 2, fromStars: 12 }
     },
+    {
+      id: "lae-gordo-primitiva",
+      name: "El Gordo de la Primitiva",
+      org: "LAE",
+      tpvCategory: "LAE",
+      category: "sorteo",
+      priceCents: 150,
+      commissionRate: 0.055,
+      drawDays: [0],
+      drawHour: 21,
+      orderDays: 0,
+      stockType: "terminal",
+      checkable: true,
+      needsNumbers: true,
+      numberMode: "gordo",
+      description: "5/54 + clave. Domingos.",
+      bet: { pick: 5, from: 54, claveFrom: 9 }
+    },
+    {
+      id: "lae-quiniela",
+      name: "La Quiniela",
+      org: "LAE",
+      tpvCategory: "LAE",
+      category: "apuestas",
+      priceCents: 75,
+      commissionRate: 0.06,
+      drawDays: [0],
+      drawHour: 22,
+      orderDays: 0,
+      stockType: "terminal",
+      checkable: true,
+      needsNumbers: true,
+      numberMode: "quiniela",
+      description: "14 partidos 1X2 + pleno al 15."
+    },
+    {
+      id: "lae-quinigol",
+      name: "Quinigol",
+      org: "LAE",
+      tpvCategory: "LAE",
+      category: "apuestas",
+      priceCents: 100,
+      commissionRate: 0.06,
+      drawDays: [0],
+      drawHour: 22,
+      orderDays: 0,
+      stockType: "terminal",
+      checkable: true,
+      needsNumbers: true,
+      numberMode: "quinigol",
+      description: "Goles 0/1/2/M en 6 partidos."
+    },
+    {
+      id: "lae-lototurf",
+      name: "Lototurf",
+      org: "LAE",
+      tpvCategory: "LAE",
+      category: "apuestas",
+      priceCents: 100,
+      commissionRate: 0.06,
+      drawDays: [0],
+      drawHour: 21,
+      orderDays: 0,
+      stockType: "terminal",
+      checkable: true,
+      needsNumbers: true,
+      numberMode: "lototurf",
+      description: "Loter\xEDa + h\xEDpica."
+    },
+    // ——— ONCE ———
     {
       id: "once-cupon",
       name: "Cup\xF3n Diario ONCE",
       org: "ONCE",
+      tpvCategory: "ONCE",
       category: "sorteo",
       priceCents: 200,
       commissionRate: 0.05,
@@ -285,13 +392,101 @@
       orderDays: 1,
       stockType: "physical",
       checkable: true,
-      description: "Cup\xF3n ordinario de lunes a viernes."
+      needsNumbers: true,
+      numberMode: "nacional",
+      description: "Cup\xF3n L\u2013V."
     },
-    // Inventadas
+    {
+      id: "once-cuponazo",
+      name: "Cuponazo ONCE",
+      org: "ONCE",
+      tpvCategory: "ONCE",
+      category: "especial",
+      priceCents: 500,
+      commissionRate: 0.05,
+      drawDays: [5],
+      drawHour: 21,
+      orderDays: 1,
+      stockType: "physical",
+      checkable: true,
+      needsNumbers: true,
+      numberMode: "nacional",
+      description: "Viernes especial."
+    },
+    {
+      id: "once-sueldazo",
+      name: "Sueldazo Fin de Semana",
+      org: "ONCE",
+      tpvCategory: "ONCE",
+      category: "especial",
+      priceCents: 300,
+      commissionRate: 0.05,
+      drawDays: [0],
+      drawHour: 21,
+      orderDays: 1,
+      stockType: "physical",
+      checkable: true,
+      needsNumbers: true,
+      numberMode: "nacional",
+      description: "Sorteo dominical."
+    },
+    {
+      id: "once-eurojackpot",
+      name: "Eurojackpot",
+      org: "ONCE",
+      tpvCategory: "ONCE",
+      category: "sorteo",
+      priceCents: 200,
+      commissionRate: 0.05,
+      drawDays: [2, 5],
+      drawHour: 21,
+      orderDays: 0,
+      stockType: "terminal",
+      checkable: true,
+      needsNumbers: true,
+      numberMode: "eurojackpot",
+      description: "5/50 + 2/12."
+    },
+    {
+      id: "once-super-once",
+      name: "Super Once",
+      org: "ONCE",
+      tpvCategory: "ONCE",
+      category: "sorteo",
+      priceCents: 100,
+      commissionRate: 0.05,
+      drawDays: [1, 2, 3, 4, 5, 6, 0],
+      drawHour: 21,
+      orderDays: 0,
+      stockType: "terminal",
+      checkable: true,
+      needsNumbers: true,
+      numberMode: "superonce",
+      description: "Elige 5 n\xFAmeros del 1\u201349 (base)."
+    },
+    {
+      id: "once-triplex",
+      name: "Triplex",
+      org: "ONCE",
+      tpvCategory: "ONCE",
+      category: "sorteo",
+      priceCents: 50,
+      commissionRate: 0.05,
+      drawDays: [1, 2, 3, 4, 5, 6, 0],
+      drawHour: 21,
+      orderDays: 0,
+      stockType: "terminal",
+      checkable: true,
+      needsNumbers: true,
+      numberMode: "triplex",
+      description: "3 cifras."
+    },
+    // ——— Autonómicas / provinciales / locales inventadas ———
     {
       id: "and-fortuna",
       name: "Andaluc\xEDa Fortuna",
       org: "Auton\xF3mica",
+      tpvCategory: "Auton\xF3micas",
       category: "inventada",
       priceCents: 100,
       commissionRate: 0.08,
@@ -300,12 +495,49 @@
       orderDays: 2,
       stockType: "physical",
       checkable: true,
-      description: "Sorteo ficticio andaluz semanal."
+      needsNumbers: true,
+      numberMode: "5from40",
+      description: "Sorteo andaluz ficticio."
+    },
+    {
+      id: "and-olivo",
+      name: "El Olivo de la Suerte",
+      org: "Auton\xF3mica",
+      tpvCategory: "Auton\xF3micas",
+      category: "inventada",
+      priceCents: 150,
+      commissionRate: 0.08,
+      drawDays: [2],
+      drawHour: 20,
+      orderDays: 2,
+      stockType: "physical",
+      checkable: true,
+      needsNumbers: true,
+      numberMode: "5from40",
+      description: "Sorteo inventado andaluz."
+    },
+    {
+      id: "and-costa",
+      name: "Sorteo Costa del Sol",
+      org: "Auton\xF3mica",
+      tpvCategory: "Auton\xF3micas",
+      category: "inventada",
+      priceCents: 200,
+      commissionRate: 0.08,
+      drawDays: [6],
+      drawHour: 20,
+      orderDays: 2,
+      stockType: "physical",
+      checkable: true,
+      needsNumbers: true,
+      numberMode: "5from40",
+      description: "Bote regional ficticio."
     },
     {
       id: "mal-premio",
       name: "Premio M\xE1laga",
       org: "Provincial",
+      tpvCategory: "Provinciales",
       category: "inventada",
       priceCents: 100,
       commissionRate: 0.1,
@@ -314,12 +546,32 @@
       orderDays: 2,
       stockType: "physical",
       checkable: true,
-      description: "Loter\xEDa provincial inventada de M\xE1laga."
+      needsNumbers: true,
+      numberMode: "5from40",
+      description: "Provincial inventada."
+    },
+    {
+      id: "mal-axarquia",
+      name: "Axarqu\xEDa Premia",
+      org: "Provincial",
+      tpvCategory: "Provinciales",
+      category: "inventada",
+      priceCents: 100,
+      commissionRate: 0.1,
+      drawDays: [3],
+      drawHour: 20,
+      orderDays: 2,
+      stockType: "physical",
+      checkable: true,
+      needsNumbers: true,
+      numberMode: "5from40",
+      description: "Sorteo comarcal inventado."
     },
     {
       id: "alo-local",
       name: "\xC1lora Local",
       org: "Local",
+      tpvCategory: "Locales",
       category: "inventada",
       priceCents: 50,
       commissionRate: 0.12,
@@ -328,27 +580,89 @@
       orderDays: 1,
       stockType: "physical",
       checkable: true,
-      description: "Rifa local inventada de \xC1lora."
+      needsNumbers: true,
+      numberMode: "5from40",
+      description: "Rifa local \xC1lora."
     },
-    // 10 rascas
+    {
+      id: "alo-hoya",
+      name: "Hoya de M\xE1laga",
+      org: "Local",
+      tpvCategory: "Locales",
+      category: "inventada",
+      priceCents: 100,
+      commissionRate: 0.1,
+      drawDays: [3],
+      drawHour: 19,
+      orderDays: 2,
+      stockType: "physical",
+      checkable: true,
+      needsNumbers: true,
+      numberMode: "5from40",
+      description: "Sorteo del valle."
+    },
+    {
+      id: "alo-chorro",
+      name: "Suerte del Chorro",
+      org: "Local",
+      tpvCategory: "Locales",
+      category: "inventada",
+      priceCents: 100,
+      commissionRate: 0.12,
+      drawDays: [6],
+      drawHour: 19,
+      orderDays: 1,
+      stockType: "physical",
+      checkable: true,
+      needsNumbers: true,
+      numberMode: "5from40",
+      description: "Rifa tur\xEDstica local inventada."
+    },
+    // ——— Rascas ———
     ...SCRATCH_CARDS.map((c) => ({
       ...c,
+      tpvCategory: "Rascas",
       category: "rasca",
       stockType: "physical",
       checkable: true,
       instant: true,
+      needsNumbers: false,
       drawDays: []
     }))
   ];
+  var TPV_CATEGORIES = ["LAE", "ONCE", "Rascas", "Auton\xF3micas", "Provinciales", "Locales"];
   function getProduct(id) {
     return PRODUCTS.find((p) => p.id === id);
   }
+  function productsByTpvCategory(cat) {
+    return PRODUCTS.filter((p) => p.tpvCategory === cat);
+  }
   var CORE_DRAW_IDS = [
     "lae-nacional",
+    "lae-nacional-jueves",
     "lae-primitiva",
     "lae-bonoloto",
     "lae-euromillones",
-    "once-cupon"
+    "lae-gordo-primitiva",
+    "lae-quiniela",
+    "lae-quinigol",
+    "lae-lototurf",
+    "once-cupon",
+    "once-cuponazo",
+    "once-sueldazo",
+    "once-eurojackpot",
+    "once-super-once",
+    "once-triplex",
+    "and-fortuna",
+    "and-olivo",
+    "and-costa",
+    "mal-premio",
+    "mal-axarquia",
+    "alo-local",
+    "alo-hoya",
+    "alo-chorro",
+    "lae-navidad",
+    "lae-nino"
   ];
 
   // src/data/money.js
@@ -750,18 +1064,107 @@
       history: []
     };
   }
+  function generateAbonadosAndPenas() {
+    const base = generateRegularCustomers(40, 9090);
+    const abonados = base.slice(0, 18).map((c, i) => ({
+      ...c,
+      id: `abo-${i + 1}`,
+      kind: "abonado",
+      favoriteProduct: c.preferredProducts[0],
+      subscription: "Primitiva + Bonoloto semanal",
+      prizesClaimed: [],
+      orders: []
+    }));
+    const penas = [
+      {
+        id: "pena-1",
+        kind: "pena",
+        name: "Pe\xF1a El Desfiladero",
+        regular: true,
+        street: "Calle Real",
+        preferredProducts: ["lae-euromillones", "lae-primitiva", "lae-nacional"],
+        visitChance: 0.15,
+        prefersPayment: "transfer",
+        trait: "generosa",
+        line: "Para la pe\xF1a, como cada semana.",
+        favoriteProduct: "lae-euromillones",
+        subscription: "Bote compartido Euromillones",
+        members: 24,
+        history: [],
+        prizesClaimed: [],
+        orders: [],
+        preferredDays: [2, 5]
+      },
+      {
+        id: "pena-2",
+        kind: "pena",
+        name: "Pe\xF1a Virgen de Flores",
+        regular: true,
+        street: "Plaza Baja",
+        preferredProducts: ["lae-nacional", "lae-navidad", "alo-local"],
+        visitChance: 0.12,
+        prefersPayment: "cash",
+        trait: "constante",
+        line: "D\xE9cimos para la pe\xF1a.",
+        favoriteProduct: "lae-nacional",
+        subscription: "Nacional jueves/s\xE1bado",
+        members: 15,
+        history: [],
+        prizesClaimed: [],
+        orders: [],
+        preferredDays: [4, 6]
+      },
+      {
+        id: "pena-3",
+        kind: "pena",
+        name: "Pe\xF1a del Chorro",
+        regular: true,
+        street: "Camino de El Chorro",
+        preferredProducts: ["lae-bonoloto", "once-eurojackpot", "rasca-jackpot"],
+        visitChance: 0.1,
+        prefersPayment: "bizum",
+        trait: "habladora",
+        line: "Hoy venimos con lista larga.",
+        favoriteProduct: "lae-bonoloto",
+        subscription: "Bonoloto diario compartido",
+        members: 30,
+        history: [],
+        prizesClaimed: [],
+        orders: [],
+        preferredDays: [1, 2, 3, 4, 5]
+      }
+    ];
+    return { abonados, penas };
+  }
 
   // src/data/events.js
   function aloraEventsForYear(year) {
     return {
-      [`${year}-06-13`]: { id: "feria-prep", name: "Preparativos Feria de \xC1lora", crowd: 0.35 },
-      [`${year}-06-14`]: { id: "feria", name: "Feria de \xC1lora", crowd: 0.9 },
-      [`${year}-06-15`]: { id: "feria", name: "Feria de \xC1lora", crowd: 1 },
-      [`${year}-06-16`]: { id: "feria", name: "Feria de \xC1lora", crowd: 0.85 },
-      [`${year}-06-24`]: { id: "san-juan", name: "San Juan (\xC1lora)", crowd: 0.7, holidayAlso: true },
-      [`${year}-09-07`]: { id: "flores-v\xEDspera", name: "V\xEDspera Virgen de Flores", crowd: 0.5 },
-      [`${year}-09-08`]: { id: "virgen-flores", name: "Virgen de Flores (\xC1lora)", crowd: 0.95, holidayAlso: true },
-      [`${year}-10-12`]: { id: "puente", name: "Puente / fiesta nacional", crowd: 0.2 }
+      // Semana Santa orientativa (fechas fijas aprox. para gameplay; no litúrgicas exactas)
+      [`${year}-03-28`]: { id: "ss-prev", name: "V\xEDspera Semana Santa", crowd: 0.4 },
+      [`${year}-03-29`]: { id: "ss", name: "Semana Santa en \xC1lora", crowd: 0.75 },
+      [`${year}-04-01`]: { id: "ss", name: "Semana Santa en \xC1lora", crowd: 0.8 },
+      [`${year}-04-02`]: { id: "ss", name: "Jueves/Viernes Santo ambiente", crowd: 0.5 },
+      // Feria
+      [`${year}-06-12`]: { id: "feria-prep", name: "Preparativos Feria de \xC1lora", crowd: 0.3 },
+      [`${year}-06-13`]: { id: "feria-prep", name: "Preparativos Feria de \xC1lora", crowd: 0.45 },
+      [`${year}-06-14`]: { id: "feria", name: "Feria de \xC1lora", crowd: 0.95 },
+      [`${year}-06-15`]: { id: "feria", name: "Feria de \xC1lora", crowd: 1.1 },
+      [`${year}-06-16`]: { id: "feria", name: "Feria de \xC1lora", crowd: 1 },
+      [`${year}-06-17`]: { id: "feria", name: "Cierre de Feria", crowd: 0.7 },
+      [`${year}-06-23`]: { id: "san-juan-v", name: "V\xEDspera de San Juan", crowd: 0.55 },
+      [`${year}-06-24`]: { id: "san-juan", name: "San Juan (\xC1lora)", crowd: 0.85, holidayAlso: true },
+      [`${year}-08-15`]: { id: "verano", name: "Asunci\xF3n / verano en el pueblo", crowd: 0.35 },
+      [`${year}-09-06`]: { id: "flores-prep", name: "Preparativos Virgen de Flores", crowd: 0.4 },
+      [`${year}-09-07`]: { id: "flores-v\xEDspera", name: "V\xEDspera Virgen de Flores", crowd: 0.65 },
+      [`${year}-09-08`]: { id: "virgen-flores", name: "Virgen de Flores (\xC1lora)", crowd: 1.05, holidayAlso: true },
+      [`${year}-09-09`]: { id: "flores-octava", name: "Ambientaci\xF3n Virgen de Flores", crowd: 0.45 },
+      [`${year}-10-12`]: { id: "puente", name: "Puente / fiesta nacional", crowd: 0.25 },
+      [`${year}-11-01`]: { id: "santos", name: "Todos los Santos", crowd: 0.2 },
+      // Navidad pueblo
+      [`${year}-12-20`]: { id: "navidad-cola", name: "Colas de Navidad en \xC1lora", crowd: 0.9 },
+      [`${year}-12-22`]: { id: "gordo", name: "D\xEDa del Gordo (ambiente)", crowd: 1.2 },
+      [`${year}-12-23`]: { id: "navidad-cola", name: "\xDAltimos d\xE9cimos", crowd: 0.85 }
     };
   }
   function buildAloraEvents(startYear, endYear) {
@@ -775,8 +1178,8 @@
 
   // src/game/state.js
   var STARTING_BANK_CENTS = 95e4;
-  var SAVE_VERSION = 2;
-  var GAME_VERSION = "0.1";
+  var SAVE_VERSION = 3;
+  var GAME_VERSION = "0.2";
   var SLOT_COUNT = 3;
   var STORAGE_PREFIX = "loterias-alora-slot-";
   var OFFICE = {
@@ -806,10 +1209,11 @@
     const float = defaultFloatDrawer();
     const holidays = buildHolidayMap(2025, 2032);
     const events = buildAloraEvents(2025, 2032);
+    const { abonados, penas } = generateAbonadosAndPenas();
     const stock = {};
     for (const p of PRODUCTS) {
       if (p.stockType === "physical") {
-        stock[p.id] = p.category === "rasca" ? 50 : p.id.includes("navidad") || p.id.includes("nino") ? 25 : 35;
+        stock[p.id] = p.category === "rasca" ? 60 : p.id.includes("navidad") || p.id.includes("nino") ? 30 : 40;
       } else {
         stock[p.id] = null;
       }
@@ -830,11 +1234,7 @@
         paused: false,
         lastRealMs: Date.now()
       },
-      office: {
-        isOpen: true,
-        openedToday: true,
-        dayStarted: true
-      },
+      office: { isOpen: true, openedToday: true, dayStarted: true },
       finance: {
         bankCents: STARTING_BANK_CENTS,
         drawer: float,
@@ -856,25 +1256,26 @@
       nextIds: { ticket: 1 },
       customers: {
         regulars: generateRegularCustomers(280),
+        abonados,
+        penas,
         queue: [],
         current: null,
         servedToday: 0,
-        nextSpawnAtMs: start.getTime() + 12 * 1e3
+        nextSpawnAtMs: start.getTime() + 10 * 1e3
       },
+      settings: { music: true, sfx: true },
       dayLog: [],
       holidays,
       events,
-      stats: {
-        totalSalesCents: 0,
-        totalCustomers: 0,
-        daysPlayed: 0
-      },
+      stats: { totalSalesCents: 0, totalCustomers: 0, daysPlayed: 0 },
       ui: {
         screen: "counter",
         toast: null,
         paymentSession: null,
+        tpv: null,
         lastTickets: [],
-        lastCloseSummary: null
+        lastCloseSummary: null,
+        fichaId: null
       }
     };
   }
@@ -885,9 +1286,18 @@
     if (!data.prizeManagement) data.prizeManagement = [];
     if (!data.events) data.events = buildAloraEvents(2025, 2032);
     if (!data.nextIds) data.nextIds = { ticket: 1 };
+    if (!data.settings) data.settings = { music: true, sfx: true };
+    if (!data.customers.abonados || !data.customers.penas) {
+      const { abonados, penas } = generateAbonadosAndPenas();
+      data.customers.abonados = data.customers.abonados || abonados;
+      data.customers.penas = data.customers.penas || penas;
+    }
+    if (!data.customers.queue) data.customers.queue = [];
     if (data.finance && data.finance.dayPrizesReimbursableCents == null) {
       data.finance.dayPrizesReimbursableCents = 0;
     }
+    data.ui = data.ui || {};
+    data.ui.tpv = null;
     data.version = SAVE_VERSION;
     data.gameVersion = GAME_VERSION;
     return data;
@@ -1103,61 +1513,82 @@
     const rng = mulberry322(hashSeed("draw", productId, ymd2));
     const p = getProduct(productId);
     if (!p) return null;
-    if (productId === "lae-primitiva" || productId === "lae-bonoloto") {
-      return {
-        productId,
-        ymd: ymd2,
-        numbers: pickUnique(rng, 6, 49),
-        complementary: productId === "lae-primitiva" ? pickInt(rng, 1, 49) : null,
-        reintegro: pickInt(rng, 0, 9)
-      };
+    switch (p.numberMode || productId) {
+      case "6from49":
+        return {
+          productId,
+          ymd: ymd2,
+          numbers: pickUnique(rng, 6, 49),
+          complementary: productId === "lae-primitiva" ? pickInt(rng, 1, 49) : null,
+          reintegro: pickInt(rng, 0, 9)
+        };
+      case "euro":
+      case "eurojackpot":
+        return { productId, ymd: ymd2, numbers: pickUnique(rng, 5, 50), stars: pickUnique(rng, 2, 12) };
+      case "gordo":
+        return { productId, ymd: ymd2, numbers: pickUnique(rng, 5, 54), clave: pickInt(rng, 1, 9) };
+      case "nacional":
+        return {
+          productId,
+          ymd: ymd2,
+          winningNumber: productId === "once-triplex" ? String(pickInt(rng, 0, 999)).padStart(3, "0") : pad5(pickInt(rng, 0, 99999))
+        };
+      case "triplex":
+        return { productId, ymd: ymd2, winningNumber: String(pickInt(rng, 0, 999)).padStart(3, "0") };
+      case "quiniela": {
+        const column = Array.from({ length: 14 }, () => ["1", "X", "2"][pickInt(rng, 0, 2)]);
+        return { productId, ymd: ymd2, column, pleno: ["0", "1", "2", "M"][pickInt(rng, 0, 3)] };
+      }
+      case "quinigol":
+        return {
+          productId,
+          ymd: ymd2,
+          goals: Array.from({ length: 6 }, () => ["0", "1", "2", "M"][pickInt(rng, 0, 3)])
+        };
+      case "superonce":
+      case "lototurf":
+        return { productId, ymd: ymd2, numbers: pickUnique(rng, 5, 49) };
+      case "5from40":
+      default:
+        if (["once-cupon", "once-cuponazo", "once-sueldazo", "lae-nacional", "lae-nacional-jueves", "lae-navidad", "lae-nino"].includes(productId)) {
+          return { productId, ymd: ymd2, winningNumber: pad5(pickInt(rng, 0, 99999)) };
+        }
+        return { productId, ymd: ymd2, numbers: pickUnique(rng, 5, 40) };
     }
-    if (productId === "lae-euromillones") {
-      return {
-        productId,
-        ymd: ymd2,
-        numbers: pickUnique(rng, 5, 50),
-        stars: pickUnique(rng, 2, 12)
-      };
-    }
-    if (productId === "lae-nacional" || productId === "lae-navidad" || productId === "lae-nino") {
-      return {
-        productId,
-        ymd: ymd2,
-        winningNumber: pad5(pickInt(rng, 0, 99999))
-        // premios aproximados por terminaciones
-      };
-    }
-    if (productId === "once-cupon") {
-      return {
-        productId,
-        ymd: ymd2,
-        winningNumber: pad5(pickInt(rng, 0, 99999))
-      };
-    }
-    return {
-      productId,
-      ymd: ymd2,
-      numbers: pickUnique(rng, 5, 40)
-    };
   }
   function generateBetSelection(productId, rng) {
     const p = getProduct(productId);
     if (!p) return {};
-    if (productId === "lae-primitiva" || productId === "lae-bonoloto") {
-      return {
-        numbers: pickUnique(rng, 6, 49),
-        reintegro: pickInt(rng, 0, 9)
-      };
+    const mode = p.numberMode;
+    if (mode === "6from49") {
+      return { numbers: pickUnique(rng, 6, 49), reintegro: pickInt(rng, 0, 9) };
     }
-    if (productId === "lae-euromillones") {
-      return {
-        numbers: pickUnique(rng, 5, 50),
-        stars: pickUnique(rng, 2, 12)
-      };
+    if (mode === "euro" || mode === "eurojackpot") {
+      return { numbers: pickUnique(rng, 5, 50), stars: pickUnique(rng, 2, 12) };
     }
-    if (productId === "lae-nacional" || productId === "lae-navidad" || productId === "lae-nino" || productId === "once-cupon") {
+    if (mode === "gordo") {
+      return { numbers: pickUnique(rng, 5, 54), clave: pickInt(rng, 1, 9) };
+    }
+    if (mode === "nacional") {
       return { number: pad5(pickInt(rng, 0, 99999)) };
+    }
+    if (mode === "triplex") {
+      return { number: String(pickInt(rng, 0, 999)).padStart(3, "0") };
+    }
+    if (mode === "quiniela") {
+      return {
+        column: Array.from({ length: 14 }, () => ["1", "X", "2"][pickInt(rng, 0, 2)]),
+        pleno: ["0", "1", "2", "M"][pickInt(rng, 0, 3)]
+      };
+    }
+    if (mode === "quinigol") {
+      return { goals: Array.from({ length: 6 }, () => ["0", "1", "2", "M"][pickInt(rng, 0, 3)]) };
+    }
+    if (mode === "superonce" || mode === "lototurf") {
+      return { numbers: pickUnique(rng, 5, 49) };
+    }
+    if (mode === "5from40") {
+      return { numbers: pickUnique(rng, 5, 40) };
     }
     return { numbers: pickUnique(rng, 5, 40) };
   }
@@ -1178,13 +1609,11 @@
       return null;
     }
     const d = new Date(fromDate.getTime());
-    for (let i = 0; i < 16; i++) {
+    for (let i = 0; i < 21; i++) {
       const dow = d.getUTCDay();
       if (p.drawDays.includes(dow)) {
         const hour = (_b = p.drawHour) != null ? _b : DEFAULT_DRAW_HOUR;
-        if (i > 0 || fromDate.getUTCHours() < hour) {
-          return ymdFromDate(d);
-        }
+        if (i > 0 || fromDate.getUTCHours() < hour) return ymdFromDate(d);
       }
       d.setUTCDate(d.getUTCDate() + 1);
       d.setUTCHours(0, 0, 0, 0);
@@ -1197,20 +1626,12 @@
     const now = gameDate(state2);
     const today = ymdFromDate(now);
     const hour = now.getUTCHours();
-    const ids = [
-      ...CORE_DRAW_IDS,
-      "and-fortuna",
-      "mal-premio",
-      "alo-local",
-      "lae-navidad",
-      "lae-nino"
-    ];
-    for (let back = 0; back <= 14; back++) {
+    for (let back = 0; back <= 21; back++) {
       const d = new Date(now.getTime());
       d.setUTCDate(d.getUTCDate() - back);
       d.setUTCHours(12, 0, 0, 0);
       const ymd2 = ymdFromDate(d);
-      for (const productId of ids) {
+      for (const productId of CORE_DRAW_IDS) {
         const p = getProduct(productId);
         if (!p) continue;
         const key = drawKey(productId, ymd2);
@@ -1228,10 +1649,6 @@
         }
         if (shouldResolve) {
           state2.draws[key] = generateDrawResult(productId, ymd2);
-          state2.dayLog.push({
-            at: state2.clock.gameTimeMs,
-            text: `Sorteo resuelto: ${p.name} (${ymd2})`
-          });
         }
       }
     }
@@ -1240,6 +1657,9 @@
   function getDraw(state2, productId, ymd2) {
     var _a;
     return ((_a = state2.draws) == null ? void 0 : _a[drawKey(productId, ymd2)]) || null;
+  }
+  function listDrawHistory(state2, limit = 60) {
+    return Object.values(state2.draws || {}).sort((a, b) => a.ymd < b.ymd ? 1 : a.ymd > b.ymd ? -1 : a.productId.localeCompare(b.productId)).slice(0, limit);
   }
 
   // src/game/tickets.js
@@ -1258,7 +1678,7 @@
       const product = getProduct(item.productId);
       if (!product) continue;
       for (let q = 0; q < item.qty; q++) {
-        const ticket = buildTicket(state2, product, clientId, clientName, rng);
+        const ticket = buildTicket(state2, product, clientId, clientName, rng, item);
         ticket.saleMethod = method;
         state2.tickets.push(ticket);
         created.push(ticket);
@@ -1266,7 +1686,7 @@
     }
     return created;
   }
-  function buildTicket(state2, product, clientId, clientName, rng) {
+  function buildTicket(state2, product, clientId, clientName, rng, item = {}) {
     const id = nextTicketId(state2);
     const base = {
       id,
@@ -1278,7 +1698,6 @@
       createdAt: state2.clock.gameTimeMs,
       priceCents: product.priceCents,
       status: "active",
-      // active | checked | paid | managed | void
       prizeCents: 0,
       checkedAt: null,
       paidAt: null
@@ -1289,18 +1708,18 @@
       return {
         ...base,
         kind: "rasca",
-        // premio oculto hasta comprobación
         hiddenPrizeCents: prize,
         selection: { code: `R${pad5(Math.floor(rng() * 1e5))}` }
       };
     }
     const drawYmd = nextDrawYmd(product.id, gameDate(state2));
-    const selection = generateBetSelection(product.id, rng);
+    const selection = item.selection || generateBetSelection(product.id, rng);
     return {
       ...base,
       kind: "draw",
       drawYmd,
       selection,
+      numberSource: item.numberSource || "random",
       hiddenPrizeCents: null
     };
   }
@@ -1323,11 +1742,11 @@
       } else detail = "Sin premio";
       return { prizeCents: prize2, detail, hits: hits2 };
     }
-    if (id === "lae-euromillones") {
+    if (id === "lae-euromillones" || id === "once-eurojackpot") {
       const hits2 = (sel.numbers || []).filter((n) => draw.numbers.includes(n)).length;
       const stars = (sel.stars || []).filter((n) => draw.stars.includes(n)).length;
       let prize2 = 0;
-      if (hits2 === 5 && stars === 2) prize2 = 5e9;
+      if (hits2 === 5 && stars === 2) prize2 = id === "once-eurojackpot" ? 3e9 : 5e9;
       else if (hits2 === 5 && stars === 1) prize2 = 25e6;
       else if (hits2 === 5) prize2 = 4e6;
       else if (hits2 === 4 && stars === 2) prize2 = 15e4;
@@ -1341,7 +1760,35 @@
       const detail = prize2 ? `${hits2}+${stars} estrellas` : "Sin premio";
       return { prizeCents: prize2, detail, hits: hits2, stars };
     }
-    if (id === "lae-nacional" || id === "lae-navidad" || id === "lae-nino" || id === "once-cupon") {
+    if (id === "lae-gordo-primitiva") {
+      const hits2 = (sel.numbers || []).filter((n) => draw.numbers.includes(n)).length;
+      const clave = sel.clave === draw.clave;
+      let prize2 = 0;
+      if (hits2 === 5 && clave) prize2 = 5e8;
+      else if (hits2 === 5) prize2 = 8e5;
+      else if (hits2 === 4 && clave) prize2 = 4e4;
+      else if (hits2 === 4) prize2 = 8e3;
+      else if (hits2 === 3 && clave) prize2 = 3e3;
+      else if (hits2 === 3) prize2 = 1e3;
+      else if (clave) prize2 = getProduct(id).priceCents;
+      return { prizeCents: prize2, detail: prize2 ? `${hits2} + clave` : "Sin premio" };
+    }
+    if (id === "lae-quiniela") {
+      const hits2 = (sel.column || []).filter((v, i) => v === (draw.column || [])[i]).length;
+      let prize2 = 0;
+      if (hits2 >= 14) prize2 = 2e8;
+      else if (hits2 === 13) prize2 = 5e5;
+      else if (hits2 === 12) prize2 = 2e4;
+      else if (hits2 === 11) prize2 = 4e3;
+      else if (hits2 === 10) prize2 = 1e3;
+      return { prizeCents: prize2, detail: `${hits2} aciertos` };
+    }
+    if (id === "lae-quinigol") {
+      const hits2 = (sel.goals || []).filter((v, i) => v === (draw.goals || [])[i]).length;
+      const prize2 = hits2 === 6 ? 5e6 : hits2 === 5 ? 2e4 : hits2 === 4 ? 2e3 : 0;
+      return { prizeCents: prize2, detail: `${hits2} partidos` };
+    }
+    if (id === "lae-nacional" || id === "lae-nacional-jueves" || id === "lae-navidad" || id === "lae-nino" || id === "once-cupon" || id === "once-cuponazo" || id === "once-sueldazo" || id === "once-triplex") {
       const mine = String(sel.number || "");
       const win = String(draw.winningNumber || "");
       let prize2 = 0;
@@ -1669,42 +2116,59 @@
   }
   function maybeSpawnCustomers(state2) {
     if (!isOpenHours(state2)) return state2;
-    if (state2.ui.screen === "cash" || state2.ui.screen === "close" || state2.ui.screen === "prize-flow") return state2;
-    if (state2.customers.current) return state2;
+    if (["cash", "close", "tpv", "prize-flow"].includes(state2.ui.screen)) return state2;
     ensureDrawsResolved(state2);
     const now = state2.clock.gameTimeMs;
     if (now < state2.customers.nextSpawnAtMs) return state2;
-    if (state2.customers.queue.length > 0) {
-      state2.customers.current = state2.customers.queue.shift();
+    if (!state2.customers.current) {
+      if (state2.customers.queue.length > 0) {
+        state2.customers.current = state2.customers.queue.shift();
+      } else {
+        const client = pickArrivingClient(state2);
+        if (client) {
+          attachIntent(state2, client);
+          state2.customers.current = client;
+        }
+      }
       scheduleNextSpawn(state2);
       return state2;
     }
-    const client = pickArrivingClient(state2);
-    if (client) {
-      attachIntent(state2, client);
-      state2.customers.current = client;
+    if (Math.random() < 0.55) {
+      const client = pickArrivingClient(state2);
+      if (client) {
+        attachIntent(state2, client);
+        state2.customers.queue.push(client);
+      }
     }
     scheduleNextSpawn(state2);
     return state2;
   }
   function scheduleNextSpawn(state2) {
     const factor = crowdFactor(state2);
-    const minMs = 18 * 1e3 / factor;
-    const maxMs = 80 * 1e3 / factor;
+    const minMs = 16 * 1e3 / factor;
+    const maxMs = 70 * 1e3 / factor;
     state2.customers.nextSpawnAtMs = state2.clock.gameTimeMs + minMs + Math.random() * (maxMs - minMs);
   }
   function pickArrivingClient(state2) {
+    var _a, _b;
     const rng = Math.random;
-    const wantVisitor = rng() < 0.28 + (crowdFactor(state2) - 1) * 0.08;
-    if (wantVisitor) return makeVisitor();
+    if (rng() < 0.08 && ((_a = state2.customers.abonados) == null ? void 0 : _a.length)) {
+      const a = state2.customers.abonados[Math.floor(rng() * state2.customers.abonados.length)];
+      return { ...a };
+    }
+    if (rng() < 0.06 && ((_b = state2.customers.penas) == null ? void 0 : _b.length)) {
+      const a = state2.customers.penas[Math.floor(rng() * state2.customers.penas.length)];
+      return { ...a };
+    }
+    if (rng() < 0.28 + (crowdFactor(state2) - 1) * 0.08) return makeVisitor();
     const dow = gameDate(state2).getUTCDay();
     const candidates = state2.customers.regulars.filter((c) => {
-      var _a;
+      var _a2;
       let chance = c.visitChance * crowdFactor(state2);
-      if ((_a = c.preferredDays) == null ? void 0 : _a.includes(dow)) chance *= 2.2;
+      if ((_a2 = c.preferredDays) == null ? void 0 : _a2.includes(dow)) chance *= 2.2;
       return rng() < chance;
     });
-    if (candidates.length === 0) {
+    if (!candidates.length) {
       const list = state2.customers.regulars;
       return { ...list[Math.floor(rng() * list.length)] };
     }
@@ -1717,52 +2181,111 @@
     const claimable = owned.filter((t) => t.status === "checked" && t.prizeCents > 0 && !t.paidAt);
     const managed = owned.filter((t) => t.status === "managed");
     let roll = rng();
-    const seasonReserve = isSpecialSeason(state2) && rng() < 0.18;
-    if (claimable.length && roll < 0.35) {
-      const ticket = claimable[Math.floor(rng() * claimable.length)];
+    if (claimable.length && roll < 0.28) {
       client.intent = "claim";
-      client.ticketFocus = ticket;
-      client.request = null;
-      client.note = `Viene a cobrar un premio de ${formatEuro(ticket.prizeCents)}.`;
+      client.ticketFocus = claimable[Math.floor(rng() * claimable.length)];
+      client.wishlist = [];
+      client.note = `Viene a cobrar ${formatEuro(client.ticketFocus.prizeCents)}.`;
       return client;
     }
-    if (managed.length && roll < 0.2) {
+    if (managed.length && roll < 0.15) {
       client.intent = "managed_ask";
       client.ticketFocus = managed[0];
-      client.request = null;
-      client.note = "Pregunta por el estado de su premio en gesti\xF3n.";
+      client.wishlist = [];
+      client.note = "Pregunta por su premio en gesti\xF3n.";
       return client;
     }
-    if (checkable.length && roll < 0.45) {
-      const ready = checkable.filter((t) => t.kind === "rasca" || t.status === "active");
-      const ticket = (ready.length ? ready : checkable)[Math.floor(rng() * (ready.length || checkable.length))];
+    if (checkable.length && roll < 0.4) {
+      const ticket = checkable[Math.floor(rng() * checkable.length)];
       client.intent = "check";
       client.ticketFocus = ticket;
-      client.request = null;
-      client.note = `Quiere comprobar ${ticket.productName} (${ticket.id}).`;
+      client.wishlist = [];
+      client.note = `Quiere comprobar ${ticket.productName}.`;
       return client;
     }
-    if (seasonReserve) {
-      const pid = gameDate(state2).getUTCMonth() === 0 ? "lae-nino" : "lae-navidad";
+    if (isSpecialSeason(state2) && rng() < 0.12) {
+      client.intent = "reserve_special";
       const m = gameDate(state2).getUTCMonth() + 1;
       const productId = m === 1 ? "lae-nino" : "lae-navidad";
       const p = getProduct(productId);
-      client.intent = "reserve_special";
-      client.request = {
-        productId: p.id,
-        productName: p.name,
-        qty: 1 + Math.floor(rng() * 3),
-        unitCents: p.priceCents,
-        totalCents: p.priceCents * (1 + Math.floor(rng() * 3))
-      };
-      client.request.totalCents = client.request.unitCents * client.request.qty;
-      client.note = `Encargo de ${p.name}.`;
+      const qty = 1 + Math.floor(rng() * 4);
+      client.wishlist = [{ productId: p.id, productName: p.name, qty, preferDictate: false }];
+      client.note = `Encargo de ${p.name} \xD7${qty}`;
       return client;
     }
     client.intent = "buy";
-    attachBuyRequest(state2, client);
+    client.wishlist = buildRichWishlist(state2, client);
+    client.note = client.line || "Quiere varias cosas.";
     return client;
   }
+  function buildRichWishlist(state2, client) {
+    var _a, _b, _c;
+    const rng = mulberry322(hashSeed("wish", state2.clock.gameTimeMs, client.id, Math.floor(Math.random() * 1e9)));
+    const templates = WISH_TEMPLATES;
+    const tpl = templates[Math.floor(rng() * templates.length)];
+    const lines = [];
+    for (const slot of tpl) {
+      if (rng() > ((_a = slot.p) != null ? _a : 1)) continue;
+      let productId = slot.id;
+      if (slot.pool) productId = slot.pool[Math.floor(rng() * slot.pool.length)];
+      if (slot.usePref && ((_b = client.preferredProducts) == null ? void 0 : _b.length) && rng() < 0.55) {
+        productId = client.preferredProducts[Math.floor(rng() * client.preferredProducts.length)];
+      }
+      const p = getProduct(productId);
+      if (!p) continue;
+      let qty = slot.qty || 1;
+      if (typeof qty === "function") qty = qty(rng);
+      if (client.kind === "pena") qty += 1 + Math.floor(rng() * 4);
+      if (client.kind === "abonado") qty += Math.floor(rng() * 2);
+      lines.push({
+        productId: p.id,
+        productName: p.name,
+        qty: Math.max(1, qty),
+        preferDictate: !!slot.dictate || client.trait === "pr\xE1ctica" && rng() < 0.35
+      });
+    }
+    if (!lines.length) {
+      const p = getProduct(((_c = client.preferredProducts) == null ? void 0 : _c[0]) || "lae-bonoloto");
+      lines.push({ productId: p.id, productName: p.name, qty: 1, preferDictate: false });
+    }
+    return lines;
+  }
+  var POOLS = {
+    lae: ["lae-primitiva", "lae-bonoloto", "lae-euromillones", "lae-nacional", "lae-gordo-primitiva", "lae-quiniela"],
+    once: ["once-cupon", "once-cuponazo", "once-eurojackpot", "once-super-once", "once-triplex"],
+    rasca: ["rasca-7-vidas", "rasca-multiplica", "rasca-diamante", "rasca-oro", "rasca-jackpot", "rasca-once-clasico"],
+    auto: ["and-fortuna", "and-olivo", "and-costa"],
+    prov: ["mal-premio", "mal-axarquia"],
+    local: ["alo-local", "alo-hoya", "alo-chorro"]
+  };
+  var WISH_TEMPLATES = [
+    [{ usePref: true, qty: (r) => 1 + Math.floor(r() * 3) }, { pool: POOLS.rasca, qty: (r) => 1 + Math.floor(r() * 4), p: 0.7 }],
+    [{ id: "lae-euromillones", qty: 2, dictate: true }, { id: "lae-bonoloto", qty: (r) => 2 + Math.floor(r() * 6) }],
+    [{ id: "lae-nacional", qty: 1 }, { pool: POOLS.once, qty: 1 }, { pool: POOLS.rasca, qty: 3 }],
+    [{ id: "lae-primitiva", qty: 1, dictate: true }, { id: "lae-primitiva", qty: 1 }, { id: "lae-gordo-primitiva", qty: 1, p: 0.5 }],
+    [{ id: "lae-quiniela", qty: 1, dictate: true }, { id: "lae-quinigol", qty: 1, p: 0.4 }, { pool: POOLS.rasca, qty: 2, p: 0.6 }],
+    [{ pool: POOLS.once, qty: (r) => 1 + Math.floor(r() * 3) }, { id: "once-eurojackpot", qty: 1, dictate: true }],
+    [{ pool: POOLS.auto, qty: 2 }, { pool: POOLS.local, qty: 1 }, { pool: POOLS.rasca, qty: 2 }],
+    [{ pool: POOLS.prov, qty: 1 }, { id: "lae-bonoloto", qty: 4 }, { id: "alo-local", qty: 2 }],
+    // peña-style big basket
+    [
+      { id: "lae-euromillones", qty: 5 },
+      { id: "lae-primitiva", qty: 5, dictate: true },
+      { id: "lae-nacional", qty: 2 },
+      { pool: POOLS.rasca, qty: 10, p: 0.8 }
+    ],
+    [{ id: "once-super-once", qty: 3 }, { id: "once-triplex", qty: 2, dictate: true }, { pool: POOLS.rasca, qty: 1 }],
+    [{ id: "lae-lototurf", qty: 1 }, { id: "lae-bonoloto", qty: 2 }, { pool: POOLS.local, qty: 1, p: 0.5 }],
+    // many small random mixes
+    ...Array.from({ length: 40 }, () => {
+      const n = 1 + Math.floor(Math.random() * 4);
+      return Array.from({ length: n }, () => {
+        const pools = Object.values(POOLS);
+        const pool = pools[Math.floor(Math.random() * pools.length)];
+        return { pool, qty: 1 + Math.floor(Math.random() * 3), dictate: Math.random() < 0.25, p: 0.5 + Math.random() * 0.5 };
+      });
+    })
+  ];
   function isSpecialSeason(state2) {
     const m = gameDate(state2).getUTCMonth() + 1;
     const d = gameDate(state2).getUTCDate();
@@ -1771,82 +2294,35 @@
     if (m === 10 && d >= 20) return true;
     return false;
   }
-  function attachBuyRequest(state2, client) {
-    const rng = Math.random;
-    const prefs = client.preferredProducts || [];
-    let productId = prefs[Math.floor(rng() * prefs.length)];
-    if (client.trait === "impulsiva" || rng() < 0.25) {
-      productId = PRODUCTS[Math.floor(rng() * PRODUCTS.length)].id;
-    }
-    const product = getProduct(productId) || PRODUCTS[0];
-    let qty = 1;
-    if (product.category === "rasca") qty = 1 + Math.floor(rng() * 3);
-    if (product.id === "lae-nacional") qty = 1 + Math.floor(rng() * 2);
-    if (product.id === "lae-bonoloto" || product.id === "lae-primitiva") qty = 1 + Math.floor(rng() * 4);
-    if (client.trait === "generosa") qty += 1 + Math.floor(rng() * 2);
-    client.request = {
-      productId: product.id,
-      productName: product.name,
-      qty,
-      unitCents: product.priceCents,
-      totalCents: product.priceCents * qty
-    };
-    client.note = client.line || "";
-  }
-  function sellToCurrent(state2) {
-    const client = state2.customers.current;
-    if (!(client == null ? void 0 : client.request)) return state2;
-    const p = getProduct(client.request.productId);
-    if (!p) return state2;
-    if (p.stockType === "physical") {
-      const have = state2.stock[p.id] || 0;
-      if (have < client.request.qty) {
-        state2.ui.toast = `No hay stock de ${p.name}. Puedes reservar/pedir.`;
-        return state2;
-      }
-    }
-    const items = [
-      {
-        productId: p.id,
-        name: p.name,
-        qty: client.request.qty,
-        unitCents: p.priceCents
-      }
-    ];
-    return startPayment(state2, { items, client, purpose: "sale" });
-  }
   function dismissCurrent(state2, reason = "Cliente atendido") {
-    state2.customers.current = null;
     state2.dayLog.push({ at: state2.clock.gameTimeMs, text: reason });
+    state2.customers.current = null;
     return state2;
   }
   function reserveForCurrent(state2) {
-    var _a;
+    var _a, _b;
     const client = state2.customers.current;
-    if (!(client == null ? void 0 : client.request)) return state2;
-    const p = getProduct(client.request.productId);
-    if (!p) return state2;
-    const days = (_a = p.orderDays) != null ? _a : 2;
-    const arrive = addBusinessDays(state2, days);
-    const order = {
-      id: `ord-${Date.now()}`,
-      productId: p.id,
-      productName: p.name,
-      qty: client.request.qty,
-      clientId: client.id,
-      clientName: client.name,
-      arriveOnYmd: arrive,
-      status: "pending",
-      reserved: true,
-      special: client.intent === "reserve_special"
-    };
-    state2.orders.push(order);
-    state2.reservations.push(order);
-    state2.dayLog.push({
-      at: state2.clock.gameTimeMs,
-      text: `Reserva para ${client.name}: ${p.name} \xD7${client.request.qty} (llegada ${arrive})`
-    });
-    state2.ui.toast = `Reserva hecha. Llegar\xE1 el ${arrive}. Sin cobro ahora.`;
+    const items = ((_a = client == null ? void 0 : client.wishlist) == null ? void 0 : _a.length) ? client.wishlist : (client == null ? void 0 : client.request) ? [client.request] : [];
+    if (!items.length) return state2;
+    for (const w of items) {
+      const p = getProduct(w.productId);
+      if (!p) continue;
+      const days = (_b = p.orderDays) != null ? _b : 2;
+      const arrive = addBusinessDays(state2, days);
+      state2.orders.push({
+        id: `ord-${Date.now()}-${w.productId}`,
+        productId: p.id,
+        productName: p.name,
+        qty: w.qty,
+        clientId: client.id,
+        clientName: client.name,
+        arriveOnYmd: arrive,
+        status: "pending",
+        reserved: true,
+        special: client.intent === "reserve_special"
+      });
+    }
+    state2.ui.toast = "Reservas hechas sin cobro.";
     state2.customers.current = null;
     return state2;
   }
@@ -1854,8 +2330,7 @@
     var _a;
     const p = getProduct(productId);
     if (!p || p.stockType !== "physical") return state2;
-    const days = (_a = p.orderDays) != null ? _a : 2;
-    const arrive = addBusinessDays(state2, days);
+    const arrive = addBusinessDays(state2, (_a = p.orderDays) != null ? _a : 2);
     state2.orders.push({
       id: `ord-${Date.now()}`,
       productId,
@@ -1867,7 +2342,7 @@
       status: "pending",
       reserved: false
     });
-    state2.ui.toast = `Pedido de ${p.name} \xD7${qty}. Llegada ${arrive}.`;
+    state2.ui.toast = `Pedido ${p.name} \xD7${qty} \u2192 ${arrive}`;
     return state2;
   }
   function addBusinessDays(state2, days) {
@@ -1876,31 +2351,24 @@
     let guard = 0;
     while (left > 0 && guard++ < 400) {
       d.setUTCDate(d.getUTCDate() + 1);
-      const dow = d.getUTCDay();
       const ymd2 = d.toISOString().slice(0, 10);
-      const hol = state2.holidays[ymd2];
-      if (dow !== 0 && dow !== 6 && !hol) left--;
+      if (d.getUTCDay() !== 0 && d.getUTCDay() !== 6 && !state2.holidays[ymd2]) left--;
     }
     return d.toISOString().slice(0, 10);
   }
   function processArrivingOrders(state2) {
     const ymd2 = gameDate(state2).toISOString().slice(0, 10);
     for (const o of state2.orders) {
-      if (o.status !== "pending") continue;
-      if (o.arriveOnYmd <= ymd2) {
-        o.status = "arrived";
-        if (!o.reserved) {
-          state2.stock[o.productId] = (state2.stock[o.productId] || 0) + o.qty;
-          state2.dayLog.push({
-            at: state2.clock.gameTimeMs,
-            text: `Pedido recibido: ${o.productName} \xD7${o.qty}`
-          });
-        } else {
-          state2.dayLog.push({
-            at: state2.clock.gameTimeMs,
-            text: `Encargo listo para ${o.clientName}: ${o.productName} \xD7${o.qty}`
-          });
-        }
+      if (o.status !== "pending" || o.arriveOnYmd > ymd2) continue;
+      o.status = "arrived";
+      if (!o.reserved) {
+        state2.stock[o.productId] = (state2.stock[o.productId] || 0) + o.qty;
+        state2.dayLog.push({ at: state2.clock.gameTimeMs, text: `Pedido recibido: ${o.productName} \xD7${o.qty}` });
+      } else {
+        state2.dayLog.push({
+          at: state2.clock.gameTimeMs,
+          text: `Encargo listo: ${o.clientName} \xB7 ${o.productName} \xD7${o.qty}`
+        });
       }
     }
     return state2;
@@ -1910,20 +2378,15 @@
     if (!(client == null ? void 0 : client.ticketFocus)) return state2;
     const result = checkTicket(state2, client.ticketFocus.id);
     client.checkResult = result;
-    if (result.pending) {
-      state2.ui.toast = result.detail;
-    } else if (result.prizeCents > 0) {
-      state2.ui.toast = `\xA1Ha tocado ${formatEuro(result.prizeCents)}! (${result.detail})`;
+    if (result.pending) state2.ui.toast = result.detail;
+    else if (result.prizeCents > 0) {
+      state2.ui.toast = `\xA1Ha tocado ${formatEuro(result.prizeCents)}!`;
       state2.dayLog.push({
         at: state2.clock.gameTimeMs,
-        text: `Comprobaci\xF3n: ${client.name} \xB7 ${result.ticket.productName} \xB7 PREMIO ${formatEuro(result.prizeCents)}`
+        text: `Comprobaci\xF3n: ${client.name} \xB7 PREMIO ${formatEuro(result.prizeCents)}`
       });
     } else {
-      state2.ui.toast = `No ha tocado. ${result.detail || ""}`;
-      state2.dayLog.push({
-        at: state2.clock.gameTimeMs,
-        text: `Comprobaci\xF3n: ${client.name} \xB7 sin premio`
-      });
+      state2.ui.toast = "No ha tocado.";
     }
     client.ticketFocus = result.ticket || client.ticketFocus;
     return state2;
@@ -2064,65 +2527,90 @@
     const d = gameDate(state2);
     const month = d.getUTCMonth();
     const day = d.getUTCDate();
-    const taxMonths = [0, 3, 6, 9];
-    if (!taxMonths.includes(month) || day !== 20) return state2;
-    const commissionQuarterApprox = Math.round(state2.stats.totalSalesCents * 0.02);
-    const iva = Math.round(commissionQuarterApprox * 0.21);
-    const irpf = Math.round(commissionQuarterApprox * 0.15);
+    if (![0, 3, 6, 9].includes(month) || day !== 20) return state2;
+    const base = Math.round(state2.stats.totalSalesCents * 0.02);
+    const iva = Math.round(base * 0.21);
+    const irpf = Math.round(base * 0.15);
     const total = iva + irpf;
     state2.finance.bankCents -= total;
     state2.finance.ledger.push({
       id: `tax-${Date.now()}`,
       at: state2.clock.gameTimeMs,
       type: "tax",
-      label: "Liquidaci\xF3n trimestral (IVA + IRPF estimado)",
+      label: "Liquidaci\xF3n trimestral IVA+IRPF",
       totalCents: -total
     });
-    state2.dayLog.push({
-      at: state2.clock.gameTimeMs,
-      text: `Impuestos trimestrales: ${formatEuro(total)}`
-    });
+    state2.dayLog.push({ at: state2.clock.gameTimeMs, text: `Impuestos: ${formatEuro(total)}` });
     return state2;
   }
-  function settleOrganizations(state2) {
-    const byOrg = { LAE: { sales: 0, commission: 0, prizes: 0 }, ONCE: { sales: 0, commission: 0, prizes: 0 } };
+  function dayOrgBreakdown(state2) {
+    const dayStart = new Date(gameDate(state2));
+    dayStart.setUTCHours(0, 0, 0, 0);
+    const startMs = dayStart.getTime();
+    const orgs = {
+      LAE: { sales: 0, commission: 0, prizes: 0 },
+      ONCE: { sales: 0, commission: 0, prizes: 0 },
+      Otros: { sales: 0, commission: 0, prizes: 0 }
+    };
     for (const e of state2.finance.ledger) {
-      if (e.type !== "sale" || !e.items) continue;
-      const dayStart = new Date(gameDate(state2));
-      dayStart.setUTCHours(0, 0, 0, 0);
-      if (e.at < dayStart.getTime()) continue;
-      for (const item of e.items) {
+      if (e.at < startMs) continue;
+      if (e.type === "sale" && e.items) {
+        for (const item of e.items) {
+          const p = getProduct(item.productId);
+          const org = (p == null ? void 0 : p.org) === "LAE" || (p == null ? void 0 : p.org) === "ONCE" ? p.org : "Otros";
+          const total = item.unitCents * item.qty;
+          const comm = Math.round(total * ((p == null ? void 0 : p.commissionRate) || 0.05));
+          orgs[org].sales += total;
+          orgs[org].commission += comm;
+        }
+      }
+      if (e.type === "prize") {
+        const org = e.org === "LAE" || e.org === "ONCE" ? e.org : "Otros";
+        orgs[org].prizes += e.totalCents || 0;
       }
     }
-    const sales = state2.finance.daySalesCents || 0;
-    const commission = state2.finance.dayCommissionCents || 0;
-    const prizesReimb = state2.finance.dayPrizesReimbursableCents || 0;
-    const laeSales = Math.round(sales * 0.7);
-    const onceSales = sales - laeSales;
-    const laeComm = Math.round(commission * 0.7);
-    const onceComm = commission - laeComm;
-    const laePrizes = Math.round(prizesReimb * 0.7);
-    const oncePrizes = prizesReimb - laePrizes;
-    const remittanceLAE = laeSales - laeComm;
-    const remittanceONCE = onceSales - onceComm;
-    state2.finance.bankCents -= remittanceLAE + remittanceONCE;
+    return orgs;
+  }
+  function settleOrganizations(state2) {
+    const orgs = dayOrgBreakdown(state2);
+    const laeRemit = orgs.LAE.sales - orgs.LAE.commission;
+    const onceRemit = orgs.ONCE.sales - orgs.ONCE.commission;
+    const otrosRemit = orgs.Otros.sales - orgs.Otros.commission;
+    const prizesReimb = (orgs.LAE.prizes || 0) + (orgs.ONCE.prizes || 0) + (orgs.Otros.prizes || 0);
+    state2.finance.bankCents -= laeRemit + onceRemit + otrosRemit;
     state2.finance.bankCents += prizesReimb;
     const settlement = {
       at: state2.clock.gameTimeMs,
-      lae: { sales: laeSales, commission: laeComm, remittance: remittanceLAE, prizesReimbursed: laePrizes },
-      once: { sales: onceSales, commission: onceComm, remittance: remittanceONCE, prizesReimbursed: oncePrizes },
-      netBankDelta: prizesReimb - remittanceLAE - remittanceONCE
+      lae: {
+        sales: orgs.LAE.sales,
+        commission: orgs.LAE.commission,
+        remittance: laeRemit,
+        prizesReimbursed: orgs.LAE.prizes
+      },
+      once: {
+        sales: orgs.ONCE.sales,
+        commission: orgs.ONCE.commission,
+        remittance: onceRemit,
+        prizesReimbursed: orgs.ONCE.prizes
+      },
+      otros: {
+        sales: orgs.Otros.sales,
+        commission: orgs.Otros.commission,
+        remittance: otrosRemit,
+        prizesReimbursed: orgs.Otros.prizes
+      },
+      netBankDelta: prizesReimb - laeRemit - onceRemit - otrosRemit
     };
     state2.finance.ledger.push({
       id: `settle-${Date.now()}`,
       at: state2.clock.gameTimeMs,
       type: "settlement",
-      label: "Liquidaci\xF3n diaria LAE/ONCE",
+      label: "Liquidaci\xF3n diaria LAE / ONCE / otros",
       settlement
     });
     state2.dayLog.push({
       at: state2.clock.gameTimeMs,
-      text: `Liquidaci\xF3n: remesas ${formatEuro(remittanceLAE + remittanceONCE)} \xB7 reembolso premios ${formatEuro(prizesReimb)} \xB7 te quedas comisiones ${formatEuro(commission)}`
+      text: `Liquidaci\xF3n LAE remesa ${formatEuro(laeRemit)} (com. ${formatEuro(orgs.LAE.commission)}) \xB7 ONCE remesa ${formatEuro(onceRemit)} (com. ${formatEuro(orgs.ONCE.commission)}) \xB7 reembolso premios ${formatEuro(prizesReimb)}`
     });
     state2.finance.lastSettlement = settlement;
     return settlement;
@@ -2130,23 +2618,22 @@
   function dayProfitBreakdown(state2) {
     const commission = state2.finance.dayCommissionCents || 0;
     const expenses = state2.finance.dayExpensesCents || 0;
-    const profit = commission - expenses;
     return {
       salesCents: state2.finance.daySalesCents || 0,
       commissionCents: commission,
       expensesCents: expenses,
       prizesPaidCents: state2.finance.dayPrizesPaidCents || 0,
       prizesReimbursableCents: state2.finance.dayPrizesReimbursableCents || 0,
-      profitCents: profit
+      profitCents: commission - expenses,
+      orgs: dayOrgBreakdown(state2)
     };
   }
   function buildDayCloseSummary(state2) {
-    const drawer = drawerTotalCents(state2.finance.drawer);
     const profit = dayProfitBreakdown(state2);
     return {
       date: gameYmd(state2),
       ...profit,
-      drawerCents: drawer,
+      drawerCents: drawerTotalCents(state2.finance.drawer),
       bankCents: state2.finance.bankCents,
       customersServed: state2.customers.servedToday,
       nextDay: nextBusinessDayStart(state2).toISOString().slice(0, 10),
@@ -2190,6 +2677,7 @@
     state2.customers.queue = [];
     state2.dayLog = [];
     state2.ui.lastTickets = [];
+    state2.ui.tpv = null;
     const float = drawerTotalCents(state2.finance.drawer);
     if (float < state2.finance.floatTargetCents * 0.5) {
       const need = state2.finance.floatTargetCents - float;
@@ -2202,7 +2690,6 @@
     state2.clock.gameTimeMs = next.getTime();
     state2.clock.lastRealMs = Date.now();
     state2.office.isOpen = true;
-    state2.office.openedToday = true;
     processArrivingOrders(state2);
     ensureDrawsResolved(state2);
     state2.customers.nextSpawnAtMs = state2.clock.gameTimeMs + 2 * 60 * 1e3;
@@ -2210,26 +2697,30 @@
     state2.ui.lastCloseSummary = summary;
     state2.dayLog.push({
       at: state2.clock.gameTimeMs,
-      text: `Nuevo d\xEDa en ${OFFICE.businessName}. ${closedReason(state2) || "Abierta 08:00\u201320:00."}`
+      text: `Nuevo d\xEDa \xB7 ${OFFICE.businessName}. ${closedReason(state2) || "Abierta 08:00\u201320:00."}`
     });
     return { state: state2, summary };
   }
 
   // src/game/sounds.js
   var ctx;
+  var musicNodes = null;
+  var musicOn = true;
+  var sfxOn = true;
   function ac() {
     if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
     if (ctx.state === "suspended") ctx.resume();
     return ctx;
   }
   function beep({ freq = 880, dur = 0.08, type = "sine", gain = 0.04, slideTo } = {}) {
+    if (!sfxOn) return;
     try {
       const c = ac();
       const o = c.createOscillator();
       const g = c.createGain();
       o.type = type;
       o.frequency.value = freq;
-      if (slideTo) o.frequency.exponentialRampToValueAtTime(slideTo, c.currentTime + dur);
+      if (slideTo) o.frequency.exponentialRampToValueAtTime(Math.max(1, slideTo), c.currentTime + dur);
       g.gain.value = gain;
       g.gain.exponentialRampToValueAtTime(1e-3, c.currentTime + dur);
       o.connect(g);
@@ -2242,9 +2733,20 @@
   var sfx = {
     click: () => beep({ freq: 620, dur: 0.04, type: "triangle", gain: 0.03 }),
     scan: () => beep({ freq: 1400, dur: 0.06, type: "square", gain: 0.025 }),
+    tpv: () => beep({ freq: 980, dur: 0.05, type: "square", gain: 0.03 }),
     cash: () => {
       beep({ freq: 880, dur: 0.07, type: "sine", gain: 0.04 });
       setTimeout(() => beep({ freq: 1175, dur: 0.09, type: "sine", gain: 0.035 }), 70);
+    },
+    drawer: () => beep({ freq: 180, dur: 0.12, type: "triangle", gain: 0.05, slideTo: 90 }),
+    ticket: () => {
+      beep({ freq: 1500, dur: 0.04, type: "square", gain: 0.02 });
+      setTimeout(() => beep({ freq: 1200, dur: 0.04, type: "square", gain: 0.02 }), 50);
+    },
+    draw: () => {
+      beep({ freq: 440, dur: 0.1 });
+      setTimeout(() => beep({ freq: 554, dur: 0.1 }), 100);
+      setTimeout(() => beep({ freq: 659, dur: 0.16 }), 200);
     },
     error: () => beep({ freq: 200, dur: 0.15, type: "sawtooth", gain: 0.03 }),
     success: () => {
@@ -2254,6 +2756,58 @@
     },
     open: () => beep({ freq: 400, dur: 0.2, type: "triangle", gain: 0.04, slideTo: 800 })
   };
+  function startMusic() {
+    if (!musicOn || musicNodes) return;
+    try {
+      const c = ac();
+      const master = c.createGain();
+      master.gain.value = 0.035;
+      master.connect(c.destination);
+      const notes = [196, 247, 294, 330, 294, 247];
+      const oscs = notes.map((freq, i) => {
+        const o = c.createOscillator();
+        const g = c.createGain();
+        o.type = "sine";
+        o.frequency.value = freq;
+        g.gain.value = 0;
+        o.connect(g);
+        g.connect(master);
+        o.start();
+        const pulse = () => {
+          if (!musicNodes) return;
+          const t = c.currentTime;
+          g.gain.cancelScheduledValues(t);
+          g.gain.setValueAtTime(0, t);
+          g.gain.linearRampToValueAtTime(0.15, t + 0.4);
+          g.gain.linearRampToValueAtTime(0, t + 2.2);
+          setTimeout(pulse, 2200 + i * 180);
+        };
+        setTimeout(pulse, i * 400);
+        return { o, g };
+      });
+      musicNodes = { master, oscs };
+    } catch (e) {
+    }
+  }
+  function stopMusic() {
+    if (!musicNodes) return;
+    try {
+      musicNodes.oscs.forEach(({ o }) => o.stop());
+    } catch (e) {
+    }
+    musicNodes = null;
+  }
+  function setMusicEnabled(on) {
+    musicOn = on;
+    if (on) startMusic();
+    else stopMusic();
+  }
+  function setSfxEnabled(on) {
+    sfxOn = on;
+  }
+  function isMusicEnabled() {
+    return musicOn;
+  }
 
   // src/game/pdf.js
   function downloadTicketPdf(ticket, business = OFFICE) {
@@ -2360,6 +2914,248 @@ ${xrefPos}
     return s.replace(/\\/g, "\\\\").replace(/\(/g, "\\(").replace(/\)/g, "\\)");
   }
 
+  // src/game/tpv.js
+  function openTpv(state2, client) {
+    state2.ui.tpv = {
+      clientId: (client == null ? void 0 : client.id) || null,
+      clientName: (client == null ? void 0 : client.name) || "Cliente",
+      category: "LAE",
+      lines: [],
+      editingLineId: null,
+      numberEntry: null,
+      // { lineId, mode, draft }
+      message: null
+    };
+    state2.ui.screen = "tpv";
+    return state2;
+  }
+  function closeTpv(state2) {
+    state2.ui.tpv = null;
+    state2.ui.screen = "counter";
+    return state2;
+  }
+  function setTpvCategory(state2, category) {
+    if (!state2.ui.tpv) return state2;
+    state2.ui.tpv.category = category;
+    state2.ui.tpv.message = null;
+    return state2;
+  }
+  function lineId() {
+    return `L-${Date.now()}-${Math.floor(Math.random() * 1e5)}`;
+  }
+  function addTpvProduct(state2, productId, { qty = 1, numberSource = "random" } = {}) {
+    const tpv = state2.ui.tpv;
+    if (!tpv) return state2;
+    const p = getProduct(productId);
+    if (!p) return state2;
+    const have = state2.stock[productId];
+    if (p.stockType === "physical" && have != null && have < qty) {
+      tpv.message = `Sin stock suficiente de ${p.name} (hay ${have}). Quita la l\xEDnea o reserva.`;
+      return state2;
+    }
+    const rng = mulberry322(hashSeed("tpv", state2.clock.gameTimeMs, productId, tpv.lines.length));
+    const selection = p.needsNumbers && numberSource === "random" ? generateBetSelection(productId, rng) : p.needsNumbers ? null : {};
+    const line = {
+      id: lineId(),
+      productId: p.id,
+      name: p.name,
+      org: p.org,
+      qty,
+      unitCents: p.priceCents,
+      numberSource,
+      selection,
+      needsNumbers: !!p.needsNumbers,
+      numberMode: p.numberMode || null
+    };
+    tpv.lines.push(line);
+    tpv.message = `A\xF1adido: ${p.name} \xD7${qty}`;
+    if (p.needsNumbers && numberSource === "dictate") {
+      tpv.numberEntry = {
+        lineId: line.id,
+        mode: p.numberMode,
+        draft: "",
+        productName: p.name
+      };
+    }
+    return state2;
+  }
+  function removeTpvLine(state2, id) {
+    var _a;
+    const tpv = state2.ui.tpv;
+    if (!tpv) return state2;
+    tpv.lines = tpv.lines.filter((l) => l.id !== id);
+    if (((_a = tpv.numberEntry) == null ? void 0 : _a.lineId) === id) tpv.numberEntry = null;
+    tpv.message = "L\xEDnea eliminada";
+    return state2;
+  }
+  function setLineQty(state2, id, qty) {
+    var _a;
+    const tpv = state2.ui.tpv;
+    if (!tpv) return state2;
+    const line = tpv.lines.find((l) => l.id === id);
+    if (!line) return state2;
+    const q = Math.max(1, Math.min(50, qty));
+    const p = getProduct(line.productId);
+    if ((p == null ? void 0 : p.stockType) === "physical") {
+      const have = (_a = state2.stock[line.productId]) != null ? _a : 0;
+      if (have < q) {
+        tpv.message = `Solo hay ${have} de ${line.name}`;
+        line.qty = Math.max(1, have);
+        return state2;
+      }
+    }
+    line.qty = q;
+    return state2;
+  }
+  function applyDictatedNumbers(state2, text) {
+    const tpv = state2.ui.tpv;
+    if (!(tpv == null ? void 0 : tpv.numberEntry)) return state2;
+    const line = tpv.lines.find((l) => l.id === tpv.numberEntry.lineId);
+    if (!line) return state2;
+    const parsed = parseDictatedNumbers(line.numberMode, text);
+    if (!parsed.ok) {
+      tpv.message = parsed.error;
+      return state2;
+    }
+    line.selection = parsed.selection;
+    tpv.numberEntry = null;
+    tpv.message = "N\xFAmeros marcados";
+    return state2;
+  }
+  function cancelNumberEntry(state2) {
+    if (state2.ui.tpv) state2.ui.tpv.numberEntry = null;
+    return state2;
+  }
+  function rerollLineNumbers(state2, id) {
+    const tpv = state2.ui.tpv;
+    if (!tpv) return state2;
+    const line = tpv.lines.find((l) => l.id === id);
+    if (!(line == null ? void 0 : line.needsNumbers)) return state2;
+    const rng = mulberry322(hashSeed("reroll", state2.clock.gameTimeMs, id));
+    line.selection = generateBetSelection(line.productId, rng);
+    line.numberSource = "random";
+    tpv.message = "Combinaci\xF3n aleatoria nueva";
+    return state2;
+  }
+  function startDictateLine(state2, id) {
+    const tpv = state2.ui.tpv;
+    if (!tpv) return state2;
+    const line = tpv.lines.find((l) => l.id === id);
+    if (!(line == null ? void 0 : line.needsNumbers)) return state2;
+    tpv.numberEntry = {
+      lineId: line.id,
+      mode: line.numberMode,
+      draft: "",
+      productName: line.name
+    };
+    return state2;
+  }
+  function parseDictatedNumbers(mode, text) {
+    const raw = String(text || "").trim();
+    if (!raw) return { ok: false, error: "Escribe los n\xFAmeros que dicta el cliente" };
+    if (mode === "nacional" || mode === "triplex") {
+      const digits = raw.replace(/\D/g, "");
+      const need = mode === "triplex" ? 3 : 5;
+      if (digits.length < need) return { ok: false, error: `Haz falta ${need} cifras` };
+      return { ok: true, selection: { number: digits.slice(0, need).padStart(need, "0") } };
+    }
+    if (mode === "6from49") {
+      const nums = raw.split(/[\s,;.-]+/).map(Number).filter((n) => n >= 1 && n <= 49);
+      const unique = [...new Set(nums)];
+      if (unique.length < 6) return { ok: false, error: "Indica 6 n\xFAmeros del 1 al 49" };
+      const reMatch = raw.match(/r\s*(\d)/i);
+      const reintegro = reMatch ? Number(reMatch[1]) : unique[6] != null ? unique[6] % 10 : 0;
+      return {
+        ok: true,
+        selection: { numbers: unique.slice(0, 6).sort((a, b) => a - b), reintegro }
+      };
+    }
+    if (mode === "euro" || mode === "eurojackpot") {
+      const parts = raw.split(/[★*|]/);
+      const main = (parts[0] || "").split(/[\s,;.-]+/).map(Number).filter((n) => n >= 1 && n <= 50);
+      const stars = (parts[1] || "").split(/[\s,;.-]+/).map(Number).filter((n) => n >= 1 && n <= 12);
+      const uMain = [...new Set(main)];
+      const uStars = [...new Set(stars)];
+      if (uMain.length < 5 || uStars.length < 2) {
+        return { ok: false, error: "Formato: 5 n\xFAmeros | 2 estrellas (ej. 1 2 3 4 5 | 6 7)" };
+      }
+      return {
+        ok: true,
+        selection: {
+          numbers: uMain.slice(0, 5).sort((a, b) => a - b),
+          stars: uStars.slice(0, 2).sort((a, b) => a - b)
+        }
+      };
+    }
+    if (mode === "gordo") {
+      const nums = raw.split(/[\s,;.-]+/).map(Number).filter((n) => n >= 1 && n <= 54);
+      const unique = [...new Set(nums)];
+      if (unique.length < 5) return { ok: false, error: "5 n\xFAmeros (1\u201354) y clave 1\u20139" };
+      const clave = Number((raw.match(/clave\s*(\d)/i) || [])[1] || unique[5] || 1);
+      return {
+        ok: true,
+        selection: { numbers: unique.slice(0, 5).sort((a, b) => a - b), clave: Math.min(9, Math.max(1, clave)) }
+      };
+    }
+    if (mode === "quiniela") {
+      const signs = raw.toUpperCase().replace(/[^1X2]/g, "");
+      if (signs.length < 14) return { ok: false, error: "14 signos 1/X/2 (ej. 1X2112...)" };
+      return { ok: true, selection: { column: signs.slice(0, 14).split(""), pleno: signs[14] || "1" } };
+    }
+    if (mode === "quinigol") {
+      const g = raw.toUpperCase().replace(/[^012M]/g, "");
+      if (g.length < 6) return { ok: false, error: "6 resultados 0/1/2/M" };
+      return { ok: true, selection: { goals: g.slice(0, 6).split("") } };
+    }
+    if (mode === "superonce" || mode === "5from40" || mode === "lototurf") {
+      const max = mode === "5from40" ? 40 : 49;
+      const need = 5;
+      const nums = raw.split(/[\s,;.-]+/).map(Number).filter((n) => n >= 1 && n <= max);
+      const unique = [...new Set(nums)];
+      if (unique.length < need) return { ok: false, error: `${need} n\xFAmeros del 1 al ${max}` };
+      return { ok: true, selection: { numbers: unique.slice(0, need).sort((a, b) => a - b) } };
+    }
+    return { ok: false, error: "No se entiende la combinaci\xF3n" };
+  }
+  function tpvTotalCents(tpv) {
+    return ((tpv == null ? void 0 : tpv.lines) || []).reduce((s, l) => s + l.unitCents * l.qty, 0);
+  }
+  function tpvReadyToCharge(tpv) {
+    var _a;
+    if (!((_a = tpv == null ? void 0 : tpv.lines) == null ? void 0 : _a.length)) return { ok: false, error: "El ticket est\xE1 vac\xEDo" };
+    for (const l of tpv.lines) {
+      if (l.needsNumbers && !l.selection) {
+        return { ok: false, error: `Faltan n\xFAmeros en ${l.name}` };
+      }
+    }
+    return { ok: true };
+  }
+  function tpvToSaleItems(tpv) {
+    return tpv.lines.map((l) => ({
+      productId: l.productId,
+      name: l.name,
+      qty: l.qty,
+      unitCents: l.unitCents,
+      org: l.org,
+      selection: l.selection,
+      numberSource: l.numberSource
+    }));
+  }
+  function formatLineSelection(line) {
+    const s = line.selection;
+    if (!s) return "Sin marcar";
+    if (s.number) return `N\xBA ${s.number}`;
+    if (s.column) return `Columna ${s.column.join("")}`;
+    if (s.goals) return `Goles ${s.goals.join("")}`;
+    if (s.stars) return `${(s.numbers || []).join(",")} \u2605 ${s.stars.join(",")}`;
+    if (s.clave != null) return `${(s.numbers || []).join(",")} clave ${s.clave}`;
+    if (s.numbers) {
+      const r = s.reintegro != null ? ` R${s.reintegro}` : "";
+      return `${s.numbers.join(",")}${r}`;
+    }
+    return "\u2014";
+  }
+
   // src/main.js
   var state = null;
   var toastTimer = null;
@@ -2376,16 +3172,28 @@ ${xrefPos}
       render();
     }, 3500);
   }
-  function loop() {
+  function maybeStartMusic() {
     var _a, _b;
+    if ((_a = state == null ? void 0 : state.settings) == null ? void 0 : _a.music) {
+      setMusicEnabled(true);
+      startMusic();
+    } else if (state == null ? void 0 : state.settings) {
+      setMusicEnabled(false);
+    }
+    if (((_b = state == null ? void 0 : state.settings) == null ? void 0 : _b.sfx) != null) setSfxEnabled(!!state.settings.sfx);
+  }
+  function loop() {
+    var _a, _b, _c, _d;
     if (state && state.ui.screen !== "menu") {
       advanceClock(state);
       ensureDrawsResolved(state);
       if (state.ui.screen === "counter") {
         const before = ((_a = state.customers.current) == null ? void 0 : _a.id) || null;
+        const qBefore = ((_b = state.customers.queue) == null ? void 0 : _b.length) || 0;
         maybeSpawnCustomers(state);
-        const after = ((_b = state.customers.current) == null ? void 0 : _b.id) || null;
-        if (before !== after) needsFullRender = true;
+        const after = ((_c = state.customers.current) == null ? void 0 : _c.id) || null;
+        const qAfter = ((_d = state.customers.queue) == null ? void 0 : _d.length) || 0;
+        if (before !== after || qBefore !== qAfter) needsFullRender = true;
       }
       const minute = Math.floor(state.clock.gameTimeMs / 6e4);
       if (needsFullRender) {
@@ -2419,12 +3227,14 @@ ${xrefPos}
   function render() {
     if (!state || state.ui.screen === "menu") return renderMenu();
     if (state.ui.screen === "cash") return renderCash();
+    if (state.ui.screen === "tpv") return renderTpv();
     if (state.ui.screen === "close") return renderClose();
     if (state.ui.screen === "saves") return renderSavesInGame();
     if (state.ui.screen === "stock") return renderStock();
     if (state.ui.screen === "prize") return renderPrize();
     if (state.ui.screen === "draws") return renderDraws();
     if (state.ui.screen === "management") return renderManagement();
+    if (state.ui.screen === "fichas") return renderFichas();
     return renderCounter();
   }
   function escapeHtml(s) {
@@ -2451,6 +3261,22 @@ ${xrefPos}
   function eventBannerText() {
     const ev = eventOn(gameYmd(state), state.events);
     return ev ? `Evento en \xC1lora: ${ev.name}` : "";
+  }
+  function dictateHint(mode) {
+    const hints = {
+      nacional: "5 cifras (ej. 45821)",
+      triplex: "3 cifras (ej. 742)",
+      "6from49": "6 n\xFAmeros 1\u201349 y reintegro (ej. 1 8 15 22 33 41 r3)",
+      euro: "5 n\xFAmeros | 2 estrellas (ej. 1 2 3 4 5 | 6 7)",
+      eurojackpot: "5 n\xFAmeros | 2 estrellas (ej. 1 2 3 4 5 | 6 7)",
+      gordo: "5 n\xFAmeros 1\u201354 y clave (ej. 3 12 20 33 50 clave 7)",
+      quiniela: "14 signos 1/X/2 (ej. 1X2112X12X121)",
+      quinigol: "6 resultados 0/1/2/M",
+      superonce: "5 n\xFAmeros del 1 al 49",
+      "5from40": "5 n\xFAmeros del 1 al 40",
+      lototurf: "5 n\xFAmeros del 1 al 49"
+    };
+    return hints[mode] || "Escribe la combinaci\xF3n dictada";
   }
   function renderMenu() {
     const slots = listSlots();
@@ -2488,7 +3314,7 @@ ${xrefPos}
         </div>
         <p class="disclaimer">
           Fan-made / no oficial. Nombres de Loter\xEDas y Apuestas del Estado y ONCE usados solo con fines de simulaci\xF3n.
-          Juego responsable \xB7 +18. Versi\xF3n ${GAME_VERSION}: sorteos, comprobaciones, rascas, liquidaciones y tickets PDF.
+          Juego responsable \xB7 +18. Versi\xF3n ${GAME_VERSION}: TPV completo, cola, abonados/pe\xF1as, liquidaciones y tickets PDF.
         </p>
       </div>
     </div>
@@ -2498,8 +3324,9 @@ ${xrefPos}
       state = newGame();
       processArrivingOrders(state);
       ensureDrawsResolved(state);
+      maybeStartMusic();
       state.ui.screen = "counter";
-      showToast("Bienvenida, Miriam. Versi\xF3n 0.1 lista.");
+      showToast("Bienvenida, Miriam. Versi\xF3n 0.2 lista. Abre el TPV para vender.");
       needsFullRender = true;
       render();
     };
@@ -2509,6 +3336,7 @@ ${xrefPos}
       if (!f) return;
       try {
         state = await importGame(f);
+        maybeStartMusic();
         showToast("Partida importada");
         sfx.success();
         needsFullRender = true;
@@ -2523,6 +3351,7 @@ ${xrefPos}
         const slot = Number(btn.getAttribute("data-load"));
         state = loadFromSlot(slot);
         if (!state) return;
+        maybeStartMusic();
         sfx.click();
         showToast(`Partida cargada (hueco ${slot})`);
         needsFullRender = true;
@@ -2573,18 +3402,22 @@ ${xrefPos}
     });
   }
   function sideNav() {
+    var _a, _b;
     const profit = dayProfitBreakdown(state);
     const openMgmt = (state.prizeManagement || []).filter((c) => c.status !== "settled").length;
+    const musicOn2 = ((_a = state.settings) == null ? void 0 : _a.music) !== false && isMusicEnabled();
     return `
     <aside class="panel nav-side">
       <h3>Oficina</h3>
       <button class="btn" data-nav="counter">Mostrador</button>
+      <button class="btn" data-nav="fichas">Abonados / Pe\xF1as</button>
       <button class="btn" data-nav="draws">Sorteos</button>
       <button class="btn" data-nav="prize">Pagar premio</button>
       <button class="btn" data-nav="management">Gesti\xF3n premios${openMgmt ? ` (${openMgmt})` : ""}</button>
       <button class="btn" data-nav="stock">Stock y pedidos</button>
       <button class="btn" data-nav="close">Cierre y balance</button>
       <button class="btn" data-nav="saves">Guardar / exportar</button>
+      <button class="btn" id="btn-music-toggle">${musicOn2 ? "\u266A M\xFAsica: ON" : "\u266A M\xFAsica: OFF"}</button>
       <hr style="border:none;border-top:1px solid var(--line);margin:14px 0" />
       <div class="stat-row"><span>Banco</span><strong>${formatEuro(state.finance.bankCents)}</strong></div>
       <div class="stat-row"><span>Caja</span><strong>${formatEuro(drawerTotalCents(state.finance.drawer))}</strong></div>
@@ -2592,6 +3425,7 @@ ${xrefPos}
       <div class="stat-row"><span>Comisi\xF3n hoy</span><strong>${formatEuro(profit.commissionCents)}</strong></div>
       <div class="stat-row"><span>Beneficio hoy*</span><strong>${formatEuro(profit.profitCents)}</strong></div>
       <div class="stat-row"><span>Clientes hoy</span><strong>${state.customers.servedToday}</strong></div>
+      <div class="stat-row"><span>En cola</span><strong>${((_b = state.customers.queue) == null ? void 0 : _b.length) || 0}</strong></div>
       <div class="stat-row"><span>Velocidad</span><strong>${speedLabel(state.clock.speed, state.clock.paused)}</strong></div>
       <p class="muted" style="font-size:0.78rem;margin-top:8px">*Comisiones \u2212 gastos del d\xEDa</p>
     </aside>
@@ -2601,13 +3435,60 @@ ${xrefPos}
     app.querySelectorAll("[data-nav]").forEach((btn) => {
       btn.onclick = () => {
         sfx.click();
-        state.ui.screen = btn.getAttribute("data-nav");
+        const screen = btn.getAttribute("data-nav");
+        if (screen === "fichas") state.ui.fichaId = null;
+        state.ui.screen = screen;
         needsFullRender = true;
         render();
       };
     });
+    const musicBtn = document.getElementById("btn-music-toggle");
+    if (musicBtn) {
+      musicBtn.onclick = () => {
+        var _a;
+        const next = !(((_a = state.settings) == null ? void 0 : _a.music) !== false && isMusicEnabled());
+        state.settings = state.settings || {};
+        state.settings.music = next;
+        setMusicEnabled(next);
+        if (next) startMusic();
+        sfx.click();
+        needsFullRender = true;
+        render();
+      };
+    }
+  }
+  function queueHTML() {
+    const queue = state.customers.queue || [];
+    if (!queue.length) {
+      return `<div class="muted" style="margin-top:8px">Cola vac\xEDa</div>`;
+    }
+    return `
+    <div class="queue-list" style="margin-top:8px">
+      ${queue.slice(0, 12).map((c, i) => {
+      const kind = c.kind === "pena" ? "Pe\xF1a" : c.kind === "abonado" ? "Abonado" : c.regular ? "Habitual" : "Visitante";
+      const wish = (c.wishlist || []).slice(0, 2).map((w) => w.productName).join(", ");
+      return `<div class="queue-item"><strong>${i + 1}. ${escapeHtml(c.name)}</strong>
+            <span class="muted"> \xB7 ${kind}${c.intent ? ` \xB7 ${escapeHtml(c.intent)}` : ""}</span>
+            ${wish ? `<div class="muted">${escapeHtml(wish)}</div>` : ""}
+          </div>`;
+    }).join("")}
+      ${queue.length > 12 ? `<div class="muted">\u2026 y ${queue.length - 12} m\xE1s</div>` : ""}
+    </div>`;
+  }
+  function wishlistHTML(client) {
+    const list = client.wishlist || [];
+    if (!list.length) {
+      if (client.request) {
+        return `<ul class="wish-list"><li><strong>${escapeHtml(client.request.productName)}</strong> \xD7 ${client.request.qty}</li></ul>`;
+      }
+      return "";
+    }
+    return `<ul class="wish-list">${list.map(
+      (w) => `<li>\u2022 <strong>${escapeHtml(w.productName)}</strong> \xD7 ${w.qty}${w.preferDictate ? ' <span class="muted">(dictado)</span>' : ""}</li>`
+    ).join("")}</ul>`;
   }
   function renderCounter() {
+    var _a;
     const client = state.customers.current;
     const ev = eventBannerText();
     let clientBlock;
@@ -2635,7 +3516,11 @@ ${xrefPos}
         ${sideNav()}
         <section class="panel counter-stage">
           ${clientBlock}
-          <div>
+          <div style="margin-top:16px">
+            <h3>Cola (${((_a = state.customers.queue) == null ? void 0 : _a.length) || 0})</h3>
+            ${queueHTML()}
+          </div>
+          <div style="margin-top:16px">
             <h3>Registro del d\xEDa</h3>
             <div class="log">
               ${log.length ? log.map((l) => `<div class="log-item">${escapeHtml(l.text)}</div>`).join("") : '<div class="muted">A\xFAn no hay movimientos.</div>'}
@@ -2661,19 +3546,25 @@ ${xrefPos}
     const intent = client.intent || "buy";
     const trait = client.trait ? ` \xB7 ${client.trait}` : "";
     const quote = client.line || client.note || "";
+    const kindLabel = client.kind === "pena" ? "Pe\xF1a" : client.kind === "abonado" ? "Abonado" : client.regular ? "Habitual" : "Visitante";
     if (intent === "buy" || intent === "reserve_special") {
-      const req = client.request;
+      const totalWish = (client.wishlist || []).reduce((s, w) => {
+        const p = getProduct(w.productId);
+        return s + ((p == null ? void 0 : p.priceCents) || 0) * w.qty;
+      }, 0);
       return `
       <div class="client-card">
-        <div class="muted">${client.regular ? "Habitual" : "Visitante"}${trait} \xB7 ${escapeHtml(client.street || "")}</div>
+        <div class="muted">${kindLabel}${trait} \xB7 ${escapeHtml(client.street || "")}</div>
         <h3>${escapeHtml(client.name)}</h3>
         ${quote ? `<p class="muted">\u201C${escapeHtml(quote)}\u201D</p>` : ""}
-        <p>${intent === "reserve_special" ? "Encargo:" : "Quiere:"} <strong>${escapeHtml(req.productName)}</strong> \xD7 ${req.qty}
-          \u2014 ${formatEuro(req.totalCents)}</p>
+        <p>${intent === "reserve_special" ? "Encargo / petici\xF3n:" : "Quiere:"}</p>
+        ${wishlistHTML(client)}
+        ${totalWish ? `<p class="muted">Estimado: ${formatEuro(totalWish)}</p>` : ""}
         <p class="muted">Pago preferido: ${payLabel(client.prefersPayment)}</p>
         <div class="actions">
-          ${intent === "reserve_special" ? `<button class="btn primary" id="btn-reserve">Reservar sin pagar</button>` : `<button class="btn primary" id="btn-sell">Vender y cobrar</button>
-                 <button class="btn" id="btn-reserve">Reservar sin pagar</button>`}
+          <button class="btn primary" id="btn-open-tpv">Abrir TPV</button>
+          <button class="btn" id="btn-load-wish">Cargar petici\xF3n</button>
+          ${intent === "reserve_special" ? `<button class="btn" id="btn-reserve">Reservar sin pagar</button>` : `<button class="btn" id="btn-reserve">Reservar sin pagar</button>`}
           <button class="btn ghost" id="btn-skip">Despedir</button>
         </div>
       </div>`;
@@ -2730,13 +3621,38 @@ ${xrefPos}
     }
     return `<div class="client-card"><h3>${escapeHtml(client.name)}</h3><button class="btn" id="btn-skip">Despedir</button></div>`;
   }
+  function loadWishlistIntoTpv(client) {
+    var _a;
+    openTpv(state, client);
+    const items = ((_a = client.wishlist) == null ? void 0 : _a.length) ? client.wishlist : client.request ? [client.request] : [];
+    for (const w of items) {
+      const src = w.preferDictate ? "dictate" : "random";
+      for (let i = 0; i < (w.qty || 1); i++) {
+        addTpvProduct(state, w.productId, { qty: 1, numberSource: src });
+      }
+    }
+  }
   function bindClientActions() {
-    const sell = document.getElementById("btn-sell");
-    if (sell) {
-      sell.onclick = () => {
-        sfx.scan();
-        sellToCurrent(state);
-        if (state.ui.toast) showToast(state.ui.toast);
+    const openTpvBtn = document.getElementById("btn-open-tpv");
+    if (openTpvBtn) {
+      openTpvBtn.onclick = () => {
+        const client = state.customers.current;
+        if (!client) return;
+        sfx.tpv();
+        openTpv(state, client);
+        needsFullRender = true;
+        render();
+      };
+    }
+    const loadWish = document.getElementById("btn-load-wish");
+    if (loadWish) {
+      loadWish.onclick = () => {
+        var _a;
+        const client = state.customers.current;
+        if (!client) return;
+        sfx.tpv();
+        loadWishlistIntoTpv(client);
+        if ((_a = state.ui.tpv) == null ? void 0 : _a.message) showToast(state.ui.tpv.message);
         needsFullRender = true;
         render();
       };
@@ -2850,6 +3766,207 @@ ${xrefPos}
       };
     }
   }
+  function renderTpv() {
+    const tpv = state.ui.tpv;
+    if (!tpv) {
+      state.ui.screen = "counter";
+      return render();
+    }
+    const cat = tpv.category || "LAE";
+    const products = productsByTpvCategory(cat);
+    const total = tpvTotalCents(tpv);
+    const entry = tpv.numberEntry;
+    app.innerHTML = `
+    <div class="shell">
+      ${topbarHTML()}
+      <div class="panel" style="margin-top:16px">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+          <div>
+            <h2 style="margin:0">TPV \xB7 ${escapeHtml(tpv.clientName || "Cliente")}</h2>
+            <p class="muted" style="margin:4px 0 0">Terminal de ventas \xB7 elige categor\xEDa, a\xF1ade productos y cobra</p>
+          </div>
+          <button class="btn ghost" id="btn-tpv-back">Volver al mostrador</button>
+        </div>
+        ${tpv.message ? `<div class="error-box" style="margin:10px 0">${escapeHtml(tpv.message)}</div>` : ""}
+        ${entry ? `<div class="dictate-box">
+                <strong>Dictado: ${escapeHtml(entry.productName || "")}</strong>
+                <p class="muted">${escapeHtml(dictateHint(entry.mode))}</p>
+                <textarea id="dictate-input" placeholder="N\xFAmeros que dicta el cliente\u2026">${escapeHtml(entry.draft || "")}</textarea>
+                <div class="actions" style="margin-top:8px">
+                  <button class="btn primary" id="btn-dictate-ok">Marcar n\xFAmeros</button>
+                  <button class="btn ghost" id="btn-dictate-cancel">Cancelar dictado</button>
+                </div>
+              </div>` : ""}
+        <div class="tpv-wrap">
+          <div class="tpv-cats">
+            ${TPV_CATEGORIES.map(
+      (c) => `<button class="btn ${c === cat ? "primary" : ""}" data-tpv-cat="${c}">${escapeHtml(c)}</button>`
+    ).join("")}
+          </div>
+          <div class="tpv-products">
+            ${products.map((p) => {
+      var _a;
+      const stock = p.stockType === "physical" ? `Stock ${(_a = state.stock[p.id]) != null ? _a : 0}` : "Terminal";
+      return `<div class="tpv-product">
+                  <strong>${escapeHtml(p.name)}</strong>
+                  <span>${formatEuro(p.priceCents)} \xB7 ${escapeHtml(stock)}</span>
+                  <div class="actions" style="margin-top:8px;gap:6px">
+                    <button class="btn primary" style="flex:1;min-height:42px;padding:8px" data-add-random="${p.id}">Aleatorio</button>
+                    ${p.needsNumbers ? `<button class="btn" style="flex:1;min-height:42px;padding:8px" data-add-dictate="${p.id}">Dictado</button>` : `<button class="btn" style="flex:1;min-height:42px;padding:8px" data-add-random="${p.id}">+1</button>`}
+                  </div>
+                </div>`;
+    }).join("")}
+          </div>
+          <aside class="tpv-cart">
+            <h3 style="margin:0 0 8px">Ticket</h3>
+            <div style="flex:1;overflow:auto;display:flex;flex-direction:column;gap:8px">
+              ${tpv.lines.length ? tpv.lines.map(
+      (l) => `<div class="tpv-line">
+                          <div><strong>${escapeHtml(l.name)}</strong> \xB7 ${formatEuro(l.unitCents * l.qty)}</div>
+                          ${l.needsNumbers ? `<div class="muted">${escapeHtml(formatLineSelection(l))}</div>` : ""}
+                          <div class="actions" style="margin-top:6px;gap:4px;flex-wrap:wrap">
+                            <button class="btn" style="padding:6px 10px" data-qty="${l.id}" data-delta="-1">\u2212</button>
+                            <strong style="min-width:1.5rem;text-align:center">${l.qty}</strong>
+                            <button class="btn" style="padding:6px 10px" data-qty="${l.id}" data-delta="1">+</button>
+                            ${l.needsNumbers ? `<button class="btn" style="padding:6px 10px" data-reroll="${l.id}">Aleat.</button>
+                                   <button class="btn" style="padding:6px 10px" data-dictate-line="${l.id}">Dictar</button>` : ""}
+                            <button class="btn danger" style="padding:6px 10px" data-remove="${l.id}">Quitar</button>
+                          </div>
+                        </div>`
+    ).join("") : '<div class="muted">Carrito vac\xEDo. A\xF1ade productos.</div>'}
+            </div>
+            <div class="total-box" style="margin-top:8px">Total<strong>${formatEuro(total)}</strong></div>
+            <div class="actions" style="margin-top:8px">
+              <button class="btn primary" id="btn-tpv-charge" style="flex:1;min-height:52px;font-size:1.05rem">Cobrar</button>
+              <button class="btn danger" id="btn-tpv-cancel" style="min-height:52px">Cancelar</button>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </div>
+    ${toastHTML()}
+  `;
+    bindTopbar();
+    document.getElementById("btn-tpv-back").onclick = () => {
+      sfx.click();
+      closeTpv(state);
+      needsFullRender = true;
+      render();
+    };
+    app.querySelectorAll("[data-tpv-cat]").forEach((btn) => {
+      btn.onclick = () => {
+        sfx.click();
+        setTpvCategory(state, btn.getAttribute("data-tpv-cat"));
+        needsFullRender = true;
+        render();
+      };
+    });
+    app.querySelectorAll("[data-add-random]").forEach((btn) => {
+      btn.onclick = () => {
+        sfx.tpv();
+        addTpvProduct(state, btn.getAttribute("data-add-random"), { numberSource: "random" });
+        needsFullRender = true;
+        render();
+      };
+    });
+    app.querySelectorAll("[data-add-dictate]").forEach((btn) => {
+      btn.onclick = () => {
+        sfx.tpv();
+        addTpvProduct(state, btn.getAttribute("data-add-dictate"), { numberSource: "dictate" });
+        needsFullRender = true;
+        render();
+      };
+    });
+    app.querySelectorAll("[data-qty]").forEach((btn) => {
+      btn.onclick = () => {
+        const id = btn.getAttribute("data-qty");
+        const delta = Number(btn.getAttribute("data-delta"));
+        const line = tpv.lines.find((l) => l.id === id);
+        if (!line) return;
+        setLineQty(state, id, line.qty + delta);
+        sfx.click();
+        needsFullRender = true;
+        render();
+      };
+    });
+    app.querySelectorAll("[data-remove]").forEach((btn) => {
+      btn.onclick = () => {
+        removeTpvLine(state, btn.getAttribute("data-remove"));
+        sfx.click();
+        needsFullRender = true;
+        render();
+      };
+    });
+    app.querySelectorAll("[data-reroll]").forEach((btn) => {
+      btn.onclick = () => {
+        rerollLineNumbers(state, btn.getAttribute("data-reroll"));
+        sfx.scan();
+        needsFullRender = true;
+        render();
+      };
+    });
+    app.querySelectorAll("[data-dictate-line]").forEach((btn) => {
+      btn.onclick = () => {
+        startDictateLine(state, btn.getAttribute("data-dictate-line"));
+        sfx.click();
+        needsFullRender = true;
+        render();
+      };
+    });
+    const dictateOk = document.getElementById("btn-dictate-ok");
+    if (dictateOk) {
+      dictateOk.onclick = () => {
+        var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j;
+        const text = ((_a = document.getElementById("dictate-input")) == null ? void 0 : _a.value) || "";
+        applyDictatedNumbers(state, text);
+        if (((_c = (_b = state.ui.tpv) == null ? void 0 : _b.message) == null ? void 0 : _c.includes("Falta")) || ((_e = (_d = state.ui.tpv) == null ? void 0 : _d.message) == null ? void 0 : _e.includes("Indica")) || ((_g = (_f = state.ui.tpv) == null ? void 0 : _f.message) == null ? void 0 : _g.includes("Formato")) || ((_i = (_h = state.ui.tpv) == null ? void 0 : _h.message) == null ? void 0 : _i.includes("n\xFAmeros")) || ((_j = state.ui.tpv) == null ? void 0 : _j.numberEntry)) {
+          sfx.error();
+        } else {
+          sfx.success();
+        }
+        needsFullRender = true;
+        render();
+      };
+    }
+    const dictateCancel = document.getElementById("btn-dictate-cancel");
+    if (dictateCancel) {
+      dictateCancel.onclick = () => {
+        cancelNumberEntry(state);
+        sfx.click();
+        needsFullRender = true;
+        render();
+      };
+    }
+    document.getElementById("btn-tpv-charge").onclick = () => {
+      var _a, _b, _c, _d;
+      const ready = tpvReadyToCharge(tpv);
+      if (!ready.ok) {
+        tpv.message = ready.error;
+        sfx.error();
+        needsFullRender = true;
+        render();
+        return;
+      }
+      const items = tpvToSaleItems(tpv);
+      const client = ((_a = state.customers.current) == null ? void 0 : _a.id) === tpv.clientId ? state.customers.current : state.customers.regulars.find((c) => c.id === tpv.clientId) || ((_b = state.customers.abonados) == null ? void 0 : _b.find((c) => c.id === tpv.clientId)) || ((_c = state.customers.penas) == null ? void 0 : _c.find((c) => c.id === tpv.clientId)) || {
+        id: tpv.clientId,
+        name: tpv.clientName,
+        prefersPayment: ((_d = state.customers.current) == null ? void 0 : _d.prefersPayment) || "cash"
+      };
+      startPayment(state, { items, client });
+      state.ui.tpv = null;
+      sfx.drawer();
+      needsFullRender = true;
+      render();
+    };
+    document.getElementById("btn-tpv-cancel").onclick = () => {
+      sfx.click();
+      closeTpv(state);
+      showToast("TPV cancelado");
+      needsFullRender = true;
+      render();
+    };
+  }
   function renderCash() {
     const ps = state.ui.paymentSession;
     if (!ps) {
@@ -2909,8 +4026,8 @@ ${xrefPos}
       <div class="log">
         ${tickets.map(
         (t) => `<div class="log-item"><strong>${t.id}</strong> \xB7 ${escapeHtml(t.productName)} \xB7 ${escapeHtml(formatSelection(t))}${t.drawYmd ? ` \xB7 sorteo ${t.drawYmd}` : ""}
-              <button class="btn" style="padding:4px 8px;margin-left:8px" data-pdf="${t.id}">PDF</button>
-              </div>`
+                <button class="btn" style="padding:4px 8px;margin-left:8px" data-pdf="${t.id}">PDF</button>
+                </div>`
       ).join("") || '<div class="muted">Sin tickets</div>'}
       </div>
       <div class="actions" style="margin-top:12px">
@@ -3044,7 +4161,10 @@ ${xrefPos}
     ).join("");
   }
   function renderClose() {
+    var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n;
     const summary = buildDayCloseSummary(state);
+    const orgs = summary.orgs || dayProfitBreakdown(state).orgs;
+    const settle = summary.settlement || state.finance.lastSettlement;
     app.innerHTML = `
     <div class="shell">
       ${topbarHTML()}
@@ -3065,6 +4185,34 @@ ${xrefPos}
             <div class="stat-row"><span>Clientes</span><strong>${summary.customersServed}</strong></div>
             <div class="stat-row"><span>Siguiente laborable</span><strong>${summary.nextDay}</strong></div>
           </div>
+
+          <h3 style="margin-top:18px">Desglose por organizaci\xF3n</h3>
+          <div class="close-summary">
+            ${["LAE", "ONCE", "Otros"].map((org) => {
+      const o = (orgs == null ? void 0 : orgs[org]) || { sales: 0, commission: 0, prizes: 0 };
+      return `<div class="stat-row"><span>${org} ventas</span><strong>${formatEuro(o.sales)}</strong></div>
+                  <div class="stat-row"><span>${org} comisi\xF3n</span><strong>${formatEuro(o.commission)}</strong></div>
+                  <div class="stat-row"><span>${org} premios</span><strong>${formatEuro(o.prizes || 0)}</strong></div>`;
+    }).join("")}
+          </div>
+
+          <h3 style="margin-top:18px">Liquidaci\xF3n prevista / \xFAltima</h3>
+          ${settle ? `<div class="close-summary">
+                  <div class="stat-row"><span>LAE remesa</span><strong>${formatEuro(((_a = settle.lae) == null ? void 0 : _a.remittance) || 0)}</strong></div>
+                  <div class="stat-row"><span>LAE comisi\xF3n retenida</span><strong>${formatEuro(((_b = settle.lae) == null ? void 0 : _b.commission) || 0)}</strong></div>
+                  <div class="stat-row"><span>ONCE remesa</span><strong>${formatEuro(((_c = settle.once) == null ? void 0 : _c.remittance) || 0)}</strong></div>
+                  <div class="stat-row"><span>ONCE comisi\xF3n retenida</span><strong>${formatEuro(((_d = settle.once) == null ? void 0 : _d.commission) || 0)}</strong></div>
+                  <div class="stat-row"><span>Otros remesa</span><strong>${formatEuro(((_e = settle.otros) == null ? void 0 : _e.remittance) || 0)}</strong></div>
+                  <div class="stat-row"><span>Reembolso premios</span><strong>${formatEuro(
+      (((_f = settle.lae) == null ? void 0 : _f.prizesReimbursed) || 0) + (((_g = settle.once) == null ? void 0 : _g.prizesReimbursed) || 0) + (((_h = settle.otros) == null ? void 0 : _h.prizesReimbursed) || 0)
+    )}</strong></div>
+                </div>` : `<p class="muted">Se calcular\xE1 al cerrar el d\xEDa (ventas \u2212 comisi\xF3n por org, m\xE1s reembolso de premios).</p>
+                <div class="close-summary">
+                  <div class="stat-row"><span>LAE remesa estimada</span><strong>${formatEuro((((_i = orgs == null ? void 0 : orgs.LAE) == null ? void 0 : _i.sales) || 0) - (((_j = orgs == null ? void 0 : orgs.LAE) == null ? void 0 : _j.commission) || 0))}</strong></div>
+                  <div class="stat-row"><span>ONCE remesa estimada</span><strong>${formatEuro((((_k = orgs == null ? void 0 : orgs.ONCE) == null ? void 0 : _k.sales) || 0) - (((_l = orgs == null ? void 0 : orgs.ONCE) == null ? void 0 : _l.commission) || 0))}</strong></div>
+                  <div class="stat-row"><span>Otros remesa estimada</span><strong>${formatEuro((((_m = orgs == null ? void 0 : orgs.Otros) == null ? void 0 : _m.sales) || 0) - (((_n = orgs == null ? void 0 : orgs.Otros) == null ? void 0 : _n.commission) || 0))}</strong></div>
+                </div>`}
+
           <p class="muted">*Beneficio \u2248 comisiones \u2212 gastos (antes de liquidar)</p>
           <div class="actions" style="margin-top:18px">
             <button class="btn accent" id="btn-do-close">Liquidar, balance y cerrar d\xEDa</button>
@@ -3082,7 +4230,6 @@ ${xrefPos}
       state.meta.activeSlot = slot;
       saveToSlot(state, slot);
       sfx.success();
-      const settle = s.settlement;
       showToast(
         `D\xEDa cerrado \u2192 ${s.nextDay}. Beneficio ${formatEuro(s.profitCents)}. Liquidaci\xF3n hecha. Guardado hueco ${slot}.`
       );
@@ -3143,6 +4290,7 @@ ${xrefPos}
     app.querySelectorAll("[data-load]").forEach((btn) => {
       btn.onclick = () => {
         state = loadFromSlot(Number(btn.getAttribute("data-load")));
+        maybeStartMusic();
         sfx.click();
         showToast("Partida cargada");
         needsFullRender = true;
@@ -3159,6 +4307,7 @@ ${xrefPos}
       if (!f) return;
       try {
         state = await importGame(f);
+        maybeStartMusic();
         showToast("Importado");
         needsFullRender = true;
         render();
@@ -3250,9 +4399,21 @@ ${xrefPos}
     document.getElementById("btn-prize-cash").onclick = () => doPay("cash");
     document.getElementById("btn-prize-transfer").onclick = () => doPay("transfer");
   }
+  function formatDrawDetail(d) {
+    let detail = "";
+    if (d.numbers) detail = d.numbers.join(", ");
+    if (d.stars) detail += ` \u2605 ${d.stars.join(", ")}`;
+    if (d.reintegro != null) detail += ` \xB7 R${d.reintegro}`;
+    if (d.clave != null) detail += ` \xB7 clave ${d.clave}`;
+    if (d.winningNumber) detail = `N\xBA ${d.winningNumber}`;
+    if (d.column) detail = `Columna ${d.column.join("")}${d.pleno ? ` \xB7 pleno ${d.pleno}` : ""}`;
+    if (d.goals) detail = `Goles ${d.goals.join("")}`;
+    if (d.complementary != null) detail += ` \xB7 C${d.complementary}`;
+    return detail || "\u2014";
+  }
   function renderDraws() {
     ensureDrawsResolved(state);
-    const entries = Object.values(state.draws || {}).sort((a, b) => a.ymd < b.ymd ? 1 : -1).slice(0, 40);
+    const entries = listDrawHistory(state, 60);
     app.innerHTML = `
     <div class="shell">
       ${topbarHTML()}
@@ -3263,13 +4424,8 @@ ${xrefPos}
           <p class="muted">Se resuelven solos a la hora del sorteo (aprox. 21:00). Nacional, Primitiva, Bonoloto, Euromillones, Cup\xF3n ONCE\u2026</p>
           <div class="log">
             ${entries.length ? entries.map((d) => {
-      const p = PRODUCTS.find((x) => x.id === d.productId);
-      let detail = "";
-      if (d.numbers) detail = d.numbers.join(", ");
-      if (d.stars) detail += ` \u2605 ${d.stars.join(", ")}`;
-      if (d.reintegro != null) detail += ` \xB7 R${d.reintegro}`;
-      if (d.winningNumber) detail = `N\xBA ${d.winningNumber}`;
-      return `<div class="log-item"><strong>${escapeHtml((p == null ? void 0 : p.name) || d.productId)}</strong> \xB7 ${d.ymd}<br/>${escapeHtml(detail)}</div>`;
+      const p = getProduct(d.productId);
+      return `<div class="log-item"><strong>${escapeHtml((p == null ? void 0 : p.name) || d.productId)}</strong> \xB7 ${d.ymd}<br/>${escapeHtml(formatDrawDetail(d))}</div>`;
     }).join("") : '<div class="muted">A\xFAn no hay sorteos. Avanza el tiempo hasta despu\xE9s de las 21:00.</div>'}
           </div>
         </section>
@@ -3303,6 +4459,115 @@ ${xrefPos}
   `;
     bindTopbar();
     bindNav();
+  }
+  function findFicha(id) {
+    return (state.customers.abonados || []).find((c) => c.id === id) || (state.customers.penas || []).find((c) => c.id === id) || null;
+  }
+  function renderFichas() {
+    const abonados = state.customers.abonados || [];
+    const penas = state.customers.penas || [];
+    const detail = state.ui.fichaId ? findFicha(state.ui.fichaId) : null;
+    let body;
+    if (detail) {
+      const favIds = detail.preferredProducts || (detail.favoriteProduct ? [detail.favoriteProduct] : []);
+      const favNames = favIds.map((id) => {
+        var _a;
+        return ((_a = getProduct(id)) == null ? void 0 : _a.name) || id;
+      });
+      const history = [...detail.history || []].slice(-20).reverse();
+      const prizes = detail.prizesClaimed || [];
+      const orders = detail.orders || [];
+      const clientOrders = (state.orders || []).filter((o) => o.clientId === detail.id).slice(-15).reverse();
+      body = `
+      <button class="btn ghost" id="btn-ficha-back" style="margin-bottom:12px">\u2190 Volver al listado</button>
+      <h2>${escapeHtml(detail.name)}</h2>
+      <p class="muted">${detail.kind === "pena" ? "Pe\xF1a" : "Abonado"}${detail.street ? ` \xB7 ${escapeHtml(detail.street)}` : ""}${detail.members ? ` \xB7 ${detail.members} socios` : ""}</p>
+      <div class="close-summary" style="margin-top:12px">
+        <div class="stat-row"><span>Suscripci\xF3n</span><strong>${escapeHtml(detail.subscription || "\u2014")}</strong></div>
+        <div class="stat-row"><span>Pago preferido</span><strong>${payLabel(detail.prefersPayment || "cash")}</strong></div>
+        <div class="stat-row"><span>Favoritos</span><strong>${escapeHtml(favNames.join(", ") || "\u2014")}</strong></div>
+      </div>
+      <h3 style="margin-top:16px">Historial de compras</h3>
+      <div class="log">
+        ${history.length ? history.map((h) => {
+        var _a;
+        const items = (h.items || []).map((i) => `${i.name || i.productId}\xD7${i.qty}`).join(", ");
+        return `<div class="log-item">${formatEuro(h.totalCents || 0)} \xB7 ${escapeHtml(items || "venta")}${((_a = h.ticketIds) == null ? void 0 : _a.length) ? ` \xB7 tickets ${h.ticketIds.join(", ")}` : ""}</div>`;
+      }).join("") : '<div class="muted">Sin compras registradas a\xFAn.</div>'}
+      </div>
+      <h3 style="margin-top:16px">Premios cobrados</h3>
+      <div class="log">
+        ${prizes.length ? prizes.map(
+        (p) => `<div class="log-item">${escapeHtml(p.productName || p.id || "Premio")} \xB7 ${formatEuro(p.amountCents || p.prizeCents || 0)}</div>`
+      ).join("") : '<div class="muted">Ning\xFAn premio cobrado en ficha.</div>'}
+      </div>
+      <h3 style="margin-top:16px">Pedidos / encargos</h3>
+      <div class="log">
+        ${orders.length || clientOrders.length ? [...orders, ...clientOrders].slice(0, 20).map(
+        (o) => `<div class="log-item">${escapeHtml(o.productName || o.productId || "Pedido")} \xD7${o.qty || 1}${o.arriveOnYmd ? ` \xB7 ${o.arriveOnYmd}` : ""}${o.status ? ` \xB7 ${o.status}` : ""}</div>`
+      ).join("") : '<div class="muted">Sin pedidos en ficha.</div>'}
+      </div>
+    `;
+    } else {
+      body = `
+      <h2>Abonados y pe\xF1as</h2>
+      <p class="muted">Fichas de clientes con suscripci\xF3n o pe\xF1a. Pulsa para ver detalle.</p>
+      <h3 style="margin-top:14px">Abonados (${abonados.length})</h3>
+      <div class="slot-grid">
+        ${abonados.map(
+        (a) => {
+          var _a;
+          return `<button class="slot" data-ficha="${a.id}" style="cursor:pointer;text-align:left;width:100%">
+              <div>
+                <strong>${escapeHtml(a.name)}</strong>
+                <div class="muted">${escapeHtml(a.subscription || "")} \xB7 ${escapeHtml(((_a = getProduct(a.favoriteProduct)) == null ? void 0 : _a.name) || "")}</div>
+              </div>
+            </button>`;
+        }
+      ).join("")}
+      </div>
+      <h3 style="margin-top:18px">Pe\xF1as (${penas.length})</h3>
+      <div class="slot-grid">
+        ${penas.map(
+        (p) => `<button class="slot" data-ficha="${p.id}" style="cursor:pointer;text-align:left;width:100%">
+              <div>
+                <strong>${escapeHtml(p.name)}</strong>
+                <div class="muted">${escapeHtml(p.subscription || "")}${p.members ? ` \xB7 ${p.members} socios` : ""}</div>
+              </div>
+            </button>`
+      ).join("")}
+      </div>
+    `;
+    }
+    app.innerHTML = `
+    <div class="shell">
+      ${topbarHTML()}
+      <div class="layout" style="grid-template-columns:280px 1fr">
+        ${sideNav()}
+        <section class="panel">${body}</section>
+      </div>
+    </div>
+    ${toastHTML()}
+  `;
+    bindTopbar();
+    bindNav();
+    app.querySelectorAll("[data-ficha]").forEach((btn) => {
+      btn.onclick = () => {
+        sfx.click();
+        state.ui.fichaId = btn.getAttribute("data-ficha");
+        needsFullRender = true;
+        render();
+      };
+    });
+    const back = document.getElementById("btn-ficha-back");
+    if (back) {
+      back.onclick = () => {
+        sfx.click();
+        state.ui.fichaId = null;
+        needsFullRender = true;
+        render();
+      };
+    }
   }
   state = null;
   renderMenu();

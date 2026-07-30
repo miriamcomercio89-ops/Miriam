@@ -28,7 +28,7 @@ export function createTicketsFromSale(state, { items, clientId, clientName, meth
     const product = getProduct(item.productId);
     if (!product) continue;
     for (let q = 0; q < item.qty; q++) {
-      const ticket = buildTicket(state, product, clientId, clientName, rng);
+      const ticket = buildTicket(state, product, clientId, clientName, rng, item);
       ticket.saleMethod = method;
       state.tickets.push(ticket);
       created.push(ticket);
@@ -37,7 +37,7 @@ export function createTicketsFromSale(state, { items, clientId, clientName, meth
   return created;
 }
 
-function buildTicket(state, product, clientId, clientName, rng) {
+function buildTicket(state, product, clientId, clientName, rng, item = {}) {
   const id = nextTicketId(state);
   const base = {
     id,
@@ -48,7 +48,7 @@ function buildTicket(state, product, clientId, clientName, rng) {
     clientName,
     createdAt: state.clock.gameTimeMs,
     priceCents: product.priceCents,
-    status: 'active', // active | checked | paid | managed | void
+    status: 'active',
     prizeCents: 0,
     checkedAt: null,
     paidAt: null,
@@ -60,19 +60,19 @@ function buildTicket(state, product, clientId, clientName, rng) {
     return {
       ...base,
       kind: 'rasca',
-      // premio oculto hasta comprobación
       hiddenPrizeCents: prize,
       selection: { code: `R${pad5(Math.floor(rng() * 1e5))}` },
     };
   }
 
   const drawYmd = nextDrawYmd(product.id, gameDate(state));
-  const selection = generateBetSelection(product.id, rng);
+  const selection = item.selection || generateBetSelection(product.id, rng);
   return {
     ...base,
     kind: 'draw',
     drawYmd,
     selection,
+    numberSource: item.numberSource || 'random',
     hiddenPrizeCents: null,
   };
 }
@@ -101,11 +101,11 @@ export function evaluateDrawPrize(ticket, draw) {
     return { prizeCents: prize, detail, hits };
   }
 
-  if (id === 'lae-euromillones') {
+  if (id === 'lae-euromillones' || id === 'once-eurojackpot') {
     const hits = (sel.numbers || []).filter((n) => draw.numbers.includes(n)).length;
     const stars = (sel.stars || []).filter((n) => draw.stars.includes(n)).length;
     let prize = 0;
-    if (hits === 5 && stars === 2) prize = 5000000000;
+    if (hits === 5 && stars === 2) prize = id === 'once-eurojackpot' ? 3000000000 : 5000000000;
     else if (hits === 5 && stars === 1) prize = 25000000;
     else if (hits === 5) prize = 4000000;
     else if (hits === 4 && stars === 2) prize = 150000;
@@ -120,7 +120,47 @@ export function evaluateDrawPrize(ticket, draw) {
     return { prizeCents: prize, detail, hits, stars };
   }
 
-  if (id === 'lae-nacional' || id === 'lae-navidad' || id === 'lae-nino' || id === 'once-cupon') {
+  if (id === 'lae-gordo-primitiva') {
+    const hits = (sel.numbers || []).filter((n) => draw.numbers.includes(n)).length;
+    const clave = sel.clave === draw.clave;
+    let prize = 0;
+    if (hits === 5 && clave) prize = 500000000;
+    else if (hits === 5) prize = 800000;
+    else if (hits === 4 && clave) prize = 40000;
+    else if (hits === 4) prize = 8000;
+    else if (hits === 3 && clave) prize = 3000;
+    else if (hits === 3) prize = 1000;
+    else if (clave) prize = getProduct(id).priceCents;
+    return { prizeCents: prize, detail: prize ? `${hits} + clave` : 'Sin premio' };
+  }
+
+  if (id === 'lae-quiniela') {
+    const hits = (sel.column || []).filter((v, i) => v === (draw.column || [])[i]).length;
+    let prize = 0;
+    if (hits >= 14) prize = 200000000;
+    else if (hits === 13) prize = 500000;
+    else if (hits === 12) prize = 20000;
+    else if (hits === 11) prize = 4000;
+    else if (hits === 10) prize = 1000;
+    return { prizeCents: prize, detail: `${hits} aciertos` };
+  }
+
+  if (id === 'lae-quinigol') {
+    const hits = (sel.goals || []).filter((v, i) => v === (draw.goals || [])[i]).length;
+    const prize = hits === 6 ? 5000000 : hits === 5 ? 20000 : hits === 4 ? 2000 : 0;
+    return { prizeCents: prize, detail: `${hits} partidos` };
+  }
+
+  if (
+    id === 'lae-nacional' ||
+    id === 'lae-nacional-jueves' ||
+    id === 'lae-navidad' ||
+    id === 'lae-nino' ||
+    id === 'once-cupon' ||
+    id === 'once-cuponazo' ||
+    id === 'once-sueldazo' ||
+    id === 'once-triplex'
+  ) {
     const mine = String(sel.number || '');
     const win = String(draw.winningNumber || '');
     let prize = 0;

@@ -1,27 +1,23 @@
-# SPEC — Loterías Álora v0.1
+# SPEC — Loterías Álora v0.2
 
-## Visión
-Simulador realista de mostrador. Jugadora: Miriam. Ubicación: Álora. Sin game over.
+## TPV
+- Multi-línea, categorías LAE/ONCE/Rascas/Autonómicas/Provinciales/Locales
+- Aleatorio o dictado de números
+- Sin stock → aviso / quitar / reservar
+- Cobro final del ticket completo
 
-## Tiempo
-- Escala base 0.25 (4× más lento)
-- Velocidades: 0 / 1 / 15 / 60
-- L–V 08:00–20:00; festivos + eventos locales Álora
-- Cierre → liquidación → siguiente laborable 08:00
+## Cola
+- Visible, sin tope fijo
 
-## Sorteos v0.1
-- Nacional, Primitiva, Bonoloto, Euromillones, Cupón ONCE (+ inventadas)
-- Resultados deterministas por fecha
-- Tickets comprobables; clientes llegan a comprobar al azar
-- Premios: pago inmediato, diferido, o gestión (>2.000 €)
+## Clientes especiales
+- Abonados y peñas con ficha (historial, favoritos, encargos, premios)
 
-## Rascas
-- 10 modelos con tablas de premios; premio oculto al vender; comprobación posterior
+## Sorteos
+- Ampliados + histórico
+- Comprobación / pago / diferido / gestión
 
 ## Economía
-- Comisiones, gastos, beneficio del día
-- Liquidación diaria LAE/ONCE al cierre
-- Tickets PDF
+- Liquidación diaria desglosada LAE / ONCE / otros
 
-## Guardado
-- 3 slots, autosave al cierre, export/import, migración v1→v2
+## Audio
+- Música de fondo + efectos TPV/caja/ticket/sorteo

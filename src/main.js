@@ -20,7 +20,6 @@ import {
 } from './game/save.js';
 import {
   maybeSpawnCustomers,
-  sellToCurrent,
   reserveForCurrent,
   dismissCurrent,
   orderStock,
@@ -38,20 +37,47 @@ import {
   cancelPayment,
   payPrize,
   formatEuro,
-  ALL_DENOMS,
+  startPayment,
   countTotalCents,
   drawerTotalCents,
 } from './game/cash.js';
 import { buildDayCloseSummary, closeDay, dayProfitBreakdown } from './game/economy.js';
-import { PRODUCTS } from './data/products.js';
+import {
+  PRODUCTS,
+  TPV_CATEGORIES,
+  productsByTpvCategory,
+  getProduct,
+} from './data/products.js';
 import { BILLS, COINS } from './data/money.js';
-import { sfx } from './game/sounds.js';
-import { ensureDrawsResolved } from './game/draws.js';
+import {
+  sfx,
+  startMusic,
+  setMusicEnabled,
+  setSfxEnabled,
+  isMusicEnabled,
+} from './game/sounds.js';
+import { ensureDrawsResolved, listDrawHistory } from './game/draws.js';
 import { formatSelection } from './game/tickets.js';
 import { payTicketPrize, startPrizeManagement } from './game/prizes.js';
 import { downloadTicketPdf, downloadSaleReceiptPdf } from './game/pdf.js';
 import { eventOn } from './data/events.js';
 import { GAME_VERSION } from './game/state.js';
+import {
+  openTpv,
+  closeTpv,
+  setTpvCategory,
+  addTpvProduct,
+  removeTpvLine,
+  setLineQty,
+  applyDictatedNumbers,
+  cancelNumberEntry,
+  rerollLineNumbers,
+  startDictateLine,
+  tpvTotalCents,
+  tpvReadyToCharge,
+  tpvToSaleItems,
+  formatLineSelection,
+} from './game/tpv.js';
 
 let state = null;
 let toastTimer = null;
@@ -71,15 +97,27 @@ function showToast(msg) {
   }, 3500);
 }
 
+function maybeStartMusic() {
+  if (state?.settings?.music) {
+    setMusicEnabled(true);
+    startMusic();
+  } else if (state?.settings) {
+    setMusicEnabled(false);
+  }
+  if (state?.settings?.sfx != null) setSfxEnabled(!!state.settings.sfx);
+}
+
 function loop() {
   if (state && state.ui.screen !== 'menu') {
     advanceClock(state);
     ensureDrawsResolved(state);
     if (state.ui.screen === 'counter') {
       const before = state.customers.current?.id || null;
+      const qBefore = state.customers.queue?.length || 0;
       maybeSpawnCustomers(state);
       const after = state.customers.current?.id || null;
-      if (before !== after) needsFullRender = true;
+      const qAfter = state.customers.queue?.length || 0;
+      if (before !== after || qBefore !== qAfter) needsFullRender = true;
     }
 
     const minute = Math.floor(state.clock.gameTimeMs / 60000);
@@ -116,12 +154,14 @@ function renderClockOnly() {
 function render() {
   if (!state || state.ui.screen === 'menu') return renderMenu();
   if (state.ui.screen === 'cash') return renderCash();
+  if (state.ui.screen === 'tpv') return renderTpv();
   if (state.ui.screen === 'close') return renderClose();
   if (state.ui.screen === 'saves') return renderSavesInGame();
   if (state.ui.screen === 'stock') return renderStock();
   if (state.ui.screen === 'prize') return renderPrize();
   if (state.ui.screen === 'draws') return renderDraws();
   if (state.ui.screen === 'management') return renderManagement();
+  if (state.ui.screen === 'fichas') return renderFichas();
   return renderCounter();
 }
 
@@ -155,6 +195,23 @@ function crowdHint() {
 function eventBannerText() {
   const ev = eventOn(gameYmd(state), state.events);
   return ev ? `Evento en Álora: ${ev.name}` : '';
+}
+
+function dictateHint(mode) {
+  const hints = {
+    nacional: '5 cifras (ej. 45821)',
+    triplex: '3 cifras (ej. 742)',
+    '6from49': '6 números 1–49 y reintegro (ej. 1 8 15 22 33 41 r3)',
+    euro: '5 números | 2 estrellas (ej. 1 2 3 4 5 | 6 7)',
+    eurojackpot: '5 números | 2 estrellas (ej. 1 2 3 4 5 | 6 7)',
+    gordo: '5 números 1–54 y clave (ej. 3 12 20 33 50 clave 7)',
+    quiniela: '14 signos 1/X/2 (ej. 1X2112X12X121)',
+    quinigol: '6 resultados 0/1/2/M',
+    superonce: '5 números del 1 al 49',
+    '5from40': '5 números del 1 al 40',
+    lototurf: '5 números del 1 al 49',
+  };
+  return hints[mode] || 'Escribe la combinación dictada';
 }
 
 function renderMenu() {
@@ -196,7 +253,7 @@ function renderMenu() {
         </div>
         <p class="disclaimer">
           Fan-made / no oficial. Nombres de Loterías y Apuestas del Estado y ONCE usados solo con fines de simulación.
-          Juego responsable · +18. Versión ${GAME_VERSION}: sorteos, comprobaciones, rascas, liquidaciones y tickets PDF.
+          Juego responsable · +18. Versión ${GAME_VERSION}: TPV completo, cola, abonados/peñas, liquidaciones y tickets PDF.
         </p>
       </div>
     </div>
@@ -207,8 +264,9 @@ function renderMenu() {
     state = newGame();
     processArrivingOrders(state);
     ensureDrawsResolved(state);
+    maybeStartMusic();
     state.ui.screen = 'counter';
-    showToast('Bienvenida, Miriam. Versión 0.1 lista.');
+    showToast('Bienvenida, Miriam. Versión 0.2 lista. Abre el TPV para vender.');
     needsFullRender = true;
     render();
   };
@@ -218,6 +276,7 @@ function renderMenu() {
     if (!f) return;
     try {
       state = await importGame(f);
+      maybeStartMusic();
       showToast('Partida importada');
       sfx.success();
       needsFullRender = true;
@@ -233,6 +292,7 @@ function renderMenu() {
       const slot = Number(btn.getAttribute('data-load'));
       state = loadFromSlot(slot);
       if (!state) return;
+      maybeStartMusic();
       sfx.click();
       showToast(`Partida cargada (hueco ${slot})`);
       needsFullRender = true;
@@ -290,16 +350,19 @@ function bindTopbar() {
 function sideNav() {
   const profit = dayProfitBreakdown(state);
   const openMgmt = (state.prizeManagement || []).filter((c) => c.status !== 'settled').length;
+  const musicOn = state.settings?.music !== false && isMusicEnabled();
   return `
     <aside class="panel nav-side">
       <h3>Oficina</h3>
       <button class="btn" data-nav="counter">Mostrador</button>
+      <button class="btn" data-nav="fichas">Abonados / Peñas</button>
       <button class="btn" data-nav="draws">Sorteos</button>
       <button class="btn" data-nav="prize">Pagar premio</button>
       <button class="btn" data-nav="management">Gestión premios${openMgmt ? ` (${openMgmt})` : ''}</button>
       <button class="btn" data-nav="stock">Stock y pedidos</button>
       <button class="btn" data-nav="close">Cierre y balance</button>
       <button class="btn" data-nav="saves">Guardar / exportar</button>
+      <button class="btn" id="btn-music-toggle">${musicOn ? '♪ Música: ON' : '♪ Música: OFF'}</button>
       <hr style="border:none;border-top:1px solid var(--line);margin:14px 0" />
       <div class="stat-row"><span>Banco</span><strong>${formatEuro(state.finance.bankCents)}</strong></div>
       <div class="stat-row"><span>Caja</span><strong>${formatEuro(drawerTotalCents(state.finance.drawer))}</strong></div>
@@ -307,6 +370,7 @@ function sideNav() {
       <div class="stat-row"><span>Comisión hoy</span><strong>${formatEuro(profit.commissionCents)}</strong></div>
       <div class="stat-row"><span>Beneficio hoy*</span><strong>${formatEuro(profit.profitCents)}</strong></div>
       <div class="stat-row"><span>Clientes hoy</span><strong>${state.customers.servedToday}</strong></div>
+      <div class="stat-row"><span>En cola</span><strong>${state.customers.queue?.length || 0}</strong></div>
       <div class="stat-row"><span>Velocidad</span><strong>${speedLabel(state.clock.speed, state.clock.paused)}</strong></div>
       <p class="muted" style="font-size:0.78rem;margin-top:8px">*Comisiones − gastos del día</p>
     </aside>
@@ -317,11 +381,70 @@ function bindNav() {
   app.querySelectorAll('[data-nav]').forEach((btn) => {
     btn.onclick = () => {
       sfx.click();
-      state.ui.screen = btn.getAttribute('data-nav');
+      const screen = btn.getAttribute('data-nav');
+      if (screen === 'fichas') state.ui.fichaId = null;
+      state.ui.screen = screen;
       needsFullRender = true;
       render();
     };
   });
+  const musicBtn = document.getElementById('btn-music-toggle');
+  if (musicBtn) {
+    musicBtn.onclick = () => {
+      const next = !(state.settings?.music !== false && isMusicEnabled());
+      state.settings = state.settings || {};
+      state.settings.music = next;
+      setMusicEnabled(next);
+      if (next) startMusic();
+      sfx.click();
+      needsFullRender = true;
+      render();
+    };
+  }
+}
+
+function queueHTML() {
+  const queue = state.customers.queue || [];
+  if (!queue.length) {
+    return `<div class="muted" style="margin-top:8px">Cola vacía</div>`;
+  }
+  return `
+    <div class="queue-list" style="margin-top:8px">
+      ${queue
+        .slice(0, 12)
+        .map((c, i) => {
+          const kind =
+            c.kind === 'pena' ? 'Peña' : c.kind === 'abonado' ? 'Abonado' : c.regular ? 'Habitual' : 'Visitante';
+          const wish = (c.wishlist || [])
+            .slice(0, 2)
+            .map((w) => w.productName)
+            .join(', ');
+          return `<div class="queue-item"><strong>${i + 1}. ${escapeHtml(c.name)}</strong>
+            <span class="muted"> · ${kind}${c.intent ? ` · ${escapeHtml(c.intent)}` : ''}</span>
+            ${wish ? `<div class="muted">${escapeHtml(wish)}</div>` : ''}
+          </div>`;
+        })
+        .join('')}
+      ${queue.length > 12 ? `<div class="muted">… y ${queue.length - 12} más</div>` : ''}
+    </div>`;
+}
+
+function wishlistHTML(client) {
+  const list = client.wishlist || [];
+  if (!list.length) {
+    if (client.request) {
+      return `<ul class="wish-list"><li><strong>${escapeHtml(client.request.productName)}</strong> × ${client.request.qty}</li></ul>`;
+    }
+    return '';
+  }
+  return `<ul class="wish-list">${list
+    .map(
+      (w) =>
+        `<li>• <strong>${escapeHtml(w.productName)}</strong> × ${w.qty}${
+          w.preferDictate ? ' <span class="muted">(dictado)</span>' : ''
+        }</li>`,
+    )
+    .join('')}</ul>`;
 }
 
 function renderCounter() {
@@ -355,7 +478,11 @@ function renderCounter() {
         ${sideNav()}
         <section class="panel counter-stage">
           ${clientBlock}
-          <div>
+          <div style="margin-top:16px">
+            <h3>Cola (${state.customers.queue?.length || 0})</h3>
+            ${queueHTML()}
+          </div>
+          <div style="margin-top:16px">
             <h3>Registro del día</h3>
             <div class="log">
               ${
@@ -387,23 +514,30 @@ function renderClientPanel(client) {
   const intent = client.intent || 'buy';
   const trait = client.trait ? ` · ${client.trait}` : '';
   const quote = client.line || client.note || '';
+  const kindLabel =
+    client.kind === 'pena' ? 'Peña' : client.kind === 'abonado' ? 'Abonado' : client.regular ? 'Habitual' : 'Visitante';
 
   if (intent === 'buy' || intent === 'reserve_special') {
-    const req = client.request;
+    const totalWish = (client.wishlist || []).reduce((s, w) => {
+      const p = getProduct(w.productId);
+      return s + (p?.priceCents || 0) * w.qty;
+    }, 0);
     return `
       <div class="client-card">
-        <div class="muted">${client.regular ? 'Habitual' : 'Visitante'}${trait} · ${escapeHtml(client.street || '')}</div>
+        <div class="muted">${kindLabel}${trait} · ${escapeHtml(client.street || '')}</div>
         <h3>${escapeHtml(client.name)}</h3>
         ${quote ? `<p class="muted">“${escapeHtml(quote)}”</p>` : ''}
-        <p>${intent === 'reserve_special' ? 'Encargo:' : 'Quiere:'} <strong>${escapeHtml(req.productName)}</strong> × ${req.qty}
-          — ${formatEuro(req.totalCents)}</p>
+        <p>${intent === 'reserve_special' ? 'Encargo / petición:' : 'Quiere:'}</p>
+        ${wishlistHTML(client)}
+        ${totalWish ? `<p class="muted">Estimado: ${formatEuro(totalWish)}</p>` : ''}
         <p class="muted">Pago preferido: ${payLabel(client.prefersPayment)}</p>
         <div class="actions">
+          <button class="btn primary" id="btn-open-tpv">Abrir TPV</button>
+          <button class="btn" id="btn-load-wish">Cargar petición</button>
           ${
             intent === 'reserve_special'
-              ? `<button class="btn primary" id="btn-reserve">Reservar sin pagar</button>`
-              : `<button class="btn primary" id="btn-sell">Vender y cobrar</button>
-                 <button class="btn" id="btn-reserve">Reservar sin pagar</button>`
+              ? `<button class="btn" id="btn-reserve">Reservar sin pagar</button>`
+              : `<button class="btn" id="btn-reserve">Reservar sin pagar</button>`
           }
           <button class="btn ghost" id="btn-skip">Despedir</button>
         </div>
@@ -482,13 +616,41 @@ function renderClientPanel(client) {
   return `<div class="client-card"><h3>${escapeHtml(client.name)}</h3><button class="btn" id="btn-skip">Despedir</button></div>`;
 }
 
+function loadWishlistIntoTpv(client) {
+  openTpv(state, client);
+  const items = client.wishlist?.length
+    ? client.wishlist
+    : client.request
+      ? [client.request]
+      : [];
+  for (const w of items) {
+    const src = w.preferDictate ? 'dictate' : 'random';
+    for (let i = 0; i < (w.qty || 1); i++) {
+      addTpvProduct(state, w.productId, { qty: 1, numberSource: src });
+    }
+  }
+}
+
 function bindClientActions() {
-  const sell = document.getElementById('btn-sell');
-  if (sell) {
-    sell.onclick = () => {
-      sfx.scan();
-      sellToCurrent(state);
-      if (state.ui.toast) showToast(state.ui.toast);
+  const openTpvBtn = document.getElementById('btn-open-tpv');
+  if (openTpvBtn) {
+    openTpvBtn.onclick = () => {
+      const client = state.customers.current;
+      if (!client) return;
+      sfx.tpv();
+      openTpv(state, client);
+      needsFullRender = true;
+      render();
+    };
+  }
+  const loadWish = document.getElementById('btn-load-wish');
+  if (loadWish) {
+    loadWish.onclick = () => {
+      const client = state.customers.current;
+      if (!client) return;
+      sfx.tpv();
+      loadWishlistIntoTpv(client);
+      if (state.ui.tpv?.message) showToast(state.ui.tpv.message);
       needsFullRender = true;
       render();
     };
@@ -537,7 +699,6 @@ function bindClientActions() {
     payNow.onclick = () => {
       const t = state.customers.current?.ticketFocus;
       if (!t) return;
-      // Si es grande, payTicketPrize forzará gestión
       const res = payTicketPrize(state, t.id, { method: 'cash' });
       if (!res.ok && res.message?.includes('efectivo')) {
         const res2 = payTicketPrize(state, t.id, { method: 'transfer' });
@@ -599,6 +760,252 @@ function bindClientActions() {
   }
 }
 
+function renderTpv() {
+  const tpv = state.ui.tpv;
+  if (!tpv) {
+    state.ui.screen = 'counter';
+    return render();
+  }
+
+  const cat = tpv.category || 'LAE';
+  const products = productsByTpvCategory(cat);
+  const total = tpvTotalCents(tpv);
+  const entry = tpv.numberEntry;
+
+  app.innerHTML = `
+    <div class="shell">
+      ${topbarHTML()}
+      <div class="panel" style="margin-top:16px">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+          <div>
+            <h2 style="margin:0">TPV · ${escapeHtml(tpv.clientName || 'Cliente')}</h2>
+            <p class="muted" style="margin:4px 0 0">Terminal de ventas · elige categoría, añade productos y cobra</p>
+          </div>
+          <button class="btn ghost" id="btn-tpv-back">Volver al mostrador</button>
+        </div>
+        ${tpv.message ? `<div class="error-box" style="margin:10px 0">${escapeHtml(tpv.message)}</div>` : ''}
+        ${
+          entry
+            ? `<div class="dictate-box">
+                <strong>Dictado: ${escapeHtml(entry.productName || '')}</strong>
+                <p class="muted">${escapeHtml(dictateHint(entry.mode))}</p>
+                <textarea id="dictate-input" placeholder="Números que dicta el cliente…">${escapeHtml(entry.draft || '')}</textarea>
+                <div class="actions" style="margin-top:8px">
+                  <button class="btn primary" id="btn-dictate-ok">Marcar números</button>
+                  <button class="btn ghost" id="btn-dictate-cancel">Cancelar dictado</button>
+                </div>
+              </div>`
+            : ''
+        }
+        <div class="tpv-wrap">
+          <div class="tpv-cats">
+            ${TPV_CATEGORIES.map(
+              (c) =>
+                `<button class="btn ${c === cat ? 'primary' : ''}" data-tpv-cat="${c}">${escapeHtml(c)}</button>`,
+            ).join('')}
+          </div>
+          <div class="tpv-products">
+            ${products
+              .map((p) => {
+                const stock =
+                  p.stockType === 'physical'
+                    ? `Stock ${state.stock[p.id] ?? 0}`
+                    : 'Terminal';
+                return `<div class="tpv-product">
+                  <strong>${escapeHtml(p.name)}</strong>
+                  <span>${formatEuro(p.priceCents)} · ${escapeHtml(stock)}</span>
+                  <div class="actions" style="margin-top:8px;gap:6px">
+                    <button class="btn primary" style="flex:1;min-height:42px;padding:8px" data-add-random="${p.id}">Aleatorio</button>
+                    ${
+                      p.needsNumbers
+                        ? `<button class="btn" style="flex:1;min-height:42px;padding:8px" data-add-dictate="${p.id}">Dictado</button>`
+                        : `<button class="btn" style="flex:1;min-height:42px;padding:8px" data-add-random="${p.id}">+1</button>`
+                    }
+                  </div>
+                </div>`;
+              })
+              .join('')}
+          </div>
+          <aside class="tpv-cart">
+            <h3 style="margin:0 0 8px">Ticket</h3>
+            <div style="flex:1;overflow:auto;display:flex;flex-direction:column;gap:8px">
+              ${
+                tpv.lines.length
+                  ? tpv.lines
+                      .map(
+                        (l) => `<div class="tpv-line">
+                          <div><strong>${escapeHtml(l.name)}</strong> · ${formatEuro(l.unitCents * l.qty)}</div>
+                          ${
+                            l.needsNumbers
+                              ? `<div class="muted">${escapeHtml(formatLineSelection(l))}</div>`
+                              : ''
+                          }
+                          <div class="actions" style="margin-top:6px;gap:4px;flex-wrap:wrap">
+                            <button class="btn" style="padding:6px 10px" data-qty="${l.id}" data-delta="-1">−</button>
+                            <strong style="min-width:1.5rem;text-align:center">${l.qty}</strong>
+                            <button class="btn" style="padding:6px 10px" data-qty="${l.id}" data-delta="1">+</button>
+                            ${
+                              l.needsNumbers
+                                ? `<button class="btn" style="padding:6px 10px" data-reroll="${l.id}">Aleat.</button>
+                                   <button class="btn" style="padding:6px 10px" data-dictate-line="${l.id}">Dictar</button>`
+                                : ''
+                            }
+                            <button class="btn danger" style="padding:6px 10px" data-remove="${l.id}">Quitar</button>
+                          </div>
+                        </div>`,
+                      )
+                      .join('')
+                  : '<div class="muted">Carrito vacío. Añade productos.</div>'
+              }
+            </div>
+            <div class="total-box" style="margin-top:8px">Total<strong>${formatEuro(total)}</strong></div>
+            <div class="actions" style="margin-top:8px">
+              <button class="btn primary" id="btn-tpv-charge" style="flex:1;min-height:52px;font-size:1.05rem">Cobrar</button>
+              <button class="btn danger" id="btn-tpv-cancel" style="min-height:52px">Cancelar</button>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </div>
+    ${toastHTML()}
+  `;
+
+  bindTopbar();
+
+  document.getElementById('btn-tpv-back').onclick = () => {
+    sfx.click();
+    closeTpv(state);
+    needsFullRender = true;
+    render();
+  };
+
+  app.querySelectorAll('[data-tpv-cat]').forEach((btn) => {
+    btn.onclick = () => {
+      sfx.click();
+      setTpvCategory(state, btn.getAttribute('data-tpv-cat'));
+      needsFullRender = true;
+      render();
+    };
+  });
+
+  app.querySelectorAll('[data-add-random]').forEach((btn) => {
+    btn.onclick = () => {
+      sfx.tpv();
+      addTpvProduct(state, btn.getAttribute('data-add-random'), { numberSource: 'random' });
+      needsFullRender = true;
+      render();
+    };
+  });
+
+  app.querySelectorAll('[data-add-dictate]').forEach((btn) => {
+    btn.onclick = () => {
+      sfx.tpv();
+      addTpvProduct(state, btn.getAttribute('data-add-dictate'), { numberSource: 'dictate' });
+      needsFullRender = true;
+      render();
+    };
+  });
+
+  app.querySelectorAll('[data-qty]').forEach((btn) => {
+    btn.onclick = () => {
+      const id = btn.getAttribute('data-qty');
+      const delta = Number(btn.getAttribute('data-delta'));
+      const line = tpv.lines.find((l) => l.id === id);
+      if (!line) return;
+      setLineQty(state, id, line.qty + delta);
+      sfx.click();
+      needsFullRender = true;
+      render();
+    };
+  });
+
+  app.querySelectorAll('[data-remove]').forEach((btn) => {
+    btn.onclick = () => {
+      removeTpvLine(state, btn.getAttribute('data-remove'));
+      sfx.click();
+      needsFullRender = true;
+      render();
+    };
+  });
+
+  app.querySelectorAll('[data-reroll]').forEach((btn) => {
+    btn.onclick = () => {
+      rerollLineNumbers(state, btn.getAttribute('data-reroll'));
+      sfx.scan();
+      needsFullRender = true;
+      render();
+    };
+  });
+
+  app.querySelectorAll('[data-dictate-line]').forEach((btn) => {
+    btn.onclick = () => {
+      startDictateLine(state, btn.getAttribute('data-dictate-line'));
+      sfx.click();
+      needsFullRender = true;
+      render();
+    };
+  });
+
+  const dictateOk = document.getElementById('btn-dictate-ok');
+  if (dictateOk) {
+    dictateOk.onclick = () => {
+      const text = document.getElementById('dictate-input')?.value || '';
+      applyDictatedNumbers(state, text);
+      if (state.ui.tpv?.message?.includes('Falta') || state.ui.tpv?.message?.includes('Indica') || state.ui.tpv?.message?.includes('Formato') || state.ui.tpv?.message?.includes('números') || state.ui.tpv?.numberEntry) {
+        sfx.error();
+      } else {
+        sfx.success();
+      }
+      needsFullRender = true;
+      render();
+    };
+  }
+  const dictateCancel = document.getElementById('btn-dictate-cancel');
+  if (dictateCancel) {
+    dictateCancel.onclick = () => {
+      cancelNumberEntry(state);
+      sfx.click();
+      needsFullRender = true;
+      render();
+    };
+  }
+
+  document.getElementById('btn-tpv-charge').onclick = () => {
+    const ready = tpvReadyToCharge(tpv);
+    if (!ready.ok) {
+      tpv.message = ready.error;
+      sfx.error();
+      needsFullRender = true;
+      render();
+      return;
+    }
+    const items = tpvToSaleItems(tpv);
+    const client =
+      state.customers.current?.id === tpv.clientId
+        ? state.customers.current
+        : state.customers.regulars.find((c) => c.id === tpv.clientId) ||
+          state.customers.abonados?.find((c) => c.id === tpv.clientId) ||
+          state.customers.penas?.find((c) => c.id === tpv.clientId) || {
+            id: tpv.clientId,
+            name: tpv.clientName,
+            prefersPayment: state.customers.current?.prefersPayment || 'cash',
+          };
+    startPayment(state, { items, client });
+    state.ui.tpv = null;
+    sfx.drawer();
+    needsFullRender = true;
+    render();
+  };
+
+  document.getElementById('btn-tpv-cancel').onclick = () => {
+    sfx.click();
+    closeTpv(state);
+    showToast('TPV cancelado');
+    needsFullRender = true;
+    render();
+  };
+}
+
 function renderCash() {
   const ps = state.ui.paymentSession;
   if (!ps) {
@@ -658,16 +1065,18 @@ function renderCash() {
       </div>
       <h3>Tickets emitidos</h3>
       <div class="log">
-        ${tickets
-          .map(
-            (t) =>
-              `<div class="log-item"><strong>${t.id}</strong> · ${escapeHtml(t.productName)} · ${escapeHtml(formatSelection(t))}${
-                t.drawYmd ? ` · sorteo ${t.drawYmd}` : ''
-              }
-              <button class="btn" style="padding:4px 8px;margin-left:8px" data-pdf="${t.id}">PDF</button>
-              </div>`,
-          )
-          .join('') || '<div class="muted">Sin tickets</div>'}
+        ${
+          tickets
+            .map(
+              (t) =>
+                `<div class="log-item"><strong>${t.id}</strong> · ${escapeHtml(t.productName)} · ${escapeHtml(formatSelection(t))}${
+                  t.drawYmd ? ` · sorteo ${t.drawYmd}` : ''
+                }
+                <button class="btn" style="padding:4px 8px;margin-left:8px" data-pdf="${t.id}">PDF</button>
+                </div>`,
+            )
+            .join('') || '<div class="muted">Sin tickets</div>'
+        }
       </div>
       <div class="actions" style="margin-top:12px">
         <button class="btn" id="btn-pdf-sale">PDF venta</button>
@@ -807,6 +1216,8 @@ function denomEditor(kind) {
 
 function renderClose() {
   const summary = buildDayCloseSummary(state);
+  const orgs = summary.orgs || dayProfitBreakdown(state).orgs;
+  const settle = summary.settlement || state.finance.lastSettlement;
   app.innerHTML = `
     <div class="shell">
       ${topbarHTML()}
@@ -827,6 +1238,42 @@ function renderClose() {
             <div class="stat-row"><span>Clientes</span><strong>${summary.customersServed}</strong></div>
             <div class="stat-row"><span>Siguiente laborable</span><strong>${summary.nextDay}</strong></div>
           </div>
+
+          <h3 style="margin-top:18px">Desglose por organización</h3>
+          <div class="close-summary">
+            ${['LAE', 'ONCE', 'Otros']
+              .map((org) => {
+                const o = orgs?.[org] || { sales: 0, commission: 0, prizes: 0 };
+                return `<div class="stat-row"><span>${org} ventas</span><strong>${formatEuro(o.sales)}</strong></div>
+                  <div class="stat-row"><span>${org} comisión</span><strong>${formatEuro(o.commission)}</strong></div>
+                  <div class="stat-row"><span>${org} premios</span><strong>${formatEuro(o.prizes || 0)}</strong></div>`;
+              })
+              .join('')}
+          </div>
+
+          <h3 style="margin-top:18px">Liquidación prevista / última</h3>
+          ${
+            settle
+              ? `<div class="close-summary">
+                  <div class="stat-row"><span>LAE remesa</span><strong>${formatEuro(settle.lae?.remittance || 0)}</strong></div>
+                  <div class="stat-row"><span>LAE comisión retenida</span><strong>${formatEuro(settle.lae?.commission || 0)}</strong></div>
+                  <div class="stat-row"><span>ONCE remesa</span><strong>${formatEuro(settle.once?.remittance || 0)}</strong></div>
+                  <div class="stat-row"><span>ONCE comisión retenida</span><strong>${formatEuro(settle.once?.commission || 0)}</strong></div>
+                  <div class="stat-row"><span>Otros remesa</span><strong>${formatEuro(settle.otros?.remittance || 0)}</strong></div>
+                  <div class="stat-row"><span>Reembolso premios</span><strong>${formatEuro(
+                    (settle.lae?.prizesReimbursed || 0) +
+                      (settle.once?.prizesReimbursed || 0) +
+                      (settle.otros?.prizesReimbursed || 0),
+                  )}</strong></div>
+                </div>`
+              : `<p class="muted">Se calculará al cerrar el día (ventas − comisión por org, más reembolso de premios).</p>
+                <div class="close-summary">
+                  <div class="stat-row"><span>LAE remesa estimada</span><strong>${formatEuro((orgs?.LAE?.sales || 0) - (orgs?.LAE?.commission || 0))}</strong></div>
+                  <div class="stat-row"><span>ONCE remesa estimada</span><strong>${formatEuro((orgs?.ONCE?.sales || 0) - (orgs?.ONCE?.commission || 0))}</strong></div>
+                  <div class="stat-row"><span>Otros remesa estimada</span><strong>${formatEuro((orgs?.Otros?.sales || 0) - (orgs?.Otros?.commission || 0))}</strong></div>
+                </div>`
+          }
+
           <p class="muted">*Beneficio ≈ comisiones − gastos (antes de liquidar)</p>
           <div class="actions" style="margin-top:18px">
             <button class="btn accent" id="btn-do-close">Liquidar, balance y cerrar día</button>
@@ -844,7 +1291,6 @@ function renderClose() {
     state.meta.activeSlot = slot;
     saveToSlot(state, slot);
     sfx.success();
-    const settle = s.settlement;
     showToast(
       `Día cerrado → ${s.nextDay}. Beneficio ${formatEuro(s.profitCents)}. Liquidación hecha. Guardado hueco ${slot}.`,
     );
@@ -905,6 +1351,7 @@ function renderSavesInGame() {
   app.querySelectorAll('[data-load]').forEach((btn) => {
     btn.onclick = () => {
       state = loadFromSlot(Number(btn.getAttribute('data-load')));
+      maybeStartMusic();
       sfx.click();
       showToast('Partida cargada');
       needsFullRender = true;
@@ -920,6 +1367,7 @@ function renderSavesInGame() {
     if (!f) return;
     try {
       state = await importGame(f);
+      maybeStartMusic();
       showToast('Importado');
       needsFullRender = true;
       render();
@@ -1027,11 +1475,22 @@ function renderPrize() {
   document.getElementById('btn-prize-transfer').onclick = () => doPay('transfer');
 }
 
+function formatDrawDetail(d) {
+  let detail = '';
+  if (d.numbers) detail = d.numbers.join(', ');
+  if (d.stars) detail += ` ★ ${d.stars.join(', ')}`;
+  if (d.reintegro != null) detail += ` · R${d.reintegro}`;
+  if (d.clave != null) detail += ` · clave ${d.clave}`;
+  if (d.winningNumber) detail = `Nº ${d.winningNumber}`;
+  if (d.column) detail = `Columna ${d.column.join('')}${d.pleno ? ` · pleno ${d.pleno}` : ''}`;
+  if (d.goals) detail = `Goles ${d.goals.join('')}`;
+  if (d.complementary != null) detail += ` · C${d.complementary}`;
+  return detail || '—';
+}
+
 function renderDraws() {
   ensureDrawsResolved(state);
-  const entries = Object.values(state.draws || {})
-    .sort((a, b) => (a.ymd < b.ymd ? 1 : -1))
-    .slice(0, 40);
+  const entries = listDrawHistory(state, 60);
   app.innerHTML = `
     <div class="shell">
       ${topbarHTML()}
@@ -1045,13 +1504,8 @@ function renderDraws() {
               entries.length
                 ? entries
                     .map((d) => {
-                      const p = PRODUCTS.find((x) => x.id === d.productId);
-                      let detail = '';
-                      if (d.numbers) detail = d.numbers.join(', ');
-                      if (d.stars) detail += ` ★ ${d.stars.join(', ')}`;
-                      if (d.reintegro != null) detail += ` · R${d.reintegro}`;
-                      if (d.winningNumber) detail = `Nº ${d.winningNumber}`;
-                      return `<div class="log-item"><strong>${escapeHtml(p?.name || d.productId)}</strong> · ${d.ymd}<br/>${escapeHtml(detail)}</div>`;
+                      const p = getProduct(d.productId);
+                      return `<div class="log-item"><strong>${escapeHtml(p?.name || d.productId)}</strong> · ${d.ymd}<br/>${escapeHtml(formatDrawDetail(d))}</div>`;
                     })
                     .join('')
                 : '<div class="muted">Aún no hay sorteos. Avanza el tiempo hasta después de las 21:00.</div>'
@@ -1096,6 +1550,147 @@ function renderManagement() {
   `;
   bindTopbar();
   bindNav();
+}
+
+function findFicha(id) {
+  return (
+    (state.customers.abonados || []).find((c) => c.id === id) ||
+    (state.customers.penas || []).find((c) => c.id === id) ||
+    null
+  );
+}
+
+function renderFichas() {
+  const abonados = state.customers.abonados || [];
+  const penas = state.customers.penas || [];
+  const detail = state.ui.fichaId ? findFicha(state.ui.fichaId) : null;
+
+  let body;
+  if (detail) {
+    const favIds = detail.preferredProducts || (detail.favoriteProduct ? [detail.favoriteProduct] : []);
+    const favNames = favIds.map((id) => getProduct(id)?.name || id);
+    const history = [...(detail.history || [])].slice(-20).reverse();
+    const prizes = detail.prizesClaimed || [];
+    const orders = detail.orders || [];
+    const clientOrders = (state.orders || []).filter((o) => o.clientId === detail.id).slice(-15).reverse();
+    body = `
+      <button class="btn ghost" id="btn-ficha-back" style="margin-bottom:12px">← Volver al listado</button>
+      <h2>${escapeHtml(detail.name)}</h2>
+      <p class="muted">${detail.kind === 'pena' ? 'Peña' : 'Abonado'}${detail.street ? ` · ${escapeHtml(detail.street)}` : ''}${
+        detail.members ? ` · ${detail.members} socios` : ''
+      }</p>
+      <div class="close-summary" style="margin-top:12px">
+        <div class="stat-row"><span>Suscripción</span><strong>${escapeHtml(detail.subscription || '—')}</strong></div>
+        <div class="stat-row"><span>Pago preferido</span><strong>${payLabel(detail.prefersPayment || 'cash')}</strong></div>
+        <div class="stat-row"><span>Favoritos</span><strong>${escapeHtml(favNames.join(', ') || '—')}</strong></div>
+      </div>
+      <h3 style="margin-top:16px">Historial de compras</h3>
+      <div class="log">
+        ${
+          history.length
+            ? history
+                .map((h) => {
+                  const items = (h.items || []).map((i) => `${i.name || i.productId}×${i.qty}`).join(', ');
+                  return `<div class="log-item">${formatEuro(h.totalCents || 0)} · ${escapeHtml(items || 'venta')}${
+                    h.ticketIds?.length ? ` · tickets ${h.ticketIds.join(', ')}` : ''
+                  }</div>`;
+                })
+                .join('')
+            : '<div class="muted">Sin compras registradas aún.</div>'
+        }
+      </div>
+      <h3 style="margin-top:16px">Premios cobrados</h3>
+      <div class="log">
+        ${
+          prizes.length
+            ? prizes
+                .map(
+                  (p) =>
+                    `<div class="log-item">${escapeHtml(p.productName || p.id || 'Premio')} · ${formatEuro(p.amountCents || p.prizeCents || 0)}</div>`,
+                )
+                .join('')
+            : '<div class="muted">Ningún premio cobrado en ficha.</div>'
+        }
+      </div>
+      <h3 style="margin-top:16px">Pedidos / encargos</h3>
+      <div class="log">
+        ${
+          orders.length || clientOrders.length
+            ? [...orders, ...clientOrders]
+                .slice(0, 20)
+                .map(
+                  (o) =>
+                    `<div class="log-item">${escapeHtml(o.productName || o.productId || 'Pedido')} ×${o.qty || 1}${
+                      o.arriveOnYmd ? ` · ${o.arriveOnYmd}` : ''
+                    }${o.status ? ` · ${o.status}` : ''}</div>`,
+                )
+                .join('')
+            : '<div class="muted">Sin pedidos en ficha.</div>'
+        }
+      </div>
+    `;
+  } else {
+    body = `
+      <h2>Abonados y peñas</h2>
+      <p class="muted">Fichas de clientes con suscripción o peña. Pulsa para ver detalle.</p>
+      <h3 style="margin-top:14px">Abonados (${abonados.length})</h3>
+      <div class="slot-grid">
+        ${abonados
+          .map(
+            (a) => `<button class="slot" data-ficha="${a.id}" style="cursor:pointer;text-align:left;width:100%">
+              <div>
+                <strong>${escapeHtml(a.name)}</strong>
+                <div class="muted">${escapeHtml(a.subscription || '')} · ${escapeHtml(getProduct(a.favoriteProduct)?.name || '')}</div>
+              </div>
+            </button>`,
+          )
+          .join('')}
+      </div>
+      <h3 style="margin-top:18px">Peñas (${penas.length})</h3>
+      <div class="slot-grid">
+        ${penas
+          .map(
+            (p) => `<button class="slot" data-ficha="${p.id}" style="cursor:pointer;text-align:left;width:100%">
+              <div>
+                <strong>${escapeHtml(p.name)}</strong>
+                <div class="muted">${escapeHtml(p.subscription || '')}${p.members ? ` · ${p.members} socios` : ''}</div>
+              </div>
+            </button>`,
+          )
+          .join('')}
+      </div>
+    `;
+  }
+
+  app.innerHTML = `
+    <div class="shell">
+      ${topbarHTML()}
+      <div class="layout" style="grid-template-columns:280px 1fr">
+        ${sideNav()}
+        <section class="panel">${body}</section>
+      </div>
+    </div>
+    ${toastHTML()}
+  `;
+  bindTopbar();
+  bindNav();
+  app.querySelectorAll('[data-ficha]').forEach((btn) => {
+    btn.onclick = () => {
+      sfx.click();
+      state.ui.fichaId = btn.getAttribute('data-ficha');
+      needsFullRender = true;
+      render();
+    };
+  });
+  const back = document.getElementById('btn-ficha-back');
+  if (back) {
+    back.onclick = () => {
+      sfx.click();
+      state.ui.fichaId = null;
+      needsFullRender = true;
+      render();
+    };
+  }
 }
 
 // Boot

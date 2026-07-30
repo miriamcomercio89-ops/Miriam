@@ -130,4 +130,77 @@ export function makeVisitor(rng = Math.random) {
   };
 }
 
+export function generateAbonadosAndPenas() {
+  const base = generateRegularCustomers(40, 9090);
+  const abonados = base.slice(0, 18).map((c, i) => ({
+    ...c,
+    id: `abo-${i + 1}`,
+    kind: 'abonado',
+    favoriteProduct: c.preferredProducts[0],
+    subscription: 'Primitiva + Bonoloto semanal',
+    prizesClaimed: [],
+    orders: [],
+  }));
+  const penas = [
+    {
+      id: 'pena-1',
+      kind: 'pena',
+      name: 'Peña El Desfiladero',
+      regular: true,
+      street: 'Calle Real',
+      preferredProducts: ['lae-euromillones', 'lae-primitiva', 'lae-nacional'],
+      visitChance: 0.15,
+      prefersPayment: 'transfer',
+      trait: 'generosa',
+      line: 'Para la peña, como cada semana.',
+      favoriteProduct: 'lae-euromillones',
+      subscription: 'Bote compartido Euromillones',
+      members: 24,
+      history: [],
+      prizesClaimed: [],
+      orders: [],
+      preferredDays: [2, 5],
+    },
+    {
+      id: 'pena-2',
+      kind: 'pena',
+      name: 'Peña Virgen de Flores',
+      regular: true,
+      street: 'Plaza Baja',
+      preferredProducts: ['lae-nacional', 'lae-navidad', 'alo-local'],
+      visitChance: 0.12,
+      prefersPayment: 'cash',
+      trait: 'constante',
+      line: 'Décimos para la peña.',
+      favoriteProduct: 'lae-nacional',
+      subscription: 'Nacional jueves/sábado',
+      members: 15,
+      history: [],
+      prizesClaimed: [],
+      orders: [],
+      preferredDays: [4, 6],
+    },
+    {
+      id: 'pena-3',
+      kind: 'pena',
+      name: 'Peña del Chorro',
+      regular: true,
+      street: 'Camino de El Chorro',
+      preferredProducts: ['lae-bonoloto', 'once-eurojackpot', 'rasca-jackpot'],
+      visitChance: 0.1,
+      prefersPayment: 'bizum',
+      trait: 'habladora',
+      line: 'Hoy venimos con lista larga.',
+      favoriteProduct: 'lae-bonoloto',
+      subscription: 'Bonoloto diario compartido',
+      members: 30,
+      history: [],
+      prizesClaimed: [],
+      orders: [],
+      preferredDays: [1, 2, 3, 4, 5],
+    },
+  ];
+  return { abonados, penas };
+}
+
 export { PREFERENCES, LINES, TRAITS };

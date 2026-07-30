@@ -2,7 +2,6 @@ import { getProduct, CORE_DRAW_IDS } from '../data/products.js';
 import { hashSeed, mulberry32, pickUnique, pickInt, pad5 } from './rng.js';
 import { gameDate } from './time.js';
 
-/** Hora del sorteo (UTC simulada = hora España simplificada) */
 const DEFAULT_DRAW_HOUR = 21;
 
 function ymdFromDate(d) {
@@ -18,75 +17,91 @@ export function generateDrawResult(productId, ymd) {
   const p = getProduct(productId);
   if (!p) return null;
 
-  if (productId === 'lae-primitiva' || productId === 'lae-bonoloto') {
-    return {
-      productId,
-      ymd,
-      numbers: pickUnique(rng, 6, 49),
-      complementary: productId === 'lae-primitiva' ? pickInt(rng, 1, 49) : null,
-      reintegro: pickInt(rng, 0, 9),
-    };
+  switch (p.numberMode || productId) {
+    case '6from49':
+      return {
+        productId,
+        ymd,
+        numbers: pickUnique(rng, 6, 49),
+        complementary: productId === 'lae-primitiva' ? pickInt(rng, 1, 49) : null,
+        reintegro: pickInt(rng, 0, 9),
+      };
+    case 'euro':
+    case 'eurojackpot':
+      return { productId, ymd, numbers: pickUnique(rng, 5, 50), stars: pickUnique(rng, 2, 12) };
+    case 'gordo':
+      return { productId, ymd, numbers: pickUnique(rng, 5, 54), clave: pickInt(rng, 1, 9) };
+    case 'nacional':
+      return {
+        productId,
+        ymd,
+        winningNumber: productId === 'once-triplex' ? String(pickInt(rng, 0, 999)).padStart(3, '0') : pad5(pickInt(rng, 0, 99999)),
+      };
+    case 'triplex':
+      return { productId, ymd, winningNumber: String(pickInt(rng, 0, 999)).padStart(3, '0') };
+    case 'quiniela': {
+      const column = Array.from({ length: 14 }, () => ['1', 'X', '2'][pickInt(rng, 0, 2)]);
+      return { productId, ymd, column, pleno: ['0', '1', '2', 'M'][pickInt(rng, 0, 3)] };
+    }
+    case 'quinigol':
+      return {
+        productId,
+        ymd,
+        goals: Array.from({ length: 6 }, () => ['0', '1', '2', 'M'][pickInt(rng, 0, 3)]),
+      };
+    case 'superonce':
+    case 'lototurf':
+      return { productId, ymd, numbers: pickUnique(rng, 5, 49) };
+    case '5from40':
+    default:
+      if (['once-cupon', 'once-cuponazo', 'once-sueldazo', 'lae-nacional', 'lae-nacional-jueves', 'lae-navidad', 'lae-nino'].includes(productId)) {
+        return { productId, ymd, winningNumber: pad5(pickInt(rng, 0, 99999)) };
+      }
+      return { productId, ymd, numbers: pickUnique(rng, 5, 40) };
   }
-  if (productId === 'lae-euromillones') {
-    return {
-      productId,
-      ymd,
-      numbers: pickUnique(rng, 5, 50),
-      stars: pickUnique(rng, 2, 12),
-    };
-  }
-  if (productId === 'lae-nacional' || productId === 'lae-navidad' || productId === 'lae-nino') {
-    return {
-      productId,
-      ymd,
-      winningNumber: pad5(pickInt(rng, 0, 99999)),
-      // premios aproximados por terminaciones
-    };
-  }
-  if (productId === 'once-cupon') {
-    return {
-      productId,
-      ymd,
-      winningNumber: pad5(pickInt(rng, 0, 99999)),
-    };
-  }
-  // inventadas: 5/40 estilo
-  return {
-    productId,
-    ymd,
-    numbers: pickUnique(rng, 5, 40),
-  };
 }
 
-/**
- * Genera apuesta aleatoria (o semi-fija) para un producto.
- */
 export function generateBetSelection(productId, rng) {
   const p = getProduct(productId);
   if (!p) return {};
-  if (productId === 'lae-primitiva' || productId === 'lae-bonoloto') {
-    return {
-      numbers: pickUnique(rng, 6, 49),
-      reintegro: pickInt(rng, 0, 9),
-    };
+  const mode = p.numberMode;
+
+  if (mode === '6from49') {
+    return { numbers: pickUnique(rng, 6, 49), reintegro: pickInt(rng, 0, 9) };
   }
-  if (productId === 'lae-euromillones') {
-    return {
-      numbers: pickUnique(rng, 5, 50),
-      stars: pickUnique(rng, 2, 12),
-    };
+  if (mode === 'euro' || mode === 'eurojackpot') {
+    return { numbers: pickUnique(rng, 5, 50), stars: pickUnique(rng, 2, 12) };
   }
-  if (productId === 'lae-nacional' || productId === 'lae-navidad' || productId === 'lae-nino' || productId === 'once-cupon') {
+  if (mode === 'gordo') {
+    return { numbers: pickUnique(rng, 5, 54), clave: pickInt(rng, 1, 9) };
+  }
+  if (mode === 'nacional') {
     return { number: pad5(pickInt(rng, 0, 99999)) };
+  }
+  if (mode === 'triplex') {
+    return { number: String(pickInt(rng, 0, 999)).padStart(3, '0') };
+  }
+  if (mode === 'quiniela') {
+    return {
+      column: Array.from({ length: 14 }, () => ['1', 'X', '2'][pickInt(rng, 0, 2)]),
+      pleno: ['0', '1', '2', 'M'][pickInt(rng, 0, 3)],
+    };
+  }
+  if (mode === 'quinigol') {
+    return { goals: Array.from({ length: 6 }, () => ['0', '1', '2', 'M'][pickInt(rng, 0, 3)]) };
+  }
+  if (mode === 'superonce' || mode === 'lototurf') {
+    return { numbers: pickUnique(rng, 5, 49) };
+  }
+  if (mode === '5from40') {
+    return { numbers: pickUnique(rng, 5, 40) };
   }
   return { numbers: pickUnique(rng, 5, 40) };
 }
 
-/** Próximo día de sorteo (ymd) a partir de una fecha de juego */
 export function nextDrawYmd(productId, fromDate) {
   const p = getProduct(productId);
   if (!p?.drawDays?.length) {
-    // especiales: Navidad 22 dic, Niño 6 ene (simplificado)
     if (productId === 'lae-navidad') {
       const y = fromDate.getUTCFullYear();
       const target = new Date(Date.UTC(y, 11, 22));
@@ -94,20 +109,20 @@ export function nextDrawYmd(productId, fromDate) {
       return `${y}-12-22`;
     }
     if (productId === 'lae-nino') {
-      const y = fromDate.getUTCMonth() === 0 && fromDate.getUTCDate() <= 6 ? fromDate.getUTCFullYear() : fromDate.getUTCFullYear() + 1;
+      const y =
+        fromDate.getUTCMonth() === 0 && fromDate.getUTCDate() <= 6
+          ? fromDate.getUTCFullYear()
+          : fromDate.getUTCFullYear() + 1;
       return `${y}-01-06`;
     }
     return null;
   }
   const d = new Date(fromDate.getTime());
-  // Si aún no ha pasado la hora del sorteo hoy y hoy es día de sorteo, hoy
-  for (let i = 0; i < 16; i++) {
+  for (let i = 0; i < 21; i++) {
     const dow = d.getUTCDay();
     if (p.drawDays.includes(dow)) {
       const hour = p.drawHour ?? DEFAULT_DRAW_HOUR;
-      if (i > 0 || fromDate.getUTCHours() < hour) {
-        return ymdFromDate(d);
-      }
+      if (i > 0 || fromDate.getUTCHours() < hour) return ymdFromDate(d);
     }
     d.setUTCDate(d.getUTCDate() + 1);
     d.setUTCHours(0, 0, 0, 0);
@@ -115,31 +130,18 @@ export function nextDrawYmd(productId, fromDate) {
   return null;
 }
 
-/**
- * Asegura que existen resultados de sorteos cuya hora ya pasó.
- */
 export function ensureDrawsResolved(state) {
   if (!state.draws) state.draws = {};
   const now = gameDate(state);
   const today = ymdFromDate(now);
   const hour = now.getUTCHours();
 
-  const ids = [
-    ...CORE_DRAW_IDS,
-    'and-fortuna',
-    'mal-premio',
-    'alo-local',
-    'lae-navidad',
-    'lae-nino',
-  ];
-
-  // Resolver sorteos de los últimos 14 días + hoy si ya pasó la hora
-  for (let back = 0; back <= 14; back++) {
+  for (let back = 0; back <= 21; back++) {
     const d = new Date(now.getTime());
     d.setUTCDate(d.getUTCDate() - back);
     d.setUTCHours(12, 0, 0, 0);
     const ymd = ymdFromDate(d);
-    for (const productId of ids) {
+    for (const productId of CORE_DRAW_IDS) {
       const p = getProduct(productId);
       if (!p) continue;
       const key = drawKey(productId, ymd);
@@ -158,10 +160,6 @@ export function ensureDrawsResolved(state) {
       }
       if (shouldResolve) {
         state.draws[key] = generateDrawResult(productId, ymd);
-        state.dayLog.push({
-          at: state.clock.gameTimeMs,
-          text: `Sorteo resuelto: ${p.name} (${ymd})`,
-        });
       }
     }
   }
@@ -170,6 +168,12 @@ export function ensureDrawsResolved(state) {
 
 export function getDraw(state, productId, ymd) {
   return state.draws?.[drawKey(productId, ymd)] || null;
+}
+
+export function listDrawHistory(state, limit = 60) {
+  return Object.values(state.draws || {})
+    .sort((a, b) => (a.ymd < b.ymd ? 1 : a.ymd > b.ymd ? -1 : a.productId.localeCompare(b.productId)))
+    .slice(0, limit);
 }
 
 export { drawKey, ymdFromDate };

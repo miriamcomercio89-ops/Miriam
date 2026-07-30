@@ -4,10 +4,10 @@ import { isOpenHours, gameDate, gameYmd } from './time.js';
 import { startPayment } from './cash.js';
 import { formatEuro } from '../data/money.js';
 import { eventOn } from '../data/events.js';
-import { checkTicket, ticketsForClient, pendingClaimTickets } from './tickets.js';
+import { checkTicket, ticketsForClient } from './tickets.js';
 import { ensureDrawsResolved } from './draws.js';
+import { hashSeed, mulberry32 } from './rng.js';
 
-/** Factor de afluencia por eventos / campañas */
 export function crowdFactor(state) {
   const d = gameDate(state);
   const month = d.getUTCMonth() + 1;
@@ -23,24 +23,34 @@ export function crowdFactor(state) {
 
 export function maybeSpawnCustomers(state) {
   if (!isOpenHours(state)) return state;
-  if (state.ui.screen === 'cash' || state.ui.screen === 'close' || state.ui.screen === 'prize-flow') return state;
-  if (state.customers.current) return state;
+  if (['cash', 'close', 'tpv', 'prize-flow'].includes(state.ui.screen)) return state;
 
   ensureDrawsResolved(state);
-
   const now = state.clock.gameTimeMs;
   if (now < state.customers.nextSpawnAtMs) return state;
 
-  if (state.customers.queue.length > 0) {
-    state.customers.current = state.customers.queue.shift();
+  // Si no hay cliente actual, sacar de cola o crear
+  if (!state.customers.current) {
+    if (state.customers.queue.length > 0) {
+      state.customers.current = state.customers.queue.shift();
+    } else {
+      const client = pickArrivingClient(state);
+      if (client) {
+        attachIntent(state, client);
+        state.customers.current = client;
+      }
+    }
     scheduleNextSpawn(state);
     return state;
   }
 
-  const client = pickArrivingClient(state);
-  if (client) {
-    attachIntent(state, client);
-    state.customers.current = client;
+  // Ya hay alguien en mostrador → puede llegar gente a la cola (sin tope)
+  if (Math.random() < 0.55) {
+    const client = pickArrivingClient(state);
+    if (client) {
+      attachIntent(state, client);
+      state.customers.queue.push(client);
+    }
   }
   scheduleNextSpawn(state);
   return state;
@@ -48,15 +58,23 @@ export function maybeSpawnCustomers(state) {
 
 function scheduleNextSpawn(state) {
   const factor = crowdFactor(state);
-  const minMs = (18 * 1000) / factor;
-  const maxMs = (80 * 1000) / factor;
+  const minMs = (16 * 1000) / factor;
+  const maxMs = (70 * 1000) / factor;
   state.customers.nextSpawnAtMs = state.clock.gameTimeMs + minMs + Math.random() * (maxMs - minMs);
 }
 
 function pickArrivingClient(state) {
   const rng = Math.random;
-  const wantVisitor = rng() < 0.28 + (crowdFactor(state) - 1) * 0.08;
-  if (wantVisitor) return makeVisitor();
+  // Peñas / abonados con menos frecuencia pero relevantes
+  if (rng() < 0.08 && state.customers.abonados?.length) {
+    const a = state.customers.abonados[Math.floor(rng() * state.customers.abonados.length)];
+    return { ...a };
+  }
+  if (rng() < 0.06 && state.customers.penas?.length) {
+    const a = state.customers.penas[Math.floor(rng() * state.customers.penas.length)];
+    return { ...a };
+  }
+  if (rng() < 0.28 + (crowdFactor(state) - 1) * 0.08) return makeVisitor();
 
   const dow = gameDate(state).getUTCDay();
   const candidates = state.customers.regulars.filter((c) => {
@@ -64,16 +82,13 @@ function pickArrivingClient(state) {
     if (c.preferredDays?.includes(dow)) chance *= 2.2;
     return rng() < chance;
   });
-  if (candidates.length === 0) {
+  if (!candidates.length) {
     const list = state.customers.regulars;
     return { ...list[Math.floor(rng() * list.length)] };
   }
   return { ...candidates[Math.floor(rng() * candidates.length)] };
 }
 
-/**
- * Intenciones: buy | check | claim | reserve_special
- */
 export function attachIntent(state, client) {
   const rng = Math.random;
   const owned = ticketsForClient(state, client.id);
@@ -81,59 +96,119 @@ export function attachIntent(state, client) {
   const claimable = owned.filter((t) => t.status === 'checked' && t.prizeCents > 0 && !t.paidAt);
   const managed = owned.filter((t) => t.status === 'managed');
 
-  // Probabilidades
   let roll = rng();
-  const seasonReserve = isSpecialSeason(state) && rng() < 0.18;
-
-  if (claimable.length && roll < 0.35) {
-    const ticket = claimable[Math.floor(rng() * claimable.length)];
+  if (claimable.length && roll < 0.28) {
     client.intent = 'claim';
-    client.ticketFocus = ticket;
-    client.request = null;
-    client.note = `Viene a cobrar un premio de ${formatEuro(ticket.prizeCents)}.`;
+    client.ticketFocus = claimable[Math.floor(rng() * claimable.length)];
+    client.wishlist = [];
+    client.note = `Viene a cobrar ${formatEuro(client.ticketFocus.prizeCents)}.`;
     return client;
   }
-  if (managed.length && roll < 0.2) {
+  if (managed.length && roll < 0.15) {
     client.intent = 'managed_ask';
     client.ticketFocus = managed[0];
-    client.request = null;
-    client.note = 'Pregunta por el estado de su premio en gestión.';
+    client.wishlist = [];
+    client.note = 'Pregunta por su premio en gestión.';
     return client;
   }
-  if (checkable.length && roll < 0.45) {
-    // Preferir tickets cuyo sorteo ya pasó o rascas
-    const ready = checkable.filter((t) => t.kind === 'rasca' || t.status === 'active');
-    const ticket = (ready.length ? ready : checkable)[Math.floor(rng() * (ready.length || checkable.length))];
+  if (checkable.length && roll < 0.4) {
+    const ticket = checkable[Math.floor(rng() * checkable.length)];
     client.intent = 'check';
     client.ticketFocus = ticket;
-    client.request = null;
-    client.note = `Quiere comprobar ${ticket.productName} (${ticket.id}).`;
+    client.wishlist = [];
+    client.note = `Quiere comprobar ${ticket.productName}.`;
     return client;
   }
-  if (seasonReserve) {
-    const pid = gameDate(state).getUTCMonth() === 0 ? 'lae-nino' : 'lae-navidad';
-    // Nov-dic navidad; ene niño
+  if (isSpecialSeason(state) && rng() < 0.12) {
+    client.intent = 'reserve_special';
     const m = gameDate(state).getUTCMonth() + 1;
     const productId = m === 1 ? 'lae-nino' : 'lae-navidad';
     const p = getProduct(productId);
-    client.intent = 'reserve_special';
-    client.request = {
-      productId: p.id,
-      productName: p.name,
-      qty: 1 + Math.floor(rng() * 3),
-      unitCents: p.priceCents,
-      totalCents: p.priceCents * (1 + Math.floor(rng() * 3)),
-    };
-    client.request.totalCents = client.request.unitCents * client.request.qty;
-    client.note = `Encargo de ${p.name}.`;
+    const qty = 1 + Math.floor(rng() * 4);
+    client.wishlist = [{ productId: p.id, productName: p.name, qty, preferDictate: false }];
+    client.note = `Encargo de ${p.name} ×${qty}`;
     return client;
   }
 
-  // Compra normal
   client.intent = 'buy';
-  attachBuyRequest(state, client);
+  client.wishlist = buildRichWishlist(state, client);
+  client.note = client.line || 'Quiere varias cosas.';
   return client;
 }
+
+/** Miles de combinaciones posibles vía plantillas + RNG */
+export function buildRichWishlist(state, client) {
+  const rng = mulberry32(hashSeed('wish', state.clock.gameTimeMs, client.id, Math.floor(Math.random() * 1e9)));
+  const templates = WISH_TEMPLATES;
+  const tpl = templates[Math.floor(rng() * templates.length)];
+  const lines = [];
+
+  for (const slot of tpl) {
+    if (rng() > (slot.p ?? 1)) continue;
+    let productId = slot.id;
+    if (slot.pool) productId = slot.pool[Math.floor(rng() * slot.pool.length)];
+    // Preferencias del cliente
+    if (slot.usePref && client.preferredProducts?.length && rng() < 0.55) {
+      productId = client.preferredProducts[Math.floor(rng() * client.preferredProducts.length)];
+    }
+    const p = getProduct(productId);
+    if (!p) continue;
+    let qty = slot.qty || 1;
+    if (typeof qty === 'function') qty = qty(rng);
+    if (client.kind === 'pena') qty += 1 + Math.floor(rng() * 4);
+    if (client.kind === 'abonado') qty += Math.floor(rng() * 2);
+    lines.push({
+      productId: p.id,
+      productName: p.name,
+      qty: Math.max(1, qty),
+      preferDictate: !!slot.dictate || (client.trait === 'práctica' && rng() < 0.35),
+    });
+  }
+
+  if (!lines.length) {
+    const p = getProduct(client.preferredProducts?.[0] || 'lae-bonoloto');
+    lines.push({ productId: p.id, productName: p.name, qty: 1, preferDictate: false });
+  }
+  return lines;
+}
+
+const POOLS = {
+  lae: ['lae-primitiva', 'lae-bonoloto', 'lae-euromillones', 'lae-nacional', 'lae-gordo-primitiva', 'lae-quiniela'],
+  once: ['once-cupon', 'once-cuponazo', 'once-eurojackpot', 'once-super-once', 'once-triplex'],
+  rasca: ['rasca-7-vidas', 'rasca-multiplica', 'rasca-diamante', 'rasca-oro', 'rasca-jackpot', 'rasca-once-clasico'],
+  auto: ['and-fortuna', 'and-olivo', 'and-costa'],
+  prov: ['mal-premio', 'mal-axarquia'],
+  local: ['alo-local', 'alo-hoya', 'alo-chorro'],
+};
+
+const WISH_TEMPLATES = [
+  [{ usePref: true, qty: (r) => 1 + Math.floor(r() * 3) }, { pool: POOLS.rasca, qty: (r) => 1 + Math.floor(r() * 4), p: 0.7 }],
+  [{ id: 'lae-euromillones', qty: 2, dictate: true }, { id: 'lae-bonoloto', qty: (r) => 2 + Math.floor(r() * 6) }],
+  [{ id: 'lae-nacional', qty: 1 }, { pool: POOLS.once, qty: 1 }, { pool: POOLS.rasca, qty: 3 }],
+  [{ id: 'lae-primitiva', qty: 1, dictate: true }, { id: 'lae-primitiva', qty: 1 }, { id: 'lae-gordo-primitiva', qty: 1, p: 0.5 }],
+  [{ id: 'lae-quiniela', qty: 1, dictate: true }, { id: 'lae-quinigol', qty: 1, p: 0.4 }, { pool: POOLS.rasca, qty: 2, p: 0.6 }],
+  [{ pool: POOLS.once, qty: (r) => 1 + Math.floor(r() * 3) }, { id: 'once-eurojackpot', qty: 1, dictate: true }],
+  [{ pool: POOLS.auto, qty: 2 }, { pool: POOLS.local, qty: 1 }, { pool: POOLS.rasca, qty: 2 }],
+  [{ pool: POOLS.prov, qty: 1 }, { id: 'lae-bonoloto', qty: 4 }, { id: 'alo-local', qty: 2 }],
+  // peña-style big basket
+  [
+    { id: 'lae-euromillones', qty: 5 },
+    { id: 'lae-primitiva', qty: 5, dictate: true },
+    { id: 'lae-nacional', qty: 2 },
+    { pool: POOLS.rasca, qty: 10, p: 0.8 },
+  ],
+  [{ id: 'once-super-once', qty: 3 }, { id: 'once-triplex', qty: 2, dictate: true }, { pool: POOLS.rasca, qty: 1 }],
+  [{ id: 'lae-lototurf', qty: 1 }, { id: 'lae-bonoloto', qty: 2 }, { pool: POOLS.local, qty: 1, p: 0.5 }],
+  // many small random mixes
+  ...Array.from({ length: 40 }, () => {
+    const n = 1 + Math.floor(Math.random() * 4);
+    return Array.from({ length: n }, () => {
+      const pools = Object.values(POOLS);
+      const pool = pools[Math.floor(Math.random() * pools.length)];
+      return { pool, qty: 1 + Math.floor(Math.random() * 3), dictate: Math.random() < 0.25, p: 0.5 + Math.random() * 0.5 };
+    });
+  }),
+];
 
 function isSpecialSeason(state) {
   const m = gameDate(state).getUTCMonth() + 1;
@@ -144,88 +219,44 @@ function isSpecialSeason(state) {
   return false;
 }
 
-function attachBuyRequest(state, client) {
-  const rng = Math.random;
-  const prefs = client.preferredProducts || [];
-  let productId = prefs[Math.floor(rng() * prefs.length)];
-  if (client.trait === 'impulsiva' || rng() < 0.25) {
-    productId = PRODUCTS[Math.floor(rng() * PRODUCTS.length)].id;
-  }
-  const product = getProduct(productId) || PRODUCTS[0];
-  let qty = 1;
-  if (product.category === 'rasca') qty = 1 + Math.floor(rng() * 3);
-  if (product.id === 'lae-nacional') qty = 1 + Math.floor(rng() * 2);
-  if (product.id === 'lae-bonoloto' || product.id === 'lae-primitiva') qty = 1 + Math.floor(rng() * 4);
-  if (client.trait === 'generosa') qty += 1 + Math.floor(rng() * 2);
-
-  client.request = {
-    productId: product.id,
-    productName: product.name,
-    qty,
-    unitCents: product.priceCents,
-    totalCents: product.priceCents * qty,
-  };
-  client.note = client.line || '';
-}
-
 export function sellToCurrent(state) {
-  const client = state.customers.current;
-  if (!client?.request) return state;
-  const p = getProduct(client.request.productId);
-  if (!p) return state;
-
-  if (p.stockType === 'physical') {
-    const have = state.stock[p.id] || 0;
-    if (have < client.request.qty) {
-      state.ui.toast = `No hay stock de ${p.name}. Puedes reservar/pedir.`;
-      return state;
-    }
-  }
-
-  const items = [
-    {
-      productId: p.id,
-      name: p.name,
-      qty: client.request.qty,
-      unitCents: p.priceCents,
-    },
-  ];
-  return startPayment(state, { items, client, purpose: 'sale' });
+  // Compat: abrir TPV
+  return state;
 }
 
 export function dismissCurrent(state, reason = 'Cliente atendido') {
-  state.customers.current = null;
   state.dayLog.push({ at: state.clock.gameTimeMs, text: reason });
+  state.customers.current = null;
   return state;
 }
 
 export function reserveForCurrent(state) {
   const client = state.customers.current;
-  if (!client?.request) return state;
-  const p = getProduct(client.request.productId);
-  if (!p) return state;
-
-  const days = p.orderDays ?? 2;
-  const arrive = addBusinessDays(state, days);
-  const order = {
-    id: `ord-${Date.now()}`,
-    productId: p.id,
-    productName: p.name,
-    qty: client.request.qty,
-    clientId: client.id,
-    clientName: client.name,
-    arriveOnYmd: arrive,
-    status: 'pending',
-    reserved: true,
-    special: client.intent === 'reserve_special',
-  };
-  state.orders.push(order);
-  state.reservations.push(order);
-  state.dayLog.push({
-    at: state.clock.gameTimeMs,
-    text: `Reserva para ${client.name}: ${p.name} ×${client.request.qty} (llegada ${arrive})`,
-  });
-  state.ui.toast = `Reserva hecha. Llegará el ${arrive}. Sin cobro ahora.`;
+  const items = client?.wishlist?.length
+    ? client.wishlist
+    : client?.request
+      ? [client.request]
+      : [];
+  if (!items.length) return state;
+  for (const w of items) {
+    const p = getProduct(w.productId);
+    if (!p) continue;
+    const days = p.orderDays ?? 2;
+    const arrive = addBusinessDays(state, days);
+    state.orders.push({
+      id: `ord-${Date.now()}-${w.productId}`,
+      productId: p.id,
+      productName: p.name,
+      qty: w.qty,
+      clientId: client.id,
+      clientName: client.name,
+      arriveOnYmd: arrive,
+      status: 'pending',
+      reserved: true,
+      special: client.intent === 'reserve_special',
+    });
+  }
+  state.ui.toast = 'Reservas hechas sin cobro.';
   state.customers.current = null;
   return state;
 }
@@ -233,8 +264,7 @@ export function reserveForCurrent(state) {
 export function orderStock(state, productId, qty) {
   const p = getProduct(productId);
   if (!p || p.stockType !== 'physical') return state;
-  const days = p.orderDays ?? 2;
-  const arrive = addBusinessDays(state, days);
+  const arrive = addBusinessDays(state, p.orderDays ?? 2);
   state.orders.push({
     id: `ord-${Date.now()}`,
     productId,
@@ -246,7 +276,7 @@ export function orderStock(state, productId, qty) {
     status: 'pending',
     reserved: false,
   });
-  state.ui.toast = `Pedido de ${p.name} ×${qty}. Llegada ${arrive}.`;
+  state.ui.toast = `Pedido ${p.name} ×${qty} → ${arrive}`;
   return state;
 }
 
@@ -256,10 +286,8 @@ function addBusinessDays(state, days) {
   let guard = 0;
   while (left > 0 && guard++ < 400) {
     d.setUTCDate(d.getUTCDate() + 1);
-    const dow = d.getUTCDay();
     const ymd = d.toISOString().slice(0, 10);
-    const hol = state.holidays[ymd];
-    if (dow !== 0 && dow !== 6 && !hol) left--;
+    if (d.getUTCDay() !== 0 && d.getUTCDay() !== 6 && !state.holidays[ymd]) left--;
   }
   return d.toISOString().slice(0, 10);
 }
@@ -267,50 +295,38 @@ function addBusinessDays(state, days) {
 export function processArrivingOrders(state) {
   const ymd = gameDate(state).toISOString().slice(0, 10);
   for (const o of state.orders) {
-    if (o.status !== 'pending') continue;
-    if (o.arriveOnYmd <= ymd) {
-      o.status = 'arrived';
-      if (!o.reserved) {
-        state.stock[o.productId] = (state.stock[o.productId] || 0) + o.qty;
-        state.dayLog.push({
-          at: state.clock.gameTimeMs,
-          text: `Pedido recibido: ${o.productName} ×${o.qty}`,
-        });
-      } else {
-        state.dayLog.push({
-          at: state.clock.gameTimeMs,
-          text: `Encargo listo para ${o.clientName}: ${o.productName} ×${o.qty}`,
-        });
-      }
+    if (o.status !== 'pending' || o.arriveOnYmd > ymd) continue;
+    o.status = 'arrived';
+    if (!o.reserved) {
+      state.stock[o.productId] = (state.stock[o.productId] || 0) + o.qty;
+      state.dayLog.push({ at: state.clock.gameTimeMs, text: `Pedido recibido: ${o.productName} ×${o.qty}` });
+    } else {
+      state.dayLog.push({
+        at: state.clock.gameTimeMs,
+        text: `Encargo listo: ${o.clientName} · ${o.productName} ×${o.qty}`,
+      });
     }
   }
   return state;
 }
 
-/** Comprobar el ticket que trae el cliente actual */
 export function checkCurrentTicket(state) {
   const client = state.customers.current;
   if (!client?.ticketFocus) return state;
   const result = checkTicket(state, client.ticketFocus.id);
   client.checkResult = result;
-  if (result.pending) {
-    state.ui.toast = result.detail;
-  } else if (result.prizeCents > 0) {
-    state.ui.toast = `¡Ha tocado ${formatEuro(result.prizeCents)}! (${result.detail})`;
+  if (result.pending) state.ui.toast = result.detail;
+  else if (result.prizeCents > 0) {
+    state.ui.toast = `¡Ha tocado ${formatEuro(result.prizeCents)}!`;
     state.dayLog.push({
       at: state.clock.gameTimeMs,
-      text: `Comprobación: ${client.name} · ${result.ticket.productName} · PREMIO ${formatEuro(result.prizeCents)}`,
+      text: `Comprobación: ${client.name} · PREMIO ${formatEuro(result.prizeCents)}`,
     });
   } else {
-    state.ui.toast = `No ha tocado. ${result.detail || ''}`;
-    state.dayLog.push({
-      at: state.clock.gameTimeMs,
-      text: `Comprobación: ${client.name} · sin premio`,
-    });
+    state.ui.toast = 'No ha tocado.';
   }
-  // refrescar referencia
   client.ticketFocus = result.ticket || client.ticketFocus;
   return state;
 }
 
-export { formatEuro, pendingClaimTickets };
+export { formatEuro };
