@@ -138,5 +138,65 @@ export function buildTownBoard(state, ymd) {
     });
   }
 
+  // Stock bajo (aviso oficina)
+  const lowStock = Object.entries(state.stock || {})
+    .filter(([, q]) => q != null && q <= 6)
+    .slice(0, 4);
+  if (lowStock.length) {
+    const names = lowStock
+      .map(([id, q]) => `${getProduct(id)?.short || getProduct(id)?.name || id} (${q})`)
+      .join(' · ');
+    items.push({
+      id: `stock-${ymd}`,
+      kind: 'stock',
+      title: 'Inventario bajo',
+      body: `Revisa pedidos: ${names}`,
+    });
+  }
+
+  // Tip Miriam del día (rotativo)
+  const tips = [
+    'Si piden terminación, dicta el número completo antes de cobrar.',
+    'Cuponazo los viernes: deja cambio menudos preparado.',
+    'Premios de 400 € o más: papeleo breve aunque pagues de caja.',
+    'Escaparate: rotula bien los décimos que más miran.',
+    'Bizum a veces falla: ten plan B en efectivo.',
+    'Los botes altos llenan la cola: ten rascas a mano.',
+    'Al cerrar, imprime el PDF del día y exporta la partida.',
+  ];
+  const tipIdx = Number(ymd.replace(/\D/g, '')) % tips.length;
+  items.push({
+    id: `tip-${ymd}`,
+    kind: 'tip',
+    title: 'Consejo Miriam',
+    body: tips[tipIdx],
+  });
+
+  // Frase del pueblo
+  const pueblo = [
+    'Hoy hay mercado: más vecinos al mediodía.',
+    'Si hace calor, piden agua… y un rasca.',
+    'Partido esta noche: Quiniela y Quinigol al acecho.',
+    'Autobús del Caminito: turistas con tarjeta.',
+    'Cola de la panadería se pasa a la administración.',
+  ];
+  items.push({
+    id: `pueblo-${ymd}`,
+    kind: 'pueblo',
+    title: 'Álora hoy',
+    body: pueblo[Number(ymd.slice(-2)) % pueblo.length],
+  });
+
+  // Extraordinarios / especiales
+  const day = Number(ymd.slice(8, 10));
+  if (month === 12 && day >= 1 && day <= 22) {
+    items.push({
+      id: 'gordo-count',
+      kind: 'especial',
+      title: 'Cuenta atrás del Gordo',
+      body: `Faltan días para el 22. Prioriza encargos y series.`,
+    });
+  }
+
   return items;
 }

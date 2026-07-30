@@ -2305,8 +2305,8 @@
       return state2;
     }
     const need = p.numberMode === "serieLocal" || p.numberMode === "triplex" ? 3 : 5;
-    const digits = String(number || "").replace(/\D/g, "").padStart(need, "0").slice(-need);
-    if (digits.length !== need) {
+    const digits2 = String(number || "").replace(/\D/g, "").padStart(need, "0").slice(-need);
+    if (digits2.length !== need) {
       state2.ui.toast = `Indica un n\xFAmero de ${need} cifras`;
       return state2;
     }
@@ -2315,12 +2315,12 @@
       id: `sc-${Date.now()}-${Math.floor(Math.random() * 1e4)}`,
       productId: p.id,
       productName: p.name,
-      number: digits,
+      number: digits2,
       qty: q,
       note: String(note || "").slice(0, 60),
       unitCents: p.priceCents
     });
-    state2.ui.toast = `Escaparate: ${p.name} n\xBA ${digits} \xD7${q}`;
+    state2.ui.toast = `Escaparate: ${p.name} n\xBA ${digits2} \xD7${q}`;
     return state2;
   }
   function removeShowcaseDecimo(state2, id) {
@@ -2427,8 +2427,8 @@
 
   // src/game/state.js
   var STARTING_BANK_CENTS = 95e4;
-  var SAVE_VERSION = 11;
-  var GAME_VERSION = "1.0";
+  var SAVE_VERSION = 12;
+  var GAME_VERSION = "1.1";
   var SLOT_COUNT = 3;
   var STORAGE_PREFIX = "loterias-alora-slot-";
   var OFFICE = {
@@ -3242,6 +3242,7 @@
   }
 
   // src/game/tickets.js
+  var MEDIUM_PRIZE_CENTS = 4e4;
   var LARGE_PRIZE_CENTS = 2e5;
   var HUGE_PRIZE_CENTS = 15e5;
   var ticketSeq = 1;
@@ -3652,9 +3653,41 @@
       ps.tendered = emptyDrawer();
       ps.changeGiven = emptyDrawer();
     } else {
+      const fail = rollPaymentFailure(method, ps.totalCents);
+      if (fail) {
+        ps.method = null;
+        ps.step = "method";
+        ps.error = fail;
+        ps.failCount = (ps.failCount || 0) + 1;
+        state2.finance.paymentFailsToday = (state2.finance.paymentFailsToday || 0) + 1;
+        state2.dayLog.push({
+          at: state2.clock.gameTimeMs,
+          text: `Cobro fallido (${labelMethod(method)}): ${fail}`
+        });
+        state2.ui.toast = fail;
+        return state2;
+      }
       completeNonCash(state2);
     }
     return state2;
+  }
+  function rollPaymentFailure(method, totalCents) {
+    const r = Math.random();
+    if (method === "card") {
+      if (r < 0.08) return "Tarjeta rechazada: contacte con su banco.";
+      if (r < 0.12) return "TPV sin cobertura. Prueba otra vez o efectivo.";
+      if (r < 0.15 && totalCents >= 1e4) return "Tarjeta denegada por l\xEDmite.";
+    }
+    if (method === "bizum") {
+      if (r < 0.1) return "Bizum no recibido. El cliente debe repetir el env\xEDo.";
+      if (r < 0.14) return "Bizum: usuario no encontrado. Revisa el m\xF3vil.";
+      if (r < 0.17) return "Bizum caducado. Pide uno nuevo.";
+    }
+    if (method === "transfer") {
+      if (r < 0.06) return "Transferencia no llegada. Espera o cobra en efectivo.";
+      if (r < 0.09) return "IBAN incorrecto. Corrige y reintenta.";
+    }
+    return null;
   }
   function completeNonCash(state2) {
     const ps = state2.ui.paymentSession;
@@ -3709,8 +3742,13 @@
     const changeNeeded = ps.changeNeededCents || 0;
     const changeSum = countTotalCents(ps.changeGiven);
     if (changeSum !== changeNeeded) {
-      ps.error = `El cambio no cuadra. Debes devolver ${formatEuro(changeNeeded)} y tienes ${formatEuro(changeSum)}. Corrige y vuelve a intentar.`;
+      const diff = changeSum - changeNeeded;
+      ps.error = diff > 0 ? `Cambio de m\xE1s: sobran ${formatEuro(diff)}. Debes devolver exactamente ${formatEuro(changeNeeded)}.` : `Cambio de menos: faltan ${formatEuro(-diff)}. Debes devolver ${formatEuro(changeNeeded)}.`;
       state2.finance.changeErrorsToday = (state2.finance.changeErrorsToday || 0) + 1;
+      state2.dayLog.push({
+        at: state2.clock.gameTimeMs,
+        text: `Error de cambio: dado ${formatEuro(changeSum)} \xB7 deb\xEDa ${formatEuro(changeNeeded)}`
+      });
       return state2;
     }
     let drawer = addToDrawer(state2.finance.drawer, ps.tendered);
@@ -3858,6 +3896,311 @@
       bizum: "Bizum",
       transfer: "transferencia"
     }[m] || m;
+  }
+
+  // src/game/numberAsks.js
+  var ENDINGS = [
+    "00",
+    "11",
+    "22",
+    "25",
+    "33",
+    "44",
+    "50",
+    "55",
+    "66",
+    "69",
+    "70",
+    "75",
+    "77",
+    "88",
+    "99",
+    "07",
+    "13",
+    "17",
+    "21",
+    "27",
+    "37",
+    "41",
+    "47",
+    "61",
+    "71",
+    "81",
+    "91"
+  ];
+  var STARTS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "12", "13", "17", "19", "21", "25", "28"];
+  var LUCKY_PHRASES = [
+    "los de siempre",
+    "los del santo",
+    "los del cumplea\xF1os",
+    "los de la boda",
+    "los del DNI",
+    "los del tel\xE9fono",
+    "los de la casa",
+    "los de la matr\xEDcula",
+    "los del pueblo",
+    "los de la pe\xF1a",
+    "los que so\xF1\xE9 anoche",
+    "los de la nieta",
+    "los del abuelo",
+    "los del Caminito",
+    "los de la feria"
+  ];
+  function pick2(rng, arr) {
+    return arr[Math.floor(rng() * arr.length)];
+  }
+  function digits(rng, n) {
+    let s = "";
+    for (let i = 0; i < n; i++) s += Math.floor(rng() * 10);
+    return s;
+  }
+  function makeNumberAsk(product, rng, client = null) {
+    const p = typeof product === "string" ? getProduct(product) : product;
+    if (!(p == null ? void 0 : p.needsNumbers)) {
+      return { kind: "none", label: "Sin n\xFAmeros", preferDictate: false };
+    }
+    const mode = p.numberMode || "nacional";
+    const roll = rng();
+    if (roll < 0.28) {
+      return {
+        kind: "random",
+        label: pick2(rng, [
+          "Aleatorio del terminal",
+          "Lo que salga",
+          "Al azar, por favor",
+          "El que diga la m\xE1quina",
+          "Sorpresa",
+          "Cualquiera, que tenga suerte"
+        ]),
+        preferDictate: false
+      };
+    }
+    if (mode === "nacional" || mode === "triplex" || mode === "serieLocal") {
+      const need = mode === "nacional" ? 5 : 3;
+      const sub = rng();
+      if (sub < 0.18) {
+        const end = pick2(rng, ENDINGS);
+        return {
+          kind: "ending",
+          label: `Que termine en ${end}`,
+          preferDictate: true,
+          hint: end,
+          draftHint: `\u2026${end}`
+        };
+      }
+      if (sub < 0.3) {
+        const start = pick2(rng, STARTS);
+        return {
+          kind: "starts",
+          label: `Que empiece por ${start}`,
+          preferDictate: true,
+          hint: start,
+          draftHint: start
+        };
+      }
+      if (sub < 0.4) {
+        const d = String(Math.floor(rng() * 10));
+        return {
+          kind: "contains",
+          label: `Que lleve el ${d} (alguna cifra)`,
+          preferDictate: true,
+          hint: d
+        };
+      }
+      if (sub < 0.5 && (client == null ? void 0 : client.name)) {
+        const year = 1950 + Math.floor(rng() * 55);
+        const mm = 1 + Math.floor(rng() * 12);
+        const dd = 1 + Math.floor(rng() * 28);
+        const num2 = pad5(String(dd) + String(mm).padStart(2, "0") + String(year).slice(-1));
+        return {
+          kind: "birth",
+          label: `Fecha especial ${String(dd).padStart(2, "0")}/${String(mm).padStart(2, "0")}`,
+          preferDictate: true,
+          selection: { number: num2.slice(0, need).padStart(need, "0"), fractions: 1, series: false },
+          draftHint: num2.slice(0, need)
+        };
+      }
+      if (sub < 0.58) {
+        const phone = digits(rng, need);
+        return {
+          kind: "phone",
+          label: `Cifras del m\xF3vil \u2026${phone.slice(-3)}`,
+          preferDictate: true,
+          selection: { number: phone, fractions: 1, series: false },
+          draftHint: phone
+        };
+      }
+      if (sub < 0.64) {
+        const house = String(1 + Math.floor(rng() * 120)).padStart(need, "0").slice(-need);
+        return {
+          kind: "house",
+          label: `N\xFAmero de casa ${Number(house)}`,
+          preferDictate: true,
+          selection: { number: house, fractions: 1, series: false },
+          draftHint: house
+        };
+      }
+      if (sub < 0.72 && mode === "nacional") {
+        const num2 = digits(rng, 5);
+        return {
+          kind: "series",
+          label: `Serie entera del ${num2}`,
+          preferDictate: true,
+          selection: { number: num2, series: true, fractions: 10 },
+          draftHint: `serie ${num2}`
+        };
+      }
+      if (sub < 0.8 && mode === "nacional") {
+        const num2 = digits(rng, 5);
+        const fr = 2 + Math.floor(rng() * 4);
+        return {
+          kind: "fractions",
+          label: `${fr} d\xE9cimos del ${num2}`,
+          preferDictate: true,
+          selection: { number: num2, fractions: fr, series: false },
+          draftHint: `${num2} x${fr}`
+        };
+      }
+      if (sub < 0.86) {
+        const a = digits(rng, need);
+        const mirror = a.split("").reverse().join("");
+        return {
+          kind: "mirror",
+          label: `Capic\xFAa o casi: ${a}`,
+          preferDictate: true,
+          selection: { number: rng() < 0.5 ? a : mirror.slice(0, need).padStart(need, "0"), fractions: 1, series: false },
+          draftHint: a
+        };
+      }
+      if (sub < 0.92) {
+        const num2 = digits(rng, need);
+        return {
+          kind: "pedrea",
+          label: `Pedrea del ${num2}`,
+          preferDictate: true,
+          selection: { number: num2, fractions: 1, series: false },
+          draftHint: num2
+        };
+      }
+      const num = digits(rng, need);
+      return {
+        kind: "dictate",
+        label: `Dicta el ${num}`,
+        preferDictate: true,
+        selection: { number: num, fractions: 1, series: false },
+        draftHint: num
+      };
+    }
+    if (mode === "6from49") {
+      if (rng() < 0.35) {
+        return { kind: "random", label: "Aleatoria 6/49", preferDictate: false };
+      }
+      const nums = [];
+      while (nums.length < 6) {
+        const n = 1 + Math.floor(rng() * 49);
+        if (!nums.includes(n)) nums.push(n);
+      }
+      nums.sort((a, b) => a - b);
+      const re = Math.floor(rng() * 10);
+      if (rng() < 0.4) {
+        return {
+          kind: "reintegro",
+          label: `Combinaci\xF3n con reintegro ${re}`,
+          preferDictate: true,
+          selection: { numbers: nums, reintegro: re, complementario: 1 + Math.floor(rng() * 49) },
+          draftHint: `${nums.join(" ")} r${re}`
+        };
+      }
+      return {
+        kind: "lucky",
+        label: pick2(rng, LUCKY_PHRASES),
+        preferDictate: true,
+        selection: { numbers: nums, reintegro: re },
+        draftHint: nums.join(" ")
+      };
+    }
+    if (mode === "euro" || mode === "eurojackpot") {
+      if (rng() < 0.3) return { kind: "random", label: "Aleatorio Europa", preferDictate: false };
+      const mainMax = mode === "euro" ? 50 : 50;
+      const starMax = mode === "euro" ? 12 : 12;
+      const main = [];
+      while (main.length < 5) {
+        const n = 1 + Math.floor(rng() * mainMax);
+        if (!main.includes(n)) main.push(n);
+      }
+      main.sort((a, b) => a - b);
+      const stars = [];
+      while (stars.length < 2) {
+        const n = 1 + Math.floor(rng() * starMax);
+        if (!stars.includes(n)) stars.push(n);
+      }
+      stars.sort((a, b) => a - b);
+      if (rng() < 0.45) {
+        return {
+          kind: "stars",
+          label: `Estrellas ${stars.join(" y ")}`,
+          preferDictate: true,
+          selection: { numbers: main, stars },
+          draftHint: `${main.join(" ")} * ${stars.join(" ")}`
+        };
+      }
+      return {
+        kind: "dictate",
+        label: pick2(rng, LUCKY_PHRASES),
+        preferDictate: true,
+        selection: { numbers: main, stars },
+        draftHint: `${main.join(" ")} * ${stars.join(" ")}`
+      };
+    }
+    if (rng() < 0.4) {
+      return { kind: "random", label: "Aleatorio", preferDictate: false };
+    }
+    return {
+      kind: "dictate",
+      label: pick2(rng, [...LUCKY_PHRASES, "Yo te digo los n\xFAmeros", "Apunta lo que te diga", "Combinaci\xF3n m\xEDa"]),
+      preferDictate: true
+    };
+  }
+  function numberAskLabel(ask) {
+    if (!ask || ask.kind === "none") return "";
+    return ask.label || ask.kind;
+  }
+  function numberAskSatisfied(ask, line) {
+    if (!ask || ask.kind === "none" || ask.kind === "random") {
+      return { ok: true, soft: true };
+    }
+    if (!(line == null ? void 0 : line.selection)) return { ok: false, reason: "Sin marcar" };
+    if (ask.kind === "random") {
+      return { ok: line.numberSource === "random", reason: "Ped\xEDa aleatorio" };
+    }
+    const s = line.selection;
+    if (ask.selection) {
+      if (ask.selection.number && s.number && ask.selection.number !== s.number) {
+        return { ok: false, reason: `Ped\xEDa ${ask.selection.number}` };
+      }
+      if (ask.selection.series && !s.series) return { ok: false, reason: "Ped\xEDa serie" };
+      if (ask.selection.fractions && s.fractions && ask.selection.fractions !== s.fractions) {
+        return { ok: false, reason: `Ped\xEDa ${ask.selection.fractions} d\xE9cimos` };
+      }
+      if (ask.selection.numbers && s.numbers) {
+        const a = [...ask.selection.numbers].sort().join(",");
+        const b = [...s.numbers].sort().join(",");
+        if (a !== b) return { ok: false, reason: "Combinaci\xF3n distinta" };
+      }
+    }
+    if (ask.kind === "ending" && ask.hint && s.number && !String(s.number).endsWith(ask.hint)) {
+      return { ok: false, reason: `Debe terminar en ${ask.hint}` };
+    }
+    if (ask.kind === "starts" && ask.hint && s.number && !String(s.number).startsWith(ask.hint)) {
+      return { ok: false, reason: `Debe empezar por ${ask.hint}` };
+    }
+    if (ask.kind === "contains" && ask.hint && s.number && !String(s.number).includes(ask.hint)) {
+      return { ok: false, reason: `Debe llevar el ${ask.hint}` };
+    }
+    if (ask.preferDictate && line.numberSource === "random" && !ask.selection) {
+      return { ok: true, soft: true, reason: "Marcado aleatorio (acepta)" };
+    }
+    return { ok: true };
   }
 
   // src/game/customers.js
@@ -4165,26 +4508,18 @@
       if (typeof qty === "function") qty = qty(rng);
       if (client.kind === "pena") qty += 1 + Math.floor(rng() * 4);
       if (client.kind === "abonado") qty += Math.floor(rng() * 2);
-      lines.push({
-        productId: p.id,
-        productName: p.name,
-        qty: Math.max(1, qty),
-        preferDictate: !!slot.dictate || client.trait === "pr\xE1ctica" && rng() < 0.35
-      });
+      const forceDictate = !!slot.dictate || client.trait === "pr\xE1ctica" && rng() < 0.35;
+      lines.push(decorateWishLine(p, Math.max(1, qty), rng, client, forceDictate));
     }
     const hot = hotJackpots(state2);
     if (hot.length && rng() < 0.42) {
-      const pick2 = hot[Math.floor(rng() * hot.length)];
-      const p = getProduct(pick2.id);
+      const pick3 = hot[Math.floor(rng() * hot.length)];
+      const p = getProduct(pick3.id);
       if (p) {
-        const qty = pick2.veryHot ? 2 + Math.floor(rng() * 3) : 1 + Math.floor(rng() * 2);
-        lines.unshift({
-          productId: p.id,
-          productName: p.name,
-          qty,
-          preferDictate: rng() < 0.45,
-          note: `Bote ${pick2.label}`
-        });
+        const qty = pick3.veryHot ? 2 + Math.floor(rng() * 3) : 1 + Math.floor(rng() * 2);
+        const line = decorateWishLine(p, qty, rng, client, rng() < 0.45);
+        line.note = `Bote ${pick3.label}`;
+        lines.unshift(line);
       }
     }
     const extras = onceExtraToday(state2);
@@ -4192,20 +4527,38 @@
       const ex = extras[Math.floor(rng() * extras.length)];
       const p = getProduct(ex.id);
       if (p) {
-        lines.unshift({
-          productId: p.id,
-          productName: p.name,
-          qty: 1 + Math.floor(rng() * 2),
-          preferDictate: rng() < 0.4,
-          note: "Extraordinario hoy"
-        });
+        const line = decorateWishLine(p, 1 + Math.floor(rng() * 2), rng, client, rng() < 0.4);
+        line.note = "Extraordinario hoy";
+        lines.unshift(line);
       }
     }
     if (!lines.length) {
       const p = getProduct(((_c = client.preferredProducts) == null ? void 0 : _c[0]) || "lae-bonoloto");
-      lines.push({ productId: p.id, productName: p.name, qty: 1, preferDictate: false });
+      lines.push(decorateWishLine(p, 1, rng, client, false));
     }
     return lines;
+  }
+  function decorateWishLine(p, qty, rng, client, forceDictate) {
+    const ask = makeNumberAsk(p, rng, client);
+    if (forceDictate && ask.kind === "random") {
+      const again = makeNumberAsk(p, () => 0.5 + rng() * 0.49, client);
+      return {
+        productId: p.id,
+        productName: p.name,
+        qty,
+        preferDictate: true,
+        numberAsk: again,
+        askLabel: numberAskLabel(again)
+      };
+    }
+    return {
+      productId: p.id,
+      productName: p.name,
+      qty,
+      preferDictate: !!ask.preferDictate,
+      numberAsk: ask,
+      askLabel: numberAskLabel(ask)
+    };
   }
   var REGIONAL_AUTO = (REGIONAL_IDS || []).filter((id) => id.startsWith("and-"));
   var REGIONAL_PROV = (REGIONAL_IDS || []).filter((id) => id.startsWith("mal-"));
@@ -4686,10 +5039,14 @@
       beep({ freq: 880, dur: 0.07, type: "sine", gain: 0.04 });
       setTimeout(() => beep({ freq: 1175, dur: 0.09, type: "sine", gain: 0.035 }), 70);
     },
-    drawer: () => beep({ freq: 180, dur: 0.12, type: "triangle", gain: 0.05, slideTo: 90 }),
+    drawer: () => {
+      beep({ freq: 180, dur: 0.12, type: "triangle", gain: 0.05, slideTo: 90 });
+      setTimeout(() => beep({ freq: 320, dur: 0.05, type: "sine", gain: 0.02 }), 80);
+    },
     ticket: () => {
       beep({ freq: 1500, dur: 0.04, type: "square", gain: 0.02 });
       setTimeout(() => beep({ freq: 1200, dur: 0.04, type: "square", gain: 0.02 }), 50);
+      setTimeout(() => beep({ freq: 1900, dur: 0.03, type: "square", gain: 0.015 }), 100);
     },
     draw: () => {
       beep({ freq: 440, dur: 0.1 });
@@ -4723,6 +5080,37 @@
     alert: () => {
       beep({ freq: 880, dur: 0.08, type: "square", gain: 0.035 });
       setTimeout(() => beep({ freq: 660, dur: 0.12, type: "square", gain: 0.03 }), 100);
+    },
+    /** Timbre de puerta / cliente entra */
+    door: () => {
+      beep({ freq: 740, dur: 0.09, type: "triangle", gain: 0.045 });
+      setTimeout(() => beep({ freq: 980, dur: 0.12, type: "triangle", gain: 0.04 }), 90);
+      setTimeout(() => beep({ freq: 620, dur: 0.08, type: "sine", gain: 0.03 }), 200);
+    },
+    /** Impresora térmica de tickets */
+    printer: () => {
+      for (let i = 0; i < 5; i++) {
+        setTimeout(
+          () => beep({ freq: 1800 + i * 40, dur: 0.03, type: "square", gain: 0.018 }),
+          i * 35
+        );
+      }
+      setTimeout(() => beep({ freq: 240, dur: 0.08, type: "triangle", gain: 0.035, slideTo: 160 }), 200);
+    },
+    /** Cajón que se abre con más cuerpo */
+    drawerOpen: () => {
+      beep({ freq: 160, dur: 0.14, type: "triangle", gain: 0.055, slideTo: 70 });
+      setTimeout(() => beep({ freq: 420, dur: 0.05, type: "sine", gain: 0.025 }), 90);
+    },
+    /** Fallo de cobro electrónico */
+    deny: () => {
+      beep({ freq: 180, dur: 0.12, type: "sawtooth", gain: 0.035 });
+      setTimeout(() => beep({ freq: 140, dur: 0.16, type: "sawtooth", gain: 0.03 }), 110);
+    },
+    /** Stock / aviso oficina */
+    notice: () => {
+      beep({ freq: 660, dur: 0.06, type: "sine", gain: 0.03 });
+      setTimeout(() => beep({ freq: 880, dur: 0.08, type: "sine", gain: 0.028 }), 70);
     }
   };
   function startMusic() {
@@ -4786,6 +5174,31 @@
   }
 
   // src/game/prizes.js
+  var MEDIUM_PAPERWORK = [
+    { id: "dni", label: "DNI / NIE del cobrador verificado" },
+    { id: "ticket", label: "Ticket original sellado / firmado" },
+    { id: "form", label: "Justificante de pago mediano cumplimentado" }
+  ];
+  function ensureMediumPaperwork(ticket) {
+    if (!ticket.mediumPaperwork) {
+      ticket.mediumPaperwork = {};
+      for (const i of MEDIUM_PAPERWORK) ticket.mediumPaperwork[i.id] = false;
+    }
+    return ticket;
+  }
+  function mediumPaperworkDone(ticket) {
+    ensureMediumPaperwork(ticket);
+    return MEDIUM_PAPERWORK.every((i) => !!ticket.mediumPaperwork[i.id]);
+  }
+  function toggleMediumPaperwork(state2, ticketId, itemId) {
+    const ticket = state2.tickets.find((t) => t.id === ticketId);
+    if (!ticket) return { ok: false, message: "Ticket no encontrado" };
+    ensureMediumPaperwork(ticket);
+    if (!MEDIUM_PAPERWORK.some((i) => i.id === itemId)) return { ok: false, message: "Documento no v\xE1lido" };
+    ticket.mediumPaperwork[itemId] = !ticket.mediumPaperwork[itemId];
+    state2.ui.toast = mediumPaperworkDone(ticket) ? "Papeleo mediano completo. Ya puedes pagar de caja." : "Documento marcado.";
+    return { ok: true, ticket, done: mediumPaperworkDone(ticket) };
+  }
   function payTicketPrize(state2, ticketId, { method = "cash", defer = false } = {}) {
     const ticket = state2.tickets.find((t) => t.id === ticketId);
     if (!ticket) return { ok: false, message: "Ticket no encontrado" };
@@ -4803,6 +5216,14 @@
     }
     if (ticket.prizeCents >= LARGE_PRIZE_CENTS) {
       return startPrizeManagement(state2, ticket);
+    }
+    if (ticket.prizeCents >= MEDIUM_PRIZE_CENTS) {
+      ensureMediumPaperwork(ticket);
+      ticket.mediumPrize = true;
+      if (!mediumPaperworkDone(ticket)) {
+        state2.ui.toast = "Premio mediano: completa el papeleo breve antes de pagar.";
+        return { ok: false, message: state2.ui.toast, medium: true, ticket };
+      }
     }
     return paySmallPrize(state2, ticket, method);
   }
@@ -5189,6 +5610,30 @@
       regional: REGIONAL_LOTTERIES.length
     };
   }
+  function encyclopediaDaily(state2) {
+    var _a, _b, _c;
+    const entries = encyclopediaEntries();
+    const ymd2 = new Date(((_a = state2.clock) == null ? void 0 : _a.gameTimeMs) || Date.now()).toISOString().slice(0, 10);
+    const tipIdx = Number(ymd2.replace(/\D/g, "")) % Math.max(1, entries.length);
+    const tipProduct = entries[tipIdx];
+    const tips = [
+      `Hoy conviene conocer bien ${(tipProduct == null ? void 0 : tipProduct.name) || "el cat\xE1logo"}: ${(tipProduct == null ? void 0 : tipProduct.flavor) || (tipProduct == null ? void 0 : tipProduct.description) || ""}`,
+      "Consulta el tabl\xF3n: botes y sorteos del d\xEDa cambian la cola.",
+      "Los rascas se venden solos si est\xE1nes explicar el premio m\xE1ximo.",
+      "Euromillones y Cuponazo: pregunta siempre si quieren aleatorio o sus cifras."
+    ];
+    const jack = ((_b = state2.jackpots) == null ? void 0 : _b.values) || {};
+    const hot = Object.entries(jack).map(([id, cents]) => ({ id, cents, p: entries.find((e) => e.id === id) })).filter((x) => x.p && x.cents >= 1e9).sort((a, b) => b.cents - a.cents).slice(0, 3);
+    const dow = new Date(((_c = state2.clock) == null ? void 0 : _c.gameTimeMs) || Date.now()).getUTCDay();
+    const todayFocus = dow === 5 ? entries.find((e) => e.id === "once-cuponazo") : dow === 2 || dow === 5 ? entries.find((e) => e.id === "lae-euromillones") : dow === 4 || dow === 6 ? entries.find((e) => e.id === "lae-nacional") : tipProduct;
+    return {
+      tip: tips[Number(ymd2.slice(-1)) % tips.length],
+      tipProduct,
+      todayFocus,
+      hot,
+      ymd: ymd2
+    };
+  }
   var DAY_NAMES = ["Dom", "Lun", "Mar", "Mi\xE9", "Jue", "Vie", "S\xE1b"];
   function renderEncyclopediaDetail(id) {
     var _a, _b;
@@ -5232,78 +5677,311 @@
   }
 
   // src/game/pdf.js
+  var THEME = {
+    brand: [0.05, 0.45, 0.48],
+    accent: [0.94, 0.64, 0.01],
+    coral: [0.91, 0.42, 0.36],
+    ink: [0.09, 0.2, 0.23],
+    muted: [0.35, 0.45, 0.48],
+    ok: [0.11, 0.54, 0.35],
+    soft: [0.9, 0.96, 0.95],
+    cream: [1, 0.97, 0.92]
+  };
   function downloadTicketPdf(ticket, business = OFFICE) {
-    const lines = [
-      { text: business.businessName, bold: true, size: 14 },
-      { text: `${business.town} \xB7 ${business.employee}` },
-      { text: "--------------------------------" },
-      { text: `Ticket ${ticket.id}`, bold: true },
-      { text: ticket.productName, bold: true },
-      { text: `Org: ${ticket.org || "\u2014"}` },
-      { text: `Cliente: ${ticket.clientName || "\u2014"}` },
-      { text: `Apuesta: ${formatSelection(ticket)}` },
-      ticket.numberSource ? { text: `Origen n\xFAmeros: ${ticket.numberSource}` } : null,
-      ticket.drawYmd ? { text: `Sorteo: ${ticket.drawYmd}` } : { text: "Rasca / instant\xE1neo" },
-      { text: `Precio: ${formatEuro(ticket.priceCents)}`, bold: true },
-      ticket.saleMethod ? { text: `Venta: ${ticket.saleMethod}` } : null,
-      ticket.checkedAt != null ? { text: `Comprobado: ${ticket.checkDetail || ""} \xB7 ${formatEuro(ticket.prizeCents || 0)}` } : { text: "Pendiente de comprobar" },
-      ticket.paidAt != null ? { text: `Pagado: ${formatEuro(ticket.prizeCents || 0)}` } : null,
-      ticket.drawSnapshot ? { text: `Resultado sorteo: ${ticket.drawSnapshot}` } : null,
-      { text: "--------------------------------" },
-      { text: "Fan-made / no oficial \xB7 +18" },
-      { text: "Juego responsable" }
+    const blocks = [
+      headerBlock("TICKET DE JUEGO", business),
+      { type: "space", h: 10 },
+      { type: "kv", k: "Ticket", v: ticket.id, bold: true },
+      { type: "kv", k: "Producto", v: ticket.productName, bold: true },
+      { type: "kv", k: "Organismo", v: ticket.org || "\u2014" },
+      { type: "kv", k: "Cliente", v: ticket.clientName || "\u2014" },
+      { type: "kv", k: "Apuesta", v: formatSelection(ticket) },
+      ticket.numberSource ? { type: "kv", k: "Origen n\xFAmeros", v: ticket.numberSource } : null,
+      ticket.drawYmd ? { type: "kv", k: "Sorteo", v: ticket.drawYmd } : { type: "kv", k: "Tipo", v: "Rasca / instant\xE1neo" },
+      { type: "kv", k: "Precio", v: formatEuro(ticket.priceCents), bold: true, color: THEME.brand },
+      ticket.saleMethod ? { type: "kv", k: "Venta", v: ticket.saleMethod } : null,
+      ticket.checkedAt != null ? { type: "kv", k: "Comprobado", v: `${ticket.checkDetail || ""} \xB7 ${formatEuro(ticket.prizeCents || 0)}` } : { type: "kv", k: "Estado", v: "Pendiente de comprobar" },
+      ticket.paidAt != null ? { type: "kv", k: "Pagado", v: formatEuro(ticket.prizeCents || 0), color: THEME.ok } : null,
+      ticket.drawSnapshot ? { type: "kv", k: "Resultado", v: ticket.drawSnapshot } : null,
+      footerBlock()
     ].filter(Boolean);
-    downloadLinesPdf(lines, `ticket-${ticket.id}.pdf`);
+    downloadStyledPdf(blocks, `ticket-${ticket.id}.pdf`);
   }
   function downloadSaleReceiptPdf({ items, totalCents, clientName, method, tickets }) {
-    const lines = [
-      { text: OFFICE.businessName, bold: true, size: 14 },
-      { text: "\xC1lora \xB7 Miriam" },
-      { text: "======== TICKET DE VENTA ========", bold: true },
-      { text: `Cliente: ${clientName || "\u2014"}` },
-      { text: `Pago: ${method}` },
-      { text: "--------------------------------" },
-      ...items.map((i) => ({ text: `${i.name} x${i.qty}  ${formatEuro(i.unitCents * i.qty)}` })),
-      { text: "--------------------------------" },
-      { text: `TOTAL  ${formatEuro(totalCents)}`, bold: true, size: 13 }
+    const blocks = [
+      headerBlock("TICKET DE VENTA", OFFICE),
+      { type: "space", h: 8 },
+      { type: "kv", k: "Cliente", v: clientName || "\u2014" },
+      { type: "kv", k: "Pago", v: method },
+      { type: "rule" },
+      ...items.map((i) => ({
+        type: "line",
+        text: `${i.name}  \xD7${i.qty}   ${formatEuro(i.unitCents * i.qty)}`,
+        size: 13
+      })),
+      { type: "rule" },
+      { type: "banner", text: `TOTAL  ${formatEuro(totalCents)}`, color: THEME.brand }
     ];
     if (tickets == null ? void 0 : tickets.length) {
-      lines.push({ text: "Tickets emitidos", bold: true });
+      blocks.push({ type: "space", h: 8 }, { type: "h2", text: "Tickets emitidos" });
       for (const t of tickets) {
-        lines.push({ text: `- ${t.id} ${t.productName}` });
-        lines.push({ text: `  ${formatSelection(t)}` });
+        blocks.push({ type: "line", text: `${t.id} \xB7 ${t.productName}`, size: 12, bold: true });
+        blocks.push({ type: "line", text: `   ${formatSelection(t)}`, size: 12, color: THEME.muted });
       }
     }
-    lines.push({ text: "--------------------------------" }, { text: "Fan-made / no oficial \xB7 +18" });
-    downloadLinesPdf(lines, `venta-${Date.now()}.pdf`);
+    blocks.push(footerBlock());
+    downloadStyledPdf(blocks, `venta-${Date.now()}.pdf`);
   }
-  function normalizeLines(lines) {
-    return lines.filter(Boolean).map((l) => {
-      var _a;
-      if (typeof l === "string") return { text: l, bold: false, size: 11 };
-      return { text: String((_a = l.text) != null ? _a : ""), bold: !!l.bold, size: l.size || (l.bold ? 12 : 11) };
-    });
-  }
-  function buildSimplePdf(rawLines) {
-    const lines = normalizeLines(rawLines);
-    const maxChars = 95;
-    let y = 800;
-    const ops = ["BT"];
-    let first = true;
-    for (const line of lines) {
-      const font = line.bold ? "/F2" : "/F1";
-      const size = line.size || 11;
-      const text = escapePdfText(String(line.text).slice(0, maxChars));
-      if (first) {
-        ops.push(`${font} ${size} Tf 48 ${y} Td (${text}) Tj`);
-        first = false;
-      } else {
-        const gap = line.bold && size >= 13 ? 20 : 15;
-        ops.push(`0 -${gap} Td ${font} ${size} Tf (${text}) Tj`);
+  function downloadPrizeCasePdf(caseItem, ticket) {
+    var _a, _b;
+    ensureCasePaperwork(caseItem);
+    const blocks = [
+      headerBlock("EXPEDIENTE DE PREMIO", OFFICE, THEME.coral),
+      { type: "space", h: 8 },
+      { type: "banner", text: `Caso ${caseItem.id}`, color: THEME.coral },
+      { type: "kv", k: "Cliente", v: caseItem.clientName },
+      { type: "kv", k: "Producto", v: caseItem.productName },
+      { type: "kv", k: "Organismo", v: caseItem.org || "\u2014" },
+      { type: "kv", k: "Importe", v: formatEuro(caseItem.amountCents), bold: true, color: THEME.coral },
+      { type: "kv", k: "Nivel", v: caseItem.level || "\u2014" },
+      { type: "kv", k: "Estado", v: PRIZE_MGMT_STATUS[caseItem.status] || caseItem.status, bold: true },
+      { type: "kv", k: "Ticket", v: caseItem.ticketId || (ticket == null ? void 0 : ticket.id) || "\u2014" },
+      caseItem.note ? { type: "line", text: caseItem.note, size: 12, color: THEME.muted } : null,
+      { type: "space", h: 10 },
+      { type: "h2", text: "Papeleo del expediente" }
+    ].filter(Boolean);
+    for (const [status, items] of Object.entries(PAPERWORK_BY_STATUS)) {
+      blocks.push({
+        type: "line",
+        text: `\u2014 ${PRIZE_MGMT_STATUS[status] || status} \u2014`,
+        bold: true,
+        size: 13,
+        color: THEME.brand
+      });
+      for (const item of items) {
+        const ok = !!((_b = (_a = caseItem.paperwork) == null ? void 0 : _a[status]) == null ? void 0 : _b[item.id]);
+        blocks.push({
+          type: "line",
+          text: `${ok ? "[X]" : "[ ]"}  ${item.label}`,
+          size: 12,
+          color: ok ? THEME.ok : THEME.ink
+        });
       }
     }
-    ops.push("ET");
-    const stream = ops.join("\n");
+    blocks.push(footerBlock());
+    downloadStyledPdf(blocks, `expediente-premio-${caseItem.id}.pdf`);
+  }
+  function downloadStatsPdf(state2) {
+    var _a, _b, _c, _d, _e, _f;
+    const s = state2.stats || {};
+    const f = state2.finance || {};
+    const blocks = [
+      headerBlock("ESTAD\xCDSTICAS DE PARTIDA", OFFICE),
+      { type: "kv", k: "Versi\xF3n", v: state2.gameVersion || "?" },
+      {
+        type: "kv",
+        k: "Fecha juego",
+        v: new Date(((_a = state2.clock) == null ? void 0 : _a.gameTimeMs) || Date.now()).toISOString().slice(0, 10)
+      },
+      { type: "rule" },
+      { type: "kv", k: "D\xEDas jugados", v: String((_b = s.daysPlayed) != null ? _b : 0) },
+      { type: "kv", k: "Ventas totales", v: formatEuro(s.totalSalesCents || 0) },
+      { type: "kv", k: "Comisiones", v: formatEuro(s.totalCommissionCents || 0), bold: true },
+      { type: "kv", k: "Premios pagados", v: formatEuro(s.totalPrizesPaidCents || 0) },
+      { type: "kv", k: "Faltantes", v: formatEuro(s.totalShortageCents || 0), color: THEME.coral },
+      { type: "kv", k: "Sobrantes", v: formatEuro(s.totalSurplusCents || 0) },
+      { type: "kv", k: "Clientes", v: String((_c = s.totalCustomers) != null ? _c : 0) },
+      { type: "kv", k: "Alertas premio alto", v: String((_d = s.highPrizesAlerted) != null ? _d : 0) },
+      { type: "rule" },
+      { type: "kv", k: "Banco", v: formatEuro(f.bankCents || 0), bold: true, color: THEME.brand },
+      { type: "kv", k: "Ventas hoy", v: formatEuro(f.daySalesCents || 0) },
+      { type: "kv", k: "Comisi\xF3n hoy", v: formatEuro(f.dayCommissionCents || 0) },
+      { type: "kv", k: "Clientes hoy", v: String((_f = (_e = state2.customers) == null ? void 0 : _e.servedToday) != null ? _f : 0) },
+      footerBlock()
+    ];
+    downloadStyledPdf(blocks, `estadisticas-alora-${Date.now()}.pdf`);
+  }
+  function downloadWeeklyPdf(weekly) {
+    const blocks = [
+      headerBlock("EXTRACTO SEMANAL", OFFICE, THEME.accent),
+      { type: "line", text: `${weekly.fromYmd}  \u2192  ${weekly.toYmd}`, size: 14, bold: true },
+      { type: "rule" },
+      { type: "kv", k: "Ventas", v: formatEuro(weekly.sales) },
+      { type: "kv", k: "Comisiones", v: formatEuro(weekly.commission), bold: true },
+      { type: "kv", k: "Premios", v: formatEuro(weekly.prizes) },
+      { type: "kv", k: "Gastos", v: formatEuro(weekly.expenses) },
+      { type: "kv", k: "Faltantes", v: formatEuro(weekly.shortage), color: THEME.coral },
+      { type: "kv", k: "Liquidaciones", v: String(weekly.settlements) },
+      { type: "banner", text: `Neto  ${formatEuro(weekly.net)}`, color: THEME.brand },
+      footerBlock()
+    ];
+    downloadStyledPdf(blocks, `extracto-semanal-${weekly.toYmd}.pdf`);
+  }
+  function downloadDayClosePdf(summary) {
+    var _a, _b, _c, _d;
+    const settle = summary.settlement;
+    const blocks = [
+      headerBlock("CIERRE DEL D\xCDA", OFFICE, THEME.brand),
+      { type: "kv", k: "Fecha", v: summary.date, bold: true },
+      { type: "kv", k: "Siguiente laborable", v: summary.nextDay },
+      { type: "rule" },
+      { type: "kv", k: "Ventas", v: formatEuro(summary.salesCents) },
+      { type: "kv", k: "Comisiones", v: formatEuro(summary.commissionCents), bold: true, color: THEME.brand },
+      { type: "kv", k: "Beneficio", v: formatEuro(summary.profitCents), bold: true },
+      { type: "kv", k: "Premios pagados", v: formatEuro(summary.prizesPaidCents) },
+      { type: "kv", k: "Gastos", v: formatEuro(summary.expensesCents) },
+      { type: "kv", k: "Faltantes", v: formatEuro(summary.shortageCents || 0), color: THEME.coral },
+      { type: "kv", k: "Sobrantes", v: formatEuro(summary.surplusCents || 0) },
+      { type: "kv", k: "Clientes", v: String(summary.customersServed) },
+      { type: "kv", k: "Caj\xF3n", v: formatEuro(summary.drawerCents) },
+      { type: "kv", k: "Banco", v: formatEuro(summary.bankCents), bold: true }
+    ];
+    if (settle) {
+      blocks.push({ type: "space", h: 8 }, { type: "h2", text: "Liquidaci\xF3n (remesa = ventas \u2212 comisi\xF3n)" });
+      for (const key of ["lae", "once", "otros"]) {
+        const o = settle[key];
+        if (!o) continue;
+        blocks.push({
+          type: "line",
+          text: `${key.toUpperCase()}  ventas ${formatEuro(o.sales || 0)} \xB7 com. ${formatEuro(o.commission || 0)} \xB7 remesa ${formatEuro(o.remittance || 0)}`,
+          size: 12
+        });
+      }
+      const reimb = (((_a = settle.lae) == null ? void 0 : _a.prizesReimbursed) || 0) + (((_b = settle.once) == null ? void 0 : _b.prizesReimbursed) || 0) + (((_c = settle.otros) == null ? void 0 : _c.prizesReimbursed) || 0);
+      blocks.push({ type: "kv", k: "Reembolso premios", v: formatEuro(reimb) });
+      blocks.push({ type: "banner", text: `Delta banco  ${formatEuro(settle.netBankDelta || 0)}`, color: THEME.brand });
+    }
+    if ((_d = summary.nextDayReasonSkip) == null ? void 0 : _d.length) {
+      blocks.push({ type: "line", text: `D\xEDas saltados: ${summary.nextDayReasonSkip.join(", ")}`, size: 12, color: THEME.muted });
+    }
+    blocks.push(footerBlock());
+    downloadStyledPdf(blocks, `cierre-${summary.date}.pdf`);
+  }
+  function downloadMonthlyPdf(statement) {
+    var _a;
+    const blocks = [
+      headerBlock(`LIQUIDACI\xD3N MENSUAL \u2014 ${statement.label}`, OFFICE, THEME.accent),
+      { type: "kv", k: "Ventas totales", v: formatEuro(statement.totalSales) },
+      { type: "kv", k: "Comisiones", v: formatEuro(statement.totalCommission), bold: true, color: THEME.brand },
+      { type: "kv", k: "Premios", v: formatEuro(statement.totalPrizes) },
+      { type: "kv", k: "Gastos local", v: formatEuro(statement.expenses) },
+      { type: "kv", k: "Proveedor", v: formatEuro(statement.supplier) },
+      { type: "kv", k: "Faltantes", v: formatEuro(statement.shortage), color: THEME.coral },
+      { type: "kv", k: "Sobrantes", v: formatEuro(statement.surplus || 0) },
+      {
+        type: "banner",
+        text: `Neto mes  ${formatEuro((_a = statement.netMonth) != null ? _a : statement.totalCommission - statement.expenses - statement.shortage)}`,
+        color: THEME.brand
+      },
+      { type: "h2", text: "Por organismo" }
+    ];
+    for (const org of ["LAE", "ONCE", "Otros"]) {
+      const o = statement.orgs[org];
+      blocks.push({ type: "line", text: org, bold: true, size: 14, color: THEME.brand });
+      blocks.push({
+        type: "line",
+        text: `  Ventas ${formatEuro(o.sales)} \xB7 Com. ${formatEuro(o.commission)} \xB7 Remesa ${formatEuro(o.remittance)} \xB7 Premios ${formatEuro(o.prizes)}`,
+        size: 12
+      });
+    }
+    blocks.push(footerBlock());
+    downloadStyledPdf(blocks, `liquidacion-mensual-${statement.year}-${statement.month + 1}.pdf`);
+  }
+  function headerBlock(title, business, color = THEME.brand) {
+    return {
+      type: "header",
+      title,
+      subtitle: `${business.businessName} \xB7 ${business.town} \xB7 ${business.employee}`,
+      color
+    };
+  }
+  function footerBlock() {
+    return {
+      type: "footer",
+      text: "Fan-made / no oficial \xB7 Juego responsable \xB7 +18 \xB7 Loter\xEDas \xC1lora"
+    };
+  }
+  function escapePdfText(s) {
+    return String(s != null ? s : "").replace(/[áàäâ]/g, "a").replace(/[éèëê]/g, "e").replace(/[íìïî]/g, "i").replace(/[óòöô]/g, "o").replace(/[úùüû]/g, "u").replace(/[ÁÀÄÂ]/g, "A").replace(/[ÉÈËÊ]/g, "E").replace(/[ÍÌÏÎ]/g, "I").replace(/[ÓÒÖÔ]/g, "O").replace(/[ÚÙÜÛ]/g, "U").replace(/ñ/g, "n").replace(/Ñ/g, "N").replace(/€/g, "EUR").replace(/·/g, "-").replace(/[^\x20-\x7E]/g, "?").replace(/\\/g, "\\\\").replace(/\(/g, "\\(").replace(/\)/g, "\\)");
+  }
+  function rgb(c) {
+    return `${c[0].toFixed(3)} ${c[1].toFixed(3)} ${c[2].toFixed(3)}`;
+  }
+  function downloadStyledPdf(blocks, filename) {
+    const pageW = 595;
+    const pageH = 842;
+    const margin = 40;
+    let y = pageH - 48;
+    const content = [];
+    const drawRect = (x, yy, w, h, fill) => {
+      content.push(`${rgb(fill)} rg ${x} ${yy} ${w} ${h} re f`);
+    };
+    for (const b of blocks) {
+      if (!b) continue;
+      if (b.type === "space") {
+        y -= b.h || 8;
+        continue;
+      }
+      if (b.type === "header") {
+        drawRect(0, y - 8, pageW, 56, b.color || THEME.brand);
+        content.push("BT");
+        content.push(`/F2 18 Tf 1 1 1 rg ${margin} ${y + 18} Td (${escapePdfText(b.title)}) Tj`);
+        content.push(`/F1 11 Tf 1 1 1 rg 0 -16 Td (${escapePdfText(b.subtitle)}) Tj`);
+        content.push("ET");
+        y -= 64;
+        continue;
+      }
+      if (b.type === "banner") {
+        drawRect(margin - 4, y - 6, pageW - margin * 2 + 8, 28, b.color || THEME.brand);
+        content.push("BT");
+        content.push(`/F2 15 Tf 1 1 1 rg ${margin + 6} ${y + 2} Td (${escapePdfText(b.text)}) Tj`);
+        content.push("ET");
+        y -= 36;
+        continue;
+      }
+      if (b.type === "h2") {
+        content.push("BT");
+        content.push(`/F2 14 Tf ${rgb(THEME.brand)} rg ${margin} ${y} Td (${escapePdfText(b.text)}) Tj`);
+        content.push("ET");
+        y -= 22;
+        continue;
+      }
+      if (b.type === "rule") {
+        content.push(`${rgb(THEME.brand)} RG 1.2 w ${margin} ${y} m ${pageW - margin} ${y} l S`);
+        y -= 14;
+        continue;
+      }
+      if (b.type === "kv") {
+        const k = escapePdfText(b.k);
+        const v = escapePdfText(b.v);
+        const col = b.color || THEME.ink;
+        content.push("BT");
+        content.push(`/F1 12 Tf ${rgb(THEME.muted)} rg ${margin} ${y} Td (${k}) Tj`);
+        content.push(`${b.bold ? "/F2" : "/F1"} 13 Tf ${rgb(col)} rg 150 0 Td (${v}) Tj`);
+        content.push("ET");
+        y -= 20;
+        continue;
+      }
+      if (b.type === "line") {
+        const col = b.color || THEME.ink;
+        const size = b.size || 13;
+        content.push("BT");
+        content.push(`${b.bold ? "/F2" : "/F1"} ${size} Tf ${rgb(col)} rg ${margin} ${y} Td (${escapePdfText(b.text).slice(0, 90)}) Tj`);
+        content.push("ET");
+        y -= size + 6;
+        continue;
+      }
+      if (b.type === "footer") {
+        y = Math.min(y, 56);
+        content.push(`${rgb(THEME.muted)} RG 0.8 w ${margin} ${y + 14} m ${pageW - margin} ${y + 14} l S`);
+        content.push("BT");
+        content.push(`/F1 10 Tf ${rgb(THEME.muted)} rg ${margin} ${y} Td (${escapePdfText(b.text)}) Tj`);
+        content.push("ET");
+        y -= 16;
+      }
+      if (y < 60) break;
+    }
+    const stream = content.join("\n");
     const objects = [];
     objects.push("1 0 obj<< /Type /Catalog /Pages 2 0 R >>endobj\n");
     objects.push("2 0 obj<< /Type /Pages /Kids [3 0 R] /Count 1 >>endobj\n");
@@ -5336,13 +6014,6 @@ endobj
 startxref
 ${xrefPos}
 %%EOF`;
-    return pdf;
-  }
-  function escapePdfText(s) {
-    return s.replace(/\\/g, "\\\\").replace(/\(/g, "\\(").replace(/\)/g, "\\)");
-  }
-  function downloadLinesPdf(lines, filename) {
-    const pdf = buildSimplePdf(lines);
     const blob = new Blob([pdf], { type: "application/pdf" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -5353,126 +6024,47 @@ ${xrefPos}
     a.remove();
     URL.revokeObjectURL(url);
   }
-  function downloadStatsPdf(state2) {
-    var _a, _b, _c, _d, _e, _f;
-    const s = state2.stats || {};
-    const f = state2.finance || {};
-    const lines = [
-      { text: OFFICE.businessName, bold: true, size: 14 },
-      { text: `${OFFICE.town} \xB7 ${OFFICE.employee}` },
-      { text: "===== ESTAD\xCDSTICAS DE PARTIDA =====", bold: true },
-      { text: `Versi\xF3n juego: ${state2.gameVersion || "?"}` },
-      {
-        text: `Fecha juego: ${new Date(((_a = state2.clock) == null ? void 0 : _a.gameTimeMs) || Date.now()).toISOString().slice(0, 10)}`
-      },
-      { text: "--------------------------------" },
-      { text: `D\xEDas jugados: ${(_b = s.daysPlayed) != null ? _b : 0}` },
-      { text: `Ventas totales: ${formatEuro(s.totalSalesCents || 0)}` },
-      { text: `Comisiones totales: ${formatEuro(s.totalCommissionCents || 0)}` },
-      { text: `Premios pagados: ${formatEuro(s.totalPrizesPaidCents || 0)}` },
-      { text: `Faltantes de caja: ${formatEuro(s.totalShortageCents || 0)}` },
-      { text: `Sobrantes de caja: ${formatEuro(s.totalSurplusCents || 0)}` },
-      { text: `Clientes atendidos: ${(_c = s.totalCustomers) != null ? _c : 0}` },
-      { text: `Alertas premio alto: ${(_d = s.highPrizesAlerted) != null ? _d : 0}` },
-      { text: "--------------------------------" },
-      { text: `Banco actual: ${formatEuro(f.bankCents || 0)}`, bold: true },
-      { text: `Ventas hoy: ${formatEuro(f.daySalesCents || 0)}` },
-      { text: `Comisi\xF3n hoy: ${formatEuro(f.dayCommissionCents || 0)}` },
-      { text: `Clientes hoy: ${(_f = (_e = state2.customers) == null ? void 0 : _e.servedToday) != null ? _f : 0}` },
-      { text: "--------------------------------" },
-      { text: "Fan-made / no oficial \xB7 +18" }
-    ];
-    downloadLinesPdf(lines, `estadisticas-alora-${Date.now()}.pdf`);
-  }
-  function downloadWeeklyPdf(weekly) {
-    const lines = [
-      { text: OFFICE.businessName, bold: true, size: 14 },
-      { text: "===== EXTRACTO SEMANAL =====", bold: true },
-      { text: `${weekly.fromYmd} \u2192 ${weekly.toYmd}` },
-      { text: "--------------------------------" },
-      { text: `Ventas: ${formatEuro(weekly.sales)}` },
-      { text: `Comisiones: ${formatEuro(weekly.commission)}` },
-      { text: `Premios: ${formatEuro(weekly.prizes)}` },
-      { text: `Gastos: ${formatEuro(weekly.expenses)}` },
-      { text: `Faltantes: ${formatEuro(weekly.shortage)}` },
-      { text: `Liquidaciones: ${weekly.settlements}` },
-      { text: `Neto (com.\u2212gastos\u2212falt.): ${formatEuro(weekly.net)}`, bold: true },
-      { text: "--------------------------------" },
-      { text: "Fan-made / no oficial \xB7 +18" }
-    ];
-    downloadLinesPdf(lines, `extracto-semanal-${weekly.toYmd}.pdf`);
-  }
-  function downloadDayClosePdf(summary) {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m;
-    const settle = summary.settlement;
-    const lines = [
-      { text: OFFICE.businessName, bold: true, size: 14 },
-      { text: "===== CIERRE DEL D\xCDA =====", bold: true },
-      { text: `Fecha: ${summary.date}` },
-      { text: `Siguiente laborable: ${summary.nextDay}` },
-      { text: "--------------------------------" },
-      { text: `Ventas: ${formatEuro(summary.salesCents)}` },
-      { text: `Comisiones: ${formatEuro(summary.commissionCents)}`, bold: true },
-      { text: `Beneficio (com.\u2212gastos\u2212falt.): ${formatEuro(summary.profitCents)}`, bold: true },
-      { text: `Premios pagados: ${formatEuro(summary.prizesPaidCents)}` },
-      { text: `Gastos: ${formatEuro(summary.expensesCents)}` },
-      { text: `Faltantes: ${formatEuro(summary.shortageCents || 0)}` },
-      { text: `Sobrantes: ${formatEuro(summary.surplusCents || 0)}` },
-      { text: `Clientes: ${summary.customersServed}` },
-      { text: `Caj\xF3n: ${formatEuro(summary.drawerCents)}` },
-      { text: `Banco: ${formatEuro(summary.bankCents)}` },
-      { text: "--------------------------------" }
-    ];
-    if (settle) {
-      lines.push({ text: "Liquidaci\xF3n (remesa = ventas \u2212 comisi\xF3n)", bold: true });
-      lines.push({
-        text: `LAE  ventas ${formatEuro(((_a = settle.lae) == null ? void 0 : _a.sales) || 0)} \xB7 com. ${formatEuro(((_b = settle.lae) == null ? void 0 : _b.commission) || 0)} \xB7 remesa ${formatEuro(((_c = settle.lae) == null ? void 0 : _c.remittance) || 0)}`
-      });
-      lines.push({
-        text: `ONCE ventas ${formatEuro(((_d = settle.once) == null ? void 0 : _d.sales) || 0)} \xB7 com. ${formatEuro(((_e = settle.once) == null ? void 0 : _e.commission) || 0)} \xB7 remesa ${formatEuro(((_f = settle.once) == null ? void 0 : _f.remittance) || 0)}`
-      });
-      lines.push({
-        text: `Otros ventas ${formatEuro(((_g = settle.otros) == null ? void 0 : _g.sales) || 0)} \xB7 com. ${formatEuro(((_h = settle.otros) == null ? void 0 : _h.commission) || 0)} \xB7 remesa ${formatEuro(((_i = settle.otros) == null ? void 0 : _i.remittance) || 0)}`
-      });
-      const reimb = (((_j = settle.lae) == null ? void 0 : _j.prizesReimbursed) || 0) + (((_k = settle.once) == null ? void 0 : _k.prizesReimbursed) || 0) + (((_l = settle.otros) == null ? void 0 : _l.prizesReimbursed) || 0);
-      lines.push({ text: `Reembolso premios: ${formatEuro(reimb)}` });
-      lines.push({ text: `Delta banco neto: ${formatEuro(settle.netBankDelta || 0)}`, bold: true });
-      lines.push({ text: "--------------------------------" });
-    }
-    if ((_m = summary.nextDayReasonSkip) == null ? void 0 : _m.length) {
-      lines.push({ text: `D\xEDas saltados: ${summary.nextDayReasonSkip.join(", ")}` });
-    }
-    lines.push({ text: "Fan-made / no oficial \xB7 +18" });
-    downloadLinesPdf(lines, `cierre-${summary.date}.pdf`);
-  }
-  function downloadMonthlyPdf(statement) {
+
+  // src/game/stockAlerts.js
+  var LOW_THRESHOLDS = {
+    rasca: 8,
+    default: 10,
+    navidad: 6
+  };
+  function stockCriticalList(state2) {
     var _a;
-    const lines = [
-      { text: OFFICE.businessName, bold: true, size: 14 },
-      { text: `Liquidaci\xF3n mensual \u2014 ${statement.label}`, bold: true },
-      { text: "--------------------------------" },
-      { text: `Ventas totales: ${formatEuro(statement.totalSales)}` },
-      { text: `Comisiones: ${formatEuro(statement.totalCommission)}`, bold: true },
-      { text: `Premios pagados: ${formatEuro(statement.totalPrizes)}` },
-      { text: `Gastos local: ${formatEuro(statement.expenses)}` },
-      { text: `Proveedor: ${formatEuro(statement.supplier)}` },
-      { text: `Faltantes: ${formatEuro(statement.shortage)}` },
-      { text: `Sobrantes: ${formatEuro(statement.surplus || 0)}` },
-      {
-        text: `Neto mes: ${formatEuro((_a = statement.netMonth) != null ? _a : statement.totalCommission - statement.expenses - statement.shortage)}`,
-        bold: true
-      },
-      { text: "--------------------------------" },
-      { text: "Remesa = ventas \u2212 comisi\xF3n retenida", bold: true }
-    ];
-    for (const org of ["LAE", "ONCE", "Otros"]) {
-      const o = statement.orgs[org];
-      lines.push({ text: org, bold: true });
-      lines.push({ text: `  Ventas ${formatEuro(o.sales)} \xB7 Com. ${formatEuro(o.commission)}` });
-      lines.push({ text: `  Remesa ${formatEuro(o.remittance)} \xB7 Premios ${formatEuro(o.prizes)}` });
+    const list = [];
+    for (const p of PRODUCTS) {
+      if (p.stockType !== "physical") continue;
+      const qty = (_a = state2.stock) == null ? void 0 : _a[p.id];
+      if (qty == null) continue;
+      let thr = LOW_THRESHOLDS.default;
+      if (p.category === "rasca") thr = LOW_THRESHOLDS.rasca;
+      if (p.id.includes("navidad") || p.id.includes("nino")) thr = LOW_THRESHOLDS.navidad;
+      if (qty <= thr) {
+        list.push({
+          id: p.id,
+          name: p.name,
+          qty,
+          thr,
+          critical: qty <= Math.max(2, Math.floor(thr / 2)),
+          category: p.tpvCategory
+        });
+      }
     }
-    lines.push({ text: "--------------------------------" }, { text: "Fan-made / no oficial \xB7 +18" });
-    downloadLinesPdf(lines, `liquidacion-mensual-${statement.year}-${statement.month + 1}.pdf`);
+    list.sort((a, b) => a.qty - b.qty);
+    return list;
+  }
+  function pendingOrdersSummary(state2) {
+    const pending = (state2.orders || []).filter((o) => o.status === "pending");
+    const arrived = (state2.orders || []).filter((o) => o.status === "arrived");
+    return { pending, arrived, pendingCount: pending.length, arrivedCount: arrived.length };
+  }
+  function stockAlertBanner(state2) {
+    const crit = stockCriticalList(state2).filter((x) => x.critical);
+    if (!crit.length) return null;
+    const names = crit.slice(0, 3).map((c) => `${c.name} (${c.qty})`).join(" \xB7 ");
+    return `Stock cr\xEDtico: ${names}${crit.length > 3 ? ` (+${crit.length - 3})` : ""}`;
   }
 
   // src/game/tpv.js
@@ -5584,10 +6176,12 @@ ${xrefPos}
     return state2;
   }
   function validateWishlist(tpv) {
+    var _a;
     const wish = (tpv == null ? void 0 : tpv.wishlist) || [];
     const covered = [];
     const missing = [];
     const extras = [];
+    const numberMismatches = [];
     const qtyByProduct = {};
     for (const l of (tpv == null ? void 0 : tpv.lines) || []) {
       qtyByProduct[l.productId] = (qtyByProduct[l.productId] || 0) + l.qty;
@@ -5595,14 +6189,30 @@ ${xrefPos}
     const used = { ...qtyByProduct };
     for (const w of wish) {
       const have = used[w.productId] || 0;
+      const askLabel = w.askLabel || ((_a = w.numberAsk) == null ? void 0 : _a.label) || "";
       if (have >= w.qty) {
-        covered.push({ ...w, have });
+        covered.push({ ...w, have, askLabel });
         used[w.productId] = have - w.qty;
       } else if (have > 0) {
-        missing.push({ ...w, have, need: w.qty - have });
+        missing.push({ ...w, have, need: w.qty - have, askLabel });
         used[w.productId] = 0;
       } else {
-        missing.push({ ...w, have: 0, need: w.qty });
+        missing.push({ ...w, have: 0, need: w.qty, askLabel });
+      }
+      if (w.numberAsk && have > 0) {
+        const lines = (tpv.lines || []).filter((l) => l.productId === w.productId);
+        for (const line of lines) {
+          const sat = numberAskSatisfied(w.numberAsk, line);
+          if (!sat.ok) {
+            numberMismatches.push({
+              productId: w.productId,
+              productName: w.productName,
+              askLabel,
+              reason: sat.reason,
+              lineId: line.id
+            });
+          }
+        }
       }
     }
     for (const [productId, left] of Object.entries(used)) {
@@ -5615,8 +6225,37 @@ ${xrefPos}
       covered,
       missing,
       extras,
-      complete: missing.length === 0
+      numberMismatches,
+      complete: missing.length === 0,
+      numbersOk: numberMismatches.length === 0
     };
+  }
+  function dailyTpvShortcuts(state2) {
+    const d = gameDate(state2);
+    const dow = d.getUTCDay();
+    const byDow = {
+      1: ["lae-bonoloto", "once-cupon", "lae-primitiva"],
+      2: ["lae-euromillones", "lae-bonoloto", "once-cupon"],
+      3: ["lae-bonoloto", "lae-nacional", "once-super-once"],
+      4: ["lae-nacional", "lae-primitiva", "once-cupon"],
+      5: ["once-cuponazo", "lae-bonoloto", "lae-euromillones"],
+      6: ["lae-nacional", "lae-gordo-primitiva", "once-sueldazo"],
+      0: ["lae-gordo-primitiva", "once-sueldazo", "lae-quiniela"]
+    };
+    const ids = [...byDow[dow] || byDow[1]];
+    for (const j of hotJackpots(state2).slice(0, 2)) {
+      if (!ids.includes(j.id)) ids.unshift(j.id);
+    }
+    for (const ex of onceExtraToday(state2)) {
+      if (!ids.includes(ex.id)) ids.unshift(ex.id);
+    }
+    return ids.map((id) => getProduct(id)).filter(Boolean).slice(0, 6).map((p) => ({
+      id: p.id,
+      name: p.short || p.name,
+      fullName: p.name,
+      priceCents: p.priceCents,
+      category: p.tpvCategory
+    }));
   }
   function setLineQty(state2, id, qty) {
     var _a;
@@ -5697,9 +6336,9 @@ ${xrefPos}
         };
       }
       const pedrea = raw.match(/(\d{3,5})\s*(?:x|×|\*|decimos?|décimos?)?\s*(\d+)?/i);
-      const digits = raw.replace(/\D/g, "");
-      if (digits.length < need && !pedrea) return { ok: false, error: `Haz falta ${need} cifras` };
-      const number = (pedrea ? pedrea[1] : digits.slice(0, need)).padStart(need, "0").slice(-need);
+      const digits2 = raw.replace(/\D/g, "");
+      if (digits2.length < need && !pedrea) return { ok: false, error: `Haz falta ${need} cifras` };
+      const number = (pedrea ? pedrea[1] : digits2.slice(0, need)).padStart(need, "0").slice(-need);
       const fractions = pedrea && pedrea[2] ? Math.max(1, Math.min(10, Number(pedrea[2]))) : 1;
       return { ok: true, selection: { number, fractions, series: false } };
     }
@@ -5905,7 +6544,7 @@ ${xrefPos}
     return ((tpv == null ? void 0 : tpv.lines) || []).reduce((s, l) => s + l.unitCents * l.qty, 0);
   }
   function tpvReadyToCharge(tpv) {
-    var _a, _b;
+    var _a, _b, _c;
     if (!((_a = tpv == null ? void 0 : tpv.lines) == null ? void 0 : _a.length)) return { ok: false, error: "El ticket est\xE1 vac\xEDo" };
     for (const l of tpv.lines) {
       if (l.needsNumbers && !l.selection) {
@@ -5917,6 +6556,13 @@ ${xrefPos}
       if (!v.complete) {
         const miss = v.missing.map((m) => `${m.productName} (faltan ${m.need})`).join(", ");
         return { ok: false, error: `La petici\xF3n no est\xE1 completa: ${miss}. Puedes a\xF1adir de m\xE1s, pero no de menos.` };
+      }
+      if (!v.numbersOk && ((_c = v.numberMismatches) == null ? void 0 : _c.length)) {
+        const n = v.numberMismatches[0];
+        return {
+          ok: false,
+          error: `Cifras: ${n.productName} \u2014 ${n.askLabel || "petici\xF3n"} (${n.reason}). Corrige o dicta de nuevo.`
+        };
       }
     }
     return { ok: true };
@@ -6406,6 +7052,57 @@ ${xrefPos}
         body: state2.ui.penaDayNotice.body
       });
     }
+    const lowStock = Object.entries(state2.stock || {}).filter(([, q]) => q != null && q <= 6).slice(0, 4);
+    if (lowStock.length) {
+      const names = lowStock.map(([id, q]) => {
+        var _a2, _b2;
+        return `${((_a2 = getProduct(id)) == null ? void 0 : _a2.short) || ((_b2 = getProduct(id)) == null ? void 0 : _b2.name) || id} (${q})`;
+      }).join(" \xB7 ");
+      items.push({
+        id: `stock-${ymd2}`,
+        kind: "stock",
+        title: "Inventario bajo",
+        body: `Revisa pedidos: ${names}`
+      });
+    }
+    const tips = [
+      "Si piden terminaci\xF3n, dicta el n\xFAmero completo antes de cobrar.",
+      "Cuponazo los viernes: deja cambio menudos preparado.",
+      "Premios de 400 \u20AC o m\xE1s: papeleo breve aunque pagues de caja.",
+      "Escaparate: rotula bien los d\xE9cimos que m\xE1s miran.",
+      "Bizum a veces falla: ten plan B en efectivo.",
+      "Los botes altos llenan la cola: ten rascas a mano.",
+      "Al cerrar, imprime el PDF del d\xEDa y exporta la partida."
+    ];
+    const tipIdx = Number(ymd2.replace(/\D/g, "")) % tips.length;
+    items.push({
+      id: `tip-${ymd2}`,
+      kind: "tip",
+      title: "Consejo Miriam",
+      body: tips[tipIdx]
+    });
+    const pueblo = [
+      "Hoy hay mercado: m\xE1s vecinos al mediod\xEDa.",
+      "Si hace calor, piden agua\u2026 y un rasca.",
+      "Partido esta noche: Quiniela y Quinigol al acecho.",
+      "Autob\xFAs del Caminito: turistas con tarjeta.",
+      "Cola de la panader\xEDa se pasa a la administraci\xF3n."
+    ];
+    items.push({
+      id: `pueblo-${ymd2}`,
+      kind: "pueblo",
+      title: "\xC1lora hoy",
+      body: pueblo[Number(ymd2.slice(-2)) % pueblo.length]
+    });
+    const day = Number(ymd2.slice(8, 10));
+    if (month === 12 && day >= 1 && day <= 22) {
+      items.push({
+        id: "gordo-count",
+        kind: "especial",
+        title: "Cuenta atr\xE1s del Gordo",
+        body: `Faltan d\xEDas para el 22. Prioriza encargos y series.`
+      });
+    }
     return items;
   }
 
@@ -6570,7 +7267,11 @@ ${xrefPos}
         maybeSpawnCustomers(state);
         const after = ((_c = state.customers.current) == null ? void 0 : _c.id) || null;
         const qAfter = ((_d = state.customers.queue) == null ? void 0 : _d.length) || 0;
-        if (before !== after || qBefore !== qAfter) needsFullRender = true;
+        if (before !== after || qBefore !== qAfter) {
+          if (after && after !== before) sfx.door();
+          else if (qAfter > qBefore) sfx.notice();
+          needsFullRender = true;
+        }
       }
       const prevAutosave = lastAutosaveRealMs;
       lastAutosaveRealMs = maybeAutosave(state, lastAutosaveRealMs);
@@ -6819,6 +7520,12 @@ ${xrefPos}
           <span class="menu-chip c-amber">TPV</span>
           <span class="menu-chip c-coral">Premios</span>
           <span class="menu-chip c-sky">Enciclopedia</span>
+          <span class="menu-chip c-lime">Tabl\xF3n</span>
+          <span class="menu-chip c-violet">Caja</span>
+          <span class="menu-chip c-rose">Stock</span>
+          <span class="menu-chip c-indigo">Sorteos</span>
+          <span class="menu-chip c-orange">Botes</span>
+          <span class="menu-chip c-mint">PDF</span>
         </div>
         <div class="actions">
           <button class="btn primary menu-cta" id="btn-new">Nueva partida</button>
@@ -6849,7 +7556,7 @@ ${xrefPos}
         </div>
         <p class="disclaimer">
           Fan-made / no oficial. Nombres de Loter\xEDas y Apuestas del Estado y ONCE usados solo con fines de simulaci\xF3n.
-          Juego responsable \xB7 +18. Versi\xF3n ${GAME_VERSION}: guardado total, logos, enciclopedia, TPV manual y m\xE1s papeleo en premios.
+          Juego responsable \xB7 +18. Versi\xF3n ${GAME_VERSION}: cifras del cliente, atajos TPV, errores de cobro, PDF con estilo y men\xFAs a todo color.
         </p>
       </div>
     </div>
@@ -6862,7 +7569,7 @@ ${xrefPos}
       maybeStartMusic();
       state.ui.screen = "counter";
       lastAutosaveRealMs = Date.now();
-      showToast("Bienvenida, Miriam. Versi\xF3n 1.0: t\xFA eliges cada producto en el TPV.");
+      showToast("Bienvenida, Miriam. Versi\xF3n 1.1: cifras del cliente, atajos y m\xE1s color.");
       needsFullRender = true;
       render();
     };
@@ -6888,8 +7595,8 @@ ${xrefPos}
         state = loadFromSlot(slot);
         if (!state) return;
         maybeStartMusic();
-        sfx.click();
-        showToast(`Partida cargada (hueco ${slot})`);
+        sfx.open();
+        loadSummaryToast(state);
         needsFullRender = true;
         render();
       };
@@ -7132,13 +7839,36 @@ ${xrefPos}
       return "";
     }
     return `<ul class="wish-list">${list.map((w) => {
+      var _a, _b;
       const extra = [];
       if (w.showcaseNumber) extra.push(`n\xBA ${w.showcaseNumber} vitrina`);
       if (w.fromPickup) extra.push("encargo");
       if (w.note) extra.push(w.note);
-      if (w.preferDictate && !w.showcaseNumber) extra.push("dictado");
+      if (w.askLabel) extra.push(w.askLabel);
+      else if ((_a = w.numberAsk) == null ? void 0 : _a.label) extra.push(w.numberAsk.label);
+      else if (w.preferDictate && !w.showcaseNumber) extra.push("dictado");
+      else if (((_b = w.numberAsk) == null ? void 0 : _b.kind) === "random") extra.push("aleatorio");
       return `<li>\u2022 <strong>${escapeHtml2(w.productName)}</strong> \xD7 ${w.qty}${extra.length ? ` <span class="muted">(${escapeHtml2(extra.join(" \xB7 "))})</span>` : ""}</li>`;
     }).join("")}</ul>`;
+  }
+  function loadSummaryToast(game) {
+    var _a, _b, _c, _d, _e, _f, _g, _h;
+    if (!game) return;
+    const q = ((_b = (_a = game.customers) == null ? void 0 : _a.queue) == null ? void 0 : _b.length) || 0;
+    const cur = (_d = (_c = game.customers) == null ? void 0 : _c.current) == null ? void 0 : _d.name;
+    const tpv = ((_e = game.ui) == null ? void 0 : _e.tpv) ? "TPV a medias" : null;
+    const pay = ((_f = game.ui) == null ? void 0 : _f.paymentSession) ? "cobro a medias" : null;
+    const mgmt = (game.prizeManagement || []).filter((c) => c.status !== "settled").length;
+    const day = (_h = (_g = game.stats) == null ? void 0 : _g.daysPlayed) != null ? _h : 0;
+    const bits = [
+      `D\xEDa ${day}`,
+      cur ? `cliente: ${cur}` : "sin cliente",
+      `cola ${q}`,
+      tpv,
+      pay,
+      mgmt ? `${mgmt} premios en gesti\xF3n` : null
+    ].filter(Boolean);
+    showToast(`Partida cargada \xB7 ${bits.join(" \xB7 ")}`);
   }
   function calendarOrderButtonsHTML(prefix = "cal") {
     const d = specialOrderDeadlines(state);
@@ -7242,6 +7972,9 @@ ${xrefPos}
         <section class="panel counter-stage">
           ${highPrizeAlertHTML()}
           ${lowCashAlertHTML()}
+          ${stockAlertBanner(state) ? `<div class="alert-banner stock-alert-banner">${escapeHtml2(stockAlertBanner(state))}
+                  <button class="btn" style="margin-left:8px;padding:4px 10px" data-nav="stock">Ir a stock</button>
+                </div>` : ""}
           ${clientBlock}
           ${client && isOpenHours(state) && !isClosedDay(state) ? `<div style="margin-top:12px" class="actions">
                   <button class="btn" id="btn-arqueo-open">Arqueo de apertura</button>
@@ -7405,7 +8138,7 @@ ${xrefPos}
     return `<div class="client-card"><h3>${escapeHtml2(client.name)}</h3><button class="btn" id="btn-skip">Despedir</button></div>`;
   }
   function loadWishlistIntoTpv(client) {
-    var _a;
+    var _a, _b;
     openTpv(state, client);
     const items = ((_a = client.wishlist) == null ? void 0 : _a.length) ? client.wishlist : client.request ? [client.request] : [];
     for (const w of items) {
@@ -7424,9 +8157,24 @@ ${xrefPos}
           continue;
         }
       }
-      const src = w.preferDictate ? "dictate" : "random";
+      const ask = w.numberAsk;
+      if (ask == null ? void 0 : ask.selection) {
+        addTpvProduct(state, w.productId, {
+          qty: w.qty || 1,
+          numberSource: "dictate",
+          selection: { ...ask.selection }
+        });
+        continue;
+      }
+      const src = (ask == null ? void 0 : ask.kind) === "random" || !w.preferDictate && (ask == null ? void 0 : ask.kind) !== "dictate" ? "random" : w.preferDictate || (ask == null ? void 0 : ask.preferDictate) ? "dictate" : "random";
       for (let i = 0; i < (w.qty || 1); i++) {
-        addTpvProduct(state, w.productId, { qty: 1, numberSource: src });
+        addTpvProduct(state, w.productId, {
+          qty: 1,
+          numberSource: src
+        });
+        if (src === "dictate" && (ask == null ? void 0 : ask.draftHint) && ((_b = state.ui.tpv) == null ? void 0 : _b.numberEntry)) {
+          state.ui.tpv.numberEntry.draft = ask.draftHint;
+        }
       }
     }
   }
@@ -7610,13 +8358,20 @@ ${xrefPos}
     const v = validateWishlist(tpv);
     const rows = [];
     for (const c of v.covered) {
+      const ask = c.askLabel ? ` \xB7 ${c.askLabel}` : "";
       rows.push(
-        `<div class="wish-ok">\u2713 ${escapeHtml2(c.productName)} \xD7${c.qty}</div>`
+        `<div class="wish-ok">\u2713 ${escapeHtml2(c.productName)} \xD7${c.qty}${escapeHtml2(ask)}</div>`
       );
     }
     for (const m of v.missing) {
+      const ask = m.askLabel ? ` \xB7 ped\xEDa: ${m.askLabel}` : "";
       rows.push(
-        `<div class="wish-miss">\u2717 ${escapeHtml2(m.productName)} \xB7 faltan ${m.need} (hay ${m.have})</div>`
+        `<div class="wish-miss">\u2717 ${escapeHtml2(m.productName)} \xB7 faltan ${m.need} (hay ${m.have})${escapeHtml2(ask)}</div>`
+      );
+    }
+    for (const n of v.numberMismatches || []) {
+      rows.push(
+        `<div class="wish-miss">\u26A0 Cifras: ${escapeHtml2(n.productName)} \u2014 ${escapeHtml2(n.askLabel || "")} (${escapeHtml2(n.reason || "")})</div>`
       );
     }
     for (const e of v.extras) {
@@ -7624,9 +8379,11 @@ ${xrefPos}
         `<div class="wish-extra">+ Extra: ${escapeHtml2(e.productName)} \xD7${e.qty}</div>`
       );
     }
+    const status = v.complete && v.numbersOk ? '<div class="wish-ok" style="margin-top:6px"><strong>Petici\xF3n cubierta</strong></div>' : '<div class="wish-miss" style="margin-top:6px"><strong>A\xFAn no cuadra con lo pedido</strong></div>';
     return `<div class="wish-panel" style="margin:10px 0">
-    <strong>Petici\xF3n del cliente</strong>
+    <strong>Checklist petici\xF3n</strong>
     ${rows.join("") || '<div class="muted">Sin l\xEDneas a\xFAn</div>'}
+    ${status}
   </div>`;
   }
   function cancelPromptHTML(tpv) {
@@ -7766,6 +8523,7 @@ ${xrefPos}
     const total = tpvTotalCents(tpv);
     const entry = tpv.numberEntry;
     const catHue = { LAE: 195, ONCE: 28, Rascas: 310, Auton\u00F3micas: 155, Provinciales: 210, Locales: 340 };
+    const shortcuts = dailyTpvShortcuts(state);
     app.innerHTML = `
     <div class="shell tpv-shell">
       ${topbarHTML()}
@@ -7780,6 +8538,12 @@ ${xrefPos}
         ${tpv.message ? `<div class="error-box" style="margin:10px 0">${escapeHtml2(tpv.message)}</div>` : ""}
         ${wishlistValidationHTML(tpv)}
         ${cancelPromptHTML(tpv)}
+        <div class="tpv-shortcuts">
+          <span class="tpv-shortcuts-label">Hoy</span>
+          ${shortcuts.map(
+      (s, i) => `<button class="btn tpv-shortcut" data-shortcut="${s.id}" style="--sh-hue:${(i * 47 + 20) % 360}" title="${escapeHtml2(s.fullName)}">${escapeHtml2(s.name)}</button>`
+    ).join("")}
+        </div>
         ${entry ? `<div class="dictate-box">
                 <strong>Dictado: ${escapeHtml2(entry.productName || "")}</strong>
                 <p class="muted">${escapeHtml2(dictateHint(entry.mode))}</p>
@@ -7885,6 +8649,17 @@ ${xrefPos}
       btn.onclick = () => {
         sfx.click();
         setTpvCategory(state, btn.getAttribute("data-tpv-cat"));
+        needsFullRender = true;
+        render();
+      };
+    });
+    app.querySelectorAll("[data-shortcut]").forEach((btn) => {
+      btn.onclick = () => {
+        sfx.tpv();
+        const id = btn.getAttribute("data-shortcut");
+        const p = getProduct(id);
+        if (p == null ? void 0 : p.tpvCategory) setTpvCategory(state, p.tpvCategory);
+        addTpvProduct(state, id, { numberSource: "random" });
         needsFullRender = true;
         render();
       };
@@ -8278,7 +9053,12 @@ ${xrefPos}
     ensureCashKeyboard();
     app.querySelectorAll("[data-method]").forEach((btn) => {
       btn.onclick = () => {
+        var _a, _b, _c, _d, _e;
+        const before = (_a = state.ui.paymentSession) == null ? void 0 : _a.step;
         selectPaymentMethod(state, btn.getAttribute("data-method"));
+        if (((_b = state.ui.paymentSession) == null ? void 0 : _b.error) && ((_c = state.ui.paymentSession) == null ? void 0 : _c.step) === "method") sfx.deny();
+        else if (((_d = state.ui.paymentSession) == null ? void 0 : _d.step) === "done") sfx.cash();
+        else if (before === "method" && ((_e = state.ui.paymentSession) == null ? void 0 : _e.method) === "cash") sfx.drawerOpen();
         sfx.click();
         if (state.ui.toast) showToast(state.ui.toast);
         needsFullRender = true;
@@ -8778,15 +9558,16 @@ ${xrefPos}
       btn.onclick = () => {
         state = loadFromSlot(Number(btn.getAttribute("data-load")));
         maybeStartMusic();
-        sfx.click();
-        showToast("Partida cargada");
+        sfx.open();
+        loadSummaryToast(state);
         needsFullRender = true;
         render();
       };
     });
     document.getElementById("btn-export").onclick = () => {
       exportGame(state);
-      showToast("Exportado");
+      sfx.printer();
+      showToast(state.ui.toast || "Exportaci\xF3n completa");
     };
     document.getElementById("btn-day-package").onclick = async () => {
       await exportDayPackage(state, { downloadDayClosePdf });
@@ -8818,6 +9599,7 @@ ${xrefPos}
     const physical = PRODUCTS.filter((p) => p.stockType === "physical");
     const monday = isMonday(state);
     const scratchLow = monday ? mondayScratchInventory(state).low : [];
+    const criticalMap = new Map(stockCriticalList(state).map((c) => [c.id, c]));
     app.innerHTML = `
     <div class="shell">
       ${topbarHTML()}
@@ -8825,7 +9607,17 @@ ${xrefPos}
         ${sideNav()}
         <section class="panel">
           <h2>Stock y pedidos</h2>
-          <p class="muted">Pedidos a proveedor con coste (banco) y fecha de llegada.</p>
+          <p class="muted">Pedidos a proveedor con coste (banco) y fecha de llegada. Los cr\xEDticos aparecen en rojo.</p>
+          ${(() => {
+      const crit = stockCriticalList(state);
+      const orders = pendingOrdersSummary(state);
+      if (!crit.length && !orders.arrivedCount) return "";
+      return `<div class="alert-banner stock-alert-banner">
+                ${crit.length ? `<strong>Bajo m\xEDnimo:</strong> ${crit.slice(0, 6).map((c) => `${escapeHtml2(c.name)} (${c.qty})`).join(" \xB7 ")}` : ""}
+                ${orders.arrivedCount ? `<div>Pedidos llegados: ${orders.arrivedCount}</div>` : ""}
+                ${orders.pendingCount ? `<div class="muted">En camino: ${orders.pendingCount}</div>` : ""}
+              </div>`;
+    })()}
           ${monday ? `<div class="alert-banner" style="border-color:rgba(14,107,122,0.35);background:rgba(14,107,122,0.1)">
                   <strong>Lunes \xB7 inventario de rascas</strong>
                   <div class="muted">${scratchLow.length ? `${scratchLow.length} por debajo de 15` : "Todos los rascas OK (\u226515)"}</div>
@@ -8843,8 +9635,11 @@ ${xrefPos}
       var _a;
       const qty = (_a = state.stock[p.id]) != null ? _a : 0;
       const cost = supplierUnitCostCents(p);
-      return `<div class="stock-item">
-                  <span><strong>${escapeHtml2(p.name)}</strong> <span class="muted">(${p.org} \xB7 coste ~${formatEuro(cost)})</span></span>
+      const alert2 = criticalMap.get(p.id);
+      return `<div class="stock-item ${alert2 ? alert2.critical ? "stock-critical" : "stock-low" : ""}">
+                  <span><strong>${escapeHtml2(p.name)}</strong> <span class="muted">(${p.org} \xB7 coste ~${formatEuro(cost)})</span>
+                  ${alert2 ? `<span class="stock-badge">${alert2.critical ? "CR\xCDTICO" : "bajo"}</span>` : ""}
+                  </span>
                   <span>${qty}
                     <button class="btn" style="padding:4px 8px;margin-left:8px" data-supplier="${p.id}">Pedir 20</button>
                   </span>
@@ -8907,23 +9702,40 @@ ${xrefPos}
         ${sideNav()}
         <section class="panel">
           <h2>Pagar premio</h2>
-          <p class="muted">Busca un ticket comprobado o paga un premio suelto sin ticket.</p>
+          <p class="muted">Busca un ticket comprobado o paga un premio suelto. Desde ${formatEuro(MEDIUM_PRIZE_CENTS)}: papeleo breve. Desde ${formatEuro(LARGE_PRIZE_CENTS)}: gesti\xF3n.</p>
           <h3>Buscar ticket</h3>
           <label>ID, cliente o producto<br/>
             <input id="prize-search" value="${escapeHtml2(state.ui.prizeSearch || "")}" placeholder="Ej. T12 o Miriam" style="width:100%;margin:6px 0 12px;padding:10px;border-radius:10px;border:1px solid var(--line)" />
           </label>
-          <div class="log" style="max-height:260px;overflow:auto">
-            ${list.length ? list.slice(0, 40).map(
-      (t) => `<div class="log-item">
+          <div class="log" style="max-height:320px;overflow:auto">
+            ${list.length ? list.slice(0, 40).map((t) => {
+      const medium = t.prizeCents >= MEDIUM_PRIZE_CENTS && t.prizeCents < LARGE_PRIZE_CENTS;
+      if (medium) ensureMediumPaperwork(t);
+      const medDone = medium && mediumPaperworkDone(t);
+      const medHtml = medium ? `<div class="paperwork-box" style="margin-top:8px">
+                            <div class="paperwork-title">Papeleo mediano ${medDone ? "\u2713" : "(obligatorio)"}</div>
+                            <ul class="paperwork-list">
+                              ${MEDIUM_PAPERWORK.map(
+        (item) => {
+          var _a;
+          return `<li><label class="paperwork-item">
+                                  <input type="checkbox" data-med-ticket="${escapeHtml2(t.id)}" data-med-item="${item.id}" ${((_a = t.mediumPaperwork) == null ? void 0 : _a[item.id]) ? "checked" : ""} />
+                                  <span>${escapeHtml2(item.label)}</span>
+                                </label></li>`;
+        }
+      ).join("")}
+                            </ul>
+                          </div>` : "";
+      const actions = t.status === "managed" || t.prizeCents >= LARGE_PRIZE_CENTS ? `<button class="btn accent" style="padding:4px 10px" data-manage-ticket="${t.id}">${t.status === "managed" ? "Ver gesti\xF3n" : "Gestionar"}</button>` : `<button class="btn primary" style="padding:4px 10px" data-pay-ticket="${t.id}" data-method="cash" ${medium && !medDone ? 'disabled title="Completa el papeleo mediano"' : ""}>Efectivo</button>
+                          <button class="btn" style="padding:4px 10px" data-pay-ticket="${t.id}" data-method="transfer" ${medium && !medDone ? "disabled" : ""}>Transfer.</button>`;
+      return `<div class="log-item">
                         <strong>${escapeHtml2(t.id)}</strong> \xB7 ${escapeHtml2(t.clientName || "\u2014")} \xB7 ${escapeHtml2(t.productName)}
                         <br/>${escapeHtml2(formatSelection(t))} \xB7 <strong>${formatEuro(t.prizeCents)}</strong>
-                        <span class="muted"> \xB7 ${escapeHtml2(t.status)}</span>
-                        <div class="actions" style="margin-top:6px">
-                          ${t.status === "managed" || t.prizeCents >= LARGE_PRIZE_CENTS ? `<button class="btn accent" style="padding:4px 10px" data-manage-ticket="${t.id}">${t.status === "managed" ? "Ver gesti\xF3n" : "Gestionar"}</button>` : `<button class="btn primary" style="padding:4px 10px" data-pay-ticket="${t.id}" data-method="cash">Efectivo</button>
-                          <button class="btn" style="padding:4px 10px" data-pay-ticket="${t.id}" data-method="transfer">Transfer.</button>`}
-                        </div>
-                      </div>`
-    ).join("") : '<div class="muted">Ning\xFAn ticket con premio pendiente. Comprueba en el mostrador o usa pago suelto.</div>'}
+                        <span class="muted"> \xB7 ${escapeHtml2(t.status)}${medium ? " \xB7 mediano" : ""}</span>
+                        ${medHtml}
+                        <div class="actions" style="margin-top:6px">${actions}</div>
+                      </div>`;
+    }).join("") : '<div class="muted">Ning\xFAn ticket con premio pendiente. Comprueba en el mostrador o usa pago suelto.</div>'}
           </div>
           <h3 style="margin-top:18px">Premio suelto (sin ticket)</h3>
           <label>Cliente<br/><input id="prize-name" style="width:100%;margin:6px 0 12px;padding:10px;border-radius:10px;border:1px solid var(--line)" /></label>
@@ -8953,6 +9765,15 @@ ${xrefPos}
       needsFullRender = true;
       render();
     };
+    app.querySelectorAll("[data-med-ticket]").forEach((inp) => {
+      inp.onchange = () => {
+        toggleMediumPaperwork(state, inp.getAttribute("data-med-ticket"), inp.getAttribute("data-med-item"));
+        sfx.click();
+        showToast(state.ui.toast);
+        needsFullRender = true;
+        render();
+      };
+    });
     app.querySelectorAll("[data-pay-ticket]").forEach((btn) => {
       btn.onclick = () => {
         const id = btn.getAttribute("data-pay-ticket");
@@ -9078,7 +9899,10 @@ ${xrefPos}
                         <br/>Estado: <strong>${escapeHtml2(st)}</strong>
                         <br/><span class="muted">${escapeHtml2(c.note || "")}</span>
                         ${paperworkHTML(c)}
-                        ${btn}
+                        <div class="actions" style="margin-top:8px;flex-wrap:wrap">
+                          <button class="btn" data-case-pdf="${c.id}">PDF expediente</button>
+                          ${btn}
+                        </div>
                       </div>`;
     }).join("") : '<div class="muted">No hay casos de gesti\xF3n.</div>'}
           </div>
@@ -9103,6 +9927,16 @@ ${xrefPos}
         render();
       };
     });
+    app.querySelectorAll("[data-case-pdf]").forEach((btn) => {
+      btn.onclick = () => {
+        const c = (state.prizeManagement || []).find((x) => x.id === btn.getAttribute("data-case-pdf"));
+        if (!c) return;
+        const ticket = state.tickets.find((t) => t.id === c.ticketId);
+        downloadPrizeCasePdf(c, ticket);
+        sfx.printer();
+        showToast("PDF del expediente descargado");
+      };
+    });
     app.querySelectorAll("[data-adv-case]").forEach((btn) => {
       btn.onclick = () => {
         const res = advancePrizeCase(state, btn.getAttribute("data-adv-case"));
@@ -9114,9 +9948,11 @@ ${xrefPos}
     });
   }
   function renderEncyclopedia() {
+    var _a;
     const families = encyclopediaFamilies();
     const stats = encyclopediaStats();
-    const selected = state.ui.encyclopediaId || null;
+    const daily = encyclopediaDaily(state);
+    const selected = state.ui.encyclopediaId || ((_a = daily.todayFocus) == null ? void 0 : _a.id) || null;
     const familyOrder = ["LAE", "ONCE", "Rascas", "Auton\xF3micas", "Provinciales", "Locales"];
     const keys = [
       ...familyOrder.filter((k) => families.has(k)),
@@ -9130,6 +9966,18 @@ ${xrefPos}
         <section class="panel ency-panel">
           <h2>Enciclopedia de loter\xEDas</h2>
           <p class="muted">${stats.total} productos \xB7 LAE ${stats.lae} \xB7 ONCE ${stats.once} \xB7 regionales ${stats.regional}</p>
+          <div class="ency-daily">
+            <div class="ency-daily-tip"><strong>Tip del d\xEDa</strong><p>${escapeHtml2(daily.tip)}</p></div>
+            ${daily.todayFocus ? `<button class="ency-daily-focus" data-ency="${daily.todayFocus.id}">
+                    ${logoHTML(daily.todayFocus.product, "md")}
+                    <span><strong>Hoy destaca</strong><br/>${escapeHtml2(daily.todayFocus.name)}</span>
+                  </button>` : ""}
+            ${daily.hot.length ? `<div class="ency-hot">${daily.hot.map(
+      (h) => `<button class="btn" data-ency="${h.id}" data-nav-board="1">${escapeHtml2(h.p.short || h.p.name)} bote</button>`
+    ).join("")}
+                    <button class="btn accent" data-nav="board">Ver tabl\xF3n</button>
+                  </div>` : `<div class="actions"><button class="btn accent" data-nav="board">Ver tabl\xF3n del pueblo</button></div>`}
+          </div>
           <div class="ency-layout">
             <div class="ency-catalog">
               ${keys.map((fam) => {

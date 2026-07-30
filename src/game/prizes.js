@@ -1,5 +1,37 @@
-import { LARGE_PRIZE_CENTS, HUGE_PRIZE_CENTS } from './tickets.js';
+import { MEDIUM_PRIZE_CENTS, LARGE_PRIZE_CENTS, HUGE_PRIZE_CENTS } from './tickets.js';
 import { formatEuro, drawerTotalCents, makeChange, removeFromDrawer } from '../data/money.js';
+
+/** Papeleo breve para premios medianos (400 € – 2.000 €) antes de pagar de caja */
+export const MEDIUM_PAPERWORK = [
+  { id: 'dni', label: 'DNI / NIE del cobrador verificado' },
+  { id: 'ticket', label: 'Ticket original sellado / firmado' },
+  { id: 'form', label: 'Justificante de pago mediano cumplimentado' },
+];
+
+export function ensureMediumPaperwork(ticket) {
+  if (!ticket.mediumPaperwork) {
+    ticket.mediumPaperwork = {};
+    for (const i of MEDIUM_PAPERWORK) ticket.mediumPaperwork[i.id] = false;
+  }
+  return ticket;
+}
+
+export function mediumPaperworkDone(ticket) {
+  ensureMediumPaperwork(ticket);
+  return MEDIUM_PAPERWORK.every((i) => !!ticket.mediumPaperwork[i.id]);
+}
+
+export function toggleMediumPaperwork(state, ticketId, itemId) {
+  const ticket = state.tickets.find((t) => t.id === ticketId);
+  if (!ticket) return { ok: false, message: 'Ticket no encontrado' };
+  ensureMediumPaperwork(ticket);
+  if (!MEDIUM_PAPERWORK.some((i) => i.id === itemId)) return { ok: false, message: 'Documento no válido' };
+  ticket.mediumPaperwork[itemId] = !ticket.mediumPaperwork[itemId];
+  state.ui.toast = mediumPaperworkDone(ticket)
+    ? 'Papeleo mediano completo. Ya puedes pagar de caja.'
+    : 'Documento marcado.';
+  return { ok: true, ticket, done: mediumPaperworkDone(ticket) };
+}
 
 /**
  * Intenta pagar un premio de ticket.
@@ -25,6 +57,16 @@ export function payTicketPrize(state, ticketId, { method = 'cash', defer = false
   // Premios grandes → gestión obligatoria
   if (ticket.prizeCents >= LARGE_PRIZE_CENTS) {
     return startPrizeManagement(state, ticket);
+  }
+
+  // Premios medianos → papeleo breve obligatorio
+  if (ticket.prizeCents >= MEDIUM_PRIZE_CENTS) {
+    ensureMediumPaperwork(ticket);
+    ticket.mediumPrize = true;
+    if (!mediumPaperworkDone(ticket)) {
+      state.ui.toast = 'Premio mediano: completa el papeleo breve antes de pagar.';
+      return { ok: false, message: state.ui.toast, medium: true, ticket };
+    }
   }
 
   return paySmallPrize(state, ticket, method);

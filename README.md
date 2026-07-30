@@ -2,7 +2,7 @@
 
 Simulador realista de administración de loterías en **Álora**. Tú eres **Miriam**.
 
-**Versión: 1.0**
+**Versión: 1.1**
 
 ## Cómo jugar
 
@@ -11,15 +11,17 @@ Simulador realista de administración de loterías en **Álora**. Tú eres **Mir
 
 No abras `index.html` de la raíz.
 
-## Novedades v1.0
+## Novedades v1.1
 
-- **Guardado / exportación absolutos**: se conserva todo el estado (TPV, cobro, cola, premios, escaparate, arqueo…)
-- Menú y TPV **más coloridos**
-- **Logo propio** por cada lotería
-- **Enciclopedia** para consultar todas las loterías
-- La petición del cliente **no se carga sola** al TPV: Miriam selecciona a mano
-- Gestión de premios con **más papeleo** por paso
-- Escritorio · solo español · simulación estricta · un solo ritmo
+- El cliente pide **aleatorio, terminaciones, fechas, series…** (miles de variantes)
+- **Atajos del día** en el TPV + checklist clara de la petición
+- Fallos realistas de **tarjeta / Bizum / transferencia** y errores de cambio
+- **PDF de expediente** de premios + PDFs con color, formato y letra más grande
+- Premios **medianos** (≥ 400 €) con papeleo breve
+- Enciclopedia jugable (tip del día, destacados, enlace al tablón)
+- Tablón más vivo, avisos de **stock crítico**, resumen al cargar partida
+- Sonidos de oficina (puerta, impresora, cajón, denegación)
+- Menús y TPV **aún más coloridos**
 
 ## Desarrollo
 

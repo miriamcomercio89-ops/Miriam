@@ -11,6 +11,7 @@ import { isBirthdayToday, matchesSanto } from '../data/birthdays.js';
 import { hotJackpots, jackpotCrowdBonus } from './jackpots.js';
 import { drawsHappeningNow } from './draws.js';
 import { onceExtraToday } from './notices.js';
+import { makeNumberAsk, numberAskLabel } from './numberAsks.js';
 
 export function crowdFactor(state) {
   const d = gameDate(state);
@@ -377,12 +378,8 @@ export function buildRichWishlist(state, client) {
     if (typeof qty === 'function') qty = qty(rng);
     if (client.kind === 'pena') qty += 1 + Math.floor(rng() * 4);
     if (client.kind === 'abonado') qty += Math.floor(rng() * 2);
-    lines.push({
-      productId: p.id,
-      productName: p.name,
-      qty: Math.max(1, qty),
-      preferDictate: !!slot.dictate || (client.trait === 'práctica' && rng() < 0.35),
-    });
+    const forceDictate = !!slot.dictate || (client.trait === 'práctica' && rng() < 0.35);
+    lines.push(decorateWishLine(p, Math.max(1, qty), rng, client, forceDictate));
   }
 
   // Botes altos: más gente pide ese juego
@@ -392,13 +389,9 @@ export function buildRichWishlist(state, client) {
     const p = getProduct(pick.id);
     if (p) {
       const qty = pick.veryHot ? 2 + Math.floor(rng() * 3) : 1 + Math.floor(rng() * 2);
-      lines.unshift({
-        productId: p.id,
-        productName: p.name,
-        qty,
-        preferDictate: rng() < 0.45,
-        note: `Bote ${pick.label}`,
-      });
+      const line = decorateWishLine(p, qty, rng, client, rng() < 0.45);
+      line.note = `Bote ${pick.label}`;
+      lines.unshift(line);
     }
   }
 
@@ -408,21 +401,41 @@ export function buildRichWishlist(state, client) {
     const ex = extras[Math.floor(rng() * extras.length)];
     const p = getProduct(ex.id);
     if (p) {
-      lines.unshift({
-        productId: p.id,
-        productName: p.name,
-        qty: 1 + Math.floor(rng() * 2),
-        preferDictate: rng() < 0.4,
-        note: 'Extraordinario hoy',
-      });
+      const line = decorateWishLine(p, 1 + Math.floor(rng() * 2), rng, client, rng() < 0.4);
+      line.note = 'Extraordinario hoy';
+      lines.unshift(line);
     }
   }
 
   if (!lines.length) {
     const p = getProduct(client.preferredProducts?.[0] || 'lae-bonoloto');
-    lines.push({ productId: p.id, productName: p.name, qty: 1, preferDictate: false });
+    lines.push(decorateWishLine(p, 1, rng, client, false));
   }
   return lines;
+}
+
+function decorateWishLine(p, qty, rng, client, forceDictate) {
+  const ask = makeNumberAsk(p, rng, client);
+  if (forceDictate && ask.kind === 'random') {
+    // Forzar alguna variante de dictado
+    const again = makeNumberAsk(p, () => 0.5 + rng() * 0.49, client);
+    return {
+      productId: p.id,
+      productName: p.name,
+      qty,
+      preferDictate: true,
+      numberAsk: again,
+      askLabel: numberAskLabel(again),
+    };
+  }
+  return {
+    productId: p.id,
+    productName: p.name,
+    qty,
+    preferDictate: !!ask.preferDictate,
+    numberAsk: ask,
+    askLabel: numberAskLabel(ask),
+  };
 }
 
 const REGIONAL_AUTO = (REGIONAL_IDS || []).filter((id) => id.startsWith('and-'));

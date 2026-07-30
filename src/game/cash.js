@@ -46,15 +46,53 @@ export function selectPaymentMethod(state, method) {
     ps.tendered = emptyDrawer();
     ps.changeGiven = emptyDrawer();
   } else {
-    // Cobro exacto electrónico
+    // Fallos realistas de cobro electrónico
+    const fail = rollPaymentFailure(method, ps.totalCents);
+    if (fail) {
+      ps.method = null;
+      ps.step = 'method';
+      ps.error = fail;
+      ps.failCount = (ps.failCount || 0) + 1;
+      state.finance.paymentFailsToday = (state.finance.paymentFailsToday || 0) + 1;
+      state.dayLog.push({
+        at: state.clock.gameTimeMs,
+        text: `Cobro fallido (${labelMethod(method)}): ${fail}`,
+      });
+      state.ui.toast = fail;
+      return state;
+    }
     completeNonCash(state);
   }
   return state;
 }
 
+/** Simula rechazos de tarjeta / Bizum / transferencia */
+function rollPaymentFailure(method, totalCents) {
+  const r = Math.random();
+  if (method === 'card') {
+    if (r < 0.08) return 'Tarjeta rechazada: contacte con su banco.';
+    if (r < 0.12) return 'TPV sin cobertura. Prueba otra vez o efectivo.';
+    if (r < 0.15 && totalCents >= 10000) return 'Tarjeta denegada por límite.';
+  }
+  if (method === 'bizum') {
+    if (r < 0.1) return 'Bizum no recibido. El cliente debe repetir el envío.';
+    if (r < 0.14) return 'Bizum: usuario no encontrado. Revisa el móvil.';
+    if (r < 0.17) return 'Bizum caducado. Pide uno nuevo.';
+  }
+  if (method === 'transfer') {
+    if (r < 0.06) return 'Transferencia no llegada. Espera o cobra en efectivo.';
+    if (r < 0.09) return 'IBAN incorrecto. Corrige y reintenta.';
+  }
+  return null;
+}
+
+/** Reintento manual tras fallo (misma vía) */
+export function retryPaymentMethod(state, method) {
+  return selectPaymentMethod(state, method);
+}
+
 function completeNonCash(state) {
   const ps = state.ui.paymentSession;
-  // Entrada a banco (no pasa por cajón)
   applySaleAccounting(state, ps, ps.method);
   ps.step = 'done';
   state.ui.toast = `Cobrado ${formatEuro(ps.totalCents)} por ${labelMethod(ps.method)}`;
@@ -112,8 +150,16 @@ export function confirmChange(state) {
   const changeNeeded = ps.changeNeededCents || 0;
   const changeSum = countTotalCents(ps.changeGiven);
   if (changeSum !== changeNeeded) {
-    ps.error = `El cambio no cuadra. Debes devolver ${formatEuro(changeNeeded)} y tienes ${formatEuro(changeSum)}. Corrige y vuelve a intentar.`;
+    const diff = changeSum - changeNeeded;
+    ps.error =
+      diff > 0
+        ? `Cambio de más: sobran ${formatEuro(diff)}. Debes devolver exactamente ${formatEuro(changeNeeded)}.`
+        : `Cambio de menos: faltan ${formatEuro(-diff)}. Debes devolver ${formatEuro(changeNeeded)}.`;
     state.finance.changeErrorsToday = (state.finance.changeErrorsToday || 0) + 1;
+    state.dayLog.push({
+      at: state.clock.gameTimeMs,
+      text: `Error de cambio: dado ${formatEuro(changeSum)} · debía ${formatEuro(changeNeeded)}`,
+    });
     return state;
   }
 

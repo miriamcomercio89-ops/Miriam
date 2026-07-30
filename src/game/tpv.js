@@ -1,9 +1,12 @@
-import { getProduct, PRODUCTS } from '../data/products.js';
+import { getProduct, PRODUCTS, TPV_CATEGORIES } from '../data/products.js';
 import { generateBetSelection, nextDrawLabel } from './draws.js';
 import { hashSeed, mulberry32 } from './rng.js';
 import { formatEuro } from '../data/money.js';
 import { validateShowcaseAgainstTpv } from './showcase.js';
 import { gameDate } from './time.js';
+import { numberAskSatisfied } from './numberAsks.js';
+import { hotJackpots } from './jackpots.js';
+import { onceExtraToday } from './notices.js';
 
 /**
  * Sesión TPV: carrito multi-línea.
@@ -139,6 +142,7 @@ export function validateWishlist(tpv) {
   const covered = [];
   const missing = [];
   const extras = [];
+  const numberMismatches = [];
 
   const qtyByProduct = {};
   for (const l of tpv?.lines || []) {
@@ -148,14 +152,31 @@ export function validateWishlist(tpv) {
 
   for (const w of wish) {
     const have = used[w.productId] || 0;
+    const askLabel = w.askLabel || w.numberAsk?.label || '';
     if (have >= w.qty) {
-      covered.push({ ...w, have });
+      covered.push({ ...w, have, askLabel });
       used[w.productId] = have - w.qty;
     } else if (have > 0) {
-      missing.push({ ...w, have, need: w.qty - have });
+      missing.push({ ...w, have, need: w.qty - have, askLabel });
       used[w.productId] = 0;
     } else {
-      missing.push({ ...w, have: 0, need: w.qty });
+      missing.push({ ...w, have: 0, need: w.qty, askLabel });
+    }
+    // Comprobar cifras si hay líneas del producto
+    if (w.numberAsk && have > 0) {
+      const lines = (tpv.lines || []).filter((l) => l.productId === w.productId);
+      for (const line of lines) {
+        const sat = numberAskSatisfied(w.numberAsk, line);
+        if (!sat.ok) {
+          numberMismatches.push({
+            productId: w.productId,
+            productName: w.productName,
+            askLabel,
+            reason: sat.reason,
+            lineId: line.id,
+          });
+        }
+      }
     }
   }
   for (const [productId, left] of Object.entries(used)) {
@@ -168,9 +189,46 @@ export function validateWishlist(tpv) {
     covered,
     missing,
     extras,
+    numberMismatches,
     complete: missing.length === 0,
+    numbersOk: numberMismatches.length === 0,
   };
 }
+
+/** Atajos del día: botes calientes, extras ONCE, favoritos por día de semana */
+export function dailyTpvShortcuts(state) {
+  const d = gameDate(state);
+  const dow = d.getUTCDay();
+  const byDow = {
+    1: ['lae-bonoloto', 'once-cupon', 'lae-primitiva'],
+    2: ['lae-euromillones', 'lae-bonoloto', 'once-cupon'],
+    3: ['lae-bonoloto', 'lae-nacional', 'once-super-once'],
+    4: ['lae-nacional', 'lae-primitiva', 'once-cupon'],
+    5: ['once-cuponazo', 'lae-bonoloto', 'lae-euromillones'],
+    6: ['lae-nacional', 'lae-gordo-primitiva', 'once-sueldazo'],
+    0: ['lae-gordo-primitiva', 'once-sueldazo', 'lae-quiniela'],
+  };
+  const ids = [...(byDow[dow] || byDow[1])];
+  for (const j of hotJackpots(state).slice(0, 2)) {
+    if (!ids.includes(j.id)) ids.unshift(j.id);
+  }
+  for (const ex of onceExtraToday(state)) {
+    if (!ids.includes(ex.id)) ids.unshift(ex.id);
+  }
+  return ids
+    .map((id) => getProduct(id))
+    .filter(Boolean)
+    .slice(0, 6)
+    .map((p) => ({
+      id: p.id,
+      name: p.short || p.name,
+      fullName: p.name,
+      priceCents: p.priceCents,
+      category: p.tpvCategory,
+    }));
+}
+
+export { TPV_CATEGORIES };
 
 export function setLineQty(state, id, qty) {
   const tpv = state.ui.tpv;
@@ -511,6 +569,13 @@ export function tpvReadyToCharge(tpv) {
     if (!v.complete) {
       const miss = v.missing.map((m) => `${m.productName} (faltan ${m.need})`).join(', ');
       return { ok: false, error: `La petición no está completa: ${miss}. Puedes añadir de más, pero no de menos.` };
+    }
+    if (!v.numbersOk && v.numberMismatches?.length) {
+      const n = v.numberMismatches[0];
+      return {
+        ok: false,
+        error: `Cifras: ${n.productName} — ${n.askLabel || 'petición'} (${n.reason}). Corrige o dicta de nuevo.`,
+      };
     }
   }
   return { ok: true };

@@ -77,7 +77,12 @@ import {
   nextDrawLabel,
   drawsHappeningNow,
 } from './game/draws.js';
-import { formatSelection, lastIssuedTicket, LARGE_PRIZE_CENTS } from './game/tickets.js';
+import {
+  formatSelection,
+  lastIssuedTicket,
+  LARGE_PRIZE_CENTS,
+  MEDIUM_PRIZE_CENTS,
+} from './game/tickets.js';
 import {
   payTicketPrize,
   startPrizeManagement,
@@ -88,11 +93,16 @@ import {
   togglePrizePaperwork,
   paperworkDone,
   dismissHighPrizeAlert,
+  MEDIUM_PAPERWORK,
+  ensureMediumPaperwork,
+  mediumPaperworkDone,
+  toggleMediumPaperwork,
 } from './game/prizes.js';
 import { logoHTML } from './data/logos.js';
 import {
   encyclopediaFamilies,
   encyclopediaStats,
+  encyclopediaDaily,
   renderEncyclopediaDetail,
 } from './game/encyclopedia.js';
 import {
@@ -102,7 +112,9 @@ import {
   downloadWeeklyPdf,
   downloadMonthlyPdf,
   downloadDayClosePdf,
+  downloadPrizeCasePdf,
 } from './game/pdf.js';
+import { stockCriticalList, stockAlertBanner, pendingOrdersSummary } from './game/stockAlerts.js';
 import { eventOn } from './data/events.js';
 import { birthdayBanner } from './data/birthdays.js';
 import { GAME_VERSION } from './game/state.js';
@@ -127,6 +139,7 @@ import {
   confirmCancelLine,
   dismissCancelPrompt,
   undoLastTpvLine,
+  dailyTpvShortcuts,
   confirmAbonoOnTpv,
   setLineFraction,
   setLineSeries,
@@ -219,7 +232,11 @@ function loop() {
       maybeSpawnCustomers(state);
       const after = state.customers.current?.id || null;
       const qAfter = state.customers.queue?.length || 0;
-      if (before !== after || qBefore !== qAfter) needsFullRender = true;
+      if (before !== after || qBefore !== qAfter) {
+        if (after && after !== before) sfx.door();
+        else if (qAfter > qBefore) sfx.notice();
+        needsFullRender = true;
+      }
     }
 
     const prevAutosave = lastAutosaveRealMs;
@@ -489,6 +506,12 @@ function renderMenu() {
           <span class="menu-chip c-amber">TPV</span>
           <span class="menu-chip c-coral">Premios</span>
           <span class="menu-chip c-sky">Enciclopedia</span>
+          <span class="menu-chip c-lime">Tablón</span>
+          <span class="menu-chip c-violet">Caja</span>
+          <span class="menu-chip c-rose">Stock</span>
+          <span class="menu-chip c-indigo">Sorteos</span>
+          <span class="menu-chip c-orange">Botes</span>
+          <span class="menu-chip c-mint">PDF</span>
         </div>
         <div class="actions">
           <button class="btn primary menu-cta" id="btn-new">Nueva partida</button>
@@ -524,7 +547,7 @@ function renderMenu() {
         </div>
         <p class="disclaimer">
           Fan-made / no oficial. Nombres de Loterías y Apuestas del Estado y ONCE usados solo con fines de simulación.
-          Juego responsable · +18. Versión ${GAME_VERSION}: guardado total, logos, enciclopedia, TPV manual y más papeleo en premios.
+          Juego responsable · +18. Versión ${GAME_VERSION}: cifras del cliente, atajos TPV, errores de cobro, PDF con estilo y menús a todo color.
         </p>
       </div>
     </div>
@@ -538,7 +561,7 @@ function renderMenu() {
     maybeStartMusic();
     state.ui.screen = 'counter';
     lastAutosaveRealMs = Date.now();
-    showToast('Bienvenida, Miriam. Versión 1.0: tú eliges cada producto en el TPV.');
+    showToast('Bienvenida, Miriam. Versión 1.1: cifras del cliente, atajos y más color.');
     needsFullRender = true;
     render();
   };
@@ -565,8 +588,8 @@ function renderMenu() {
       state = loadFromSlot(slot);
       if (!state) return;
       maybeStartMusic();
-      sfx.click();
-      showToast(`Partida cargada (hueco ${slot})`);
+      sfx.open();
+      loadSummaryToast(state);
       needsFullRender = true;
       render();
     };
@@ -839,12 +862,35 @@ function wishlistHTML(client) {
       if (w.showcaseNumber) extra.push(`nº ${w.showcaseNumber} vitrina`);
       if (w.fromPickup) extra.push('encargo');
       if (w.note) extra.push(w.note);
-      if (w.preferDictate && !w.showcaseNumber) extra.push('dictado');
+      if (w.askLabel) extra.push(w.askLabel);
+      else if (w.numberAsk?.label) extra.push(w.numberAsk.label);
+      else if (w.preferDictate && !w.showcaseNumber) extra.push('dictado');
+      else if (w.numberAsk?.kind === 'random') extra.push('aleatorio');
       return `<li>• <strong>${escapeHtml(w.productName)}</strong> × ${w.qty}${
         extra.length ? ` <span class="muted">(${escapeHtml(extra.join(' · '))})</span>` : ''
       }</li>`;
     })
     .join('')}</ul>`;
+}
+
+/** Resumen al cargar partida */
+function loadSummaryToast(game) {
+  if (!game) return;
+  const q = game.customers?.queue?.length || 0;
+  const cur = game.customers?.current?.name;
+  const tpv = game.ui?.tpv ? 'TPV a medias' : null;
+  const pay = game.ui?.paymentSession ? 'cobro a medias' : null;
+  const mgmt = (game.prizeManagement || []).filter((c) => c.status !== 'settled').length;
+  const day = game.stats?.daysPlayed ?? 0;
+  const bits = [
+    `Día ${day}`,
+    cur ? `cliente: ${cur}` : 'sin cliente',
+    `cola ${q}`,
+    tpv,
+    pay,
+    mgmt ? `${mgmt} premios en gestión` : null,
+  ].filter(Boolean);
+  showToast(`Partida cargada · ${bits.join(' · ')}`);
 }
 
 function calendarOrderButtonsHTML(prefix = 'cal') {
@@ -956,6 +1002,13 @@ function renderCounter() {
         <section class="panel counter-stage">
           ${highPrizeAlertHTML()}
           ${lowCashAlertHTML()}
+          ${
+            stockAlertBanner(state)
+              ? `<div class="alert-banner stock-alert-banner">${escapeHtml(stockAlertBanner(state))}
+                  <button class="btn" style="margin-left:8px;padding:4px 10px" data-nav="stock">Ir a stock</button>
+                </div>`
+              : ''
+          }
           ${clientBlock}
           ${
             client && isOpenHours(state) && !isClosedDay(state)
@@ -1211,9 +1264,29 @@ function loadWishlistIntoTpv(client) {
         continue;
       }
     }
-    const src = w.preferDictate ? 'dictate' : 'random';
+    const ask = w.numberAsk;
+    if (ask?.selection) {
+      addTpvProduct(state, w.productId, {
+        qty: w.qty || 1,
+        numberSource: 'dictate',
+        selection: { ...ask.selection },
+      });
+      continue;
+    }
+    const src = ask?.kind === 'random' || (!w.preferDictate && ask?.kind !== 'dictate')
+      ? 'random'
+      : w.preferDictate || ask?.preferDictate
+        ? 'dictate'
+        : 'random';
     for (let i = 0; i < (w.qty || 1); i++) {
-      addTpvProduct(state, w.productId, { qty: 1, numberSource: src });
+      addTpvProduct(state, w.productId, {
+        qty: 1,
+        numberSource: src,
+      });
+      // Prefill draft hint on last line
+      if (src === 'dictate' && ask?.draftHint && state.ui.tpv?.numberEntry) {
+        state.ui.tpv.numberEntry.draft = ask.draftHint;
+      }
     }
   }
 }
@@ -1391,13 +1464,20 @@ function wishlistValidationHTML(tpv) {
   const v = validateWishlist(tpv);
   const rows = [];
   for (const c of v.covered) {
+    const ask = c.askLabel ? ` · ${c.askLabel}` : '';
     rows.push(
-      `<div class="wish-ok">✓ ${escapeHtml(c.productName)} ×${c.qty}</div>`,
+      `<div class="wish-ok">✓ ${escapeHtml(c.productName)} ×${c.qty}${escapeHtml(ask)}</div>`,
     );
   }
   for (const m of v.missing) {
+    const ask = m.askLabel ? ` · pedía: ${m.askLabel}` : '';
     rows.push(
-      `<div class="wish-miss">✗ ${escapeHtml(m.productName)} · faltan ${m.need} (hay ${m.have})</div>`,
+      `<div class="wish-miss">✗ ${escapeHtml(m.productName)} · faltan ${m.need} (hay ${m.have})${escapeHtml(ask)}</div>`,
+    );
+  }
+  for (const n of v.numberMismatches || []) {
+    rows.push(
+      `<div class="wish-miss">⚠ Cifras: ${escapeHtml(n.productName)} — ${escapeHtml(n.askLabel || '')} (${escapeHtml(n.reason || '')})</div>`,
     );
   }
   for (const e of v.extras) {
@@ -1405,9 +1485,13 @@ function wishlistValidationHTML(tpv) {
       `<div class="wish-extra">+ Extra: ${escapeHtml(e.productName)} ×${e.qty}</div>`,
     );
   }
+  const status = v.complete && v.numbersOk
+    ? '<div class="wish-ok" style="margin-top:6px"><strong>Petición cubierta</strong></div>'
+    : '<div class="wish-miss" style="margin-top:6px"><strong>Aún no cuadra con lo pedido</strong></div>';
   return `<div class="wish-panel" style="margin:10px 0">
-    <strong>Petición del cliente</strong>
+    <strong>Checklist petición</strong>
     ${rows.join('') || '<div class="muted">Sin líneas aún</div>'}
+    ${status}
   </div>`;
 }
 
@@ -1562,6 +1646,7 @@ function renderTpv() {
   const entry = tpv.numberEntry;
 
   const catHue = { LAE: 195, ONCE: 28, Rascas: 310, Autonómicas: 155, Provinciales: 210, Locales: 340 };
+  const shortcuts = dailyTpvShortcuts(state);
   app.innerHTML = `
     <div class="shell tpv-shell">
       ${topbarHTML()}
@@ -1576,6 +1661,15 @@ function renderTpv() {
         ${tpv.message ? `<div class="error-box" style="margin:10px 0">${escapeHtml(tpv.message)}</div>` : ''}
         ${wishlistValidationHTML(tpv)}
         ${cancelPromptHTML(tpv)}
+        <div class="tpv-shortcuts">
+          <span class="tpv-shortcuts-label">Hoy</span>
+          ${shortcuts
+            .map(
+              (s, i) =>
+                `<button class="btn tpv-shortcut" data-shortcut="${s.id}" style="--sh-hue:${(i * 47 + 20) % 360}" title="${escapeHtml(s.fullName)}">${escapeHtml(s.name)}</button>`,
+            )
+            .join('')}
+        </div>
         ${
           entry
             ? `<div class="dictate-box">
@@ -1725,6 +1819,18 @@ function renderTpv() {
     btn.onclick = () => {
       sfx.click();
       setTpvCategory(state, btn.getAttribute('data-tpv-cat'));
+      needsFullRender = true;
+      render();
+    };
+  });
+
+  app.querySelectorAll('[data-shortcut]').forEach((btn) => {
+    btn.onclick = () => {
+      sfx.tpv();
+      const id = btn.getAttribute('data-shortcut');
+      const p = getProduct(id);
+      if (p?.tpvCategory) setTpvCategory(state, p.tpvCategory);
+      addTpvProduct(state, id, { numberSource: 'random' });
       needsFullRender = true;
       render();
     };
@@ -2157,7 +2263,11 @@ function renderCash() {
   ensureCashKeyboard();
   app.querySelectorAll('[data-method]').forEach((btn) => {
     btn.onclick = () => {
+      const before = state.ui.paymentSession?.step;
       selectPaymentMethod(state, btn.getAttribute('data-method'));
+      if (state.ui.paymentSession?.error && state.ui.paymentSession?.step === 'method') sfx.deny();
+      else if (state.ui.paymentSession?.step === 'done') sfx.cash();
+      else if (before === 'method' && state.ui.paymentSession?.method === 'cash') sfx.drawerOpen();
       sfx.click();
       if (state.ui.toast) showToast(state.ui.toast);
       needsFullRender = true;
@@ -2682,15 +2792,16 @@ function renderSavesInGame() {
     btn.onclick = () => {
       state = loadFromSlot(Number(btn.getAttribute('data-load')));
       maybeStartMusic();
-      sfx.click();
-      showToast('Partida cargada');
+      sfx.open();
+      loadSummaryToast(state);
       needsFullRender = true;
       render();
     };
   });
   document.getElementById('btn-export').onclick = () => {
     exportGame(state);
-    showToast('Exportado');
+    sfx.printer();
+    showToast(state.ui.toast || 'Exportación completa');
   };
   document.getElementById('btn-day-package').onclick = async () => {
     await exportDayPackage(state, { downloadDayClosePdf });
@@ -2722,6 +2833,7 @@ function renderStock() {
   const physical = PRODUCTS.filter((p) => p.stockType === 'physical');
   const monday = isMonday(state);
   const scratchLow = monday ? mondayScratchInventory(state).low : [];
+  const criticalMap = new Map(stockCriticalList(state).map((c) => [c.id, c]));
   app.innerHTML = `
     <div class="shell">
       ${topbarHTML()}
@@ -2729,7 +2841,19 @@ function renderStock() {
         ${sideNav()}
         <section class="panel">
           <h2>Stock y pedidos</h2>
-          <p class="muted">Pedidos a proveedor con coste (banco) y fecha de llegada.</p>
+          <p class="muted">Pedidos a proveedor con coste (banco) y fecha de llegada. Los críticos aparecen en rojo.</p>
+          ${
+            (() => {
+              const crit = stockCriticalList(state);
+              const orders = pendingOrdersSummary(state);
+              if (!crit.length && !orders.arrivedCount) return '';
+              return `<div class="alert-banner stock-alert-banner">
+                ${crit.length ? `<strong>Bajo mínimo:</strong> ${crit.slice(0, 6).map((c) => `${escapeHtml(c.name)} (${c.qty})`).join(' · ')}` : ''}
+                ${orders.arrivedCount ? `<div>Pedidos llegados: ${orders.arrivedCount}</div>` : ''}
+                ${orders.pendingCount ? `<div class="muted">En camino: ${orders.pendingCount}</div>` : ''}
+              </div>`;
+            })()
+          }
           ${
             monday
               ? `<div class="alert-banner" style="border-color:rgba(14,107,122,0.35);background:rgba(14,107,122,0.1)">
@@ -2751,8 +2875,11 @@ function renderStock() {
               .map((p) => {
                 const qty = state.stock[p.id] ?? 0;
                 const cost = supplierUnitCostCents(p);
-                return `<div class="stock-item">
-                  <span><strong>${escapeHtml(p.name)}</strong> <span class="muted">(${p.org} · coste ~${formatEuro(cost)})</span></span>
+                const alert = criticalMap.get(p.id);
+                return `<div class="stock-item ${alert ? (alert.critical ? 'stock-critical' : 'stock-low') : ''}">
+                  <span><strong>${escapeHtml(p.name)}</strong> <span class="muted">(${p.org} · coste ~${formatEuro(cost)})</span>
+                  ${alert ? `<span class="stock-badge">${alert.critical ? 'CRÍTICO' : 'bajo'}</span>` : ''}
+                  </span>
                   <span>${qty}
                     <button class="btn" style="padding:4px 8px;margin-left:8px" data-supplier="${p.id}">Pedir 20</button>
                   </span>
@@ -2835,33 +2962,55 @@ function renderPrize() {
         ${sideNav()}
         <section class="panel">
           <h2>Pagar premio</h2>
-          <p class="muted">Busca un ticket comprobado o paga un premio suelto sin ticket.</p>
+          <p class="muted">Busca un ticket comprobado o paga un premio suelto. Desde ${formatEuro(MEDIUM_PRIZE_CENTS)}: papeleo breve. Desde ${formatEuro(LARGE_PRIZE_CENTS)}: gestión.</p>
           <h3>Buscar ticket</h3>
           <label>ID, cliente o producto<br/>
             <input id="prize-search" value="${escapeHtml(state.ui.prizeSearch || '')}" placeholder="Ej. T12 o Miriam" style="width:100%;margin:6px 0 12px;padding:10px;border-radius:10px;border:1px solid var(--line)" />
           </label>
-          <div class="log" style="max-height:260px;overflow:auto">
+          <div class="log" style="max-height:320px;overflow:auto">
             ${
               list.length
                 ? list
                     .slice(0, 40)
-                    .map(
-                      (t) => `<div class="log-item">
+                    .map((t) => {
+                      const medium =
+                        t.prizeCents >= MEDIUM_PRIZE_CENTS && t.prizeCents < LARGE_PRIZE_CENTS;
+                      if (medium) ensureMediumPaperwork(t);
+                      const medDone = medium && mediumPaperworkDone(t);
+                      const medHtml = medium
+                        ? `<div class="paperwork-box" style="margin-top:8px">
+                            <div class="paperwork-title">Papeleo mediano ${medDone ? '✓' : '(obligatorio)'}</div>
+                            <ul class="paperwork-list">
+                              ${MEDIUM_PAPERWORK.map(
+                                (item) => `<li><label class="paperwork-item">
+                                  <input type="checkbox" data-med-ticket="${escapeHtml(t.id)}" data-med-item="${item.id}" ${
+                                    t.mediumPaperwork?.[item.id] ? 'checked' : ''
+                                  } />
+                                  <span>${escapeHtml(item.label)}</span>
+                                </label></li>`,
+                              ).join('')}
+                            </ul>
+                          </div>`
+                        : '';
+                      const actions =
+                        t.status === 'managed' || t.prizeCents >= LARGE_PRIZE_CENTS
+                          ? `<button class="btn accent" style="padding:4px 10px" data-manage-ticket="${t.id}">${
+                              t.status === 'managed' ? 'Ver gestión' : 'Gestionar'
+                            }</button>`
+                          : `<button class="btn primary" style="padding:4px 10px" data-pay-ticket="${t.id}" data-method="cash" ${
+                              medium && !medDone ? 'disabled title="Completa el papeleo mediano"' : ''
+                            }>Efectivo</button>
+                          <button class="btn" style="padding:4px 10px" data-pay-ticket="${t.id}" data-method="transfer" ${
+                            medium && !medDone ? 'disabled' : ''
+                          }>Transfer.</button>`;
+                      return `<div class="log-item">
                         <strong>${escapeHtml(t.id)}</strong> · ${escapeHtml(t.clientName || '—')} · ${escapeHtml(t.productName)}
                         <br/>${escapeHtml(formatSelection(t))} · <strong>${formatEuro(t.prizeCents)}</strong>
-                        <span class="muted"> · ${escapeHtml(t.status)}</span>
-                        <div class="actions" style="margin-top:6px">
-                          ${
-                            t.status === 'managed' || t.prizeCents >= LARGE_PRIZE_CENTS
-                              ? `<button class="btn accent" style="padding:4px 10px" data-manage-ticket="${t.id}">${
-                                  t.status === 'managed' ? 'Ver gestión' : 'Gestionar'
-                                }</button>`
-                              : `<button class="btn primary" style="padding:4px 10px" data-pay-ticket="${t.id}" data-method="cash">Efectivo</button>
-                          <button class="btn" style="padding:4px 10px" data-pay-ticket="${t.id}" data-method="transfer">Transfer.</button>`
-                          }
-                        </div>
-                      </div>`,
-                    )
+                        <span class="muted"> · ${escapeHtml(t.status)}${medium ? ' · mediano' : ''}</span>
+                        ${medHtml}
+                        <div class="actions" style="margin-top:6px">${actions}</div>
+                      </div>`;
+                    })
                     .join('')
                 : '<div class="muted">Ningún ticket con premio pendiente. Comprueba en el mostrador o usa pago suelto.</div>'
             }
@@ -2894,6 +3043,15 @@ function renderPrize() {
     needsFullRender = true;
     render();
   };
+  app.querySelectorAll('[data-med-ticket]').forEach((inp) => {
+    inp.onchange = () => {
+      toggleMediumPaperwork(state, inp.getAttribute('data-med-ticket'), inp.getAttribute('data-med-item'));
+      sfx.click();
+      showToast(state.ui.toast);
+      needsFullRender = true;
+      render();
+    };
+  });
   app.querySelectorAll('[data-pay-ticket]').forEach((btn) => {
     btn.onclick = () => {
       const id = btn.getAttribute('data-pay-ticket');
@@ -3040,7 +3198,10 @@ function renderManagement() {
                         <br/>Estado: <strong>${escapeHtml(st)}</strong>
                         <br/><span class="muted">${escapeHtml(c.note || '')}</span>
                         ${paperworkHTML(c)}
-                        ${btn}
+                        <div class="actions" style="margin-top:8px;flex-wrap:wrap">
+                          <button class="btn" data-case-pdf="${c.id}">PDF expediente</button>
+                          ${btn}
+                        </div>
                       </div>`;
                     })
                     .join('')
@@ -3068,6 +3229,16 @@ function renderManagement() {
       render();
     };
   });
+  app.querySelectorAll('[data-case-pdf]').forEach((btn) => {
+    btn.onclick = () => {
+      const c = (state.prizeManagement || []).find((x) => x.id === btn.getAttribute('data-case-pdf'));
+      if (!c) return;
+      const ticket = state.tickets.find((t) => t.id === c.ticketId);
+      downloadPrizeCasePdf(c, ticket);
+      sfx.printer();
+      showToast('PDF del expediente descargado');
+    };
+  });
   app.querySelectorAll('[data-adv-case]').forEach((btn) => {
     btn.onclick = () => {
       const res = advancePrizeCase(state, btn.getAttribute('data-adv-case'));
@@ -3082,7 +3253,8 @@ function renderManagement() {
 function renderEncyclopedia() {
   const families = encyclopediaFamilies();
   const stats = encyclopediaStats();
-  const selected = state.ui.encyclopediaId || null;
+  const daily = encyclopediaDaily(state);
+  const selected = state.ui.encyclopediaId || daily.todayFocus?.id || null;
   const familyOrder = ['LAE', 'ONCE', 'Rascas', 'Autonómicas', 'Provinciales', 'Locales'];
   const keys = [
     ...familyOrder.filter((k) => families.has(k)),
@@ -3096,6 +3268,29 @@ function renderEncyclopedia() {
         <section class="panel ency-panel">
           <h2>Enciclopedia de loterías</h2>
           <p class="muted">${stats.total} productos · LAE ${stats.lae} · ONCE ${stats.once} · regionales ${stats.regional}</p>
+          <div class="ency-daily">
+            <div class="ency-daily-tip"><strong>Tip del día</strong><p>${escapeHtml(daily.tip)}</p></div>
+            ${
+              daily.todayFocus
+                ? `<button class="ency-daily-focus" data-ency="${daily.todayFocus.id}">
+                    ${logoHTML(daily.todayFocus.product, 'md')}
+                    <span><strong>Hoy destaca</strong><br/>${escapeHtml(daily.todayFocus.name)}</span>
+                  </button>`
+                : ''
+            }
+            ${
+              daily.hot.length
+                ? `<div class="ency-hot">${daily.hot
+                    .map(
+                      (h) =>
+                        `<button class="btn" data-ency="${h.id}" data-nav-board="1">${escapeHtml(h.p.short || h.p.name)} bote</button>`,
+                    )
+                    .join('')}
+                    <button class="btn accent" data-nav="board">Ver tablón</button>
+                  </div>`
+                : `<div class="actions"><button class="btn accent" data-nav="board">Ver tablón del pueblo</button></div>`
+            }
+          </div>
           <div class="ency-layout">
             <div class="ency-catalog">
               ${keys

@@ -41,10 +41,14 @@ export const sfx = {
     beep({ freq: 880, dur: 0.07, type: 'sine', gain: 0.04 });
     setTimeout(() => beep({ freq: 1175, dur: 0.09, type: 'sine', gain: 0.035 }), 70);
   },
-  drawer: () => beep({ freq: 180, dur: 0.12, type: 'triangle', gain: 0.05, slideTo: 90 }),
+  drawer: () => {
+    beep({ freq: 180, dur: 0.12, type: 'triangle', gain: 0.05, slideTo: 90 });
+    setTimeout(() => beep({ freq: 320, dur: 0.05, type: 'sine', gain: 0.02 }), 80);
+  },
   ticket: () => {
     beep({ freq: 1500, dur: 0.04, type: 'square', gain: 0.02 });
     setTimeout(() => beep({ freq: 1200, dur: 0.04, type: 'square', gain: 0.02 }), 50);
+    setTimeout(() => beep({ freq: 1900, dur: 0.03, type: 'square', gain: 0.015 }), 100);
   },
   draw: () => {
     beep({ freq: 440, dur: 0.1 });
@@ -78,6 +82,37 @@ export const sfx = {
   alert: () => {
     beep({ freq: 880, dur: 0.08, type: 'square', gain: 0.035 });
     setTimeout(() => beep({ freq: 660, dur: 0.12, type: 'square', gain: 0.03 }), 100);
+  },
+  /** Timbre de puerta / cliente entra */
+  door: () => {
+    beep({ freq: 740, dur: 0.09, type: 'triangle', gain: 0.045 });
+    setTimeout(() => beep({ freq: 980, dur: 0.12, type: 'triangle', gain: 0.04 }), 90);
+    setTimeout(() => beep({ freq: 620, dur: 0.08, type: 'sine', gain: 0.03 }), 200);
+  },
+  /** Impresora térmica de tickets */
+  printer: () => {
+    for (let i = 0; i < 5; i++) {
+      setTimeout(
+        () => beep({ freq: 1800 + i * 40, dur: 0.03, type: 'square', gain: 0.018 }),
+        i * 35,
+      );
+    }
+    setTimeout(() => beep({ freq: 240, dur: 0.08, type: 'triangle', gain: 0.035, slideTo: 160 }), 200);
+  },
+  /** Cajón que se abre con más cuerpo */
+  drawerOpen: () => {
+    beep({ freq: 160, dur: 0.14, type: 'triangle', gain: 0.055, slideTo: 70 });
+    setTimeout(() => beep({ freq: 420, dur: 0.05, type: 'sine', gain: 0.025 }), 90);
+  },
+  /** Fallo de cobro electrónico */
+  deny: () => {
+    beep({ freq: 180, dur: 0.12, type: 'sawtooth', gain: 0.035 });
+    setTimeout(() => beep({ freq: 140, dur: 0.16, type: 'sawtooth', gain: 0.03 }), 110);
+  },
+  /** Stock / aviso oficina */
+  notice: () => {
+    beep({ freq: 660, dur: 0.06, type: 'sine', gain: 0.03 });
+    setTimeout(() => beep({ freq: 880, dur: 0.08, type: 'sine', gain: 0.028 }), 70);
   },
 };
 

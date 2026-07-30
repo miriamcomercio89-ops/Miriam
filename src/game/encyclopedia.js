@@ -58,6 +58,42 @@ export function encyclopediaStats() {
   };
 }
 
+/** Tip del día + destacados jugables (sorteos, botes) */
+export function encyclopediaDaily(state) {
+  const entries = encyclopediaEntries();
+  const ymd = new Date(state.clock?.gameTimeMs || Date.now()).toISOString().slice(0, 10);
+  const tipIdx = Number(ymd.replace(/\D/g, '')) % Math.max(1, entries.length);
+  const tipProduct = entries[tipIdx];
+  const tips = [
+    `Hoy conviene conocer bien ${tipProduct?.name || 'el catálogo'}: ${tipProduct?.flavor || tipProduct?.description || ''}`,
+    'Consulta el tablón: botes y sorteos del día cambian la cola.',
+    'Los rascas se venden solos si estánes explicar el premio máximo.',
+    'Euromillones y Cuponazo: pregunta siempre si quieren aleatorio o sus cifras.',
+  ];
+  const jack = state.jackpots?.values || {};
+  const hot = Object.entries(jack)
+    .map(([id, cents]) => ({ id, cents, p: entries.find((e) => e.id === id) }))
+    .filter((x) => x.p && x.cents >= 1e9)
+    .sort((a, b) => b.cents - a.cents)
+    .slice(0, 3);
+  const dow = new Date(state.clock?.gameTimeMs || Date.now()).getUTCDay();
+  const todayFocus =
+    dow === 5
+      ? entries.find((e) => e.id === 'once-cuponazo')
+      : dow === 2 || dow === 5
+        ? entries.find((e) => e.id === 'lae-euromillones')
+        : dow === 4 || dow === 6
+          ? entries.find((e) => e.id === 'lae-nacional')
+          : tipProduct;
+  return {
+    tip: tips[Number(ymd.slice(-1)) % tips.length],
+    tipProduct,
+    todayFocus,
+    hot,
+    ymd,
+  };
+}
+
 const DAY_NAMES = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 
 export function renderEncyclopediaDetail(id) {

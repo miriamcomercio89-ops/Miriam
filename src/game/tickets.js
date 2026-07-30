@@ -6,8 +6,9 @@ import { gameDate } from './time.js';
 import { formatEuro } from '../data/money.js';
 import { isJackpotGame, resetJackpotAfterHit } from './jackpots.js';
 
-/** Umbral: por encima hay que gestionar (no pago libre de caja) */
-export const LARGE_PRIZE_CENTS = 200000; // 2.000 €
+/** Umbrales de trámite / gestión */
+export const MEDIUM_PRIZE_CENTS = 40000; // 400 € — papeleo breve, se puede pagar de caja
+export const LARGE_PRIZE_CENTS = 200000; // 2.000 € — gestión obligatoria
 export const HUGE_PRIZE_CENTS = 1500000; // 15.000 €
 
 let ticketSeq = 1;
