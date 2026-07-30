@@ -1,8 +1,6 @@
-ABRE ESTE ARCHIVO:
+ABRE:
 
   LOTERIAS-ALORA.html
 
-(doble clic)
-
-Versión 0.2 — TPV, cola, abonados/peñas.
+Versión 0.3
 No abras index.html

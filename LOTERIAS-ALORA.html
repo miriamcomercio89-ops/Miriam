@@ -2114,9 +2114,9 @@ try {
   // src/game/jackpots.js
   var JACKPOT_GAMES = [
     { id: "lae-euromillones", name: "Euromillones", base: 17e8, min: 17e8, step: 5e8 },
-    { id: "lae-primitiva", name: "Primitiva", base: 8e8, min: 14e7, step: 2e8 },
-    { id: "lae-bonoloto", name: "Bonoloto", base: 4e7, min: 4e7, step: 2e7 },
-    { id: "lae-gordo-primitiva", name: "Gordo Primitiva", base: 5e8, min: 5e8, step: 1e8 },
+    { id: "lae-primitiva", name: "Primitiva", base: 25e8, min: 14e7, step: 5e8 },
+    { id: "lae-bonoloto", name: "Bonoloto", base: 1e8, min: 4e7, step: 2e7 },
+    { id: "lae-gordo-primitiva", name: "Gordo Primitiva", base: 7e8, min: 5e8, step: 1e8 },
     { id: "once-eurojackpot", name: "Eurojackpot", base: 1e9, min: 1e9, step: 4e8 },
     { id: "once-cuponazo", name: "Cuponazo", base: 9e8, min: 9e8, step: 1e8 }
   ];
@@ -2131,13 +2131,13 @@ try {
     const rng = mulberry322(hashSeed("jackpot", weekKey));
     const values = {};
     for (const g of JACKPOT_GAMES) {
-      const prev = ((_a = state2.jackpots.values) == null ? void 0 : _a[g.id]) || g.base;
+      const prev = Number((_a = state2.jackpots.values) == null ? void 0 : _a[g.id]) || g.base;
       const roll = rng();
       let next;
       if (roll < 0.18) next = g.min;
       else if (roll < 0.55) next = prev + g.step;
-      else next = prev + Math.floor(g.step * (0.5 + rng()));
-      values[g.id] = Math.max(g.min, next);
+      else next = prev + Math.round(g.step * (0.5 + rng()));
+      values[g.id] = Math.max(g.min, Math.round(next));
     }
     state2.jackpots = { weekKey, updatedYmd: ymd2, values };
     return state2;
@@ -2156,11 +2156,16 @@ try {
       id: g.id,
       name: g.name,
       cents: state2.jackpots.values[g.id] || g.base,
-      label: formatEuro(state2.jackpots.values[g.id] || g.base)
+      label: formatJackpotShort(state2.jackpots.values[g.id] || g.base)
     }));
   }
   function formatJackpotShort(cents) {
-    if (cents >= 1e8) return `${(cents / 1e8).toFixed(1)} M\u20AC`;
+    const euros = Math.round(Number(cents) / 100);
+    if (euros >= 1e6) {
+      const m = euros / 1e6;
+      return `${m >= 10 ? m.toFixed(0) : m.toFixed(1)} M\u20AC`;
+    }
+    if (euros >= 1e3) return `${Math.round(euros / 1e3)} mil \u20AC`;
     return formatEuro(cents);
   }
 

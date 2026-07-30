@@ -1,27 +1,28 @@
 # Loterías Álora
 
-Simulador realista de administración de loterías en **Álora** (Málaga). Tú eres **Miriam**.
+Simulador realista de administración de loterías en **Álora**. Tú eres **Miriam**.
 
-**Versión: 0.2**
+**Versión: 0.3**
 
 ## Cómo jugar
 
 1. Descarga el ZIP del juego  
 2. Abre **`LOTERIAS-ALORA.html`** (doble clic)
 
-No abras `index.html` de la raíz (es solo para desarrollo).
+No abras `index.html` de la raíz.
 
-## Novedades v0.2
+## Novedades v0.3
 
-- **TPV** multi-línea: el cliente pide varias cosas y tú las marcas por categorías
-- Cola visible de clientes
-- Números **aleatorios** o **dictados** por el cliente
-- Más sorteos: Gordo Primitiva, Quiniela, Quinigol, Eurojackpot, Super Once, Triplex…
-- Histórico de sorteos
-- Liquidación detallada LAE / ONCE / otros
-- Fichas de **abonados y peñas**
-- Más eventos de Álora
-- Música de fondo y efectos (TPV, cajón, ticket, sorteo)
+- TPV: validar petición del cliente (verde/rojo), cancelar líneas con motivo, recibo antes de cobrar
+- Pedreas y series de Lotería Nacional
+- Botes visibles + aviso “hoy hay sorteo de…”
+- Arqueo guiado al abrir/cerrar y faltante de caja
+- Extracto semanal y pantalla de estadísticas
+- Encargos Navidad/Niño con calendario
+- Más peñas (8) y abonados (40) + temporada turística
+- Atajos de teclado en TPV (F1–F6, Enter, Esc)
+- Autosave cada 2 minutos
+- +10 rascas y extraordinarios ONCE
 
 ## Desarrollo
 
@@ -31,6 +32,4 @@ npm run dev
 npm run build:play
 ```
 
-## Aviso
-
-Fan-made / no oficial · +18 · Juego responsable
+Fan-made / no oficial · +18
