@@ -5,6 +5,7 @@ import { processArrivingOrders } from './customers.js';
 import { ensureDrawsResolved } from './draws.js';
 import { advancePrizeManagement } from './prizes.js';
 import { getProduct } from '../data/products.js';
+import { pushCloseSummary } from './closeHistory.js';
 
 export function applyDailyExpenses(state) {
   const monthlyTotal = Object.values(MONTHLY_EXPENSES).reduce((a, b) => a + b, 0);
@@ -176,6 +177,7 @@ export function closeDay(state) {
 
   const summary = buildDayCloseSummary(state);
   summary.settlement = settlement;
+  pushCloseSummary(state, summary);
   state.stats.daysPlayed += 1;
 
   if (state.finance.dayShortageCents) {

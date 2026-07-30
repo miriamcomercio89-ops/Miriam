@@ -2,6 +2,7 @@ import './style.css';
 import {
   advanceClock,
   setSpeed,
+  togglePause,
   formatGameClock,
   gameDate,
   gameYmd,
@@ -26,6 +27,8 @@ import {
   orderStock,
   processArrivingOrders,
   checkCurrentTicket,
+  advanceCheckQueue,
+  checkQueueProgress,
   crowdFactor,
   isTouristSeason,
 } from './game/customers.js';
@@ -49,6 +52,7 @@ import {
   TPV_CATEGORIES,
   productsByTpvCategory,
   getProduct,
+  productMetaLabel,
 } from './data/products.js';
 import { BILLS, COINS } from './data/money.js';
 import {
@@ -60,10 +64,17 @@ import {
   setMusicVolume,
   setSfxVolume,
 } from './game/sounds.js';
-import { ensureDrawsResolved, listDrawHistory, modeHint } from './game/draws.js';
+import { ensureDrawsResolved, listDrawHistory, modeHint, nextDrawLabel } from './game/draws.js';
 import { formatSelection } from './game/tickets.js';
 import { payTicketPrize, startPrizeManagement } from './game/prizes.js';
-import { downloadTicketPdf, downloadSaleReceiptPdf, downloadStatsPdf, downloadWeeklyPdf, downloadMonthlyPdf } from './game/pdf.js';
+import {
+  downloadTicketPdf,
+  downloadSaleReceiptPdf,
+  downloadStatsPdf,
+  downloadWeeklyPdf,
+  downloadMonthlyPdf,
+  downloadDayClosePdf,
+} from './game/pdf.js';
 import { eventOn } from './data/events.js';
 import { birthdayBanner } from './data/birthdays.js';
 import { GAME_VERSION } from './game/state.js';
@@ -98,6 +109,7 @@ import {
   removeShowcaseDecimo,
   sellShowcaseToTpv,
   ensureShowcase,
+  validateShowcaseAgainstTpv,
 } from './game/showcase.js';
 import { placeSupplierOrder, mondayScratchInventory, restockLowScratches, supplierUnitCostCents } from './game/supplier.js';
 import { dismissHighPrizeAlert } from './game/prizes.js';
@@ -112,12 +124,15 @@ import {
 import { jackpotList, ensureJackpots, formatJackpotShort } from './game/jackpots.js';
 import {
   todaysDrawNotices,
+  todaysDrawDetails,
   specialOrderDeadlines,
   createCalendarOrder,
 } from './game/notices.js';
 import { depositCashToBank, withdrawBankToCash } from './game/bank.js';
 import { buildTownBoard } from './data/board.js';
 import { currentMonthStatement } from './game/monthly.js';
+import { maybeLowCashAlert, dismissLowCashAlert } from './game/alerts.js';
+import { recentCloses } from './game/closeHistory.js';
 
 let state = null;
 let toastTimer = null;
@@ -185,6 +200,10 @@ function loop() {
     }
 
     maybeMondayHint();
+    if (maybeLowCashAlert(state)) {
+      sfx.alert();
+      needsFullRender = true;
+    }
 
     const minute = Math.floor(state.clock.gameTimeMs / 60000);
     if (needsFullRender) {
@@ -238,6 +257,7 @@ function render() {
   if (state.ui.screen === 'tpv') return renderTpv();
   if (state.ui.screen === 'close') return renderClose();
   if (state.ui.screen === 'day-results') return renderDayResults();
+  if (state.ui.screen === 'closes') return renderCloses();
   if (state.ui.screen === 'saves') return renderSavesInGame();
   if (state.ui.screen === 'stock') return renderStock();
   if (state.ui.screen === 'showcase') return renderShowcase();
@@ -305,6 +325,32 @@ function highPrizeAlertHTML() {
   </div>`;
 }
 
+function lowCashAlertHTML() {
+  const a = state.ui?.lowCashAlert;
+  if (!a) return '';
+  return `<div class="alert-banner alert-banner--cash" id="low-cash-alert">
+    <strong>⚠ Caja baja</strong>
+    <div>${formatEuro(a.drawerCents)} en cajón (umbral ${formatEuro(a.thresholdCents)}). Considera sacar cambio del banco.</div>
+    <div class="actions" style="margin-top:8px">
+      <button class="btn" id="btn-dismiss-low-cash">Entendido</button>
+      <button class="btn primary" id="btn-goto-bank-cash">Ir a Caja ↔ banco</button>
+    </div>
+  </div>`;
+}
+
+function pauseSummaryHTML() {
+  const p = state.ui?.pauseSummary;
+  if (!p || !state.clock?.paused) return '';
+  const current = p.current ? `cliente actual: ${escapeHtml(p.current)}` : 'sin cliente en mostrador';
+  return `<div class="pause-banner" id="pause-summary">
+    <strong>Oficina en pausa</strong>
+    <div>${p.queue ?? 0} en cola · ${current} · ventas hoy ${formatEuro(p.salesToday || 0)}</div>
+    <div class="actions" style="margin-top:8px">
+      <button class="btn primary" id="btn-resume">Reanudar</button>
+    </div>
+  </div>`;
+}
+
 function bindHighPrizeAlert() {
   const d = document.getElementById('btn-dismiss-high-prize');
   if (d) {
@@ -325,6 +371,57 @@ function bindHighPrizeAlert() {
       render();
     };
   }
+}
+
+function bindLowCashAlert() {
+  const d = document.getElementById('btn-dismiss-low-cash');
+  if (d) {
+    d.onclick = () => {
+      dismissLowCashAlert(state);
+      sfx.click();
+      needsFullRender = true;
+      render();
+    };
+  }
+  const g = document.getElementById('btn-goto-bank-cash');
+  if (g) {
+    g.onclick = () => {
+      dismissLowCashAlert(state);
+      state.ui.screen = 'bank';
+      sfx.click();
+      needsFullRender = true;
+      render();
+    };
+  }
+}
+
+function bindPauseSummary() {
+  const r = document.getElementById('btn-resume');
+  if (!r) return;
+  r.onclick = () => {
+    if (state.clock.paused) togglePause(state);
+    if (state.clock.speed === 0 || state.clock.paused) setSpeed(state, 1);
+    state.ui.pauseSummary = null;
+    sfx.click();
+    needsFullRender = true;
+    render();
+  };
+}
+
+/** Tras comprobar, suena jackpot si hay alerta de premio alto. */
+function maybeJackpotSfx() {
+  if (state.ui?.highPrizeAlert) sfx.jackpot();
+}
+
+/** Tras cobro/despedida de comprobación: siguiente ticket o salir. */
+function finishOrAdvanceCheck() {
+  const adv = advanceCheckQueue(state);
+  if (adv.advanced) {
+    showToast(state.ui.toast || 'Siguiente ticket');
+    return true;
+  }
+  state.customers.current = null;
+  return false;
 }
 
 function dictateHint(mode) {
@@ -370,7 +467,7 @@ function renderMenu() {
         </div>
         <p class="disclaimer">
           Fan-made / no oficial. Nombres de Loterías y Apuestas del Estado y ONCE usados solo con fines de simulación.
-          Juego responsable · +18. Versión ${GAME_VERSION}: Catálogo +50 loterías, escaparate, abonos, tema, proveedor, resultados del día y PDF de estadísticas.
+          Juego responsable · +18. Versión ${GAME_VERSION}: Sorteos visibles, cadena de comprobación, alerta de caja, histórico de cierres, pausa, PDF de cierre y sonidos.
         </p>
       </div>
     </div>
@@ -384,7 +481,7 @@ function renderMenu() {
     maybeStartMusic();
     state.ui.screen = 'counter';
     lastAutosaveRealMs = Date.now();
-    showToast('Bienvenida, Miriam. Versión 0.5 lista. Abre el TPV para vender.');
+    showToast('Bienvenida, Miriam. Versión 0.6 lista. Abre el TPV para vender.');
     needsFullRender = true;
     render();
   };
@@ -420,9 +517,19 @@ function renderMenu() {
 }
 
 function drawNoticeBannerHTML() {
-  const notices = todaysDrawNotices(state);
-  if (!notices.length) return '';
-  return `<div class="notice-banner">Hoy hay sorteo de: ${escapeHtml(notices.join(', '))}</div>`;
+  const details = todaysDrawDetails(state);
+  if (!details.length) {
+    const notices = todaysDrawNotices(state);
+    if (!notices.length) return '';
+    return `<div class="notice-banner">Hoy hay sorteo de: ${escapeHtml(notices.join(', '))}</div>`;
+  }
+  const items = details
+    .map((d) => `${d.name} ${String(d.hour).padStart(2, '0')}:00`)
+    .join(' · ');
+  return `<div class="notice-banner sticky-notice">
+    <strong>Hoy: ${details.length} sorteo${details.length === 1 ? '' : 's'}</strong>
+    <div class="notice-banner-detail">${escapeHtml(items)}</div>
+  </div>`;
 }
 
 function jackpotStripHTML() {
@@ -472,6 +579,7 @@ function topbarHTML() {
       </div>
     </header>
     ${drawNoticeBannerHTML()}
+    ${pauseSummaryHTML()}
     ${jackpotStripHTML()}
   `;
 }
@@ -480,11 +588,22 @@ function bindTopbar() {
   app.querySelectorAll('[data-speed]').forEach((btn) => {
     btn.onclick = () => {
       sfx.click();
-      setSpeed(state, Number(btn.getAttribute('data-speed')));
+      const speed = Number(btn.getAttribute('data-speed'));
+      setSpeed(state, speed);
+      if (speed === 0) {
+        state.ui.pauseSummary = {
+          queue: state.customers.queue?.length || 0,
+          current: state.customers.current?.name || null,
+          salesToday: state.finance.daySalesCents || 0,
+        };
+      } else {
+        state.ui.pauseSummary = null;
+      }
       needsFullRender = true;
       render();
     };
   });
+  bindPauseSummary();
 }
 
 function sideNav() {
@@ -515,6 +634,7 @@ function sideNav() {
       <button class="btn" data-nav="monthly">Liquidación mensual</button>
       <button class="btn" data-nav="stats">Estadísticas</button>
       <button class="btn" data-nav="close">Cierre y balance</button>
+      <button class="btn" data-nav="closes">Histórico cierres</button>
       <button class="btn" data-nav="settings">Ajustes</button>
       <button class="btn" data-nav="saves">Guardar / exportar</button>
       <button class="btn" id="btn-music-toggle">${musicOn ? '♪ Música: ON' : '♪ Música: OFF'}</button>
@@ -729,6 +849,7 @@ function renderCounter() {
         ${sideNav()}
         <section class="panel counter-stage">
           ${highPrizeAlertHTML()}
+          ${lowCashAlertHTML()}
           ${clientBlock}
           ${
             client && isOpenHours(state) && !isClosedDay(state)
@@ -769,6 +890,7 @@ function renderCounter() {
   bindTopbar();
   bindNav();
   bindHighPrizeAlert();
+  bindLowCashAlert();
   bindClientActions();
   bindScratchOverlay();
   bindCalendarOrderButtons('counter', state.customers.current);
@@ -831,10 +953,21 @@ function renderClientPanel(client) {
   if (intent === 'check') {
     const t = client.ticketFocus;
     const result = client.checkResult;
+    const progress = checkQueueProgress(client);
+    const progressLabel = progress
+      ? `<p class="muted"><strong>Ticket ${progress.index + 1}/${progress.total}</strong>${
+          progress.remaining ? ` · ${progress.remaining} más en cola` : ''
+        }</p>`
+      : '';
+    const nextBtn =
+      result && progress?.remaining
+        ? `<button class="btn primary" id="btn-next-check">Siguiente ticket</button>`
+        : '';
     return `
       <div class="client-card">
         <div class="muted">Comprobación${trait}</div>
         <h3>${escapeHtml(client.name)}</h3>
+        ${progressLabel}
         <p>Trae <strong>${escapeHtml(t.productName)}</strong> (${t.id})</p>
         <p class="muted">${formatSelection(t)}${t.drawYmd ? ` · Sorteo ${t.drawYmd}` : ''}</p>
         ${
@@ -860,7 +993,10 @@ function renderClientPanel(client) {
                 ? `<button class="btn primary" id="btn-pay-now">Pagar ahora</button>
                    <button class="btn" id="btn-defer">Cobrar otro día</button>
                    <button class="btn accent" id="btn-manage">Gestionar (premio grande)</button>`
-                : `<button class="btn primary" id="btn-done-check">Listo</button>`
+                : `${nextBtn}
+                   <button class="btn ${nextBtn ? '' : 'primary'}" id="btn-done-check">${
+                     nextBtn ? 'Terminar' : 'Listo'
+                   }</button>`
           }
           <button class="btn" id="btn-pdf-ticket">PDF ticket</button>
           <button class="btn ghost" id="btn-skip">Despedir</button>
@@ -923,7 +1059,8 @@ function bindClientActions() {
     openTpvBtn.onclick = () => {
       const client = state.customers.current;
       if (!client) return;
-      sfx.tpv();
+      if (client.intent === 'pena_day') sfx.pena();
+      else sfx.tpv();
       if (client.intent === 'pena_day' && (client.wishlist?.length || client.request)) {
         loadWishlistIntoTpv(client);
         if (state.ui.tpv?.message) showToast(state.ui.tpv.message);
@@ -972,6 +1109,7 @@ function bindClientActions() {
     check.onclick = () => {
       sfx.scan();
       checkCurrentTicket(state);
+      maybeJackpotSfx();
       showToast(state.ui.toast);
       needsFullRender = true;
       render();
@@ -982,13 +1120,14 @@ function bindClientActions() {
     scratchBtn.onclick = () => {
       const t = state.customers.current?.ticketFocus;
       if (!t) return;
-      sfx.scan();
+      sfx.scratch();
       state.ui.scratchReveal = { ticketId: t.id, step: 'scratching', prizeCents: null };
       needsFullRender = true;
       render();
       setTimeout(() => {
         if (!state?.ui?.scratchReveal || state.ui.scratchReveal.ticketId !== t.id) return;
         checkCurrentTicket(state);
+        maybeJackpotSfx();
         const prize = state.customers.current?.checkResult?.prizeCents ?? 0;
         state.ui.scratchReveal = { ticketId: t.id, step: 'done', prizeCents: prize };
         showToast(state.ui.toast);
@@ -1000,7 +1139,22 @@ function bindClientActions() {
   const done = document.getElementById('btn-done-check');
   if (done) {
     done.onclick = () => {
-      state.customers.current = null;
+      finishOrAdvanceCheck();
+      needsFullRender = true;
+      render();
+    };
+  }
+  const nextCheck = document.getElementById('btn-next-check');
+  if (nextCheck) {
+    nextCheck.onclick = () => {
+      const adv = advanceCheckQueue(state);
+      if (adv.advanced) {
+        sfx.scan();
+        showToast(state.ui.toast || 'Siguiente ticket');
+      } else {
+        state.customers.current = null;
+        sfx.click();
+      }
       needsFullRender = true;
       render();
     };
@@ -1019,7 +1173,7 @@ function bindClientActions() {
         } else {
           sfx.cash();
           showToast(state.ui.toast);
-          state.customers.current = null;
+          finishOrAdvanceCheck();
         }
       } else if (!res.ok) {
         sfx.error();
@@ -1027,7 +1181,7 @@ function bindClientActions() {
       } else {
         sfx.cash();
         showToast(state.ui.toast);
-        if (!res.deferred) state.customers.current = null;
+        if (!res.deferred) finishOrAdvanceCheck();
       }
       needsFullRender = true;
       render();
@@ -1041,7 +1195,7 @@ function bindClientActions() {
       payTicketPrize(state, t.id, { defer: true });
       sfx.click();
       showToast(state.ui.toast);
-      state.customers.current = null;
+      finishOrAdvanceCheck();
       needsFullRender = true;
       render();
     };
@@ -1054,7 +1208,7 @@ function bindClientActions() {
       startPrizeManagement(state, t);
       sfx.click();
       showToast(state.ui.toast);
-      state.customers.current = null;
+      finishOrAdvanceCheck();
       needsFullRender = true;
       render();
     };
@@ -1145,16 +1299,38 @@ function confirmTpvCharge() {
   render();
 }
 
+function showcaseWarningsHTML(tpv) {
+  const warnings = tpv?.showcaseWarnings?.length
+    ? tpv.showcaseWarnings
+    : validateShowcaseAgainstTpv(state, tpv).warnings;
+  if (!warnings?.length) return '';
+  return `<div class="error-box showcase-warn" style="margin:10px 0">
+    <strong>Aviso escaparate</strong>
+    <ul style="margin:6px 0 0;padding-left:1.2rem">
+      ${warnings.map((w) => `<li>${escapeHtml(w.message || w)}</li>`).join('')}
+    </ul>
+  </div>`;
+}
+
 function goTpvChargeOrReceipt() {
   const tpv = state.ui.tpv;
   if (!tpv) return;
   if (tpv.step === 'receipt') {
+    const warn = validateShowcaseAgainstTpv(state, tpv);
+    if (warn.warnings?.length) {
+      showToast(warn.warnings.map((w) => w.message).join(' · '));
+    }
     confirmTpvCharge();
     return;
   }
   goTpvReceipt(state);
   if (state.ui.tpv?.step !== 'receipt') sfx.error();
-  else sfx.scan();
+  else {
+    sfx.scan();
+    if (state.ui.tpv?.showcaseWarnings?.length) {
+      showToast(state.ui.tpv.showcaseWarnings.map((w) => w.message).join(' · '));
+    }
+  }
   needsFullRender = true;
   render();
 }
@@ -1168,6 +1344,7 @@ function renderTpvReceipt(tpv) {
         <h2>Ticket de venta · ${escapeHtml(tpv.clientName || 'Cliente')}</h2>
         <p class="muted">Revisa el ticket antes de cobrar. Puedes descargar PDF.</p>
         ${wishlistValidationHTML(tpv)}
+        ${showcaseWarningsHTML(tpv)}
         <div class="log" style="margin:12px 0">
           ${tpv.lines
             .map(
@@ -1264,11 +1441,14 @@ function renderTpv() {
                   p.stockType === 'physical'
                     ? `Stock ${state.stock[p.id] ?? 0}`
                     : 'Terminal';
-                const rate = p.commissionRate ?? 0.05;
-                const meta = `Com. ${(rate * 100).toFixed(1)}%${p.trait ? ` · ${p.trait}` : ''}`;
+                const meta =
+                  productMetaLabel(p) ||
+                  `Com. ${((p.commissionRate ?? 0.05) * 100).toFixed(1)}%${p.trait ? ` · ${p.trait}` : ''}`;
+                const next = nextDrawLabel(p.id, gameDate(state));
                 return `<div class="tpv-product">
                   <strong>${escapeHtml(p.name)}</strong>
                   <span>${formatEuro(p.priceCents)} · ${escapeHtml(stock)}</span>
+                  ${next ? `<div class="muted product-next">Próximo: ${escapeHtml(next)}</div>` : ''}
                   <div class="product-meta">${escapeHtml(meta)}</div>
                   <div class="actions" style="margin-top:8px;gap:6px">
                     <button class="btn primary" style="flex:1;min-height:42px;padding:8px" data-add-random="${p.id}">Aleatorio</button>
@@ -1869,7 +2049,9 @@ function renderClose() {
           <p class="muted">*Beneficio ≈ comisiones − gastos (antes de liquidar)</p>
           <p class="muted" style="margin-top:12px">Recomendado: haz el arqueo de caja antes de cerrar.</p>
           <div class="actions" style="margin-top:18px">
+            <button class="btn" id="btn-close-pdf">PDF del cierre</button>
             <button class="btn" id="btn-arqueo-before-close">Arqueo de caja primero</button>
+            <button class="btn" data-nav="closes">Histórico cierres</button>
             <button class="btn accent" id="btn-do-close">Liquidar, balance y cerrar día</button>
           </div>
         </section>
@@ -1879,6 +2061,11 @@ function renderClose() {
   `;
   bindTopbar();
   bindNav();
+  document.getElementById('btn-close-pdf').onclick = () => {
+    downloadDayClosePdf(summary);
+    sfx.success();
+    showToast('PDF del cierre descargado');
+  };
   document.getElementById('btn-arqueo-before-close').onclick = () => {
     sfx.click();
     startArqueo(state, 'close');
@@ -2563,6 +2750,8 @@ function renderDayResults() {
             : ''
         }
         <div class="actions" style="margin-top:18px">
+          <button class="btn" id="btn-day-close-pdf">PDF del cierre</button>
+          <button class="btn" id="btn-day-closes">Histórico cierres</button>
           <button class="btn primary" id="btn-day-results-ok">Abrir mostrador</button>
         </div>
       </div>
@@ -2570,12 +2759,76 @@ function renderDayResults() {
     ${toastHTML()}
   `;
   bindTopbar();
+  document.getElementById('btn-day-close-pdf').onclick = () => {
+    downloadDayClosePdf(s);
+    sfx.success();
+    showToast('PDF del cierre descargado');
+  };
+  document.getElementById('btn-day-closes').onclick = () => {
+    sfx.click();
+    state.ui.screen = 'closes';
+    needsFullRender = true;
+    render();
+  };
   document.getElementById('btn-day-results-ok').onclick = () => {
     sfx.click();
     state.ui.screen = 'counter';
     needsFullRender = true;
     render();
   };
+}
+
+function renderCloses() {
+  const rows = recentCloses(state, 7);
+  app.innerHTML = `
+    <div class="shell">
+      ${topbarHTML()}
+      <div class="layout" style="grid-template-columns:280px 1fr">
+        ${sideNav()}
+        <section class="panel">
+          <h2>Histórico de cierres</h2>
+          <p class="muted">Últimos ${rows.length || 7} días cerrados (máx. 7 en vista).</p>
+          ${
+            rows.length
+              ? `<div class="table-wrap" style="overflow:auto;margin-top:12px">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>Fecha</th>
+                        <th>Ventas</th>
+                        <th>Comisión</th>
+                        <th>Beneficio</th>
+                        <th>Clientes</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${rows
+                        .map(
+                          (r) => `<tr>
+                            <td>${escapeHtml(r.date)}</td>
+                            <td>${formatEuro(r.salesCents)}</td>
+                            <td>${formatEuro(r.commissionCents)}</td>
+                            <td>${formatEuro(r.profitCents)}</td>
+                            <td>${r.customersServed ?? 0}</td>
+                          </tr>`,
+                        )
+                        .join('')}
+                    </tbody>
+                  </table>
+                </div>`
+              : '<p class="muted" style="margin-top:12px">Aún no hay cierres registrados. Cierra un día para empezar el histórico.</p>'
+          }
+          <div class="actions" style="margin-top:18px">
+            <button class="btn" data-nav="close">Cierre y balance</button>
+            <button class="btn primary" data-nav="counter">Mostrador</button>
+          </div>
+        </section>
+      </div>
+    </div>
+    ${toastHTML()}
+  `;
+  bindTopbar();
+  bindNav();
 }
 
 function renderShowcase() {
@@ -2881,7 +3134,8 @@ function ensureGlobalShortcuts() {
       const client = state.customers.current;
       if (!client) return;
       e.preventDefault();
-      sfx.tpv();
+      if (client.intent === 'pena_day') sfx.pena();
+      else sfx.tpv();
       if (client.intent === 'pena_day' && (client.wishlist?.length || client.request)) {
         loadWishlistIntoTpv(client);
       } else {

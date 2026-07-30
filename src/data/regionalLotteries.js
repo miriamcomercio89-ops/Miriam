@@ -1,12 +1,20 @@
 /**
- * Loterías inventadas Álora / Málaga / Andalucía (v0.5).
- * Cada una con mecánica, precio, horario y comisión propios.
+ * Loterías inventadas Álora / Málaga / Andalucía (v0.6).
+ * Cada una con mecánica, premio, horario y sabor propios.
  */
 
 function L(id, name, org, tpvCategory, priceCents, drawDays, extra = {}) {
+  const short =
+    extra.short ||
+    name
+      .replace(/^El |^La |^Sorteo /i, '')
+      .split(/\s+/)
+      .slice(0, 2)
+      .join(' ');
   return {
     id,
     name,
+    short,
     org,
     tpvCategory,
     category: 'inventada',
@@ -22,50 +30,63 @@ function L(id, name, org, tpvCategory, priceCents, drawDays, extra = {}) {
     description: `${name} (inventada · ${org}).`,
     trait: '',
     topPrizeHint: '',
+    flavor: '',
+    prizeTier: org === 'Local' ? 'small' : org === 'Provincial' ? 'mid' : 'big',
     fractionable: false,
     ...extra,
+    short: extra.short || short,
   };
 }
 
 const AUTONOMICAS = [
   L('and-fortuna', 'Andalucía Fortuna', 'Autonómica', 'Autonómicas', 100, [5], {
-    numberMode: '5from40', trait: 'Clásico 5/40', topPrizeHint: 'Bote semanal',
+    numberMode: '5from40', short: 'A. Fortuna', prizeTier: 'big', flavor: 'Viernes de bote',
+    trait: 'Clásico 5/40', topPrizeHint: 'hasta 250.000 €',
     description: '5 números del 1 al 40. Viernes 20:00.',
   }),
   L('and-olivo', 'El Olivo de la Suerte', 'Autonómica', 'Autonómicas', 150, [2], {
-    numberMode: '6from36', commissionRate: 0.09, trait: '6/36', topPrizeHint: 'Aceite de oro',
+    numberMode: '6from36', commissionRate: 0.09, short: 'Olivo', prizeTier: 'big', flavor: 'Aceite y suerte',
+    trait: '6/36', topPrizeHint: 'hasta 180.000 €',
     description: '6 del 1–36. Martes.',
   }),
   L('and-costa', 'Sorteo Costa del Sol', 'Autonómica', 'Autonómicas', 200, [6], {
-    numberMode: 'nacional', fractionable: true, trait: 'Décimo 5 cifras', topPrizeHint: 'Costa Gold',
+    numberMode: 'nacional', fractionable: true, short: 'Costa Sol', prizeTier: 'big', flavor: 'Décimo playero',
+    trait: 'Décimo 5 cifras', topPrizeHint: 'hasta 400.000 €',
     description: 'Número de 5 cifras. Sábados.',
   }),
   L('and-guadalquivir', 'Guadalquivir Oro', 'Autonómica', 'Autonómicas', 120, [3], {
-    numberMode: '4from30', drawHour: 19, trait: '4/30', topPrizeHint: 'Lingote',
+    numberMode: '4from30', drawHour: 19, short: 'Guadalquivir', prizeTier: 'mid', flavor: 'Río de oro',
+    trait: '4/30', topPrizeHint: 'hasta 120.000 €',
     description: '4 números del 1 al 30. Miércoles 19:00.',
   }),
   L('and-sierra', 'Sierra Nevada Suerte', 'Autonómica', 'Autonómicas', 180, [4], {
-    numberMode: '7from45', commissionRate: 0.085, trait: '7/45', topPrizeHint: 'Cumbre',
+    numberMode: '7from45', commissionRate: 0.085, short: 'Sierra N.', prizeTier: 'big', flavor: 'Nieve y números',
+    trait: '7/45', topPrizeHint: 'hasta 300.000 €',
     description: '7 números del 1 al 45. Jueves.',
   }),
   L('and-alhambra', 'Alhambra Premia', 'Autonómica', 'Autonómicas', 250, [5], {
-    numberMode: 'colorball', trait: '4/30 + color', topPrizeHint: 'Nasrí',
+    numberMode: 'colorball', short: 'Alhambra', prizeTier: 'big', flavor: 'Colores nazaríes',
+    trait: '4/30 + color', topPrizeHint: 'hasta 500.000 €',
     description: '4 del 1–30 y bola de color (rojo/verde/azul/oro).',
   }),
   L('and-rocio', 'Rocío de la Fortuna', 'Autonómica', 'Autonómicas', 100, [1], {
-    numberMode: 'triplex', trait: '3 cifras', topPrizeHint: 'Romería',
+    numberMode: 'triplex', short: 'Rocío', prizeTier: 'mid', flavor: 'Romería en cifras',
+    trait: '3 cifras', topPrizeHint: 'hasta 80.000 €',
     description: '3 cifras. Lunes.',
   }),
   L('and-feria', 'Feria Andaluza', 'Autonómica', 'Autonómicas', 150, [6], {
-    numberMode: 'carta', trait: 'Baraja española', topPrizeHint: 'Reyes de oros',
+    numberMode: 'carta', short: 'Feria And.', prizeTier: 'mid', flavor: 'Cartas de feria',
+    trait: 'Baraja española', topPrizeHint: 'hasta 150.000 €',
     description: '3 cartas (palo + valor). Sábados.',
   }),
   L('and-levante', 'Levante Andaluz', 'Autonómica', 'Autonómicas', 90, [2], {
-    numberMode: '2from20', stockType: 'terminal', orderDays: 0, trait: 'Doble 1–20', topPrizeHint: 'Levante',
+    numberMode: '2from20', stockType: 'terminal', orderDays: 0, short: 'Levante', prizeTier: 'small', flavor: 'Viento de este',
+    trait: 'Doble 1–20', topPrizeHint: 'hasta 40.000 €',
     description: '2 números del 1 al 20. Terminal.',
   }),
   L('and-poniente', 'Poniente de Suerte', 'Autonómica', 'Autonómicas', 110, [4], {
-    numberMode: 'ruleta', trait: 'Ruleta 0–36', topPrizeHint: 'Pleno',
+    numberMode: 'ruleta', short: 'Poniente', prizeTier: 'mid', flavor: 'Ruleta atlántica',
+    trait: 'Ruleta 0–36', topPrizeHint: 'hasta 200.000 €',
     description: 'Un número de ruleta (0–36). Jueves.',
   }),
   L('and-azahar', 'Azahar Premiado', 'Autonómica', 'Autonómicas', 160, [3], {

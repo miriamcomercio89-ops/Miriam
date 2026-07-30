@@ -266,7 +266,10 @@ export function evaluateDrawPrize(ticket, draw) {
   }
   const hits = (sel.numbers || []).filter((n) => (draw.numbers || []).includes(n)).length;
   const need = (draw.numbers || []).length || 5;
-  const table =
+  const product = getProduct(id);
+  const tier = product?.prizeTier || 'mid';
+  const mult = tier === 'big' ? 1.4 : tier === 'small' ? 0.55 : 1;
+  const base =
     need >= 7
       ? { 7: 900000, 6: 80000, 5: 8000, 4: 800 }
       : need === 6
@@ -276,7 +279,7 @@ export function evaluateDrawPrize(ticket, draw) {
           : need === 2
             ? { 2: 150000, 1: 1500 }
             : { 5: 500000, 4: 20000, 3: 2000, 2: 200 };
-  const prize = table[hits] || 0;
+  const prize = Math.round((base[hits] || 0) * mult);
   return { prizeCents: prize, detail: prize ? `${hits} aciertos` : 'Sin premio', hits };
 }
 

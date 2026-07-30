@@ -229,6 +229,25 @@ export function listDrawHistory(state, limit = 60) {
     .slice(0, limit);
 }
 
+const DOW_LABEL = ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb'];
+
+/** Texto corto: próximo sorteo del producto. */
+export function nextDrawLabel(productId, fromDate = new Date()) {
+  const p = getProduct(productId);
+  if (!p) return '';
+  const ymd = nextDrawYmd(productId, fromDate);
+  if (!ymd) {
+    if (p.seasonMonths?.length) return 'Temporada especial';
+    return 'Sin sorteo programado';
+  }
+  const d = new Date(`${ymd}T12:00:00Z`);
+  const dow = DOW_LABEL[d.getUTCDay()] || '';
+  const hour = p.drawHour ?? DEFAULT_DRAW_HOUR;
+  const today = fromDate.toISOString().slice(0, 10);
+  if (ymd === today) return `Hoy ${String(hour).padStart(2, '0')}:00`;
+  return `${dow} ${ymd.slice(8, 10)}/${ymd.slice(5, 7)} ${String(hour).padStart(2, '0')}:00`;
+}
+
 export function modeHint(mode) {
   const hints = {
     nacional: '5 cifras (ej. 45821) · serie 45821 · 45821 x2',

@@ -345,9 +345,11 @@
 
   // src/data/regionalLotteries.js
   function L(id, name, org, tpvCategory, priceCents, drawDays, extra = {}) {
+    const short = extra.short || name.replace(/^El |^La |^Sorteo /i, "").split(/\s+/).slice(0, 2).join(" ");
     return {
       id,
       name,
+      short,
       org,
       tpvCategory,
       category: "inventada",
@@ -363,75 +365,108 @@
       description: `${name} (inventada \xB7 ${org}).`,
       trait: "",
       topPrizeHint: "",
+      flavor: "",
+      prizeTier: org === "Local" ? "small" : org === "Provincial" ? "mid" : "big",
       fractionable: false,
-      ...extra
+      ...extra,
+      short: extra.short || short
     };
   }
   var AUTONOMICAS = [
     L("and-fortuna", "Andaluc\xEDa Fortuna", "Auton\xF3mica", "Auton\xF3micas", 100, [5], {
       numberMode: "5from40",
+      short: "A. Fortuna",
+      prizeTier: "big",
+      flavor: "Viernes de bote",
       trait: "Cl\xE1sico 5/40",
-      topPrizeHint: "Bote semanal",
+      topPrizeHint: "hasta 250.000 \u20AC",
       description: "5 n\xFAmeros del 1 al 40. Viernes 20:00."
     }),
     L("and-olivo", "El Olivo de la Suerte", "Auton\xF3mica", "Auton\xF3micas", 150, [2], {
       numberMode: "6from36",
       commissionRate: 0.09,
+      short: "Olivo",
+      prizeTier: "big",
+      flavor: "Aceite y suerte",
       trait: "6/36",
-      topPrizeHint: "Aceite de oro",
+      topPrizeHint: "hasta 180.000 \u20AC",
       description: "6 del 1\u201336. Martes."
     }),
     L("and-costa", "Sorteo Costa del Sol", "Auton\xF3mica", "Auton\xF3micas", 200, [6], {
       numberMode: "nacional",
       fractionable: true,
+      short: "Costa Sol",
+      prizeTier: "big",
+      flavor: "D\xE9cimo playero",
       trait: "D\xE9cimo 5 cifras",
-      topPrizeHint: "Costa Gold",
+      topPrizeHint: "hasta 400.000 \u20AC",
       description: "N\xFAmero de 5 cifras. S\xE1bados."
     }),
     L("and-guadalquivir", "Guadalquivir Oro", "Auton\xF3mica", "Auton\xF3micas", 120, [3], {
       numberMode: "4from30",
       drawHour: 19,
+      short: "Guadalquivir",
+      prizeTier: "mid",
+      flavor: "R\xEDo de oro",
       trait: "4/30",
-      topPrizeHint: "Lingote",
+      topPrizeHint: "hasta 120.000 \u20AC",
       description: "4 n\xFAmeros del 1 al 30. Mi\xE9rcoles 19:00."
     }),
     L("and-sierra", "Sierra Nevada Suerte", "Auton\xF3mica", "Auton\xF3micas", 180, [4], {
       numberMode: "7from45",
       commissionRate: 0.085,
+      short: "Sierra N.",
+      prizeTier: "big",
+      flavor: "Nieve y n\xFAmeros",
       trait: "7/45",
-      topPrizeHint: "Cumbre",
+      topPrizeHint: "hasta 300.000 \u20AC",
       description: "7 n\xFAmeros del 1 al 45. Jueves."
     }),
     L("and-alhambra", "Alhambra Premia", "Auton\xF3mica", "Auton\xF3micas", 250, [5], {
       numberMode: "colorball",
+      short: "Alhambra",
+      prizeTier: "big",
+      flavor: "Colores nazar\xEDes",
       trait: "4/30 + color",
-      topPrizeHint: "Nasr\xED",
+      topPrizeHint: "hasta 500.000 \u20AC",
       description: "4 del 1\u201330 y bola de color (rojo/verde/azul/oro)."
     }),
     L("and-rocio", "Roc\xEDo de la Fortuna", "Auton\xF3mica", "Auton\xF3micas", 100, [1], {
       numberMode: "triplex",
+      short: "Roc\xEDo",
+      prizeTier: "mid",
+      flavor: "Romer\xEDa en cifras",
       trait: "3 cifras",
-      topPrizeHint: "Romer\xEDa",
+      topPrizeHint: "hasta 80.000 \u20AC",
       description: "3 cifras. Lunes."
     }),
     L("and-feria", "Feria Andaluza", "Auton\xF3mica", "Auton\xF3micas", 150, [6], {
       numberMode: "carta",
+      short: "Feria And.",
+      prizeTier: "mid",
+      flavor: "Cartas de feria",
       trait: "Baraja espa\xF1ola",
-      topPrizeHint: "Reyes de oros",
+      topPrizeHint: "hasta 150.000 \u20AC",
       description: "3 cartas (palo + valor). S\xE1bados."
     }),
     L("and-levante", "Levante Andaluz", "Auton\xF3mica", "Auton\xF3micas", 90, [2], {
       numberMode: "2from20",
       stockType: "terminal",
       orderDays: 0,
+      short: "Levante",
+      prizeTier: "small",
+      flavor: "Viento de este",
       trait: "Doble 1\u201320",
-      topPrizeHint: "Levante",
+      topPrizeHint: "hasta 40.000 \u20AC",
       description: "2 n\xFAmeros del 1 al 20. Terminal."
     }),
     L("and-poniente", "Poniente de Suerte", "Auton\xF3mica", "Auton\xF3micas", 110, [4], {
       numberMode: "ruleta",
+      short: "Poniente",
+      prizeTier: "mid",
+      flavor: "Ruleta atl\xE1ntica",
       trait: "Ruleta 0\u201336",
-      topPrizeHint: "Pleno",
+      topPrizeHint: "hasta 200.000 \u20AC",
       description: "Un n\xFAmero de ruleta (0\u201336). Jueves."
     }),
     L("and-azahar", "Azahar Premiado", "Auton\xF3mica", "Auton\xF3micas", 160, [3], {
@@ -1160,6 +1195,15 @@
     "lae-nino",
     ...REGIONAL_IDS
   ];
+  function productMetaLabel(p) {
+    if (!p) return "";
+    const parts = [];
+    if (p.trait) parts.push(p.trait);
+    else if (p.numberMode) parts.push(p.numberMode);
+    if (p.commissionRate != null) parts.push(`Com. ${(p.commissionRate * 100).toFixed(1)}%`);
+    if (p.topPrizeHint) parts.push(p.topPrizeHint);
+    return parts.join(" \xB7 ");
+  }
 
   // src/data/money.js
   var COINS = [
@@ -1743,31 +1787,60 @@
 
   // src/game/notices.js
   function todaysDrawNotices(state2) {
+    var _a;
     const d = gameDate(state2);
     const dow = d.getUTCDay();
     const ymd2 = gameYmd(state2);
     const notices = [];
-    const catalog = [
-      { id: "lae-bonoloto", days: [1, 2, 3, 4, 5, 6], label: "Bonoloto" },
-      { id: "lae-primitiva", days: [3, 6], label: "Primitiva" },
-      { id: "lae-euromillones", days: [2, 5], label: "Euromillones" },
-      { id: "lae-nacional", days: [4, 6], label: "Loter\xEDa Nacional" },
-      { id: "lae-gordo-primitiva", days: [0], label: "Gordo de la Primitiva" },
-      { id: "lae-quiniela", days: [0], label: "Quiniela" },
-      { id: "once-cupon", days: [1, 2, 3, 4, 5], label: "Cup\xF3n ONCE" },
-      { id: "once-cuponazo", days: [5], label: "Cuponazo" },
-      { id: "once-eurojackpot", days: [2, 5], label: "Eurojackpot" },
-      { id: "once-sueldazo", days: [0], label: "Sueldazo" }
-    ];
-    for (const c of catalog) {
-      if (c.days.includes(dow)) notices.push(c.label);
+    const seen = /* @__PURE__ */ new Set();
+    const push = (label) => {
+      if (!label || seen.has(label)) return;
+      seen.add(label);
+      notices.push(label);
+    };
+    for (const p of PRODUCTS) {
+      if (p.category === "rasca" || p.instant) continue;
+      if (((_a = p.drawDays) == null ? void 0 : _a.length) && p.drawDays.includes(dow)) {
+        push(p.short || p.name);
+      }
     }
-    if (ymd2.endsWith("-12-22")) notices.push("Sorteo de Navidad");
-    if (ymd2.endsWith("-01-06")) notices.push("Sorteo del Ni\xF1o");
+    if (ymd2.endsWith("-12-22")) {
+      push("Sorteo de Navidad");
+      push("Navidad Alore\xF1a");
+    }
+    if (ymd2.endsWith("-01-06")) push("Sorteo del Ni\xF1o");
     for (const ex of state2.onceExtras || []) {
-      if (ex.ymd === ymd2) notices.push(ex.name);
+      if (ex.ymd === ymd2) push(ex.name);
     }
     return notices;
+  }
+  function todaysDrawDetails(state2) {
+    var _a, _b;
+    const d = gameDate(state2);
+    const dow = d.getUTCDay();
+    const ymd2 = gameYmd(state2);
+    const list = [];
+    for (const p of PRODUCTS) {
+      if (p.category === "rasca" || p.instant) continue;
+      if (((_a = p.drawDays) == null ? void 0 : _a.length) && p.drawDays.includes(dow)) {
+        const hour = (_b = p.drawHour) != null ? _b : 21;
+        list.push({
+          id: p.id,
+          name: p.short || p.name,
+          hour,
+          org: p.org,
+          trait: p.trait || ""
+        });
+      }
+    }
+    if (ymd2.endsWith("-12-22")) {
+      list.push({ id: "lae-navidad", name: "Navidad", hour: 21, org: "LAE", trait: "" });
+    }
+    if (ymd2.endsWith("-01-06")) {
+      list.push({ id: "lae-nino", name: "El Ni\xF1o", hour: 21, org: "LAE", trait: "" });
+    }
+    list.sort((a, b) => a.hour - b.hour || a.name.localeCompare(b.name));
+    return list;
   }
   function specialOrderDeadlines(state2) {
     const y = gameDate(state2).getUTCFullYear();
@@ -1927,13 +2000,14 @@
       return state2;
     }
     const p = getProduct(productId);
-    if (!p || p.numberMode !== "nacional") {
-      state2.ui.toast = "Solo d\xE9cimos con n\xFAmero nacional en escaparate";
+    if (!p || p.numberMode !== "nacional" && !p.fractionable) {
+      state2.ui.toast = "Solo d\xE9cimos con n\xFAmero (nacional / fractionable) en escaparate";
       return state2;
     }
-    const digits = String(number || "").replace(/\D/g, "").padStart(5, "0").slice(-5);
-    if (digits.length !== 5) {
-      state2.ui.toast = "Indica un n\xFAmero de 5 cifras";
+    const need = p.numberMode === "serieLocal" || p.numberMode === "triplex" ? 3 : 5;
+    const digits = String(number || "").replace(/\D/g, "").padStart(need, "0").slice(-need);
+    if (digits.length !== need) {
+      state2.ui.toast = `Indica un n\xFAmero de ${need} cifras`;
       return state2;
     }
     const q = Math.max(1, Math.min(10, Number(qty) || 1));
@@ -2003,7 +2077,9 @@
       { productId: "lae-nacional", number: "55555", qty: 1, note: "" },
       { productId: "lae-nacional", number: "88888", qty: 1, note: "Vitrina" },
       { productId: "lae-nacional", number: pad5(13e3), qty: 1, note: "Pueblo" },
-      { productId: "lae-nacional", number: "24680", qty: 1, note: "" }
+      { productId: "lae-nacional", number: "24680", qty: 1, note: "" },
+      { productId: "and-costa", number: "29001", qty: 1, note: "Costa" },
+      { productId: "alo-chorro", number: "13013", qty: 1, note: "Turismo" }
     ];
     for (const s of seeds) {
       if (state2.showcase.length >= SHOWCASE_MAX) break;
@@ -2012,11 +2088,44 @@
     if ((_a = state2.ui.toast) == null ? void 0 : _a.startsWith("Escaparate:")) state2.ui.toast = null;
     return state2;
   }
+  function validateShowcaseAgainstTpv(state2, tpv) {
+    var _a, _b, _c;
+    ensureShowcase(state2);
+    const inVitrine = new Set((state2.showcase || []).map((d) => `${d.productId}:${d.number}`));
+    const warnings = [];
+    const ok = [];
+    for (const line of (tpv == null ? void 0 : tpv.lines) || []) {
+      const num = (_a = line.selection) == null ? void 0 : _a.number;
+      if (!num || line.numberMode !== "nacional" && !((_b = getProduct(line.productId)) == null ? void 0 : _b.fractionable)) continue;
+      const key = `${line.productId}:${num}`;
+      const stillThere = inVitrine.has(key);
+      if (line.fromShowcaseId) {
+        ok.push({ lineId: line.id, number: num, note: "Vendido desde escaparate" });
+        continue;
+      }
+      if (stillThere) {
+        warnings.push({
+          lineId: line.id,
+          number: num,
+          level: "info",
+          message: `n\xBA ${num} sigue en escaparate: qu\xEDtalo de la vitrina al cobrar o v\xE9ndelo desde Escaparate.`
+        });
+      } else if (((_c = line.name) == null ? void 0 : _c.includes("escaparate")) || line._wasShowcase) {
+        warnings.push({
+          lineId: line.id,
+          number: num,
+          level: "warn",
+          message: `n\xBA ${num} ya no est\xE1 en el escaparate.`
+        });
+      }
+    }
+    return { warnings, ok, hasBlocking: false };
+  }
 
   // src/game/state.js
   var STARTING_BANK_CENTS = 95e4;
-  var SAVE_VERSION = 6;
-  var GAME_VERSION = "0.5";
+  var SAVE_VERSION = 7;
+  var GAME_VERSION = "0.6";
   var SLOT_COUNT = 3;
   var STORAGE_PREFIX = "loterias-alora-slot-";
   var OFFICE = {
@@ -2116,6 +2225,7 @@
         defaultSpeed: 1
       },
       showcase: [],
+      closeHistory: [],
       dayLog: [],
       holidays,
       events,
@@ -2143,7 +2253,10 @@
         lastAutosaveSlot: null,
         scratchReveal: null,
         penaDayYmd: null,
-        penaDayNotice: null
+        penaDayNotice: null,
+        lowCashAlert: null,
+        lowCashAlertYmd: null,
+        pauseSummary: null
       }
     };
     game.clock.speed = game.settings.defaultSpeed;
@@ -2202,6 +2315,7 @@
     }
     ensureShowcase(data);
     if (!data.showcase.length) seedDefaultShowcase(data);
+    if (!Array.isArray(data.closeHistory)) data.closeHistory = [];
     ensureCustomerBirthdays(data.customers.regulars);
     ensureCustomerBirthdays(data.customers.abonados);
     for (const a of data.customers.abonados || []) {
@@ -2235,6 +2349,16 @@
   function setSpeed(state2, speed) {
     state2.clock.speed = speed;
     state2.clock.paused = speed === 0;
+    state2.clock.lastRealMs = Date.now();
+    return state2;
+  }
+  function togglePause(state2) {
+    if (state2.clock.paused) {
+      state2.clock.paused = false;
+      if (state2.clock.speed === 0) state2.clock.speed = 1;
+    } else {
+      state2.clock.paused = true;
+    }
     state2.clock.lastRealMs = Date.now();
     return state2;
   }
@@ -2604,6 +2728,23 @@
   function listDrawHistory(state2, limit = 60) {
     return Object.values(state2.draws || {}).sort((a, b) => a.ymd < b.ymd ? 1 : a.ymd > b.ymd ? -1 : a.productId.localeCompare(b.productId)).slice(0, limit);
   }
+  var DOW_LABEL = ["dom", "lun", "mar", "mi\xE9", "jue", "vie", "s\xE1b"];
+  function nextDrawLabel(productId, fromDate = /* @__PURE__ */ new Date()) {
+    var _a, _b;
+    const p = getProduct(productId);
+    if (!p) return "";
+    const ymd2 = nextDrawYmd(productId, fromDate);
+    if (!ymd2) {
+      if ((_a = p.seasonMonths) == null ? void 0 : _a.length) return "Temporada especial";
+      return "Sin sorteo programado";
+    }
+    const d = /* @__PURE__ */ new Date(`${ymd2}T12:00:00Z`);
+    const dow = DOW_LABEL[d.getUTCDay()] || "";
+    const hour = (_b = p.drawHour) != null ? _b : DEFAULT_DRAW_HOUR;
+    const today = fromDate.toISOString().slice(0, 10);
+    if (ymd2 === today) return `Hoy ${String(hour).padStart(2, "0")}:00`;
+    return `${dow} ${ymd2.slice(8, 10)}/${ymd2.slice(5, 7)} ${String(hour).padStart(2, "0")}:00`;
+  }
   function modeHint(mode) {
     const hints = {
       nacional: "5 cifras (ej. 45821) \xB7 serie 45821 \xB7 45821 x2",
@@ -2866,8 +3007,11 @@
     }
     const hits = (sel.numbers || []).filter((n) => (draw.numbers || []).includes(n)).length;
     const need = (draw.numbers || []).length || 5;
-    const table = need >= 7 ? { 7: 9e5, 6: 8e4, 5: 8e3, 4: 800 } : need === 6 ? { 6: 7e5, 5: 4e4, 4: 4e3, 3: 400 } : need === 4 ? { 4: 4e5, 3: 15e3, 2: 800 } : need === 2 ? { 2: 15e4, 1: 1500 } : { 5: 5e5, 4: 2e4, 3: 2e3, 2: 200 };
-    const prize = table[hits] || 0;
+    const product = getProduct(id);
+    const tier = (product == null ? void 0 : product.prizeTier) || "mid";
+    const mult = tier === "big" ? 1.4 : tier === "small" ? 0.55 : 1;
+    const base = need >= 7 ? { 7: 9e5, 6: 8e4, 5: 8e3, 4: 800 } : need === 6 ? { 6: 7e5, 5: 4e4, 4: 4e3, 3: 400 } : need === 4 ? { 4: 4e5, 3: 15e3, 2: 800 } : need === 2 ? { 2: 15e4, 1: 1500 } : { 5: 5e5, 4: 2e4, 3: 2e3, 2: 200 };
+    const prize = Math.round((base[hits] || 0) * mult);
     return { prizeCents: prize, detail: prize ? `${hits} aciertos` : "Sin premio", hits };
   }
   function checkTicket(state2, ticketId) {
@@ -3342,11 +3486,14 @@
       return client;
     }
     if (checkable.length && roll < 0.4) {
-      const ticket = checkable[Math.floor(rng() * checkable.length)];
+      const ordered = [...checkable].sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+      const chain = ordered.slice(0, Math.min(ordered.length, 1 + Math.floor(rng() * 3)));
       client.intent = "check";
-      client.ticketFocus = ticket;
+      client.checkQueue = chain.map((t) => t.id);
+      client.ticketFocus = chain[0];
+      client.checkIndex = 0;
       client.wishlist = [];
-      client.note = `Quiere comprobar ${ticket.productName}.`;
+      client.note = chain.length > 1 ? `Quiere comprobar ${chain.length} tickets (${chain.map((t) => t.productName).join(", ")}).` : `Quiere comprobar ${chain[0].productName}.`;
       return client;
     }
     if (isSpecialSeason(state2) && rng() < 0.12) {
@@ -3557,6 +3704,39 @@
     client.ticketFocus = result.ticket || client.ticketFocus;
     return state2;
   }
+  function advanceCheckQueue(state2) {
+    var _a;
+    const client = state2.customers.current;
+    if (!((_a = client == null ? void 0 : client.checkQueue) == null ? void 0 : _a.length)) return { advanced: false, done: true };
+    const idx = (client.checkIndex || 0) + 1;
+    if (idx >= client.checkQueue.length) {
+      return { advanced: false, done: true, remaining: 0 };
+    }
+    const nextId = client.checkQueue[idx];
+    const ticket = (state2.tickets || []).find((t) => t.id === nextId);
+    if (!ticket) return { advanced: false, done: true };
+    client.checkIndex = idx;
+    client.ticketFocus = ticket;
+    client.checkResult = null;
+    client.note = `Siguiente ticket (${idx + 1}/${client.checkQueue.length}): ${ticket.productName}`;
+    state2.ui.toast = client.note;
+    return {
+      advanced: true,
+      done: false,
+      remaining: client.checkQueue.length - idx - 1,
+      index: idx,
+      total: client.checkQueue.length
+    };
+  }
+  function checkQueueProgress(client) {
+    var _a;
+    if (!((_a = client == null ? void 0 : client.checkQueue) == null ? void 0 : _a.length)) return null;
+    return {
+      index: client.checkIndex || 0,
+      total: client.checkQueue.length,
+      remaining: Math.max(0, client.checkQueue.length - (client.checkIndex || 0) - 1)
+    };
+  }
 
   // src/game/prizes.js
   function payTicketPrize(state2, ticketId, { method = "cash", defer = false } = {}) {
@@ -3694,6 +3874,42 @@
         });
       }
     }
+  }
+
+  // src/game/closeHistory.js
+  var CLOSE_HISTORY_MAX = 14;
+  function ensureCloseHistory(state2) {
+    if (!Array.isArray(state2.closeHistory)) state2.closeHistory = [];
+    return state2;
+  }
+  function pushCloseSummary(state2, summary) {
+    var _a, _b, _c;
+    ensureCloseHistory(state2);
+    state2.closeHistory.unshift({
+      date: summary.date,
+      salesCents: summary.salesCents,
+      commissionCents: summary.commissionCents,
+      profitCents: summary.profitCents,
+      prizesPaidCents: summary.prizesPaidCents,
+      expensesCents: summary.expensesCents,
+      customersServed: summary.customersServed,
+      bankCents: summary.bankCents,
+      drawerCents: summary.drawerCents,
+      nextDay: summary.nextDay,
+      settlement: summary.settlement ? {
+        laeRemit: ((_a = summary.settlement.lae) == null ? void 0 : _a.remittance) || 0,
+        onceRemit: ((_b = summary.settlement.once) == null ? void 0 : _b.remittance) || 0,
+        otrosRemit: ((_c = summary.settlement.otros) == null ? void 0 : _c.remittance) || 0
+      } : null
+    });
+    if (state2.closeHistory.length > CLOSE_HISTORY_MAX) {
+      state2.closeHistory.length = CLOSE_HISTORY_MAX;
+    }
+    return state2;
+  }
+  function recentCloses(state2, n = 7) {
+    ensureCloseHistory(state2);
+    return state2.closeHistory.slice(0, n);
   }
 
   // src/game/economy.js
@@ -3854,6 +4070,7 @@
     advancePrizeManagement(state2);
     const summary = buildDayCloseSummary(state2);
     summary.settlement = settlement;
+    pushCloseSummary(state2, summary);
     state2.stats.daysPlayed += 1;
     if (state2.finance.dayShortageCents) {
       state2.stats.totalShortageCents = (state2.stats.totalShortageCents || 0) + state2.finance.dayShortageCents;
@@ -3949,7 +4166,28 @@
       setTimeout(() => beep({ freq: 659, dur: 0.08 }), 80);
       setTimeout(() => beep({ freq: 784, dur: 0.12 }), 160);
     },
-    open: () => beep({ freq: 400, dur: 0.2, type: "triangle", gain: 0.04, slideTo: 800 })
+    open: () => beep({ freq: 400, dur: 0.2, type: "triangle", gain: 0.04, slideTo: 800 }),
+    scratch: () => {
+      beep({ freq: 320, dur: 0.05, type: "sawtooth", gain: 0.03 });
+      setTimeout(() => beep({ freq: 480, dur: 0.05, type: "sawtooth", gain: 0.025 }), 60);
+      setTimeout(() => beep({ freq: 260, dur: 0.08, type: "triangle", gain: 0.03 }), 120);
+      setTimeout(() => beep({ freq: 520, dur: 0.06, type: "square", gain: 0.02 }), 200);
+    },
+    pena: () => {
+      beep({ freq: 392, dur: 0.1, type: "triangle", gain: 0.04 });
+      setTimeout(() => beep({ freq: 494, dur: 0.1, type: "triangle", gain: 0.035 }), 110);
+      setTimeout(() => beep({ freq: 587, dur: 0.14, type: "sine", gain: 0.04 }), 220);
+    },
+    jackpot: () => {
+      beep({ freq: 523, dur: 0.1, type: "sine", gain: 0.05 });
+      setTimeout(() => beep({ freq: 659, dur: 0.1, type: "sine", gain: 0.05 }), 100);
+      setTimeout(() => beep({ freq: 784, dur: 0.1, type: "sine", gain: 0.05 }), 200);
+      setTimeout(() => beep({ freq: 1046, dur: 0.22, type: "triangle", gain: 0.045 }), 320);
+    },
+    alert: () => {
+      beep({ freq: 880, dur: 0.08, type: "square", gain: 0.035 });
+      setTimeout(() => beep({ freq: 660, dur: 0.12, type: "square", gain: 0.03 }), 100);
+    }
   };
   function startMusic() {
     if (!musicOn || musicNodes) return;
@@ -4178,6 +4416,38 @@ ${xrefPos}
     ];
     downloadLinesPdf(lines, `extracto-semanal-${weekly.toYmd}.pdf`);
   }
+  function downloadDayClosePdf(summary) {
+    var _a, _b, _c, _d;
+    const settle = summary.settlement;
+    const lines = [
+      OFFICE.businessName,
+      "===== CIERRE DEL D\xCDA =====",
+      `Fecha: ${summary.date}`,
+      `Siguiente laborable: ${summary.nextDay}`,
+      "--------------------------------",
+      `Ventas: ${formatEuro(summary.salesCents)}`,
+      `Comisiones: ${formatEuro(summary.commissionCents)}`,
+      `Beneficio: ${formatEuro(summary.profitCents)}`,
+      `Premios pagados: ${formatEuro(summary.prizesPaidCents)}`,
+      `Gastos: ${formatEuro(summary.expensesCents)}`,
+      `Clientes: ${summary.customersServed}`,
+      `Caj\xF3n: ${formatEuro(summary.drawerCents)}`,
+      `Banco: ${formatEuro(summary.bankCents)}`,
+      "--------------------------------"
+    ];
+    if (settle) {
+      lines.push("Liquidaci\xF3n");
+      lines.push(`LAE remesa: ${formatEuro(((_a = settle.lae) == null ? void 0 : _a.remittance) || 0)}`);
+      lines.push(`ONCE remesa: ${formatEuro(((_b = settle.once) == null ? void 0 : _b.remittance) || 0)}`);
+      lines.push(`Otros remesa: ${formatEuro(((_c = settle.otros) == null ? void 0 : _c.remittance) || 0)}`);
+      lines.push("--------------------------------");
+    }
+    if ((_d = summary.nextDayReasonSkip) == null ? void 0 : _d.length) {
+      lines.push(`D\xEDas saltados: ${summary.nextDayReasonSkip.join(", ")}`);
+    }
+    lines.push("Fan-made / no oficial \xB7 +18");
+    downloadLinesPdf(lines, `cierre-${summary.date}.pdf`);
+  }
   function downloadMonthlyPdf(statement) {
     const lines = [
       OFFICE.businessName,
@@ -4260,8 +4530,10 @@ ${xrefPos}
       needsNumbers: !!p.needsNumbers,
       numberMode: p.numberMode || null
     };
+    line.nextDraw = nextDrawLabel(p.id, gameDate(state2));
     tpv.lines.push(line);
-    tpv.message = `A\xF1adido: ${p.name} \xD7${qty}`;
+    const next = line.nextDraw ? ` \xB7 pr\xF3ximo ${line.nextDraw}` : "";
+    tpv.message = `A\xF1adido: ${p.name} \xD7${qty}${next}`;
     if (p.needsNumbers && numberSource === "dictate") {
       tpv.numberEntry = {
         lineId: line.id,
@@ -4648,8 +4920,13 @@ ${xrefPos}
       tpv.message = ready.error;
       return state2;
     }
+    const sc = validateShowcaseAgainstTpv(state2, tpv);
+    tpv.showcaseWarnings = sc.warnings;
+    if (sc.warnings.length) {
+      tpv.message = sc.warnings.map((w) => w.message).join(" \xB7 ");
+    }
     tpv.step = "receipt";
-    tpv.message = null;
+    if (!sc.warnings.length) tpv.message = null;
     return state2;
   }
   function backTpvEdit(state2) {
@@ -5106,6 +5383,40 @@ ${xrefPos}
     return buildMonthlyStatement(state2, d.getUTCFullYear(), d.getUTCMonth());
   }
 
+  // src/game/alerts.js
+  function lowCashThreshold(state2) {
+    const target = state2.finance.floatTargetCents || 16e3;
+    return Math.max(8e3, Math.round(target * 0.45));
+  }
+  function maybeLowCashAlert(state2) {
+    var _a;
+    if (!((_a = state2 == null ? void 0 : state2.office) == null ? void 0 : _a.isOpen)) return false;
+    const d = gameDate(state2);
+    const hour = d.getUTCHours();
+    if (hour < 10 || hour >= 14) return false;
+    const ymd2 = gameYmd(state2);
+    if (state2.ui.lowCashAlertYmd === ymd2) return false;
+    const total = drawerTotalCents(state2.finance.drawer);
+    const thr = lowCashThreshold(state2);
+    if (total >= thr) return false;
+    state2.ui.lowCashAlertYmd = ymd2;
+    state2.ui.lowCashAlert = {
+      at: state2.clock.gameTimeMs,
+      drawerCents: total,
+      thresholdCents: thr
+    };
+    state2.dayLog.push({
+      at: state2.clock.gameTimeMs,
+      text: `\u26A0 Caja baja: ${formatEuro(total)} (umbral ${formatEuro(thr)}). Considera retirar cambio del banco.`
+    });
+    state2.ui.toast = `Caja baja: ${formatEuro(total)}. Ve a Caja \u2194 banco.`;
+    return true;
+  }
+  function dismissLowCashAlert(state2) {
+    if (state2.ui) state2.ui.lowCashAlert = null;
+    return state2;
+  }
+
   // src/main.js
   var state = null;
   var toastTimer = null;
@@ -5167,6 +5478,10 @@ ${xrefPos}
         if ((_e = state.ui.toast) == null ? void 0 : _e.startsWith("Partida guardada")) state.ui.toast = null;
       }
       maybeMondayHint();
+      if (maybeLowCashAlert(state)) {
+        sfx.alert();
+        needsFullRender = true;
+      }
       const minute = Math.floor(state.clock.gameTimeMs / 6e4);
       if (needsFullRender) {
         render();
@@ -5216,6 +5531,7 @@ ${xrefPos}
     if (state.ui.screen === "tpv") return renderTpv();
     if (state.ui.screen === "close") return renderClose();
     if (state.ui.screen === "day-results") return renderDayResults();
+    if (state.ui.screen === "closes") return renderCloses();
     if (state.ui.screen === "saves") return renderSavesInGame();
     if (state.ui.screen === "stock") return renderStock();
     if (state.ui.screen === "showcase") return renderShowcase();
@@ -5275,6 +5591,32 @@ ${xrefPos}
     </div>
   </div>`;
   }
+  function lowCashAlertHTML() {
+    var _a;
+    const a = (_a = state.ui) == null ? void 0 : _a.lowCashAlert;
+    if (!a) return "";
+    return `<div class="alert-banner alert-banner--cash" id="low-cash-alert">
+    <strong>\u26A0 Caja baja</strong>
+    <div>${formatEuro(a.drawerCents)} en caj\xF3n (umbral ${formatEuro(a.thresholdCents)}). Considera sacar cambio del banco.</div>
+    <div class="actions" style="margin-top:8px">
+      <button class="btn" id="btn-dismiss-low-cash">Entendido</button>
+      <button class="btn primary" id="btn-goto-bank-cash">Ir a Caja \u2194 banco</button>
+    </div>
+  </div>`;
+  }
+  function pauseSummaryHTML() {
+    var _a, _b, _c;
+    const p = (_a = state.ui) == null ? void 0 : _a.pauseSummary;
+    if (!p || !((_b = state.clock) == null ? void 0 : _b.paused)) return "";
+    const current = p.current ? `cliente actual: ${escapeHtml(p.current)}` : "sin cliente en mostrador";
+    return `<div class="pause-banner" id="pause-summary">
+    <strong>Oficina en pausa</strong>
+    <div>${(_c = p.queue) != null ? _c : 0} en cola \xB7 ${current} \xB7 ventas hoy ${formatEuro(p.salesToday || 0)}</div>
+    <div class="actions" style="margin-top:8px">
+      <button class="btn primary" id="btn-resume">Reanudar</button>
+    </div>
+  </div>`;
+  }
   function bindHighPrizeAlert() {
     const d = document.getElementById("btn-dismiss-high-prize");
     if (d) {
@@ -5295,6 +5637,52 @@ ${xrefPos}
         render();
       };
     }
+  }
+  function bindLowCashAlert() {
+    const d = document.getElementById("btn-dismiss-low-cash");
+    if (d) {
+      d.onclick = () => {
+        dismissLowCashAlert(state);
+        sfx.click();
+        needsFullRender = true;
+        render();
+      };
+    }
+    const g = document.getElementById("btn-goto-bank-cash");
+    if (g) {
+      g.onclick = () => {
+        dismissLowCashAlert(state);
+        state.ui.screen = "bank";
+        sfx.click();
+        needsFullRender = true;
+        render();
+      };
+    }
+  }
+  function bindPauseSummary() {
+    const r = document.getElementById("btn-resume");
+    if (!r) return;
+    r.onclick = () => {
+      if (state.clock.paused) togglePause(state);
+      if (state.clock.speed === 0 || state.clock.paused) setSpeed(state, 1);
+      state.ui.pauseSummary = null;
+      sfx.click();
+      needsFullRender = true;
+      render();
+    };
+  }
+  function maybeJackpotSfx() {
+    var _a;
+    if ((_a = state.ui) == null ? void 0 : _a.highPrizeAlert) sfx.jackpot();
+  }
+  function finishOrAdvanceCheck() {
+    const adv = advanceCheckQueue(state);
+    if (adv.advanced) {
+      showToast(state.ui.toast || "Siguiente ticket");
+      return true;
+    }
+    state.customers.current = null;
+    return false;
   }
   function dictateHint(mode) {
     return modeHint(mode);
@@ -5335,7 +5723,7 @@ ${xrefPos}
         </div>
         <p class="disclaimer">
           Fan-made / no oficial. Nombres de Loter\xEDas y Apuestas del Estado y ONCE usados solo con fines de simulaci\xF3n.
-          Juego responsable \xB7 +18. Versi\xF3n ${GAME_VERSION}: Cat\xE1logo +50 loter\xEDas, escaparate, abonos, tema, proveedor, resultados del d\xEDa y PDF de estad\xEDsticas.
+          Juego responsable \xB7 +18. Versi\xF3n ${GAME_VERSION}: Sorteos visibles, cadena de comprobaci\xF3n, alerta de caja, hist\xF3rico de cierres, pausa, PDF de cierre y sonidos.
         </p>
       </div>
     </div>
@@ -5348,7 +5736,7 @@ ${xrefPos}
       maybeStartMusic();
       state.ui.screen = "counter";
       lastAutosaveRealMs = Date.now();
-      showToast("Bienvenida, Miriam. Versi\xF3n 0.5 lista. Abre el TPV para vender.");
+      showToast("Bienvenida, Miriam. Versi\xF3n 0.6 lista. Abre el TPV para vender.");
       needsFullRender = true;
       render();
     };
@@ -5382,9 +5770,17 @@ ${xrefPos}
     });
   }
   function drawNoticeBannerHTML() {
-    const notices = todaysDrawNotices(state);
-    if (!notices.length) return "";
-    return `<div class="notice-banner">Hoy hay sorteo de: ${escapeHtml(notices.join(", "))}</div>`;
+    const details = todaysDrawDetails(state);
+    if (!details.length) {
+      const notices = todaysDrawNotices(state);
+      if (!notices.length) return "";
+      return `<div class="notice-banner">Hoy hay sorteo de: ${escapeHtml(notices.join(", "))}</div>`;
+    }
+    const items = details.map((d) => `${d.name} ${String(d.hour).padStart(2, "0")}:00`).join(" \xB7 ");
+    return `<div class="notice-banner sticky-notice">
+    <strong>Hoy: ${details.length} sorteo${details.length === 1 ? "" : "s"}</strong>
+    <div class="notice-banner-detail">${escapeHtml(items)}</div>
+  </div>`;
   }
   function jackpotStripHTML() {
     const list = jackpotList(state).slice(0, 4);
@@ -5427,18 +5823,31 @@ ${xrefPos}
       </div>
     </header>
     ${drawNoticeBannerHTML()}
+    ${pauseSummaryHTML()}
     ${jackpotStripHTML()}
   `;
   }
   function bindTopbar() {
     app.querySelectorAll("[data-speed]").forEach((btn) => {
       btn.onclick = () => {
+        var _a, _b;
         sfx.click();
-        setSpeed(state, Number(btn.getAttribute("data-speed")));
+        const speed = Number(btn.getAttribute("data-speed"));
+        setSpeed(state, speed);
+        if (speed === 0) {
+          state.ui.pauseSummary = {
+            queue: ((_a = state.customers.queue) == null ? void 0 : _a.length) || 0,
+            current: ((_b = state.customers.current) == null ? void 0 : _b.name) || null,
+            salesToday: state.finance.daySalesCents || 0
+          };
+        } else {
+          state.ui.pauseSummary = null;
+        }
         needsFullRender = true;
         render();
       };
     });
+    bindPauseSummary();
   }
   function sideNav() {
     var _a, _b, _c, _d, _e;
@@ -5469,6 +5878,7 @@ ${xrefPos}
       <button class="btn" data-nav="monthly">Liquidaci\xF3n mensual</button>
       <button class="btn" data-nav="stats">Estad\xEDsticas</button>
       <button class="btn" data-nav="close">Cierre y balance</button>
+      <button class="btn" data-nav="closes">Hist\xF3rico cierres</button>
       <button class="btn" data-nav="settings">Ajustes</button>
       <button class="btn" data-nav="saves">Guardar / exportar</button>
       <button class="btn" id="btn-music-toggle">${musicOn2 ? "\u266A M\xFAsica: ON" : "\u266A M\xFAsica: OFF"}</button>
@@ -5661,6 +6071,7 @@ ${xrefPos}
         ${sideNav()}
         <section class="panel counter-stage">
           ${highPrizeAlertHTML()}
+          ${lowCashAlertHTML()}
           ${clientBlock}
           ${client && isOpenHours(state) && !isClosedDay(state) ? `<div style="margin-top:12px" class="actions">
                   <button class="btn" id="btn-arqueo-open">Arqueo de apertura</button>
@@ -5692,6 +6103,7 @@ ${xrefPos}
     bindTopbar();
     bindNav();
     bindHighPrizeAlert();
+    bindLowCashAlert();
     bindClientActions();
     bindScratchOverlay();
     bindCalendarOrderButtons("counter", state.customers.current);
@@ -5737,10 +6149,14 @@ ${xrefPos}
     if (intent === "check") {
       const t = client.ticketFocus;
       const result = client.checkResult;
+      const progress = checkQueueProgress(client);
+      const progressLabel = progress ? `<p class="muted"><strong>Ticket ${progress.index + 1}/${progress.total}</strong>${progress.remaining ? ` \xB7 ${progress.remaining} m\xE1s en cola` : ""}</p>` : "";
+      const nextBtn = result && (progress == null ? void 0 : progress.remaining) ? `<button class="btn primary" id="btn-next-check">Siguiente ticket</button>` : "";
       return `
       <div class="client-card">
         <div class="muted">Comprobaci\xF3n${trait}</div>
         <h3>${escapeHtml(client.name)}</h3>
+        ${progressLabel}
         <p>Trae <strong>${escapeHtml(t.productName)}</strong> (${t.id})</p>
         <p class="muted">${formatSelection(t)}${t.drawYmd ? ` \xB7 Sorteo ${t.drawYmd}` : ""}</p>
         ${result ? `<div class="${result.prizeCents ? "total-box" : "error-box"}" style="margin:10px 0">
@@ -5749,7 +6165,8 @@ ${xrefPos}
         <div class="actions">
           ${!result ? t.kind === "rasca" ? `<button class="btn primary" id="btn-scratch">Rascar en mostrador</button>` : `<button class="btn primary" id="btn-check">Comprobar</button>` : result.prizeCents > 0 ? `<button class="btn primary" id="btn-pay-now">Pagar ahora</button>
                    <button class="btn" id="btn-defer">Cobrar otro d\xEDa</button>
-                   <button class="btn accent" id="btn-manage">Gestionar (premio grande)</button>` : `<button class="btn primary" id="btn-done-check">Listo</button>`}
+                   <button class="btn accent" id="btn-manage">Gestionar (premio grande)</button>` : `${nextBtn}
+                   <button class="btn ${nextBtn ? "" : "primary"}" id="btn-done-check">${nextBtn ? "Terminar" : "Listo"}</button>`}
           <button class="btn" id="btn-pdf-ticket">PDF ticket</button>
           <button class="btn ghost" id="btn-skip">Despedir</button>
         </div>
@@ -5804,7 +6221,8 @@ ${xrefPos}
         var _a, _b;
         const client = state.customers.current;
         if (!client) return;
-        sfx.tpv();
+        if (client.intent === "pena_day") sfx.pena();
+        else sfx.tpv();
         if (client.intent === "pena_day" && (((_a = client.wishlist) == null ? void 0 : _a.length) || client.request)) {
           loadWishlistIntoTpv(client);
           if ((_b = state.ui.tpv) == null ? void 0 : _b.message) showToast(state.ui.tpv.message);
@@ -5855,6 +6273,7 @@ ${xrefPos}
       check.onclick = () => {
         sfx.scan();
         checkCurrentTicket(state);
+        maybeJackpotSfx();
         showToast(state.ui.toast);
         needsFullRender = true;
         render();
@@ -5866,7 +6285,7 @@ ${xrefPos}
         var _a;
         const t = (_a = state.customers.current) == null ? void 0 : _a.ticketFocus;
         if (!t) return;
-        sfx.scan();
+        sfx.scratch();
         state.ui.scratchReveal = { ticketId: t.id, step: "scratching", prizeCents: null };
         needsFullRender = true;
         render();
@@ -5874,6 +6293,7 @@ ${xrefPos}
           var _a2, _b, _c, _d;
           if (!((_a2 = state == null ? void 0 : state.ui) == null ? void 0 : _a2.scratchReveal) || state.ui.scratchReveal.ticketId !== t.id) return;
           checkCurrentTicket(state);
+          maybeJackpotSfx();
           const prize = (_d = (_c = (_b = state.customers.current) == null ? void 0 : _b.checkResult) == null ? void 0 : _c.prizeCents) != null ? _d : 0;
           state.ui.scratchReveal = { ticketId: t.id, step: "done", prizeCents: prize };
           showToast(state.ui.toast);
@@ -5885,7 +6305,22 @@ ${xrefPos}
     const done = document.getElementById("btn-done-check");
     if (done) {
       done.onclick = () => {
-        state.customers.current = null;
+        finishOrAdvanceCheck();
+        needsFullRender = true;
+        render();
+      };
+    }
+    const nextCheck = document.getElementById("btn-next-check");
+    if (nextCheck) {
+      nextCheck.onclick = () => {
+        const adv = advanceCheckQueue(state);
+        if (adv.advanced) {
+          sfx.scan();
+          showToast(state.ui.toast || "Siguiente ticket");
+        } else {
+          state.customers.current = null;
+          sfx.click();
+        }
         needsFullRender = true;
         render();
       };
@@ -5905,7 +6340,7 @@ ${xrefPos}
           } else {
             sfx.cash();
             showToast(state.ui.toast);
-            state.customers.current = null;
+            finishOrAdvanceCheck();
           }
         } else if (!res.ok) {
           sfx.error();
@@ -5913,7 +6348,7 @@ ${xrefPos}
         } else {
           sfx.cash();
           showToast(state.ui.toast);
-          if (!res.deferred) state.customers.current = null;
+          if (!res.deferred) finishOrAdvanceCheck();
         }
         needsFullRender = true;
         render();
@@ -5928,7 +6363,7 @@ ${xrefPos}
         payTicketPrize(state, t.id, { defer: true });
         sfx.click();
         showToast(state.ui.toast);
-        state.customers.current = null;
+        finishOrAdvanceCheck();
         needsFullRender = true;
         render();
       };
@@ -5942,7 +6377,7 @@ ${xrefPos}
         startPrizeManagement(state, t);
         sfx.click();
         showToast(state.ui.toast);
-        state.customers.current = null;
+        finishOrAdvanceCheck();
         needsFullRender = true;
         render();
       };
@@ -6027,17 +6462,37 @@ ${xrefPos}
     needsFullRender = true;
     render();
   }
-  function goTpvChargeOrReceipt() {
+  function showcaseWarningsHTML(tpv) {
     var _a;
+    const warnings = ((_a = tpv == null ? void 0 : tpv.showcaseWarnings) == null ? void 0 : _a.length) ? tpv.showcaseWarnings : validateShowcaseAgainstTpv(state, tpv).warnings;
+    if (!(warnings == null ? void 0 : warnings.length)) return "";
+    return `<div class="error-box showcase-warn" style="margin:10px 0">
+    <strong>Aviso escaparate</strong>
+    <ul style="margin:6px 0 0;padding-left:1.2rem">
+      ${warnings.map((w) => `<li>${escapeHtml(w.message || w)}</li>`).join("")}
+    </ul>
+  </div>`;
+  }
+  function goTpvChargeOrReceipt() {
+    var _a, _b, _c, _d;
     const tpv = state.ui.tpv;
     if (!tpv) return;
     if (tpv.step === "receipt") {
+      const warn = validateShowcaseAgainstTpv(state, tpv);
+      if ((_a = warn.warnings) == null ? void 0 : _a.length) {
+        showToast(warn.warnings.map((w) => w.message).join(" \xB7 "));
+      }
       confirmTpvCharge();
       return;
     }
     goTpvReceipt(state);
-    if (((_a = state.ui.tpv) == null ? void 0 : _a.step) !== "receipt") sfx.error();
-    else sfx.scan();
+    if (((_b = state.ui.tpv) == null ? void 0 : _b.step) !== "receipt") sfx.error();
+    else {
+      sfx.scan();
+      if ((_d = (_c = state.ui.tpv) == null ? void 0 : _c.showcaseWarnings) == null ? void 0 : _d.length) {
+        showToast(state.ui.tpv.showcaseWarnings.map((w) => w.message).join(" \xB7 "));
+      }
+    }
     needsFullRender = true;
     render();
   }
@@ -6050,6 +6505,7 @@ ${xrefPos}
         <h2>Ticket de venta \xB7 ${escapeHtml(tpv.clientName || "Cliente")}</h2>
         <p class="muted">Revisa el ticket antes de cobrar. Puedes descargar PDF.</p>
         ${wishlistValidationHTML(tpv)}
+        ${showcaseWarningsHTML(tpv)}
         <div class="log" style="margin:12px 0">
           ${tpv.lines.map(
       (l) => `<div class="log-item"><strong>${escapeHtml(l.name)}</strong> \xD7${l.qty} \xB7 ${formatEuro(l.unitCents * l.qty)}
@@ -6132,11 +6588,12 @@ ${xrefPos}
             ${products.map((p) => {
       var _a2, _b2;
       const stock = p.stockType === "physical" ? `Stock ${(_a2 = state.stock[p.id]) != null ? _a2 : 0}` : "Terminal";
-      const rate = (_b2 = p.commissionRate) != null ? _b2 : 0.05;
-      const meta = `Com. ${(rate * 100).toFixed(1)}%${p.trait ? ` \xB7 ${p.trait}` : ""}`;
+      const meta = productMetaLabel(p) || `Com. ${(((_b2 = p.commissionRate) != null ? _b2 : 0.05) * 100).toFixed(1)}%${p.trait ? ` \xB7 ${p.trait}` : ""}`;
+      const next = nextDrawLabel(p.id, gameDate(state));
       return `<div class="tpv-product">
                   <strong>${escapeHtml(p.name)}</strong>
                   <span>${formatEuro(p.priceCents)} \xB7 ${escapeHtml(stock)}</span>
+                  ${next ? `<div class="muted product-next">Pr\xF3ximo: ${escapeHtml(next)}</div>` : ""}
                   <div class="product-meta">${escapeHtml(meta)}</div>
                   <div class="actions" style="margin-top:8px;gap:6px">
                     <button class="btn primary" style="flex:1;min-height:42px;padding:8px" data-add-random="${p.id}">Aleatorio</button>
@@ -6657,7 +7114,9 @@ ${xrefPos}
           <p class="muted">*Beneficio \u2248 comisiones \u2212 gastos (antes de liquidar)</p>
           <p class="muted" style="margin-top:12px">Recomendado: haz el arqueo de caja antes de cerrar.</p>
           <div class="actions" style="margin-top:18px">
+            <button class="btn" id="btn-close-pdf">PDF del cierre</button>
             <button class="btn" id="btn-arqueo-before-close">Arqueo de caja primero</button>
+            <button class="btn" data-nav="closes">Hist\xF3rico cierres</button>
             <button class="btn accent" id="btn-do-close">Liquidar, balance y cerrar d\xEDa</button>
           </div>
         </section>
@@ -6667,6 +7126,11 @@ ${xrefPos}
   `;
     bindTopbar();
     bindNav();
+    document.getElementById("btn-close-pdf").onclick = () => {
+      downloadDayClosePdf(summary);
+      sfx.success();
+      showToast("PDF del cierre descargado");
+    };
     document.getElementById("btn-arqueo-before-close").onclick = () => {
       sfx.click();
       startArqueo(state, "close");
@@ -7269,6 +7733,8 @@ ${xrefPos}
                </div>` : ""}
         ${((_d = s.nextDayReasonSkip) == null ? void 0 : _d.length) ? `<p class="muted" style="margin-top:12px">D\xEDas saltados: ${escapeHtml(s.nextDayReasonSkip.join(", "))}</p>` : ""}
         <div class="actions" style="margin-top:18px">
+          <button class="btn" id="btn-day-close-pdf">PDF del cierre</button>
+          <button class="btn" id="btn-day-closes">Hist\xF3rico cierres</button>
           <button class="btn primary" id="btn-day-results-ok">Abrir mostrador</button>
         </div>
       </div>
@@ -7276,12 +7742,72 @@ ${xrefPos}
     ${toastHTML()}
   `;
     bindTopbar();
+    document.getElementById("btn-day-close-pdf").onclick = () => {
+      downloadDayClosePdf(s);
+      sfx.success();
+      showToast("PDF del cierre descargado");
+    };
+    document.getElementById("btn-day-closes").onclick = () => {
+      sfx.click();
+      state.ui.screen = "closes";
+      needsFullRender = true;
+      render();
+    };
     document.getElementById("btn-day-results-ok").onclick = () => {
       sfx.click();
       state.ui.screen = "counter";
       needsFullRender = true;
       render();
     };
+  }
+  function renderCloses() {
+    const rows = recentCloses(state, 7);
+    app.innerHTML = `
+    <div class="shell">
+      ${topbarHTML()}
+      <div class="layout" style="grid-template-columns:280px 1fr">
+        ${sideNav()}
+        <section class="panel">
+          <h2>Hist\xF3rico de cierres</h2>
+          <p class="muted">\xDAltimos ${rows.length || 7} d\xEDas cerrados (m\xE1x. 7 en vista).</p>
+          ${rows.length ? `<div class="table-wrap" style="overflow:auto;margin-top:12px">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>Fecha</th>
+                        <th>Ventas</th>
+                        <th>Comisi\xF3n</th>
+                        <th>Beneficio</th>
+                        <th>Clientes</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${rows.map(
+      (r) => {
+        var _a;
+        return `<tr>
+                            <td>${escapeHtml(r.date)}</td>
+                            <td>${formatEuro(r.salesCents)}</td>
+                            <td>${formatEuro(r.commissionCents)}</td>
+                            <td>${formatEuro(r.profitCents)}</td>
+                            <td>${(_a = r.customersServed) != null ? _a : 0}</td>
+                          </tr>`;
+      }
+    ).join("")}
+                    </tbody>
+                  </table>
+                </div>` : '<p class="muted" style="margin-top:12px">A\xFAn no hay cierres registrados. Cierra un d\xEDa para empezar el hist\xF3rico.</p>'}
+          <div class="actions" style="margin-top:18px">
+            <button class="btn" data-nav="close">Cierre y balance</button>
+            <button class="btn primary" data-nav="counter">Mostrador</button>
+          </div>
+        </section>
+      </div>
+    </div>
+    ${toastHTML()}
+  `;
+    bindTopbar();
+    bindNav();
   }
   function renderShowcase() {
     ensureShowcase(state);
@@ -7568,7 +8094,8 @@ ${xrefPos}
         const client = state.customers.current;
         if (!client) return;
         e.preventDefault();
-        sfx.tpv();
+        if (client.intent === "pena_day") sfx.pena();
+        else sfx.tpv();
         if (client.intent === "pena_day" && (((_e = client.wishlist) == null ? void 0 : _e.length) || client.request)) {
           loadWishlistIntoTpv(client);
         } else {

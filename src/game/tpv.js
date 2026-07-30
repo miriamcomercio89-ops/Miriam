@@ -1,7 +1,9 @@
 import { getProduct, PRODUCTS } from '../data/products.js';
-import { generateBetSelection } from './draws.js';
+import { generateBetSelection, nextDrawLabel } from './draws.js';
 import { hashSeed, mulberry32 } from './rng.js';
 import { formatEuro } from '../data/money.js';
+import { validateShowcaseAgainstTpv } from './showcase.js';
+import { gameDate } from './time.js';
 
 /**
  * Sesión TPV: carrito multi-línea.
@@ -75,8 +77,10 @@ export function addTpvProduct(state, productId, { qty = 1, numberSource = 'rando
     needsNumbers: !!p.needsNumbers,
     numberMode: p.numberMode || null,
   };
+  line.nextDraw = nextDrawLabel(p.id, gameDate(state));
   tpv.lines.push(line);
-  tpv.message = `Añadido: ${p.name} ×${qty}`;
+  const next = line.nextDraw ? ` · próximo ${line.nextDraw}` : '';
+  tpv.message = `Añadido: ${p.name} ×${qty}${next}`;
 
   if (p.needsNumbers && numberSource === 'dictate') {
     tpv.numberEntry = {
@@ -512,8 +516,13 @@ export function goTpvReceipt(state) {
     tpv.message = ready.error;
     return state;
   }
+  const sc = validateShowcaseAgainstTpv(state, tpv);
+  tpv.showcaseWarnings = sc.warnings;
+  if (sc.warnings.length) {
+    tpv.message = sc.warnings.map((w) => w.message).join(' · ');
+  }
   tpv.step = 'receipt';
-  tpv.message = null;
+  if (!sc.warnings.length) tpv.message = null;
   return state;
 }
 

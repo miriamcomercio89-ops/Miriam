@@ -1,37 +1,65 @@
-import { getProduct } from '../data/products.js';
+import { getProduct, PRODUCTS } from '../data/products.js';
 import { gameDate, gameYmd } from './time.js';
 
-/** Avisos de sorteos que tocan hoy (o esta noche) */
+/** Avisos de sorteos que tocan hoy (LAE/ONCE + inventadas). */
 export function todaysDrawNotices(state) {
   const d = gameDate(state);
   const dow = d.getUTCDay();
   const ymd = gameYmd(state);
   const notices = [];
+  const seen = new Set();
 
-  const catalog = [
-    { id: 'lae-bonoloto', days: [1, 2, 3, 4, 5, 6], label: 'Bonoloto' },
-    { id: 'lae-primitiva', days: [3, 6], label: 'Primitiva' },
-    { id: 'lae-euromillones', days: [2, 5], label: 'Euromillones' },
-    { id: 'lae-nacional', days: [4, 6], label: 'Lotería Nacional' },
-    { id: 'lae-gordo-primitiva', days: [0], label: 'Gordo de la Primitiva' },
-    { id: 'lae-quiniela', days: [0], label: 'Quiniela' },
-    { id: 'once-cupon', days: [1, 2, 3, 4, 5], label: 'Cupón ONCE' },
-    { id: 'once-cuponazo', days: [5], label: 'Cuponazo' },
-    { id: 'once-eurojackpot', days: [2, 5], label: 'Eurojackpot' },
-    { id: 'once-sueldazo', days: [0], label: 'Sueldazo' },
-  ];
+  const push = (label) => {
+    if (!label || seen.has(label)) return;
+    seen.add(label);
+    notices.push(label);
+  };
 
-  for (const c of catalog) {
-    if (c.days.includes(dow)) notices.push(c.label);
+  for (const p of PRODUCTS) {
+    if (p.category === 'rasca' || p.instant) continue;
+    if (p.drawDays?.length && p.drawDays.includes(dow)) {
+      push(p.short || p.name);
+    }
   }
-  if (ymd.endsWith('-12-22')) notices.push('Sorteo de Navidad');
-  if (ymd.endsWith('-01-06')) notices.push('Sorteo del Niño');
+  if (ymd.endsWith('-12-22')) {
+    push('Sorteo de Navidad');
+    push('Navidad Aloreña');
+  }
+  if (ymd.endsWith('-01-06')) push('Sorteo del Niño');
 
-  // Extraordinarios ONCE programados en state
   for (const ex of state.onceExtras || []) {
-    if (ex.ymd === ymd) notices.push(ex.name);
+    if (ex.ymd === ymd) push(ex.name);
   }
   return notices;
+}
+
+/** Detalle enriquecido para banner (hora si hay). */
+export function todaysDrawDetails(state) {
+  const d = gameDate(state);
+  const dow = d.getUTCDay();
+  const ymd = gameYmd(state);
+  const list = [];
+  for (const p of PRODUCTS) {
+    if (p.category === 'rasca' || p.instant) continue;
+    if (p.drawDays?.length && p.drawDays.includes(dow)) {
+      const hour = p.drawHour ?? 21;
+      list.push({
+        id: p.id,
+        name: p.short || p.name,
+        hour,
+        org: p.org,
+        trait: p.trait || '',
+      });
+    }
+  }
+  if (ymd.endsWith('-12-22')) {
+    list.push({ id: 'lae-navidad', name: 'Navidad', hour: 21, org: 'LAE', trait: '' });
+  }
+  if (ymd.endsWith('-01-06')) {
+    list.push({ id: 'lae-nino', name: 'El Niño', hour: 21, org: 'LAE', trait: '' });
+  }
+  list.sort((a, b) => a.hour - b.hour || a.name.localeCompare(b.name));
+  return list;
 }
 
 /**

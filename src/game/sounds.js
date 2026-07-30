@@ -58,6 +58,27 @@ export const sfx = {
     setTimeout(() => beep({ freq: 784, dur: 0.12 }), 160);
   },
   open: () => beep({ freq: 400, dur: 0.2, type: 'triangle', gain: 0.04, slideTo: 800 }),
+  scratch: () => {
+    beep({ freq: 320, dur: 0.05, type: 'sawtooth', gain: 0.03 });
+    setTimeout(() => beep({ freq: 480, dur: 0.05, type: 'sawtooth', gain: 0.025 }), 60);
+    setTimeout(() => beep({ freq: 260, dur: 0.08, type: 'triangle', gain: 0.03 }), 120);
+    setTimeout(() => beep({ freq: 520, dur: 0.06, type: 'square', gain: 0.02 }), 200);
+  },
+  pena: () => {
+    beep({ freq: 392, dur: 0.1, type: 'triangle', gain: 0.04 });
+    setTimeout(() => beep({ freq: 494, dur: 0.1, type: 'triangle', gain: 0.035 }), 110);
+    setTimeout(() => beep({ freq: 587, dur: 0.14, type: 'sine', gain: 0.04 }), 220);
+  },
+  jackpot: () => {
+    beep({ freq: 523, dur: 0.1, type: 'sine', gain: 0.05 });
+    setTimeout(() => beep({ freq: 659, dur: 0.1, type: 'sine', gain: 0.05 }), 100);
+    setTimeout(() => beep({ freq: 784, dur: 0.1, type: 'sine', gain: 0.05 }), 200);
+    setTimeout(() => beep({ freq: 1046, dur: 0.22, type: 'triangle', gain: 0.045 }), 320);
+  },
+  alert: () => {
+    beep({ freq: 880, dur: 0.08, type: 'square', gain: 0.035 });
+    setTimeout(() => beep({ freq: 660, dur: 0.12, type: 'square', gain: 0.03 }), 100);
+  },
 };
 
 export function startMusic() {

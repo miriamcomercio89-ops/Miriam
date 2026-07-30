@@ -18,13 +18,14 @@ export function addShowcaseDecimo(state, { productId = 'lae-nacional', number, q
     return state;
   }
   const p = getProduct(productId);
-  if (!p || p.numberMode !== 'nacional') {
-    state.ui.toast = 'Solo décimos con número nacional en escaparate';
+  if (!p || (p.numberMode !== 'nacional' && !p.fractionable)) {
+    state.ui.toast = 'Solo décimos con número (nacional / fractionable) en escaparate';
     return state;
   }
-  const digits = String(number || '').replace(/\D/g, '').padStart(5, '0').slice(-5);
-  if (digits.length !== 5) {
-    state.ui.toast = 'Indica un número de 5 cifras';
+  const need = p.numberMode === 'serieLocal' || p.numberMode === 'triplex' ? 3 : 5;
+  const digits = String(number || '').replace(/\D/g, '').padStart(need, '0').slice(-need);
+  if (digits.length !== need) {
+    state.ui.toast = `Indica un número de ${need} cifras`;
     return state;
   }
   const q = Math.max(1, Math.min(10, Number(qty) || 1));
@@ -98,6 +99,8 @@ export function seedDefaultShowcase(state) {
     { productId: 'lae-nacional', number: '88888', qty: 1, note: 'Vitrina' },
     { productId: 'lae-nacional', number: pad5(13000), qty: 1, note: 'Pueblo' },
     { productId: 'lae-nacional', number: '24680', qty: 1, note: '' },
+    { productId: 'and-costa', number: '29001', qty: 1, note: 'Costa' },
+    { productId: 'alo-chorro', number: '13013', qty: 1, note: 'Turismo' },
   ];
   for (const s of seeds) {
     if (state.showcase.length >= SHOWCASE_MAX) break;
@@ -105,4 +108,51 @@ export function seedDefaultShowcase(state) {
   }
   if (state.ui.toast?.startsWith('Escaparate:')) state.ui.toast = null;
   return state;
+}
+
+/**
+ * Valida líneas del TPV frente al escaparate:
+ * - números que parecen de vitrina pero ya no están → aviso
+ * - venta de escaparate OK si fromShowcaseId o número aún listado
+ */
+export function validateShowcaseAgainstTpv(state, tpv) {
+  ensureShowcase(state);
+  const inVitrine = new Set((state.showcase || []).map((d) => `${d.productId}:${d.number}`));
+  const warnings = [];
+  const ok = [];
+  for (const line of tpv?.lines || []) {
+    const num = line.selection?.number;
+    if (!num || (line.numberMode !== 'nacional' && !getProduct(line.productId)?.fractionable)) continue;
+    const key = `${line.productId}:${num}`;
+    const stillThere = inVitrine.has(key);
+    if (line.fromShowcaseId) {
+      ok.push({ lineId: line.id, number: num, note: 'Vendido desde escaparate' });
+      continue;
+    }
+    // Si el jugador marcó a mano un número que está (o estuvo tipicamente) en vitrina
+    if (stillThere) {
+      warnings.push({
+        lineId: line.id,
+        number: num,
+        level: 'info',
+        message: `nº ${num} sigue en escaparate: quítalo de la vitrina al cobrar o véndelo desde Escaparate.`,
+      });
+    } else if (line.name?.includes('escaparate') || line._wasShowcase) {
+      warnings.push({
+        lineId: line.id,
+        number: num,
+        level: 'warn',
+        message: `nº ${num} ya no está en el escaparate.`,
+      });
+    }
+  }
+  return { warnings, ok, hasBlocking: false };
+}
+
+export function findShowcaseByNumber(state, productId, number) {
+  ensureShowcase(state);
+  const digits = String(number || '').replace(/\D/g, '');
+  return (state.showcase || []).find(
+    (d) => d.productId === productId && d.number === digits.padStart(d.number.length, '0').slice(-d.number.length),
+  );
 }

@@ -193,11 +193,18 @@ export function attachIntent(state, client) {
     return client;
   }
   if (checkable.length && roll < 0.4) {
-    const ticket = checkable[Math.floor(rng() * checkable.length)];
+    // Varios tickets en cadena si tiene más de uno
+    const ordered = [...checkable].sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+    const chain = ordered.slice(0, Math.min(ordered.length, 1 + Math.floor(rng() * 3)));
     client.intent = 'check';
-    client.ticketFocus = ticket;
+    client.checkQueue = chain.map((t) => t.id);
+    client.ticketFocus = chain[0];
+    client.checkIndex = 0;
     client.wishlist = [];
-    client.note = `Quiere comprobar ${ticket.productName}.`;
+    client.note =
+      chain.length > 1
+        ? `Quiere comprobar ${chain.length} tickets (${chain.map((t) => t.productName).join(', ')}).`
+        : `Quiere comprobar ${chain[0].productName}.`;
     return client;
   }
   if (isSpecialSeason(state) && rng() < 0.12) {
@@ -441,7 +448,6 @@ export function checkCurrentTicket(state) {
       text: `Comprobación: ${client.name} · PREMIO ${formatEuro(result.prizeCents)}`,
     });
     if (result.large || result.huge) {
-      // alerta visual; import dinámico evitado — inline mínimo
       state.ui.highPrizeAlert = {
         ticketId: result.ticket?.id || client.ticketFocus?.id,
         clientName: client.name,
@@ -456,6 +462,40 @@ export function checkCurrentTicket(state) {
   }
   client.ticketFocus = result.ticket || client.ticketFocus;
   return state;
+}
+
+/** Pasa al siguiente ticket de la cadena de comprobación (si hay). */
+export function advanceCheckQueue(state) {
+  const client = state.customers.current;
+  if (!client?.checkQueue?.length) return { advanced: false, done: true };
+  const idx = (client.checkIndex || 0) + 1;
+  if (idx >= client.checkQueue.length) {
+    return { advanced: false, done: true, remaining: 0 };
+  }
+  const nextId = client.checkQueue[idx];
+  const ticket = (state.tickets || []).find((t) => t.id === nextId);
+  if (!ticket) return { advanced: false, done: true };
+  client.checkIndex = idx;
+  client.ticketFocus = ticket;
+  client.checkResult = null;
+  client.note = `Siguiente ticket (${idx + 1}/${client.checkQueue.length}): ${ticket.productName}`;
+  state.ui.toast = client.note;
+  return {
+    advanced: true,
+    done: false,
+    remaining: client.checkQueue.length - idx - 1,
+    index: idx,
+    total: client.checkQueue.length,
+  };
+}
+
+export function checkQueueProgress(client) {
+  if (!client?.checkQueue?.length) return null;
+  return {
+    index: client.checkIndex || 0,
+    total: client.checkQueue.length,
+    remaining: Math.max(0, client.checkQueue.length - (client.checkIndex || 0) - 1),
+  };
 }
 
 export { formatEuro };

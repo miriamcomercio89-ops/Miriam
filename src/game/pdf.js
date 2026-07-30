@@ -174,6 +174,38 @@ export function downloadWeeklyPdf(weekly) {
   downloadLinesPdf(lines, `extracto-semanal-${weekly.toYmd}.pdf`);
 }
 
+export function downloadDayClosePdf(summary) {
+  const settle = summary.settlement;
+  const lines = [
+    OFFICE.businessName,
+    '===== CIERRE DEL DÍA =====',
+    `Fecha: ${summary.date}`,
+    `Siguiente laborable: ${summary.nextDay}`,
+    '--------------------------------',
+    `Ventas: ${formatEuro(summary.salesCents)}`,
+    `Comisiones: ${formatEuro(summary.commissionCents)}`,
+    `Beneficio: ${formatEuro(summary.profitCents)}`,
+    `Premios pagados: ${formatEuro(summary.prizesPaidCents)}`,
+    `Gastos: ${formatEuro(summary.expensesCents)}`,
+    `Clientes: ${summary.customersServed}`,
+    `Cajón: ${formatEuro(summary.drawerCents)}`,
+    `Banco: ${formatEuro(summary.bankCents)}`,
+    '--------------------------------',
+  ];
+  if (settle) {
+    lines.push('Liquidación');
+    lines.push(`LAE remesa: ${formatEuro(settle.lae?.remittance || 0)}`);
+    lines.push(`ONCE remesa: ${formatEuro(settle.once?.remittance || 0)}`);
+    lines.push(`Otros remesa: ${formatEuro(settle.otros?.remittance || 0)}`);
+    lines.push('--------------------------------');
+  }
+  if (summary.nextDayReasonSkip?.length) {
+    lines.push(`Días saltados: ${summary.nextDayReasonSkip.join(', ')}`);
+  }
+  lines.push('Fan-made / no oficial · +18');
+  downloadLinesPdf(lines, `cierre-${summary.date}.pdf`);
+}
+
 export function downloadMonthlyPdf(statement) {
   const lines = [
     OFFICE.businessName,

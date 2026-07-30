@@ -628,16 +628,79 @@ select {
   padding: 8px;
   font: inherit;
 }
-/* v0.3 banners / wishlist / jackpots */
+/* v0.3 / v0.6 banners / wishlist / jackpots */
 .notice-banner {
   margin: 8px 0 0;
-  padding: 8px 14px;
-  background: rgba(14, 107, 122, 0.12);
-  border: 1px solid rgba(14, 107, 122, 0.28);
-  border-radius: 10px;
+  padding: 12px 16px;
+  background: rgba(14, 107, 122, 0.14);
+  border: 2px solid rgba(14, 107, 122, 0.45);
+  border-radius: 12px;
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: var(--brand-deep);
+  box-shadow: 0 0 0 1px rgba(14, 107, 122, 0.08);
+  animation: notice-pulse 2.8s ease-in-out infinite;
+}
+.notice-banner.sticky-notice {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  backdrop-filter: blur(6px);
+}
+.notice-banner-detail {
+  margin-top: 4px;
   font-size: 0.92rem;
   font-weight: 600;
+  line-height: 1.35;
+  opacity: 0.92;
+}
+@keyframes notice-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(14, 107, 122, 0.15); }
+  50% { box-shadow: 0 0 0 4px rgba(14, 107, 122, 0.12); }
+}
+.pause-banner {
+  margin: 8px 0 0;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 2px solid rgba(140, 90, 20, 0.4);
+  background: rgba(196, 140, 0, 0.14);
+  color: var(--ink);
+  animation: rise 0.35s ease both;
+}
+.pause-banner strong {
+  display: block;
+  margin-bottom: 4px;
+  color: #8a5a00;
+}
+.alert-banner--cash {
+  border-color: rgba(140, 90, 20, 0.4);
+  background: rgba(196, 140, 0, 0.14);
+}
+.alert-banner--cash strong {
+  color: #8a5a00;
+}
+.product-next {
+  font-size: 0.78rem;
+  margin-top: 2px;
+}
+.showcase-warn ul {
+  margin: 6px 0 0;
+}
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+.data-table th,
+.data-table td {
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--line);
+}
+.data-table th {
+  font-weight: 700;
   color: var(--brand-deep);
+  background: rgba(14, 107, 122, 0.06);
 }
 .jackpot-strip {
   display: flex;

@@ -9,8 +9,8 @@ import { ensureJackpots } from './jackpots.js';
 import { seedDefaultShowcase, ensureShowcase } from './showcase.js';
 
 export const STARTING_BANK_CENTS = 950000;
-export const SAVE_VERSION = 6;
-export const GAME_VERSION = '0.5';
+export const SAVE_VERSION = 7;
+export const GAME_VERSION = '0.6';
 export const SLOT_COUNT = 3;
 export const STORAGE_PREFIX = 'loterias-alora-slot-';
 export const HIGH_PRIZE_ALERT_CENTS = 200000; // 2.000 €
@@ -118,6 +118,7 @@ export function createNewGame(options = {}) {
       defaultSpeed: 1,
     },
     showcase: [],
+    closeHistory: [],
     dayLog: [],
     holidays,
     events,
@@ -146,6 +147,9 @@ export function createNewGame(options = {}) {
       scratchReveal: null,
       penaDayYmd: null,
       penaDayNotice: null,
+      lowCashAlert: null,
+      lowCashAlertYmd: null,
+      pauseSummary: null,
     },
   };
   game.clock.speed = game.settings.defaultSpeed;
@@ -206,6 +210,7 @@ export function migrateState(data) {
   }
   ensureShowcase(data);
   if (!data.showcase.length) seedDefaultShowcase(data);
+  if (!Array.isArray(data.closeHistory)) data.closeHistory = [];
   ensureCustomerBirthdays(data.customers.regulars);
   ensureCustomerBirthdays(data.customers.abonados);
   for (const a of data.customers.abonados || []) {
