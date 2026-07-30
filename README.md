@@ -1,21 +1,36 @@
-# Miriam — Administración de Loterías (proyecto)
+# Loterías Álora
 
-Proyecto: videojuego/simulador de gestión de una administración de loterías ubicado en Álora.
+Simulador realista de una administración de loterías en **Álora** (Málaga). Tú eres **Miriam**, la única empleada.
 
-Este repositorio contiene el scaffold inicial del proyecto: una aplicación en HTML/CSS/JS que corre totalmente en el navegador (sin servidor), usa localStorage para persistencia y permite exportar/importar el estado en JSON.
+## Cómo jugar
 
-Características del scaffold inicial:
-- Reloj de juego con escala temporal: el tiempo del juego va 4× más lento que el real (gameTime = start + elapsed * 0.25).
-- Lógica de apertura de oficina: 09:00–14:00 y 17:00–22:00 (hora del juego). Cerrado sábados y domingos. Festivos habilitables manualmente.
-- Funciones básicas de exportar/importar JSON del estado del juego.
-- Estructura básica para añadir los juegos, ventas, contabilidad, clientes, etc.
+```bash
+npm install
+npm run dev
+```
 
-Cómo usar:
-1. Clona el repo o descarga los archivos.
-2. Abre `index.html` en un navegador moderno.
-3. Usa los botones "Exportar" / "Importar" para guardar o restaurar el estado.
+Abre la URL que indique Vite (normalmente `http://localhost:5173`).
 
-Siguiente paso:
-- Crear la rama `feature/lottery-full` desde la rama por defecto y continuar con la implementación completa de juegos, contabilidad y UI.
+Para generar la versión de producción:
 
-Commit inicial: scaffold con reloj escalado y export/import JSON.
+```bash
+npm run build
+npm run preview
+```
+
+## Qué incluye (v0.1)
+
+- Mostrador con clientes habituales (cientos) y visitantes
+- Reloj de juego **4× más lento**, con Pausa / Normal / Rápido / Muy rápido
+- Horario **L–V 08:00–20:00**; cierra fines de semana y festivos (España + Andalucía + Álora)
+- Cierre del día con balance y salto al siguiente laborable
+- **Caja completa en euros**: billetes/monedas, cambio manual, tarjeta, Bizum y transferencia
+- Stock, pedidos y reservas sin pagar
+- 3 huecos de guardado + exportar/importar JSON
+- Catálogo amplio LAE / ONCE / rascas (nombres reales, fan-made) + loterías autonómicas/provinciales/locales inventadas
+- Sonidos básicos de interfaz
+
+## Aviso
+
+Proyecto **fan-made / no oficial**. No está afiliado a Loterías y Apuestas del Estado ni a la ONCE.  
+Juego responsable · solo mayores de 18 años.
