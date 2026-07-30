@@ -86,3 +86,30 @@ export function jackpotCrowdBonus(state) {
   if (maxJ >= 1800000000) return 0.1;
   return 0;
 }
+
+export function isJackpotGame(productId) {
+  return JACKPOT_GAMES.some((g) => g.id === productId);
+}
+
+/** Cuando cae categoría 1 / premio enorme: el bote vuelve al mínimo. */
+export function resetJackpotAfterHit(state, productId) {
+  ensureJackpots(state);
+  const g = JACKPOT_GAMES.find((x) => x.id === productId);
+  if (!g) return false;
+  const prev = state.jackpots.values[productId] || g.base;
+  state.jackpots.values[productId] = g.min;
+  state.jackpots.updatedYmd = gameYmd(state);
+  state.dayLog.push({
+    at: state.clock.gameTimeMs,
+    text: `¡Bote de ${g.name} caído! ${formatJackpotShort(prev)} → ${formatJackpotShort(g.min)}`,
+  });
+  state.ui.toast = `Bote ${g.name} reiniciado (${formatJackpotShort(g.min)})`;
+  state.ui.jackpotDropped = {
+    productId,
+    name: g.name,
+    from: prev,
+    to: g.min,
+    at: state.clock.gameTimeMs,
+  };
+  return true;
+}

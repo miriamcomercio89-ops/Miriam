@@ -4,6 +4,7 @@ import { getDraw, nextDrawYmd, generateBetSelection } from './draws.js';
 import { hashSeed, mulberry32, pad5 } from './rng.js';
 import { gameDate } from './time.js';
 import { formatEuro } from '../data/money.js';
+import { isJackpotGame, resetJackpotAfterHit } from './jackpots.js';
 
 /** Umbral: por encima hay que gestionar (no pago libre de caja) */
 export const LARGE_PRIZE_CENTS = 200000; // 2.000 €
@@ -88,17 +89,30 @@ export function evaluateDrawPrize(ticket, draw) {
   if (id === 'lae-primitiva' || id === 'lae-bonoloto') {
     const hits = (sel.numbers || []).filter((n) => draw.numbers.includes(n)).length;
     const reintegroHit = sel.reintegro === draw.reintegro;
+    const compHit =
+      id === 'lae-primitiva' &&
+      draw.complementary != null &&
+      (sel.numbers || []).includes(draw.complementary);
     let prize = 0;
     let detail = `${hits} aciertos`;
     if (hits === 6) prize = id === 'lae-primitiva' ? 80000000 : 40000000;
-    else if (hits === 5) prize = id === 'lae-primitiva' ? 120000 : 40000;
+    else if (hits === 5 && compHit) {
+      prize = 1000000; // 5+C Primitiva
+      detail = '5 + complementario';
+    } else if (hits === 5) prize = id === 'lae-primitiva' ? 120000 : 40000;
     else if (hits === 4) prize = 2500;
     else if (hits === 3) prize = 800;
     else if (reintegroHit) {
       prize = getProduct(id).priceCents;
       detail = 'Reintegro';
     } else detail = 'Sin premio';
-    return { prizeCents: prize, detail, hits };
+    return {
+      prizeCents: prize,
+      detail,
+      hits,
+      complementary: !!compHit,
+      jackpotHit: hits === 6,
+    };
   }
 
   if (id === 'lae-euromillones' || id === 'once-eurojackpot') {
@@ -117,7 +131,7 @@ export function evaluateDrawPrize(ticket, draw) {
     else if (hits === 1 && stars === 2) prize = 800;
     else if (stars === 2) prize = 600;
     const detail = prize ? `${hits}+${stars} estrellas` : 'Sin premio';
-    return { prizeCents: prize, detail, hits, stars };
+    return { prizeCents: prize, detail, hits, stars, jackpotHit: hits === 5 && stars === 2 };
   }
 
   if (id === 'lae-gordo-primitiva') {
@@ -131,7 +145,11 @@ export function evaluateDrawPrize(ticket, draw) {
     else if (hits === 3 && clave) prize = 3000;
     else if (hits === 3) prize = 1000;
     else if (clave) prize = getProduct(id).priceCents;
-    return { prizeCents: prize, detail: prize ? `${hits} + clave` : 'Sin premio' };
+    return {
+      prizeCents: prize,
+      detail: prize ? `${hits} + clave` : 'Sin premio',
+      jackpotHit: hits === 5 && clave,
+    };
   }
 
   if (id === 'lae-quiniela') {
@@ -181,7 +199,11 @@ export function evaluateDrawPrize(ticket, draw) {
       prize = getProduct(id).priceCents; // reintegro simplificado
       detail = 'Reintegro (última cifra)';
     }
-    return { prizeCents: prize, detail };
+    return {
+      prizeCents: prize,
+      detail,
+      jackpotHit: mine === win && id === 'once-cuponazo',
+    };
   }
 
   // inventadas / modos especiales
@@ -357,6 +379,9 @@ export function checkTicket(state, ticketId) {
   ticket.status = 'checked';
   ticket.checkDetail = result.detail;
   ticket.drawSnapshot = formatDrawResult(draw);
+  if (result.jackpotHit && isJackpotGame(ticket.productId)) {
+    resetJackpotAfterHit(state, ticket.productId);
+  }
   return {
     ok: true,
     ticket,
@@ -364,6 +389,7 @@ export function checkTicket(state, ticketId) {
     detail: result.detail,
     large: result.prizeCents >= LARGE_PRIZE_CENTS,
     huge: result.prizeCents >= HUGE_PRIZE_CENTS,
+    jackpotHit: !!result.jackpotHit,
     betText: formatSelection(ticket),
     drawText: formatDrawResult(draw),
     draw,

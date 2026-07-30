@@ -21,14 +21,21 @@ function pad2(n) {
 
 function genByMode(mode, productId, ymd, rng) {
   switch (mode) {
-    case '6from49':
+    case '6from49': {
+      const numbers = pickUnique(rng, 6, 49);
+      let complementary = null;
+      if (productId === 'lae-primitiva') {
+        const pool = Array.from({ length: 49 }, (_, i) => i + 1).filter((n) => !numbers.includes(n));
+        complementary = pool[Math.floor(rng() * pool.length)];
+      }
       return {
         productId,
         ymd,
-        numbers: pickUnique(rng, 6, 49),
-        complementary: productId === 'lae-primitiva' ? pickInt(rng, 1, 49) : null,
+        numbers,
+        complementary,
         reintegro: pickInt(rng, 0, 9),
       };
+    }
     case 'euro':
     case 'eurojackpot':
       return { productId, ymd, numbers: pickUnique(rng, 5, 50), stars: pickUnique(rng, 2, 12) };
@@ -210,6 +217,8 @@ export function ensureDrawsResolved(state) {
         shouldResolve = ymd < today || (ymd === today && hour >= 21);
       } else if (productId === 'lae-nino' && ymd.endsWith('-01-06')) {
         shouldResolve = ymd < today || (ymd === today && hour >= 21);
+      } else if ((state.onceExtras || []).some((ex) => ex.id === productId && ex.ymd === ymd)) {
+        shouldResolve = ymd < today || (ymd === today && hour >= 21);
       }
       if (shouldResolve) {
         state.draws[key] = generateDrawResult(productId, ymd);
@@ -217,6 +226,55 @@ export function ensureDrawsResolved(state) {
     }
   }
   return state;
+}
+
+/**
+ * Productos cuyo sorteo está “en antena” ahora (ventana alrededor de la hora).
+ * @returns {{ id, name, hour, phase: 'soon'|'live'|'just' }[]}
+ */
+export function drawsHappeningNow(state, beforeMin = 20, afterMin = 50) {
+  const now = gameDate(state);
+  const ymd = ymdFromDate(now);
+  const minutes = now.getUTCHours() * 60 + now.getUTCMinutes();
+  const dow = now.getUTCDay();
+  const out = [];
+  const seen = new Set();
+
+  const consider = (p, hour) => {
+    if (!p || seen.has(p.id)) return;
+    const h = (hour ?? p.drawHour ?? DEFAULT_DRAW_HOUR) * 60;
+    if (minutes < h - beforeMin || minutes >= h + afterMin) return;
+    let phase = 'live';
+    if (minutes < h) phase = 'soon';
+    else if (minutes >= h + 25) phase = 'just';
+    seen.add(p.id);
+    out.push({
+      id: p.id,
+      name: p.short || p.name,
+      hour: hour ?? p.drawHour ?? DEFAULT_DRAW_HOUR,
+      phase,
+    });
+  };
+
+  for (const productId of CORE_DRAW_IDS) {
+    const p = getProduct(productId);
+    if (!p || p.instant || p.category === 'rasca') continue;
+    if (p.drawDays?.length && p.drawDays.includes(dow)) consider(p);
+    else if (
+      (productId === 'lae-navidad' || productId === 'alo-navidad') &&
+      ymd.endsWith('-12-22')
+    ) {
+      consider(p, 21);
+    } else if (productId === 'lae-nino' && ymd.endsWith('-01-06')) {
+      consider(p, 21);
+    }
+  }
+  for (const ex of state.onceExtras || []) {
+    if (ex.ymd !== ymd) continue;
+    consider(getProduct(ex.id), 21);
+  }
+  out.sort((a, b) => a.hour - b.hour || a.name.localeCompare(b.name));
+  return out;
 }
 
 export function getDraw(state, productId, ymd) {

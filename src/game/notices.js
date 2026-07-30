@@ -118,3 +118,29 @@ export function ensureOnceExtras(state) {
   ];
   return state;
 }
+
+const ONCE_EXTRA_IDS = new Set(['once-extra-verano', 'once-extra-navidad', 'once-extra-dia']);
+
+/** Extraordinarios ONCE solo se venden el día del sorteo (y víspera). */
+export function isOnceExtraSellable(state, productId) {
+  if (!ONCE_EXTRA_IDS.has(productId)) return true;
+  const ymd = gameYmd(state);
+  return (state.onceExtras || []).some((ex) => {
+    if (ex.id !== productId) return false;
+    if (ex.ymd === ymd) return true;
+    // Víspera
+    const d = new Date(`${ex.ymd}T12:00:00Z`);
+    d.setUTCDate(d.getUTCDate() - 1);
+    return d.toISOString().slice(0, 10) === ymd;
+  });
+}
+
+export function onceExtraToday(state) {
+  const ymd = gameYmd(state);
+  return (state.onceExtras || []).filter((ex) => {
+    if (ex.ymd === ymd) return true;
+    const d = new Date(`${ex.ymd}T12:00:00Z`);
+    d.setUTCDate(d.getUTCDate() - 1);
+    return d.toISOString().slice(0, 10) === ymd;
+  });
+}

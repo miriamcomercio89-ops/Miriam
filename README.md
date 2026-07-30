@@ -2,7 +2,7 @@
 
 Simulador realista de administración de loterías en **Álora**. Tú eres **Miriam**.
 
-**Versión: 0.8**
+**Versión: 0.9**
 
 ## Cómo jugar
 
@@ -11,21 +11,17 @@ Simulador realista de administración de loterías en **Álora**. Tú eres **Mir
 
 No abras `index.html` de la raíz.
 
-## Novedades v0.8
+## Novedades v0.9
 
-- Tablón con sorteos reales del día, horas y botes altos
-- Escaparate amplio (Nacional, especiales y décimos regionales)
-- Gestión de premios grandes a mano (documentar → presentar → liquidar)
-- Pagar premio con búsqueda de ticket
-- Menú lateral agrupado (Mostrador / Caja / Oficina / Informes)
-- Atajos de teclado en caja (billetes y monedas)
-- Botes altos → más afluencia y más demanda de ese juego
-- Liquidación clara: remesa = ventas − comisión
-- Arqueo con faltante/sobrante que pesa en el mes
-- PDFs más legibles (negrita y desglose)
-- Ficha de producto en el TPV (Info)
-- Autoguardado visible en la barra superior
-- Loterías con más sabor y carácter propio
+- Recogida de encargos cuando llegan
+- Clientes que piden un número concreto del escaparate
+- Retirada banco→caja eligiendo billetes y monedas
+- Primitiva **5 + complementario** con premio propio
+- Extraordinarios ONCE vendibles el día (y víspera)
+- Bote que cae y se reinicia al tocar categoría 1
+- Hora del sorteo: banner y más comprobaciones
+- UI más colorida y moderna, con transiciones suaves
+- Loterías con descripciones y sabor reforzados
 
 ## Desarrollo
 

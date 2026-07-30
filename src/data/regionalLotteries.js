@@ -43,32 +43,32 @@ const AUTONOMICAS = [
   L('and-fortuna', 'Andalucía Fortuna', 'Autonómica', 'Autonómicas', 100, [5], {
     numberMode: '5from40', short: 'A. Fortuna', prizeTier: 'big', flavor: 'Viernes de bote',
     trait: 'Clásico 5/40', topPrizeHint: 'hasta 250.000 €',
-    description: '5 números del 1 al 40. Viernes 20:00.',
+    description: "El clásico andaluz del viernes: 5 del 1–40 con bote que crece. Ideal para la peña del pueblo.",
   }),
   L('and-olivo', 'El Olivo de la Suerte', 'Autonómica', 'Autonómicas', 150, [2], {
     numberMode: '6from36', commissionRate: 0.09, short: 'Olivo', prizeTier: 'big', flavor: 'Aceite y suerte',
     trait: '6/36', topPrizeHint: 'hasta 180.000 €',
-    description: '6 del 1–36. Martes.',
+    description: "Seis números entre olivos. Martes tranquilo, premio serio.",
   }),
   L('and-costa', 'Sorteo Costa del Sol', 'Autonómica', 'Autonómicas', 200, [6], {
     numberMode: 'nacional', fractionable: true, short: 'Costa Sol', prizeTier: 'big', flavor: 'Décimo playero',
     trait: 'Décimo 5 cifras', topPrizeHint: 'hasta 400.000 €',
-    description: 'Número de 5 cifras. Sábados.',
+    description: "Décimo playero de 5 cifras. Sábados con olor a chiringuito.",
   }),
   L('and-guadalquivir', 'Guadalquivir Oro', 'Autonómica', 'Autonómicas', 120, [3], {
     numberMode: '4from30', drawHour: 19, short: 'Guadalquivir', prizeTier: 'mid', flavor: 'Río de oro',
     trait: '4/30', topPrizeHint: 'hasta 120.000 €',
-    description: '4 números del 1 al 30. Miércoles 19:00.',
+    description: "Cuatro del 1–30 a las 19:00. El río trae suerte a media tarde.",
   }),
   L('and-sierra', 'Sierra Nevada Suerte', 'Autonómica', 'Autonómicas', 180, [4], {
     numberMode: '7from45', commissionRate: 0.085, short: 'Sierra N.', prizeTier: 'big', flavor: 'Nieve y números',
     trait: '7/45', topPrizeHint: 'hasta 300.000 €',
-    description: '7 números del 1 al 45. Jueves.',
+    description: "Siete del 1–45: nieve, sierra y un bote que asusta.",
   }),
   L('and-alhambra', 'Alhambra Premia', 'Autonómica', 'Autonómicas', 250, [5], {
     numberMode: 'colorball', short: 'Alhambra', prizeTier: 'big', flavor: 'Colores nazaríes',
     trait: '4/30 + color', topPrizeHint: 'hasta 500.000 €',
-    description: '4 del 1–30 y bola de color (rojo/verde/azul/oro).',
+    description: "Cuatro números y una bola de color nazarí (rojo, verde, azul u oro).",
   }),
   L('and-rocio', 'Rocío de la Fortuna', 'Autonómica', 'Autonómicas', 100, [1], {
     numberMode: 'triplex', short: 'Rocío', prizeTier: 'mid', flavor: 'Romería en cifras',
@@ -121,7 +121,7 @@ const PROVINCIALES = [
   L('mal-premio', 'Premio Málaga', 'Provincial', 'Provinciales', 100, [4], {
     short: 'P. Málaga', prizeTier: 'mid', flavor: 'Capital de la Costa', topPrizeHint: 'hasta 100.000 €',
     numberMode: '5from40', trait: 'Provincial 5/40',
-    description: '5/40 provincial. Jueves.',
+    description: "La provincial de los jueves. Cinco del 1–40 con sabor a capital.",
   }),
   L('mal-axarquia', 'Axarquía Premia', 'Provincial', 'Provinciales', 120, [3], {
     short: 'Axarquía', prizeTier: 'mid', flavor: 'Moscatel y sol', topPrizeHint: 'hasta 85.000 €',
@@ -197,7 +197,7 @@ const PROVINCIALES = [
   L('mal-caminito', 'Caminito del Rey', 'Provincial', 'Provinciales', 250, [6], {
     short: 'Caminito', prizeTier: 'big', flavor: 'Pasarelas y vértigo', topPrizeHint: 'hasta 280.000 €',
     numberMode: 'horaSuerte', commissionRate: 0.11, trait: 'Hora desfiladero',
-    description: 'Marca la hora de tu paseo. Sábados.',
+    description: "Marca la hora de tu paseo por las pasarelas. Sábados de vértigo.",
   }),
   L('mal-chorro', 'Desfiladero del Chorro', 'Provincial', 'Provinciales', 150, [2], {
     short: 'El Chorro', prizeTier: 'mid', flavor: 'Embalse de noche', topPrizeHint: 'hasta 130.000 €',
@@ -215,7 +215,7 @@ const LOCALES = [
   L('alo-local', 'Álora Local', 'Local', 'Locales', 50, [5], {
     short: 'Álora Loc.', prizeTier: 'small', flavor: 'Serie del pueblo', topPrizeHint: 'hasta 15.000 €',
     numberMode: 'serieLocal', drawHour: 19, trait: 'Serie 000–999',
-    description: 'Número local de 3 cifras. Viernes 19:00.',
+    description: "Serie del pueblo 000–999. Viernes a las 19:00 en la Plaza.",
   }),
   L('alo-hoya', 'Hoya de Málaga', 'Local', 'Locales', 100, [3], {
     short: 'Hoya', prizeTier: 'small', flavor: 'Valle dulce', topPrizeHint: 'hasta 40.000 €',
@@ -225,7 +225,7 @@ const LOCALES = [
   L('alo-chorro', 'Suerte del Chorro', 'Local', 'Locales', 120, [6], {
     short: 'S. Chorro', prizeTier: 'mid', flavor: 'Décimo turístico', topPrizeHint: 'hasta 90.000 €',
     numberMode: 'nacional', fractionable: true, trait: 'Décimo turístico',
-    description: '5 cifras. Ideal turistas. Sábados.',
+    description: "Décimo turístico de 5 cifras. El favorito de quien viene del Caminito.",
   }),
   L('alo-castillo', 'Castillo de Álora', 'Local', 'Locales', 100, [4], {
     short: 'Castillo', prizeTier: 'small', flavor: 'Torre del homenaje', topPrizeHint: 'hasta 25.000 €',
@@ -235,7 +235,7 @@ const LOCALES = [
   L('alo-flores', 'Virgen de Flores Lotería', 'Local', 'Locales', 150, [1], {
     short: 'V. Flores', prizeTier: 'mid', flavor: 'Patrona de Álora', topPrizeHint: 'hasta 60.000 €',
     numberMode: 'fecha', trait: 'Fecha patronal',
-    description: 'Rifa inventada de la patrona: día + mes.',
+    description: "Rifa de la patrona: elige día y mes. Lunes con devoción.",
   }),
   L('alo-sanjuan', 'San Juan de Álora', 'Local', 'Locales', 80, [2], {
     short: 'San Juan', prizeTier: 'small', flavor: 'Hogueras de junio', topPrizeHint: 'hasta 30.000 €',
@@ -291,7 +291,7 @@ const LOCALES = [
     short: 'Nav. Álora', prizeTier: 'big', flavor: 'Gordo del pueblo', topPrizeHint: 'hasta 200.000 €',
     numberMode: 'nacional', fractionable: true, seasonMonths: [11, 12], orderDays: 3,
     trait: 'Décimo navideño local',
-    description: 'Sorteo local de Navidad (22 dic. inventado).',
+    description: "El Gordo inventado del pueblo. Encarga con tiempo en noviembre.",
   }),
   L('pue-pizarra', 'Pizarra Vecina', 'Local', 'Locales', 50, [4], {
     short: 'Pizarra', prizeTier: 'small', flavor: 'Vecina del valle', topPrizeHint: 'hasta 12.000 €',

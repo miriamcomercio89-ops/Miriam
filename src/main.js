@@ -60,7 +60,7 @@ import {
   getProduct,
   productMetaLabel,
 } from './data/products.js';
-import { BILLS, COINS } from './data/money.js';
+import { BILLS, COINS, ALL_DENOMS, countTotalCents, emptyDrawer } from './data/money.js';
 import {
   sfx,
   startMusic,
@@ -70,7 +70,13 @@ import {
   setMusicVolume,
   setSfxVolume,
 } from './game/sounds.js';
-import { ensureDrawsResolved, listDrawHistory, modeHint, nextDrawLabel } from './game/draws.js';
+import {
+  ensureDrawsResolved,
+  listDrawHistory,
+  modeHint,
+  nextDrawLabel,
+  drawsHappeningNow,
+} from './game/draws.js';
 import { formatSelection, lastIssuedTicket, LARGE_PRIZE_CENTS } from './game/tickets.js';
 import {
   payTicketPrize,
@@ -139,6 +145,8 @@ import {
   todaysDrawDetails,
   specialOrderDeadlines,
   createCalendarOrder,
+  isOnceExtraSellable,
+  onceExtraToday,
 } from './game/notices.js';
 import { depositCashToBank, withdrawBankToCash } from './game/bank.js';
 import { buildTownBoard } from './data/board.js';
@@ -485,7 +493,7 @@ function renderMenu() {
         </div>
         <p class="disclaimer">
           Fan-made / no oficial. Nombres de Loterías y Apuestas del Estado y ONCE usados solo con fines de simulación.
-          Juego responsable · +18. Versión ${GAME_VERSION}: tablón con sorteos, escaparate amplio, gestión de premios a mano, liquidación clara, botes que tiran y ficha de producto.
+          Juego responsable · +18. Versión ${GAME_VERSION}: encargos, vitrina, hora del sorteo, 5+C, ONCE extras, botes que caen y UI renovada.
         </p>
       </div>
     </div>
@@ -499,7 +507,7 @@ function renderMenu() {
     maybeStartMusic();
     state.ui.screen = 'counter';
     lastAutosaveRealMs = Date.now();
-    showToast('Bienvenida, Miriam. Versión 0.8 lista. Mira el tablón y abre el TPV.');
+    showToast('Bienvenida, Miriam. Versión 0.9 lista. ¡A por el mostrador!');
     needsFullRender = true;
     render();
   };
@@ -535,8 +543,29 @@ function renderMenu() {
 }
 
 function drawNoticeBannerHTML() {
+  const live = drawsHappeningNow(state);
+  let liveHtml = '';
+  if (live.length) {
+    const label = live
+      .map((d) => {
+        const tag = d.phase === 'soon' ? 'en breve' : d.phase === 'just' ? 'acaba de salir' : 'EN DIRECTO';
+        return `${d.name} (${tag})`;
+      })
+      .join(' · ');
+    liveHtml = `<div class="notice-banner draw-live sticky-notice">
+      <strong>¡Hora del sorteo!</strong>
+      <div class="notice-banner-detail">${escapeHtml(label)} · más comprobaciones en cola</div>
+    </div>`;
+  }
+  const extras = onceExtraToday(state);
+  const extraHtml = extras.length
+    ? `<div class="notice-banner sticky-notice">
+        <strong>ONCE extraordinario</strong>
+        <div class="notice-banner-detail">${escapeHtml(extras.map((e) => e.name).join(' · '))} · a la venta hoy</div>
+      </div>`
+    : '';
   const details = todaysDrawDetails(state);
-  if (!details.length) {
+  if (!details.length && !liveHtml && !extraHtml) {
     const notices = todaysDrawNotices(state);
     if (!notices.length) return '';
     return `<div class="notice-banner">Hoy hay sorteo de: ${escapeHtml(notices.join(', '))}</div>`;
@@ -544,10 +573,13 @@ function drawNoticeBannerHTML() {
   const items = details
     .map((d) => `${d.name} ${String(d.hour).padStart(2, '0')}:00`)
     .join(' · ');
-  return `<div class="notice-banner sticky-notice">
+  const dayHtml = details.length
+    ? `<div class="notice-banner sticky-notice">
     <strong>Hoy: ${details.length} sorteo${details.length === 1 ? '' : 's'}</strong>
     <div class="notice-banner-detail">${escapeHtml(items)}</div>
-  </div>`;
+  </div>`
+    : '';
+  return `${liveHtml}${extraHtml}${dayHtml}`;
 }
 
 function jackpotStripHTML() {
@@ -770,12 +802,16 @@ function wishlistHTML(client) {
     return '';
   }
   return `<ul class="wish-list">${list
-    .map(
-      (w) =>
-        `<li>• <strong>${escapeHtml(w.productName)}</strong> × ${w.qty}${
-          w.preferDictate ? ' <span class="muted">(dictado)</span>' : ''
-        }</li>`,
-    )
+    .map((w) => {
+      const extra = [];
+      if (w.showcaseNumber) extra.push(`nº ${w.showcaseNumber} vitrina`);
+      if (w.fromPickup) extra.push('encargo');
+      if (w.note) extra.push(w.note);
+      if (w.preferDictate && !w.showcaseNumber) extra.push('dictado');
+      return `<li>• <strong>${escapeHtml(w.productName)}</strong> × ${w.qty}${
+        extra.length ? ` <span class="muted">(${escapeHtml(extra.join(' · '))})</span>` : ''
+      }</li>`;
+    })
     .join('')}</ul>`;
 }
 
@@ -969,7 +1005,14 @@ function renderClientPanel(client) {
   const kindLabel =
     client.kind === 'pena' ? 'Peña' : client.kind === 'abonado' ? 'Abonado' : client.regular ? 'Habitual' : 'Visitante';
 
-  if (intent === 'buy' || intent === 'reserve_special' || intent === 'abono' || intent === 'pena_day') {
+  if (
+    intent === 'buy' ||
+    intent === 'reserve_special' ||
+    intent === 'abono' ||
+    intent === 'pena_day' ||
+    intent === 'pickup' ||
+    intent === 'showcase_ask'
+  ) {
     const totalWish = (client.wishlist || []).reduce((s, w) => {
       const p = getProduct(w.productId);
       return s + (p?.priceCents || 0) * w.qty;
@@ -981,12 +1024,16 @@ function renderClientPanel(client) {
           ? 'Abono a confirmar en TPV:'
           : intent === 'pena_day'
             ? 'Pedido de peña:'
-            : 'Quiere:';
+            : intent === 'pickup'
+              ? 'Recoge su encargo:'
+              : intent === 'showcase_ask'
+                ? 'Pide del escaparate:'
+                : 'Quiere:';
     return `
-      <div class="client-card">
+      <div class="client-card intent-${escapeHtml(intent)}">
         <div class="muted">${kindLabel}${trait} · ${escapeHtml(client.street || '')}${
           client.specialDay === 'birthday' ? ' · Cumpleaños' : client.specialDay === 'santo' ? ' · Santo' : ''
-        }</div>
+        }${intent === 'pickup' ? ' · Encargo listo' : ''}${intent === 'showcase_ask' ? ' · Vitrina' : ''}</div>
         <h3>${escapeHtml(client.name)}</h3>
         ${quote ? `<p class="muted">“${escapeHtml(quote)}”</p>` : ''}
         <p>${title}</p>
@@ -996,12 +1043,32 @@ function renderClientPanel(client) {
         <p class="muted">Pago preferido: ${payLabel(client.prefersPayment)}</p>
         <div class="actions">
           <button class="btn primary" id="btn-open-tpv">${
-            intent === 'abono' ? 'Abrir TPV y confirmar abono' : intent === 'pena_day' ? 'Abrir TPV (cargar peña)' : 'Abrir TPV'
+            intent === 'abono'
+              ? 'Abrir TPV y confirmar abono'
+              : intent === 'pena_day'
+                ? 'Abrir TPV (cargar peña)'
+                : intent === 'pickup'
+                  ? 'Abrir TPV (entregar)'
+                  : intent === 'showcase_ask'
+                    ? 'Abrir TPV (vitrina)'
+                    : 'Abrir TPV'
           }</button>
           <button class="btn" id="btn-load-wish">${
-            intent === 'abono' ? 'Cargar abono' : intent === 'pena_day' ? 'Cargar pedido peña' : 'Cargar petición'
+            intent === 'abono'
+              ? 'Cargar abono'
+              : intent === 'pena_day'
+                ? 'Cargar pedido peña'
+                : intent === 'pickup'
+                  ? 'Cargar encargo'
+                  : intent === 'showcase_ask'
+                    ? 'Cargar nº vitrina'
+                    : 'Cargar petición'
           }</button>
-          <button class="btn" id="btn-reserve">Reservar sin pagar</button>
+          ${
+            intent === 'pickup' || intent === 'showcase_ask'
+              ? ''
+              : `<button class="btn" id="btn-reserve">Reservar sin pagar</button>`
+          }
           <button class="btn ghost" id="btn-skip">Despedir</button>
         </div>
       </div>`;
@@ -1114,6 +1181,23 @@ function loadWishlistIntoTpv(client) {
       ? [client.request]
       : [];
   for (const w of items) {
+    if (w.showcaseId || w.showcaseNumber) {
+      const byId = w.showcaseId
+        ? (state.showcase || []).find((d) => d.id === w.showcaseId)
+        : null;
+      if (byId) {
+        sellShowcaseToTpv(state, byId.id);
+        continue;
+      }
+      if (w.showcaseNumber) {
+        addTpvProduct(state, w.productId, {
+          qty: w.qty || 1,
+          numberSource: 'dictate',
+          selection: { number: String(w.showcaseNumber), fractions: w.qty || 1, series: false },
+        });
+        continue;
+      }
+    }
     const src = w.preferDictate ? 'dictate' : 'random';
     for (let i = 0; i < (w.qty || 1); i++) {
       addTpvProduct(state, w.productId, { qty: 1, numberSource: src });
@@ -1129,7 +1213,13 @@ function bindClientActions() {
       if (!client) return;
       if (client.intent === 'pena_day') sfx.pena();
       else sfx.tpv();
-      if (client.intent === 'pena_day' && (client.wishlist?.length || client.request)) {
+      if (
+        ['pena_day', 'pickup', 'showcase_ask', 'abono'].includes(client.intent) &&
+        (client.wishlist?.length || client.request)
+      ) {
+        loadWishlistIntoTpv(client);
+        if (state.ui.tpv?.message) showToast(state.ui.tpv.message);
+      } else if (client.wishlist?.length) {
         loadWishlistIntoTpv(client);
         if (state.ui.tpv?.message) showToast(state.ui.tpv.message);
       } else {
@@ -1464,7 +1554,7 @@ function renderTpv() {
   if (tpv.step === 'receipt') return renderTpvReceipt(tpv);
 
   const cat = tpv.category || 'LAE';
-  const products = productsByTpvCategory(cat);
+  const products = productsByTpvCategory(cat).filter((p) => isOnceExtraSellable(state, p.id));
   const total = tpvTotalCents(tpv);
   const entry = tpv.numberEntry;
 
@@ -3310,6 +3400,9 @@ function renderBoard() {
 function renderBank() {
   const cash = drawerTotalCents(state.finance.drawer);
   const bank = state.finance.bankCents;
+  if (!state.ui.bankWithdrawCounts) state.ui.bankWithdrawCounts = emptyDrawer();
+  const counts = state.ui.bankWithdrawCounts;
+  const sum = countTotalCents(counts);
   app.innerHTML = `
     <div class="shell">
       ${topbarHTML()}
@@ -3317,7 +3410,7 @@ function renderBank() {
         ${sideNav()}
         <section class="panel">
           <h2>Caja ↔ Banco</h2>
-          <p class="muted">Ingresa efectivo al banco o retira cambio a caja.</p>
+          <p class="muted">Ingresa efectivo al banco o retira cambio eligiendo billetes y monedas.</p>
           <div class="close-summary" style="margin:12px 0">
             <div class="stat-row"><span>Efectivo en caja</span><strong>${formatEuro(cash)}</strong></div>
             <div class="stat-row"><span>Saldo banco</span><strong>${formatEuro(bank)}</strong></div>
@@ -3328,11 +3421,35 @@ function renderBank() {
             </label>
             <button class="btn primary" id="btn-bank-deposit">Ingresar</button>
           </div>
-          <div class="actions" style="flex-wrap:wrap;align-items:flex-end;gap:12px;margin-top:14px">
-            <label>Retirar a caja (€)<br/>
-              <input id="bank-withdraw" type="number" min="0" step="0.01" placeholder="50" style="padding:8px;border-radius:10px;border:1px solid var(--line);width:140px" />
-            </label>
-            <button class="btn" id="btn-bank-withdraw">Retirar cambio</button>
+          <h3 style="margin-top:20px">Retirar a caja (denominaciones)</h3>
+          <p class="muted">Marca qué billetes y monedas quieres del banco.</p>
+          <div class="totals" style="margin:10px 0">
+            <div class="total-box">Selección<strong id="wd-sum">${formatEuro(sum)}</strong></div>
+          </div>
+          ${['Billetes', 'Monedas']
+            .map((title, i) => {
+              const list = i === 0 ? BILLS : COINS;
+              return `<h3 style="margin-top:12px">${title}</h3>
+              <div class="denom-grid">
+                ${list
+                  .map(
+                    (d) => `<div class="denom">
+                  <div class="label">${d.label}</div>
+                  <div class="row">
+                    <button data-wd="${d.id}" data-delta="-1">−</button>
+                    <strong>${counts[d.id] || 0}</strong>
+                    <button data-wd="${d.id}" data-delta="1">+</button>
+                  </div>
+                </div>`,
+                  )
+                  .join('')}
+              </div>`;
+            })
+            .join('')}
+          <div class="actions" style="margin-top:14px;flex-wrap:wrap">
+            <button class="btn" id="btn-wd-clear">Vaciar</button>
+            <button class="btn" id="btn-wd-preset-small">Preset cambio</button>
+            <button class="btn primary" id="btn-bank-withdraw" ${sum <= 0 ? 'disabled' : ''}>Retirar ${formatEuro(sum)}</button>
           </div>
         </section>
       </div>
@@ -3350,10 +3467,45 @@ function renderBank() {
     needsFullRender = true;
     render();
   };
+  app.querySelectorAll('[data-wd]').forEach((btn) => {
+    btn.onclick = () => {
+      const id = btn.getAttribute('data-wd');
+      const delta = Number(btn.getAttribute('data-delta'));
+      counts[id] = Math.max(0, (counts[id] || 0) + delta);
+      sfx.click();
+      needsFullRender = true;
+      render();
+    };
+  });
+  document.getElementById('btn-wd-clear').onclick = () => {
+    state.ui.bankWithdrawCounts = emptyDrawer();
+    sfx.click();
+    needsFullRender = true;
+    render();
+  };
+  document.getElementById('btn-wd-preset-small').onclick = () => {
+    state.ui.bankWithdrawCounts = {
+      ...emptyDrawer(),
+      b5: 10,
+      b10: 5,
+      b20: 3,
+      e2: 10,
+      e1: 10,
+      c50: 10,
+      c20: 10,
+      c10: 10,
+    };
+    sfx.click();
+    needsFullRender = true;
+    render();
+  };
   document.getElementById('btn-bank-withdraw').onclick = () => {
-    const ok = withdrawBankToCash(state, eurosToCents(document.getElementById('bank-withdraw')));
-    if (ok) sfx.cash();
-    else sfx.error();
+    const amt = countTotalCents(state.ui.bankWithdrawCounts);
+    const ok = withdrawBankToCash(state, amt, state.ui.bankWithdrawCounts);
+    if (ok) {
+      sfx.cash();
+      state.ui.bankWithdrawCounts = emptyDrawer();
+    } else sfx.error();
     showToast(state.ui.toast);
     needsFullRender = true;
     render();

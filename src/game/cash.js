@@ -206,6 +206,17 @@ function finishSaleSideEffects(state) {
     at: state.clock.gameTimeMs,
     text: `Venta a ${ps.clientName}: ${formatEuro(ps.totalCents)} (${labelMethod(ps.method)}) · ${tickets.length} ticket(s)`,
   });
+
+  // Si venía a recoger encargo, marcar entregado
+  const cur = state.customers.current;
+  if (cur && (cur.intent === 'pickup' || cur.pickupOrders?.length) && cur.id === ps.clientId) {
+    for (const o of state.orders || []) {
+      if (o.reserved && o.status === 'arrived' && o.clientId === cur.id) {
+        o.status = 'delivered';
+        o.deliveredAt = state.clock.gameTimeMs;
+      }
+    }
+  }
 }
 
 export function closePaymentSession(state) {

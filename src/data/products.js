@@ -112,7 +112,7 @@ export const PRODUCTS = [
     needsNumbers: true,
     numberMode: '6from49',
     flavor: 'El bote que hace cola',
-    description: '6/49 + reintegro.',
+    description: "6/49 + reintegro. El complementario cuenta: 5+C tiene premio propio.",
     bet: { pick: 6, from: 49, reintegro: true },
   },
   {
@@ -134,7 +134,7 @@ export const PRODUCTS = [
     needsNumbers: true,
     numberMode: '6from49',
     flavor: 'Diario y asequible',
-    description: '6/49 L–S.',
+    description: "6/49 de lunes a sábado. Barata, diaria y con bote propio.",
     bet: { pick: 6, from: 49, reintegro: true },
   },
   {
@@ -156,7 +156,7 @@ export const PRODUCTS = [
     needsNumbers: true,
     numberMode: 'euro',
     flavor: 'Martes y viernes europeos',
-    description: '5/50 + 2 estrellas.',
+    description: "5/50 + 2 estrellas. Martes y viernes; cuando el bote sube, la cola también.",
     bet: { pickMain: 5, fromMain: 50, pickStars: 2, fromStars: 12 },
   },
   {
@@ -178,7 +178,7 @@ export const PRODUCTS = [
     needsNumbers: true,
     numberMode: 'gordo',
     flavor: 'Domingo con clave',
-    description: '5/54 + clave. Domingos.',
+    description: "5/54 + clave del 0–9. Domingos con categoría especial.",
     bet: { pick: 5, from: 54, claveFrom: 9 },
   },
   {
@@ -200,7 +200,7 @@ export const PRODUCTS = [
     needsNumbers: true,
     numberMode: 'quiniela',
     flavor: 'La de toda la vida',
-    description: '14 partidos 1X2 + pleno al 15.',
+    description: "14 partidos 1X2 y pleno al 15. La de toda la vida en el mostrador.",
   },
   {
     id: 'lae-quinigol',
@@ -309,7 +309,7 @@ export const PRODUCTS = [
     needsNumbers: true,
     numberMode: 'nacional',
     flavor: 'El viernes gordo de la ONCE',
-    description: 'Viernes especial.',
+    description: "Viernes especial ONCE. Número completo = bote gordo que puede caer.",
   },
   {
     id: 'once-sueldazo',
@@ -351,7 +351,7 @@ export const PRODUCTS = [
     needsNumbers: true,
     numberMode: 'eurojackpot',
     flavor: 'Bote europeo ONCE',
-    description: '5/50 + 2/12.',
+    description: "5/50 + 2/12. El bote europeo de la ONCE, martes y viernes.",
   },
   {
     id: 'once-super-once',
@@ -412,7 +412,7 @@ export const PRODUCTS = [
     checkable: true,
     needsNumbers: true,
     numberMode: 'nacional',
-    description: 'Sorteo extraordinario de verano.',
+    description: "Extraordinario de verano: solo se vende en fechas de campaña.",
   },
   {
     id: 'once-extra-navidad',
@@ -431,7 +431,7 @@ export const PRODUCTS = [
     checkable: true,
     needsNumbers: true,
     numberMode: 'nacional',
-    description: 'Sorteo extraordinario de Navidad.',
+    description: "Extraordinario de Navidad ONCE. Ventana corta de venta.",
   },
   {
     id: 'once-extra-dia',
@@ -450,7 +450,7 @@ export const PRODUCTS = [
     checkable: true,
     needsNumbers: true,
     numberMode: 'nacional',
-    description: 'Sorteo del Día de la ONCE.',
+    description: "Extraordinario del Día de la ONCE. Aparece en tablón y TPV ese día.",
   },
 
   // ——— Autonómicas / provinciales / locales inventadas (Álora / Málaga / Andalucía) ———
@@ -517,7 +517,7 @@ export function inventedLotteryCount() {
   return REGIONAL_LOTTERIES.length;
 }
 
-/** Etiqueta corta para TPV: mecánica + comisión */
+/** Etiqueta corta para TPV: mecánica + comisión + sabor */
 export function productMetaLabel(p) {
   if (!p) return '';
   const parts = [];
@@ -525,6 +525,7 @@ export function productMetaLabel(p) {
   else if (p.numberMode) parts.push(p.numberMode);
   if (p.commissionRate != null) parts.push(`Com. ${(p.commissionRate * 100).toFixed(1)}%`);
   if (p.topPrizeHint) parts.push(p.topPrizeHint);
+  if (p.flavor) parts.push(p.flavor);
   return parts.join(' · ');
 }
 

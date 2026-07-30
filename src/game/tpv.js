@@ -49,7 +49,11 @@ function lineId() {
  * Añade producto al carrito.
  * numberSource: 'random' | 'dictate'
  */
-export function addTpvProduct(state, productId, { qty = 1, numberSource = 'random' } = {}) {
+export function addTpvProduct(
+  state,
+  productId,
+  { qty = 1, numberSource = 'random', selection: forcedSelection = undefined, fromShowcaseId = null } = {},
+) {
   const tpv = state.ui.tpv;
   if (!tpv) return state;
   const p = getProduct(productId);
@@ -62,27 +66,31 @@ export function addTpvProduct(state, productId, { qty = 1, numberSource = 'rando
   }
 
   const rng = mulberry32(hashSeed('tpv', state.clock.gameTimeMs, productId, tpv.lines.length));
-  const selection =
-    p.needsNumbers && numberSource === 'random' ? generateBetSelection(productId, rng) : p.needsNumbers ? null : {};
+  let selection;
+  if (forcedSelection) selection = { ...forcedSelection };
+  else if (p.needsNumbers && numberSource === 'random') selection = generateBetSelection(productId, rng);
+  else if (p.needsNumbers) selection = null;
+  else selection = {};
 
   const line = {
     id: lineId(),
     productId: p.id,
-    name: p.name,
+    name: fromShowcaseId ? `${p.name} (escaparate)` : p.name,
     org: p.org,
     qty,
     unitCents: p.priceCents,
-    numberSource,
+    numberSource: forcedSelection ? 'dictate' : numberSource,
     selection,
     needsNumbers: !!p.needsNumbers,
     numberMode: p.numberMode || null,
+    fromShowcaseId: fromShowcaseId || undefined,
   };
   line.nextDraw = nextDrawLabel(p.id, gameDate(state));
   tpv.lines.push(line);
   const next = line.nextDraw ? ` · próximo ${line.nextDraw}` : '';
   tpv.message = `Añadido: ${p.name} ×${qty}${next}`;
 
-  if (p.needsNumbers && numberSource === 'dictate') {
+  if (p.needsNumbers && numberSource === 'dictate' && !forcedSelection) {
     tpv.numberEntry = {
       lineId: line.id,
       mode: p.numberMode,

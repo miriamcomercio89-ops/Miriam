@@ -9,8 +9,8 @@ import { ensureJackpots } from './jackpots.js';
 import { seedDefaultShowcase, ensureShowcase } from './showcase.js';
 
 export const STARTING_BANK_CENTS = 950000;
-export const SAVE_VERSION = 9;
-export const GAME_VERSION = '0.8';
+export const SAVE_VERSION = 10;
+export const GAME_VERSION = '0.9';
 export const SLOT_COUNT = 3;
 export const STORAGE_PREFIX = 'loterias-alora-slot-';
 export const HIGH_PRIZE_ALERT_CENTS = 200000; // 2.000 €
@@ -213,6 +213,9 @@ export function migrateState(data) {
       c.note = 'Pendiente documentar y presentar.';
     }
   }
+  data.ui = data.ui || {};
+  data.ui.bankWithdrawCounts = data.ui.bankWithdrawCounts || null;
+  data.onceExtras = data.onceExtras || [];
   data.jackpots = data.jackpots || {};
   data.stock = data.stock || {};
   for (const p of PRODUCTS) {
