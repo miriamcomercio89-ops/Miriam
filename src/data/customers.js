@@ -1,4 +1,4 @@
-/** Nombres andaluces / españoles para clientes de Álora */
+/** Nombres y personalidad de clientes (sin slang andaluz) */
 
 const FIRST_NAMES = [
   'Antonio', 'Manuel', 'José', 'Francisco', 'Juan', 'David', 'José Luis', 'Javier',
@@ -18,7 +18,6 @@ const LAST_NAMES = [
   'Domínguez', 'Vázquez', 'Ramos', 'Gil', 'Ramírez', 'Serrano', 'Blanco',
   'Molina', 'Morales', 'Suárez', 'Ortega', 'Delgado', 'Castro', 'Ortiz',
   'Rubio', 'Marín', 'Sanz', 'Iglesias', 'Núñez', 'Medina', 'Garrido', 'Cortes',
-  'Cruz', 'Calvo', 'Gallego', 'León', 'Vidal', 'Lozano', 'Herrera', 'Peña',
 ];
 
 const STREETS = [
@@ -29,11 +28,32 @@ const STREETS = [
 
 const PREFERENCES = [
   'lae-nacional', 'lae-primitiva', 'lae-bonoloto', 'lae-euromillones',
-  'lae-quiniela', 'once-cupon', 'once-cuponazo', 'once-eurojackpot',
-  'rasca-multiplica', 'rasca-diamante', 'rasca-7-vidas', 'rasca-oro',
-  'rasca-once-clasico', 'and-fortuna', 'alo-local', 'mal-premio',
-  'lae-navidad', 'lae-nino', 'once-sueldazo', 'rasca-jackpot',
+  'once-cupon', 'rasca-7-vidas', 'rasca-multiplica', 'rasca-diamante',
+  'rasca-oro', 'rasca-jackpot', 'rasca-once-clasico', 'rasca-once-premium',
+  'and-fortuna', 'alo-local', 'mal-premio', 'lae-navidad', 'lae-nino',
 ];
+
+const TRAITS = [
+  'constante', // viene días fijos
+  'impulsiva', // cambia de producto
+  'desconfiada', // pide comprobar mucho
+  'generosa', // compra más cantidad
+  'reservada', // habla poco
+  'habladora', // comentario extra
+  'suertuda', // cree en rachas
+  'práctica', // va al grano
+];
+
+const LINES = {
+  constante: ['Como cada semana.', 'Paso a por lo de siempre.'],
+  impulsiva: ['Al final me llevo otra cosa.', 'He cambiado de idea.'],
+  desconfiada: ['¿Me lo puedes comprobar bien?', 'Quiero asegurarme.'],
+  generosa: ['Ponme un poco más.', 'Hoy me animo.'],
+  reservada: ['Buenos días.', 'Esto, gracias.'],
+  habladora: ['Menuda mañana lleva el pueblo.', '¿Hay mucho movimiento hoy?'],
+  suertuda: ['Hoy me siento bien.', 'A ver si hay suerte.'],
+  práctica: ['Vamos al grano.', '¿Cuánto es?'],
+};
 
 function mulberry32(a) {
   return function () {
@@ -48,9 +68,6 @@ function pick(rng, arr) {
   return arr[Math.floor(rng() * arr.length)];
 }
 
-/**
- * Genera cientos de clientes habituales + plantilla de visitantes.
- */
 export function generateRegularCustomers(count = 280, seed = 2026) {
   const rng = mulberry32(seed);
   const used = new Set();
@@ -69,6 +86,11 @@ export function generateRegularCustomers(count = 280, seed = 2026) {
     const nPrefs = 1 + Math.floor(rng() * 3);
     for (let p = 0; p < nPrefs; p++) prefs.add(pick(rng, PREFERENCES));
 
+    const trait = pick(rng, TRAITS);
+    const preferredDays = [];
+    const nDays = 1 + Math.floor(rng() * 3);
+    for (let d = 0; d < nDays; d++) preferredDays.push(1 + Math.floor(rng() * 5)); // L-V
+
     list.push({
       id: `reg-${i + 1}`,
       name,
@@ -76,10 +98,12 @@ export function generateRegularCustomers(count = 280, seed = 2026) {
       street: pick(rng, STREETS),
       age: 18 + Math.floor(rng() * 62),
       preferredProducts: [...prefs],
-      // 0–1: probabilidad relativa de aparecer un día laborable
       visitChance: 0.02 + rng() * 0.08,
       patience: 0.4 + rng() * 0.6,
       prefersPayment: pick(rng, ['cash', 'cash', 'cash', 'card', 'bizum', 'transfer']),
+      trait,
+      preferredDays,
+      line: pick(rng, LINES[trait]),
       history: [],
     });
   }
@@ -88,10 +112,10 @@ export function generateRegularCustomers(count = 280, seed = 2026) {
 
 export function makeVisitor(rng = Math.random) {
   const r = typeof rng === 'function' ? rng : () => Math.random();
-  const name = `${pick(r, FIRST_NAMES)} ${pick(r, LAST_NAMES)}`;
+  const trait = pick(r, TRAITS);
   return {
     id: `vis-${Date.now()}-${Math.floor(r() * 1e6)}`,
-    name,
+    name: `${pick(r, FIRST_NAMES)} ${pick(r, LAST_NAMES)}`,
     regular: false,
     street: 'De paso',
     age: 18 + Math.floor(r() * 50),
@@ -99,8 +123,11 @@ export function makeVisitor(rng = Math.random) {
     visitChance: 0,
     patience: 0.3 + r() * 0.5,
     prefersPayment: pick(r, ['cash', 'cash', 'card', 'bizum']),
+    trait,
+    preferredDays: [],
+    line: pick(r, LINES[trait]),
     history: [],
   };
 }
 
-export { PREFERENCES, FIRST_NAMES };
+export { PREFERENCES, LINES, TRAITS };

@@ -2,10 +2,12 @@ import { PRODUCTS } from '../data/products.js';
 import { defaultFloatDrawer, emptyDrawer, drawerTotalCents } from '../data/money.js';
 import { buildHolidayMap } from '../data/holidays.js';
 import { generateRegularCustomers } from '../data/customers.js';
+import { buildAloraEvents } from '../data/events.js';
 
 /** Capital inicial medio (~10.000 € en banco + fondo de caja) */
-export const STARTING_BANK_CENTS = 950000; // 9.500 €
-export const SAVE_VERSION = 1;
+export const STARTING_BANK_CENTS = 950000;
+export const SAVE_VERSION = 2;
+export const GAME_VERSION = '0.1';
 export const SLOT_COUNT = 3;
 export const STORAGE_PREFIX = 'loterias-alora-slot-';
 
@@ -19,9 +21,8 @@ export const OFFICE = {
   businessName: 'Loterías Álora',
 };
 
-/** Gastos mensuales aproximados del local (en céntimos) */
 export const MONTHLY_EXPENSES = {
-  rent: 65000, // 650 €
+  rent: 65000,
   electricity: 12000,
   water: 3500,
   internet: 4500,
@@ -32,7 +33,6 @@ export const MONTHLY_EXPENSES = {
 
 export function createNewGame(options = {}) {
   const start = options.startDate ? new Date(options.startDate) : new Date(Date.UTC(2026, 0, 7, 8, 0, 0));
-  // Ajustar al primer día laborable
   while (start.getUTCDay() === 0 || start.getUTCDay() === 6) {
     start.setUTCDate(start.getUTCDate() + 1);
   }
@@ -40,19 +40,21 @@ export function createNewGame(options = {}) {
 
   const float = defaultFloatDrawer();
   const holidays = buildHolidayMap(2025, 2032);
+  const events = buildAloraEvents(2025, 2032);
 
   const stock = {};
   for (const p of PRODUCTS) {
     if (p.stockType === 'physical') {
-      stock[p.id] = p.category === 'rasca' ? 40 : p.id.includes('navidad') || p.id.includes('nino') ? 20 : 30;
+      stock[p.id] =
+        p.category === 'rasca' ? 50 : p.id.includes('navidad') || p.id.includes('nino') ? 25 : 35;
     } else {
-      // Terminal: sin stock físico (null = ilimitado; evita Infinity en JSON)
       stock[p.id] = null;
     }
   }
 
   return {
     version: SAVE_VERSION,
+    gameVersion: GAME_VERSION,
     meta: {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -61,9 +63,7 @@ export function createNewGame(options = {}) {
       town: OFFICE.town,
     },
     clock: {
-      /** Fecha/hora de juego en ms UTC */
       gameTimeMs: start.getTime(),
-      /** Multiplicador sobre la base 0.25 (4× más lento). 0 = pausa */
       speed: 1,
       paused: false,
       lastRealMs: Date.now(),
@@ -80,32 +80,56 @@ export function createNewGame(options = {}) {
       daySalesCents: 0,
       dayCommissionCents: 0,
       dayPrizesPaidCents: 0,
+      dayPrizesReimbursableCents: 0,
       dayExpensesCents: 0,
+      lastSettlement: null,
       ledger: [],
     },
     stock,
-    orders: [], // { id, productId, qty, clientId?, clientName?, arriveOnYmd, status }
+    orders: [],
     reservations: [],
+    tickets: [],
+    draws: {},
+    prizeManagement: [],
+    nextIds: { ticket: 1 },
     customers: {
       regulars: generateRegularCustomers(280),
       queue: [],
       current: null,
       servedToday: 0,
-      nextSpawnAtMs: start.getTime() + 12 * 1000, // primer cliente ~12 s de juego
+      nextSpawnAtMs: start.getTime() + 12 * 1000,
     },
     dayLog: [],
     holidays,
+    events,
     stats: {
       totalSalesCents: 0,
       totalCustomers: 0,
       daysPlayed: 0,
     },
     ui: {
-      screen: 'counter', // menu | counter | cash | close | saves
+      screen: 'counter',
       toast: null,
       paymentSession: null,
+      lastTickets: [],
+      lastCloseSummary: null,
     },
   };
+}
+
+export function migrateState(data) {
+  if (!data) return createNewGame();
+  if (!data.tickets) data.tickets = [];
+  if (!data.draws) data.draws = {};
+  if (!data.prizeManagement) data.prizeManagement = [];
+  if (!data.events) data.events = buildAloraEvents(2025, 2032);
+  if (!data.nextIds) data.nextIds = { ticket: 1 };
+  if (data.finance && data.finance.dayPrizesReimbursableCents == null) {
+    data.finance.dayPrizesReimbursableCents = 0;
+  }
+  data.version = SAVE_VERSION;
+  data.gameVersion = GAME_VERSION;
+  return data;
 }
 
 export function emptyCounts() {

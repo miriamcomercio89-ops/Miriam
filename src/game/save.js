@@ -1,4 +1,4 @@
-import { createNewGame, SAVE_VERSION, SLOT_COUNT, STORAGE_PREFIX } from './state.js';
+import { createNewGame, SAVE_VERSION, SLOT_COUNT, STORAGE_PREFIX, migrateState } from './state.js';
 
 export function slotKey(slot) {
   return `${STORAGE_PREFIX}${slot}`;
@@ -21,6 +21,7 @@ export function listSlots() {
         gameTimeMs: data.clock?.gameTimeMs,
         bankCents: data.finance?.bankCents,
         daysPlayed: data.stats?.daysPlayed,
+        gameVersion: data.gameVersion || '0.0',
       });
     } catch {
       slots.push({ slot: i, empty: true, corrupt: true });
@@ -40,7 +41,7 @@ export function saveToSlot(state, slot) {
 export function loadFromSlot(slot) {
   const raw = localStorage.getItem(slotKey(slot));
   if (!raw) return null;
-  const data = JSON.parse(raw);
+  const data = migrateState(JSON.parse(raw));
   data.clock.lastRealMs = Date.now();
   data.ui = data.ui || { screen: 'counter', toast: null, paymentSession: null };
   data.ui.paymentSession = null;
@@ -74,7 +75,7 @@ export function importGame(file) {
     const reader = new FileReader();
     reader.onload = () => {
       try {
-        const data = JSON.parse(reader.result);
+        const data = migrateState(JSON.parse(reader.result));
         if (!data.clock || !data.finance) throw new Error('Archivo no válido');
         data.clock.lastRealMs = Date.now();
         data.ui = data.ui || {};

@@ -9,6 +9,7 @@ import {
   drawerTotalCents,
 } from '../data/money.js';
 import { getProduct } from '../data/products.js';
+import { createTicketsFromSale } from './tickets.js';
 
 export { formatEuro, ALL_DENOMS, emptyDrawer, drawerTotalCents, countTotalCents };
 
@@ -171,6 +172,16 @@ function finishSaleSideEffects(state) {
       state.stock[item.productId] = Math.max(0, (state.stock[item.productId] || 0) - item.qty);
     }
   }
+  // Crear tickets / rascas
+  const tickets = createTicketsFromSale(state, {
+    items: ps.items,
+    clientId: ps.clientId,
+    clientName: ps.clientName,
+    method: ps.method,
+  });
+  ps.createdTickets = tickets;
+  state.ui.lastTickets = tickets;
+
   // Historial cliente
   const client =
     state.customers.regulars.find((c) => c.id === ps.clientId) ||
@@ -180,13 +191,14 @@ function finishSaleSideEffects(state) {
       at: state.clock.gameTimeMs,
       items: ps.items,
       totalCents: ps.totalCents,
+      ticketIds: tickets.map((t) => t.id),
     });
   }
   state.stats.totalCustomers += 1;
   state.customers.servedToday += 1;
   state.dayLog.push({
     at: state.clock.gameTimeMs,
-    text: `Venta a ${ps.clientName}: ${formatEuro(ps.totalCents)} (${labelMethod(ps.method)})`,
+    text: `Venta a ${ps.clientName}: ${formatEuro(ps.totalCents)} (${labelMethod(ps.method)}) · ${tickets.length} ticket(s)`,
   });
 }
 

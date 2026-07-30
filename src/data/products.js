@@ -1,14 +1,9 @@
-/**
- * Catálogo de productos.
- * LAE / ONCE / rascas: nombres reales (fan-made, no oficial).
- * Autonómicas / provinciales / locales: inventadas.
- *
- * commissionRate = % comisión aproximada sobre venta
- * orderDays = días laborables de pedido
- */
+import { SCRATCH_CARDS } from './scratch.js';
 
+/**
+ * Catálogo v0.1 — sorteos core bien hechos + 10 rascas + inventadas.
+ */
 export const PRODUCTS = [
-  // ——— Loterías y Apuestas del Estado ———
   {
     id: 'lae-nacional',
     name: 'Lotería Nacional',
@@ -17,8 +12,10 @@ export const PRODUCTS = [
     priceCents: 3000,
     commissionRate: 0.04,
     drawDays: [4, 6],
+    drawHour: 21,
     orderDays: 2,
     stockType: 'physical',
+    checkable: true,
     description: 'Décimos de Lotería Nacional (jueves y sábado).',
   },
   {
@@ -32,6 +29,7 @@ export const PRODUCTS = [
     seasonMonths: [10, 11, 12],
     orderDays: 3,
     stockType: 'physical',
+    checkable: true,
     description: 'El Gordo de Navidad (20 € el décimo).',
   },
   {
@@ -45,6 +43,7 @@ export const PRODUCTS = [
     seasonMonths: [12, 1],
     orderDays: 3,
     stockType: 'physical',
+    checkable: true,
     description: 'Sorteo Extraordinario del Niño.',
   },
   {
@@ -55,8 +54,10 @@ export const PRODUCTS = [
     priceCents: 100,
     commissionRate: 0.055,
     drawDays: [3, 6],
+    drawHour: 21,
     orderDays: 0,
     stockType: 'terminal',
+    checkable: true,
     description: '6 números del 1 al 49 + reintegro. Miércoles y sábado.',
     bet: { pick: 6, from: 49, reintegro: true },
   },
@@ -68,8 +69,10 @@ export const PRODUCTS = [
     priceCents: 50,
     commissionRate: 0.055,
     drawDays: [1, 2, 3, 4, 5, 6],
+    drawHour: 21,
     orderDays: 0,
     stockType: 'terminal',
+    checkable: true,
     description: '6/49 de lunes a sábado. Precio 0,50 €.',
     bet: { pick: 6, from: 49, reintegro: true },
   },
@@ -81,74 +84,13 @@ export const PRODUCTS = [
     priceCents: 250,
     commissionRate: 0.055,
     drawDays: [2, 5],
+    drawHour: 21,
     orderDays: 0,
     stockType: 'terminal',
+    checkable: true,
     description: '5/50 + 2 estrellas. Martes y viernes. 2,50 €.',
     bet: { pickMain: 5, fromMain: 50, pickStars: 2, fromStars: 12 },
   },
-  {
-    id: 'lae-gordo-primitiva',
-    name: 'El Gordo de la Primitiva',
-    org: 'LAE',
-    category: 'sorteo',
-    priceCents: 150,
-    commissionRate: 0.055,
-    drawDays: [0],
-    orderDays: 0,
-    stockType: 'terminal',
-    description: '5/54 + clave. Domingos (venta viernes).',
-    bet: { pick: 5, from: 54, claveFrom: 9 },
-  },
-  {
-    id: 'lae-quiniela',
-    name: 'La Quiniela',
-    org: 'LAE',
-    category: 'apuestas',
-    priceCents: 75,
-    commissionRate: 0.06,
-    drawDays: [0],
-    orderDays: 0,
-    stockType: 'terminal',
-    description: 'Pronósticos 1X2. 0,75 € por columna.',
-  },
-  {
-    id: 'lae-quinigol',
-    name: 'Quinigol',
-    org: 'LAE',
-    category: 'apuestas',
-    priceCents: 100,
-    commissionRate: 0.06,
-    drawDays: [0],
-    orderDays: 0,
-    stockType: 'terminal',
-    description: 'Goles exactos en 6 partidos.',
-  },
-  {
-    id: 'lae-lototurf',
-    name: 'Lototurf',
-    org: 'LAE',
-    category: 'apuestas',
-    priceCents: 100,
-    commissionRate: 0.06,
-    drawDays: [0],
-    orderDays: 0,
-    stockType: 'terminal',
-    description: 'Lotería + hípica.',
-  },
-  {
-    id: 'lae-quintuple',
-    name: 'Quíntuple Plus',
-    org: 'LAE',
-    category: 'apuestas',
-    priceCents: 50,
-    commissionRate: 0.06,
-    drawDays: [0],
-    orderDays: 0,
-    stockType: 'terminal',
-    description: 'Apuestas hípicas.',
-  },
-
-  // ——— ONCE ———
   {
     id: 'once-cupon',
     name: 'Cupón Diario ONCE',
@@ -157,147 +99,13 @@ export const PRODUCTS = [
     priceCents: 200,
     commissionRate: 0.05,
     drawDays: [1, 2, 3, 4, 5],
+    drawHour: 21,
     orderDays: 1,
     stockType: 'physical',
+    checkable: true,
     description: 'Cupón ordinario de lunes a viernes.',
   },
-  {
-    id: 'once-fin-semana',
-    name: 'Cupón Fin de Semana ONCE',
-    org: 'ONCE',
-    category: 'sorteo',
-    priceCents: 200,
-    commissionRate: 0.05,
-    drawDays: [6],
-    orderDays: 1,
-    stockType: 'physical',
-    description: 'Cupón de sábado.',
-  },
-  {
-    id: 'once-cuponazo',
-    name: 'Cuponazo ONCE',
-    org: 'ONCE',
-    category: 'especial',
-    priceCents: 500,
-    commissionRate: 0.05,
-    drawDays: [5],
-    orderDays: 1,
-    stockType: 'physical',
-    description: 'Sorteo especial de viernes.',
-  },
-  {
-    id: 'once-sueldazo',
-    name: 'Sueldazo del Fin de Semana',
-    org: 'ONCE',
-    category: 'especial',
-    priceCents: 300,
-    commissionRate: 0.05,
-    drawDays: [0],
-    orderDays: 1,
-    stockType: 'physical',
-    description: 'Sorteo dominical con sueldazos.',
-  },
-  {
-    id: 'once-extra',
-    name: 'Extraordinarios ONCE',
-    org: 'ONCE',
-    category: 'especial',
-    priceCents: 600,
-    commissionRate: 0.05,
-    drawDays: [],
-    orderDays: 2,
-    stockType: 'physical',
-    description: 'Sorteos extraordinarios (verano, Navidad, etc.).',
-  },
-  {
-    id: 'once-eurojackpot',
-    name: 'Eurojackpot',
-    org: 'ONCE',
-    category: 'sorteo',
-    priceCents: 200,
-    commissionRate: 0.05,
-    drawDays: [2, 5],
-    orderDays: 0,
-    stockType: 'terminal',
-    description: '5/50 + 2/12. Martes y viernes.',
-    bet: { pickMain: 5, fromMain: 50, pickEuro: 2, fromEuro: 12 },
-  },
-  {
-    id: 'once-super-once',
-    name: 'Super Once',
-    org: 'ONCE',
-    category: 'sorteo',
-    priceCents: 100,
-    commissionRate: 0.05,
-    drawDays: [1, 2, 3, 4, 5, 6, 0],
-    orderDays: 0,
-    stockType: 'terminal',
-    description: 'Elige 5 a 12 números del 1 al 49.',
-  },
-  {
-    id: 'once-triplex',
-    name: 'Triplex',
-    org: 'ONCE',
-    category: 'sorteo',
-    priceCents: 50,
-    commissionRate: 0.05,
-    drawDays: [1, 2, 3, 4, 5, 6, 0],
-    orderDays: 0,
-    stockType: 'terminal',
-    description: '3 cifras. Diario.',
-  },
-  {
-    id: 'once-mi-dia',
-    name: 'Mi Día',
-    org: 'ONCE',
-    category: 'sorteo',
-    priceCents: 100,
-    commissionRate: 0.05,
-    drawDays: [1, 2, 3, 4, 5, 6, 0],
-    orderDays: 0,
-    stockType: 'terminal',
-    description: 'Fecha especial + número.',
-  },
-
-  // ——— Rascas LAE (selección amplia de nombres reales / reconocibles) ———
-  ...rasca('lae', 'LAE', [
-    ['rasca-multiplica', 'Multiplica', 100],
-    ['rasca-7-vidas', '7 Vidas', 100],
-    ['rasca-cruz', 'La Cruz', 100],
-    ['rasca-diamante', 'Diamante', 200],
-    ['rasca-oro', 'Al Oro', 200],
-    ['rasca-euro', 'Euro', 200],
-    ['rasca-triple', 'Triple', 300],
-    ['rasca-caja-fuerte', 'Caja Fuerte', 300],
-    ['rasca-jackpot', 'Jackpot', 500],
-    ['rasca-millón', 'El Millón Instantáneo', 500],
-    ['rasca-suerte', 'Pleno al 15 Instantáneo', 100],
-    ['rasca-bingo', 'Bingo', 200],
-    ['rasca-poker', 'Póker', 200],
-    ['rasca-fruta', 'Frutas', 100],
-    ['rasca-navidad', 'Rasca de Navidad', 200],
-    ['rasca-verano', 'Rasca de Verano', 200],
-    ['rasca-10x', '10×', 1000],
-    ['rasca-20e', 'Gana hasta 2.000.000 €', 2000],
-    ['rasca-5e', 'Gana hasta 500.000 €', 500],
-    ['rasca-lucky', 'Lucky 7', 100],
-  ]),
-
-  // ——— Rascas ONCE ———
-  ...rasca('once', 'ONCE', [
-    ['rasca-once-clasico', 'Rasca ONCE Clásico', 100],
-    ['rasca-once-premium', 'Rasca ONCE Premium', 500],
-    ['rasca-once-x2', 'Rasca ×2', 200],
-    ['rasca-once-x5', 'Rasca ×5', 200],
-    ['rasca-once-x10', 'Rasca ×10', 500],
-    ['rasca-once-oro', 'Rasca de Oro', 300],
-    ['rasca-once-platino', 'Rasca Platino', 1000],
-    ['rasca-once-estrella', 'Estrella de la Suerte', 200],
-    ['rasca-once-navidad', 'Rasca Extra Navidad', 300],
-    ['rasca-once-verano', 'Rasca Verano', 200],
-  ]),
-
-  // ——— Inventadas: autonómicas / provinciales / locales ———
+  // Inventadas
   {
     id: 'and-fortuna',
     name: 'Andalucía Fortuna',
@@ -306,21 +114,11 @@ export const PRODUCTS = [
     priceCents: 100,
     commissionRate: 0.08,
     drawDays: [5],
+    drawHour: 20,
     orderDays: 2,
     stockType: 'physical',
+    checkable: true,
     description: 'Sorteo ficticio andaluz semanal.',
-  },
-  {
-    id: 'and-costa',
-    name: 'Sorteo Costa del Sol',
-    org: 'Autonómica',
-    category: 'inventada',
-    priceCents: 200,
-    commissionRate: 0.08,
-    drawDays: [6],
-    orderDays: 2,
-    stockType: 'physical',
-    description: 'Juego regional ficticio con bote.',
   },
   {
     id: 'mal-premio',
@@ -330,8 +128,10 @@ export const PRODUCTS = [
     priceCents: 100,
     commissionRate: 0.1,
     drawDays: [4],
+    drawHour: 20,
     orderDays: 2,
     stockType: 'physical',
+    checkable: true,
     description: 'Lotería provincial inventada de Málaga.',
   },
   {
@@ -342,51 +142,22 @@ export const PRODUCTS = [
     priceCents: 50,
     commissionRate: 0.12,
     drawDays: [5],
+    drawHour: 19,
     orderDays: 1,
     stockType: 'physical',
+    checkable: true,
     description: 'Rifa local inventada de Álora.',
   },
-  {
-    id: 'alo-hoya',
-    name: 'Hoya de Málaga',
-    org: 'Local',
-    category: 'inventada',
-    priceCents: 100,
-    commissionRate: 0.1,
-    drawDays: [3],
-    orderDays: 2,
-    stockType: 'physical',
-    description: 'Sorteo local inventado del valle.',
-  },
-  {
-    id: 'and-olivo',
-    name: 'El Olivo de la Suerte',
-    org: 'Autonómica',
-    category: 'inventada',
-    priceCents: 150,
-    commissionRate: 0.08,
-    drawDays: [2],
-    orderDays: 2,
-    stockType: 'physical',
-    description: 'Sorteo inventado andaluz.',
-  },
-];
-
-function rasca(prefix, org, list) {
-  return list.map(([id, name, priceCents]) => ({
-    id: id.trim(),
-    name,
-    org,
+  // 10 rascas
+  ...SCRATCH_CARDS.map((c) => ({
+    ...c,
     category: 'rasca',
-    priceCents,
-    commissionRate: org === 'LAE' ? 0.06 : 0.055,
-    drawDays: [],
-    orderDays: 2,
     stockType: 'physical',
+    checkable: true,
     instant: true,
-    description: `Cupón rasca ${org}. Premio instantáneo.`,
-  }));
-}
+    drawDays: [],
+  })),
+];
 
 export function getProduct(id) {
   return PRODUCTS.find((p) => p.id === id);
@@ -400,3 +171,12 @@ export function productsByOrg() {
   }
   return map;
 }
+
+/** Productos de sorteo comprobables (no rasca) */
+export const CORE_DRAW_IDS = [
+  'lae-nacional',
+  'lae-primitiva',
+  'lae-bonoloto',
+  'lae-euromillones',
+  'once-cupon',
+];

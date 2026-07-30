@@ -4,6 +4,7 @@ import {
   setSpeed,
   formatGameClock,
   gameDate,
+  gameYmd,
   isOpenHours,
   closedReason,
   isClosedDay,
@@ -24,6 +25,8 @@ import {
   dismissCurrent,
   orderStock,
   processArrivingOrders,
+  checkCurrentTicket,
+  crowdFactor,
 } from './game/customers.js';
 import {
   selectPaymentMethod,
@@ -39,33 +42,39 @@ import {
   countTotalCents,
   drawerTotalCents,
 } from './game/cash.js';
-import { buildDayCloseSummary, closeDay } from './game/economy.js';
+import { buildDayCloseSummary, closeDay, dayProfitBreakdown } from './game/economy.js';
 import { PRODUCTS } from './data/products.js';
 import { BILLS, COINS } from './data/money.js';
 import { sfx } from './game/sounds.js';
+import { ensureDrawsResolved } from './game/draws.js';
+import { formatSelection } from './game/tickets.js';
+import { payTicketPrize, startPrizeManagement } from './game/prizes.js';
+import { downloadTicketPdf, downloadSaleReceiptPdf } from './game/pdf.js';
+import { eventOn } from './data/events.js';
+import { GAME_VERSION } from './game/state.js';
 
 let state = null;
 let toastTimer = null;
-let lastFullRender = 0;
 let needsFullRender = true;
-let lastClientId = null;
 let lastClockMinute = -1;
 
 const app = document.getElementById('app');
 
 function showToast(msg) {
+  if (!state) return;
   state.ui.toast = msg;
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => {
     if (state) state.ui.toast = null;
     needsFullRender = true;
     render();
-  }, 3200);
+  }, 3500);
 }
 
-function loop(ts) {
+function loop() {
   if (state && state.ui.screen !== 'menu') {
     advanceClock(state);
+    ensureDrawsResolved(state);
     if (state.ui.screen === 'counter') {
       const before = state.customers.current?.id || null;
       maybeSpawnCustomers(state);
@@ -77,16 +86,15 @@ function loop(ts) {
     if (needsFullRender) {
       render();
       needsFullRender = false;
-      lastFullRender = ts;
-      lastClientId = state.customers.current?.id || null;
       lastClockMinute = minute;
     } else {
       renderClockOnly();
-      // Actualizar texto de espera cada minuto de juego sin re-montar botones
       if (state.ui.screen === 'counter' && minute !== lastClockMinute) {
         lastClockMinute = minute;
         const hint = document.getElementById('crowd-hint');
         if (hint) hint.textContent = crowdHint();
+        const evEl = document.getElementById('event-banner');
+        if (evEl) evEl.textContent = eventBannerText();
       }
     }
   }
@@ -106,35 +114,47 @@ function renderClockOnly() {
 }
 
 function render() {
-  if (!state) {
-    renderMenu();
-    return;
-  }
-  if (state.ui.screen === 'menu') {
-    renderMenu();
-    return;
-  }
-  if (state.ui.screen === 'cash') {
-    renderCash();
-    return;
-  }
-  if (state.ui.screen === 'close') {
-    renderClose();
-    return;
-  }
-  if (state.ui.screen === 'saves') {
-    renderSavesInGame();
-    return;
-  }
-  if (state.ui.screen === 'stock') {
-    renderStock();
-    return;
-  }
-  if (state.ui.screen === 'prize') {
-    renderPrize();
-    return;
-  }
-  renderCounter();
+  if (!state || state.ui.screen === 'menu') return renderMenu();
+  if (state.ui.screen === 'cash') return renderCash();
+  if (state.ui.screen === 'close') return renderClose();
+  if (state.ui.screen === 'saves') return renderSavesInGame();
+  if (state.ui.screen === 'stock') return renderStock();
+  if (state.ui.screen === 'prize') return renderPrize();
+  if (state.ui.screen === 'draws') return renderDraws();
+  if (state.ui.screen === 'management') return renderManagement();
+  return renderCounter();
+}
+
+function escapeHtml(s) {
+  return String(s)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;');
+}
+
+function toastHTML() {
+  if (!state?.ui?.toast) return '';
+  return `<div class="toast">${escapeHtml(state.ui.toast)}</div>`;
+}
+
+function payLabel(m) {
+  return { cash: 'efectivo', card: 'tarjeta', bizum: 'Bizum', transfer: 'transferencia', managed: 'gestión' }[m] || m;
+}
+
+function crowdHint() {
+  const d = gameDate(state);
+  const m = d.getUTCMonth() + 1;
+  const ev = eventOn(gameYmd(state), state.events);
+  if (ev) return `alta (${ev.name})`;
+  if (m === 12) return 'mucha (Navidad)';
+  if (m === 1 && d.getUTCDate() <= 10) return 'alta (El Niño)';
+  if (d.getUTCDay() === 5) return 'media-alta (Euromillones)';
+  return 'normal';
+}
+
+function eventBannerText() {
+  const ev = eventOn(gameYmd(state), state.events);
+  return ev ? `Evento en Álora: ${ev.name}` : '';
 }
 
 function renderMenu() {
@@ -142,7 +162,7 @@ function renderMenu() {
   app.innerHTML = `
     <div class="menu-screen">
       <div class="menu-card">
-        <div class="muted">Álora · Málaga · Única administración del pueblo</div>
+        <div class="muted">Álora · Málaga · v${GAME_VERSION}</div>
         <h1>Loterías Álora</h1>
         <p class="tagline">Simulador realista de mostrador. Tú eres Miriam, la única empleada.</p>
         <div class="actions">
@@ -165,7 +185,7 @@ function renderMenu() {
               return `<div class="slot">
                 <div>
                   <strong>Hueco ${s.slot}</strong>
-                  <div class="muted">${when} · Día ${s.daysPlayed ?? 0}</div>
+                  <div class="muted">${when} · Día ${s.daysPlayed ?? 0} · v${s.gameVersion || '?'}</div>
                 </div>
                 <div class="actions">
                   <button class="btn primary" data-load="${s.slot}">Continuar</button>
@@ -176,7 +196,7 @@ function renderMenu() {
         </div>
         <p class="disclaimer">
           Fan-made / no oficial. Nombres de Loterías y Apuestas del Estado y ONCE usados solo con fines de simulación.
-          Juego responsable · +18. El tiempo avanza 4× más lento. Horario: L–V 08:00–20:00.
+          Juego responsable · +18. Versión ${GAME_VERSION}: sorteos, comprobaciones, rascas, liquidaciones y tickets PDF.
         </p>
       </div>
     </div>
@@ -186,8 +206,9 @@ function renderMenu() {
     sfx.open();
     state = newGame();
     processArrivingOrders(state);
+    ensureDrawsResolved(state);
     state.ui.screen = 'counter';
-    showToast('Bienvenida, Miriam. La administración abre a las 08:00.');
+    showToast('Bienvenida, Miriam. Versión 0.1 lista.');
     needsFullRender = true;
     render();
   };
@@ -231,11 +252,12 @@ function topbarHTML() {
   });
   const open = isOpenHours(state) && !isClosedDay(state);
   const speed = state.clock.paused ? 0 : state.clock.speed;
+  const ev = eventBannerText();
   return `
     <header class="topbar">
       <div class="brand">
         <div class="brand-name">Loterías Álora</div>
-        <div class="brand-sub">Miriam · Álora (Málaga) · ~13.000 hab.</div>
+        <div class="brand-sub">Miriam · Álora · v${GAME_VERSION}${ev ? ` · ${escapeHtml(ev)}` : ''}</div>
       </div>
       <div class="clock-block">
         <div class="clock-time" id="live-clock">${formatGameClock(state)}</div>
@@ -266,11 +288,15 @@ function bindTopbar() {
 }
 
 function sideNav() {
+  const profit = dayProfitBreakdown(state);
+  const openMgmt = (state.prizeManagement || []).filter((c) => c.status !== 'settled').length;
   return `
     <aside class="panel nav-side">
       <h3>Oficina</h3>
       <button class="btn" data-nav="counter">Mostrador</button>
+      <button class="btn" data-nav="draws">Sorteos</button>
       <button class="btn" data-nav="prize">Pagar premio</button>
+      <button class="btn" data-nav="management">Gestión premios${openMgmt ? ` (${openMgmt})` : ''}</button>
       <button class="btn" data-nav="stock">Stock y pedidos</button>
       <button class="btn" data-nav="close">Cierre y balance</button>
       <button class="btn" data-nav="saves">Guardar / exportar</button>
@@ -278,9 +304,11 @@ function sideNav() {
       <div class="stat-row"><span>Banco</span><strong>${formatEuro(state.finance.bankCents)}</strong></div>
       <div class="stat-row"><span>Caja</span><strong>${formatEuro(drawerTotalCents(state.finance.drawer))}</strong></div>
       <div class="stat-row"><span>Ventas hoy</span><strong>${formatEuro(state.finance.daySalesCents)}</strong></div>
-      <div class="stat-row"><span>Comisión hoy</span><strong>${formatEuro(state.finance.dayCommissionCents)}</strong></div>
+      <div class="stat-row"><span>Comisión hoy</span><strong>${formatEuro(profit.commissionCents)}</strong></div>
+      <div class="stat-row"><span>Beneficio hoy*</span><strong>${formatEuro(profit.profitCents)}</strong></div>
       <div class="stat-row"><span>Clientes hoy</span><strong>${state.customers.servedToday}</strong></div>
       <div class="stat-row"><span>Velocidad</span><strong>${speedLabel(state.clock.speed, state.clock.paused)}</strong></div>
+      <p class="muted" style="font-size:0.78rem;margin-top:8px">*Comisiones − gastos del día</p>
     </aside>
   `;
 }
@@ -296,49 +324,26 @@ function bindNav() {
   });
 }
 
-function toastHTML() {
-  if (!state.ui.toast) return '';
-  return `<div class="toast">${escapeHtml(state.ui.toast)}</div>`;
-}
-
-function escapeHtml(s) {
-  return String(s)
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;');
-}
-
 function renderCounter() {
   const client = state.customers.current;
+  const ev = eventBannerText();
   let clientBlock;
+
   if (!isOpenHours(state) || isClosedDay(state)) {
     clientBlock = `
       <div class="hero-counter">
         <h2>Oficina cerrada</h2>
-        <p>${closedReason(state) || 'Fuera de horario (08:00–20:00). Puedes revisar stock o hacer el cierre del día.'}</p>
+        <p>${closedReason(state) || 'Fuera de horario (08:00–20:00).'}</p>
       </div>`;
   } else if (!client) {
     clientBlock = `
       <div class="hero-counter">
         <h2>Mostrador listo</h2>
-        <p>Esperando clientes en Álora… El tiempo corre ${state.clock.paused ? 'en pausa' : '4× más lento (con tu velocidad)'}.
-        Hoy hay <span id="crowd-hint">${crowdHint()}</span> afluencia.</p>
+        <p>Esperando clientes… Afluencia <span id="crowd-hint">${crowdHint()}</span>
+        ${ev ? `· <span id="event-banner">${escapeHtml(ev)}</span>` : '<span id="event-banner"></span>'}</p>
       </div>`;
   } else {
-    const req = client.request;
-    clientBlock = `
-      <div class="client-card">
-        <div class="muted">${client.regular ? 'Cliente habitual' : 'Visitante de paso'} · ${escapeHtml(client.street || '')}</div>
-        <h3>${escapeHtml(client.name)}</h3>
-        <p>Quiere: <strong>${escapeHtml(req.productName)}</strong> × ${req.qty}
-          — ${formatEuro(req.totalCents)}</p>
-        <p class="muted">Pago preferido: ${payLabel(client.prefersPayment)}</p>
-        <div class="actions">
-          <button class="btn primary" id="btn-sell">Vender y cobrar</button>
-          <button class="btn" id="btn-reserve">Reservar sin pagar</button>
-          <button class="btn ghost" id="btn-skip">Despedir</button>
-        </div>
-      </div>`;
+    clientBlock = renderClientPanel(client);
   }
 
   const log = [...state.dayLog].slice(-12).reverse();
@@ -362,12 +367,11 @@ function renderCounter() {
           </div>
         </section>
         <aside class="panel">
-          <h3>Caja rápida</h3>
-          <p class="muted">Fondo de cambio y arqueo completo en el cierre.</p>
-          <div class="stat-row"><span>En cajón</span><strong>${formatEuro(drawerTotalCents(state.finance.drawer))}</strong></div>
+          <h3>Hoy</h3>
+          <div class="stat-row"><span>Tickets emitidos</span><strong>${(state.tickets || []).length}</strong></div>
           <div class="stat-row"><span>Pedidos pendientes</span><strong>${state.orders.filter((o) => o.status === 'pending').length}</strong></div>
-          <div class="stat-row"><span>Habituales</span><strong>${state.customers.regulars.length}</strong></div>
-          <p class="disclaimer" style="margin-top:16px">Fan-made · no oficial · +18</p>
+          <div class="stat-row"><span>Afluencia</span><strong>×${crowdFactor(state).toFixed(1)}</strong></div>
+          <p class="disclaimer" style="margin-top:16px">Fan-made · no oficial · +18 · v${GAME_VERSION}</p>
         </aside>
       </div>
     </div>
@@ -376,14 +380,115 @@ function renderCounter() {
 
   bindTopbar();
   bindNav();
+  bindClientActions();
+}
 
+function renderClientPanel(client) {
+  const intent = client.intent || 'buy';
+  const trait = client.trait ? ` · ${client.trait}` : '';
+  const quote = client.line || client.note || '';
+
+  if (intent === 'buy' || intent === 'reserve_special') {
+    const req = client.request;
+    return `
+      <div class="client-card">
+        <div class="muted">${client.regular ? 'Habitual' : 'Visitante'}${trait} · ${escapeHtml(client.street || '')}</div>
+        <h3>${escapeHtml(client.name)}</h3>
+        ${quote ? `<p class="muted">“${escapeHtml(quote)}”</p>` : ''}
+        <p>${intent === 'reserve_special' ? 'Encargo:' : 'Quiere:'} <strong>${escapeHtml(req.productName)}</strong> × ${req.qty}
+          — ${formatEuro(req.totalCents)}</p>
+        <p class="muted">Pago preferido: ${payLabel(client.prefersPayment)}</p>
+        <div class="actions">
+          ${
+            intent === 'reserve_special'
+              ? `<button class="btn primary" id="btn-reserve">Reservar sin pagar</button>`
+              : `<button class="btn primary" id="btn-sell">Vender y cobrar</button>
+                 <button class="btn" id="btn-reserve">Reservar sin pagar</button>`
+          }
+          <button class="btn ghost" id="btn-skip">Despedir</button>
+        </div>
+      </div>`;
+  }
+
+  if (intent === 'check') {
+    const t = client.ticketFocus;
+    const result = client.checkResult;
+    return `
+      <div class="client-card">
+        <div class="muted">Comprobación${trait}</div>
+        <h3>${escapeHtml(client.name)}</h3>
+        <p>Trae <strong>${escapeHtml(t.productName)}</strong> (${t.id})</p>
+        <p class="muted">${formatSelection(t)}${t.drawYmd ? ` · Sorteo ${t.drawYmd}` : ''}</p>
+        ${
+          result
+            ? `<div class="${result.prizeCents ? 'total-box' : 'error-box'}" style="margin:10px 0">
+                ${
+                  result.pending
+                    ? escapeHtml(result.detail)
+                    : result.prizeCents
+                      ? `¡Premio: ${formatEuro(result.prizeCents)}! (${escapeHtml(result.detail || '')})`
+                      : `Sin premio. ${escapeHtml(result.detail || '')}`
+                }
+              </div>`
+            : ''
+        }
+        <div class="actions">
+          ${
+            !result
+              ? `<button class="btn primary" id="btn-check">Comprobar</button>`
+              : result.prizeCents > 0
+                ? `<button class="btn primary" id="btn-pay-now">Pagar ahora</button>
+                   <button class="btn" id="btn-defer">Cobrar otro día</button>
+                   <button class="btn accent" id="btn-manage">Gestionar (premio grande)</button>`
+                : `<button class="btn primary" id="btn-done-check">Listo</button>`
+          }
+          <button class="btn" id="btn-pdf-ticket">PDF ticket</button>
+          <button class="btn ghost" id="btn-skip">Despedir</button>
+        </div>
+      </div>`;
+  }
+
+  if (intent === 'claim') {
+    const t = client.ticketFocus;
+    return `
+      <div class="client-card">
+        <div class="muted">Cobro de premio${trait}</div>
+        <h3>${escapeHtml(client.name)}</h3>
+        <p>Premio pendiente: <strong>${formatEuro(t.prizeCents)}</strong> · ${escapeHtml(t.productName)}</p>
+        <div class="actions">
+          <button class="btn primary" id="btn-pay-now">Pagar ahora</button>
+          <button class="btn" id="btn-defer">Seguir pendiente</button>
+          <button class="btn accent" id="btn-manage">Pasar a gestión</button>
+          <button class="btn ghost" id="btn-skip">Despedir</button>
+        </div>
+      </div>`;
+  }
+
+  if (intent === 'managed_ask') {
+    const t = client.ticketFocus;
+    const mgmt = (state.prizeManagement || []).find((m) => m.ticketId === t.id);
+    return `
+      <div class="client-card">
+        <div class="muted">Consulta de gestión</div>
+        <h3>${escapeHtml(client.name)}</h3>
+        <p>Premio en gestión: <strong>${formatEuro(t.prizeCents)}</strong></p>
+        <p class="muted">Estado: ${mgmt?.status || 'en trámite'} · ${escapeHtml(mgmt?.note || '')}</p>
+        <div class="actions">
+          <button class="btn primary" id="btn-done-check">Explicar y despedir</button>
+        </div>
+      </div>`;
+  }
+
+  return `<div class="client-card"><h3>${escapeHtml(client.name)}</h3><button class="btn" id="btn-skip">Despedir</button></div>`;
+}
+
+function bindClientActions() {
   const sell = document.getElementById('btn-sell');
   if (sell) {
     sell.onclick = () => {
       sfx.scan();
-      const before = state.ui.screen;
       sellToCurrent(state);
-      if (state.ui.toast && state.ui.screen === before) sfx.error();
+      if (state.ui.toast) showToast(state.ui.toast);
       needsFullRender = true;
       render();
     };
@@ -393,6 +498,7 @@ function renderCounter() {
     reserve.onclick = () => {
       sfx.click();
       reserveForCurrent(state);
+      showToast(state.ui.toast);
       needsFullRender = true;
       render();
     };
@@ -401,39 +507,109 @@ function renderCounter() {
   if (skip) {
     skip.onclick = () => {
       sfx.click();
-      dismissCurrent(state, `${state.customers.current?.name || 'Cliente'} se va sin comprar`);
+      const name = state.customers.current?.name || 'Cliente';
+      dismissCurrent(state, `${name} se va`);
       state.customers.current = null;
       needsFullRender = true;
       render();
     };
   }
-}
-
-function crowdHint() {
-  const d = gameDate(state);
-  const m = d.getUTCMonth() + 1;
-  if (m === 12) return 'mucha (Navidad)';
-  if (m === 1 && d.getUTCDate() <= 10) return 'alta (El Niño)';
-  if (d.getUTCDay() === 5) return 'media-alta (Euromillones)';
-  return 'normal';
-}
-
-function payLabel(m) {
-  return { cash: 'efectivo', card: 'tarjeta', bizum: 'Bizum', transfer: 'transferencia' }[m] || m;
+  const check = document.getElementById('btn-check');
+  if (check) {
+    check.onclick = () => {
+      sfx.scan();
+      checkCurrentTicket(state);
+      showToast(state.ui.toast);
+      needsFullRender = true;
+      render();
+    };
+  }
+  const done = document.getElementById('btn-done-check');
+  if (done) {
+    done.onclick = () => {
+      state.customers.current = null;
+      needsFullRender = true;
+      render();
+    };
+  }
+  const payNow = document.getElementById('btn-pay-now');
+  if (payNow) {
+    payNow.onclick = () => {
+      const t = state.customers.current?.ticketFocus;
+      if (!t) return;
+      // Si es grande, payTicketPrize forzará gestión
+      const res = payTicketPrize(state, t.id, { method: 'cash' });
+      if (!res.ok && res.message?.includes('efectivo')) {
+        const res2 = payTicketPrize(state, t.id, { method: 'transfer' });
+        if (!res2.ok) {
+          sfx.error();
+          showToast(res2.message || res.message);
+        } else {
+          sfx.cash();
+          showToast(state.ui.toast);
+          state.customers.current = null;
+        }
+      } else if (!res.ok) {
+        sfx.error();
+        showToast(res.message);
+      } else {
+        sfx.cash();
+        showToast(state.ui.toast);
+        if (!res.deferred) state.customers.current = null;
+      }
+      needsFullRender = true;
+      render();
+    };
+  }
+  const defer = document.getElementById('btn-defer');
+  if (defer) {
+    defer.onclick = () => {
+      const t = state.customers.current?.ticketFocus;
+      if (!t) return;
+      payTicketPrize(state, t.id, { defer: true });
+      sfx.click();
+      showToast(state.ui.toast);
+      state.customers.current = null;
+      needsFullRender = true;
+      render();
+    };
+  }
+  const manage = document.getElementById('btn-manage');
+  if (manage) {
+    manage.onclick = () => {
+      const t = state.customers.current?.ticketFocus;
+      if (!t) return;
+      startPrizeManagement(state, t);
+      sfx.click();
+      showToast(state.ui.toast);
+      state.customers.current = null;
+      needsFullRender = true;
+      render();
+    };
+  }
+  const pdfBtn = document.getElementById('btn-pdf-ticket');
+  if (pdfBtn) {
+    pdfBtn.onclick = () => {
+      const t = state.customers.current?.ticketFocus;
+      if (!t) return;
+      downloadTicketPdf(t);
+      sfx.click();
+      showToast('PDF del ticket descargado');
+    };
+  }
 }
 
 function renderCash() {
   const ps = state.ui.paymentSession;
   if (!ps) {
     state.ui.screen = 'counter';
-    render();
-    return;
+    return render();
   }
 
   const tendered = countTotalCents(ps.tendered);
   const changeSum = countTotalCents(ps.changeGiven || {});
-
   let body = '';
+
   if (ps.step === 'method') {
     body = `
       <p>Cliente: <strong>${escapeHtml(ps.clientName)}</strong> · Prefiere ${payLabel(ps.preferredPayment)}</p>
@@ -445,29 +621,26 @@ function renderCash() {
         <button class="btn" data-method="card">Tarjeta</button>
         <button class="btn" data-method="bizum">Bizum</button>
         <button class="btn" data-method="transfer">Transferencia</button>
-      </div>
-      <p class="muted" style="margin-top:10px">Tarjeta, Bizum y transferencia cobran el importe exacto (sin cambio).</p>
-    `;
+      </div>`;
   } else if (ps.step === 'cash-tender') {
     body = `
-      <p>El cliente te da billetes y monedas. Marca lo recibido.</p>
+      <p>Marca lo que entrega el cliente.</p>
       <div class="totals">
         <div class="total-box">A cobrar<strong>${formatEuro(ps.totalCents)}</strong></div>
         <div class="total-box">Entregado<strong>${formatEuro(tendered)}</strong></div>
-        <div class="total-box">Cambio teórico<strong>${formatEuro(Math.max(0, tendered - ps.totalCents))}</strong></div>
+        <div class="total-box">Cambio<strong>${formatEuro(Math.max(0, tendered - ps.totalCents))}</strong></div>
       </div>
       ${denomEditor('tender')}
       <div class="actions" style="margin-top:12px">
         <button class="btn primary" id="btn-confirm-tender">Continuar al cambio</button>
         <button class="btn danger" id="btn-cancel-pay">Cancelar</button>
-      </div>
-    `;
+      </div>`;
   } else if (ps.step === 'cash-change') {
     body = `
-      <p>Elige el cambio en billetes y monedas. Debe cuadrar exactamente.</p>
+      <p>Elige el cambio exacto.</p>
       <div class="totals">
-        <div class="total-box">Cambio a devolver<strong>${formatEuro(ps.changeNeededCents || 0)}</strong></div>
-        <div class="total-box">Tu selección<strong>${formatEuro(changeSum)}</strong></div>
+        <div class="total-box">A devolver<strong>${formatEuro(ps.changeNeededCents || 0)}</strong></div>
+        <div class="total-box">Selección<strong>${formatEuro(changeSum)}</strong></div>
         <div class="total-box">En caja<strong>${formatEuro(drawerTotalCents(state.finance.drawer))}</strong></div>
       </div>
       ${denomEditor('change')}
@@ -475,18 +648,31 @@ function renderCash() {
         <button class="btn primary" id="btn-confirm-change">Confirmar cobro</button>
         <button class="btn" id="btn-back-tender">Volver</button>
         <button class="btn danger" id="btn-cancel-pay">Cancelar</button>
-      </div>
-    `;
+      </div>`;
   } else if (ps.step === 'done') {
+    const tickets = ps.createdTickets || [];
     body = `
       <div class="hero-counter">
         <h2>Cobro completado</h2>
         <p>${escapeHtml(ps.clientName)} · ${formatEuro(ps.totalCents)} · ${payLabel(ps.method)}</p>
       </div>
-      <div class="actions">
-        <button class="btn primary" id="btn-next-client">Siguiente</button>
+      <h3>Tickets emitidos</h3>
+      <div class="log">
+        ${tickets
+          .map(
+            (t) =>
+              `<div class="log-item"><strong>${t.id}</strong> · ${escapeHtml(t.productName)} · ${escapeHtml(formatSelection(t))}${
+                t.drawYmd ? ` · sorteo ${t.drawYmd}` : ''
+              }
+              <button class="btn" style="padding:4px 8px;margin-left:8px" data-pdf="${t.id}">PDF</button>
+              </div>`,
+          )
+          .join('') || '<div class="muted">Sin tickets</div>'}
       </div>
-    `;
+      <div class="actions" style="margin-top:12px">
+        <button class="btn" id="btn-pdf-sale">PDF venta</button>
+        <button class="btn primary" id="btn-next-client">Siguiente</button>
+      </div>`;
   }
 
   app.innerHTML = `
@@ -503,19 +689,15 @@ function renderCash() {
   `;
 
   bindTopbar();
-
   app.querySelectorAll('[data-method]').forEach((btn) => {
     btn.onclick = () => {
-      const m = btn.getAttribute('data-method');
-      selectPaymentMethod(state, m);
-      if (m !== 'cash') sfx.cash();
-      else sfx.click();
+      selectPaymentMethod(state, btn.getAttribute('data-method'));
+      sfx.click();
       if (state.ui.toast) showToast(state.ui.toast);
       needsFullRender = true;
       render();
     };
   });
-
   app.querySelectorAll('[data-adj]').forEach((btn) => {
     btn.onclick = () => {
       const kind = btn.getAttribute('data-adj');
@@ -528,19 +710,16 @@ function renderCash() {
       render();
     };
   });
-
   const ct = document.getElementById('btn-confirm-tender');
-  if (ct) {
+  if (ct)
     ct.onclick = () => {
       confirmTender(state);
-      if (state.ui.paymentSession?.error) sfx.error();
-      else sfx.scan();
+      state.ui.paymentSession?.error ? sfx.error() : sfx.scan();
       needsFullRender = true;
       render();
     };
-  }
   const cc = document.getElementById('btn-confirm-change');
-  if (cc) {
+  if (cc)
     cc.onclick = () => {
       confirmChange(state);
       if (state.ui.paymentSession?.error) sfx.error();
@@ -551,43 +730,59 @@ function renderCash() {
       needsFullRender = true;
       render();
     };
-  }
   const back = document.getElementById('btn-back-tender');
-  if (back) {
+  if (back)
     back.onclick = () => {
       state.ui.paymentSession.step = 'cash-tender';
       state.ui.paymentSession.error = null;
       needsFullRender = true;
       render();
     };
-  }
   const cancel = document.getElementById('btn-cancel-pay');
-  if (cancel) {
+  if (cancel)
     cancel.onclick = () => {
       cancelPayment(state);
       needsFullRender = true;
       render();
     };
-  }
   const next = document.getElementById('btn-next-client');
-  if (next) {
+  if (next)
     next.onclick = () => {
       closePaymentSession(state);
       sfx.success();
       needsFullRender = true;
       render();
     };
-  }
+  const pdfSale = document.getElementById('btn-pdf-sale');
+  if (pdfSale)
+    pdfSale.onclick = () => {
+      downloadSaleReceiptPdf({
+        items: ps.items,
+        totalCents: ps.totalCents,
+        clientName: ps.clientName,
+        method: payLabel(ps.method),
+        tickets: ps.createdTickets,
+      });
+      sfx.click();
+      showToast('PDF de venta descargado');
+    };
+  app.querySelectorAll('[data-pdf]').forEach((btn) => {
+    btn.onclick = () => {
+      const id = btn.getAttribute('data-pdf');
+      const t = (ps.createdTickets || []).find((x) => x.id === id);
+      if (t) downloadTicketPdf(t);
+      sfx.click();
+    };
+  });
 }
 
 function denomEditor(kind) {
   const ps = state.ui.paymentSession;
   const counts = kind === 'tender' ? ps.tendered : ps.changeGiven;
-  const groups = [
+  return [
     ['Billetes', BILLS],
     ['Monedas', COINS],
-  ];
-  return groups
+  ]
     .map(
       ([title, list]) => `
       <h3 style="margin-top:14px">${title}</h3>
@@ -619,33 +814,22 @@ function renderClose() {
         ${sideNav()}
         <section class="panel">
           <h2>Cierre y balance</h2>
-          <p class="muted">Al confirmar, se aplican gastos del día y saltas al siguiente día laborable a las 08:00.</p>
+          <p class="muted">Al confirmar: gastos del día, liquidación LAE/ONCE, avance de gestiones de premios y salto al siguiente laborable.</p>
           <div class="close-summary">
             <div class="stat-row"><span>Fecha</span><strong>${summary.date}</strong></div>
             <div class="stat-row"><span>Ventas</span><strong>${formatEuro(summary.salesCents)}</strong></div>
             <div class="stat-row"><span>Comisiones</span><strong>${formatEuro(summary.commissionCents)}</strong></div>
+            <div class="stat-row"><span>Beneficio del día*</span><strong>${formatEuro(summary.profitCents)}</strong></div>
             <div class="stat-row"><span>Premios pagados</span><strong>${formatEuro(summary.prizesPaidCents)}</strong></div>
-            <div class="stat-row"><span>Gastos (hoy al cerrar)</span><strong>${formatEuro(summary.expensesCents)}</strong></div>
+            <div class="stat-row"><span>Gastos (al cerrar)</span><strong>${formatEuro(summary.expensesCents)}</strong></div>
             <div class="stat-row"><span>Cajón</span><strong>${formatEuro(summary.drawerCents)}</strong></div>
             <div class="stat-row"><span>Banco</span><strong>${formatEuro(summary.bankCents)}</strong></div>
-            <div class="stat-row"><span>Clientes atendidos</span><strong>${summary.customersServed}</strong></div>
-            <div class="stat-row"><span>Siguiente día laborable</span><strong>${summary.nextDay}</strong></div>
+            <div class="stat-row"><span>Clientes</span><strong>${summary.customersServed}</strong></div>
+            <div class="stat-row"><span>Siguiente laborable</span><strong>${summary.nextDay}</strong></div>
           </div>
-          ${
-            summary.nextDayReasonSkip?.length
-              ? `<p class="muted" style="margin-top:10px">Se saltan: ${summary.nextDayReasonSkip.join(' · ')}</p>`
-              : ''
-          }
-          <h3 style="margin-top:18px">Arqueo de caja</h3>
-          <div class="denom-grid">
-            ${ALL_DENOMS.map((d) => {
-              const n = state.finance.drawer[d.id] || 0;
-              if (!n) return '';
-              return `<div class="denom"><div class="label">${d.label}</div><strong>× ${n}</strong></div>`;
-            }).join('')}
-          </div>
+          <p class="muted">*Beneficio ≈ comisiones − gastos (antes de liquidar)</p>
           <div class="actions" style="margin-top:18px">
-            <button class="btn accent" id="btn-do-close">Hacer balance y cerrar día</button>
+            <button class="btn accent" id="btn-do-close">Liquidar, balance y cerrar día</button>
           </div>
         </section>
       </div>
@@ -655,14 +839,15 @@ function renderClose() {
   bindTopbar();
   bindNav();
   document.getElementById('btn-do-close').onclick = () => {
-    // Autosave slot 1 soft reminder — actual save is separate; also auto-save slot last used if any
     const { summary: s } = closeDay(state);
-    sfx.success();
-    // Guardar automáticamente en el hueco 1 si existe o está vacío? Plan: save on day close — use slot 1 as autosave working copy OR ask. We'll autosave to slot marked via state.meta.activeSlot or default 1.
     const slot = state.meta.activeSlot || 1;
     state.meta.activeSlot = slot;
     saveToSlot(state, slot);
-    showToast(`Día cerrado. Siguiente: ${s.nextDay}. Guardado en hueco ${slot}.`);
+    sfx.success();
+    const settle = s.settlement;
+    showToast(
+      `Día cerrado → ${s.nextDay}. Beneficio ${formatEuro(s.profitCents)}. Liquidación hecha. Guardado hueco ${slot}.`,
+    );
     needsFullRender = true;
     render();
   };
@@ -684,7 +869,7 @@ function renderSavesInGame() {
               <div class="slot">
                 <div>
                   <strong>Hueco ${s.slot}</strong>
-                  <div class="muted">${s.empty ? 'Vacío' : `Días ${s.daysPlayed ?? 0}`}</div>
+                  <div class="muted">${s.empty ? 'Vacío' : `Días ${s.daysPlayed ?? 0} · v${s.gameVersion || '?'}`}</div>
                 </div>
                 <div class="actions">
                   <button class="btn primary" data-save="${s.slot}">Guardar aquí</button>
@@ -695,11 +880,8 @@ function renderSavesInGame() {
               .join('')}
           </div>
           <div class="actions" style="margin-top:12px">
-            <button class="btn" id="btn-export">Exportar archivo JSON</button>
-            <label class="btn ghost" style="cursor:pointer">
-              Importar archivo
-              <input id="import-file" type="file" accept="application/json" hidden />
-            </label>
+            <button class="btn" id="btn-export">Exportar JSON</button>
+            <label class="btn ghost" style="cursor:pointer">Importar<input id="import-file" type="file" accept="application/json" hidden /></label>
             <button class="btn danger" id="btn-menu">Volver al menú</button>
           </div>
         </section>
@@ -722,89 +904,35 @@ function renderSavesInGame() {
   });
   app.querySelectorAll('[data-load]').forEach((btn) => {
     btn.onclick = () => {
-      const slot = Number(btn.getAttribute('data-load'));
-      const loaded = loadFromSlot(slot);
-      if (!loaded) return;
-      state = loaded;
-      state.meta.activeSlot = slot;
+      state = loadFromSlot(Number(btn.getAttribute('data-load')));
       sfx.click();
-      showToast(`Cargado hueco ${slot}`);
+      showToast('Partida cargada');
       needsFullRender = true;
       render();
     };
   });
   document.getElementById('btn-export').onclick = () => {
     exportGame(state);
-    sfx.click();
-    showToast('Archivo exportado');
+    showToast('Exportado');
   };
   document.getElementById('import-file').onchange = async (e) => {
     const f = e.target.files?.[0];
     if (!f) return;
     try {
       state = await importGame(f);
-      sfx.success();
-      showToast('Partida importada');
+      showToast('Importado');
       needsFullRender = true;
       render();
     } catch {
-      sfx.error();
       alert('Archivo no válido');
     }
   };
   document.getElementById('btn-menu').onclick = () => {
-    if (confirm('¿Volver al menú? Guarda antes si no quieres perder el progreso.')) {
+    if (confirm('¿Volver al menú? Guarda antes si hace falta.')) {
       state = null;
       renderMenu();
     }
   };
-}
-
-function renderPrize() {
-  app.innerHTML = `
-    <div class="shell">
-      ${topbarHTML()}
-      <div class="layout" style="grid-template-columns:280px 1fr">
-        ${sideNav()}
-        <section class="panel">
-          <h2>Pagar premio</h2>
-          <p class="muted">Si hay efectivo suficiente en caja, puedes pagarlo al momento. Si no, usa transferencia desde el banco.</p>
-          <label>Nombre del cliente<br/>
-            <input id="prize-name" value="${escapeHtml(state.customers.current?.name || '')}" style="width:100%;margin:6px 0 12px;padding:10px;border-radius:10px;border:1px solid var(--line)" />
-          </label>
-          <label>Importe (€)<br/>
-            <input id="prize-amount" type="number" min="0.01" step="0.01" value="5" style="width:100%;margin:6px 0 12px;padding:10px;border-radius:10px;border:1px solid var(--line)" />
-          </label>
-          <label>Nota<br/>
-            <input id="prize-note" placeholder="Ej. Primitiva acierto 3" style="width:100%;margin:6px 0 12px;padding:10px;border-radius:10px;border:1px solid var(--line)" />
-          </label>
-          <div class="actions">
-            <button class="btn primary" id="btn-prize-cash">Pagar en efectivo</button>
-            <button class="btn" id="btn-prize-transfer">Pagar por transferencia</button>
-          </div>
-          <div class="stat-row" style="margin-top:16px"><span>Caja disponible</span><strong>${formatEuro(drawerTotalCents(state.finance.drawer))}</strong></div>
-          <div class="stat-row"><span>Banco disponible</span><strong>${formatEuro(state.finance.bankCents)}</strong></div>
-        </section>
-      </div>
-    </div>
-    ${toastHTML()}
-  `;
-  bindTopbar();
-  bindNav();
-  const doPay = (method) => {
-    const name = document.getElementById('prize-name').value.trim() || 'Cliente';
-    const euros = parseFloat(document.getElementById('prize-amount').value);
-    const note = document.getElementById('prize-note').value.trim();
-    const cents = Math.round((euros || 0) * 100);
-    const ok = payPrize(state, { amountCents: cents, clientName: name, method, note });
-    if (ok) sfx.cash();
-    else sfx.error();
-    showToast(state.ui.toast);
-    needsFullRender = true;
-    render();
-  };
-  document.getElementById('btn-prize-cash').onclick = () => doPay('cash');
-  document.getElementById('btn-prize-transfer').onclick = () => doPay('transfer');
 }
 
 function renderStock() {
@@ -816,15 +944,13 @@ function renderStock() {
         ${sideNav()}
         <section class="panel">
           <h2>Stock y pedidos</h2>
-          <p class="muted">Los productos de terminal no llevan stock físico. Pedidos: plazo según producto. Reservas de clientes sin pago previo.</p>
           <div class="stock-list">
             ${physical
               .map((p) => {
                 const qty = state.stock[p.id] ?? 0;
                 return `<div class="stock-item">
                   <span><strong>${escapeHtml(p.name)}</strong> <span class="muted">(${p.org})</span></span>
-                  <span>
-                    ${qty}
+                  <span>${qty}
                     <button class="btn" style="padding:4px 8px;margin-left:8px" data-order="${p.id}">Pedir 20</button>
                   </span>
                 </div>`;
@@ -838,10 +964,10 @@ function renderStock() {
                 ? state.orders
                     .slice()
                     .reverse()
-                    .slice(0, 30)
+                    .slice(0, 40)
                     .map(
                       (o) =>
-                        `<div class="log-item">${o.status} · ${escapeHtml(o.productName)} ×${o.qty} · llegada ${o.arriveOnYmd}${
+                        `<div class="log-item">${o.status}${o.special ? ' · ENCARGO' : ''} · ${escapeHtml(o.productName)} ×${o.qty} · ${o.arriveOnYmd}${
                           o.clientName ? ` · ${escapeHtml(o.clientName)}` : ''
                         }</div>`,
                     )
@@ -859,7 +985,6 @@ function renderStock() {
   app.querySelectorAll('[data-order]').forEach((btn) => {
     btn.onclick = () => {
       orderStock(state, btn.getAttribute('data-order'), 20);
-      sfx.click();
       showToast(state.ui.toast);
       needsFullRender = true;
       render();
@@ -867,10 +992,114 @@ function renderStock() {
   });
 }
 
+function renderPrize() {
+  app.innerHTML = `
+    <div class="shell">
+      ${topbarHTML()}
+      <div class="layout" style="grid-template-columns:280px 1fr">
+        ${sideNav()}
+        <section class="panel">
+          <h2>Pagar premio (manual)</h2>
+          <p class="muted">Para premios sueltos. Los de ticket se gestionan en el mostrador al comprobar.</p>
+          <label>Cliente<br/><input id="prize-name" style="width:100%;margin:6px 0 12px;padding:10px;border-radius:10px;border:1px solid var(--line)" /></label>
+          <label>Importe (€)<br/><input id="prize-amount" type="number" min="0.01" step="0.01" value="5" style="width:100%;margin:6px 0 12px;padding:10px;border-radius:10px;border:1px solid var(--line)" /></label>
+          <div class="actions">
+            <button class="btn primary" id="btn-prize-cash">Efectivo</button>
+            <button class="btn" id="btn-prize-transfer">Transferencia</button>
+          </div>
+        </section>
+      </div>
+    </div>
+    ${toastHTML()}
+  `;
+  bindTopbar();
+  bindNav();
+  const doPay = (method) => {
+    const name = document.getElementById('prize-name').value.trim() || 'Cliente';
+    const cents = Math.round(parseFloat(document.getElementById('prize-amount').value || '0') * 100);
+    const ok = payPrize(state, { amountCents: cents, clientName: name, method });
+    ok ? sfx.cash() : sfx.error();
+    showToast(state.ui.toast);
+    needsFullRender = true;
+    render();
+  };
+  document.getElementById('btn-prize-cash').onclick = () => doPay('cash');
+  document.getElementById('btn-prize-transfer').onclick = () => doPay('transfer');
+}
+
+function renderDraws() {
+  ensureDrawsResolved(state);
+  const entries = Object.values(state.draws || {})
+    .sort((a, b) => (a.ymd < b.ymd ? 1 : -1))
+    .slice(0, 40);
+  app.innerHTML = `
+    <div class="shell">
+      ${topbarHTML()}
+      <div class="layout" style="grid-template-columns:280px 1fr">
+        ${sideNav()}
+        <section class="panel">
+          <h2>Sorteos resueltos</h2>
+          <p class="muted">Se resuelven solos a la hora del sorteo (aprox. 21:00). Nacional, Primitiva, Bonoloto, Euromillones, Cupón ONCE…</p>
+          <div class="log">
+            ${
+              entries.length
+                ? entries
+                    .map((d) => {
+                      const p = PRODUCTS.find((x) => x.id === d.productId);
+                      let detail = '';
+                      if (d.numbers) detail = d.numbers.join(', ');
+                      if (d.stars) detail += ` ★ ${d.stars.join(', ')}`;
+                      if (d.reintegro != null) detail += ` · R${d.reintegro}`;
+                      if (d.winningNumber) detail = `Nº ${d.winningNumber}`;
+                      return `<div class="log-item"><strong>${escapeHtml(p?.name || d.productId)}</strong> · ${d.ymd}<br/>${escapeHtml(detail)}</div>`;
+                    })
+                    .join('')
+                : '<div class="muted">Aún no hay sorteos. Avanza el tiempo hasta después de las 21:00.</div>'
+            }
+          </div>
+        </section>
+      </div>
+    </div>
+    ${toastHTML()}
+  `;
+  bindTopbar();
+  bindNav();
+}
+
+function renderManagement() {
+  const list = [...(state.prizeManagement || [])].reverse();
+  app.innerHTML = `
+    <div class="shell">
+      ${topbarHTML()}
+      <div class="layout" style="grid-template-columns:280px 1fr">
+        ${sideNav()}
+        <section class="panel">
+          <h2>Gestión de premios grandes</h2>
+          <p class="muted">No se pagan de tu caja. Al cerrar días avanzan: abierto → presentado → liquidado (paga LAE/ONCE).</p>
+          <div class="log">
+            ${
+              list.length
+                ? list
+                    .map(
+                      (c) =>
+                        `<div class="log-item"><strong>${escapeHtml(c.clientName)}</strong> · ${formatEuro(c.amountCents)} · ${escapeHtml(c.productName)}<br/>
+                        Estado: <strong>${c.status}</strong> (${c.level}) · ${escapeHtml(c.note || '')}</div>`,
+                    )
+                    .join('')
+                : '<div class="muted">No hay casos de gestión.</div>'
+            }
+          </div>
+        </section>
+      </div>
+    </div>
+    ${toastHTML()}
+  `;
+  bindTopbar();
+  bindNav();
+}
+
 // Boot
 state = null;
 renderMenu();
 requestAnimationFrame(loop);
-
-// Expose for debug
 window.__loterias = () => state;

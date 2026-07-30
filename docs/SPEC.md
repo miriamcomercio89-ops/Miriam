@@ -1,38 +1,27 @@
-# SPEC — Loterías Álora
+# SPEC — Loterías Álora v0.1
 
 ## Visión
-Simulador realista de mostrador. Jugadora: Miriam. Ubicación: Álora (única administración, ~13.000 hab.). Sin game over.
+Simulador realista de mostrador. Jugadora: Miriam. Ubicación: Álora. Sin game over.
 
 ## Tiempo
-- Escala base 0.25 (4× más lento que el tiempo real)
-- Velocidades: 0 (pausa), 1, 2, 4
-- Oficina: L–V 08:00–20:00
-- Cierre → balance → siguiente día laborable 08:00
-- Festivos nacionales + Andalucía + locales Álora
+- Escala base 0.25 (4× más lento)
+- Velocidades: 0 / 1 / 15 / 60
+- L–V 08:00–20:00; festivos + eventos locales Álora
+- Cierre → liquidación → siguiente laborable 08:00
 
-## Caja
-- Efectivo con denominaciones EUR; el jugador elige cambio
-- Si el cambio no cuadra: aviso y corregir (sin castigo)
-- Tarjeta / Bizum / transferencia: cobro exacto a banco
-- Fondo de cambio al abrir; arqueo al cerrar
+## Sorteos v0.1
+- Nacional, Primitiva, Bonoloto, Euromillones, Cupón ONCE (+ inventadas)
+- Resultados deterministas por fecha
+- Tickets comprobables; clientes llegan a comprobar al azar
+- Premios: pago inmediato, diferido, o gestión (>2.000 €)
 
-## Clientes
-- ~280 habituales con gustos (pueden variar)
-- Visitantes de paso
-- Más afluencia en Navidad / Niño / viernes Euromillones
-- Reserva sin pagar si no hay stock; plazo según producto
+## Rascas
+- 10 modelos con tablas de premios; premio oculto al vender; comprobación posterior
 
 ## Economía
-- Capital inicial medio (~9.500 € banco + fondo caja)
-- Comisiones por producto
-- Gastos: alquiler, luz, agua, internet, seguro, limpieza, material
-- Impuestos trimestrales estimados (IVA + IRPF)
+- Comisiones, gastos, beneficio del día
+- Liquidación diaria LAE/ONCE al cierre
+- Tickets PDF
 
 ## Guardado
-- 3 slots localStorage
-- Autosave al cerrar el día (hueco activo)
-- Export / import JSON
-
-## Productos
-- Reales: LAE, ONCE, rascas
-- Inventadas: autonómicas / provinciales / locales
+- 3 slots, autosave al cierre, export/import, migración v1→v2
