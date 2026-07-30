@@ -16,6 +16,7 @@ import {
   saveToSlot,
   loadFromSlot,
   exportGame,
+  exportDayPackage,
   importGame,
   newGame,
   maybeAutosave,
@@ -65,7 +66,7 @@ import {
   setSfxVolume,
 } from './game/sounds.js';
 import { ensureDrawsResolved, listDrawHistory, modeHint, nextDrawLabel } from './game/draws.js';
-import { formatSelection } from './game/tickets.js';
+import { formatSelection, lastIssuedTicket } from './game/tickets.js';
 import { payTicketPrize, startPrizeManagement } from './game/prizes.js';
 import {
   downloadTicketPdf,
@@ -467,7 +468,7 @@ function renderMenu() {
         </div>
         <p class="disclaimer">
           Fan-made / no oficial. Nombres de Loterías y Apuestas del Estado y ONCE usados solo con fines de simulación.
-          Juego responsable · +18. Versión ${GAME_VERSION}: Sorteos visibles, cadena de comprobación, alerta de caja, histórico de cierres, pausa, PDF de cierre y sonidos.
+          Juego responsable · +18. Versión ${GAME_VERSION}: comparar apuesta vs sorteo, reimprimir último ticket, paquete del día y loterías con carácter propio.
         </p>
       </div>
     </div>
@@ -481,7 +482,7 @@ function renderMenu() {
     maybeStartMusic();
     state.ui.screen = 'counter';
     lastAutosaveRealMs = Date.now();
-    showToast('Bienvenida, Miriam. Versión 0.6 lista. Abre el TPV para vender.');
+    showToast('Bienvenida, Miriam. Versión 0.7 lista. Abre el TPV para vender.');
     needsFullRender = true;
     render();
   };
@@ -879,6 +880,11 @@ function renderCounter() {
           <div class="stat-row"><span>Tickets emitidos</span><strong>${(state.tickets || []).length}</strong></div>
           <div class="stat-row"><span>Pedidos pendientes</span><strong>${state.orders.filter((o) => o.status === 'pending').length}</strong></div>
           <div class="stat-row"><span>Afluencia</span><strong>×${crowdFactor(state).toFixed(1)}</strong></div>
+          <div class="actions" style="margin-top:14px">
+            <button class="btn" id="btn-reprint-last" ${lastIssuedTicket(state) ? '' : 'disabled'}>
+              Reimprimir último ticket
+            </button>
+          </div>
           <p class="disclaimer" style="margin-top:16px">Fan-made · no oficial · +18 · v${GAME_VERSION}</p>
         </aside>
       </div>
@@ -901,6 +907,20 @@ function renderCounter() {
       startArqueo(state, 'open');
       needsFullRender = true;
       render();
+    };
+  }
+  const reprint = document.getElementById('btn-reprint-last');
+  if (reprint) {
+    reprint.onclick = () => {
+      const t = lastIssuedTicket(state);
+      if (!t) {
+        sfx.error();
+        showToast('No hay tickets emitidos para reimprimir');
+        return;
+      }
+      downloadTicketPdf(t);
+      sfx.success();
+      showToast(`Reimpreso: ${t.productName} (${t.id})`);
     };
   }
 }
@@ -972,7 +992,18 @@ function renderClientPanel(client) {
         <p class="muted">${formatSelection(t)}${t.drawYmd ? ` · Sorteo ${t.drawYmd}` : ''}</p>
         ${
           result
-            ? `<div class="${result.prizeCents ? 'total-box' : 'error-box'}" style="margin:10px 0">
+            ? `<div class="check-compare">
+                <div class="check-compare-col">
+                  <span class="check-compare-label">Tu apuesta</span>
+                  <strong>${escapeHtml(result.betText || formatSelection(t))}</strong>
+                </div>
+                <div class="check-compare-vs">vs</div>
+                <div class="check-compare-col">
+                  <span class="check-compare-label">Sorteo${t.drawYmd ? ` ${escapeHtml(t.drawYmd)}` : ''}</span>
+                  <strong>${escapeHtml(result.drawText || '—')}</strong>
+                </div>
+              </div>
+              <div class="${result.prizeCents ? 'total-box' : 'error-box'}" style="margin:10px 0">
                 ${
                   result.pending
                     ? escapeHtml(result.detail)
@@ -2307,6 +2338,7 @@ function renderSavesInGame() {
           </div>
           <div class="actions" style="margin-top:12px">
             <button class="btn" id="btn-export">Exportar JSON</button>
+            <button class="btn accent" id="btn-day-package">Paquete del día</button>
             <label class="btn ghost" style="cursor:pointer">Importar<input id="import-file" type="file" accept="application/json" hidden /></label>
             <button class="btn danger" id="btn-menu">Volver al menú</button>
           </div>
@@ -2341,6 +2373,11 @@ function renderSavesInGame() {
   document.getElementById('btn-export').onclick = () => {
     exportGame(state);
     showToast('Exportado');
+  };
+  document.getElementById('btn-day-package').onclick = async () => {
+    await exportDayPackage(state, { downloadDayClosePdf });
+    sfx.success();
+    showToast(state.ui.toast || 'Paquete del día descargado');
   };
   document.getElementById('import-file').onchange = async (e) => {
     const f = e.target.files?.[0];
@@ -2751,6 +2788,7 @@ function renderDayResults() {
         }
         <div class="actions" style="margin-top:18px">
           <button class="btn" id="btn-day-close-pdf">PDF del cierre</button>
+          <button class="btn accent" id="btn-day-package">Paquete del día</button>
           <button class="btn" id="btn-day-closes">Histórico cierres</button>
           <button class="btn primary" id="btn-day-results-ok">Abrir mostrador</button>
         </div>
@@ -2763,6 +2801,11 @@ function renderDayResults() {
     downloadDayClosePdf(s);
     sfx.success();
     showToast('PDF del cierre descargado');
+  };
+  document.getElementById('btn-day-package').onclick = async () => {
+    await exportDayPackage(state, { downloadDayClosePdf });
+    sfx.success();
+    showToast(state.ui.toast || 'Paquete del día descargado');
   };
   document.getElementById('btn-day-closes').onclick = () => {
     sfx.click();

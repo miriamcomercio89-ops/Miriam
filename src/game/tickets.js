@@ -283,6 +283,39 @@ export function evaluateDrawPrize(ticket, draw) {
   return { prizeCents: prize, detail: prize ? `${hits} aciertos` : 'Sin premio', hits };
 }
 
+/** Texto legible del resultado de un sorteo (para comparar al comprobar). */
+export function formatDrawResult(draw) {
+  if (!draw) return '—';
+  if (draw.winningNumber != null) return `Nº ${draw.winningNumber}`;
+  if (draw.races) {
+    return `Carreras ${draw.races.join('-')}${draw.plus != null ? ` +${draw.plus}` : ''}`;
+  }
+  if (draw.color) return `${(draw.numbers || []).join(', ')} · ${draw.color}`;
+  if (draw.roulette != null) return `Ruleta ${draw.roulette}`;
+  if (draw.day != null) return `Fecha ${draw.day}/${draw.month}`;
+  if (draw.hour != null) {
+    return `Hora ${String(draw.hour).padStart(2, '0')}:${String(draw.minute).padStart(2, '0')}`;
+  }
+  if (draw.parity) return `Par/Impar ${draw.parity.join('')}`;
+  if (draw.dice) return `Dados ${draw.dice.join('-')}`;
+  if (draw.cards) return `Cartas ${draw.cards.map((c) => `${c.palo}-${c.valor}`).join(' ')}`;
+  if (draw.stars) return `${(draw.numbers || []).join(', ')} ★ ${(draw.stars || []).join(', ')}`;
+  if (draw.clave != null) {
+    return `${(draw.numbers || []).join(', ')} clave ${draw.clave}${
+      draw.reintegro != null ? ` R${draw.reintegro}` : ''
+    }`;
+  }
+  if (draw.column) return `Columna ${draw.column.join('')}${draw.pleno != null ? ` pleno ${draw.pleno}` : ''}`;
+  if (draw.goals) return `Goles ${draw.goals.join('')}`;
+  if (draw.numbers) {
+    let t = draw.numbers.join(', ');
+    if (draw.complementary != null) t += ` C${draw.complementary}`;
+    if (draw.reintegro != null) t += ` R${draw.reintegro}`;
+    return t;
+  }
+  return '—';
+}
+
 export function checkTicket(state, ticketId) {
   const ticket = state.tickets.find((t) => t.id === ticketId);
   if (!ticket) return { ok: false, message: 'Ticket no encontrado' };
@@ -300,6 +333,8 @@ export function checkTicket(state, ticketId) {
       prizeCents: ticket.prizeCents,
       detail: ticket.checkDetail,
       large: ticket.prizeCents >= LARGE_PRIZE_CENTS,
+      betText: formatSelection(ticket),
+      drawText: ticket.prizeCents ? `Premio oculto ${formatEuro(ticket.prizeCents)}` : 'Sin premio en rasca',
     };
   }
 
@@ -311,6 +346,8 @@ export function checkTicket(state, ticketId) {
       prizeCents: 0,
       pending: true,
       detail: `Sorteo del ${ticket.drawYmd} aún no celebrado`,
+      betText: formatSelection(ticket),
+      drawText: 'Pendiente de celebrar',
     };
   }
 
@@ -319,6 +356,7 @@ export function checkTicket(state, ticketId) {
   ticket.checkedAt = state.clock.gameTimeMs;
   ticket.status = 'checked';
   ticket.checkDetail = result.detail;
+  ticket.drawSnapshot = formatDrawResult(draw);
   return {
     ok: true,
     ticket,
@@ -326,7 +364,22 @@ export function checkTicket(state, ticketId) {
     detail: result.detail,
     large: result.prizeCents >= LARGE_PRIZE_CENTS,
     huge: result.prizeCents >= HUGE_PRIZE_CENTS,
+    betText: formatSelection(ticket),
+    drawText: formatDrawResult(draw),
+    draw,
   };
+}
+
+/** Último ticket emitido (para reimprimir). */
+export function lastIssuedTicket(state) {
+  const list = state.tickets || [];
+  if (!list.length) return null;
+  if (state.ui?.lastTickets?.length) {
+    const id = state.ui.lastTickets[state.ui.lastTickets.length - 1]?.id;
+    const t = list.find((x) => x.id === id);
+    if (t) return t;
+  }
+  return [...list].sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))[0];
 }
 
 export function ticketsForClient(state, clientId) {

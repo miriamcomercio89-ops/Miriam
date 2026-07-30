@@ -4,7 +4,7 @@ import { REGIONAL_LOTTERIES, REGIONAL_IDS } from './regionalLotteries.js';
 export { REGIONAL_LOTTERIES, REGIONAL_IDS };
 
 /**
- * Catálogo v0.2 — LAE / ONCE / rascas / autonómicas / provinciales / locales.
+ * Catálogo v0.7 — LAE / ONCE / rascas / autonómicas / provinciales / locales.
  * tpvCategory: agrupación del TPV
  */
 export const PRODUCTS = [
@@ -12,6 +12,9 @@ export const PRODUCTS = [
   {
     id: 'lae-nacional',
     name: 'Lotería Nacional',
+    short: 'Nacional',
+    trait: 'Décimo 5 cifras',
+    topPrizeHint: 'hasta el Gordo',
     org: 'LAE',
     tpvCategory: 'LAE',
     category: 'sorteo',
@@ -29,6 +32,9 @@ export const PRODUCTS = [
   {
     id: 'lae-nacional-jueves',
     name: 'Nacional (solo jueves)',
+    short: 'Nac. Jueves',
+    trait: 'Décimo jueves',
+    topPrizeHint: 'hasta el Gordo',
     org: 'LAE',
     tpvCategory: 'LAE',
     category: 'sorteo',
@@ -46,6 +52,9 @@ export const PRODUCTS = [
   {
     id: 'lae-navidad',
     name: 'Sorteo de Navidad',
+    short: 'Navidad',
+    trait: 'El Gordo · 22 dic',
+    topPrizeHint: '4.000.000 €/serie',
     org: 'LAE',
     tpvCategory: 'LAE',
     category: 'especial',
@@ -63,6 +72,9 @@ export const PRODUCTS = [
   {
     id: 'lae-nino',
     name: 'Sorteo del Niño',
+    short: 'El Niño',
+    trait: '6 enero',
+    topPrizeHint: '2.000.000 €/serie',
     org: 'LAE',
     tpvCategory: 'LAE',
     category: 'especial',
@@ -80,6 +92,9 @@ export const PRODUCTS = [
   {
     id: 'lae-primitiva',
     name: 'La Primitiva',
+    short: 'Primitiva',
+    trait: '6/49 + reintegro',
+    topPrizeHint: 'bote nacional',
     org: 'LAE',
     tpvCategory: 'LAE',
     category: 'sorteo',
@@ -98,6 +113,9 @@ export const PRODUCTS = [
   {
     id: 'lae-bonoloto',
     name: 'Bonoloto',
+    short: 'Bonoloto',
+    trait: '6/49 diario',
+    topPrizeHint: 'bote diario',
     org: 'LAE',
     tpvCategory: 'LAE',
     category: 'sorteo',
@@ -116,6 +134,9 @@ export const PRODUCTS = [
   {
     id: 'lae-euromillones',
     name: 'Euromillones',
+    short: 'Euromillones',
+    trait: '5/50 + 2 estrellas',
+    topPrizeHint: 'bote europeo',
     org: 'LAE',
     tpvCategory: 'LAE',
     category: 'sorteo',
@@ -134,6 +155,9 @@ export const PRODUCTS = [
   {
     id: 'lae-gordo-primitiva',
     name: 'El Gordo de la Primitiva',
+    short: 'Gordo Prim.',
+    trait: '5/54 + clave',
+    topPrizeHint: 'bote dominical',
     org: 'LAE',
     tpvCategory: 'LAE',
     category: 'sorteo',
@@ -152,6 +176,9 @@ export const PRODUCTS = [
   {
     id: 'lae-quiniela',
     name: 'La Quiniela',
+    short: 'Quiniela',
+    trait: '14 × 1X2 + pleno',
+    topPrizeHint: 'pleno al 15',
     org: 'LAE',
     tpvCategory: 'LAE',
     category: 'apuestas',
@@ -169,6 +196,9 @@ export const PRODUCTS = [
   {
     id: 'lae-quinigol',
     name: 'Quinigol',
+    short: 'Quinigol',
+    trait: '6 partidos 0/1/2/M',
+    topPrizeHint: 'goles exactos',
     org: 'LAE',
     tpvCategory: 'LAE',
     category: 'apuestas',
@@ -186,6 +216,9 @@ export const PRODUCTS = [
   {
     id: 'lae-lototurf',
     name: 'Lototurf',
+    short: 'Lototurf',
+    trait: '6/12 + caballo',
+    topPrizeHint: 'hípica + lotería',
     org: 'LAE',
     tpvCategory: 'LAE',
     category: 'apuestas',
@@ -204,6 +237,9 @@ export const PRODUCTS = [
   {
     id: 'lae-quintuple',
     name: 'Quíntuple Plus',
+    short: 'Quíntuple',
+    trait: '5 carreras + plus',
+    topPrizeHint: 'hípica',
     org: 'LAE',
     tpvCategory: 'LAE',
     category: 'apuestas',
@@ -224,6 +260,9 @@ export const PRODUCTS = [
   {
     id: 'once-cupon',
     name: 'Cupón Diario ONCE',
+    short: 'Cupón',
+    trait: '5 cifras L–V',
+    topPrizeHint: 'hasta 35.000 €',
     org: 'ONCE',
     tpvCategory: 'ONCE',
     category: 'sorteo',
@@ -241,6 +280,9 @@ export const PRODUCTS = [
   {
     id: 'once-cuponazo',
     name: 'Cuponazo ONCE',
+    short: 'Cuponazo',
+    trait: 'Viernes especial',
+    topPrizeHint: 'hasta 9.000.000 €',
     org: 'ONCE',
     tpvCategory: 'ONCE',
     category: 'especial',
@@ -258,6 +300,9 @@ export const PRODUCTS = [
   {
     id: 'once-sueldazo',
     name: 'Sueldazo Fin de Semana',
+    short: 'Sueldazo',
+    trait: 'Domingo + reintegro',
+    topPrizeHint: 'sueldo de por vida',
     org: 'ONCE',
     tpvCategory: 'ONCE',
     category: 'especial',
@@ -275,6 +320,9 @@ export const PRODUCTS = [
   {
     id: 'once-eurojackpot',
     name: 'Eurojackpot',
+    short: 'Eurojackpot',
+    trait: '5/50 + 2/12',
+    topPrizeHint: 'bote europeo',
     org: 'ONCE',
     tpvCategory: 'ONCE',
     category: 'sorteo',
@@ -292,6 +340,9 @@ export const PRODUCTS = [
   {
     id: 'once-super-once',
     name: 'Super Once',
+    short: 'Super Once',
+    trait: '5/49 diario',
+    topPrizeHint: 'combinaciones',
     org: 'ONCE',
     tpvCategory: 'ONCE',
     category: 'sorteo',
@@ -309,6 +360,9 @@ export const PRODUCTS = [
   {
     id: 'once-triplex',
     name: 'Triplex',
+    short: 'Triplex',
+    trait: '3 cifras',
+    topPrizeHint: 'hasta 25.000 €',
     org: 'ONCE',
     tpvCategory: 'ONCE',
     category: 'sorteo',
@@ -326,6 +380,9 @@ export const PRODUCTS = [
   {
     id: 'once-extra-verano',
     name: 'Extraordinario ONCE Verano',
+    short: 'Extra verano',
+    trait: 'Sorteo de verano',
+    topPrizeHint: 'extraordinario',
     org: 'ONCE',
     tpvCategory: 'ONCE',
     category: 'especial',
@@ -342,6 +399,9 @@ export const PRODUCTS = [
   {
     id: 'once-extra-navidad',
     name: 'Extraordinario ONCE Navidad',
+    short: 'Extra Navidad',
+    trait: 'Sorteo navideño',
+    topPrizeHint: 'extraordinario',
     org: 'ONCE',
     tpvCategory: 'ONCE',
     category: 'especial',
@@ -358,6 +418,9 @@ export const PRODUCTS = [
   {
     id: 'once-extra-dia',
     name: 'Extraordinario Día de la ONCE',
+    short: 'Día ONCE',
+    trait: 'Sorteo del día',
+    topPrizeHint: 'extraordinario',
     org: 'ONCE',
     tpvCategory: 'ONCE',
     category: 'especial',
@@ -377,16 +440,24 @@ export const PRODUCTS = [
 
 
   // ——— Rascas ———
-  ...SCRATCH_CARDS.map((c) => ({
-    ...c,
-    tpvCategory: 'Rascas',
-    category: 'rasca',
-    stockType: 'physical',
-    checkable: true,
-    instant: true,
-    needsNumbers: false,
-    drawDays: [],
-  })),
+  ...SCRATCH_CARDS.map((c) => {
+    const top = c.topPrizeCents
+      ? `hasta ${(c.topPrizeCents / 100).toLocaleString('es-ES')} €`
+      : 'instantáneo';
+    return {
+      ...c,
+      short: c.short || c.name.replace(/^Rasca\s+/i, '').split(/\s+/).slice(0, 2).join(' '),
+      trait: c.trait || (c.org === 'ONCE' ? 'Rasca ONCE' : 'Rasca LAE'),
+      topPrizeHint: c.topPrizeHint || top,
+      tpvCategory: 'Rascas',
+      category: 'rasca',
+      stockType: 'physical',
+      checkable: true,
+      instant: true,
+      needsNumbers: false,
+      drawDays: [],
+    };
+  }),
 ];
 
 export const TPV_CATEGORIES = ['LAE', 'ONCE', 'Rascas', 'Autonómicas', 'Provinciales', 'Locales'];

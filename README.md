@@ -2,7 +2,7 @@
 
 Simulador realista de administración de loterías en **Álora**. Tú eres **Miriam**.
 
-**Versión: 0.6**
+**Versión: 0.7**
 
 ## Cómo jugar
 
@@ -11,18 +11,12 @@ Simulador realista de administración de loterías en **Álora**. Tú eres **Mir
 
 No abras `index.html` de la raíz.
 
-## Novedades v0.6
+## Novedades v0.7
 
-- Validación de escaparate al cobrar (aviso si el número no cuadra con la vitrina)
-- Comprobar varios tickets del mismo cliente en cadena
-- Próximo sorteo visible al añadir producto en el TPV
-- Alerta de caja baja a media mañana
-- Histórico de cierres (últimos días)
-- Pausa con resumen (cola y cliente actual)
-- PDF del cierre del día
-- Sonidos nuevos: rasca, peña, premio alto, alerta
-- Banner reforzado “hoy hay sorteo…” con horas
-- Loterías inventadas afinadas (nombres cortos, sabor, tramos de premio)
+- Al comprobar: apuesta vs resultado del sorteo lado a lado
+- Reimprimir el último ticket desde el mostrador
+- Paquete del día: JSON de partida + PDF de cierre
+- Loterías LAE, ONCE, rascas e inventadas con mecánica, sabor y premio propios
 
 ## Desarrollo
 

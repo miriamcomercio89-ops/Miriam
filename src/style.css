@@ -755,6 +755,52 @@ select {
 .day-results {
   animation: rise 0.55s ease both;
 }
+.check-compare {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 10px;
+  align-items: stretch;
+  margin: 12px 0;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.4);
+}
+[data-theme='dark'] .check-compare {
+  background: rgba(0, 0, 0, 0.22);
+}
+.check-compare-col {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.check-compare-label {
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.check-compare-col strong {
+  font-size: 0.98rem;
+  line-height: 1.35;
+  word-break: break-word;
+}
+.check-compare-vs {
+  align-self: center;
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  color: var(--brand);
+  opacity: 0.85;
+}
+@media (max-width: 640px) {
+  .check-compare {
+    grid-template-columns: 1fr;
+  }
+  .check-compare-vs {
+    justify-self: start;
+  }
+}
 .showcase-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));

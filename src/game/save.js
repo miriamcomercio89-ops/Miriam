@@ -56,21 +56,58 @@ export function deleteSlot(slot) {
   localStorage.removeItem(slotKey(slot));
 }
 
+function downloadBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
 export function exportGame(state) {
   const payload = {
     ...state,
     meta: { ...state.meta, exportedAt: new Date().toISOString() },
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
   const ymd = new Date().toISOString().slice(0, 10);
-  a.href = url;
-  a.download = `loterias-alora-${ymd}.json`;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
+  downloadBlob(blob, `loterias-alora-${ymd}.json`);
+}
+
+/**
+ * Paquete del día: JSON de partida + PDF de cierre (si hay resumen).
+ * Dos descargas seguidas (sin dependencia de ZIP).
+ */
+export async function exportDayPackage(state, { downloadDayClosePdf } = {}) {
+  const summary = state.ui?.lastCloseSummary;
+  const ymd = summary?.date || new Date(state.clock?.gameTimeMs || Date.now()).toISOString().slice(0, 10);
+  const payload = {
+    ...state,
+    meta: {
+      ...state.meta,
+      exportedAt: new Date().toISOString(),
+      dayPackage: ymd,
+    },
+    dayPackage: {
+      closeSummary: summary || null,
+      exportedAt: new Date().toISOString(),
+    },
+  };
+  downloadBlob(
+    new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' }),
+    `paquete-dia-${ymd}.json`,
+  );
+  if (summary && typeof downloadDayClosePdf === 'function') {
+    await new Promise((r) => setTimeout(r, 350));
+    downloadDayClosePdf(summary);
+  }
+  state.ui.toast = summary
+    ? `Paquete del día ${ymd}: partida + PDF de cierre`
+    : `Paquete del día ${ymd}: partida (sin cierre reciente)`;
+  return { ymd, hasPdf: !!summary };
 }
 
 export function importGame(file) {
