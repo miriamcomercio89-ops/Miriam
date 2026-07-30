@@ -9116,7 +9116,7 @@ ${xrefPos}
     return ((tpv == null ? void 0 : tpv.lines) || []).reduce((s, l) => s + l.unitCents * l.qty, 0);
   }
   function tpvReadyToCharge(tpv) {
-    var _a, _b, _c;
+    var _a, _b;
     if (!((_a = tpv == null ? void 0 : tpv.lines) == null ? void 0 : _a.length)) return { ok: false, error: "El ticket est\xE1 vac\xEDo" };
     for (const l of tpv.lines) {
       if (l.needsNumbers && !l.selection) {
@@ -9128,13 +9128,6 @@ ${xrefPos}
       if (!v.complete) {
         const miss = v.missing.map((m) => `${m.productName} (faltan ${m.need})`).join(", ");
         return { ok: false, error: `La petici\xF3n no est\xE1 completa: ${miss}. Puedes a\xF1adir de m\xE1s, pero no de menos.` };
-      }
-      if (!v.numbersOk && ((_c = v.numberMismatches) == null ? void 0 : _c.length)) {
-        const n = v.numberMismatches[0];
-        return {
-          ok: false,
-          error: `Cifras: ${n.productName} \u2014 ${n.askLabel || "petici\xF3n"} (${n.reason}). Corrige o dicta de nuevo.`
-        };
       }
     }
     return { ok: true };
@@ -11002,7 +10995,14 @@ ${xrefPos}
         `<div class="wish-extra">+ Extra: ${escapeHtml2(e.productName)} \xD7${e.qty}</div>`
       );
     }
-    const status = v.complete && v.numbersOk ? '<div class="wish-ok" style="margin-top:6px"><strong>Petici\xF3n cubierta</strong></div>' : '<div class="wish-miss" style="margin-top:6px"><strong>A\xFAn no cuadra con lo pedido</strong></div>';
+    let status;
+    if (!v.complete) {
+      status = '<div class="wish-miss" style="margin-top:6px"><strong>Faltan productos de la petici\xF3n</strong></div>';
+    } else if (!v.numbersOk) {
+      status = '<div class="wish-extra" style="margin-top:6px"><strong>Productos OK \xB7 cifras distintas (puedes cobrar igual)</strong></div>';
+    } else {
+      status = '<div class="wish-ok" style="margin-top:6px"><strong>Petici\xF3n cubierta</strong></div>';
+    }
     return `<div class="wish-panel" style="margin:10px 0">
     <strong>Checklist petici\xF3n</strong>
     ${rows.join("") || '<div class="muted">Sin l\xEDneas a\xFAn</div>'}

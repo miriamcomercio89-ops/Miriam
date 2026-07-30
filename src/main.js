@@ -1558,9 +1558,15 @@ function wishlistValidationHTML(tpv) {
       `<div class="wish-extra">+ Extra: ${escapeHtml(e.productName)} ×${e.qty}</div>`,
     );
   }
-  const status = v.complete && v.numbersOk
-    ? '<div class="wish-ok" style="margin-top:6px"><strong>Petición cubierta</strong></div>'
-    : '<div class="wish-miss" style="margin-top:6px"><strong>Aún no cuadra con lo pedido</strong></div>';
+  let status;
+  if (!v.complete) {
+    status = '<div class="wish-miss" style="margin-top:6px"><strong>Faltan productos de la petición</strong></div>';
+  } else if (!v.numbersOk) {
+    status =
+      '<div class="wish-extra" style="margin-top:6px"><strong>Productos OK · cifras distintas (puedes cobrar igual)</strong></div>';
+  } else {
+    status = '<div class="wish-ok" style="margin-top:6px"><strong>Petición cubierta</strong></div>';
+  }
   return `<div class="wish-panel" style="margin:10px 0">
     <strong>Checklist petición</strong>
     ${rows.join('') || '<div class="muted">Sin líneas aún</div>'}

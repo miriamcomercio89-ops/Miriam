@@ -661,13 +661,7 @@ export function tpvReadyToCharge(tpv) {
       const miss = v.missing.map((m) => `${m.productName} (faltan ${m.need})`).join(', ');
       return { ok: false, error: `La petición no está completa: ${miss}. Puedes añadir de más, pero no de menos.` };
     }
-    if (!v.numbersOk && v.numberMismatches?.length) {
-      const n = v.numberMismatches[0];
-      return {
-        ok: false,
-        error: `Cifras: ${n.productName} — ${n.askLabel || 'petición'} (${n.reason}). Corrige o dicta de nuevo.`,
-      };
-    }
+    // Las cifras distintas NO bloquean el cobro: solo avisan en el checklist.
   }
   return { ok: true };
 }
