@@ -9,8 +9,8 @@ import { ensureJackpots } from './jackpots.js';
 import { seedDefaultShowcase, ensureShowcase } from './showcase.js';
 
 export const STARTING_BANK_CENTS = 950000;
-export const SAVE_VERSION = 8;
-export const GAME_VERSION = '0.7';
+export const SAVE_VERSION = 9;
+export const GAME_VERSION = '0.8';
 export const SLOT_COUNT = 3;
 export const STORAGE_PREFIX = 'loterias-alora-slot-';
 export const HIGH_PRIZE_ALERT_CENTS = 200000; // 2.000 €
@@ -84,6 +84,8 @@ export function createNewGame(options = {}) {
       dayPrizesReimbursableCents: 0,
       dayExpensesCents: 0,
       dayShortageCents: 0,
+      daySurplusCents: 0,
+      arqueoLog: [],
       changeErrorsToday: 0,
       lastSettlement: null,
       ledger: [],
@@ -129,6 +131,7 @@ export function createNewGame(options = {}) {
       totalCommissionCents: 0,
       totalPrizesPaidCents: 0,
       totalShortageCents: 0,
+      totalSurplusCents: 0,
       highPrizesAlerted: 0,
     },
     ui: {
@@ -150,6 +153,7 @@ export function createNewGame(options = {}) {
       lowCashAlert: null,
       lowCashAlertYmd: null,
       pauseSummary: null,
+      productSheet: null,
     },
   };
   game.clock.speed = game.settings.defaultSpeed;
@@ -197,7 +201,18 @@ export function migrateState(data) {
   data.stats.totalCommissionCents = data.stats.totalCommissionCents || 0;
   data.stats.totalPrizesPaidCents = data.stats.totalPrizesPaidCents || 0;
   data.stats.totalShortageCents = data.stats.totalShortageCents || 0;
+  data.stats.totalSurplusCents = data.stats.totalSurplusCents || 0;
   data.stats.highPrizesAlerted = data.stats.highPrizesAlerted || 0;
+  if (data.finance) {
+    data.finance.daySurplusCents = data.finance.daySurplusCents || 0;
+    data.finance.arqueoLog = data.finance.arqueoLog || [];
+  }
+  // Migrar casos de gestión antiguos (open → sigue válido; pasos nuevos documentados)
+  for (const c of data.prizeManagement || []) {
+    if (c.status === 'open' && !c.note) {
+      c.note = 'Pendiente documentar y presentar.';
+    }
+  }
   data.jackpots = data.jackpots || {};
   data.stock = data.stock || {};
   for (const p of PRODUCTS) {

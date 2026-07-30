@@ -134,25 +134,66 @@ export function dismissHighPrizeAlert(state) {
   return state;
 }
 
-/** Al liquidar el día, los casos "submitted" pueden pasar a settled y el cliente cobra vía org */
-export function advancePrizeManagement(state) {
-  for (const c of state.prizeManagement || []) {
+/** Etiquetas de estado para la UI. */
+export const PRIZE_MGMT_STATUS = {
+  open: 'Abierto',
+  documented: 'Documentado',
+  submitted: 'Presentado',
+  settled: 'Liquidado',
+};
+
+/**
+ * Avanza un caso de gestión un paso (manual, Miriam).
+ * open → documented → submitted → settled
+ */
+export function advancePrizeCase(state, caseId) {
+  const c = (state.prizeManagement || []).find((x) => x.id === caseId);
+  if (!c) return { ok: false, message: 'Caso no encontrado' };
+  if (c.status === 'settled') return { ok: false, message: 'Ya está liquidado' };
+
+  if (c.status === 'open') {
+    c.status = 'documented';
+    c.documentedAt = state.clock.gameTimeMs;
+    c.note = 'Documentación lista (DNI, ticket, formulario). Pendiente presentar.';
+    state.ui.toast = 'Caso documentado. Siguiente: presentar a LAE/ONCE.';
+  } else if (c.status === 'documented') {
+    c.status = 'submitted';
+    c.submittedAt = state.clock.gameTimeMs;
+    c.note = `Presentado a ${c.org || 'organismo'}. Esperando liquidación.`;
+    state.ui.toast = `Presentado a ${c.org || 'organismo'}.`;
+  } else if (c.status === 'submitted') {
+    c.status = 'settled';
+    c.settledAt = state.clock.gameTimeMs;
+    c.note = `Liquidado: paga ${c.org || 'organismo'} (no sale de tu caja).`;
+    const ticket = state.tickets.find((t) => t.id === c.ticketId);
+    if (ticket) {
+      ticket.status = 'paid';
+      ticket.paidAt = state.clock.gameTimeMs;
+      ticket.paidMethod = 'managed';
+    }
+    state.dayLog.push({
+      at: state.clock.gameTimeMs,
+      text: `Premio gestionado liquidado: ${c.clientName} · ${formatEuro(c.amountCents)} (paga ${c.org})`,
+    });
+    state.ui.toast = `Premio liquidado: ${formatEuro(c.amountCents)}`;
+  } else {
+    // Compat: saves antiguos con open/submitted/settled
     if (c.status === 'open') {
+      /* handled above */
+    } else {
       c.status = 'submitted';
       c.submittedAt = state.clock.gameTimeMs;
-    } else if (c.status === 'submitted') {
-      c.status = 'settled';
-      c.settledAt = state.clock.gameTimeMs;
-      const ticket = state.tickets.find((t) => t.id === c.ticketId);
-      if (ticket) {
-        ticket.status = 'paid';
-        ticket.paidAt = state.clock.gameTimeMs;
-        ticket.paidMethod = 'managed';
-      }
-      state.dayLog.push({
-        at: state.clock.gameTimeMs,
-        text: `Premio gestionado liquidado: ${c.clientName} · ${formatEuro(c.amountCents)} (paga ${c.org})`,
-      });
     }
   }
+
+  state.dayLog.push({
+    at: state.clock.gameTimeMs,
+    text: `Gestión premio → ${PRIZE_MGMT_STATUS[c.status] || c.status}: ${c.clientName} · ${formatEuro(c.amountCents)}`,
+  });
+  return { ok: true, case: c };
+}
+
+/** @deprecated No auto-avanza en cierre v0.8; se mantiene por saves antiguos. */
+export function advancePrizeManagement(_state) {
+  // Intencionadamente vacío: Miriam avanza casos a mano.
 }

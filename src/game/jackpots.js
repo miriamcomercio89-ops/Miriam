@@ -63,3 +63,26 @@ export function formatJackpotShort(cents) {
   if (euros >= 1000) return `${Math.round(euros / 1000)} mil €`;
   return formatEuro(cents);
 }
+
+/** Botes “calientes” que empujan afluencia y deseo de ese juego. */
+export function hotJackpots(state) {
+  ensureJackpots(state);
+  return JACKPOT_GAMES.map((g) => {
+    const cents = state.jackpots.values[g.id] || g.base;
+    const hot = cents >= g.base * 1.35 || cents >= 3000000000;
+    const veryHot = cents >= 5000000000 || cents >= g.base * 2;
+    return { id: g.id, name: g.name, cents, hot, veryHot, label: formatJackpotShort(cents) };
+  }).filter((j) => j.hot);
+}
+
+/** Multiplicador de afluencia por botes altos (0–0.45). */
+export function jackpotCrowdBonus(state) {
+  const list = jackpotList(state);
+  if (!list.length) return 0;
+  const maxJ = Math.max(...list.map((j) => j.cents));
+  if (maxJ >= 5000000000) return 0.45;
+  if (maxJ >= 3500000000) return 0.3;
+  if (maxJ >= 2500000000) return 0.18;
+  if (maxJ >= 1800000000) return 0.1;
+  return 0;
+}

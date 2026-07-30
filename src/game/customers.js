@@ -8,6 +8,7 @@ import { checkTicket, ticketsForClient } from './tickets.js';
 import { ensureDrawsResolved } from './draws.js';
 import { hashSeed, mulberry32 } from './rng.js';
 import { isBirthdayToday, matchesSanto } from '../data/birthdays.js';
+import { hotJackpots, jackpotCrowdBonus } from './jackpots.js';
 
 export function crowdFactor(state) {
   const d = gameDate(state);
@@ -23,6 +24,7 @@ export function crowdFactor(state) {
   if (month === 12 && day >= 5 && day <= 9) f += 0.25;
   const ev = eventOn(gameYmd(state), state.events);
   if (ev) f += ev.crowd || 0;
+  f += jackpotCrowdBonus(state);
   return f;
 }
 
@@ -274,6 +276,23 @@ export function buildRichWishlist(state, client) {
       qty: Math.max(1, qty),
       preferDictate: !!slot.dictate || (client.trait === 'práctica' && rng() < 0.35),
     });
+  }
+
+  // Botes altos: más gente pide ese juego
+  const hot = hotJackpots(state);
+  if (hot.length && rng() < 0.42) {
+    const pick = hot[Math.floor(rng() * hot.length)];
+    const p = getProduct(pick.id);
+    if (p) {
+      const qty = pick.veryHot ? 2 + Math.floor(rng() * 3) : 1 + Math.floor(rng() * 2);
+      lines.unshift({
+        productId: p.id,
+        productName: p.name,
+        qty,
+        preferDictate: rng() < 0.45,
+        note: `Bote ${pick.label}`,
+      });
+    }
   }
 
   if (!lines.length) {

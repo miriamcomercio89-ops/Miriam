@@ -1,9 +1,11 @@
 /**
- * Tablón del pueblo — anuncios de Álora (v0.5).
+ * Tablón del pueblo — anuncios de Álora (v0.8).
  */
 import { eventOn } from './events.js';
 import { santosToday, birthdayBanner } from './birthdays.js';
 import { getProduct } from './products.js';
+import { todaysDrawDetails } from '../game/notices.js';
+import { jackpotList } from '../game/jackpots.js';
 
 export function buildTownBoard(state, ymd) {
   const items = [];
@@ -37,13 +39,55 @@ export function buildTownBoard(state, ymd) {
     });
   }
 
-  // Sorteos de hoy
-  const dow = new Date(`${ymd}T12:00:00Z`).getUTCDay();
-  const drawsToday = [];
-  for (const p of state._productsCache || []) {
-    /* filled by caller if needed */
+  // Sorteos de hoy (reales)
+  const draws = todaysDrawDetails(state);
+  if (draws.length) {
+    const byHour = {};
+    for (const d of draws) {
+      const h = d.hour ?? 21;
+      if (!byHour[h]) byHour[h] = [];
+      byHour[h].push(d);
+    }
+    const hours = Object.keys(byHour)
+      .map(Number)
+      .sort((a, b) => a - b);
+    for (const h of hours) {
+      const list = byHour[h];
+      const names = list.map((d) => d.name).join(', ');
+      const traits = list
+        .filter((d) => d.trait)
+        .slice(0, 4)
+        .map((d) => `${d.name}: ${d.trait}`)
+        .join(' · ');
+      items.push({
+        id: `draws-${ymd}-${h}`,
+        kind: 'sorteo',
+        title: `Hoy a las ${String(h).padStart(2, '0')}:00`,
+        body: `${names}${traits ? ` · ${traits}` : ''}`,
+      });
+    }
+  } else {
+    items.push({
+      id: `draws-none-${ymd}`,
+      kind: 'sorteo',
+      title: 'Sin sorteos programados hoy',
+      body: 'Fin de semana o festivo de juegos: aprovecha para encargos y escaparate.',
+    });
   }
-  void drawsToday;
+
+  // Botes altos
+  const jacks = jackpotList(state)
+    .filter((j) => j.cents >= 2000000000)
+    .sort((a, b) => b.cents - a.cents)
+    .slice(0, 4);
+  if (jacks.length) {
+    items.push({
+      id: `jackpots-${ymd}`,
+      kind: 'bote',
+      title: 'Botes que tiran',
+      body: jacks.map((j) => `${j.name} ${j.label}`).join(' · '),
+    });
+  }
 
   items.push({
     id: 'aviso-responsable',

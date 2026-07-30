@@ -1,9 +1,14 @@
-import { getProduct } from '../data/products.js';
+import { getProduct, PRODUCTS } from '../data/products.js';
 import { pad5 } from './rng.js';
 import { formatEuro } from '../data/money.js';
 
 export const SHOWCASE_MIN = 10;
-export const SHOWCASE_MAX = 20;
+export const SHOWCASE_MAX = 24;
+
+/** Productos que caben en escaparate (décimo / fractionable). */
+export function showcaseableProducts() {
+  return PRODUCTS.filter((p) => p.numberMode === 'nacional' || p.fractionable);
+}
 
 /** Escaparate de décimos de administración (números a la vista). */
 export function ensureShowcase(state) {
@@ -101,6 +106,9 @@ export function seedDefaultShowcase(state) {
     { productId: 'lae-nacional', number: '24680', qty: 1, note: '' },
     { productId: 'and-costa', number: '29001', qty: 1, note: 'Costa' },
     { productId: 'alo-chorro', number: '13013', qty: 1, note: 'Turismo' },
+    { productId: 'mal-antequera', number: '29200', qty: 1, note: 'Torcal' },
+    { productId: 'alo-navidad', number: '25122', qty: 1, note: 'Nav. local' },
+    { productId: 'lae-navidad', number: '45821', qty: 1, note: 'Gordo' },
   ];
   for (const s of seeds) {
     if (state.showcase.length >= SHOWCASE_MAX) break;

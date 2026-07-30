@@ -42,11 +42,25 @@ export function confirmArqueo(state) {
   a.result = { expected, counted, diff };
   a.step = 'result';
 
+  if (!state.finance.arqueoLog) state.finance.arqueoLog = [];
+  const entry = {
+    at: state.clock.gameTimeMs,
+    ymd: gameYmd(state),
+    kind: a.kind,
+    expected,
+    counted,
+    diff,
+  };
+  state.finance.arqueoLog.push(entry);
+  if (state.finance.arqueoLog.length > 60) {
+    state.finance.arqueoLog = state.finance.arqueoLog.slice(-60);
+  }
+
   if (diff === 0) {
     a.message = 'Arqueo correcto. La caja cuadra.';
     state.finance.changeErrorsToday = state.finance.changeErrorsToday || 0;
   } else if (diff < 0) {
-    // Faltante
+    // Faltante → resta banco y pesa en beneficio del día / mes
     state.finance.changeErrorsToday = (state.finance.changeErrorsToday || 0) + 1;
     state.finance.bankCents += diff; // restar del banco (diff negativo)
     state.finance.dayShortageCents = (state.finance.dayShortageCents || 0) + Math.abs(diff);
@@ -56,19 +70,29 @@ export function confirmArqueo(state) {
       type: 'shortage',
       label: `Faltante de caja (${a.kind})`,
       totalCents: diff,
+      ymd: entry.ymd,
     });
-    a.message = `Faltante de ${formatEuro(Math.abs(diff))}. Se ajusta del banco. Aviso sin cerrar el negocio.`;
+    a.message = `Faltante de ${formatEuro(Math.abs(diff))}. Se ajusta del banco y resta del beneficio del mes.`;
     state.dayLog.push({
       at: state.clock.gameTimeMs,
-      text: `Faltante de caja: ${formatEuro(Math.abs(diff))} (${a.kind})`,
+      text: `Faltante de caja: ${formatEuro(Math.abs(diff))} (${a.kind}) · afecta al mes`,
     });
   } else {
-    // Sobrante: se ingresa a banco
+    // Sobrante: se ingresa a banco y se registra
     state.finance.bankCents += diff;
-    a.message = `Sobra ${formatEuro(diff)}. Se ingresa en el banco.`;
+    state.finance.daySurplusCents = (state.finance.daySurplusCents || 0) + diff;
+    state.finance.ledger.push({
+      id: `surplus-${Date.now()}`,
+      at: state.clock.gameTimeMs,
+      type: 'surplus',
+      label: `Sobrante de caja (${a.kind})`,
+      totalCents: diff,
+      ymd: entry.ymd,
+    });
+    a.message = `Sobra ${formatEuro(diff)}. Se ingresa en el banco (registrado en el mes).`;
     state.dayLog.push({
       at: state.clock.gameTimeMs,
-      text: `Sobrante de caja: ${formatEuro(diff)}`,
+      text: `Sobrante de caja: ${formatEuro(diff)} (${a.kind})`,
     });
   }
 

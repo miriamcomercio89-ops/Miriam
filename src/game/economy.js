@@ -3,7 +3,6 @@ import { defaultFloatDrawer, drawerTotalCents, formatEuro } from '../data/money.
 import { gameDate, gameYmd, nextBusinessDayStart, closedReason } from './time.js';
 import { processArrivingOrders } from './customers.js';
 import { ensureDrawsResolved } from './draws.js';
-import { advancePrizeManagement } from './prizes.js';
 import { getProduct } from '../data/products.js';
 import { pushCloseSummary } from './closeHistory.js';
 
@@ -125,15 +124,38 @@ export function settleOrganizations(state) {
 export function dayProfitBreakdown(state) {
   const commission = state.finance.dayCommissionCents || 0;
   const expenses = state.finance.dayExpensesCents || 0;
+  const shortage = state.finance.dayShortageCents || 0;
+  const surplus = state.finance.daySurplusCents || 0;
   return {
     salesCents: state.finance.daySalesCents || 0,
     commissionCents: commission,
     expensesCents: expenses,
     prizesPaidCents: state.finance.dayPrizesPaidCents || 0,
     prizesReimbursableCents: state.finance.dayPrizesReimbursableCents || 0,
-    profitCents: commission - expenses,
+    shortageCents: shortage,
+    surplusCents: surplus,
+    /** Comisiones − gastos − faltantes (+ sobrantes no suman a beneficio operativo) */
+    profitCents: commission - expenses - shortage,
     orgs: dayOrgBreakdown(state),
   };
+}
+
+/** Texto claro de liquidación para UI/PDF. */
+export function settlementExplain(settle) {
+  if (!settle) return [];
+  return [
+    'Remesa = ventas − comisión retenida (sale del banco).',
+    'Reembolso = premios que pagaste y te devuelve el organismo.',
+    `LAE: ventas ${formatEuro(settle.lae?.sales || 0)} − com. ${formatEuro(settle.lae?.commission || 0)} → remesa ${formatEuro(settle.lae?.remittance || 0)}`,
+    `ONCE: ventas ${formatEuro(settle.once?.sales || 0)} − com. ${formatEuro(settle.once?.commission || 0)} → remesa ${formatEuro(settle.once?.remittance || 0)}`,
+    `Otros: ventas ${formatEuro(settle.otros?.sales || 0)} − com. ${formatEuro(settle.otros?.commission || 0)} → remesa ${formatEuro(settle.otros?.remittance || 0)}`,
+    `Reembolso premios: ${formatEuro(
+      (settle.lae?.prizesReimbursed || 0) +
+        (settle.once?.prizesReimbursed || 0) +
+        (settle.otros?.prizesReimbursed || 0),
+    )}`,
+    `Delta banco neto: ${formatEuro(settle.netBankDelta || 0)}`,
+  ];
 }
 
 export function buildDayCloseSummary(state) {
@@ -147,6 +169,7 @@ export function buildDayCloseSummary(state) {
     nextDay: nextBusinessDayStart(state).toISOString().slice(0, 10),
     nextDayReasonSkip: peekSkipReason(state),
     settlement: state.finance.lastSettlement || null,
+    settlementNotes: settlementExplain(state.finance.lastSettlement),
   };
 }
 
@@ -173,10 +196,10 @@ export function closeDay(state) {
   applyDailyExpenses(state);
   maybeApplyTaxes(state);
   const settlement = settleOrganizations(state);
-  advancePrizeManagement(state);
 
   const summary = buildDayCloseSummary(state);
   summary.settlement = settlement;
+  summary.settlementNotes = settlementExplain(settlement);
   pushCloseSummary(state, summary);
   state.stats.daysPlayed += 1;
 
@@ -184,12 +207,17 @@ export function closeDay(state) {
     state.stats.totalShortageCents =
       (state.stats.totalShortageCents || 0) + state.finance.dayShortageCents;
   }
+  if (state.finance.daySurplusCents) {
+    state.stats.totalSurplusCents =
+      (state.stats.totalSurplusCents || 0) + state.finance.daySurplusCents;
+  }
   state.finance.daySalesCents = 0;
   state.finance.dayCommissionCents = 0;
   state.finance.dayPrizesPaidCents = 0;
   state.finance.dayPrizesReimbursableCents = 0;
   state.finance.dayExpensesCents = 0;
   state.finance.dayShortageCents = 0;
+  state.finance.daySurplusCents = 0;
   state.finance.changeErrorsToday = 0;
   state.customers.servedToday = 0;
   state.customers.current = null;

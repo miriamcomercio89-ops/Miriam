@@ -15,6 +15,8 @@ export function buildMonthlyStatement(state, year, month) {
   let expenses = 0;
   let supplier = 0;
   let shortage = 0;
+  let surplus = 0;
+  let arqueos = 0;
 
   for (const e of state.finance.ledger || []) {
     if (e.at < start || e.at >= end) continue;
@@ -34,7 +36,14 @@ export function buildMonthlyStatement(state, year, month) {
     }
     if (e.type === 'expense') expenses += Math.abs(e.totalCents || 0);
     if (e.type === 'supplier') supplier += Math.abs(e.totalCents || 0);
-    if (e.type === 'shortage') shortage += Math.abs(e.totalCents || 0);
+    if (e.type === 'shortage') {
+      shortage += Math.abs(e.totalCents || 0);
+      arqueos += 1;
+    }
+    if (e.type === 'surplus') {
+      surplus += Math.abs(e.totalCents || 0);
+      arqueos += 1;
+    }
   }
 
   for (const org of Object.keys(orgs)) {
@@ -47,6 +56,10 @@ export function buildMonthlyStatement(state, year, month) {
     timeZone: 'UTC',
   });
 
+  const totalSales = orgs.LAE.sales + orgs.ONCE.sales + orgs.Otros.sales;
+  const totalCommission = orgs.LAE.commission + orgs.ONCE.commission + orgs.Otros.commission;
+  const totalPrizes = orgs.LAE.prizes + orgs.ONCE.prizes + orgs.Otros.prizes;
+
   return {
     year,
     month,
@@ -55,9 +68,13 @@ export function buildMonthlyStatement(state, year, month) {
     expenses,
     supplier,
     shortage,
-    totalSales: orgs.LAE.sales + orgs.ONCE.sales + orgs.Otros.sales,
-    totalCommission: orgs.LAE.commission + orgs.ONCE.commission + orgs.Otros.commission,
-    totalPrizes: orgs.LAE.prizes + orgs.ONCE.prizes + orgs.Otros.prizes,
+    surplus,
+    arqueos,
+    totalSales,
+    totalCommission,
+    totalPrizes,
+    /** Comisiones − gastos − faltantes (sobrantes no inflan el beneficio) */
+    netMonth: totalCommission - expenses - shortage,
   };
 }
 
@@ -76,8 +93,11 @@ export function formatMonthlyLines(statement) {
     `Premios pagados: ${formatEuro(s.totalPrizes)}`,
     `Gastos local: ${formatEuro(s.expenses)}`,
     `Proveedor: ${formatEuro(s.supplier)}`,
-    `Faltantes: ${formatEuro(s.shortage)}`,
+    `Faltantes de caja: ${formatEuro(s.shortage)}`,
+    `Sobrantes de caja: ${formatEuro(s.surplus || 0)}`,
+    `Neto mes (com.−gastos−falt.): ${formatEuro(s.netMonth ?? s.totalCommission - s.expenses - s.shortage)}`,
     '--------------------------------',
+    'Remesa = ventas − comisión retenida',
   ];
   for (const org of ['LAE', 'ONCE', 'Otros']) {
     const o = s.orgs[org];

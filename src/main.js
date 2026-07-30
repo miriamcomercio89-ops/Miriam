@@ -47,7 +47,12 @@ import {
   countTotalCents,
   drawerTotalCents,
 } from './game/cash.js';
-import { buildDayCloseSummary, closeDay, dayProfitBreakdown } from './game/economy.js';
+import {
+  buildDayCloseSummary,
+  closeDay,
+  dayProfitBreakdown,
+  settlementExplain,
+} from './game/economy.js';
 import {
   PRODUCTS,
   TPV_CATEGORIES,
@@ -66,8 +71,14 @@ import {
   setSfxVolume,
 } from './game/sounds.js';
 import { ensureDrawsResolved, listDrawHistory, modeHint, nextDrawLabel } from './game/draws.js';
-import { formatSelection, lastIssuedTicket } from './game/tickets.js';
-import { payTicketPrize, startPrizeManagement } from './game/prizes.js';
+import { formatSelection, lastIssuedTicket, LARGE_PRIZE_CENTS } from './game/tickets.js';
+import {
+  payTicketPrize,
+  startPrizeManagement,
+  advancePrizeCase,
+  PRIZE_MGMT_STATUS,
+  dismissHighPrizeAlert,
+} from './game/prizes.js';
 import {
   downloadTicketPdf,
   downloadSaleReceiptPdf,
@@ -111,9 +122,9 @@ import {
   sellShowcaseToTpv,
   ensureShowcase,
   validateShowcaseAgainstTpv,
+  showcaseableProducts,
 } from './game/showcase.js';
 import { placeSupplierOrder, mondayScratchInventory, restockLowScratches, supplierUnitCostCents } from './game/supplier.js';
-import { dismissHighPrizeAlert } from './game/prizes.js';
 import {
   startArqueo,
   adjustArqueoCount,
@@ -196,8 +207,14 @@ function loop() {
     const prevAutosave = lastAutosaveRealMs;
     lastAutosaveRealMs = maybeAutosave(state, lastAutosaveRealMs);
     if (lastAutosaveRealMs !== prevAutosave) {
-      // Silent autosave — clear toast from saveToSlot
       if (state.ui.toast?.startsWith('Partida guardada')) state.ui.toast = null;
+      const el = document.getElementById('autosave-badge');
+      if (el) {
+        const slot = state.ui.lastAutosaveSlot || state.meta?.activeSlot || 1;
+        el.textContent = `Autoguardado · hueco ${slot}`;
+        el.classList.add('flash');
+        setTimeout(() => el.classList.remove('flash'), 1200);
+      }
     }
 
     maybeMondayHint();
@@ -468,7 +485,7 @@ function renderMenu() {
         </div>
         <p class="disclaimer">
           Fan-made / no oficial. Nombres de Loterías y Apuestas del Estado y ONCE usados solo con fines de simulación.
-          Juego responsable · +18. Versión ${GAME_VERSION}: comparar apuesta vs sorteo, reimprimir último ticket, paquete del día y loterías con carácter propio.
+          Juego responsable · +18. Versión ${GAME_VERSION}: tablón con sorteos, escaparate amplio, gestión de premios a mano, liquidación clara, botes que tiran y ficha de producto.
         </p>
       </div>
     </div>
@@ -482,7 +499,7 @@ function renderMenu() {
     maybeStartMusic();
     state.ui.screen = 'counter';
     lastAutosaveRealMs = Date.now();
-    showToast('Bienvenida, Miriam. Versión 0.7 lista. Abre el TPV para vender.');
+    showToast('Bienvenida, Miriam. Versión 0.8 lista. Mira el tablón y abre el TPV.');
     needsFullRender = true;
     render();
   };
@@ -558,12 +575,22 @@ function topbarHTML() {
   const open = isOpenHours(state) && !isClosedDay(state);
   const speed = state.clock.paused ? 0 : state.clock.speed;
   const ev = eventBannerText();
+  const autosaveBadge = (() => {
+    if (!state.ui?.lastAutosaveAt) {
+      return `<div class="autosave-badge muted" id="autosave-badge">Sin autoguardado aún</div>`;
+    }
+    const mins = Math.max(0, Math.round((Date.now() - state.ui.lastAutosaveAt) / 60000));
+    const slot = state.ui.lastAutosaveSlot || state.meta?.activeSlot || 1;
+    const when = mins === 0 ? 'ahora' : `hace ${mins}m`;
+    return `<div class="autosave-badge" id="autosave-badge">Autoguardado ${when} · hueco ${slot}</div>`;
+  })();
   return `
     <header class="topbar">
       <div class="brand">
         <div class="brand-name">Loterías Álora</div>
         <div class="brand-sub">Miriam · Álora · v${GAME_VERSION}${ev ? ` · ${escapeHtml(ev)}` : ''}</div>
         ${touristHintHTML()}
+        ${autosaveBadge}
       </div>
       <div class="clock-block">
         <div class="clock-time" id="live-clock">${formatGameClock(state)}</div>
@@ -612,45 +639,55 @@ function sideNav() {
   const openMgmt = (state.prizeManagement || []).filter((c) => c.status !== 'settled').length;
   const musicOn = state.settings?.music !== false && isMusicEnabled();
   const dark = state.settings?.theme === 'dark';
-  let autosaveLine = '';
-  if (state.ui?.lastAutosaveAt) {
-    const mins = Math.max(0, Math.round((Date.now() - state.ui.lastAutosaveAt) / 60000));
-    const slot = state.ui.lastAutosaveSlot || state.meta?.activeSlot || 1;
-    autosaveLine = `<div class="muted" id="autosave-hint">Guardado hace ${mins}m · hueco ${slot}</div>`;
-  }
+  const navBtn = (id, label) =>
+    `<button class="btn ${state.ui.screen === id ? 'primary' : ''}" data-nav="${id}">${label}</button>`;
   return `
     <aside class="panel nav-side">
-      <h3>Oficina</h3>
-      <button class="btn" data-nav="counter">Mostrador</button>
-      <button class="btn" data-nav="board">Tablón</button>
-      <button class="btn" data-nav="fichas">Abonados / Peñas</button>
-      <button class="btn" data-nav="draws">Sorteos</button>
-      <button class="btn" data-nav="prize">Pagar premio</button>
-      <button class="btn" data-nav="management">Gestión premios${openMgmt ? ` (${openMgmt})` : ''}</button>
-      <button class="btn" data-nav="stock">Stock y pedidos</button>
-      <button class="btn" data-nav="showcase">Escaparate</button>
-      <button class="btn" data-nav="bank">Caja↔Banco</button>
-      <button class="btn" data-nav="arqueo">Arqueo</button>
-      <button class="btn" data-nav="weekly">Extracto semanal</button>
-      <button class="btn" data-nav="monthly">Liquidación mensual</button>
-      <button class="btn" data-nav="stats">Estadísticas</button>
-      <button class="btn" data-nav="close">Cierre y balance</button>
-      <button class="btn" data-nav="closes">Histórico cierres</button>
-      <button class="btn" data-nav="settings">Ajustes</button>
-      <button class="btn" data-nav="saves">Guardar / exportar</button>
-      <button class="btn" id="btn-music-toggle">${musicOn ? '♪ Música: ON' : '♪ Música: OFF'}</button>
-      <button class="btn" id="btn-theme-toggle">${dark ? 'Tema: oscuro' : 'Tema: claro'}</button>
-      ${autosaveLine}
+      <div class="nav-group">
+        <div class="nav-group-title">Mostrador</div>
+        ${navBtn('counter', 'Mostrador')}
+        ${navBtn('board', 'Tablón')}
+        ${navBtn('fichas', 'Abonados / Peñas')}
+        ${navBtn('draws', 'Sorteos')}
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-title">Caja y premios</div>
+        ${navBtn('prize', 'Pagar premio')}
+        ${navBtn('management', `Gestión premios${openMgmt ? ` (${openMgmt})` : ''}`)}
+        ${navBtn('bank', 'Caja↔Banco')}
+        <button class="btn" data-nav="arqueo">Arqueo</button>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-title">Oficina</div>
+        ${navBtn('stock', 'Stock y pedidos')}
+        ${navBtn('showcase', 'Escaparate')}
+        ${navBtn('close', 'Cierre y balance')}
+        ${navBtn('closes', 'Histórico cierres')}
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-title">Informes</div>
+        ${navBtn('weekly', 'Extracto semanal')}
+        ${navBtn('monthly', 'Liquidación mensual')}
+        ${navBtn('stats', 'Estadísticas')}
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-title">Sistema</div>
+        ${navBtn('settings', 'Ajustes')}
+        ${navBtn('saves', 'Guardar / exportar')}
+        <button class="btn" id="btn-music-toggle">${musicOn ? '♪ Música: ON' : '♪ Música: OFF'}</button>
+        <button class="btn" id="btn-theme-toggle">${dark ? 'Tema: oscuro' : 'Tema: claro'}</button>
+      </div>
       <hr style="border:none;border-top:1px solid var(--line);margin:14px 0" />
       <div class="stat-row"><span>Banco</span><strong>${formatEuro(state.finance.bankCents)}</strong></div>
       <div class="stat-row"><span>Caja</span><strong>${formatEuro(drawerTotalCents(state.finance.drawer))}</strong></div>
       <div class="stat-row"><span>Ventas hoy</span><strong>${formatEuro(state.finance.daySalesCents)}</strong></div>
       <div class="stat-row"><span>Comisión hoy</span><strong>${formatEuro(profit.commissionCents)}</strong></div>
       <div class="stat-row"><span>Beneficio hoy*</span><strong>${formatEuro(profit.profitCents)}</strong></div>
+      <div class="stat-row"><span>Faltante hoy</span><strong>${formatEuro(profit.shortageCents || 0)}</strong></div>
       <div class="stat-row"><span>Clientes hoy</span><strong>${state.customers.servedToday}</strong></div>
       <div class="stat-row"><span>En cola</span><strong>${state.customers.queue?.length || 0}</strong></div>
       <div class="stat-row"><span>Velocidad</span><strong>${speedLabel(state.clock.speed, state.clock.paused)}</strong></div>
-      <p class="muted" style="font-size:0.78rem;margin-top:8px">*Comisiones − gastos del día</p>
+      <p class="muted" style="font-size:0.78rem;margin-top:8px">*Comisiones − gastos − faltantes</p>
     </aside>
   `;
 }
@@ -1477,7 +1514,10 @@ function renderTpv() {
                   `Com. ${((p.commissionRate ?? 0.05) * 100).toFixed(1)}%${p.trait ? ` · ${p.trait}` : ''}`;
                 const next = nextDrawLabel(p.id, gameDate(state));
                 return `<div class="tpv-product">
-                  <strong>${escapeHtml(p.name)}</strong>
+                  <div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start">
+                    <strong>${escapeHtml(p.name)}</strong>
+                    <button class="btn ghost" style="padding:2px 8px;font-size:0.8rem" data-detail="${p.id}" title="Ficha">Info</button>
+                  </div>
                   <span>${formatEuro(p.priceCents)} · ${escapeHtml(stock)}</span>
                   ${next ? `<div class="muted product-next">Próximo: ${escapeHtml(next)}</div>` : ''}
                   <div class="product-meta">${escapeHtml(meta)}</div>
@@ -1566,14 +1606,17 @@ function renderTpv() {
         </div>
       </div>
     </div>
+    ${productSheetHTML()}
     ${toastHTML()}
   `;
 
   bindTopbar();
   ensureTpvKeyboard();
+  bindProductSheet();
 
   document.getElementById('btn-tpv-back').onclick = () => {
     sfx.click();
+    state.ui.productSheet = null;
     closeTpv(state);
     needsFullRender = true;
     render();
@@ -1601,6 +1644,16 @@ function renderTpv() {
     btn.onclick = () => {
       sfx.tpv();
       addTpvProduct(state, btn.getAttribute('data-add-dictate'), { numberSource: 'dictate' });
+      needsFullRender = true;
+      render();
+    };
+  });
+
+  app.querySelectorAll('[data-detail]').forEach((btn) => {
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      sfx.click();
+      state.ui.productSheet = { productId: btn.getAttribute('data-detail') };
       needsFullRender = true;
       render();
     };
@@ -1751,6 +1804,97 @@ function renderTpv() {
   };
 }
 
+const DAY_NAMES_SHORT = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+
+function productSheetHTML() {
+  const id = state.ui?.productSheet?.productId;
+  if (!id) return '';
+  const p = getProduct(id);
+  if (!p) return '';
+  const days = (p.drawDays || []).map((d) => DAY_NAMES_SHORT[d]).join(', ') || 'Especial / sin día fijo';
+  const hour = p.drawHour != null ? `${String(p.drawHour).padStart(2, '0')}:00` : '—';
+  const stock =
+    p.stockType === 'physical' ? `${state.stock[p.id] ?? 0} uds` : 'Terminal (sin stock físico)';
+  const jack = (state.jackpots?.values || {})[p.id];
+  return `
+    <div class="product-sheet-overlay" id="product-sheet">
+      <div class="product-sheet panel">
+        <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start">
+          <div>
+            <div class="muted">${escapeHtml(p.org || '')} · ${escapeHtml(p.tpvCategory || '')}</div>
+            <h2 style="margin:4px 0 8px">${escapeHtml(p.name)}</h2>
+          </div>
+          <button class="btn ghost" id="btn-sheet-close">Cerrar</button>
+        </div>
+        <p>${escapeHtml(p.description || '')}</p>
+        ${p.flavor ? `<p class="muted">“${escapeHtml(p.flavor)}”</p>` : ''}
+        <div class="close-summary" style="margin-top:12px">
+          <div class="stat-row"><span>Precio</span><strong>${formatEuro(p.priceCents)}</strong></div>
+          <div class="stat-row"><span>Comisión</span><strong>${((p.commissionRate ?? 0.05) * 100).toFixed(1)}%</strong></div>
+          <div class="stat-row"><span>Mecánica</span><strong>${escapeHtml(p.trait || p.numberMode || '—')}</strong></div>
+          <div class="stat-row"><span>Premio orientativo</span><strong>${escapeHtml(p.topPrizeHint || '—')}</strong></div>
+          <div class="stat-row"><span>Días de sorteo</span><strong>${escapeHtml(days)}</strong></div>
+          <div class="stat-row"><span>Hora</span><strong>${escapeHtml(hour)}</strong></div>
+          <div class="stat-row"><span>Stock</span><strong>${escapeHtml(stock)}</strong></div>
+          ${jack ? `<div class="stat-row"><span>Bote actual</span><strong>${escapeHtml(formatJackpotShort(jack))}</strong></div>` : ''}
+          ${p.orderDays != null && p.stockType === 'physical' ? `<div class="stat-row"><span>Pedido proveedor</span><strong>${p.orderDays} día(s)</strong></div>` : ''}
+        </div>
+        <div class="actions" style="margin-top:14px">
+          <button class="btn primary" id="btn-sheet-add">Añadir al ticket (aleatorio)</button>
+          ${p.needsNumbers ? `<button class="btn" id="btn-sheet-dictate">Dictado</button>` : ''}
+        </div>
+      </div>
+    </div>`;
+}
+
+function bindProductSheet() {
+  const close = document.getElementById('btn-sheet-close');
+  if (close) {
+    close.onclick = () => {
+      state.ui.productSheet = null;
+      sfx.click();
+      needsFullRender = true;
+      render();
+    };
+  }
+  const overlay = document.getElementById('product-sheet');
+  if (overlay) {
+    overlay.onclick = (e) => {
+      if (e.target === overlay) {
+        state.ui.productSheet = null;
+        needsFullRender = true;
+        render();
+      }
+    };
+  }
+  const add = document.getElementById('btn-sheet-add');
+  if (add) {
+    add.onclick = () => {
+      const id = state.ui.productSheet?.productId;
+      state.ui.productSheet = null;
+      if (id) {
+        sfx.tpv();
+        addTpvProduct(state, id, { numberSource: 'random' });
+      }
+      needsFullRender = true;
+      render();
+    };
+  }
+  const dict = document.getElementById('btn-sheet-dictate');
+  if (dict) {
+    dict.onclick = () => {
+      const id = state.ui.productSheet?.productId;
+      state.ui.productSheet = null;
+      if (id) {
+        sfx.tpv();
+        addTpvProduct(state, id, { numberSource: 'dictate' });
+      }
+      needsFullRender = true;
+      render();
+    };
+  }
+}
+
 function ensureTpvKeyboard() {
   if (tpvKeysBound) return;
   tpvKeysBound = true;
@@ -1773,7 +1917,9 @@ function ensureTpvKeyboard() {
 
     if (e.key === 'Escape') {
       e.preventDefault();
-      if (tpv.cancelPrompt) {
+      if (state.ui.productSheet) {
+        state.ui.productSheet = null;
+      } else if (tpv.cancelPrompt) {
         dismissCancelPrompt(state);
       } else if (tpv.numberEntry) {
         cancelNumberEntry(state);
@@ -1893,6 +2039,11 @@ function renderCash() {
       <div class="panel cash-screen" style="margin-top:16px">
         <h2>Caja</h2>
         <div class="muted">${ps.items.map((i) => `${i.name} ×${i.qty}`).join(' · ')}</div>
+        ${
+          ps.step === 'cash-tender' || ps.step === 'cash-change'
+            ? `<p class="muted cash-keys-hint">Atajos: 1–7 billetes (5–500€) · Q–I monedas (2€→1c) · Shift=restar · Enter=continuar</p>`
+            : ''
+        }
         ${ps.error ? `<div class="error-box" style="margin:10px 0">${escapeHtml(ps.error)}</div>` : ''}
         ${body}
       </div>
@@ -1901,6 +2052,7 @@ function renderCash() {
   `;
 
   bindTopbar();
+  ensureCashKeyboard();
   app.querySelectorAll('[data-method]').forEach((btn) => {
     btn.onclick = () => {
       selectPaymentMethod(state, btn.getAttribute('data-method'));
@@ -1988,6 +2140,65 @@ function renderCash() {
   });
 }
 
+let cashKeysBound = false;
+function ensureCashKeyboard() {
+  if (cashKeysBound) return;
+  cashKeysBound = true;
+  const BILL_KEYS = {
+    '1': 'b5',
+    '2': 'b10',
+    '3': 'b20',
+    '4': 'b50',
+    '5': 'b100',
+    '6': 'b200',
+    '7': 'b500',
+  };
+  const COIN_KEYS = {
+    q: 'e2',
+    w: 'e1',
+    e: 'c50',
+    r: 'c20',
+    t: 'c10',
+    y: 'c5',
+    u: 'c2',
+    i: 'c1',
+  };
+  document.addEventListener('keydown', (ev) => {
+    if (!state || state.ui.screen !== 'cash') return;
+    const ps = state.ui.paymentSession;
+    if (!ps || (ps.step !== 'cash-tender' && ps.step !== 'cash-change')) return;
+    const tag = (ev.target?.tagName || '').toLowerCase();
+    if (tag === 'input' || tag === 'textarea') return;
+    if (ev.key === 'Enter') {
+      ev.preventDefault();
+      if (ps.step === 'cash-tender') {
+        confirmTender(state);
+        state.ui.paymentSession?.error ? sfx.error() : sfx.scan();
+      } else {
+        confirmChange(state);
+        if (state.ui.paymentSession?.error) sfx.error();
+        else {
+          sfx.cash();
+          if (state.ui.toast) showToast(state.ui.toast);
+        }
+      }
+      needsFullRender = true;
+      render();
+      return;
+    }
+    const k = ev.key?.toLowerCase?.() || '';
+    const denomId = BILL_KEYS[ev.key] || COIN_KEYS[k];
+    if (!denomId) return;
+    ev.preventDefault();
+    const delta = ev.shiftKey ? -1 : 1;
+    if (ps.step === 'cash-tender') adjustTender(state, denomId, delta);
+    else adjustChange(state, denomId, delta);
+    sfx.click();
+    needsFullRender = true;
+    render();
+  });
+}
+
 function denomEditor(kind) {
   const ps = state.ui.paymentSession;
   const counts = kind === 'tender' ? ps.tendered : ps.changeGiven;
@@ -2028,7 +2239,7 @@ function renderClose() {
         ${sideNav()}
         <section class="panel">
           <h2>Cierre y balance</h2>
-          <p class="muted">Al confirmar: gastos del día, liquidación LAE/ONCE, avance de gestiones de premios y salto al siguiente laborable.</p>
+          <p class="muted">Al confirmar: gastos del día, liquidación LAE/ONCE/otros y salto al siguiente laborable. Las gestiones de premios las avanzas tú a mano.</p>
           <div class="close-summary">
             <div class="stat-row"><span>Fecha</span><strong>${summary.date}</strong></div>
             <div class="stat-row"><span>Ventas</span><strong>${formatEuro(summary.salesCents)}</strong></div>
@@ -2036,6 +2247,8 @@ function renderClose() {
             <div class="stat-row"><span>Beneficio del día*</span><strong>${formatEuro(summary.profitCents)}</strong></div>
             <div class="stat-row"><span>Premios pagados</span><strong>${formatEuro(summary.prizesPaidCents)}</strong></div>
             <div class="stat-row"><span>Gastos (al cerrar)</span><strong>${formatEuro(summary.expensesCents)}</strong></div>
+            <div class="stat-row"><span>Faltantes arqueo</span><strong>${formatEuro(summary.shortageCents || 0)}</strong></div>
+            <div class="stat-row"><span>Sobrantes arqueo</span><strong>${formatEuro(summary.surplusCents || 0)}</strong></div>
             <div class="stat-row"><span>Cajón</span><strong>${formatEuro(summary.drawerCents)}</strong></div>
             <div class="stat-row"><span>Banco</span><strong>${formatEuro(summary.bankCents)}</strong></div>
             <div class="stat-row"><span>Clientes</span><strong>${summary.customersServed}</strong></div>
@@ -2043,13 +2256,16 @@ function renderClose() {
           </div>
 
           <h3 style="margin-top:18px">Desglose por organización</h3>
+          <p class="muted">Comisión = lo que te quedas. Remesa = ventas − comisión (sale del banco al organismo).</p>
           <div class="close-summary">
             ${['LAE', 'ONCE', 'Otros']
               .map((org) => {
                 const o = orgs?.[org] || { sales: 0, commission: 0, prizes: 0 };
+                const remit = (o.sales || 0) - (o.commission || 0);
                 return `<div class="stat-row"><span>${org} ventas</span><strong>${formatEuro(o.sales)}</strong></div>
-                  <div class="stat-row"><span>${org} comisión</span><strong>${formatEuro(o.commission)}</strong></div>
-                  <div class="stat-row"><span>${org} premios</span><strong>${formatEuro(o.prizes || 0)}</strong></div>`;
+                  <div class="stat-row"><span>${org} comisión retenida</span><strong>${formatEuro(o.commission)}</strong></div>
+                  <div class="stat-row"><span>${org} remesa</span><strong>${formatEuro(remit)}</strong></div>
+                  <div class="stat-row"><span>${org} premios pagados</span><strong>${formatEuro(o.prizes || 0)}</strong></div>`;
               })
               .join('')}
           </div>
@@ -2058,18 +2274,11 @@ function renderClose() {
           ${
             settle
               ? `<div class="close-summary">
-                  <div class="stat-row"><span>LAE remesa</span><strong>${formatEuro(settle.lae?.remittance || 0)}</strong></div>
-                  <div class="stat-row"><span>LAE comisión retenida</span><strong>${formatEuro(settle.lae?.commission || 0)}</strong></div>
-                  <div class="stat-row"><span>ONCE remesa</span><strong>${formatEuro(settle.once?.remittance || 0)}</strong></div>
-                  <div class="stat-row"><span>ONCE comisión retenida</span><strong>${formatEuro(settle.once?.commission || 0)}</strong></div>
-                  <div class="stat-row"><span>Otros remesa</span><strong>${formatEuro(settle.otros?.remittance || 0)}</strong></div>
-                  <div class="stat-row"><span>Reembolso premios</span><strong>${formatEuro(
-                    (settle.lae?.prizesReimbursed || 0) +
-                      (settle.once?.prizesReimbursed || 0) +
-                      (settle.otros?.prizesReimbursed || 0),
-                  )}</strong></div>
+                  ${settlementExplain(settle)
+                    .map((line) => `<p class="muted" style="margin:4px 0">${escapeHtml(line)}</p>`)
+                    .join('')}
                 </div>`
-              : `<p class="muted">Se calculará al cerrar el día (ventas − comisión por org, más reembolso de premios).</p>
+              : `<p class="muted">Se calculará al cerrar: remesa = ventas − comisión; el banco recibe el reembolso de premios.</p>
                 <div class="close-summary">
                   <div class="stat-row"><span>LAE remesa estimada</span><strong>${formatEuro((orgs?.LAE?.sales || 0) - (orgs?.LAE?.commission || 0))}</strong></div>
                   <div class="stat-row"><span>ONCE remesa estimada</span><strong>${formatEuro((orgs?.ONCE?.sales || 0) - (orgs?.ONCE?.commission || 0))}</strong></div>
@@ -2077,7 +2286,7 @@ function renderClose() {
                 </div>`
           }
 
-          <p class="muted">*Beneficio ≈ comisiones − gastos (antes de liquidar)</p>
+          <p class="muted">*Beneficio ≈ comisiones − gastos − faltantes de arqueo</p>
           <p class="muted" style="margin-top:12px">Recomendado: haz el arqueo de caja antes de cerrar.</p>
           <div class="actions" style="margin-top:18px">
             <button class="btn" id="btn-close-pdf">PDF del cierre</button>
@@ -2493,15 +2702,62 @@ function renderStock() {
   });
 }
 
+function claimableTickets() {
+  return (state.tickets || []).filter(
+    (t) => (t.status === 'checked' || t.status === 'managed') && (t.prizeCents || 0) > 0,
+  );
+}
+
 function renderPrize() {
+  const q = (state.ui.prizeSearch || '').trim().toLowerCase();
+  const list = claimableTickets().filter((t) => {
+    if (!q) return true;
+    return (
+      t.id.toLowerCase().includes(q) ||
+      (t.clientName || '').toLowerCase().includes(q) ||
+      (t.productName || '').toLowerCase().includes(q) ||
+      formatSelection(t).toLowerCase().includes(q)
+    );
+  });
   app.innerHTML = `
     <div class="shell">
       ${topbarHTML()}
       <div class="layout" style="grid-template-columns:280px 1fr">
         ${sideNav()}
         <section class="panel">
-          <h2>Pagar premio (manual)</h2>
-          <p class="muted">Para premios sueltos. Los de ticket se gestionan en el mostrador al comprobar.</p>
+          <h2>Pagar premio</h2>
+          <p class="muted">Busca un ticket comprobado o paga un premio suelto sin ticket.</p>
+          <h3>Buscar ticket</h3>
+          <label>ID, cliente o producto<br/>
+            <input id="prize-search" value="${escapeHtml(state.ui.prizeSearch || '')}" placeholder="Ej. T12 o Miriam" style="width:100%;margin:6px 0 12px;padding:10px;border-radius:10px;border:1px solid var(--line)" />
+          </label>
+          <div class="log" style="max-height:260px;overflow:auto">
+            ${
+              list.length
+                ? list
+                    .slice(0, 40)
+                    .map(
+                      (t) => `<div class="log-item">
+                        <strong>${escapeHtml(t.id)}</strong> · ${escapeHtml(t.clientName || '—')} · ${escapeHtml(t.productName)}
+                        <br/>${escapeHtml(formatSelection(t))} · <strong>${formatEuro(t.prizeCents)}</strong>
+                        <span class="muted"> · ${escapeHtml(t.status)}</span>
+                        <div class="actions" style="margin-top:6px">
+                          ${
+                            t.status === 'managed' || t.prizeCents >= LARGE_PRIZE_CENTS
+                              ? `<button class="btn accent" style="padding:4px 10px" data-manage-ticket="${t.id}">${
+                                  t.status === 'managed' ? 'Ver gestión' : 'Gestionar'
+                                }</button>`
+                              : `<button class="btn primary" style="padding:4px 10px" data-pay-ticket="${t.id}" data-method="cash">Efectivo</button>
+                          <button class="btn" style="padding:4px 10px" data-pay-ticket="${t.id}" data-method="transfer">Transfer.</button>`
+                          }
+                        </div>
+                      </div>`,
+                    )
+                    .join('')
+                : '<div class="muted">Ningún ticket con premio pendiente. Comprueba en el mostrador o usa pago suelto.</div>'
+            }
+          </div>
+          <h3 style="margin-top:18px">Premio suelto (sin ticket)</h3>
           <label>Cliente<br/><input id="prize-name" style="width:100%;margin:6px 0 12px;padding:10px;border-radius:10px;border:1px solid var(--line)" /></label>
           <label>Importe (€)<br/><input id="prize-amount" type="number" min="0.01" step="0.01" value="5" style="width:100%;margin:6px 0 12px;padding:10px;border-radius:10px;border:1px solid var(--line)" /></label>
           <div class="actions">
@@ -2515,6 +2771,43 @@ function renderPrize() {
   `;
   bindTopbar();
   bindNav();
+  const search = document.getElementById('prize-search');
+  search.oninput = () => {
+    state.ui.prizeSearch = search.value;
+  };
+  search.onkeydown = (e) => {
+    if (e.key === 'Enter') {
+      needsFullRender = true;
+      render();
+    }
+  };
+  search.onblur = () => {
+    needsFullRender = true;
+    render();
+  };
+  app.querySelectorAll('[data-pay-ticket]').forEach((btn) => {
+    btn.onclick = () => {
+      const id = btn.getAttribute('data-pay-ticket');
+      const method = btn.getAttribute('data-method') || 'cash';
+      const res = payTicketPrize(state, id, { method });
+      res.ok ? sfx.cash() : sfx.error();
+      showToast(res.message || state.ui.toast);
+      needsFullRender = true;
+      render();
+    };
+  });
+  app.querySelectorAll('[data-manage-ticket]').forEach((btn) => {
+    btn.onclick = () => {
+      const t = state.tickets.find((x) => x.id === btn.getAttribute('data-manage-ticket'));
+      if (!t) return;
+      if (t.status !== 'managed') startPrizeManagement(state, t);
+      sfx.click();
+      showToast(state.ui.toast || 'Gestión de premios');
+      state.ui.screen = 'management';
+      needsFullRender = true;
+      render();
+    };
+  });
   const doPay = (method) => {
     const name = document.getElementById('prize-name').value.trim() || 'Cliente';
     const cents = Math.round(parseFloat(document.getElementById('prize-amount').value || '0') * 100);
@@ -2575,6 +2868,11 @@ function renderDraws() {
 
 function renderManagement() {
   const list = [...(state.prizeManagement || [])].reverse();
+  const nextLabel = {
+    open: 'Documentar (DNI / ticket)',
+    documented: 'Presentar a organismo',
+    submitted: 'Marcar liquidado',
+  };
   app.innerHTML = `
     <div class="shell">
       ${topbarHTML()}
@@ -2582,16 +2880,27 @@ function renderManagement() {
         ${sideNav()}
         <section class="panel">
           <h2>Gestión de premios grandes</h2>
-          <p class="muted">No se pagan de tu caja. Al cerrar días avanzan: abierto → presentado → liquidado (paga LAE/ONCE).</p>
+          <p class="muted">No salen de tu caja. Tú avanzas los pasos: abierto → documentado → presentado → liquidado (paga LAE/ONCE).</p>
           <div class="log">
             ${
               list.length
                 ? list
-                    .map(
-                      (c) =>
-                        `<div class="log-item"><strong>${escapeHtml(c.clientName)}</strong> · ${formatEuro(c.amountCents)} · ${escapeHtml(c.productName)}<br/>
-                        Estado: <strong>${c.status}</strong> (${c.level}) · ${escapeHtml(c.note || '')}</div>`,
-                    )
+                    .map((c) => {
+                      const st = PRIZE_MGMT_STATUS[c.status] || c.status;
+                      const btn =
+                        c.status !== 'settled'
+                          ? `<button class="btn primary" style="margin-top:8px;padding:6px 12px" data-adv-case="${c.id}">${
+                              nextLabel[c.status] || 'Avanzar'
+                            }</button>`
+                          : '';
+                      return `<div class="log-item">
+                        <strong>${escapeHtml(c.clientName)}</strong> · ${formatEuro(c.amountCents)} · ${escapeHtml(c.productName)}
+                        <br/>Ticket ${escapeHtml(c.ticketId || '—')} · ${escapeHtml(c.org || '')} · ${c.level}
+                        <br/>Estado: <strong>${escapeHtml(st)}</strong>
+                        <br/><span class="muted">${escapeHtml(c.note || '')}</span>
+                        ${btn}
+                      </div>`;
+                    })
                     .join('')
                 : '<div class="muted">No hay casos de gestión.</div>'
             }
@@ -2603,6 +2912,15 @@ function renderManagement() {
   `;
   bindTopbar();
   bindNav();
+  app.querySelectorAll('[data-adv-case]').forEach((btn) => {
+    btn.onclick = () => {
+      const res = advancePrizeCase(state, btn.getAttribute('data-adv-case'));
+      res.ok ? sfx.success() : sfx.error();
+      showToast(res.message || state.ui.toast);
+      needsFullRender = true;
+      render();
+    };
+  });
 }
 
 function findFicha(id) {
@@ -2768,16 +3086,20 @@ function renderDayResults() {
           <div class="stat-row"><span>Beneficio</span><strong>${formatEuro(s.profitCents)}</strong></div>
           <div class="stat-row"><span>Premios pagados</span><strong>${formatEuro(s.prizesPaidCents)}</strong></div>
           <div class="stat-row"><span>Gastos</span><strong>${formatEuro(s.expensesCents)}</strong></div>
+          <div class="stat-row"><span>Faltantes</span><strong>${formatEuro(s.shortageCents || 0)}</strong></div>
+          <div class="stat-row"><span>Sobrantes</span><strong>${formatEuro(s.surplusCents || 0)}</strong></div>
           <div class="stat-row"><span>Clientes</span><strong>${s.customersServed}</strong></div>
           <div class="stat-row"><span>Banco tras cierre</span><strong>${formatEuro(s.bankCents)}</strong></div>
         </div>
         ${
           settle
             ? `<h3 style="margin-top:16px">Liquidación</h3>
+               <p class="muted">Remesa = ventas − comisión retenida</p>
                <div class="close-summary">
-                 <div class="stat-row"><span>LAE remesa</span><strong>${formatEuro(settle.lae?.remittance || 0)}</strong></div>
-                 <div class="stat-row"><span>ONCE remesa</span><strong>${formatEuro(settle.once?.remittance || 0)}</strong></div>
-                 <div class="stat-row"><span>Otros remesa</span><strong>${formatEuro(settle.otros?.remittance || 0)}</strong></div>
+                 ${settlementExplain(settle)
+                   .slice(2)
+                   .map((line) => `<div class="stat-row"><span>${escapeHtml(line)}</span></div>`)
+                   .join('')}
                </div>`
             : ''
         }
@@ -2902,11 +3224,16 @@ function renderShowcase() {
             }
           </div>
           <h3 style="margin-top:18px">Añadir décimo</h3>
+          <p class="muted">Nacional, especiales y décimos regionales fractionables.</p>
           <div class="actions" style="flex-wrap:wrap;align-items:flex-end">
             <label>Producto<br/>
-              <select id="sc-product" style="padding:8px;border-radius:10px;border:1px solid var(--line)">
-                <option value="lae-nacional">Lotería Nacional</option>
-                <option value="lae-nacional-jueves">Nacional jueves</option>
+              <select id="sc-product" style="padding:8px;border-radius:10px;border:1px solid var(--line);max-width:280px">
+                ${showcaseableProducts()
+                  .map(
+                    (p) =>
+                      `<option value="${p.id}">${escapeHtml(p.short || p.name)} · ${escapeHtml(p.org || '')}</option>`,
+                  )
+                  .join('')}
               </select>
             </label>
             <label>Número<br/><input id="sc-number" maxlength="5" placeholder="45821" style="padding:8px;border-radius:10px;border:1px solid var(--line);width:110px" /></label>
@@ -2961,7 +3288,7 @@ function renderBoard() {
               items.length
                 ? items
                     .map(
-                      (it) => `<article class="board-item" style="padding:12px;border:1px solid var(--line);border-radius:12px">
+                      (it) => `<article class="board-item" data-kind="${escapeHtml(it.kind || '')}" style="padding:12px;border:1px solid var(--line);border-radius:12px">
                         <div class="muted" style="font-size:0.8rem;text-transform:uppercase">${escapeHtml(it.kind || '')}</div>
                         <h3 style="margin:4px 0 6px;font-family:var(--font-display)">${escapeHtml(it.title)}</h3>
                         <p style="margin:0">${escapeHtml(it.body || '')}</p>
@@ -3124,6 +3451,7 @@ function renderMonthly() {
         <section class="panel">
           <h2>Liquidación mensual</h2>
           <p class="muted">${escapeHtml(st.label)}</p>
+          <p class="muted">Remesa = ventas − comisión. Los faltantes de arqueo restan del neto del mes.</p>
           <div class="close-summary">
             <div class="stat-row"><span>Ventas totales</span><strong>${formatEuro(st.totalSales)}</strong></div>
             <div class="stat-row"><span>Comisiones</span><strong>${formatEuro(st.totalCommission)}</strong></div>
@@ -3131,7 +3459,10 @@ function renderMonthly() {
             <div class="stat-row"><span>Gastos local</span><strong>${formatEuro(st.expenses)}</strong></div>
             <div class="stat-row"><span>Proveedor</span><strong>${formatEuro(st.supplier)}</strong></div>
             <div class="stat-row"><span>Faltantes</span><strong>${formatEuro(st.shortage)}</strong></div>
+            <div class="stat-row"><span>Sobrantes</span><strong>${formatEuro(st.surplus || 0)}</strong></div>
+            <div class="stat-row"><span>Neto mes*</span><strong>${formatEuro(st.netMonth ?? st.totalCommission - st.expenses - st.shortage)}</strong></div>
           </div>
+          <p class="muted">*Comisiones − gastos − faltantes</p>
           <h3 style="margin-top:16px">Por organización</h3>
           ${['LAE', 'ONCE', 'Otros']
             .map((org) => {
@@ -3139,8 +3470,8 @@ function renderMonthly() {
               return `<div class="close-summary" style="margin-top:8px">
                 <strong>${org}</strong>
                 <div class="stat-row"><span>Ventas</span><strong>${formatEuro(o.sales)}</strong></div>
-                <div class="stat-row"><span>Comisión</span><strong>${formatEuro(o.commission)}</strong></div>
-                <div class="stat-row"><span>Remesa</span><strong>${formatEuro(o.remittance)}</strong></div>
+                <div class="stat-row"><span>Comisión retenida</span><strong>${formatEuro(o.commission)}</strong></div>
+                <div class="stat-row"><span>Remesa (ventas−com.)</span><strong>${formatEuro(o.remittance)}</strong></div>
                 <div class="stat-row"><span>Premios</span><strong>${formatEuro(o.prizes)}</strong></div>
               </div>`;
             })

@@ -27,6 +27,7 @@ export const PRODUCTS = [
     checkable: true,
     needsNumbers: true,
     numberMode: 'nacional',
+    flavor: 'El clásico de los jueves y sábados',
     description: 'Décimos jueves y sábado.',
   },
   {
@@ -47,6 +48,7 @@ export const PRODUCTS = [
     checkable: true,
     needsNumbers: true,
     numberMode: 'nacional',
+    flavor: 'Solo el sorteo del jueves',
     description: 'Décimo del sorteo del jueves.',
   },
   {
@@ -67,6 +69,7 @@ export const PRODUCTS = [
     checkable: true,
     needsNumbers: true,
     numberMode: 'nacional',
+    flavor: 'El Gordo del 22 de diciembre',
     description: 'El Gordo de Navidad.',
   },
   {
@@ -87,6 +90,7 @@ export const PRODUCTS = [
     checkable: true,
     needsNumbers: true,
     numberMode: 'nacional',
+    flavor: 'El Niño del 6 de enero',
     description: 'Sorteo del Niño.',
   },
   {
@@ -107,6 +111,7 @@ export const PRODUCTS = [
     checkable: true,
     needsNumbers: true,
     numberMode: '6from49',
+    flavor: 'El bote que hace cola',
     description: '6/49 + reintegro.',
     bet: { pick: 6, from: 49, reintegro: true },
   },
@@ -128,6 +133,7 @@ export const PRODUCTS = [
     checkable: true,
     needsNumbers: true,
     numberMode: '6from49',
+    flavor: 'Diario y asequible',
     description: '6/49 L–S.',
     bet: { pick: 6, from: 49, reintegro: true },
   },
@@ -149,6 +155,7 @@ export const PRODUCTS = [
     checkable: true,
     needsNumbers: true,
     numberMode: 'euro',
+    flavor: 'Martes y viernes europeos',
     description: '5/50 + 2 estrellas.',
     bet: { pickMain: 5, fromMain: 50, pickStars: 2, fromStars: 12 },
   },
@@ -170,6 +177,7 @@ export const PRODUCTS = [
     checkable: true,
     needsNumbers: true,
     numberMode: 'gordo',
+    flavor: 'Domingo con clave',
     description: '5/54 + clave. Domingos.',
     bet: { pick: 5, from: 54, claveFrom: 9 },
   },
@@ -191,6 +199,7 @@ export const PRODUCTS = [
     checkable: true,
     needsNumbers: true,
     numberMode: 'quiniela',
+    flavor: 'La de toda la vida',
     description: '14 partidos 1X2 + pleno al 15.',
   },
   {
@@ -211,6 +220,7 @@ export const PRODUCTS = [
     checkable: true,
     needsNumbers: true,
     numberMode: 'quinigol',
+    flavor: 'Goles al detalle',
     description: 'Goles 0/1/2/M en 6 partidos.',
   },
   {
@@ -231,6 +241,7 @@ export const PRODUCTS = [
     checkable: true,
     needsNumbers: true,
     numberMode: 'lototurf',
+    flavor: 'Caballos y números',
     description: 'Lotería + hípica.',
   },
 
@@ -252,6 +263,7 @@ export const PRODUCTS = [
     checkable: true,
     needsNumbers: true,
     numberMode: 'quintuple',
+    flavor: 'Cinco carreras + plus',
     description: 'Apuesta hípica: 5 carreras + suplementaria.',
   },
 
@@ -275,6 +287,7 @@ export const PRODUCTS = [
     checkable: true,
     needsNumbers: true,
     numberMode: 'nacional',
+    flavor: 'Cupón de lunes a viernes',
     description: 'Cupón L–V.',
   },
   {
@@ -295,6 +308,7 @@ export const PRODUCTS = [
     checkable: true,
     needsNumbers: true,
     numberMode: 'nacional',
+    flavor: 'El viernes gordo de la ONCE',
     description: 'Viernes especial.',
   },
   {
@@ -315,6 +329,7 @@ export const PRODUCTS = [
     checkable: true,
     needsNumbers: true,
     numberMode: 'nacional',
+    flavor: 'Domingo con sueldo',
     description: 'Sorteo dominical.',
   },
   {
@@ -335,6 +350,7 @@ export const PRODUCTS = [
     checkable: true,
     needsNumbers: true,
     numberMode: 'eurojackpot',
+    flavor: 'Bote europeo ONCE',
     description: '5/50 + 2/12.',
   },
   {
@@ -355,6 +371,7 @@ export const PRODUCTS = [
     checkable: true,
     needsNumbers: true,
     numberMode: 'superonce',
+    flavor: 'Combinaciones todos los días',
     description: 'Elige 5 números del 1–49 (base).',
   },
   {
@@ -375,6 +392,7 @@ export const PRODUCTS = [
     checkable: true,
     needsNumbers: true,
     numberMode: 'triplex',
+    flavor: 'Tres cifras rápidas',
     description: '3 cifras.',
   },
   {
