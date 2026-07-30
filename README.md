@@ -19,3 +19,11 @@ Siguiente paso:
 - Crear la rama `feature/lottery-full` desde la rama por defecto y continuar con la implementación completa de juegos, contabilidad y UI.
 
 Commit inicial: scaffold con reloj escalado y export/import JSON.
+
+---
+
+## Guía Cities: Skylines — Leonida
+
+Documento aparte (no relacionado con el juego de loterías):
+
+- [`docs/GUIA_CITIES_SKYLINES_LEONIDA_500_FASES.md`](docs/GUIA_CITIES_SKYLINES_LEONIDA_500_FASES.md) — guía de **500 fases** para construir Leonida (+500k, todos los DLC, presupuesto real).
