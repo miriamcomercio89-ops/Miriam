@@ -343,6 +343,95 @@
     return 0;
   }
 
+  // src/data/regionalLotteries.js
+  function L(id, name, org, tpvCategory, priceCents, drawDays, extra = {}) {
+    var _a, _b;
+    return {
+      id,
+      name,
+      org,
+      tpvCategory,
+      category: "inventada",
+      priceCents,
+      commissionRate: org === "Local" ? 0.12 : org === "Provincial" ? 0.1 : 0.08,
+      drawDays,
+      drawHour: (_a = extra.drawHour) != null ? _a : 20,
+      orderDays: (_b = extra.orderDays) != null ? _b : 2,
+      stockType: "physical",
+      checkable: true,
+      needsNumbers: true,
+      numberMode: extra.numberMode || "5from40",
+      description: extra.description || `${name} (inventada \xB7 ${org}).`,
+      ...extra
+    };
+  }
+  var AUTONOMICAS = [
+    L("and-fortuna", "Andaluc\xEDa Fortuna", "Auton\xF3mica", "Auton\xF3micas", 100, [5]),
+    L("and-olivo", "El Olivo de la Suerte", "Auton\xF3mica", "Auton\xF3micas", 150, [2]),
+    L("and-costa", "Sorteo Costa del Sol", "Auton\xF3mica", "Auton\xF3micas", 200, [6]),
+    L("and-guadalquivir", "Guadalquivir Oro", "Auton\xF3mica", "Auton\xF3micas", 100, [3]),
+    L("and-sierra", "Sierra Nevada Suerte", "Auton\xF3mica", "Auton\xF3micas", 150, [4]),
+    L("and-alhambra", "Alhambra Premia", "Auton\xF3mica", "Auton\xF3micas", 200, [5]),
+    L("and-rocio", "Roc\xEDo de la Fortuna", "Auton\xF3mica", "Auton\xF3micas", 100, [1]),
+    L("and-feria", "Feria Andaluza", "Auton\xF3mica", "Auton\xF3micas", 150, [6]),
+    L("and-levante", "Levante Andaluz", "Auton\xF3mica", "Auton\xF3micas", 100, [2]),
+    L("and-poniente", "Poniente de Suerte", "Auton\xF3mica", "Auton\xF3micas", 100, [4]),
+    L("and-azahar", "Azahar Premiado", "Auton\xF3mica", "Auton\xF3micas", 150, [3]),
+    L("and-duende", "Duende Andaluz", "Auton\xF3mica", "Auton\xF3micas", 200, [5]),
+    L("and-sol", "Sol de Andaluc\xEDa", "Auton\xF3mica", "Auton\xF3micas", 100, [1, 4]),
+    L("and-luna", "Luna Mora", "Auton\xF3mica", "Auton\xF3micas", 150, [6]),
+    L("and-patio", "Patio Cordob\xE9s", "Auton\xF3mica", "Auton\xF3micas", 100, [2])
+  ];
+  var PROVINCIALES = [
+    L("mal-premio", "Premio M\xE1laga", "Provincial", "Provinciales", 100, [4]),
+    L("mal-axarquia", "Axarqu\xEDa Premia", "Provincial", "Provinciales", 100, [3]),
+    L("mal-antequera", "Antequera Fortuna", "Provincial", "Provinciales", 100, [2]),
+    L("mal-ronda", "Ronda de la Suerte", "Provincial", "Provinciales", 150, [5]),
+    L("mal-marbella", "Marbella Gold", "Provincial", "Provinciales", 200, [6]),
+    L("mal-nerja", "Nerja Balc\xF3n", "Provincial", "Provinciales", 100, [1]),
+    L("mal-torre", "Torremolinos Sol", "Provincial", "Provinciales", 100, [3]),
+    L("mal-estepona", "Estepona Orqu\xEDdea", "Provincial", "Provinciales", 150, [4]),
+    L("mal-fuengirola", "Fuengirola Playa", "Provincial", "Provinciales", 100, [5]),
+    L("mal-velez", "V\xE9lez-M\xE1laga", "Provincial", "Provinciales", 100, [2]),
+    L("mal-coin", "Co\xEDn Valle", "Provincial", "Provinciales", 100, [6]),
+    L("mal-alhaurin", "Alhaur\xEDn Suerte", "Provincial", "Provinciales", 100, [3]),
+    L("mal-cartama", "C\xE1rtama Guadalhorce", "Provincial", "Provinciales", 100, [1]),
+    L("mal-archidona", "Archidona Pe\xF1a", "Provincial", "Provinciales", 100, [4]),
+    L("mal-torcal", "Torcal M\xE1gico", "Provincial", "Provinciales", 150, [5]),
+    L("mal-caminito", "Caminito del Rey", "Provincial", "Provinciales", 200, [6]),
+    L("mal-chorro", "Desfiladero del Chorro", "Provincial", "Provinciales", 150, [2]),
+    L("mal-montes", "Montes de M\xE1laga", "Provincial", "Provinciales", 100, [3])
+  ];
+  var LOCALES = [
+    L("alo-local", "\xC1lora Local", "Local", "Locales", 50, [5], { drawHour: 19 }),
+    L("alo-hoya", "Hoya de M\xE1laga", "Local", "Locales", 100, [3]),
+    L("alo-chorro", "Suerte del Chorro", "Local", "Locales", 100, [6]),
+    L("alo-castillo", "Castillo de \xC1lora", "Local", "Locales", 100, [4]),
+    L("alo-flores", "Virgen de Flores Loter\xEDa", "Local", "Locales", 150, [1], { description: "Rifa local inventada (patrona)." }),
+    L("alo-sanjuan", "San Juan de \xC1lora", "Local", "Locales", 100, [2]),
+    L("alo-estacion", "Estaci\xF3n Guadalhorce", "Local", "Locales", 50, [5]),
+    L("alo-plaza", "Plaza Baja Premia", "Local", "Locales", 50, [3]),
+    L("alo-real", "Calle Real Suerte", "Local", "Locales", 50, [4]),
+    L("alo-puente", "Puente de \xC1lora", "Local", "Locales", 100, [6]),
+    L("alo-mirador", "Mirador del Valle", "Local", "Locales", 100, [1]),
+    L("alo-naranjo", "Naranjo Dulce", "Local", "Locales", 50, [2]),
+    L("alo-aceite", "Aceite de la Hoya", "Local", "Locales", 100, [5]),
+    L("alo-feria", "Feria de \xC1lora Rifa", "Local", "Locales", 150, [6]),
+    L("alo-verano", "Verano en el Pueblo", "Local", "Locales", 100, [3]),
+    L("alo-navidad", "Navidad Alore\xF1a", "Local", "Locales", 200, [], { seasonMonths: [11, 12], orderDays: 3 }),
+    L("pue-pizarra", "Pizarra Vecina", "Local", "Locales", 50, [4]),
+    L("pue-carratraca", "Carratraca Termal", "Local", "Locales", 100, [2]),
+    L("pue-ardales", "Ardales Embalse", "Local", "Locales", 100, [5]),
+    L("pue-elburgo", "El Burgo Sierra", "Local", "Locales", 50, [1]),
+    L("pue-yunquera", "Yunquera Pinsapo", "Local", "Locales", 100, [3]),
+    L("pue-tolox", "Tolox Fuente", "Local", "Locales", 50, [6]),
+    L("pue-casarabonela", "Casarabonela", "Local", "Locales", 50, [4]),
+    L("pue-alozaima", "Alozaina Pasera", "Local", "Locales", 50, [2]),
+    L("pue-guaro", "Guaro Luna", "Local", "Locales", 50, [5])
+  ];
+  var REGIONAL_LOTTERIES = [...AUTONOMICAS, ...PROVINCIALES, ...LOCALES];
+  var REGIONAL_IDS = REGIONAL_LOTTERIES.map((p) => p.id);
+
   // src/data/products.js
   var PRODUCTS = [
     // ——— LAE ———
@@ -537,6 +626,23 @@
       numberMode: "lototurf",
       description: "Loter\xEDa + h\xEDpica."
     },
+    {
+      id: "lae-quintuple",
+      name: "Qu\xEDntuple Plus",
+      org: "LAE",
+      tpvCategory: "LAE",
+      category: "apuestas",
+      priceCents: 100,
+      commissionRate: 0.06,
+      drawDays: [0],
+      drawHour: 21,
+      orderDays: 0,
+      stockType: "terminal",
+      checkable: true,
+      needsNumbers: true,
+      numberMode: "quintuple",
+      description: "Apuesta h\xEDpica: 5 carreras + suplementaria."
+    },
     // ——— ONCE ———
     {
       id: "once-cupon",
@@ -688,143 +794,8 @@
       numberMode: "nacional",
       description: "Sorteo del D\xEDa de la ONCE."
     },
-    // ——— Autonómicas / provinciales / locales inventadas ———
-    {
-      id: "and-fortuna",
-      name: "Andaluc\xEDa Fortuna",
-      org: "Auton\xF3mica",
-      tpvCategory: "Auton\xF3micas",
-      category: "inventada",
-      priceCents: 100,
-      commissionRate: 0.08,
-      drawDays: [5],
-      drawHour: 20,
-      orderDays: 2,
-      stockType: "physical",
-      checkable: true,
-      needsNumbers: true,
-      numberMode: "5from40",
-      description: "Sorteo andaluz ficticio."
-    },
-    {
-      id: "and-olivo",
-      name: "El Olivo de la Suerte",
-      org: "Auton\xF3mica",
-      tpvCategory: "Auton\xF3micas",
-      category: "inventada",
-      priceCents: 150,
-      commissionRate: 0.08,
-      drawDays: [2],
-      drawHour: 20,
-      orderDays: 2,
-      stockType: "physical",
-      checkable: true,
-      needsNumbers: true,
-      numberMode: "5from40",
-      description: "Sorteo inventado andaluz."
-    },
-    {
-      id: "and-costa",
-      name: "Sorteo Costa del Sol",
-      org: "Auton\xF3mica",
-      tpvCategory: "Auton\xF3micas",
-      category: "inventada",
-      priceCents: 200,
-      commissionRate: 0.08,
-      drawDays: [6],
-      drawHour: 20,
-      orderDays: 2,
-      stockType: "physical",
-      checkable: true,
-      needsNumbers: true,
-      numberMode: "5from40",
-      description: "Bote regional ficticio."
-    },
-    {
-      id: "mal-premio",
-      name: "Premio M\xE1laga",
-      org: "Provincial",
-      tpvCategory: "Provinciales",
-      category: "inventada",
-      priceCents: 100,
-      commissionRate: 0.1,
-      drawDays: [4],
-      drawHour: 20,
-      orderDays: 2,
-      stockType: "physical",
-      checkable: true,
-      needsNumbers: true,
-      numberMode: "5from40",
-      description: "Provincial inventada."
-    },
-    {
-      id: "mal-axarquia",
-      name: "Axarqu\xEDa Premia",
-      org: "Provincial",
-      tpvCategory: "Provinciales",
-      category: "inventada",
-      priceCents: 100,
-      commissionRate: 0.1,
-      drawDays: [3],
-      drawHour: 20,
-      orderDays: 2,
-      stockType: "physical",
-      checkable: true,
-      needsNumbers: true,
-      numberMode: "5from40",
-      description: "Sorteo comarcal inventado."
-    },
-    {
-      id: "alo-local",
-      name: "\xC1lora Local",
-      org: "Local",
-      tpvCategory: "Locales",
-      category: "inventada",
-      priceCents: 50,
-      commissionRate: 0.12,
-      drawDays: [5],
-      drawHour: 19,
-      orderDays: 1,
-      stockType: "physical",
-      checkable: true,
-      needsNumbers: true,
-      numberMode: "5from40",
-      description: "Rifa local \xC1lora."
-    },
-    {
-      id: "alo-hoya",
-      name: "Hoya de M\xE1laga",
-      org: "Local",
-      tpvCategory: "Locales",
-      category: "inventada",
-      priceCents: 100,
-      commissionRate: 0.1,
-      drawDays: [3],
-      drawHour: 19,
-      orderDays: 2,
-      stockType: "physical",
-      checkable: true,
-      needsNumbers: true,
-      numberMode: "5from40",
-      description: "Sorteo del valle."
-    },
-    {
-      id: "alo-chorro",
-      name: "Suerte del Chorro",
-      org: "Local",
-      tpvCategory: "Locales",
-      category: "inventada",
-      priceCents: 100,
-      commissionRate: 0.12,
-      drawDays: [6],
-      drawHour: 19,
-      orderDays: 1,
-      stockType: "physical",
-      checkable: true,
-      needsNumbers: true,
-      numberMode: "5from40",
-      description: "Rifa tur\xEDstica local inventada."
-    },
+    // ——— Autonómicas / provinciales / locales inventadas (Álora / Málaga / Andalucía) ———
+    ...REGIONAL_LOTTERIES,
     // ——— Rascas ———
     ...SCRATCH_CARDS.map((c) => ({
       ...c,
@@ -854,6 +825,7 @@
     "lae-quiniela",
     "lae-quinigol",
     "lae-lototurf",
+    "lae-quintuple",
     "once-cupon",
     "once-cuponazo",
     "once-sueldazo",
@@ -863,16 +835,9 @@
     "once-extra-verano",
     "once-extra-navidad",
     "once-extra-dia",
-    "and-fortuna",
-    "and-olivo",
-    "and-costa",
-    "mal-premio",
-    "mal-axarquia",
-    "alo-local",
-    "alo-hoya",
-    "alo-chorro",
     "lae-navidad",
-    "lae-nino"
+    "lae-nino",
+    ...REGIONAL_IDS
   ];
 
   // src/data/money.js
@@ -1033,6 +998,84 @@
   }
   function holidayName(ymdStr, holidayMap) {
     return holidayMap[ymdStr] || null;
+  }
+
+  // src/data/birthdays.js
+  var SANTOS = {
+    "01-01": ["Manuel", "Jes\xFAs"],
+    "01-06": ["Reyes", "Gaspar"],
+    "01-17": ["Antonio"],
+    "02-14": ["Valent\xEDn"],
+    "03-19": ["Jos\xE9"],
+    "04-23": ["Jorge"],
+    "05-15": ["Isidro"],
+    "06-13": ["Antonio"],
+    "06-24": ["Juan", "Juan"],
+    "07-25": ["Santiago", "Jaime"],
+    "08-15": ["Mar\xEDa", "Asunci\xF3n"],
+    "09-08": ["Mar\xEDa", "Carmen"],
+    "09-29": ["Miguel", "Rafael", "Gabriel"],
+    "10-12": ["Pilar"],
+    "11-01": ["Todos"],
+    "11-30": ["Andr\xE9s"],
+    "12-06": ["Nicol\xE1s"],
+    "12-08": ["Inmaculada", "Concepci\xF3n"],
+    "12-13": ["Luc\xEDa"],
+    "12-25": ["Navidad"]
+  };
+  function mmddFromYmd(ymd2) {
+    return (ymd2 == null ? void 0 : ymd2.slice(5, 10)) || "";
+  }
+  function assignBirthday(rng) {
+    const month = 1 + Math.floor(rng() * 12);
+    const day = 1 + Math.floor(rng() * 28);
+    return `${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+  }
+  function ensureCustomerBirthdays(list, seedBase = 4242) {
+    if (!(list == null ? void 0 : list.length)) return list;
+    let i = 0;
+    for (const c of list) {
+      if (c.birthday) continue;
+      let h = seedBase + i++;
+      const id = String(c.id || "");
+      for (let k = 0; k < id.length; k++) h = h * 31 + id.charCodeAt(k) >>> 0;
+      const month = 1 + h % 12;
+      const day = 1 + (h >>> 4) % 28;
+      c.birthday = `${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+    }
+    return list;
+  }
+  function santosToday(ymd2) {
+    const key = mmddFromYmd(ymd2);
+    return SANTOS[key] || [];
+  }
+  function isBirthdayToday(client, ymd2) {
+    if (!(client == null ? void 0 : client.birthday)) return false;
+    return client.birthday === mmddFromYmd(ymd2);
+  }
+  function matchesSanto(client, ymd2) {
+    const names = santosToday(ymd2);
+    if (!names.length || names[0] === "Todos" || names[0] === "Navidad" || names[0] === "Reyes") {
+      return names[0] === "Todos" || names[0] === "Navidad";
+    }
+    const first = String(client.name || "").split(/\s+/)[0];
+    return names.some((n) => first === n || first.startsWith(n));
+  }
+  function birthdayBanner(state2, ymd2) {
+    const mmdd = mmddFromYmd(ymd2);
+    const santos = santosToday(ymd2);
+    const parts = [];
+    if (santos.length) parts.push(`Santoral: ${santos.join(", ")}`);
+    const birthdays = [];
+    for (const list of [state2.customers.regulars, state2.customers.abonados]) {
+      for (const c of list || []) {
+        if (c.birthday === mmdd) birthdays.push(c.name);
+      }
+    }
+    if (birthdays.length) {
+      parts.push(`Cumplea\xF1os: ${birthdays.slice(0, 4).join(", ")}${birthdays.length > 4 ? "\u2026" : ""}`);
+    }
+    return parts.join(" \xB7 ");
   }
 
   // src/data/customers.js
@@ -1250,7 +1293,8 @@
         trait,
         preferredDays,
         line: pick(rng, LINES[trait]),
-        history: []
+        history: [],
+        birthday: assignBirthday(rng)
       });
     }
     return list;
@@ -1289,6 +1333,9 @@
       kind: "abonado",
       favoriteProduct: c.preferredProducts[0],
       subscription: subs[i % subs.length],
+      abonoQty: 2 + i % 3,
+      abonosConfirmed: 0,
+      lastAbonoAt: null,
       prizesClaimed: [],
       orders: []
     }));
@@ -1332,6 +1379,8 @@
       [`${year}-03-29`]: { id: "ss", name: "Semana Santa en \xC1lora", crowd: 0.75 },
       [`${year}-04-01`]: { id: "ss", name: "Semana Santa en \xC1lora", crowd: 0.8 },
       [`${year}-04-02`]: { id: "ss", name: "Jueves/Viernes Santo ambiente", crowd: 0.5 },
+      [`${year}-05-01`]: { id: "mayo", name: "Fiesta del Trabajo / puente", crowd: 0.3 },
+      [`${year}-05-15`]: { id: "isidro", name: "San Isidro (ambiente rural)", crowd: 0.35 },
       // Feria
       [`${year}-06-12`]: { id: "feria-prep", name: "Preparativos Feria de \xC1lora", crowd: 0.3 },
       [`${year}-06-13`]: { id: "feria-prep", name: "Preparativos Feria de \xC1lora", crowd: 0.45 },
@@ -1341,17 +1390,25 @@
       [`${year}-06-17`]: { id: "feria", name: "Cierre de Feria", crowd: 0.7 },
       [`${year}-06-23`]: { id: "san-juan-v", name: "V\xEDspera de San Juan", crowd: 0.55 },
       [`${year}-06-24`]: { id: "san-juan", name: "San Juan (\xC1lora)", crowd: 0.85, holidayAlso: true },
+      [`${year}-07-16`]: { id: "carmen", name: "Virgen del Carmen (Costa)", crowd: 0.4 },
+      [`${year}-07-25`]: { id: "santiago", name: "Santiago / verano en el valle", crowd: 0.45 },
       [`${year}-08-15`]: { id: "verano", name: "Asunci\xF3n / verano en el pueblo", crowd: 0.35 },
+      [`${year}-08-19`]: { id: "caminito", name: "Jornada tur\xEDstica Caminito", crowd: 0.55 },
       [`${year}-09-06`]: { id: "flores-prep", name: "Preparativos Virgen de Flores", crowd: 0.4 },
       [`${year}-09-07`]: { id: "flores-v\xEDspera", name: "V\xEDspera Virgen de Flores", crowd: 0.65 },
       [`${year}-09-08`]: { id: "virgen-flores", name: "Virgen de Flores (\xC1lora)", crowd: 1.05, holidayAlso: true },
       [`${year}-09-09`]: { id: "flores-octava", name: "Ambientaci\xF3n Virgen de Flores", crowd: 0.45 },
       [`${year}-10-12`]: { id: "puente", name: "Puente / fiesta nacional", crowd: 0.25 },
+      [`${year}-10-31`]: { id: "v\xEDspera-santos", name: "V\xEDspera de Todos los Santos", crowd: 0.25 },
       [`${year}-11-01`]: { id: "santos", name: "Todos los Santos", crowd: 0.2 },
+      [`${year}-11-25`]: { id: "pre-navidad", name: "Primeros encargos de Navidad", crowd: 0.35 },
       // Navidad pueblo
+      [`${year}-12-06`]: { id: "constitucion", name: "Puente de la Constituci\xF3n", crowd: 0.4 },
+      [`${year}-12-08`]: { id: "inmaculada", name: "Inmaculada / ambiente navide\xF1o", crowd: 0.5 },
       [`${year}-12-20`]: { id: "navidad-cola", name: "Colas de Navidad en \xC1lora", crowd: 0.9 },
       [`${year}-12-22`]: { id: "gordo", name: "D\xEDa del Gordo (ambiente)", crowd: 1.2 },
-      [`${year}-12-23`]: { id: "navidad-cola", name: "\xDAltimos d\xE9cimos", crowd: 0.85 }
+      [`${year}-12-23`]: { id: "navidad-cola", name: "\xDAltimos d\xE9cimos", crowd: 0.85 },
+      [`${year}-12-28`]: { id: "inocentes", name: "Santos Inocentes (ambiente)", crowd: 0.3 }
     };
   }
   function buildAloraEvents(startYear, endYear) {
@@ -1536,10 +1593,109 @@
     return formatEuro(cents);
   }
 
+  // src/game/showcase.js
+  var SHOWCASE_MAX = 20;
+  function ensureShowcase(state2) {
+    if (!Array.isArray(state2.showcase)) state2.showcase = [];
+    return state2;
+  }
+  function addShowcaseDecimo(state2, { productId = "lae-nacional", number, qty = 1, note = "" } = {}) {
+    ensureShowcase(state2);
+    if (state2.showcase.length >= SHOWCASE_MAX) {
+      state2.ui.toast = `Escaparate lleno (m\xE1x. ${SHOWCASE_MAX})`;
+      return state2;
+    }
+    const p = getProduct(productId);
+    if (!p || p.numberMode !== "nacional") {
+      state2.ui.toast = "Solo d\xE9cimos con n\xFAmero nacional en escaparate";
+      return state2;
+    }
+    const digits = String(number || "").replace(/\D/g, "").padStart(5, "0").slice(-5);
+    if (digits.length !== 5) {
+      state2.ui.toast = "Indica un n\xFAmero de 5 cifras";
+      return state2;
+    }
+    const q = Math.max(1, Math.min(10, Number(qty) || 1));
+    state2.showcase.push({
+      id: `sc-${Date.now()}-${Math.floor(Math.random() * 1e4)}`,
+      productId: p.id,
+      productName: p.name,
+      number: digits,
+      qty: q,
+      note: String(note || "").slice(0, 60),
+      unitCents: p.priceCents
+    });
+    state2.ui.toast = `Escaparate: ${p.name} n\xBA ${digits} \xD7${q}`;
+    return state2;
+  }
+  function removeShowcaseDecimo(state2, id) {
+    ensureShowcase(state2);
+    state2.showcase = state2.showcase.filter((d) => d.id !== id);
+    state2.ui.toast = "D\xE9cimo quitado del escaparate";
+    return state2;
+  }
+  function sellShowcaseToTpv(state2, showcaseId) {
+    const tpv = state2.ui.tpv;
+    ensureShowcase(state2);
+    const item = state2.showcase.find((d) => d.id === showcaseId);
+    if (!tpv || !item) {
+      state2.ui.toast = "Abre el TPV y elige un d\xE9cimo del escaparate";
+      return state2;
+    }
+    const p = getProduct(item.productId);
+    if (!p) return state2;
+    const have = state2.stock[item.productId];
+    if (p.stockType === "physical" && have != null && have < item.qty) {
+      tpv.message = `Sin stock de ${p.name} para el escaparate`;
+      return state2;
+    }
+    tpv.lines.push({
+      id: `L-${Date.now()}-${Math.floor(Math.random() * 1e5)}`,
+      productId: p.id,
+      name: `${p.name} (escaparate)`,
+      org: p.org,
+      qty: item.qty,
+      unitCents: p.priceCents,
+      numberSource: "dictate",
+      selection: { number: item.number, fractions: item.qty, series: false },
+      needsNumbers: true,
+      numberMode: p.numberMode,
+      fromShowcaseId: item.id
+    });
+    state2.showcase = state2.showcase.filter((d) => d.id !== item.id);
+    tpv.message = `Escaparate \u2192 ticket: n\xBA ${item.number} \xD7${item.qty} (${formatEuro(p.priceCents * item.qty)})`;
+    return state2;
+  }
+  function seedDefaultShowcase(state2) {
+    var _a;
+    ensureShowcase(state2);
+    if (state2.showcase.length) return state2;
+    const seeds = [
+      { productId: "lae-nacional", number: "45821", qty: 1, note: "Admin" },
+      { productId: "lae-nacional", number: "12345", qty: 2, note: "Rinc\xF3n" },
+      { productId: "lae-nacional", number: "77777", qty: 1, note: "Vitrina" },
+      { productId: "lae-nacional-jueves", number: "09090", qty: 1, note: "Jueves" },
+      { productId: "lae-nacional", number: "33333", qty: 1, note: "" },
+      { productId: "lae-nacional", number: "68024", qty: 1, note: "\xC1lora" },
+      { productId: "lae-nacional", number: "20260", qty: 1, note: "" },
+      { productId: "lae-nacional", number: "11111", qty: 1, note: "Serie corta" },
+      { productId: "lae-nacional", number: "55555", qty: 1, note: "" },
+      { productId: "lae-nacional", number: "88888", qty: 1, note: "Vitrina" },
+      { productId: "lae-nacional", number: pad5(13e3), qty: 1, note: "Pueblo" },
+      { productId: "lae-nacional", number: "24680", qty: 1, note: "" }
+    ];
+    for (const s of seeds) {
+      if (state2.showcase.length >= SHOWCASE_MAX) break;
+      addShowcaseDecimo(state2, s);
+    }
+    if ((_a = state2.ui.toast) == null ? void 0 : _a.startsWith("Escaparate:")) state2.ui.toast = null;
+    return state2;
+  }
+
   // src/game/state.js
   var STARTING_BANK_CENTS = 95e4;
-  var SAVE_VERSION = 4;
-  var GAME_VERSION = "0.3";
+  var SAVE_VERSION = 5;
+  var GAME_VERSION = "0.4";
   var SLOT_COUNT = 3;
   var STORAGE_PREFIX = "loterias-alora-slot-";
   var OFFICE = {
@@ -1628,7 +1784,8 @@
         servedToday: 0,
         nextSpawnAtMs: start.getTime() + 10 * 1e3
       },
-      settings: { music: true, sfx: true, autosaveMinutes: 2 },
+      settings: { music: true, sfx: true, autosaveMinutes: 2, theme: "light" },
+      showcase: [],
       dayLog: [],
       holidays,
       events,
@@ -1638,7 +1795,8 @@
         daysPlayed: 0,
         totalCommissionCents: 0,
         totalPrizesPaidCents: 0,
-        totalShortageCents: 0
+        totalShortageCents: 0,
+        highPrizesAlerted: 0
       },
       ui: {
         screen: "counter",
@@ -1648,7 +1806,9 @@
         arqueo: null,
         lastTickets: [],
         lastCloseSummary: null,
-        fichaId: null
+        fichaId: null,
+        highPrizeAlert: null,
+        mondayScratchReport: null
       }
     };
     return finalizeNewGame(game);
@@ -1656,6 +1816,9 @@
   function finalizeNewGame(state2) {
     ensureOnceExtras(state2);
     ensureJackpots(state2);
+    seedDefaultShowcase(state2);
+    ensureCustomerBirthdays(state2.customers.regulars);
+    ensureCustomerBirthdays(state2.customers.abonados);
     return state2;
   }
   function migrateState(data) {
@@ -1664,8 +1827,10 @@
     if (!data.draws) data.draws = {};
     if (!data.prizeManagement) data.prizeManagement = [];
     if (!data.events) data.events = buildAloraEvents(2025, 2032);
+    else Object.assign(data.events, buildAloraEvents(2025, 2032));
     if (!data.nextIds) data.nextIds = { ticket: 1 };
-    if (!data.settings) data.settings = { music: true, sfx: true, autosaveMinutes: 2 };
+    if (!data.settings) data.settings = { music: true, sfx: true, autosaveMinutes: 2, theme: "light" };
+    data.settings.theme = data.settings.theme || "light";
     if (!data.customers.abonados || !data.customers.penas) {
       const { abonados, penas } = generateAbonadosAndPenas();
       data.customers.abonados = data.customers.abonados || abonados;
@@ -1679,7 +1844,24 @@
     data.stats.totalCommissionCents = data.stats.totalCommissionCents || 0;
     data.stats.totalPrizesPaidCents = data.stats.totalPrizesPaidCents || 0;
     data.stats.totalShortageCents = data.stats.totalShortageCents || 0;
+    data.stats.highPrizesAlerted = data.stats.highPrizesAlerted || 0;
     data.jackpots = data.jackpots || {};
+    data.stock = data.stock || {};
+    for (const p of PRODUCTS) {
+      if (p.stockType === "physical" && data.stock[p.id] == null) {
+        data.stock[p.id] = p.category === "rasca" ? 40 : p.id.includes("navidad") || p.id.includes("nino") ? 20 : 25;
+      } else if (p.stockType !== "physical" && data.stock[p.id] === void 0) {
+        data.stock[p.id] = null;
+      }
+    }
+    ensureShowcase(data);
+    if (!data.showcase.length) seedDefaultShowcase(data);
+    ensureCustomerBirthdays(data.customers.regulars);
+    ensureCustomerBirthdays(data.customers.abonados);
+    for (const a of data.customers.abonados || []) {
+      if (a.abonoQty == null) a.abonoQty = 2;
+      if (a.abonosConfirmed == null) a.abonosConfirmed = 0;
+    }
     data.ui = data.ui || {};
     data.ui.tpv = null;
     data.ui.arqueo = null;
@@ -1912,6 +2094,13 @@
       case "superonce":
       case "lototurf":
         return { productId, ymd: ymd2, numbers: pickUnique(rng, 5, 49) };
+      case "quintuple":
+        return {
+          productId,
+          ymd: ymd2,
+          races: Array.from({ length: 5 }, () => pickInt(rng, 1, 20)),
+          plus: pickInt(rng, 1, 20)
+        };
       case "5from40":
       default:
         if (["once-cupon", "once-cuponazo", "once-sueldazo", "lae-nacional", "lae-nacional-jueves", "lae-navidad", "lae-nino"].includes(productId)) {
@@ -1950,6 +2139,12 @@
     }
     if (mode === "superonce" || mode === "lototurf") {
       return { numbers: pickUnique(rng, 5, 49) };
+    }
+    if (mode === "quintuple") {
+      return {
+        races: Array.from({ length: 5 }, () => pickInt(rng, 1, 20)),
+        plus: pickInt(rng, 1, 20)
+      };
     }
     if (mode === "5from40") {
       return { numbers: pickUnique(rng, 5, 40) };
@@ -2229,7 +2424,11 @@
     const s = ticket.selection || {};
     if (ticket.kind === "rasca") return `C\xF3digo ${s.code || "\u2014"}`;
     if (s.number) return `N\xBA ${s.number}`;
+    if (s.races) return `Carreras ${s.races.join("-")}${s.plus != null ? ` +${s.plus}` : ""}`;
     if (s.stars) return `${(s.numbers || []).join(", ")} \u2605 ${(s.stars || []).join(", ")}`;
+    if (s.clave != null) return `${(s.numbers || []).join(", ")} clave ${s.clave}`;
+    if (s.column) return `Columna ${s.column.join("")}`;
+    if (s.goals) return `Goles ${s.goals.join("")}`;
     if (s.numbers) {
       const extra = s.reintegro != null ? ` \xB7 R${s.reintegro}` : "";
       return `${(s.numbers || []).join(", ")}${extra}`;
@@ -2371,7 +2570,7 @@
     });
   }
   function finishSaleSideEffects(state2) {
-    var _a;
+    var _a, _b, _c;
     const ps = state2.ui.paymentSession;
     for (const item of ps.items) {
       const p = getProduct(item.productId);
@@ -2387,14 +2586,16 @@
     });
     ps.createdTickets = tickets;
     state2.ui.lastTickets = tickets;
-    const client = state2.customers.regulars.find((c) => c.id === ps.clientId) || (((_a = state2.customers.current) == null ? void 0 : _a.id) === ps.clientId ? state2.customers.current : null);
+    const entry = {
+      at: state2.clock.gameTimeMs,
+      items: ps.items,
+      totalCents: ps.totalCents,
+      ticketIds: tickets.map((t) => t.id)
+    };
+    const client = state2.customers.regulars.find((c) => c.id === ps.clientId) || ((_a = state2.customers.abonados) == null ? void 0 : _a.find((c) => c.id === ps.clientId)) || ((_b = state2.customers.penas) == null ? void 0 : _b.find((c) => c.id === ps.clientId)) || (((_c = state2.customers.current) == null ? void 0 : _c.id) === ps.clientId ? state2.customers.current : null);
     if (client) {
-      client.history.push({
-        at: state2.clock.gameTimeMs,
-        items: ps.items,
-        totalCents: ps.totalCents,
-        ticketIds: tickets.map((t) => t.id)
-      });
+      if (!client.history) client.history = [];
+      client.history.push(entry);
     }
     state2.stats.totalCustomers += 1;
     state2.customers.servedToday += 1;
@@ -2529,7 +2730,18 @@
   function pickArrivingClient(state2) {
     var _a, _b;
     const rng = Math.random;
-    if (rng() < 0.08 && ((_a = state2.customers.abonados) == null ? void 0 : _a.length)) {
+    const ymd2 = gameYmd(state2);
+    if (rng() < 0.12) {
+      const specials = (state2.customers.regulars || []).filter(
+        (c) => isBirthdayToday(c, ymd2) || matchesSanto(c, ymd2)
+      );
+      if (specials.length) {
+        const c = { ...specials[Math.floor(rng() * specials.length)] };
+        c.specialDay = isBirthdayToday(c, ymd2) ? "birthday" : "santo";
+        return c;
+      }
+    }
+    if (rng() < 0.1 && ((_a = state2.customers.abonados) == null ? void 0 : _a.length)) {
       const a = state2.customers.abonados[Math.floor(rng() * state2.customers.abonados.length)];
       return { ...a };
     }
@@ -2552,6 +2764,7 @@
       var _a2;
       let chance = c.visitChance * crowdFactor(state2);
       if ((_a2 = c.preferredDays) == null ? void 0 : _a2.includes(dow)) chance *= 2.2;
+      if (isBirthdayToday(c, ymd2) || matchesSanto(c, ymd2)) chance *= 3;
       return rng() < chance;
     });
     if (!candidates.length) {
@@ -2561,6 +2774,7 @@
     return { ...candidates[Math.floor(rng() * candidates.length)] };
   }
   function attachIntent(state2, client) {
+    var _a;
     const rng = Math.random;
     const owned = ticketsForClient(state2, client.id);
     const checkable = owned.filter((t) => t.status === "active" || t.status === "checked" && t.deferred);
@@ -2599,9 +2813,20 @@
       client.note = `Encargo de ${p.name} \xD7${qty}`;
       return client;
     }
+    if ((client.kind === "abonado" || client.kind === "pena") && rng() < 0.55) {
+      const p = getProduct(client.favoriteProduct || ((_a = client.preferredProducts) == null ? void 0 : _a[0]));
+      const qty = client.kind === "pena" ? 5 : client.abonoQty || 2;
+      client.intent = "abono";
+      client.wishlist = p ? [{ productId: p.id, productName: p.name, qty, preferDictate: false }] : [];
+      client.note = client.kind === "pena" ? `Pe\xF1a: confirmar abono \xAB${client.subscription || (p == null ? void 0 : p.name) || ""}\xBB \xD7${qty}` : `Abono: confirmar \xAB${client.subscription || (p == null ? void 0 : p.name) || ""}\xBB \xD7${qty}`;
+      if (client.specialDay === "birthday") client.note += " \xB7 \xA1Cumplea\xF1os!";
+      return client;
+    }
     client.intent = "buy";
     client.wishlist = buildRichWishlist(state2, client);
     client.note = client.line || "Quiere varias cosas.";
+    if (client.specialDay === "birthday") client.note = `\xA1Hoy es su cumplea\xF1os! ${client.note}`;
+    else if (client.specialDay === "santo") client.note = `Santoral \xB7 ${client.note}`;
     return client;
   }
   function buildRichWishlist(state2, client) {
@@ -2636,13 +2861,25 @@
     }
     return lines;
   }
+  var REGIONAL_AUTO = (REGIONAL_IDS || []).filter((id) => id.startsWith("and-"));
+  var REGIONAL_PROV = (REGIONAL_IDS || []).filter((id) => id.startsWith("mal-"));
+  var REGIONAL_LOCAL = (REGIONAL_IDS || []).filter((id) => id.startsWith("alo-") || id.startsWith("pue-"));
   var POOLS = {
-    lae: ["lae-primitiva", "lae-bonoloto", "lae-euromillones", "lae-nacional", "lae-gordo-primitiva", "lae-quiniela"],
+    lae: [
+      "lae-primitiva",
+      "lae-bonoloto",
+      "lae-euromillones",
+      "lae-nacional",
+      "lae-gordo-primitiva",
+      "lae-quiniela",
+      "lae-lototurf",
+      "lae-quintuple"
+    ],
     once: ["once-cupon", "once-cuponazo", "once-eurojackpot", "once-super-once", "once-triplex"],
     rasca: ["rasca-7-vidas", "rasca-multiplica", "rasca-diamante", "rasca-oro", "rasca-jackpot", "rasca-once-clasico"],
-    auto: ["and-fortuna", "and-olivo", "and-costa"],
-    prov: ["mal-premio", "mal-axarquia"],
-    local: ["alo-local", "alo-hoya", "alo-chorro"]
+    auto: REGIONAL_AUTO.length ? REGIONAL_AUTO : ["and-fortuna", "and-olivo", "and-costa"],
+    prov: REGIONAL_PROV.length ? REGIONAL_PROV : ["mal-premio", "mal-axarquia"],
+    local: REGIONAL_LOCAL.length ? REGIONAL_LOCAL : ["alo-local", "alo-hoya", "alo-chorro"]
   };
   var WISH_TEMPLATES = [
     [{ usePref: true, qty: (r) => 1 + Math.floor(r() * 3) }, { pool: POOLS.rasca, qty: (r) => 1 + Math.floor(r() * 4), p: 0.7 }],
@@ -2662,6 +2899,7 @@
     ],
     [{ id: "once-super-once", qty: 3 }, { id: "once-triplex", qty: 2, dictate: true }, { pool: POOLS.rasca, qty: 1 }],
     [{ id: "lae-lototurf", qty: 1 }, { id: "lae-bonoloto", qty: 2 }, { pool: POOLS.local, qty: 1, p: 0.5 }],
+    [{ id: "lae-quintuple", qty: 1, dictate: true }, { id: "lae-lototurf", qty: 1, p: 0.6 }, { pool: POOLS.rasca, qty: 2, p: 0.5 }],
     // many small random mixes
     ...Array.from({ length: 40 }, () => {
       const n = 1 + Math.floor(Math.random() * 4);
@@ -2712,25 +2950,6 @@
     state2.customers.current = null;
     return state2;
   }
-  function orderStock(state2, productId, qty) {
-    var _a;
-    const p = getProduct(productId);
-    if (!p || p.stockType !== "physical") return state2;
-    const arrive = addBusinessDays(state2, (_a = p.orderDays) != null ? _a : 2);
-    state2.orders.push({
-      id: `ord-${Date.now()}`,
-      productId,
-      productName: p.name,
-      qty,
-      clientId: null,
-      clientName: null,
-      arriveOnYmd: arrive,
-      status: "pending",
-      reserved: false
-    });
-    state2.ui.toast = `Pedido ${p.name} \xD7${qty} \u2192 ${arrive}`;
-    return state2;
-  }
   function addBusinessDays(state2, days) {
     const d = gameDate(state2);
     let left = days;
@@ -2760,6 +2979,7 @@
     return state2;
   }
   function checkCurrentTicket(state2) {
+    var _a, _b, _c;
     const client = state2.customers.current;
     if (!(client == null ? void 0 : client.ticketFocus)) return state2;
     const result = checkTicket(state2, client.ticketFocus.id);
@@ -2771,6 +2991,16 @@
         at: state2.clock.gameTimeMs,
         text: `Comprobaci\xF3n: ${client.name} \xB7 PREMIO ${formatEuro(result.prizeCents)}`
       });
+      if (result.large || result.huge) {
+        state2.ui.highPrizeAlert = {
+          ticketId: ((_a = result.ticket) == null ? void 0 : _a.id) || ((_b = client.ticketFocus) == null ? void 0 : _b.id),
+          clientName: client.name,
+          productName: (_c = client.ticketFocus) == null ? void 0 : _c.productName,
+          amountCents: result.prizeCents,
+          at: state2.clock.gameTimeMs
+        };
+        state2.stats.highPrizesAlerted = (state2.stats.highPrizesAlerted || 0) + 1;
+      }
     } else {
       state2.ui.toast = "No ha tocado.";
     }
@@ -2866,12 +3096,33 @@
     state2.prizeManagement.push(caseItem);
     ticket.status = "managed";
     ticket.managementId = caseItem.id;
+    raiseHighPrizeAlert(state2, ticket);
     state2.dayLog.push({
       at: state2.clock.gameTimeMs,
       text: `Gesti\xF3n de premio ${level}: ${ticket.clientName} \xB7 ${formatEuro(ticket.prizeCents)}`
     });
     state2.ui.toast = `Premio de ${formatEuro(ticket.prizeCents)} enviado a gesti\xF3n.`;
     return { ok: true, managed: true, case: caseItem };
+  }
+  function raiseHighPrizeAlert(state2, ticket) {
+    if (!ticket || (ticket.prizeCents || 0) < LARGE_PRIZE_CENTS) return state2;
+    state2.ui.highPrizeAlert = {
+      ticketId: ticket.id,
+      clientName: ticket.clientName,
+      productName: ticket.productName,
+      amountCents: ticket.prizeCents,
+      at: state2.clock.gameTimeMs
+    };
+    state2.stats.highPrizesAlerted = (state2.stats.highPrizesAlerted || 0) + 1;
+    state2.dayLog.push({
+      at: state2.clock.gameTimeMs,
+      text: `\u26A0 ALERTA premio alto: ${ticket.clientName || "cliente"} \xB7 ${formatEuro(ticket.prizeCents)} \xB7 ${ticket.productName}`
+    });
+    return state2;
+  }
+  function dismissHighPrizeAlert(state2) {
+    if (state2.ui) state2.ui.highPrizeAlert = null;
+    return state2;
   }
   function advancePrizeManagement(state2) {
     for (const c of state2.prizeManagement || []) {
@@ -3085,8 +3336,8 @@
     processArrivingOrders(state2);
     ensureDrawsResolved(state2);
     state2.customers.nextSpawnAtMs = state2.clock.gameTimeMs + 2 * 60 * 1e3;
-    state2.ui.screen = "counter";
     state2.ui.lastCloseSummary = summary;
+    state2.ui.screen = "day-results";
     state2.dayLog.push({
       at: state2.clock.gameTimeMs,
       text: `Nuevo d\xEDa \xB7 ${OFFICE.businessName}. ${closedReason(state2) || "Abierta 08:00\u201320:00."}`
@@ -3304,6 +3555,44 @@ ${xrefPos}
   }
   function escapePdfText(s) {
     return s.replace(/\\/g, "\\\\").replace(/\(/g, "\\(").replace(/\)/g, "\\)");
+  }
+  function downloadStatsPdf(state2) {
+    var _a, _b, _c, _d, _e, _f;
+    const s = state2.stats || {};
+    const f = state2.finance || {};
+    const lines = [
+      OFFICE.businessName,
+      `${OFFICE.town} \xB7 ${OFFICE.employee}`,
+      "===== ESTAD\xCDSTICAS DE PARTIDA =====",
+      `Versi\xF3n juego: ${state2.gameVersion || "?"}`,
+      `Fecha juego: ${new Date(((_a = state2.clock) == null ? void 0 : _a.gameTimeMs) || Date.now()).toISOString().slice(0, 10)}`,
+      "--------------------------------",
+      `D\xEDas jugados: ${(_b = s.daysPlayed) != null ? _b : 0}`,
+      `Ventas totales: ${formatEuro(s.totalSalesCents || 0)}`,
+      `Comisiones totales: ${formatEuro(s.totalCommissionCents || 0)}`,
+      `Premios pagados: ${formatEuro(s.totalPrizesPaidCents || 0)}`,
+      `Faltantes de caja: ${formatEuro(s.totalShortageCents || 0)}`,
+      `Clientes atendidos: ${(_c = s.totalCustomers) != null ? _c : 0}`,
+      `Alertas premio alto: ${(_d = s.highPrizesAlerted) != null ? _d : 0}`,
+      "--------------------------------",
+      `Banco actual: ${formatEuro(f.bankCents || 0)}`,
+      `Ventas hoy: ${formatEuro(f.daySalesCents || 0)}`,
+      `Comisi\xF3n hoy: ${formatEuro(f.dayCommissionCents || 0)}`,
+      `Clientes hoy: ${(_f = (_e = state2.customers) == null ? void 0 : _e.servedToday) != null ? _f : 0}`,
+      "--------------------------------",
+      "Fan-made / no oficial \xB7 +18",
+      "Juego responsable"
+    ];
+    const pdf = buildSimplePdf(lines);
+    const blob = new Blob([pdf], { type: "application/pdf" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `estadisticas-alora-${Date.now()}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
   }
 
   // src/game/tpv.js
@@ -3580,10 +3869,68 @@ ${xrefPos}
       const need = 5;
       const nums = raw.split(/[\s,;.-]+/).map(Number).filter((n) => n >= 1 && n <= max);
       const unique = [...new Set(nums)];
-      if (unique.length < need) return { ok: false, error: `${need} n\xFAmeros del 1 al ${max}` };
+      if (unique.length < need) return { ok: false, error: `${need} numbers del 1 al ${max}` };
       return { ok: true, selection: { numbers: unique.slice(0, need).sort((a, b) => a - b) } };
     }
+    if (mode === "quintuple") {
+      const nums = raw.split(/[\s,;.-]+/).map(Number).filter((n) => n >= 1 && n <= 20);
+      if (nums.length < 6) return { ok: false, error: "5 caballos (1\u201320) + suplementaria" };
+      return {
+        ok: true,
+        selection: { races: nums.slice(0, 5), plus: nums[5] }
+      };
+    }
     return { ok: false, error: "No se entiende la combinaci\xF3n" };
+  }
+  function undoLastTpvLine(state2) {
+    var _a, _b, _c;
+    const tpv = state2.ui.tpv;
+    if (!((_a = tpv == null ? void 0 : tpv.lines) == null ? void 0 : _a.length)) {
+      if (tpv) tpv.message = "No hay l\xEDneas que deshacer";
+      return state2;
+    }
+    const last = tpv.lines.pop();
+    if (((_b = tpv.numberEntry) == null ? void 0 : _b.lineId) === last.id) tpv.numberEntry = null;
+    if (((_c = tpv.cancelPrompt) == null ? void 0 : _c.lineId) === last.id) tpv.cancelPrompt = null;
+    tpv.message = `Deshecho: ${last.name} \xD7${last.qty}`;
+    state2.dayLog.push({
+      at: state2.clock.gameTimeMs,
+      text: `TPV: deshacer \xFAltima l\xEDnea ${last.name} \xD7${last.qty}`
+    });
+    return state2;
+  }
+  function confirmAbonoOnTpv(state2) {
+    var _a, _b, _c, _d, _e;
+    const tpv = state2.ui.tpv;
+    if (!tpv) return state2;
+    const client = state2.customers.current || ((_a = state2.customers.abonados) == null ? void 0 : _a.find((a) => a.id === tpv.clientId)) || ((_b = state2.customers.penas) == null ? void 0 : _b.find((a) => a.id === tpv.clientId));
+    if (!client) {
+      tpv.message = "No hay cliente de abono en esta sesi\xF3n";
+      return state2;
+    }
+    if (client.kind !== "abonado" && client.kind !== "pena") {
+      tpv.message = "Este cliente no tiene abono / pe\xF1a";
+      return state2;
+    }
+    const fav = client.favoriteProduct || ((_c = client.preferredProducts) == null ? void 0 : _c[0]);
+    const p = getProduct(fav);
+    if (!p) {
+      tpv.message = "No hay producto de abono configurado";
+      return state2;
+    }
+    const qty = client.kind === "pena" ? 5 : client.abonoQty || 2;
+    addTpvProduct(state2, p.id, { qty, numberSource: "random" });
+    tpv.message = `Abono confirmado: ${p.name} \xD7${qty}`;
+    state2.dayLog.push({
+      at: state2.clock.gameTimeMs,
+      text: `Abono confirmado TPV: ${client.name} \xB7 ${p.name} \xD7${qty}`
+    });
+    const src = client.kind === "abonado" ? (_d = state2.customers.abonados) == null ? void 0 : _d.find((a) => a.id === client.id) : (_e = state2.customers.penas) == null ? void 0 : _e.find((a) => a.id === client.id);
+    if (src) {
+      src.lastAbonoAt = state2.clock.gameTimeMs;
+      src.abonosConfirmed = (src.abonosConfirmed || 0) + 1;
+    }
+    return state2;
   }
   function tpvTotalCents(tpv) {
     return ((tpv == null ? void 0 : tpv.lines) || []).reduce((s, l) => s + l.unitCents * l.qty, 0);
@@ -3646,11 +3993,108 @@ ${xrefPos}
     if (s.goals) return `Goles ${s.goals.join("")}`;
     if (s.stars) return `${(s.numbers || []).join(",")} \u2605 ${s.stars.join(",")}`;
     if (s.clave != null) return `${(s.numbers || []).join(",")} clave ${s.clave}`;
+    if (s.races) return `Carreras ${s.races.join("-")}${s.plus != null ? ` +${s.plus}` : ""}`;
     if (s.numbers) {
       const r = s.reintegro != null ? ` R${s.reintegro}` : "";
       return `${s.numbers.join(",")}${r}`;
     }
     return "\u2014";
+  }
+
+  // src/game/supplier.js
+  function supplierUnitCostCents(product) {
+    var _a;
+    const rate = (_a = product.commissionRate) != null ? _a : 0.05;
+    return Math.max(1, Math.round(product.priceCents * (1 - rate)));
+  }
+  function addBusinessDays2(state2, days) {
+    const d = gameDate(state2);
+    let left = Math.max(1, days);
+    let guard = 0;
+    while (left > 0 && guard++ < 400) {
+      d.setUTCDate(d.getUTCDate() + 1);
+      const ymd2 = d.toISOString().slice(0, 10);
+      if (d.getUTCDay() !== 0 && d.getUTCDay() !== 6 && !state2.holidays[ymd2]) left--;
+    }
+    return d.toISOString().slice(0, 10);
+  }
+  function placeSupplierOrder(state2, productId, qty) {
+    var _a;
+    const p = getProduct(productId);
+    if (!p || p.stockType !== "physical") {
+      state2.ui.toast = "Solo productos f\xEDsicos se piden a proveedor";
+      return state2;
+    }
+    const q = Math.max(1, Math.min(200, Number(qty) || 20));
+    const unitCost = supplierUnitCostCents(p);
+    const totalCost = unitCost * q;
+    if (state2.finance.bankCents < totalCost) {
+      state2.ui.toast = `Banco insuficiente para pedido (${formatEuro(totalCost)})`;
+      return state2;
+    }
+    const arrive = addBusinessDays2(state2, (_a = p.orderDays) != null ? _a : 2);
+    state2.finance.bankCents -= totalCost;
+    state2.orders.push({
+      id: `sup-${Date.now()}`,
+      productId,
+      productName: p.name,
+      qty: q,
+      clientId: null,
+      clientName: null,
+      arriveOnYmd: arrive,
+      status: "pending",
+      reserved: false,
+      supplier: true,
+      unitCostCents: unitCost,
+      totalCostCents: totalCost,
+      orderedOnYmd: gameYmd(state2)
+    });
+    state2.finance.ledger.push({
+      id: `sup-pay-${Date.now()}`,
+      at: state2.clock.gameTimeMs,
+      type: "supplier",
+      label: `Proveedor: ${p.name} \xD7${q}`,
+      totalCents: -totalCost
+    });
+    state2.dayLog.push({
+      at: state2.clock.gameTimeMs,
+      text: `Pedido proveedor ${p.name} \xD7${q} \xB7 coste ${formatEuro(totalCost)} \xB7 llega ${arrive}`
+    });
+    state2.ui.toast = `Proveedor: ${p.name} \xD7${q} \xB7 ${formatEuro(totalCost)} \xB7 ${arrive}`;
+    return state2;
+  }
+  function mondayScratchInventory(state2) {
+    var _a;
+    const rascas = PRODUCTS.filter((p) => p.category === "rasca");
+    const low = [];
+    const report = [];
+    for (const p of rascas) {
+      const qty = (_a = state2.stock[p.id]) != null ? _a : 0;
+      report.push({ productId: p.id, name: p.name, qty });
+      if (qty < 15) low.push({ productId: p.id, name: p.name, qty });
+    }
+    state2.ui.mondayScratchReport = {
+      ymd: gameYmd(state2),
+      report,
+      low
+    };
+    return { report, low };
+  }
+  function restockLowScratches(state2, targetQty = 40) {
+    const { low } = mondayScratchInventory(state2);
+    if (!low.length) {
+      state2.ui.toast = "Rascas OK: ninguno por debajo de 15";
+      return state2;
+    }
+    let n = 0;
+    for (const item of low) {
+      const need = Math.max(10, targetQty - item.qty);
+      const before = state2.finance.bankCents;
+      placeSupplierOrder(state2, item.productId, need);
+      if (state2.finance.bankCents < before) n += 1;
+    }
+    state2.ui.toast = n ? `Lunes: pedidos de reposici\xF3n de ${n} rascas enviados` : "No se pudo reponer (revisa banco)";
+    return state2;
   }
 
   // src/game/audit.js
@@ -3784,6 +4228,15 @@ ${xrefPos}
       setMusicEnabled(false);
     }
     if (((_b = state == null ? void 0 : state.settings) == null ? void 0 : _b.sfx) != null) setSfxEnabled(!!state.settings.sfx);
+    applyTheme();
+  }
+  function applyTheme() {
+    var _a;
+    const theme = ((_a = state == null ? void 0 : state.settings) == null ? void 0 : _a.theme) === "dark" ? "dark" : "light";
+    document.documentElement.setAttribute("data-theme", theme);
+  }
+  function confirmImportant(message) {
+    return window.confirm(message);
   }
   function loop() {
     var _a, _b, _c, _d, _e;
@@ -3828,7 +4281,12 @@ ${xrefPos}
     const ymd2 = gameYmd(state);
     if (state.ui.mondayHintYmd === ymd2) return;
     state.ui.mondayHintYmd = ymd2;
-    showToast("Lunes: revisa el extracto semanal (men\xFA Extracto semanal).");
+    const { low } = mondayScratchInventory(state);
+    if (low.length) {
+      showToast(`Lunes: ${low.length} rascas bajos de stock \xB7 Extracto semanal + inventario rascas`);
+    } else {
+      showToast("Lunes: revisa el extracto semanal e inventario de rascas.");
+    }
     needsFullRender = true;
   }
   function renderClockOnly() {
@@ -3843,12 +4301,15 @@ ${xrefPos}
     }
   }
   function render() {
+    applyTheme();
     if (!state || state.ui.screen === "menu") return renderMenu();
     if (state.ui.screen === "cash") return renderCash();
     if (state.ui.screen === "tpv") return renderTpv();
     if (state.ui.screen === "close") return renderClose();
+    if (state.ui.screen === "day-results") return renderDayResults();
     if (state.ui.screen === "saves") return renderSavesInGame();
     if (state.ui.screen === "stock") return renderStock();
+    if (state.ui.screen === "showcase") return renderShowcase();
     if (state.ui.screen === "prize") return renderPrize();
     if (state.ui.screen === "draws") return renderDraws();
     if (state.ui.screen === "management") return renderManagement();
@@ -3880,8 +4341,47 @@ ${xrefPos}
     return "normal";
   }
   function eventBannerText() {
-    const ev = eventOn(gameYmd(state), state.events);
-    return ev ? `Evento en \xC1lora: ${ev.name}` : "";
+    const ymd2 = gameYmd(state);
+    const ev = eventOn(ymd2, state.events);
+    const bday = birthdayBanner(state, ymd2);
+    const parts = [];
+    if (ev) parts.push(`Evento en \xC1lora: ${ev.name}`);
+    if (bday) parts.push(bday);
+    return parts.join(" \xB7 ");
+  }
+  function highPrizeAlertHTML() {
+    var _a;
+    const a = (_a = state.ui) == null ? void 0 : _a.highPrizeAlert;
+    if (!a) return "";
+    return `<div class="alert-banner" id="high-prize-alert">
+    <strong>\u26A0 Premio alto</strong>
+    <div>${escapeHtml(a.clientName || "Cliente")} \xB7 ${escapeHtml(a.productName || "")} \xB7 ${formatEuro(a.amountCents)}</div>
+    <div class="actions" style="margin-top:8px">
+      <button class="btn" id="btn-dismiss-high-prize">Entendido</button>
+      <button class="btn primary" id="btn-goto-mgmt-prize">Ir a gesti\xF3n</button>
+    </div>
+  </div>`;
+  }
+  function bindHighPrizeAlert() {
+    const d = document.getElementById("btn-dismiss-high-prize");
+    if (d) {
+      d.onclick = () => {
+        dismissHighPrizeAlert(state);
+        sfx.click();
+        needsFullRender = true;
+        render();
+      };
+    }
+    const g = document.getElementById("btn-goto-mgmt-prize");
+    if (g) {
+      g.onclick = () => {
+        dismissHighPrizeAlert(state);
+        state.ui.screen = "management";
+        sfx.click();
+        needsFullRender = true;
+        render();
+      };
+    }
   }
   function dictateHint(mode) {
     const hints = {
@@ -3895,7 +4395,8 @@ ${xrefPos}
       quinigol: "6 resultados 0/1/2/M",
       superonce: "5 n\xFAmeros del 1 al 49",
       "5from40": "5 n\xFAmeros del 1 al 40",
-      lototurf: "5 n\xFAmeros del 1 al 49"
+      lototurf: "5 n\xFAmeros del 1 al 49",
+      quintuple: "5 caballos 1\u201320 + suplementaria (ej. 3 7 11 14 18 5)"
     };
     return hints[mode] || "Escribe la combinaci\xF3n dictada";
   }
@@ -3935,7 +4436,7 @@ ${xrefPos}
         </div>
         <p class="disclaimer">
           Fan-made / no oficial. Nombres de Loter\xEDas y Apuestas del Estado y ONCE usados solo con fines de simulaci\xF3n.
-          Juego responsable \xB7 +18. Versi\xF3n ${GAME_VERSION}: TPV con ticket, arqueo, botes, extracto semanal y encargos de calendario.
+          Juego responsable \xB7 +18. Versi\xF3n ${GAME_VERSION}: Cat\xE1logo +50 loter\xEDas, escaparate, abonos, tema, proveedor, resultados del d\xEDa y PDF de estad\xEDsticas.
         </p>
       </div>
     </div>
@@ -3948,7 +4449,7 @@ ${xrefPos}
       maybeStartMusic();
       state.ui.screen = "counter";
       lastAutosaveRealMs = Date.now();
-      showToast("Bienvenida, Miriam. Versi\xF3n 0.3 lista. Abre el TPV para vender.");
+      showToast("Bienvenida, Miriam. Versi\xF3n 0.4 lista. Abre el TPV para vender.");
       needsFullRender = true;
       render();
     };
@@ -4041,10 +4542,11 @@ ${xrefPos}
     });
   }
   function sideNav() {
-    var _a, _b;
+    var _a, _b, _c;
     const profit = dayProfitBreakdown(state);
     const openMgmt = (state.prizeManagement || []).filter((c) => c.status !== "settled").length;
     const musicOn2 = ((_a = state.settings) == null ? void 0 : _a.music) !== false && isMusicEnabled();
+    const dark = ((_b = state.settings) == null ? void 0 : _b.theme) === "dark";
     return `
     <aside class="panel nav-side">
       <h3>Oficina</h3>
@@ -4054,12 +4556,14 @@ ${xrefPos}
       <button class="btn" data-nav="prize">Pagar premio</button>
       <button class="btn" data-nav="management">Gesti\xF3n premios${openMgmt ? ` (${openMgmt})` : ""}</button>
       <button class="btn" data-nav="stock">Stock y pedidos</button>
+      <button class="btn" data-nav="showcase">Escaparate</button>
       <button class="btn" data-nav="arqueo">Arqueo</button>
       <button class="btn" data-nav="weekly">Extracto semanal</button>
       <button class="btn" data-nav="stats">Estad\xEDsticas</button>
       <button class="btn" data-nav="close">Cierre y balance</button>
       <button class="btn" data-nav="saves">Guardar / exportar</button>
       <button class="btn" id="btn-music-toggle">${musicOn2 ? "\u266A M\xFAsica: ON" : "\u266A M\xFAsica: OFF"}</button>
+      <button class="btn" id="btn-theme-toggle">${dark ? "Tema: oscuro" : "Tema: claro"}</button>
       <hr style="border:none;border-top:1px solid var(--line);margin:14px 0" />
       <div class="stat-row"><span>Banco</span><strong>${formatEuro(state.finance.bankCents)}</strong></div>
       <div class="stat-row"><span>Caja</span><strong>${formatEuro(drawerTotalCents(state.finance.drawer))}</strong></div>
@@ -4067,7 +4571,7 @@ ${xrefPos}
       <div class="stat-row"><span>Comisi\xF3n hoy</span><strong>${formatEuro(profit.commissionCents)}</strong></div>
       <div class="stat-row"><span>Beneficio hoy*</span><strong>${formatEuro(profit.profitCents)}</strong></div>
       <div class="stat-row"><span>Clientes hoy</span><strong>${state.customers.servedToday}</strong></div>
-      <div class="stat-row"><span>En cola</span><strong>${((_b = state.customers.queue) == null ? void 0 : _b.length) || 0}</strong></div>
+      <div class="stat-row"><span>En cola</span><strong>${((_c = state.customers.queue) == null ? void 0 : _c.length) || 0}</strong></div>
       <div class="stat-row"><span>Velocidad</span><strong>${speedLabel(state.clock.speed, state.clock.paused)}</strong></div>
       <p class="muted" style="font-size:0.78rem;margin-top:8px">*Comisiones \u2212 gastos del d\xEDa</p>
     </aside>
@@ -4097,6 +4601,17 @@ ${xrefPos}
         state.settings.music = next;
         setMusicEnabled(next);
         if (next) startMusic();
+        sfx.click();
+        needsFullRender = true;
+        render();
+      };
+    }
+    const themeBtn = document.getElementById("btn-theme-toggle");
+    if (themeBtn) {
+      themeBtn.onclick = () => {
+        state.settings = state.settings || {};
+        state.settings.theme = state.settings.theme === "dark" ? "light" : "dark";
+        applyTheme();
         sfx.click();
         needsFullRender = true;
         render();
@@ -4199,6 +4714,7 @@ ${xrefPos}
       <div class="layout">
         ${sideNav()}
         <section class="panel counter-stage">
+          ${highPrizeAlertHTML()}
           ${clientBlock}
           ${client && isOpenHours(state) && !isClosedDay(state) ? `<div style="margin-top:12px" class="actions">
                   <button class="btn" id="btn-arqueo-open">Arqueo de apertura</button>
@@ -4228,6 +4744,7 @@ ${xrefPos}
   `;
     bindTopbar();
     bindNav();
+    bindHighPrizeAlert();
     bindClientActions();
     bindCalendarOrderButtons("counter", state.customers.current);
     const arqueoOpen = document.getElementById("btn-arqueo-open");
@@ -4245,24 +4762,26 @@ ${xrefPos}
     const trait = client.trait ? ` \xB7 ${client.trait}` : "";
     const quote = client.line || client.note || "";
     const kindLabel = client.kind === "pena" ? "Pe\xF1a" : client.kind === "abonado" ? "Abonado" : client.regular ? "Habitual" : "Visitante";
-    if (intent === "buy" || intent === "reserve_special") {
+    if (intent === "buy" || intent === "reserve_special" || intent === "abono") {
       const totalWish = (client.wishlist || []).reduce((s, w) => {
         const p = getProduct(w.productId);
         return s + ((p == null ? void 0 : p.priceCents) || 0) * w.qty;
       }, 0);
+      const title = intent === "reserve_special" ? "Encargo / petici\xF3n:" : intent === "abono" ? "Abono a confirmar en TPV:" : "Quiere:";
       return `
       <div class="client-card">
-        <div class="muted">${kindLabel}${trait} \xB7 ${escapeHtml(client.street || "")}</div>
+        <div class="muted">${kindLabel}${trait} \xB7 ${escapeHtml(client.street || "")}${client.specialDay === "birthday" ? " \xB7 Cumplea\xF1os" : client.specialDay === "santo" ? " \xB7 Santo" : ""}</div>
         <h3>${escapeHtml(client.name)}</h3>
         ${quote ? `<p class="muted">\u201C${escapeHtml(quote)}\u201D</p>` : ""}
-        <p>${intent === "reserve_special" ? "Encargo / petici\xF3n:" : "Quiere:"}</p>
+        <p>${title}</p>
         ${wishlistHTML(client)}
+        ${client.subscription ? `<p class="muted">Suscripci\xF3n: ${escapeHtml(client.subscription)}</p>` : ""}
         ${totalWish ? `<p class="muted">Estimado: ${formatEuro(totalWish)}</p>` : ""}
         <p class="muted">Pago preferido: ${payLabel(client.prefersPayment)}</p>
         <div class="actions">
-          <button class="btn primary" id="btn-open-tpv">Abrir TPV</button>
-          <button class="btn" id="btn-load-wish">Cargar petici\xF3n</button>
-          ${intent === "reserve_special" ? `<button class="btn" id="btn-reserve">Reservar sin pagar</button>` : `<button class="btn" id="btn-reserve">Reservar sin pagar</button>`}
+          <button class="btn primary" id="btn-open-tpv">${intent === "abono" ? "Abrir TPV y confirmar abono" : "Abrir TPV"}</button>
+          <button class="btn" id="btn-load-wish">${intent === "abono" ? "Cargar abono" : "Cargar petici\xF3n"}</button>
+          <button class="btn" id="btn-reserve">Reservar sin pagar</button>
           <button class="btn ghost" id="btn-skip">Despedir</button>
         </div>
       </div>`;
@@ -4522,6 +5041,8 @@ ${xrefPos}
       render();
       return;
     }
+    const total = tpvTotalCents(tpv);
+    if (!confirmImportant(`\xBFConfirmar cobro de ${formatEuro(total)} a ${tpv.clientName || "cliente"}?`)) return;
     const items = tpvToSaleItems(tpv);
     const client = resolveTpvClient(tpv);
     startPayment(state, { items, client });
@@ -4591,6 +5112,7 @@ ${xrefPos}
     ensureTpvKeyboard();
   }
   function renderTpv() {
+    var _a, _b;
     const tpv = state.ui.tpv;
     if (!tpv) {
       state.ui.screen = "counter";
@@ -4632,8 +5154,8 @@ ${xrefPos}
           </div>
           <div class="tpv-products">
             ${products.map((p) => {
-      var _a;
-      const stock = p.stockType === "physical" ? `Stock ${(_a = state.stock[p.id]) != null ? _a : 0}` : "Terminal";
+      var _a2;
+      const stock = p.stockType === "physical" ? `Stock ${(_a2 = state.stock[p.id]) != null ? _a2 : 0}` : "Terminal";
       return `<div class="tpv-product">
                   <strong>${escapeHtml(p.name)}</strong>
                   <span>${formatEuro(p.priceCents)} \xB7 ${escapeHtml(stock)}</span>
@@ -4663,10 +5185,18 @@ ${xrefPos}
     ).join("") : '<div class="muted">Carrito vac\xEDo. A\xF1ade productos.</div>'}
             </div>
             <div class="total-box" style="margin-top:8px">Total<strong>${formatEuro(total)}</strong></div>
-            <div class="actions" style="margin-top:8px">
+            <div class="actions" style="margin-top:8px;flex-wrap:wrap">
               <button class="btn primary" id="btn-tpv-charge" style="flex:1;min-height:52px;font-size:1.05rem">Cobrar</button>
+              <button class="btn" id="btn-tpv-undo" style="min-height:52px" title="Ctrl+Z">Deshacer</button>
+              ${((_a = state.customers.current) == null ? void 0 : _a.kind) === "abonado" || ((_b = state.customers.current) == null ? void 0 : _b.kind) === "pena" ? `<button class="btn accent" id="btn-tpv-abono" style="min-height:52px">Confirmar abono</button>` : ""}
               <button class="btn danger" id="btn-tpv-cancel" style="min-height:52px">Cancelar</button>
             </div>
+            ${(state.showcase || []).length ? `<div style="margin-top:10px">
+                    <div class="muted" style="margin-bottom:6px">Escaparate</div>
+                    ${(state.showcase || []).slice(0, 6).map(
+      (d) => `<button class="btn" style="width:100%;margin-bottom:4px;justify-content:flex-start" data-sell-showcase="${d.id}">n\xBA ${escapeHtml(d.number)} \xB7 ${escapeHtml(d.productName)} \xD7${d.qty}</button>`
+    ).join("")}
+                  </div>` : ""}
           </aside>
         </div>
       </div>
@@ -4761,10 +5291,10 @@ ${xrefPos}
     const dictateOk = document.getElementById("btn-dictate-ok");
     if (dictateOk) {
       dictateOk.onclick = () => {
-        var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j;
-        const text = ((_a = document.getElementById("dictate-input")) == null ? void 0 : _a.value) || "";
+        var _a2, _b2, _c, _d, _e, _f, _g, _h, _i, _j;
+        const text = ((_a2 = document.getElementById("dictate-input")) == null ? void 0 : _a2.value) || "";
         applyDictatedNumbers(state, text);
-        if (((_c = (_b = state.ui.tpv) == null ? void 0 : _b.message) == null ? void 0 : _c.includes("Falta")) || ((_e = (_d = state.ui.tpv) == null ? void 0 : _d.message) == null ? void 0 : _e.includes("Indica")) || ((_g = (_f = state.ui.tpv) == null ? void 0 : _f.message) == null ? void 0 : _g.includes("Formato")) || ((_i = (_h = state.ui.tpv) == null ? void 0 : _h.message) == null ? void 0 : _i.includes("n\xFAmeros")) || ((_j = state.ui.tpv) == null ? void 0 : _j.numberEntry)) {
+        if (((_c = (_b2 = state.ui.tpv) == null ? void 0 : _b2.message) == null ? void 0 : _c.includes("Falta")) || ((_e = (_d = state.ui.tpv) == null ? void 0 : _d.message) == null ? void 0 : _e.includes("Indica")) || ((_g = (_f = state.ui.tpv) == null ? void 0 : _f.message) == null ? void 0 : _g.includes("Formato")) || ((_i = (_h = state.ui.tpv) == null ? void 0 : _h.message) == null ? void 0 : _i.includes("n\xFAmeros")) || ((_j = state.ui.tpv) == null ? void 0 : _j.numberEntry)) {
           sfx.error();
         } else {
           sfx.success();
@@ -4783,7 +5313,35 @@ ${xrefPos}
       };
     }
     document.getElementById("btn-tpv-charge").onclick = () => goTpvChargeOrReceipt();
+    const undoBtn = document.getElementById("btn-tpv-undo");
+    if (undoBtn) {
+      undoBtn.onclick = () => {
+        undoLastTpvLine(state);
+        sfx.click();
+        needsFullRender = true;
+        render();
+      };
+    }
+    const abonoBtn = document.getElementById("btn-tpv-abono");
+    if (abonoBtn) {
+      abonoBtn.onclick = () => {
+        if (!confirmImportant("\xBFConfirmar abono del cliente en el ticket?")) return;
+        confirmAbonoOnTpv(state);
+        sfx.success();
+        needsFullRender = true;
+        render();
+      };
+    }
+    app.querySelectorAll("[data-sell-showcase]").forEach((btn) => {
+      btn.onclick = () => {
+        sellShowcaseToTpv(state, btn.getAttribute("data-sell-showcase"));
+        sfx.tpv();
+        needsFullRender = true;
+        render();
+      };
+    });
     document.getElementById("btn-tpv-cancel").onclick = () => {
+      if (tpv.lines.length && !confirmImportant("\xBFCancelar el TPV y perder el ticket actual?")) return;
       sfx.click();
       closeTpv(state);
       showToast("TPV cancelado");
@@ -4800,6 +5358,16 @@ ${xrefPos}
       const tpv = state.ui.tpv;
       const tag = (((_a = e.target) == null ? void 0 : _a.tagName) || "").toLowerCase();
       const typing = tag === "input" || tag === "textarea";
+      if ((e.ctrlKey || e.metaKey) && (e.key === "z" || e.key === "Z") && !typing) {
+        e.preventDefault();
+        if (tpv.step !== "receipt") {
+          undoLastTpvLine(state);
+          sfx.click();
+          needsFullRender = true;
+          render();
+        }
+        return;
+      }
       if (e.key === "Escape") {
         e.preventDefault();
         if (tpv.cancelPrompt) {
@@ -4809,6 +5377,7 @@ ${xrefPos}
         } else if (tpv.step === "receipt") {
           backTpvEdit(state);
         } else {
+          if (tpv.lines.length && !confirmImportant("\xBFCerrar el TPV y perder el ticket?")) return;
           closeTpv(state);
           showToast("TPV cerrado");
         }
@@ -5100,6 +5669,7 @@ ${xrefPos}
       render();
     };
     document.getElementById("btn-do-close").onclick = () => {
+      if (!confirmImportant("\xBFLiquidar organizaciones, cerrar el d\xEDa y pasar al siguiente laborable?")) return;
       const { summary: s } = closeDay(state);
       const slot = state.meta.activeSlot || 1;
       state.meta.activeSlot = slot;
@@ -5253,7 +5823,7 @@ ${xrefPos}
     bindNav();
   }
   function renderStats() {
-    var _a, _b;
+    var _a, _b, _c;
     const s = state.stats || {};
     app.innerHTML = `
     <div class="shell">
@@ -5262,7 +5832,7 @@ ${xrefPos}
         ${sideNav()}
         <section class="panel">
           <h2>Estad\xEDsticas</h2>
-          <p class="muted">Acumulado de la partida</p>
+          <p class="muted">Acumulado de la partida \xB7 v${GAME_VERSION}</p>
           <div class="close-summary">
             <div class="stat-row"><span>D\xEDas jugados</span><strong>${(_a = s.daysPlayed) != null ? _a : 0}</strong></div>
             <div class="stat-row"><span>Ventas totales</span><strong>${formatEuro(s.totalSalesCents || 0)}</strong></div>
@@ -5270,6 +5840,10 @@ ${xrefPos}
             <div class="stat-row"><span>Premios pagados</span><strong>${formatEuro(s.totalPrizesPaidCents || 0)}</strong></div>
             <div class="stat-row"><span>Faltantes de caja</span><strong>${formatEuro(s.totalShortageCents || 0)}</strong></div>
             <div class="stat-row"><span>Clientes atendidos</span><strong>${(_b = s.totalCustomers) != null ? _b : 0}</strong></div>
+            <div class="stat-row"><span>Alertas premio alto</span><strong>${(_c = s.highPrizesAlerted) != null ? _c : 0}</strong></div>
+          </div>
+          <div class="actions" style="margin-top:16px">
+            <button class="btn primary" id="btn-stats-pdf">Descargar PDF</button>
           </div>
         </section>
       </div>
@@ -5278,6 +5852,11 @@ ${xrefPos}
   `;
     bindTopbar();
     bindNav();
+    document.getElementById("btn-stats-pdf").onclick = () => {
+      downloadStatsPdf(state);
+      sfx.success();
+      showToast("PDF de estad\xEDsticas descargado");
+    };
   }
   function renderSavesInGame() {
     const slots = listSlots();
@@ -5366,6 +5945,8 @@ ${xrefPos}
   }
   function renderStock() {
     const physical = PRODUCTS.filter((p) => p.stockType === "physical");
+    const monday = isMonday(state);
+    const scratchLow = monday ? mondayScratchInventory(state).low : [];
     app.innerHTML = `
     <div class="shell">
       ${topbarHTML()}
@@ -5373,6 +5954,14 @@ ${xrefPos}
         ${sideNav()}
         <section class="panel">
           <h2>Stock y pedidos</h2>
+          <p class="muted">Pedidos a proveedor con coste (banco) y fecha de llegada.</p>
+          ${monday ? `<div class="alert-banner" style="border-color:rgba(14,107,122,0.35);background:rgba(14,107,122,0.1)">
+                  <strong>Lunes \xB7 inventario de rascas</strong>
+                  <div class="muted">${scratchLow.length ? `${scratchLow.length} por debajo de 15` : "Todos los rascas OK (\u226515)"}</div>
+                  <div class="actions" style="margin-top:8px">
+                    <button class="btn primary" id="btn-restock-scratches">Reponer rascas bajos</button>
+                  </div>
+                </div>` : ""}
           <div style="margin-bottom:14px">
             <h3 style="margin:0 0 6px">Encargos de calendario</h3>
             <p class="muted" style="margin:0 0 8px">Navidad / Ni\xF1o con fecha de entrega.</p>
@@ -5382,10 +5971,11 @@ ${xrefPos}
             ${physical.map((p) => {
       var _a;
       const qty = (_a = state.stock[p.id]) != null ? _a : 0;
+      const cost = supplierUnitCostCents(p);
       return `<div class="stock-item">
-                  <span><strong>${escapeHtml(p.name)}</strong> <span class="muted">(${p.org})</span></span>
+                  <span><strong>${escapeHtml(p.name)}</strong> <span class="muted">(${p.org} \xB7 coste ~${formatEuro(cost)})</span></span>
                   <span>${qty}
-                    <button class="btn" style="padding:4px 8px;margin-left:8px" data-order="${p.id}">Pedir 20</button>
+                    <button class="btn" style="padding:4px 8px;margin-left:8px" data-supplier="${p.id}">Pedir 20</button>
                   </span>
                 </div>`;
     }).join("")}
@@ -5393,7 +5983,7 @@ ${xrefPos}
           <h3 style="margin-top:18px">Pedidos / reservas</h3>
           <div class="log">
             ${state.orders.length ? state.orders.slice().reverse().slice(0, 40).map(
-      (o) => `<div class="log-item">${o.status}${o.special ? " \xB7 ENCARGO" : ""} \xB7 ${escapeHtml(o.productName)} \xD7${o.qty} \xB7 ${o.arriveOnYmd}${o.clientName ? ` \xB7 ${escapeHtml(o.clientName)}` : ""}</div>`
+      (o) => `<div class="log-item">${o.status}${o.supplier ? " \xB7 PROVEEDOR" : ""}${o.special ? " \xB7 ENCARGO" : ""} \xB7 ${escapeHtml(o.productName)} \xD7${o.qty} \xB7 ${o.arriveOnYmd}${o.totalCostCents != null ? ` \xB7 ${formatEuro(o.totalCostCents)}` : ""}${o.clientName ? ` \xB7 ${escapeHtml(o.clientName)}` : ""}</div>`
     ).join("") : '<div class="muted">Sin pedidos.</div>'}
           </div>
         </section>
@@ -5404,9 +5994,24 @@ ${xrefPos}
     bindTopbar();
     bindNav();
     bindCalendarOrderButtons("stock", state.customers.current);
-    app.querySelectorAll("[data-order]").forEach((btn) => {
+    const restock = document.getElementById("btn-restock-scratches");
+    if (restock) {
+      restock.onclick = () => {
+        if (!confirmImportant("\xBFPedir reposici\xF3n de rascas bajos al proveedor (cargo en banco)?")) return;
+        restockLowScratches(state);
+        sfx.success();
+        showToast(state.ui.toast);
+        needsFullRender = true;
+        render();
+      };
+    }
+    app.querySelectorAll("[data-supplier]").forEach((btn) => {
       btn.onclick = () => {
-        orderStock(state, btn.getAttribute("data-order"), 20);
+        const id = btn.getAttribute("data-supplier");
+        const p = getProduct(id);
+        if (!confirmImportant(`\xBFPedir 20 \xD7 ${(p == null ? void 0 : p.name) || id} al proveedor? Se cobra el coste del banco.`)) return;
+        placeSupplierOrder(state, id, 20);
+        sfx.click();
         showToast(state.ui.toast);
         needsFullRender = true;
         render();
@@ -5619,6 +6224,114 @@ ${xrefPos}
         render();
       };
     }
+  }
+  function renderDayResults() {
+    var _a, _b, _c, _d;
+    const s = state.ui.lastCloseSummary;
+    if (!s) {
+      state.ui.screen = "counter";
+      return render();
+    }
+    const settle = s.settlement;
+    app.innerHTML = `
+    <div class="shell">
+      ${topbarHTML()}
+      <div class="panel day-results" style="margin-top:16px;max-width:720px">
+        <h2>Resultados del d\xEDa</h2>
+        <p class="muted">Cierre de ${escapeHtml(s.date)} \xB7 siguiente laborable ${escapeHtml(s.nextDay)}</p>
+        <div class="close-summary">
+          <div class="stat-row"><span>Ventas</span><strong>${formatEuro(s.salesCents)}</strong></div>
+          <div class="stat-row"><span>Comisiones</span><strong>${formatEuro(s.commissionCents)}</strong></div>
+          <div class="stat-row"><span>Beneficio</span><strong>${formatEuro(s.profitCents)}</strong></div>
+          <div class="stat-row"><span>Premios pagados</span><strong>${formatEuro(s.prizesPaidCents)}</strong></div>
+          <div class="stat-row"><span>Gastos</span><strong>${formatEuro(s.expensesCents)}</strong></div>
+          <div class="stat-row"><span>Clientes</span><strong>${s.customersServed}</strong></div>
+          <div class="stat-row"><span>Banco tras cierre</span><strong>${formatEuro(s.bankCents)}</strong></div>
+        </div>
+        ${settle ? `<h3 style="margin-top:16px">Liquidaci\xF3n</h3>
+               <div class="close-summary">
+                 <div class="stat-row"><span>LAE remesa</span><strong>${formatEuro(((_a = settle.lae) == null ? void 0 : _a.remittance) || 0)}</strong></div>
+                 <div class="stat-row"><span>ONCE remesa</span><strong>${formatEuro(((_b = settle.once) == null ? void 0 : _b.remittance) || 0)}</strong></div>
+                 <div class="stat-row"><span>Otros remesa</span><strong>${formatEuro(((_c = settle.otros) == null ? void 0 : _c.remittance) || 0)}</strong></div>
+               </div>` : ""}
+        ${((_d = s.nextDayReasonSkip) == null ? void 0 : _d.length) ? `<p class="muted" style="margin-top:12px">D\xEDas saltados: ${escapeHtml(s.nextDayReasonSkip.join(", "))}</p>` : ""}
+        <div class="actions" style="margin-top:18px">
+          <button class="btn primary" id="btn-day-results-ok">Abrir mostrador</button>
+        </div>
+      </div>
+    </div>
+    ${toastHTML()}
+  `;
+    bindTopbar();
+    document.getElementById("btn-day-results-ok").onclick = () => {
+      sfx.click();
+      state.ui.screen = "counter";
+      needsFullRender = true;
+      render();
+    };
+  }
+  function renderShowcase() {
+    ensureShowcase(state);
+    const items = state.showcase || [];
+    app.innerHTML = `
+    <div class="shell">
+      ${topbarHTML()}
+      <div class="layout" style="grid-template-columns:280px 1fr">
+        ${sideNav()}
+        <section class="panel">
+          <h2>Escaparate</h2>
+          <p class="muted">D\xE9cimos de administraci\xF3n a la vista (10\u201320). V\xE9ndelos desde el TPV.</p>
+          <div class="showcase-grid">
+            ${items.length ? items.map(
+      (d) => `<div class="showcase-item">
+                        <strong>n\xBA ${escapeHtml(d.number)}</strong>
+                        <div>${escapeHtml(d.productName)} \xD7${d.qty}</div>
+                        <div class="muted">${formatEuro(d.unitCents * d.qty)}${d.note ? ` \xB7 ${escapeHtml(d.note)}` : ""}</div>
+                        <button class="btn danger" style="margin-top:8px;padding:6px 10px" data-rm-sc="${d.id}">Quitar</button>
+                      </div>`
+    ).join("") : '<div class="muted">Escaparate vac\xEDo.</div>'}
+          </div>
+          <h3 style="margin-top:18px">A\xF1adir d\xE9cimo</h3>
+          <div class="actions" style="flex-wrap:wrap;align-items:flex-end">
+            <label>Producto<br/>
+              <select id="sc-product" style="padding:8px;border-radius:10px;border:1px solid var(--line)">
+                <option value="lae-nacional">Loter\xEDa Nacional</option>
+                <option value="lae-nacional-jueves">Nacional jueves</option>
+              </select>
+            </label>
+            <label>N\xFAmero<br/><input id="sc-number" maxlength="5" placeholder="45821" style="padding:8px;border-radius:10px;border:1px solid var(--line);width:110px" /></label>
+            <label>Cant.<br/><input id="sc-qty" type="number" min="1" max="10" value="1" style="padding:8px;border-radius:10px;border:1px solid var(--line);width:70px" /></label>
+            <label>Nota<br/><input id="sc-note" placeholder="Vitrina" style="padding:8px;border-radius:10px;border:1px solid var(--line);width:140px" /></label>
+            <button class="btn primary" id="btn-sc-add">A\xF1adir</button>
+          </div>
+        </section>
+      </div>
+    </div>
+    ${toastHTML()}
+  `;
+    bindTopbar();
+    bindNav();
+    document.getElementById("btn-sc-add").onclick = () => {
+      addShowcaseDecimo(state, {
+        productId: document.getElementById("sc-product").value,
+        number: document.getElementById("sc-number").value,
+        qty: Number(document.getElementById("sc-qty").value || 1),
+        note: document.getElementById("sc-note").value
+      });
+      sfx.click();
+      showToast(state.ui.toast);
+      needsFullRender = true;
+      render();
+    };
+    app.querySelectorAll("[data-rm-sc]").forEach((btn) => {
+      btn.onclick = () => {
+        removeShowcaseDecimo(state, btn.getAttribute("data-rm-sc"));
+        sfx.click();
+        showToast(state.ui.toast);
+        needsFullRender = true;
+        render();
+      };
+    });
   }
   state = null;
   renderMenu();

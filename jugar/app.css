@@ -1,5 +1,6 @@
 /* src/style.css */
-:root {
+:root,
+[data-theme=light] {
   --bg0: #e8f0f2;
   --bg1: #f7fafb;
   --ink: #1a2b33;
@@ -19,6 +20,29 @@
     Georgia,
     serif;
   --font-body: "Manrope", sans-serif;
+  --bg-grad-a: rgba(14, 107, 122, 0.18);
+  --bg-grad-b: rgba(226, 160, 58, 0.16);
+  --bg-grad-c: #dce9ec;
+  --bg-grad-d: #eef5f2;
+}
+[data-theme=dark] {
+  --bg0: #122026;
+  --bg1: #1a2d35;
+  --ink: #e8f2f5;
+  --muted: #9bb0b8;
+  --line: #2f4750;
+  --brand: #3db8c9;
+  --brand-deep: #8fd4de;
+  --accent: #e2a03a;
+  --accent-ink: #3d2a0a;
+  --ok: #3ecf8e;
+  --bad: #e06a6a;
+  --panel: rgba(22, 38, 45, 0.9);
+  --shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+  --bg-grad-a: rgba(61, 184, 201, 0.12);
+  --bg-grad-b: rgba(226, 160, 58, 0.1);
+  --bg-grad-c: #101c22;
+  --bg-grad-d: #152830;
 }
 * {
   box-sizing: border-box;
@@ -34,18 +58,19 @@ body {
   background:
     radial-gradient(
       1200px 600px at 10% -10%,
-      rgba(14, 107, 122, 0.18),
+      var(--bg-grad-a),
       transparent 60%),
     radial-gradient(
       900px 500px at 100% 0%,
-      rgba(226, 160, 58, 0.16),
+      var(--bg-grad-b),
       transparent 55%),
     linear-gradient(
       165deg,
-      #dce9ec 0%,
+      var(--bg-grad-c) 0%,
       var(--bg1) 45%,
-      #eef5f2 100%);
+      var(--bg-grad-d) 100%);
   background-attachment: fixed;
+  transition: background 0.35s ease, color 0.25s ease;
 }
 button,
 input,
@@ -598,6 +623,34 @@ select {
   background: rgba(196, 140, 0, 0.12);
   border-radius: 8px;
   padding: 4px 8px;
+}
+.alert-banner {
+  margin: 12px 0;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(163, 59, 59, 0.35);
+  background: rgba(163, 59, 59, 0.12);
+  animation: rise 0.45s ease both;
+}
+.alert-banner strong {
+  color: var(--bad);
+}
+.day-results {
+  animation: rise 0.55s ease both;
+}
+.showcase-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+}
+.showcase-item {
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.35);
+}
+[data-theme=dark] .showcase-item {
+  background: rgba(0, 0, 0, 0.2);
 }
 @media (max-width: 1100px) {
   .layout {
