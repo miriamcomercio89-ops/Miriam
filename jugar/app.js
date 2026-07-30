@@ -368,8 +368,7 @@
       flavor: "",
       prizeTier: org === "Local" ? "small" : org === "Provincial" ? "mid" : "big",
       fractionable: false,
-      ...extra,
-      short: extra.short || short
+      ...extra
     };
   }
   var AUTONOMICAS = [

@@ -34,7 +34,6 @@ function L(id, name, org, tpvCategory, priceCents, drawDays, extra = {}) {
     prizeTier: org === 'Local' ? 'small' : org === 'Provincial' ? 'mid' : 'big',
     fractionable: false,
     ...extra,
-    short: extra.short || short,
   };
 }
 
