@@ -11,7 +11,6 @@ const REPO = "miriamcomercio89-ops/Miriam";
 const BRANCH = "cursor/red-ferroviaria-alemania-555a";
 const gitRoot = path.resolve(root, "..");
 const gitSha = spawnSync("git", ["rev-parse", "HEAD"], { encoding: "utf8", cwd: gitRoot }).stdout.trim();
-// Tras el commit de publicación se vuelve a exportar para fijar el SHA real.
 const CDN_REF = process.env.EUROPEROTE_CDN_REF || gitSha || BRANCH;
 const CDN_BASE = `https://cdn.jsdelivr.net/gh/${REPO}@${CDN_REF}/europerote-ets2/web`;
 const CHUNK = 350;
@@ -19,7 +18,7 @@ const CHUNK = 350;
 const operator = JSON.parse(fs.readFileSync(path.join(root, "data/operator.json"), "utf8"));
 const lineTypes = JSON.parse(fs.readFileSync(path.join(root, "data/line-types.json"), "utf8"));
 const addonsDoc = JSON.parse(fs.readFileSync(path.join(root, "data/addons.json"), "utf8"));
-const stopsDoc = JSON.parse(fs.readFileSync(path.join(root, "data/stops.json"), "utf8"));
+const geoDoc = JSON.parse(fs.readFileSync(path.join(root, "data/cities-geo.json"), "utf8"));
 const routesPath = path.join(outDir, "lines-mass.json");
 if (!fs.existsSync(routesPath)) {
   console.error("Falta output/lines-mass.json. Ejecuta npm run generate primero.");
@@ -34,22 +33,42 @@ const routes = routesDoc.lines.map((l) => ({
   desc: l.descripcion,
   tipo: l.tipo_id,
   prefijo: l.prefijo,
+  nacional: !!l.nacional,
   op: l.operador_id,
   opn: l.operador_nombre,
   color: l.color,
   paradas: l.paradas_nombres || [],
+  paradaIds: l.paradas || [],
   n: l.num_paradas,
   km: l.distancia_km,
   matId: l.material_id,
   mat: l.material_nombre,
   paises: l.paises || [],
+  paisCodes: l.pais_codes || [],
   addons: l.addons || [],
   patron: l.patron || "base",
   origen: (l.paradas_nombres || [])[0] || "",
   destino: (l.paradas_nombres || []).slice(-1)[0] || "",
 }));
 
+const cities = (geoDoc.cities || []).map((c) => ({
+  id: c.id,
+  nombre: c.nombre,
+  nombre_juego: c.nombre_juego,
+  pais: c.pais,
+  iso: c.iso,
+  lat: c.lat,
+  lon: c.lon,
+  tier: c.tier,
+  addons: c.addons || [],
+}));
+
 fs.mkdirSync(path.join(webDir, "chunks"), { recursive: true });
+// clean old chunks beyond new count later
+for (const f of fs.readdirSync(path.join(webDir, "chunks"))) {
+  fs.unlinkSync(path.join(webDir, "chunks", f));
+}
+
 const chunks = [];
 for (let i = 0; i < routes.length; i += CHUNK) {
   const part = routes.slice(i, i + CHUNK);
@@ -58,16 +77,19 @@ for (let i = 0; i < routes.length; i += CHUNK) {
   chunks.push(idx);
 }
 
+fs.writeFileSync(path.join(webDir, "cities.json"), JSON.stringify({ total: cities.length, cities }));
+
 const meta = {
-  version: "1.0.0",
+  version: "3.0.0",
   generado: new Date().toISOString(),
   total: routes.length,
   chunks: chunks.length,
   chunkSize: CHUNK,
+  cities: cities.length,
+  solo_promods_real: true,
   operador: operator,
   tipoNames: Object.fromEntries(lineTypes.tipos.map((t) => [t.id, t.nombre])),
   addonNames: Object.fromEntries(addonsDoc.addons.map((a) => [a.id, a.nombre])),
-  stops: stopsDoc.total,
   cdnBase: CDN_BASE,
   commit: CDN_REF,
 };
@@ -83,10 +105,10 @@ const htmlCdn = shell
   .replace("__CDN_BASE__", CDN_BASE);
 fs.writeFileSync(path.join(webDir, "index.html"), htmlCdn);
 
-// Local inline (small sample for offline smoke) + full data file
 const inlineData = `window.CATALOG_DATA = ${JSON.stringify({
   ...meta,
-  routes: routes.slice(0, 40),
+  routes: routes.slice(0, 30),
+  cities: cities.slice(0, 40),
 })};`;
 const htmlLocal = shell
   .replace("__STYLES__", styles)
@@ -112,15 +134,15 @@ code{word-break:break-all;font-size:.85rem}
 </head>
 <body>
 <h1>EuroPerote</h1>
-<p>Catálogo interactivo de autobuses sobre ETS2 + ProMods completo. Un solo operador: <strong>EuroPerote</strong>.</p>
+<p>Catálogo ProMods (solo ciudades reales) con mapa OpenStreetMap. Operador: <strong>EuroPerote</strong>.</p>
 <div class="card">
 <p><strong>Enlace móvil (htmlpreview + commit fijado):</strong></p>
 <p><a href="https://htmlpreview.github.io/?https://github.com/${REPO}/blob/${CDN_REF}/europerote-ets2/web/index.html">Abrir catálogo</a></p>
 <p>Si el preview falla, espera 1–2 min a que jsDelivr indexe el commit <code>${CDN_REF}</code>.</p>
 </div>
-<p>Rutas: ${routes.length} · Paradas: ${stopsDoc.total}</p>
+<p>Rutas: ${routes.length} · Ciudades reales: ${cities.length}</p>
 </body>
 </html>`;
 fs.writeFileSync(path.join(root, "ABRIR-EN-MOVIL.html"), abrir);
 
-console.log(`Export OK: ${routes.length} routes, ${chunks.length} chunks, CDN ${CDN_BASE}`);
+console.log(`Export OK: ${routes.length} routes, ${cities.length} cities, ${chunks.length} chunks, CDN ${CDN_BASE}`);

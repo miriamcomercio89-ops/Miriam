@@ -3,14 +3,15 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>EuroPerote — Catálogo de autobuses ProMods</title>
+<title>EuroPerote — Catálogo ProMods</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,600;7..72,700&family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
 <style>:root {
   --ink: #0a1628;
   --paper: #e8eef6;
-  --panel: rgba(255,255,255,.9);
+  --panel: rgba(255,255,255,.92);
   --panel-solid: #f7faff;
   --line: #c5d0e0;
   --muted: #5a6a7e;
@@ -23,14 +24,13 @@
   --sidebar: 300px;
 }
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
+html, body { margin: 0; }
 body {
-  margin: 0;
   font-family: "Sora", system-ui, sans-serif;
   color: var(--ink);
   background:
     radial-gradient(1100px 560px at 8% -8%, rgba(11,61,145,.22), transparent 55%),
-    radial-gradient(900px 480px at 100% 0%, rgba(242,169,0,.18), transparent 48%),
+    radial-gradient(900px 480px at 100% 0%, rgba(242,169,0,.16), transparent 48%),
     linear-gradient(165deg, #d9e4f2 0%, var(--paper) 42%, #cfdced 100%);
   min-height: 100vh;
 }
@@ -39,129 +39,136 @@ button, input, select { font: inherit; }
 .app { display: grid; grid-template-columns: var(--sidebar) 1fr; min-height: 100vh; }
 .sidebar {
   position: sticky; top: 0; height: 100vh; overflow: auto;
-  padding: 1.15rem; border-right: 1px solid var(--line);
+  padding: 1.1rem; border-right: 1px solid var(--line);
   background: linear-gradient(180deg, rgba(247,250,255,.97), rgba(232,238,246,.94));
-  backdrop-filter: blur(10px);
 }
-.brand { display: flex; gap: .85rem; align-items: center; margin-bottom: 1rem; }
+.brand { display: flex; gap: .85rem; align-items: center; margin-bottom: .9rem; }
 .brand-mark {
   width: 48px; height: 48px; border-radius: 14px;
   background: linear-gradient(135deg, var(--accent), var(--accent-3) 55%, var(--accent-2));
-  box-shadow: inset 0 0 0 2px rgba(255,255,255,.28); position: relative;
+  position: relative;
 }
 .brand-mark::after {
   content: ""; position: absolute; left: 10px; right: 10px; top: 22px; height: 5px; border-radius: 99px;
   background: rgba(255,255,255,.9);
   box-shadow: 0 -8px 0 rgba(242,169,0,.85), 0 8px 0 rgba(255,255,255,.45);
 }
-.brand h1 { margin: 0; font-size: 1.28rem; line-height: 1.1; }
+.brand h1 { margin: 0; font-size: 1.25rem; }
 .brand p { margin: .15rem 0 0; color: var(--muted); font-size: .8rem; }
 .section-label {
   font-size: .7rem; text-transform: uppercase; letter-spacing: .08em;
-  color: var(--muted); font-weight: 700; margin: .95rem 0 .4rem;
+  color: var(--muted); font-weight: 700; margin: .9rem 0 .35rem;
 }
-.field { margin-bottom: .65rem; }
-.field label { display: block; font-size: .76rem; font-weight: 600; margin-bottom: .25rem; color: #334155; }
+.field { margin-bottom: .55rem; }
+.field label { display: block; font-size: .76rem; font-weight: 600; margin-bottom: .25rem; }
 .field input, .field select {
   width: 100%; border: 1px solid var(--line); background: #fff; border-radius: 12px;
-  padding: .55rem .68rem; outline: none;
+  padding: .5rem .65rem; outline: none;
 }
-.field input:focus, .field select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(11,61,145,.14); }
-.range-row { display: grid; grid-template-columns: 1fr 1fr; gap: .4rem; }
-.actions { display: grid; gap: .4rem; margin-top: .9rem; }
-.actions button { border: 0; border-radius: 12px; padding: .68rem .8rem; cursor: pointer; font-weight: 700; }
+#citySelect { height: 160px; margin-top: .35rem; }
+.actions { display: grid; gap: .4rem; margin-top: .8rem; }
+.actions button, .btn-ghost, .btn-primary {
+  border: 0; border-radius: 12px; padding: .65rem .8rem; cursor: pointer; font-weight: 700; width: 100%;
+}
 .btn-primary { background: var(--accent); color: #fff; }
 .btn-ghost { background: transparent; border: 1px solid var(--line) !important; color: var(--ink); }
-.main { padding: 1.15rem 1.3rem 3rem; }
-.topbar { display: grid; gap: .75rem; margin-bottom: .85rem; }
-.search-hero label { display: block; font-size: .75rem; font-weight: 700; color: var(--muted); margin-bottom: .3rem; }
+.main { padding: 1rem 1.2rem 2.5rem; }
+.topbar { display: grid; gap: .7rem; margin-bottom: .7rem; }
+.search-hero label { display: block; font-size: .75rem; font-weight: 700; color: var(--muted); margin-bottom: .25rem; }
 .search-hero input {
-  width: 100%; border: 1px solid var(--line); border-radius: 16px; padding: .85rem 1rem;
-  background: var(--panel); box-shadow: var(--shadow); font-size: 1.02rem;
+  width: 100%; border: 1px solid var(--line); border-radius: 16px; padding: .8rem 1rem;
+  background: var(--panel); box-shadow: var(--shadow);
 }
-.metrics { display: flex; flex-wrap: wrap; gap: .45rem; }
+.metrics { display: flex; flex-wrap: wrap; gap: .4rem; }
 .metric {
   background: var(--panel-solid); border: 1px solid var(--line); border-radius: 999px;
-  padding: .35rem .7rem; font-size: .78rem; font-weight: 600; color: var(--muted);
+  padding: .3rem .65rem; font-size: .76rem; font-weight: 600; color: var(--muted);
 }
 .metric strong { color: var(--ink); }
-.toolbar {
-  display: flex; flex-wrap: wrap; justify-content: space-between; gap: .6rem;
-  align-items: center; margin: .5rem 0 .85rem;
+.map-panel {
+  border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden;
+  background: #fff; box-shadow: var(--shadow); margin-bottom: 1rem;
 }
-.toolbar .right { display: flex; flex-wrap: wrap; gap: .45rem; align-items: center; }
-.toolbar select { border: 1px solid var(--line); border-radius: 10px; padding: .4rem .55rem; background: #fff; }
+#map { height: min(48vh, 420px); width: 100%; }
+.map-hint { margin: 0; padding: .55rem .8rem; font-size: .8rem; color: var(--muted); background: var(--panel-solid); }
+.city-heading { margin: .2rem 0 .7rem; }
+.city-heading h2 { margin: 0 0 .2rem; font-size: 1.35rem; }
+.city-heading p { margin: 0; color: var(--muted); font-size: .9rem; }
+.city-cols { display: grid; grid-template-columns: 1fr 1fr; gap: .85rem; margin-bottom: 1rem; }
+.city-cols h3 { margin: 0 0 .45rem; font-size: 1rem; }
+.toolbar {
+  display: flex; flex-wrap: wrap; justify-content: space-between; gap: .55rem;
+  align-items: center; margin: .4rem 0 .7rem;
+}
+.toolbar .right { display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; }
+.toolbar select { border: 1px solid var(--line); border-radius: 10px; padding: .35rem .5rem; background: #fff; }
 .seg { display: flex; gap: .25rem; }
 .seg button {
   border: 1px solid var(--line); background: #fff; border-radius: 10px;
-  padding: .35rem .55rem; cursor: pointer; font-weight: 600;
+  padding: .3rem .5rem; cursor: pointer; font-weight: 600;
 }
 .seg button.on { background: var(--ink); color: #fff; border-color: var(--ink); }
 .meta { color: var(--muted); font-size: .85rem; }
-.list { display: grid; gap: .75rem; }
+.list { display: grid; gap: .65rem; }
 .card {
   background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
-  padding: 1rem 1.05rem; box-shadow: 0 8px 28px rgba(10,22,40,.06);
-  animation: rise .35s ease both;
+  padding: .9rem 1rem; animation: rise .3s ease both;
 }
-@keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-.card-head { display: flex; gap: .75rem; align-items: flex-start; justify-content: space-between; }
+@keyframes rise { from { opacity: 0; transform: translateY(6px);} to { opacity:1; transform:none;} }
+.card-head { display: flex; gap: .7rem; justify-content: space-between; align-items: flex-start; }
 .code {
-  font-weight: 800; letter-spacing: .04em; color: #fff; background: var(--accent);
-  border-radius: 10px; padding: .28rem .55rem; font-size: .82rem; white-space: nowrap;
+  font-weight: 800; letter-spacing: .03em; color: #fff; background: var(--accent);
+  border-radius: 10px; padding: .25rem .5rem; font-size: .78rem; white-space: nowrap;
 }
-.card h2 { margin: 0 0 .2rem; font-size: 1.12rem; }
-.card .sub { color: var(--muted); font-size: .84rem; margin: 0 0 .55rem; }
-.tags { display: flex; flex-wrap: wrap; gap: .3rem; margin: .35rem 0 .55rem; }
+.card h2, .card h4 { margin: 0 0 .15rem; font-size: 1.05rem; }
+.card .sub { color: var(--muted); font-size: .82rem; margin: 0 0 .45rem; }
+.tags { display: flex; flex-wrap: wrap; gap: .28rem; margin: .25rem 0 .45rem; }
 .tag {
-  font-size: .72rem; font-weight: 700; border-radius: 999px; padding: .22rem .5rem;
+  font-size: .7rem; font-weight: 700; border-radius: 999px; padding: .18rem .45rem;
   background: var(--chip); color: var(--accent); border: 1px solid #b8cae3;
 }
 .tag.gold { background: #fff4d6; color: #8a6200; border-color: #ecd48a; }
-.desc { font-size: .9rem; line-height: 1.45; color: #243447; margin: .4rem 0; }
+.desc { font-size: .88rem; line-height: 1.45; color: #243447; margin: .3rem 0; }
 .stops {
-  font-size: .82rem; color: var(--muted); line-height: 1.4;
-  border-top: 1px dashed var(--line); padding-top: .55rem; margin-top: .45rem;
+  font-size: .8rem; color: var(--muted); line-height: 1.4;
+  border-top: 1px dashed var(--line); padding-top: .45rem; margin-top: .4rem;
 }
-.pager {
-  display: flex; justify-content: center; align-items: center; gap: .75rem; margin-top: 1.2rem;
-}
+.pager { display: flex; justify-content: center; align-items: center; gap: .7rem; margin-top: 1rem; }
 .pager button {
   border: 1px solid var(--line); background: #fff; border-radius: 12px;
-  padding: .55rem .9rem; cursor: pointer; font-weight: 700;
+  padding: .5rem .85rem; cursor: pointer; font-weight: 700;
 }
 .pager button:disabled { opacity: .4; cursor: not-allowed; }
 .mobile-bar {
   display: none; position: sticky; top: 0; z-index: 20;
-  background: rgba(10,22,40,.92); color: #fff; padding: .65rem .9rem;
-  justify-content: space-between; align-items: center; backdrop-filter: blur(8px);
+  background: rgba(10,22,40,.92); color: #fff; padding: .6rem .85rem;
+  justify-content: space-between; align-items: center;
 }
 .mobile-bar button {
   border: 0; background: var(--accent-2); color: #111; font-weight: 800;
-  border-radius: 10px; padding: .4rem .7rem; cursor: pointer;
+  border-radius: 10px; padding: .35rem .65rem; cursor: pointer;
 }
 #boot {
   position: fixed; inset: 0; z-index: 50; display: grid; place-items: center;
-  background: linear-gradient(160deg, #0B3D91, #0a1628 60%);
-  color: #fff; text-align: center; padding: 1.5rem;
+  background: linear-gradient(160deg, #0B3D91, #0a1628 60%); color: #fff; text-align: center; padding: 1.5rem;
 }
 #boot[hidden] { display: none !important; }
-.boot-card { width: min(420px, 100%); }
-.boot-bar {
-  height: 8px; border-radius: 99px; background: rgba(255,255,255,.15); overflow: hidden; margin: 1rem 0 .5rem;
-}
+.boot-bar { height: 8px; border-radius: 99px; background: rgba(255,255,255,.15); overflow: hidden; margin: 1rem 0 .5rem; }
 #bootBar { height: 100%; width: 8%; background: linear-gradient(90deg, var(--accent-2), #fff); transition: width .25s ease; }
-#bootErr { color: #ffb4b4; margin-top: .8rem; }
 body.booting .app, body.booting .mobile-bar { visibility: hidden; }
-@media (max-width: 900px) {
+.leaflet-container { font: inherit; }
+.city-marker { background: var(--accent); border: 2px solid #fff; border-radius: 50%; }
+.city-marker.selected { background: var(--accent-2); }
+@media (max-width: 980px) {
   .mobile-bar { display: flex; }
   .app { grid-template-columns: 1fr; }
   .sidebar {
     position: fixed; inset: 52px 0 auto; z-index: 30; height: auto; max-height: calc(100vh - 52px);
-    transform: translateY(-120%); transition: transform .25s ease; border-bottom: 1px solid var(--line);
+    transform: translateY(-120%); transition: transform .25s ease;
   }
   .sidebar.open { transform: none; }
-  .main { padding: 1rem .85rem 2.5rem; }
+  .city-cols { grid-template-columns: 1fr; }
+  #map { height: 40vh; }
 }
 </style>
 </head>
@@ -169,7 +176,7 @@ body.booting .app, body.booting .mobile-bar { visibility: hidden; }
 <div id="boot">
   <div class="boot-card">
     <h1 style="font-family:Literata,serif;margin:0 0 .35rem">EuroPerote</h1>
-    <p style="margin:0;opacity:.85">Cargando red de autobuses ProMods…</p>
+    <p style="margin:0;opacity:.85">Cargando ciudades y rutas ProMods…</p>
     <div class="boot-bar"><div id="bootBar"></div></div>
     <div id="bootPct">0%</div>
     <div id="bootErr" hidden></div>
@@ -177,7 +184,7 @@ body.booting .app, body.booting .mobile-bar { visibility: hidden; }
 </div>
 <div class="mobile-bar">
   <strong>EuroPerote</strong>
-  <button id="toggleFilters" type="button">Filtros</button>
+  <button id="toggleFilters" type="button">Menú</button>
 </div>
 <div class="app">
   <aside class="sidebar" id="sidebar">
@@ -185,35 +192,40 @@ body.booting .app, body.booting .mobile-bar { visibility: hidden; }
       <div class="brand-mark" aria-hidden="true"></div>
       <div>
         <h1>EuroPerote</h1>
-        <p>ETS2 · ProMods completo</p>
+        <p>ProMods · rutas reales</p>
       </div>
     </div>
 
-    <div id="filters-routes">
-      <div class="section-label">Búsqueda</div>
-      <div class="field"><label for="q">Texto libre</label><input id="q" placeholder="código, ciudad, descripción…"/></div>
-      <div class="field"><label for="qStop">Parada concreta</label><input id="qStop" placeholder="p.ej. Colonia, Riga, Madrid…"/></div>
-
-      <div class="section-label">Clasificación</div>
-      <div class="field"><label for="tipo">Tipo de línea</label><select id="tipo"><option value="">Todos</option></select></div>
-      <div class="field"><label for="pais">País</label><select id="pais"><option value="">Todos</option></select></div>
-      <div class="field"><label for="addon">Addon / mapa</label><select id="addon"><option value="">Todos</option></select></div>
-      <div class="field"><label for="material">Autobús</label><select id="material"><option value="">Todos</option></select></div>
-      <div class="field"><label for="patron">Patrón</label><select id="patron">
-        <option value="">Todos</option>
-        <option value="parador">Parador</option>
-        <option value="base">Base</option>
-        <option value="directo">Directo</option>
-      </select></div>
-
-      <div class="section-label">Rangos</div>
-      <div class="field"><label>Paradas (min–max)</label><div class="range-row"><input id="minN" type="number" min="2" placeholder="mín"/><input id="maxN" type="number" min="2" placeholder="máx"/></div></div>
-      <div class="field"><label>Distancia km (min–max)</label><div class="range-row"><input id="minKm" type="number" min="0" placeholder="mín"/><input id="maxKm" type="number" min="0" placeholder="máx"/></div></div>
+    <div class="section-label">Ciudad</div>
+    <div class="field">
+      <label for="citySelect">Seleccionar ciudad / pueblo</label>
+      <input id="citySearch" placeholder="Buscar en el mapa…"/>
+      <select id="citySelect" size="8"></select>
     </div>
+    <div class="field">
+      <label for="cityMode">Al elegir ciudad mostrar</label>
+      <select id="cityMode">
+        <option value="both">Pasan y cabeceras</option>
+        <option value="through">Solo pasan por ella</option>
+        <option value="ends">Solo origen o destino</option>
+      </select>
+    </div>
+    <button class="btn-ghost" id="clearCity" type="button">Quitar ciudad</button>
+
+    <div class="section-label">Filtros de ruta</div>
+    <div class="field"><label for="q">Texto libre</label><input id="q" placeholder="código, descripción…"/></div>
+    <div class="field"><label for="tipo">Tipo</label><select id="tipo"><option value="">Todos</option></select></div>
+    <div class="field"><label for="ambito">Ámbito</label><select id="ambito">
+      <option value="">Todos</option>
+      <option value="nacional">Nacional</option>
+      <option value="internacional">Internacional</option>
+    </select></div>
+    <div class="field"><label for="pais">País</label><select id="pais"><option value="">Todos</option></select></div>
+    <div class="field"><label for="addon">Addon</label><select id="addon"><option value="">Todos</option></select></div>
 
     <div class="actions">
-      <button class="btn-primary" id="applyBtn" type="button">Aplicar filtros</button>
-      <button class="btn-ghost" id="resetBtn" type="button">Limpiar todo</button>
+      <button class="btn-primary" id="applyBtn" type="button">Aplicar</button>
+      <button class="btn-ghost" id="resetBtn" type="button">Limpiar filtros</button>
     </div>
   </aside>
 
@@ -221,11 +233,31 @@ body.booting .app, body.booting .mobile-bar { visibility: hidden; }
     <div class="topbar">
       <div class="search-hero">
         <label for="qTop">Explorar EuroPerote</label>
-        <input id="qTop" placeholder="Busca rutas, códigos o ciudades…"/>
+        <input id="qTop" placeholder="Rutas, códigos o ciudades…"/>
       </div>
       <div class="metrics" id="metrics"></div>
     </div>
-    <div class="toolbar">
+
+    <section class="map-panel">
+      <div id="map" role="application" aria-label="Mapa OpenStreetMap de ciudades ProMods"></div>
+      <p class="map-hint" id="mapHint">Clic en un marcador o elige ciudad a la izquierda.</p>
+    </section>
+
+    <div id="cityPanels" hidden>
+      <div class="city-heading" id="cityHeading"></div>
+      <div class="city-cols">
+        <section>
+          <h3>Origen o destino</h3>
+          <div class="list" id="listEnds"></div>
+        </section>
+        <section>
+          <h3>Pasan por la ciudad</h3>
+          <div class="list" id="listThrough"></div>
+        </section>
+      </div>
+    </div>
+
+    <div class="toolbar" id="allToolbar">
       <div class="left"><span id="resultCount" class="meta"></span></div>
       <div class="right">
         <label class="meta" for="sort">Orden</label>
@@ -233,7 +265,6 @@ body.booting .app, body.booting .mobile-bar { visibility: hidden; }
           <option value="codigo">Código</option>
           <option value="nombre">Nombre</option>
           <option value="paradas_desc">Más paradas</option>
-          <option value="paradas_asc">Menos paradas</option>
           <option value="km_desc">Más km</option>
           <option value="km_asc">Menos km</option>
         </select>
@@ -245,25 +276,32 @@ body.booting .app, body.booting .mobile-bar { visibility: hidden; }
       </div>
     </div>
     <div class="list" id="list"></div>
-    <div class="pager">
+    <div class="pager" id="pager">
       <button type="button" id="prev">Anterior</button>
       <span class="meta" id="pageInfo"></span>
       <button type="button" id="next">Siguiente</button>
     </div>
   </main>
 </div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script>window.CATALOG_BASE = "";</script>
-<script>window.CATALOG_DATA = {"version":"1.0.0","generado":"2026-07-31T12:48:30.642Z","total":4217,"chunks":13,"chunkSize":350,"operador":{"id":"europerote","nombre":"EuroPerote","nombre_corto":"EP","color":"#0B3D91","color_secundario":"#F2A900","eslogan":"Toda Europa ProMods en autobús","sede":"Colonia","tipo":"internacional","descripcion":"Único operador de la red EuroPerote: servicios urbanos, interurbanos, express, nocturnos, turísticos, aeroportuarios e internacionales sobre el mapa ProMods (Europe + Middle East + The Great Steppe) y complementos compatibles."},"tipoNames":{"urb":"Urbano","reg":"Regional","exp":"Express","int":"Internacional","noc":"Nocturno","tur":"Turístico","ae":"Aeropuerto","fer":"Ferry-bus","brt":"BRT / Busway"},"addonNames":{"ets2-base":"ETS2 mapa base + DLCs SCS","promods":"ProMods Europe (última)","promods-middle-east":"ProMods Middle East","promods-great-steppe":"ProMods The Great Steppe","rusmap":"RusMap (compatible ProMods)","balkans-addon":"Complementos Balcanes","egypt-addon":"Complemento Egipto / Norte África","ets2+promods":"Fusión base ETS2 + ProMods"},"stops":1520,"cdnBase":"https://cdn.jsdelivr.net/gh/miriamcomercio89-ops/Miriam@c8d387bd03510f7d4c4ddafea13ed35676bd5ca6/europerote-ets2/web","commit":"c8d387bd03510f7d4c4ddafea13ed35676bd5ca6","routes":[{"id":"ep-aer-0001","codigo":"EP-AER-0001","nombre":"Aeropuerto Aalborg: ciudad ↔ aeropuerto","desc":"Aeropuerto EP-AER-0001 de EuroPerote entre Aalborg y Aalborg — Aeropuerto (4 km estimados). Lanzadera aeroportuaria corta y directa. Servicio directo, sin paradas intermedias. Circula en Dinamarca, siguiendo un eje geográfico coherente entre nodos ProMods. Mapa: ProMods Europe (última). Material: Scania Citywide. Operador único: EuroPerote. Paradas: Aalborg → Aalborg — Aeropuerto.","tipo":"ae","prefijo":"AER","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Aalborg","Aalborg — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Dinamarca"],"addons":["promods"],"patron":"directo","origen":"Aalborg","destino":"Aalborg — Aeropuerto"},{"id":"ep-aer-0002","codigo":"EP-AER-0002","nombre":"Aeropuerto Ámsterdam: ciudad ↔ aeropuerto","desc":"Aeropuerto EP-AER-0002 de EuroPerote entre Ámsterdam y Ámsterdam — Aeropuerto (4 km estimados). Lanzadera aeroportuaria corta y directa. Servicio directo, sin paradas intermedias. Circula en Países Bajos, siguiendo un eje geográfico coherente entre nodos ProMods. Mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material: Scania Citywide. Operador único: EuroPerote. Paradas: Ámsterdam → Ámsterdam — Aeropuerto.","tipo":"ae","prefijo":"AER","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Ámsterdam","Ámsterdam — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Países Bajos"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Ámsterdam","destino":"Ámsterdam — Aeropuerto"},{"id":"ep-aer-0003","codigo":"EP-AER-0003","nombre":"Aeropuerto Bergen: ciudad ↔ aeropuerto","desc":"Aeropuerto EP-AER-0003 de EuroPerote entre Bergen y Bergen — Aeropuerto (4 km estimados). Lanzadera aeroportuaria corta y directa. Servicio directo, sin paradas intermedias. Circula en Noruega, siguiendo un eje geográfico coherente entre nodos ProMods. Mapa: ProMods Europe (última). Material: Scania Citywide. Operador único: EuroPerote. Paradas: Bergen → Bergen — Aeropuerto.","tipo":"ae","prefijo":"AER","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Bergen","Bergen — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Noruega"],"addons":["promods"],"patron":"directo","origen":"Bergen","destino":"Bergen — Aeropuerto"},{"id":"ep-aer-0004","codigo":"EP-AER-0004","nombre":"Aeropuerto Berlín: ciudad ↔ aeropuerto","desc":"Aeropuerto EP-AER-0004 de EuroPerote entre Berlín y Berlín — Aeropuerto (4 km estimados). Lanzadera aeroportuaria corta y directa. Servicio directo, sin paradas intermedias. Circula en Alemania, siguiendo un eje geográfico coherente entre nodos ProMods. Mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material: Scania Citywide. Operador único: EuroPerote. Paradas: Berlín → Berlín — Aeropuerto.","tipo":"ae","prefijo":"AER","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Berlín","Berlín — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Alemania"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Berlín","destino":"Berlín — Aeropuerto"},{"id":"ep-aer-0005","codigo":"EP-AER-0005","nombre":"Aeropuerto Berna: ciudad ↔ aeropuerto","desc":"Aeropuerto EP-AER-0005 de EuroPerote entre Berna y Berna — Aeropuerto (4 km estimados). Lanzadera aeroportuaria corta y directa. Servicio directo, sin paradas intermedias. Circula en Suiza, siguiendo un eje geográfico coherente entre nodos ProMods. Mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material: Scania Citywide. Operador único: EuroPerote. Paradas: Berna → Berna — Aeropuerto.","tipo":"ae","prefijo":"AER","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Berna","Berna — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Suiza"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Berna","destino":"Berna — Aeropuerto"},{"id":"ep-aer-0006","codigo":"EP-AER-0006","nombre":"Aeropuerto Białystok: ciudad ↔ aeropuerto","desc":"Aeropuerto EP-AER-0006 de EuroPerote entre Białystok y Białystok — Aeropuerto (4 km estimados). Lanzadera aeroportuaria corta y directa. Servicio directo, sin paradas intermedias. Circula en Polonia, siguiendo un eje geográfico coherente entre nodos ProMods. Mapa: ProMods Europe (última). Material: Scania Citywide. Operador único: EuroPerote. Paradas: Białystok → Białystok — Aeropuerto.","tipo":"ae","prefijo":"AER","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Białystok","Białystok — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Polonia"],"addons":["promods"],"patron":"directo","origen":"Białystok","destino":"Białystok — Aeropuerto"},{"id":"ep-aer-0007","codigo":"EP-AER-0007","nombre":"Aeropuerto Birmingham: ciudad ↔ aeropuerto","desc":"Aeropuerto EP-AER-0007 de EuroPerote entre Birmingham y Birmingham — Aeropuerto (4 km estimados). Lanzadera aeroportuaria corta y directa. Servicio directo, sin paradas intermedias. Circula en Reino Unido, siguiendo un eje geográfico coherente entre nodos ProMods. Mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material: Scania Citywide. Operador único: EuroPerote. Paradas: Birmingham → Birmingham — Aeropuerto.","tipo":"ae","prefijo":"AER","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Birmingham","Birmingham — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Reino Unido"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Birmingham","destino":"Birmingham — Aeropuerto"},{"id":"ep-aer-0008","codigo":"EP-AER-0008","nombre":"Aeropuerto Bratislava: ciudad ↔ aeropuerto","desc":"Aeropuerto EP-AER-0008 de EuroPerote entre Bratislava y Bratislava — Aeropuerto (4 km estimados). Lanzadera aeroportuaria corta y directa. Servicio directo, sin paradas intermedias. Circula en Eslovaquia, siguiendo un eje geográfico coherente entre nodos ProMods. Mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material: Scania Citywide. Operador único: EuroPerote. Paradas: Bratislava → Bratislava — Aeropuerto.","tipo":"ae","prefijo":"AER","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Bratislava","Bratislava — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Eslovaquia"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Bratislava","destino":"Bratislava — Aeropuerto"},{"id":"ep-aer-0009","codigo":"EP-AER-0009","nombre":"Aeropuerto Bremen: ciudad ↔ aeropuerto","desc":"Aeropuerto EP-AER-0009 de EuroPerote entre Bremen y Bremen — Aeropuerto (4 km estimados). Lanzadera aeroportuaria corta y directa. Servicio directo, sin paradas intermedias. Circula en Alemania, siguiendo un eje geográfico coherente entre nodos ProMods. Mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material: Scania Citywide. Operador único: EuroPerote. Paradas: Bremen → Bremen — Aeropuerto.","tipo":"ae","prefijo":"AER","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Bremen","Bremen — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Alemania"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Bremen","destino":"Bremen — Aeropuerto"},{"id":"ep-aer-0010","codigo":"EP-AER-0010","nombre":"Aeropuerto Brno: ciudad ↔ aeropuerto","desc":"Aeropuerto EP-AER-0010 de EuroPerote entre Brno y Brno — Aeropuerto (4 km estimados). Lanzadera aeroportuaria corta y directa. Servicio directo, sin paradas intermedias. Circula en Chequia, siguiendo un eje geográfico coherente entre nodos ProMods. Mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material: Scania Citywide. Operador único: EuroPerote. Paradas: Brno → Brno — Aeropuerto.","tipo":"ae","prefijo":"AER","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Brno","Brno — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Chequia"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Brno","destino":"Brno — Aeropuerto"},{"id":"ep-aer-0011","codigo":"EP-AER-0011","nombre":"Aeropuerto Bruselas: ciudad ↔ aeropuerto","desc":"Aeropuerto EP-AER-0011 de EuroPerote entre Bruselas y Bruselas — Aeropuerto (4 km estimados). Lanzadera aeroportuaria corta y directa. Servicio directo, sin paradas intermedias. Circula en Bélgica, siguiendo un eje geográfico coherente entre nodos ProMods. Mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material: Scania Citywide. Operador único: EuroPerote. Paradas: Bruselas → Bruselas — Aeropuerto.","tipo":"ae","prefijo":"AER","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Bruselas","Bruselas — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Bélgica"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Bruselas","destino":"Bruselas — Aeropuerto"},{"id":"ep-aer-0012","codigo":"EP-AER-0012","nombre":"Aeropuerto Budapest: ciudad ↔ aeropuerto","desc":"Aeropuerto EP-AER-0012 de EuroPerote entre Budapest y Budapest — Aeropuerto (4 km estimados). Lanzadera aeroportuaria corta y directa. Servicio directo, sin paradas intermedias. Circula en Hungría, siguiendo un eje geográfico coherente entre nodos ProMods. Mapa: ProMods Europe (última). Material: Scania Citywide. Operador único: EuroPerote. Paradas: Budapest → Budapest — Aeropuerto.","tipo":"ae","prefijo":"AER","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Budapest","Budapest — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Hungría"],"addons":["promods"],"patron":"directo","origen":"Budapest","destino":"Budapest — Aeropuerto"},{"id":"ep-aer-0013","codigo":"EP-AER-0013","nombre":"Aeropuerto Banská Bystrica: ciudad ↔ aeropuerto","desc":"Aeropuerto EP-AER-0013 de EuroPerote entre Banská Bystrica y Banská Bystrica — Aeropuerto (4 km estimados). Lanzadera aeroportuaria corta y directa. Servicio directo, sin paradas intermedias. Circula en Eslovaquia, siguiendo un eje geográfico coherente entre nodos ProMods. Mapa: ProMods Europe (última). Material: Scania Citywide. Operador único: EuroPerote. Paradas: Banská Bystrica → Banská Bystrica — Aeropuerto.","tipo":"ae","prefijo":"AER","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Banská Bystrica","Banská Bystrica — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Eslovaquia"],"addons":["promods"],"patron":"directo","origen":"Banská Bystrica","destino":"Banská Bystrica — Aeropuerto"},{"id":"ep-aer-0014","codigo":"EP-AER-0014","nombre":"Aeropuerto Calais: ciudad ↔ aeropuerto","desc":"Aeropuerto EP-AER-0014 de EuroPerote entre Calais y Calais — Aeropuerto (4 km estimados). Lanzadera aeroportuaria corta y directa. Servicio directo, sin paradas intermedias. Circula en Francia, siguiendo un eje geográfico coherente entre nodos ProMods. Mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material: Scania Citywide. Operador único: EuroPerote. Paradas: Calais → Calais — Aeropuerto.","tipo":"ae","prefijo":"AER","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Calais","Calais — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Francia"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Calais","destino":"Calais — Aeropuerto"},{"id":"ep-aer-0015","codigo":"EP-AER-0015","nombre":"Aeropuerto Cambridge: ciudad ↔ aeropuerto","desc":"Aeropuerto EP-AER-0015 de EuroPerote entre Cambridge y Cambridge — Aeropuerto (4 km estimados). Lanzadera aeroportuaria corta y directa. Servicio directo, sin paradas intermedias. Circula en Reino Unido, siguiendo un eje geográfico coherente entre nodos ProMods. Mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material: Scania Citywide. Operador único: EuroPerote. Paradas: Cambridge → Cambridge — Aeropuerto.","tipo":"ae","prefijo":"AER","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Cambridge","Cambridge — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Reino Unido"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Cambridge","destino":"Cambridge — Aeropuerto"},{"id":"ep-aer-0016","codigo":"EP-AER-0016","nombre":"Aeropuerto Cardiff: ciudad ↔ aeropuerto","desc":"Aeropuerto EP-AER-0016 de EuroPerote entre Cardiff y Cardiff — Aeropuerto (4 km estimados). Lanzadera aeroportuaria corta y directa. Servicio directo, sin paradas intermedias. Circula en Reino Unido, siguiendo un eje geográfico coherente entre nodos ProMods. Mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material: Scania Citywide. Operador único: EuroPerote. Paradas: Cardiff → Cardiff — Aeropuerto.","tipo":"ae","prefijo":"AER","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Cardiff","Cardiff — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Reino Unido"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Cardiff","destino":"Cardiff — Aeropuerto"},{"id":"ep-aer-0017","codigo":"EP-AER-0017","nombre":"Aeropuerto Debrecen: ciudad ↔ aeropuerto","desc":"Aeropuerto EP-AER-0017 de EuroPerote entre Debrecen y Debrecen — Aeropuerto (4 km estimados). Lanzadera aeroportuaria corta y directa. Servicio directo, sin paradas intermedias. Circula en Hungría, siguiendo un eje geográfico coherente entre nodos ProMods. Mapa: ProMods Europe (última). Material: Scania Citywide. Operador único: EuroPerote. Paradas: Debrecen → Debrecen — Aeropuerto.","tipo":"ae","prefijo":"AER","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Debrecen","Debrecen — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Hungría"],"addons":["promods"],"patron":"directo","origen":"Debrecen","destino":"Debrecen — Aeropuerto"},{"id":"ep-aer-0018","codigo":"EP-AER-0018","nombre":"Aeropuerto Dijon: ciudad ↔ aeropuerto","desc":"Aeropuerto EP-AER-0018 de EuroPerote entre Dijon y Dijon — Aeropuerto (4 km estimados). Lanzadera aeroportuaria corta y directa. Servicio directo, sin paradas intermedias. Circula en Francia, siguiendo un eje geográfico coherente entre nodos ProMods. Mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material: Scania Citywide. Operador único: EuroPerote. Paradas: Dijon → Dijon — Aeropuerto.","tipo":"ae","prefijo":"AER","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Dijon","Dijon — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Francia"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Dijon","destino":"Dijon — Aeropuerto"},{"id":"ep-aer-0019","codigo":"EP-AER-0019","nombre":"Aeropuerto Dortmund: ciudad ↔ aeropuerto","desc":"Aeropuerto EP-AER-0019 de EuroPerote entre Dortmund y Dortmund — Aeropuerto (4 km estimados). Lanzadera aeroportuaria corta y directa. Servicio directo, sin paradas intermedias. Circula en Alemania, siguiendo un eje geográfico coherente entre nodos ProMods. Mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material: Scania Citywide. Operador único: EuroPerote. Paradas: Dortmund → Dortmund — Aeropuerto.","tipo":"ae","prefijo":"AER","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Dortmund","Dortmund — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Alemania"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Dortmund","destino":"Dortmund — Aeropuerto"},{"id":"ep-aer-0020","codigo":"EP-AER-0020","nombre":"Aeropuerto Dover: ciudad ↔ aeropuerto","desc":"Aeropuerto EP-AER-0020 de EuroPerote entre Dover y Dover — Aeropuerto (4 km estimados). Lanzadera aeroportuaria corta y directa. Servicio directo, sin paradas intermedias. Circula en Reino Unido, siguiendo un eje geográfico coherente entre nodos ProMods. Mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material: Scania Citywide. Operador único: EuroPerote. Paradas: Dover → Dover — Aeropuerto.","tipo":"ae","prefijo":"AER","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Dover","Dover — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Reino Unido"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Dover","destino":"Dover — Aeropuerto"},{"id":"ep-aer-0021","codigo":"EP-AER-0021","nombre":"Aeropuerto Dresden: ciudad ↔ aeropuerto","desc":"Aeropuerto EP-AER-0021 de EuroPerote entre Dresden y Dresden — Aeropuerto (4 km estimados). Lanzadera aeroportuaria corta y directa. Servicio directo, sin paradas intermedias. Circula en Alemania, siguiendo un eje geográfico coherente entre nodos ProMods. Mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material: Scania Citywide. Operador único: EuroPerote. Paradas: Dresden → Dresden — Aeropuerto.","tipo":"ae","prefijo":"AER","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Dresden","Dresden — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Alemania"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Dresden","destino":"Dresden — Aeropuerto"},{"id":"ep-aer-0022","codigo":"EP-AER-0022","nombre":"Aeropuerto Duisburg: ciudad ↔ aeropuerto","desc":"Aeropuerto EP-AER-0022 de EuroPerote entre Duisburg y Duisburg — Aeropuerto (4 km estimados). Lanzadera aeroportuaria corta y directa. Servicio directo, sin paradas intermedias. Circula en Alemania, siguiendo un eje geográfico coherente entre nodos ProMods. Mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material: Scania Citywide. Operador único: EuroPerote. Paradas: Duisburg → Duisburg — Aeropuerto.","tipo":"ae","prefijo":"AER","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Duisburg","Duisburg — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Alemania"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Duisburg","destino":"Duisburg — Aeropuerto"},{"id":"ep-aer-0023","codigo":"EP-AER-0023","nombre":"Aeropuerto Düsseldorf: ciudad ↔ aeropuerto","desc":"Aeropuerto EP-AER-0023 de EuroPerote entre Düsseldorf y Düsseldorf — Aeropuerto (4 km estimados). Lanzadera aeroportuaria corta y directa. Servicio directo, sin paradas intermedias. Circula en Alemania, siguiendo un eje geográfico coherente entre nodos ProMods. Mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material: Scania Citywide. Operador único: EuroPerote. Paradas: Düsseldorf → Düsseldorf — Aeropuerto.","tipo":"ae","prefijo":"AER","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Düsseldorf","Düsseldorf — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Alemania"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Düsseldorf","destino":"Düsseldorf — Aeropuerto"},{"id":"ep-aer-0024","codigo":"EP-AER-0024","nombre":"Aeropuerto Erfurt: ciudad ↔ aeropuerto","desc":"Aeropuerto EP-AER-0024 de EuroPerote entre Erfurt y Erfurt — Aeropuerto (4 km estimados). Lanzadera aeroportuaria corta y directa. Servicio directo, sin paradas intermedias. Circula en Alemania, siguiendo un eje geográfico coherente entre nodos ProMods. Mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material: Scania Citywide. Operador único: EuroPerote. Paradas: Erfurt → Erfurt — Aeropuerto.","tipo":"ae","prefijo":"AER","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Erfurt","Erfurt — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Alemania"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Erfurt","destino":"Erfurt — Aeropuerto"},{"id":"ep-aer-0025","codigo":"EP-AER-0025","nombre":"Aeropuerto Esbjerg: ciudad ↔ aeropuerto","desc":"Aeropuerto EP-AER-0025 de EuroPerote entre Esbjerg y Esbjerg — Aeropuerto (4 km estimados). Lanzadera aeroportuaria corta y directa. Servicio directo, sin paradas intermedias. Circula en Dinamarca, siguiendo un eje geográfico coherente entre nodos ProMods. Mapa: ProMods Europe (última). Material: Scania Citywide. Operador único: EuroPerote. Paradas: Esbjerg → Esbjerg — Aeropuerto.","tipo":"ae","prefijo":"AER","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Esbjerg","Esbjerg — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Dinamarca"],"addons":["promods"],"patron":"directo","origen":"Esbjerg","destino":"Esbjerg — Aeropuerto"},{"id":"ep-aer-0026","codigo":"EP-AER-0026","nombre":"Aeropuerto Felixstowe: ciudad ↔ aeropuerto","desc":"Aeropuerto EP-AER-0026 de EuroPerote entre Felixstowe y Felixstowe — Aeropuerto (4 km estimados). Lanzadera aeroportuaria corta y directa. Servicio directo, sin paradas intermedias. Circula en Reino Unido, siguiendo un eje geográfico coherente entre nodos ProMods. Mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material: Scania Citywide. Operador único: EuroPerote. Paradas: Felixstowe → Felixstowe — Aeropuerto.","tipo":"ae","prefijo":"AER","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Felixstowe","Felixstowe — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Reino Unido"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Felixstowe","destino":"Felixstowe — Aeropuerto"},{"id":"ep-aer-0027","codigo":"EP-AER-0027","nombre":"Aeropuerto Frankfurt am Main: ciudad ↔ aeropuerto","desc":"Aeropuerto EP-AER-0027 de EuroPerote entre Frankfurt am Main y Frankfurt am Main — Aeropuerto (4 km estimados). Lanzadera aeroportuaria corta y directa. Servicio directo, sin paradas intermedias. Circula en Alemania, siguiendo un eje geográfico coherente entre nodos ProMods. Mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material: Scania Citywide. Operador único: EuroPerote. Paradas: Frankfurt am Main → Frankfurt am Main — Aeropuerto.","tipo":"ae","prefijo":"AER","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Frankfurt am Main","Frankfurt am Main — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Alemania"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Frankfurt am Main","destino":"Frankfurt am Main — Aeropuerto"},{"id":"ep-aer-0028","codigo":"EP-AER-0028","nombre":"Aeropuerto Frederikshavn: ciudad ↔ aeropuerto","desc":"Aeropuerto EP-AER-0028 de EuroPerote entre Frederikshavn y Frederikshavn — Aeropuerto (4 km estimados). Lanzadera aeroportuaria corta y directa. Servicio directo, sin paradas intermedias. Circula en Dinamarca, siguiendo un eje geográfico coherente entre nodos ProMods. Mapa: ProMods Europe (última). Material: Scania Citywide. Operador único: EuroPerote. Paradas: Frederikshavn → Frederikshavn — Aeropuerto.","tipo":"ae","prefijo":"AER","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Frederikshavn","Frederikshavn — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Dinamarca"],"addons":["promods"],"patron":"directo","origen":"Frederikshavn","destino":"Frederikshavn — Aeropuerto"},{"id":"ep-aer-0029","codigo":"EP-AER-0029","nombre":"Aeropuerto Gdańsk: ciudad ↔ aeropuerto","desc":"Aeropuerto EP-AER-0029 de EuroPerote entre Gdańsk y Gdańsk — Aeropuerto (4 km estimados). Lanzadera aeroportuaria corta y directa. Servicio directo, sin paradas intermedias. Circula en Polonia, siguiendo un eje geográfico coherente entre nodos ProMods. Mapa: ProMods Europe (última). Material: Scania Citywide. Operador único: EuroPerote. Paradas: Gdańsk → Gdańsk — Aeropuerto.","tipo":"ae","prefijo":"AER","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Gdańsk","Gdańsk — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Polonia"],"addons":["promods"],"patron":"directo","origen":"Gdańsk","destino":"Gdańsk — Aeropuerto"},{"id":"ep-aer-0030","codigo":"EP-AER-0030","nombre":"Aeropuerto Gedser: ciudad ↔ aeropuerto","desc":"Aeropuerto EP-AER-0030 de EuroPerote entre Gedser y Gedser — Aeropuerto (4 km estimados). Lanzadera aeroportuaria corta y directa. Servicio directo, sin paradas intermedias. Circula en Dinamarca, siguiendo un eje geográfico coherente entre nodos ProMods. Mapa: ProMods Europe (última). Material: Scania Citywide. Operador único: EuroPerote. Paradas: Gedser → Gedser — Aeropuerto.","tipo":"ae","prefijo":"AER","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Gedser","Gedser — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Dinamarca"],"addons":["promods"],"patron":"directo","origen":"Gedser","destino":"Gedser — Aeropuerto"},{"id":"ep-aer-0031","codigo":"EP-AER-0031","nombre":"Aeropuerto Ginebra: ciudad ↔ aeropuerto","desc":"Aeropuerto EP-AER-0031 de EuroPerote entre Ginebra y Ginebra — Aeropuerto (4 km estimados). Lanzadera aeroportuaria corta y directa. Servicio directo, sin paradas intermedias. Circula en Suiza, siguiendo un eje geográfico coherente entre nodos ProMods. Mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material: Scania Citywide. Operador único: EuroPerote. Paradas: Ginebra → Ginebra — Aeropuerto.","tipo":"ae","prefijo":"AER","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Ginebra","Ginebra — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Suiza"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Ginebra","destino":"Ginebra — Aeropuerto"},{"id":"ep-aer-0032","codigo":"EP-AER-0032","nombre":"Aeropuerto Göteborg: ciudad ↔ aeropuerto","desc":"Aeropuerto EP-AER-0032 de EuroPerote entre Göteborg y Göteborg — Aeropuerto (4 km estimados). Lanzadera aeroportuaria corta y directa. Servicio directo, sin paradas intermedias. Circula en Suecia, siguiendo un eje geográfico coherente entre nodos ProMods. Mapa: ProMods Europe (última). Material: Scania Citywide. Operador único: EuroPerote. Paradas: Göteborg → Göteborg — Aeropuerto.","tipo":"ae","prefijo":"AER","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Göteborg","Göteborg — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Suecia"],"addons":["promods"],"patron":"directo","origen":"Göteborg","destino":"Göteborg — Aeropuerto"},{"id":"ep-aer-0033","codigo":"EP-AER-0033","nombre":"Aeropuerto Graz: ciudad ↔ aeropuerto","desc":"Aeropuerto EP-AER-0033 de EuroPerote entre Graz y Graz — Aeropuerto (4 km estimados). Lanzadera aeroportuaria corta y directa. Servicio directo, sin paradas intermedias. Circula en Austria, siguiendo un eje geográfico coherente entre nodos ProMods. Mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material: Scania Citywide. Operador único: EuroPerote. Paradas: Graz → Graz — Aeropuerto.","tipo":"ae","prefijo":"AER","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Graz","Graz — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Austria"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Graz","destino":"Graz — Aeropuerto"},{"id":"ep-aer-0034","codigo":"EP-AER-0034","nombre":"Aeropuerto Grimsby: ciudad ↔ aeropuerto","desc":"Aeropuerto EP-AER-0034 de EuroPerote entre Grimsby y Grimsby — Aeropuerto (4 km estimados). Lanzadera aeroportuaria corta y directa. Servicio directo, sin paradas intermedias. Circula en Reino Unido, siguiendo un eje geográfico coherente entre nodos ProMods. Mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material: Scania Citywide. Operador único: EuroPerote. Paradas: Grimsby → Grimsby — Aeropuerto.","tipo":"ae","prefijo":"AER","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Grimsby","Grimsby — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Reino Unido"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Grimsby","destino":"Grimsby — Aeropuerto"},{"id":"ep-aer-0035","codigo":"EP-AER-0035","nombre":"Aeropuerto Groningen: ciudad ↔ aeropuerto","desc":"Aeropuerto EP-AER-0035 de EuroPerote entre Groningen y Groningen — Aeropuerto (4 km estimados). Lanzadera aeroportuaria corta y directa. Servicio directo, sin paradas intermedias. Circula en Países Bajos, siguiendo un eje geográfico coherente entre nodos ProMods. Mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material: Scania Citywide. Operador único: EuroPerote. Paradas: Groningen → Groningen — Aeropuerto.","tipo":"ae","prefijo":"AER","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Groningen","Groningen — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Países Bajos"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Groningen","destino":"Groningen — Aeropuerto"},{"id":"ep-aer-0036","codigo":"EP-AER-0036","nombre":"Aeropuerto Hamburg: ciudad ↔ aeropuerto","desc":"Aeropuerto EP-AER-0036 de EuroPerote entre Hamburg y Hamburg — Aeropuerto (4 km estimados). Lanzadera aeroportuaria corta y directa. Servicio directo, sin paradas intermedias. Circula en Alemania, siguiendo un eje geográfico coherente entre nodos ProMods. Mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material: Scania Citywide. Operador único: EuroPerote. Paradas: Hamburg → Hamburg — Aeropuerto.","tipo":"ae","prefijo":"AER","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Hamburg","Hamburg — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Alemania"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Hamburg","destino":"Hamburg — Aeropuerto"},{"id":"ep-aer-0037","codigo":"EP-AER-0037","nombre":"Aeropuerto Hannover: ciudad ↔ aeropuerto","desc":"Aeropuerto EP-AER-0037 de EuroPerote entre Hannover y Hannover — Aeropuerto (4 km estimados). Lanzadera aeroportuaria corta y directa. Servicio directo, sin paradas intermedias. Circula en Alemania, siguiendo un eje geográfico coherente entre nodos ProMods. Mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material: Scania Citywide. Operador único: EuroPerote. Paradas: Hannover → Hannover — Aeropuerto.","tipo":"ae","prefijo":"AER","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Hannover","Hannover — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Alemania"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Hannover","destino":"Hannover — Aeropuerto"},{"id":"ep-aer-0038","codigo":"EP-AER-0038","nombre":"Aeropuerto Helsingborg: ciudad ↔ aeropuerto","desc":"Aeropuerto EP-AER-0038 de EuroPerote entre Helsingborg y Helsingborg — Aeropuerto (4 km estimados). Lanzadera aeroportuaria corta y directa. Servicio directo, sin paradas intermedias. Circula en Suecia, siguiendo un eje geográfico coherente entre nodos ProMods. Mapa: ProMods Europe (última). Material: Scania Citywide. Operador único: EuroPerote. Paradas: Helsingborg → Helsingborg — Aeropuerto.","tipo":"ae","prefijo":"AER","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Helsingborg","Helsingborg — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Suecia"],"addons":["promods"],"patron":"directo","origen":"Helsingborg","destino":"Helsingborg — Aeropuerto"},{"id":"ep-aer-0039","codigo":"EP-AER-0039","nombre":"Aeropuerto Hirtshals: ciudad ↔ aeropuerto","desc":"Aeropuerto EP-AER-0039 de EuroPerote entre Hirtshals y Hirtshals — Aeropuerto (4 km estimados). Lanzadera aeroportuaria corta y directa. Servicio directo, sin paradas intermedias. Circula en Dinamarca, siguiendo un eje geográfico coherente entre nodos ProMods. Mapa: ProMods Europe (última). Material: Scania Citywide. Operador único: EuroPerote. Paradas: Hirtshals → Hirtshals — Aeropuerto.","tipo":"ae","prefijo":"AER","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Hirtshals","Hirtshals — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Dinamarca"],"addons":["promods"],"patron":"directo","origen":"Hirtshals","destino":"Hirtshals — Aeropuerto"},{"id":"ep-aer-0040","codigo":"EP-AER-0040","nombre":"Aeropuerto Innsbruck: ciudad ↔ aeropuerto","desc":"Aeropuerto EP-AER-0040 de EuroPerote entre Innsbruck y Innsbruck — Aeropuerto (4 km estimados). Lanzadera aeroportuaria corta y directa. Servicio directo, sin paradas intermedias. Circula en Austria, siguiendo un eje geográfico coherente entre nodos ProMods. Mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material: Scania Citywide. Operador único: EuroPerote. Paradas: Innsbruck → Innsbruck — Aeropuerto.","tipo":"ae","prefijo":"AER","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Innsbruck","Innsbruck — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Austria"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Innsbruck","destino":"Innsbruck — Aeropuerto"}]};
+<script>window.CATALOG_DATA = {"version":"3.0.0","generado":"2026-07-31T13:35:40.987Z","total":2656,"chunks":8,"chunkSize":350,"cities":[{"id":"aalborg","nombre":"Aalborg","nombre_juego":"Aalborg","pais":"Dinamarca","iso":"DK","lat":57.048,"lon":9.9187,"tier":2,"addons":["promods"]},{"id":"aberdeen","nombre":"Aberdeen","nombre_juego":"Aberdeen","pais":"Reino Unido","iso":"GB","lat":57.14369,"lon":-2.09814,"tier":3,"addons":["promods","ets2+promods"]},{"id":"amsterdam","nombre":"Ámsterdam","nombre_juego":"Amsterdam","pais":"Países Bajos","iso":"NL","lat":52.37403,"lon":4.88969,"tier":1,"addons":["promods","ets2+promods"]},{"id":"bergen","nombre":"Bergen","nombre_juego":"Bergen","pais":"Noruega","iso":"NO","lat":60.39299,"lon":5.32415,"tier":2,"addons":["promods"]},{"id":"berlin","nombre":"Berlín","nombre_juego":"Berlin","pais":"Alemania","iso":"DE","lat":52.52437,"lon":13.41053,"tier":1,"addons":["promods","ets2+promods"]},{"id":"bern","nombre":"Berna","nombre_juego":"Bern","pais":"Suiza","iso":"CH","lat":46.94809,"lon":7.44744,"tier":2,"addons":["promods","ets2+promods"]},{"id":"bialystok","nombre":"Białystok","nombre_juego":"Białystok","pais":"Polonia","iso":"PL","lat":53.13333,"lon":23.16433,"tier":2,"addons":["promods"]},{"id":"birmingham","nombre":"Birmingham","nombre_juego":"Birmingham","pais":"Reino Unido","iso":"GB","lat":52.48142,"lon":-1.89983,"tier":2,"addons":["promods","ets2+promods"]},{"id":"bratislava","nombre":"Bratislava","nombre_juego":"Bratislava","pais":"Eslovaquia","iso":"SK","lat":48.14816,"lon":17.10674,"tier":2,"addons":["promods","ets2+promods"]},{"id":"bremen","nombre":"Bremen","nombre_juego":"Bremen","pais":"Alemania","iso":"DE","lat":53.07582,"lon":8.80717,"tier":2,"addons":["promods","ets2+promods"]},{"id":"brno","nombre":"Brno","nombre_juego":"Brno","pais":"Chequia","iso":"CZ","lat":49.19522,"lon":16.60796,"tier":2,"addons":["promods","ets2+promods"]},{"id":"brussel","nombre":"Bruselas","nombre_juego":"Brussel","pais":"Bélgica","iso":"BE","lat":50.85045,"lon":4.34878,"tier":2,"addons":["promods","ets2+promods"]},{"id":"budapest","nombre":"Budapest","nombre_juego":"Budapest","pais":"Hungría","iso":"HU","lat":47.49835,"lon":19.04045,"tier":1,"addons":["promods"]},{"id":"bystrica","nombre":"Banská Bystrica","nombre_juego":"Banská Bystrica","pais":"Eslovaquia","iso":"SK","lat":48.73947,"lon":19.14932,"tier":2,"addons":["promods"]},{"id":"calais","nombre":"Calais","nombre_juego":"Calais","pais":"Francia","iso":"FR","lat":50.95194,"lon":1.85635,"tier":2,"addons":["promods","ets2+promods"]},{"id":"cambridge","nombre":"Cambridge","nombre_juego":"Cambridge","pais":"Reino Unido","iso":"GB","lat":52.2,"lon":0.11667,"tier":2,"addons":["promods","ets2+promods"]},{"id":"cardiff","nombre":"Cardiff","nombre_juego":"Cardiff","pais":"Reino Unido","iso":"GB","lat":51.48,"lon":-3.18,"tier":2,"addons":["promods","ets2+promods"]},{"id":"carlisle","nombre":"Carlisle","nombre_juego":"Carlisle","pais":"Reino Unido","iso":"GB","lat":54.8951,"lon":-2.9382,"tier":3,"addons":["promods","ets2+promods"]},{"id":"debrecen","nombre":"Debrecen","nombre_juego":"Debrecen","pais":"Hungría","iso":"HU","lat":47.53167,"lon":21.62444,"tier":2,"addons":["promods"]},{"id":"dijon","nombre":"Dijon","nombre_juego":"Dijon","pais":"Francia","iso":"FR","lat":47.31344,"lon":5.01391,"tier":2,"addons":["promods","ets2+promods"]},{"id":"dortmund","nombre":"Dortmund","nombre_juego":"Dortmund","pais":"Alemania","iso":"DE","lat":51.51494,"lon":7.466,"tier":2,"addons":["promods","ets2+promods"]},{"id":"dover","nombre":"Dover","nombre_juego":"Dover","pais":"Reino Unido","iso":"GB","lat":51.12598,"lon":1.31257,"tier":2,"addons":["promods","ets2+promods"]},{"id":"dresden","nombre":"Dresden","nombre_juego":"Dresden","pais":"Alemania","iso":"DE","lat":51.05089,"lon":13.73832,"tier":2,"addons":["promods","ets2+promods"]},{"id":"duisburg","nombre":"Duisburg","nombre_juego":"Duisburg","pais":"Alemania","iso":"DE","lat":51.43247,"lon":6.76516,"tier":2,"addons":["promods","ets2+promods"]},{"id":"dusseldorf","nombre":"Düsseldorf","nombre_juego":"Düsseldorf","pais":"Alemania","iso":"DE","lat":51.22319,"lon":6.77927,"tier":2,"addons":["promods","ets2+promods"]},{"id":"edinburgh","nombre":"Edimburgo","nombre_juego":"Edinburgh","pais":"Reino Unido","iso":"GB","lat":55.95206,"lon":-3.19648,"tier":3,"addons":["promods","ets2+promods"]},{"id":"erfurt","nombre":"Erfurt","nombre_juego":"Erfurt","pais":"Alemania","iso":"DE","lat":50.97734,"lon":11.03536,"tier":2,"addons":["promods","ets2+promods"]},{"id":"esbjerg","nombre":"Esbjerg","nombre_juego":"Esbjerg","pais":"Dinamarca","iso":"DK","lat":55.47028,"lon":8.45187,"tier":2,"addons":["promods"]},{"id":"felixstowe","nombre":"Felixstowe","nombre_juego":"Felixstowe","pais":"Reino Unido","iso":"GB","lat":51.96375,"lon":1.3511,"tier":2,"addons":["promods","ets2+promods"]},{"id":"frankfurt","nombre":"Frankfurt am Main","nombre_juego":"Frankfurt am Main","pais":"Alemania","iso":"DE","lat":50.11552,"lon":8.68417,"tier":2,"addons":["promods","ets2+promods"]},{"id":"frederikshv","nombre":"Frederikshavn","nombre_juego":"Frederikshavn","pais":"Dinamarca","iso":"DK","lat":57.44073,"lon":10.53661,"tier":2,"addons":["promods"]},{"id":"gdansk","nombre":"Gdańsk","nombre_juego":"Gdańsk","pais":"Polonia","iso":"PL","lat":54.352,"lon":18.6466,"tier":2,"addons":["promods"]},{"id":"gedser","nombre":"Gedser","nombre_juego":"Gedser","pais":"Dinamarca","iso":"DK","lat":54.57644,"lon":11.93004,"tier":2,"addons":["promods"]},{"id":"geneve","nombre":"Ginebra","nombre_juego":"Genève","pais":"Suiza","iso":"CH","lat":46.20222,"lon":6.14569,"tier":2,"addons":["promods","ets2+promods"]},{"id":"glasgow","nombre":"Glasgow","nombre_juego":"Glasgow","pais":"Reino Unido","iso":"GB","lat":55.86515,"lon":-4.25763,"tier":3,"addons":["promods","ets2+promods"]},{"id":"goteborg","nombre":"Göteborg","nombre_juego":"Göteborg","pais":"Suecia","iso":"SE","lat":57.70716,"lon":11.96679,"tier":2,"addons":["promods"]},{"id":"graz","nombre":"Graz","nombre_juego":"Graz","pais":"Austria","iso":"AT","lat":47.06733,"lon":15.44197,"tier":2,"addons":["promods","ets2+promods"]},{"id":"grimsby","nombre":"Grimsby","nombre_juego":"Grimsby","pais":"Reino Unido","iso":"GB","lat":53.56539,"lon":-0.07553,"tier":2,"addons":["promods","ets2+promods"]},{"id":"groningen","nombre":"Groningen","nombre_juego":"Groningen","pais":"Países Bajos","iso":"NL","lat":53.21917,"lon":6.56667,"tier":2,"addons":["promods","ets2+promods"]},{"id":"hamburg","nombre":"Hamburg","nombre_juego":"Hamburg","pais":"Alemania","iso":"DE","lat":53.55073,"lon":9.99302,"tier":2,"addons":["promods","ets2+promods"]}],"solo_promods_real":true,"operador":{"id":"europerote","nombre":"EuroPerote","nombre_corto":"EP","color":"#0B3D91","color_secundario":"#F2A900","eslogan":"Toda Europa ProMods en autobús","sede":"Colonia","tipo":"internacional","descripcion":"Único operador de la red EuroPerote: servicios urbanos, interurbanos, express, nocturnos, turísticos, aeroportuarios e internacionales sobre el mapa ProMods (Europe + Middle East + The Great Steppe) y complementos compatibles."},"tipoNames":{"urb":"Urbano","reg":"Regional","exp":"Express","int":"Internacional","noc":"Nocturno","tur":"Turístico","ae":"Aeropuerto","fer":"Ferry-bus","brt":"BRT / Busway"},"addonNames":{"ets2-base":"ETS2 mapa base + DLCs SCS","promods":"ProMods Europe (última)","promods-middle-east":"ProMods Middle East","promods-great-steppe":"ProMods The Great Steppe","rusmap":"RusMap (compatible ProMods)","balkans-addon":"Complementos Balcanes","egypt-addon":"Complemento Egipto / Norte África","ets2+promods":"Fusión base ETS2 + ProMods"},"cdnBase":"https://cdn.jsdelivr.net/gh/miriamcomercio89-ops/Miriam@94d9bff10af13fdf18e92108710237db7e107084/europerote-ets2/web","commit":"94d9bff10af13fdf18e92108710237db7e107084","routes":[{"id":"at-exp-0001","codigo":"AT-EXP-0001","nombre":"Express Viena — Graz","desc":"Express AT-EXP-0001 de EuroPerote entre Viena y Graz (134 km). Todas las paradas son ciudades/pueblos reales del mapa ProMods. Servicio directo. Recorrido nacional en Austria. Mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material: Setra S 516 HD. Operador: EuroPerote. Itinerario (2): Viena → Graz.","tipo":"exp","prefijo":"EXP","nacional":true,"op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Viena","Graz"],"paradaIds":["wien","graz"],"n":2,"km":134,"matId":"setra-s516","mat":"Setra S 516 HD","paises":["Austria"],"paisCodes":["AT"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Viena","destino":"Graz"},{"id":"at-exp-0002","codigo":"AT-EXP-0002","nombre":"Express Viena — Linz","desc":"Express AT-EXP-0002 de EuroPerote entre Viena y Linz (145 km). Todas las paradas son ciudades/pueblos reales del mapa ProMods. Servicio directo. Recorrido nacional en Austria. Mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material: Mercedes-Benz Intouro. Operador: EuroPerote. Itinerario (2): Viena → Linz.","tipo":"exp","prefijo":"EXP","nacional":true,"op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Viena","Linz"],"paradaIds":["wien","linz"],"n":2,"km":145,"matId":"mb-intouro","mat":"Mercedes-Benz Intouro","paises":["Austria"],"paisCodes":["AT"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Viena","destino":"Linz"},{"id":"at-exp-0003","codigo":"AT-EXP-0003","nombre":"Express Graz — Klagenfurt am Wörthersee","desc":"Express AT-EXP-0003 de EuroPerote entre Graz y Klagenfurt am Wörthersee (93 km). Todas las paradas son ciudades/pueblos reales del mapa ProMods. Servicio directo. Recorrido nacional en Austria. Mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material: Setra S 531 DT (doble piso). Operador: EuroPerote. Itinerario (2): Graz → Klagenfurt am Wörthersee.","tipo":"exp","prefijo":"EXP","nacional":true,"op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Graz","Klagenfurt am Wörthersee"],"paradaIds":["graz","klagenfurt"],"n":2,"km":93,"matId":"setra-s531","mat":"Setra S 531 DT (doble piso)","paises":["Austria"],"paisCodes":["AT"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Graz","destino":"Klagenfurt am Wörthersee"},{"id":"at-exp-0004","codigo":"AT-EXP-0004","nombre":"Express Graz — Linz","desc":"Express AT-EXP-0004 de EuroPerote entre Graz y Linz (155 km). Todas las paradas son ciudades/pueblos reales del mapa ProMods. Servicio directo. Recorrido nacional en Austria. Mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material: Iveco Crossway. Operador: EuroPerote. Itinerario (2): Graz → Linz.","tipo":"exp","prefijo":"EXP","nacional":true,"op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Graz","Linz"],"paradaIds":["graz","linz"],"n":2,"km":155,"matId":"iveco-crossway","mat":"Iveco Crossway","paises":["Austria"],"paisCodes":["AT"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Graz","destino":"Linz"},{"id":"at-exp-0005","codigo":"AT-EXP-0005","nombre":"Express Innsbruck — Salzburg","desc":"Express AT-EXP-0005 de EuroPerote entre Innsbruck y Salzburg (139 km). Todas las paradas son ciudades/pueblos reales del mapa ProMods. Servicio directo. Recorrido nacional en Austria. Mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material: Volvo 9700. Operador: EuroPerote. Itinerario (2): Innsbruck → Salzburg.","tipo":"exp","prefijo":"EXP","nacional":true,"op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Innsbruck","Salzburg"],"paradaIds":["innsbruck","salzburg"],"n":2,"km":139,"matId":"volvo-9700","mat":"Volvo 9700","paises":["Austria"],"paisCodes":["AT"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Innsbruck","destino":"Salzburg"},{"id":"at-exp-0006","codigo":"AT-EXP-0006","nombre":"Express Klagenfurt am Wörthersee — Salzburg","desc":"Express AT-EXP-0006 de EuroPerote entre Klagenfurt am Wörthersee y Salzburg (154 km). Todas las paradas son ciudades/pueblos reales del mapa ProMods. Servicio directo. Recorrido nacional en Austria. Mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material: Irizar i6. Operador: EuroPerote. Itinerario (2): Klagenfurt am Wörthersee → Salzburg.","tipo":"exp","prefijo":"EXP","nacional":true,"op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Klagenfurt am Wörthersee","Salzburg"],"paradaIds":["klagenfurt","salzburg"],"n":2,"km":154,"matId":"irizar-i6","mat":"Irizar i6","paises":["Austria"],"paisCodes":["AT"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Klagenfurt am Wörthersee","destino":"Salzburg"},{"id":"at-exp-0007","codigo":"AT-EXP-0007","nombre":"Express Klagenfurt am Wörthersee — Linz","desc":"Express AT-EXP-0007 de EuroPerote entre Klagenfurt am Wörthersee y Linz (176 km). Todas las paradas son ciudades/pueblos reales del mapa ProMods. Servicio directo. Recorrido nacional en Austria. Mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material: Setra S 516 HD. Operador: EuroPerote. Itinerario (2): Klagenfurt am Wörthersee → Linz.","tipo":"exp","prefijo":"EXP","nacional":true,"op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Klagenfurt am Wörthersee","Linz"],"paradaIds":["klagenfurt","linz"],"n":2,"km":176,"matId":"setra-s516","mat":"Setra S 516 HD","paises":["Austria"],"paisCodes":["AT"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Klagenfurt am Wörthersee","destino":"Linz"},{"id":"at-exp-0008","codigo":"AT-EXP-0008","nombre":"Express Linz — Salzburg","desc":"Express AT-EXP-0008 de EuroPerote entre Linz y Salzburg (102 km). Todas las paradas son ciudades/pueblos reales del mapa ProMods. Servicio directo. Recorrido nacional en Austria. Mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material: Van Hool EX. Operador: EuroPerote. Itinerario (2): Linz → Salzburg.","tipo":"exp","prefijo":"EXP","nacional":true,"op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Linz","Salzburg"],"paradaIds":["linz","salzburg"],"n":2,"km":102,"matId":"vanhool-ex","mat":"Van Hool EX","paises":["Austria"],"paisCodes":["AT"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Linz","destino":"Salzburg"},{"id":"at-exp-0009","codigo":"AT-EXP-0009","nombre":"Express Salzburg — Graz","desc":"Express AT-EXP-0009 de EuroPerote entre Salzburg y Graz (189 km). Todas las paradas son ciudades/pueblos reales del mapa ProMods. Servicio directo. Recorrido nacional en Austria. Mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material: Mercedes-Benz Travego. Operador: EuroPerote. Itinerario (2): Salzburg → Graz.","tipo":"exp","prefijo":"EXP","nacional":true,"op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Salzburg","Graz"],"paradaIds":["salzburg","graz"],"n":2,"km":189,"matId":"mb-travego","mat":"Mercedes-Benz Travego","paises":["Austria"],"paisCodes":["AT"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Salzburg","destino":"Graz"},{"id":"at-reg-0001","codigo":"AT-REG-0001","nombre":"Regional Innsbruck — Graz","desc":"Regional AT-REG-0001 de EuroPerote entre Innsbruck y Graz (329 km). Todas las paradas son ciudades/pueblos reales del mapa ProMods. Paradas reales ProMods en orden geográfico: Salzburg. Recorrido nacional en Austria. Mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material: Volvo 7900 Hybrid. Operador: EuroPerote. Itinerario (3): Innsbruck → Salzburg → Graz.","tipo":"reg","prefijo":"REG","nacional":true,"op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Innsbruck","Salzburg","Graz"],"paradaIds":["innsbruck","salzburg","graz"],"n":3,"km":329,"matId":"volvo-7900","mat":"Volvo 7900 Hybrid","paises":["Austria"],"paisCodes":["AT"],"addons":["promods","ets2+promods"],"patron":"parador","origen":"Innsbruck","destino":"Graz"},{"id":"at-reg-0002","codigo":"AT-REG-0002","nombre":"Regional Innsbruck — Viena","desc":"Regional AT-REG-0002 de EuroPerote entre Innsbruck y Viena (376 km). Todas las paradas son ciudades/pueblos reales del mapa ProMods. Paradas reales ProMods en orden geográfico: Salzburg. Recorrido nacional en Austria. Mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material: Iveco Crossway. Operador: EuroPerote. Itinerario (3): Innsbruck → Salzburg → Viena.","tipo":"reg","prefijo":"REG","nacional":true,"op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Innsbruck","Salzburg","Viena"],"paradaIds":["innsbruck","salzburg","wien"],"n":3,"km":376,"matId":"iveco-crossway","mat":"Iveco Crossway","paises":["Austria"],"paisCodes":["AT"],"addons":["promods","ets2+promods"],"patron":"parador","origen":"Innsbruck","destino":"Viena"},{"id":"at-reg-0003","codigo":"AT-REG-0003","nombre":"Regional Linz — Salzburg","desc":"Regional AT-REG-0003 de EuroPerote entre Linz y Salzburg (102 km). Todas las paradas son ciudades/pueblos reales del mapa ProMods. Servicio directo. Recorrido nacional en Austria. Mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material: Alexander Dennis Enviro400. Operador: EuroPerote. Itinerario (2): Linz → Salzburg.","tipo":"reg","prefijo":"REG","nacional":true,"op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Linz","Salzburg"],"paradaIds":["linz","salzburg"],"n":2,"km":102,"matId":"alexander-enviro","mat":"Alexander Dennis Enviro400","paises":["Austria"],"paisCodes":["AT"],"addons":["promods","ets2+promods"],"patron":"base","origen":"Linz","destino":"Salzburg"},{"id":"at-reg-0004","codigo":"AT-REG-0004","nombre":"Regional Linz — Innsbruck","desc":"Regional AT-REG-0004 de EuroPerote entre Linz y Innsbruck (240 km). Todas las paradas son ciudades/pueblos reales del mapa ProMods. Servicio directo. Recorrido nacional en Austria. Mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material: Scania Citywide. Operador: EuroPerote. Itinerario (2): Linz → Innsbruck.","tipo":"reg","prefijo":"REG","nacional":true,"op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Linz","Innsbruck"],"paradaIds":["linz","innsbruck"],"n":2,"km":240,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Austria"],"paisCodes":["AT"],"addons":["promods","ets2+promods"],"patron":"base","origen":"Linz","destino":"Innsbruck"},{"id":"at-reg-0005","codigo":"AT-REG-0005","nombre":"Regional Linz — Graz","desc":"Regional AT-REG-0005 de EuroPerote entre Linz y Graz (155 km). Todas las paradas son ciudades/pueblos reales del mapa ProMods. Servicio directo. Recorrido nacional en Austria. Mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material: Solaris Urbino 18. Operador: EuroPerote. Itinerario (2): Linz → Graz.","tipo":"reg","prefijo":"REG","nacional":true,"op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Linz","Graz"],"paradaIds":["linz","graz"],"n":2,"km":155,"matId":"solaris-urbino","mat":"Solaris Urbino 18","paises":["Austria"],"paisCodes":["AT"],"addons":["promods","ets2+promods"],"patron":"base","origen":"Linz","destino":"Graz"},{"id":"at-reg-0006","codigo":"AT-REG-0006","nombre":"Regional Linz — Klagenfurt am Wörthersee","desc":"Regional AT-REG-0006 de EuroPerote entre Linz y Klagenfurt am Wörthersee (176 km). Todas las paradas son ciudades/pueblos reales del mapa ProMods. Servicio directo. Recorrido nacional en Austria. Mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material: Irizar ie tram (BRT). Operador: EuroPerote. Itinerario (2): Linz → Klagenfurt am Wörthersee.","tipo":"reg","prefijo":"REG","nacional":true,"op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Linz","Klagenfurt am Wörthersee"],"paradaIds":["linz","klagenfurt"],"n":2,"km":176,"matId":"irizar-ie","mat":"Irizar ie tram (BRT)","paises":["Austria"],"paisCodes":["AT"],"addons":["promods","ets2+promods"],"patron":"base","origen":"Linz","destino":"Klagenfurt am Wörthersee"},{"id":"at-reg-0007","codigo":"AT-REG-0007","nombre":"Regional Viena — Innsbruck","desc":"Regional AT-REG-0007 de EuroPerote entre Viena y Innsbruck (386 km). Todas las paradas son ciudades/pueblos reales del mapa ProMods. Paradas reales ProMods en orden geográfico: Linz. Recorrido nacional en Austria. Mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material: Solaris Urbino 18. Operador: EuroPerote. Itinerario (3): Viena → Linz → Innsbruck.","tipo":"reg","prefijo":"REG","nacional":true,"op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Viena","Linz","Innsbruck"],"paradaIds":["wien","linz","innsbruck"],"n":3,"km":386,"matId":"solaris-urbino","mat":"Solaris Urbino 18","paises":["Austria"],"paisCodes":["AT"],"addons":["promods","ets2+promods"],"patron":"base","origen":"Viena","destino":"Innsbruck"},{"id":"at-reg-0008","codigo":"AT-REG-0008","nombre":"Regional Viena — Graz","desc":"Regional AT-REG-0008 de EuroPerote entre Viena y Graz (134 km). Todas las paradas son ciudades/pueblos reales del mapa ProMods. Servicio directo. Recorrido nacional en Austria. Mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material: Iveco Crossway. Operador: EuroPerote. Itinerario (2): Viena → Graz.","tipo":"reg","prefijo":"REG","nacional":true,"op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Viena","Graz"],"paradaIds":["wien","graz"],"n":2,"km":134,"matId":"iveco-crossway","mat":"Iveco Crossway","paises":["Austria"],"paisCodes":["AT"],"addons":["promods","ets2+promods"],"patron":"base","origen":"Viena","destino":"Graz"},{"id":"at-reg-0009","codigo":"AT-REG-0009","nombre":"Regional Viena — Klagenfurt am Wörthersee","desc":"Regional AT-REG-0009 de EuroPerote entre Viena y Klagenfurt am Wörthersee (217 km). Todas las paradas son ciudades/pueblos reales del mapa ProMods. Servicio directo. Recorrido nacional en Austria. Mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material: MAN Lion's Intercity. Operador: EuroPerote. Itinerario (2): Viena → Klagenfurt am Wörthersee.","tipo":"reg","prefijo":"REG","nacional":true,"op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Viena","Klagenfurt am Wörthersee"],"paradaIds":["wien","klagenfurt"],"n":2,"km":217,"matId":"man-lions-intercity","mat":"MAN Lion's Intercity","paises":["Austria"],"paisCodes":["AT"],"addons":["promods","ets2+promods"],"patron":"base","origen":"Viena","destino":"Klagenfurt am Wörthersee"},{"id":"at-reg-0010","codigo":"AT-REG-0010","nombre":"Regional Salzburg — Graz","desc":"Regional AT-REG-0010 de EuroPerote entre Salzburg y Graz (189 km). Todas las paradas son ciudades/pueblos reales del mapa ProMods. Servicio directo. Recorrido nacional en Austria. Mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material: Iveco Crossway. Operador: EuroPerote. Itinerario (2): Salzburg → Graz.","tipo":"reg","prefijo":"REG","nacional":true,"op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Salzburg","Graz"],"paradaIds":["salzburg","graz"],"n":2,"km":189,"matId":"iveco-crossway","mat":"Iveco Crossway","paises":["Austria"],"paisCodes":["AT"],"addons":["promods","ets2+promods"],"patron":"base","origen":"Salzburg","destino":"Graz"},{"id":"at-reg-0011","codigo":"AT-REG-0011","nombre":"Regional Salzburg — Klagenfurt am Wörthersee","desc":"Regional AT-REG-0011 de EuroPerote entre Salzburg y Klagenfurt am Wörthersee (154 km). Todas las paradas son ciudades/pueblos reales del mapa ProMods. Servicio directo. Recorrido nacional en Austria. Mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material: Irizar ie tram (BRT). Operador: EuroPerote. Itinerario (2): Salzburg → Klagenfurt am Wörthersee.","tipo":"reg","prefijo":"REG","nacional":true,"op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Salzburg","Klagenfurt am Wörthersee"],"paradaIds":["salzburg","klagenfurt"],"n":2,"km":154,"matId":"irizar-ie","mat":"Irizar ie tram (BRT)","paises":["Austria"],"paisCodes":["AT"],"addons":["promods","ets2+promods"],"patron":"base","origen":"Salzburg","destino":"Klagenfurt am Wörthersee"},{"id":"at-reg-0012","codigo":"AT-REG-0012","nombre":"Regional Innsbruck — Klagenfurt am Wörthersee","desc":"Regional AT-REG-0012 de EuroPerote entre Innsbruck y Klagenfurt am Wörthersee (235 km). Todas las paradas son ciudades/pueblos reales del mapa ProMods. Servicio directo. Recorrido nacional en Austria. Mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material: Mercedes-Benz Citaro. Operador: EuroPerote. Itinerario (2): Innsbruck → Klagenfurt am Wörthersee.","tipo":"reg","prefijo":"REG","nacional":true,"op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Innsbruck","Klagenfurt am Wörthersee"],"paradaIds":["innsbruck","klagenfurt"],"n":2,"km":235,"matId":"mb-citaro","mat":"Mercedes-Benz Citaro","paises":["Austria"],"paisCodes":["AT"],"addons":["promods","ets2+promods"],"patron":"base","origen":"Innsbruck","destino":"Klagenfurt am Wörthersee"},{"id":"ba-exp-0001","codigo":"BA-EXP-0001","nombre":"Express Brod — Mostar","desc":"Express BA-EXP-0001 de EuroPerote entre Brod y Mostar (170 km). Todas las paradas son ciudades/pueblos reales del mapa ProMods. Servicio directo. Recorrido nacional en Bosnia y Herzegovina. Mapa: Complementos Balcanes; ProMods Europe (última). Material: Iveco Magelys. Operador: EuroPerote. Itinerario (2): Brod → Mostar.","tipo":"exp","prefijo":"EXP","nacional":true,"op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Brod","Mostar"],"paradaIds":["brod","mostar"],"n":2,"km":170,"matId":"iveco-magelys","mat":"Iveco Magelys","paises":["Bosnia y Herzegovina"],"paisCodes":["BA"],"addons":["balkans-addon","promods"],"patron":"directo","origen":"Brod","destino":"Mostar"},{"id":"ba-exp-0002","codigo":"BA-EXP-0002","nombre":"Express Doboj — Mostar","desc":"Express BA-EXP-0002 de EuroPerote entre Doboj y Mostar (132 km). Todas las paradas son ciudades/pueblos reales del mapa ProMods. Servicio directo. Recorrido nacional en Bosnia y Herzegovina. Mapa: Complementos Balcanes; ProMods Europe (última). Material: Mercedes-Benz Tourismo. Operador: EuroPerote. Itinerario (2): Doboj → Mostar.","tipo":"exp","prefijo":"EXP","nacional":true,"op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Doboj","Mostar"],"paradaIds":["doboj","mostar"],"n":2,"km":132,"matId":"mb-tourismo","mat":"Mercedes-Benz Tourismo","paises":["Bosnia y Herzegovina"],"paisCodes":["BA"],"addons":["balkans-addon","promods"],"patron":"directo","origen":"Doboj","destino":"Mostar"},{"id":"ba-reg-0001","codigo":"BA-REG-0001","nombre":"Regional Brod — Mostar","desc":"Regional BA-REG-0001 de EuroPerote entre Brod y Mostar (170 km). Todas las paradas son ciudades/pueblos reales del mapa ProMods. Servicio directo. Recorrido nacional en Bosnia y Herzegovina. Mapa: Complementos Balcanes; ProMods Europe (última). Material: Mercedes-Benz Citaro G (articulado). Operador: EuroPerote. Itinerario (2): Brod → Mostar.","tipo":"reg","prefijo":"REG","nacional":true,"op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Brod","Mostar"],"paradaIds":["brod","mostar"],"n":2,"km":170,"matId":"mb-citaro-g","mat":"Mercedes-Benz Citaro G (articulado)","paises":["Bosnia y Herzegovina"],"paisCodes":["BA"],"addons":["balkans-addon","promods"],"patron":"base","origen":"Brod","destino":"Mostar"},{"id":"be-exp-0001","codigo":"BE-EXP-0001","nombre":"Express Bruselas — Liège","desc":"Express BE-EXP-0001 de EuroPerote entre Bruselas y Liège (92 km). Todas las paradas son ciudades/pueblos reales del mapa ProMods. Servicio directo. Recorrido nacional en Bélgica. Mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material: Setra S 516 HD. Operador: EuroPerote. Itinerario (2): Bruselas → Liège.","tipo":"exp","prefijo":"EXP","nacional":true,"op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Bruselas","Liège"],"paradaIds":["brussel","liege"],"n":2,"km":92,"matId":"setra-s516","mat":"Setra S 516 HD","paises":["Bélgica"],"paisCodes":["BE"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Bruselas","destino":"Liège"},{"id":"bg-reg-0001","codigo":"BG-REG-0001","nombre":"Regional Пловдив — Варна","desc":"Regional BG-REG-0001 de EuroPerote entre Пловдив y Варна (307 km). Todas las paradas son ciudades/pueblos reales del mapa ProMods. Paradas reales ProMods en orden geográfico: Бургас. Recorrido nacional en Bulgaria. Mapa: Complementos Balcanes. Material: Volvo 7900 Hybrid. Operador: EuroPerote. Itinerario (3): Пловдив → Бургас → Варна.","tipo":"reg","prefijo":"REG","nacional":true,"op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Пловдив","Бургас","Варна"],"paradaIds":["plovdiv","burgas","varna"],"n":3,"km":307,"matId":"volvo-7900","mat":"Volvo 7900 Hybrid","paises":["Bulgaria"],"paisCodes":["BG"],"addons":["balkans-addon"],"patron":"parador","origen":"Пловдив","destino":"Варна"},{"id":"bg-reg-0002","codigo":"BG-REG-0002","nombre":"Regional Русе — Варна","desc":"Regional BG-REG-0002 de EuroPerote entre Русе y Варна (167 km). Todas las paradas son ciudades/pueblos reales del mapa ProMods. Servicio directo. Recorrido nacional en Bulgaria. Mapa: Complementos Balcanes. Material: Iveco Crossway. Operador: EuroPerote. Itinerario (2): Русе → Варна.","tipo":"reg","prefijo":"REG","nacional":true,"op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Русе","Варна"],"paradaIds":["ruse","varna"],"n":2,"km":167,"matId":"iveco-crossway","mat":"Iveco Crossway","paises":["Bulgaria"],"paisCodes":["BG"],"addons":["balkans-addon"],"patron":"base","origen":"Русе","destino":"Варна"},{"id":"bg-reg-0003","codigo":"BG-REG-0003","nombre":"Regional Русе — Плевен","desc":"Regional BG-REG-0003 de EuroPerote entre Русе y Плевен (86 km). Todas las paradas son ciudades/pueblos reales del mapa ProMods. Servicio directo. Recorrido nacional en Bulgaria. Mapa: Complementos Balcanes. Material: Scania Citywide. Operador: EuroPerote. Itinerario (2): Русе → Плевен.","tipo":"reg","prefijo":"REG","nacional":true,"op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Русе","Плевен"],"paradaIds":["ruse","pleven"],"n":2,"km":86,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Bulgaria"],"paisCodes":["BG"],"addons":["balkans-addon"],"patron":"base","origen":"Русе","destino":"Плевен"},{"id":"bg-reg-0004","codigo":"BG-REG-0004","nombre":"Regional Русе — Велико Търново","desc":"Regional BG-REG-0004 de EuroPerote entre Русе y Велико Търново (73 km). Todas las paradas son ciudades/pueblos reales del mapa ProMods. Servicio directo. Recorrido nacional en Bulgaria. Mapa: Complementos Balcanes. Material: MAN Lion's City. Operador: EuroPerote. Itinerario (2): Русе → Велико Търново.","tipo":"reg","prefijo":"REG","nacional":true,"op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Русе","Велико Търново"],"paradaIds":["ruse","veli_tarnovo"],"n":2,"km":73,"matId":"man-lions-city","mat":"MAN Lion's City","paises":["Bulgaria"],"paisCodes":["BG"],"addons":["balkans-addon"],"patron":"base","origen":"Русе","destino":"Велико Търново"},{"id":"bg-reg-0005","codigo":"BG-REG-0005","nombre":"Regional Русе — Бургас","desc":"Regional BG-REG-0005 de EuroPerote entre Русе y Бургас (171 km). Todas las paradas son ciudades/pueblos reales del mapa ProMods. Servicio directo. Recorrido nacional en Bulgaria. Mapa: Complementos Balcanes. Material: Mercedes-Benz Intouro. Operador: EuroPerote. Itinerario (2): Русе → Бургас.","tipo":"reg","prefijo":"REG","nacional":true,"op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Русе","Бургас"],"paradaIds":["ruse","burgas"],"n":2,"km":171,"matId":"mb-intouro","mat":"Mercedes-Benz Intouro","paises":["Bulgaria"],"paisCodes":["BG"],"addons":["balkans-addon"],"patron":"base","origen":"Русе","destino":"Бургас"}]};
 (() => {
   let DATA = window.CATALOG_DATA && window.CATALOG_DATA.routes ? window.CATALOG_DATA : null;
-  const state = { page: 0, pageSize: 24, filtered: [] };
+  const state = {
+    page: 0,
+    pageSize: 24,
+    filtered: [],
+    cityId: "",
+    map: null,
+    markers: new Map(),
+    selectedMarker: null,
+  };
 
   const $ = (id) => document.getElementById(id);
   const esc = (s) =>
     String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-
-  const uniq = (arr) =>
-    [...new Set(arr)].filter(Boolean).sort((a, b) => String(a).localeCompare(String(b), "es"));
+  const uniq = (arr) => [...new Set(arr)].filter(Boolean).sort((a, b) => String(a).localeCompare(String(b), "es"));
 
   function setBoot(pct, err) {
     const bar = $("bootBar");
@@ -276,13 +314,11 @@ body.booting .app, body.booting .mobile-bar { visibility: hidden; }
       errEl.textContent = err;
     }
   }
-
   function hideBoot() {
     const boot = $("boot");
     if (boot) boot.hidden = true;
     document.body.classList.remove("booting");
   }
-
   function fetchJson(url) {
     return fetch(url, { cache: "no-cache", mode: "cors" }).then(async (r) => {
       if (!r.ok) throw new Error("HTTP " + r.status + " en " + url.split("/").slice(-2).join("/"));
@@ -301,7 +337,9 @@ body.booting .app, body.booting .mobile-bar { visibility: hidden; }
     for (const base of bases) {
       try {
         const meta = await fetchJson(base + "/meta.json");
-        setBoot(14);
+        setBoot(12);
+        const cities = await fetchJson(base + "/cities.json");
+        setBoot(22);
         const total = meta.chunks || 0;
         if (!total) throw new Error("meta.json sin chunks");
         const routes = [];
@@ -311,11 +349,11 @@ body.booting .app, body.booting .mobile-bar { visibility: hidden; }
           for (let j = i; j < Math.min(total, i + batch); j++) slice.push(j);
           const parts = await Promise.all(slice.map((j) => fetchJson(base + "/chunks/routes-" + j + ".json")));
           parts.forEach((p) => routes.push(...p));
-          setBoot(14 + (82 * Math.min(total, i + batch)) / Math.max(total, 1));
+          setBoot(22 + (74 * Math.min(total, i + batch)) / Math.max(total, 1));
         }
         if (!routes.length) throw new Error("No se cargaron rutas");
         setBoot(98);
-        return { ...meta, routes };
+        return { ...meta, routes, cities: cities.cities || cities };
       } catch (e) {
         lastErr = e;
         console.warn("Fallo carga desde", base, e);
@@ -338,147 +376,301 @@ body.booting .app, body.booting .mobile-bar { visibility: hidden; }
     if (cur) el.value = cur;
   }
 
+  function fillCitySelect(filterText) {
+    const el = $("citySelect");
+    if (!el || !DATA.cities) return;
+    const q = (filterText || "").trim().toLowerCase();
+    const list = DATA.cities
+      .filter((c) => c.lat != null && c.lon != null)
+      .filter((c) => !q || c.nombre.toLowerCase().includes(q) || c.pais.toLowerCase().includes(q) || (c.iso || "").toLowerCase().includes(q))
+      .sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
+    el.innerHTML = "";
+    for (const c of list) {
+      const opt = document.createElement("option");
+      opt.value = c.id;
+      opt.textContent = `${c.nombre} (${c.iso || c.pais})`;
+      if (c.id === state.cityId) opt.selected = true;
+      el.appendChild(opt);
+    }
+  }
+
   function initFilters() {
     fillSelect("tipo", uniq(DATA.routes.map((r) => r.tipo)), (id) => DATA.tipoNames[id] || id);
     fillSelect("pais", uniq(DATA.routes.flatMap((r) => r.paises || [])));
     fillSelect("addon", uniq(DATA.routes.flatMap((r) => r.addons || [])), (id) => DATA.addonNames[id] || id);
-    fillSelect("material", uniq(DATA.routes.map((r) => r.mat)));
+    fillCitySelect("");
   }
 
-  function applyFilters() {
+  function routeCard(r, asH4) {
+    const tipo = DATA.tipoNames[r.tipo] || r.tipo;
+    const addons = (r.addons || []).map((a) => DATA.addonNames[a] || a).join(" · ");
+    const titleTag = asH4 ? "h4" : "h2";
+    return (
+      '<article class="card">' +
+      '<div class="card-head"><div>' +
+      `<${titleTag}>` +
+      esc(r.nombre) +
+      `</${titleTag}>` +
+      '<p class="sub">' +
+      esc(tipo) +
+      " · " +
+      esc(r.nacional ? "Nacional" : "Internacional") +
+      " · " +
+      esc((r.paises || []).join(", ")) +
+      " · " +
+      esc(r.km) +
+      " km · " +
+      esc(r.n) +
+      " paradas</p></div><span class=\"code\">" +
+      esc(r.codigo) +
+      "</span></div>" +
+      '<div class="tags">' +
+      '<span class="tag">' +
+      esc(tipo) +
+      "</span>" +
+      '<span class="tag gold">' +
+      esc(r.mat || "") +
+      "</span>" +
+      (addons ? '<span class="tag">' + esc(addons) + "</span>" : "") +
+      "</div>" +
+      '<p class="desc">' +
+      esc(r.desc || "") +
+      "</p>" +
+      '<div class="stops"><strong>Itinerario:</strong> ' +
+      esc((r.paradas || []).join(" → ")) +
+      "</div></article>"
+    );
+  }
+
+  function baseFilter(r) {
     const q = (($("q")?.value || "") + " " + ($("qTop")?.value || "")).trim().toLowerCase();
-    const qStop = ($("qStop")?.value || "").trim().toLowerCase();
     const tipo = $("tipo")?.value || "";
     const pais = $("pais")?.value || "";
     const addon = $("addon")?.value || "";
-    const material = $("material")?.value || "";
-    const patron = $("patron")?.value || "";
-    const minN = Number($("minN")?.value || 0);
-    const maxN = Number($("maxN")?.value || 0);
-    const minKm = Number($("minKm")?.value || 0);
-    const maxKm = Number($("maxKm")?.value || 0);
+    const ambito = $("ambito")?.value || "";
+    if (tipo && r.tipo !== tipo) return false;
+    if (pais && !(r.paises || []).includes(pais)) return false;
+    if (addon && !(r.addons || []).includes(addon)) return false;
+    if (ambito === "nacional" && !r.nacional) return false;
+    if (ambito === "internacional" && r.nacional) return false;
+    if (q) {
+      const blob = [r.codigo, r.nombre, r.desc, r.mat, ...(r.paradas || []), ...(r.paises || [])].join(" ").toLowerCase();
+      if (!blob.includes(q)) return false;
+    }
+    return true;
+  }
 
-    state.filtered = DATA.routes.filter((r) => {
-      if (tipo && r.tipo !== tipo) return false;
-      if (pais && !(r.paises || []).includes(pais)) return false;
-      if (addon && !(r.addons || []).includes(addon)) return false;
-      if (material && r.mat !== material) return false;
-      if (patron && r.patron !== patron) return false;
-      if (minN && r.n < minN) return false;
-      if (maxN && r.n > maxN) return false;
-      if (minKm && r.km < minKm) return false;
-      if (maxKm && r.km > maxKm) return false;
-      if (qStop) {
-        const hit = (r.paradas || []).some((p) => String(p).toLowerCase().includes(qStop));
-        if (!hit) return false;
-      }
-      if (q) {
-        const blob = [r.codigo, r.nombre, r.desc, r.mat, ...(r.paradas || []), ...(r.paises || [])].join(" ").toLowerCase();
-        if (!blob.includes(q)) return false;
-      }
-      return true;
-    });
-
+  function sortRoutes(arr) {
     const sort = $("sort")?.value || "codigo";
-    state.filtered.sort((a, b) => {
+    arr.sort((a, b) => {
       if (sort === "nombre") return a.nombre.localeCompare(b.nombre, "es");
       if (sort === "paradas_desc") return b.n - a.n;
-      if (sort === "paradas_asc") return a.n - b.n;
       if (sort === "km_desc") return b.km - a.km;
       if (sort === "km_asc") return a.km - b.km;
       return String(a.codigo).localeCompare(String(b.codigo), "es");
     });
-    state.page = 0;
-    render();
   }
 
-  function render() {
+  function routesForCity(cityId) {
+    const city = DATA.cities.find((c) => c.id === cityId);
+    if (!city) return { ends: [], through: [], city: null };
+    const name = city.nombre;
+    const ends = [];
+    const through = [];
+    for (const r of DATA.routes) {
+      if (!baseFilter(r)) continue;
+      const ids = r.paradaIds || [];
+      const names = r.paradas || [];
+      const hitId = ids.includes(cityId);
+      const hitName = names.includes(name);
+      if (!hitId && !hitName) continue;
+      const isEnd =
+        names[0] === name ||
+        names[names.length - 1] === name ||
+        ids[0] === cityId ||
+        ids[ids.length - 1] === cityId;
+      if (isEnd) ends.push(r);
+      else through.push(r);
+    }
+    sortRoutes(ends);
+    sortRoutes(through);
+    return { ends, through, city };
+  }
+
+  function applyFilters() {
+    if (state.cityId) {
+      renderCityView();
+      return;
+    }
+    $("cityPanels").hidden = true;
+    $("allToolbar").hidden = false;
+    $("list").hidden = false;
+    $("pager").hidden = false;
+
+    state.filtered = DATA.routes.filter(baseFilter);
+    sortRoutes(state.filtered);
+    state.page = 0;
+    renderList();
+  }
+
+  function renderList() {
     const list = $("list");
     const total = state.filtered.length;
     const pages = Math.max(1, Math.ceil(total / state.pageSize));
     if (state.page >= pages) state.page = pages - 1;
     const start = state.page * state.pageSize;
     const slice = state.filtered.slice(start, start + state.pageSize);
-
     if ($("resultCount")) $("resultCount").textContent = total + " rutas · página " + (state.page + 1) + "/" + pages;
     if ($("pageInfo")) $("pageInfo").textContent = state.page + 1 + " / " + pages;
     if ($("prev")) $("prev").disabled = state.page <= 0;
     if ($("next")) $("next").disabled = state.page >= pages - 1;
+    updateMetrics(total);
+    list.innerHTML = slice.map((r) => routeCard(r, false)).join("");
+  }
 
-    if ($("metrics")) {
-      $("metrics").innerHTML =
-        '<span class="metric"><strong>' +
-        (DATA.total || DATA.routes.length) +
-        "</strong> en catálogo</span>" +
-        '<span class="metric"><strong>' +
-        total +
-        "</strong> filtradas</span>" +
-        '<span class="metric">Operador <strong>EuroPerote</strong></span>';
+  function renderCityView() {
+    const mode = $("cityMode")?.value || "both";
+    const { ends, through, city } = routesForCity(state.cityId);
+    if (!city) return;
+    $("cityPanels").hidden = false;
+    $("allToolbar").hidden = true;
+    $("list").hidden = true;
+    $("pager").hidden = true;
+
+    $("cityHeading").innerHTML =
+      "<h2>" +
+      esc(city.nombre) +
+      "</h2><p>" +
+      esc(city.pais) +
+      " · " +
+      esc(city.iso || "") +
+      " · ProMods real · " +
+      ends.length +
+      " cabeceras · " +
+      through.length +
+      " de paso</p>";
+
+    const showEnds = mode === "both" || mode === "ends";
+    const showThrough = mode === "both" || mode === "through";
+    $("listEnds").parentElement.hidden = !showEnds;
+    $("listThrough").parentElement.hidden = !showThrough;
+    $("listEnds").innerHTML = showEnds
+      ? ends.length
+        ? ends.map((r) => routeCard(r, true)).join("")
+        : '<p class="meta">Ninguna ruta con origen/destino aquí.</p>'
+      : "";
+    $("listThrough").innerHTML = showThrough
+      ? through.length
+        ? through.map((r) => routeCard(r, true)).join("")
+        : '<p class="meta">Ninguna ruta de paso.</p>'
+      : "";
+
+    updateMetrics(ends.length + through.length);
+    if ($("mapHint")) {
+      $("mapHint").textContent = `Ciudad seleccionada: ${city.nombre}. Cabeceras ${ends.length} · De paso ${through.length}.`;
     }
+    focusCityOnMap(city.id);
+  }
 
-    list.innerHTML = slice
-      .map((r) => {
-        const tipo = DATA.tipoNames[r.tipo] || r.tipo;
-        const addons = (r.addons || []).map((a) => DATA.addonNames[a] || a).join(" · ");
-        return (
-          '<article class="card">' +
-          '<div class="card-head"><div>' +
-          "<h2>" +
-          esc(r.nombre) +
-          "</h2>" +
-          '<p class="sub">' +
-          esc(tipo) +
-          " · " +
-          esc((r.paises || []).join(", ")) +
-          " · " +
-          esc(r.km) +
-          " km · " +
-          esc(r.n) +
-          " paradas</p>" +
-          "</div><span class=\"code\">" +
-          esc(r.codigo) +
-          "</span></div>" +
-          '<div class="tags">' +
-          '<span class="tag">' +
-          esc(tipo) +
-          "</span>" +
-          '<span class="tag gold">' +
-          esc(r.mat || "") +
-          "</span>" +
-          (r.patron ? '<span class="tag">' + esc(r.patron) + "</span>" : "") +
-          (addons ? '<span class="tag">' + esc(addons) + "</span>" : "") +
-          "</div>" +
-          '<p class="desc">' +
-          esc(r.desc || "") +
-          "</p>" +
-          '<div class="stops"><strong>Itinerario:</strong> ' +
-          esc((r.paradas || []).join(" → ")) +
-          "</div></article>"
-        );
-      })
-      .join("");
+  function updateMetrics(filtered) {
+    if (!$("metrics")) return;
+    $("metrics").innerHTML =
+      '<span class="metric"><strong>' +
+      (DATA.total || DATA.routes.length) +
+      "</strong> rutas</span>" +
+      '<span class="metric"><strong>' +
+      (DATA.cities?.length || 0) +
+      "</strong> ciudades ProMods</span>" +
+      '<span class="metric"><strong>' +
+      filtered +
+      "</strong> en vista</span>" +
+      '<span class="metric">Operador <strong>EuroPerote</strong></span>';
+  }
+
+  function initMap() {
+    if (!window.L || state.map) return;
+    state.map = L.map("map", { scrollWheelZoom: true }).setView([52.5, 13.4], 4);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 18,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    }).addTo(state.map);
+
+    const bounds = [];
+    for (const c of DATA.cities || []) {
+      if (c.lat == null || c.lon == null) continue;
+      const marker = L.circleMarker([c.lat, c.lon], {
+        radius: 5,
+        color: "#fff",
+        weight: 1.5,
+        fillColor: "#0B3D91",
+        fillOpacity: 0.9,
+      });
+      marker.bindTooltip(c.nombre + " (" + (c.iso || c.pais) + ")", { direction: "top" });
+      marker.on("click", () => selectCity(c.id, true));
+      marker.addTo(state.map);
+      state.markers.set(c.id, marker);
+      bounds.push([c.lat, c.lon]);
+    }
+    if (bounds.length) state.map.fitBounds(bounds, { padding: [24, 24] });
+    setTimeout(() => state.map.invalidateSize(), 200);
+  }
+
+  function focusCityOnMap(cityId) {
+    const marker = state.markers.get(cityId);
+    const city = DATA.cities.find((c) => c.id === cityId);
+    if (!marker || !city || !state.map) return;
+    if (state.selectedMarker) {
+      state.selectedMarker.setStyle({ fillColor: "#0B3D91", radius: 5 });
+    }
+    marker.setStyle({ fillColor: "#F2A900", radius: 9 });
+    state.selectedMarker = marker;
+    state.map.setView([city.lat, city.lon], Math.max(state.map.getZoom(), 6), { animate: true });
+  }
+
+  function selectCity(cityId, fromMap) {
+    state.cityId = cityId || "";
+    if ($("citySelect") && cityId) $("citySelect").value = cityId;
+    if (!fromMap) fillCitySelect($("citySearch")?.value || "");
+    applyFilters();
   }
 
   function bind() {
     $("applyBtn")?.addEventListener("click", applyFilters);
     $("resetBtn")?.addEventListener("click", () => {
-      ["q", "qTop", "qStop", "tipo", "pais", "addon", "material", "patron", "minN", "maxN", "minKm", "maxKm"].forEach((id) => {
-        const el = $(id);
-        if (el) el.value = "";
+      ["q", "qTop", "tipo", "pais", "addon", "ambito", "citySearch"].forEach((id) => {
+        if ($(id)) $(id).value = "";
       });
+      if ($("cityMode")) $("cityMode").value = "both";
+      state.cityId = "";
+      fillCitySelect("");
+      if (state.selectedMarker) {
+        state.selectedMarker.setStyle({ fillColor: "#0B3D91", radius: 5 });
+        state.selectedMarker = null;
+      }
       applyFilters();
     });
-    ["q", "qTop", "qStop"].forEach((id) => $(id)?.addEventListener("input", () => applyFilters()));
-    ["tipo", "pais", "addon", "material", "patron", "sort"].forEach((id) =>
-      $(id)?.addEventListener("change", () => applyFilters())
-    );
+    $("clearCity")?.addEventListener("click", () => {
+      state.cityId = "";
+      if ($("citySelect")) $("citySelect").selectedIndex = -1;
+      if (state.selectedMarker) {
+        state.selectedMarker.setStyle({ fillColor: "#0B3D91", radius: 5 });
+        state.selectedMarker = null;
+      }
+      if ($("mapHint")) $("mapHint").textContent = "Clic en un marcador o elige ciudad a la izquierda.";
+      applyFilters();
+    });
+    $("citySelect")?.addEventListener("change", (e) => selectCity(e.target.value, false));
+    $("citySearch")?.addEventListener("input", (e) => fillCitySelect(e.target.value));
+    $("cityMode")?.addEventListener("change", () => state.cityId && renderCityView());
+    ["q", "qTop"].forEach((id) => $(id)?.addEventListener("input", () => applyFilters()));
+    ["tipo", "pais", "addon", "ambito", "sort"].forEach((id) => $(id)?.addEventListener("change", () => applyFilters()));
     $("prev")?.addEventListener("click", () => {
       state.page--;
-      render();
+      renderList();
     });
     $("next")?.addEventListener("click", () => {
       state.page++;
-      render();
+      renderList();
     });
     $("pageSizeSeg")?.addEventListener("click", (e) => {
       const btn = e.target.closest("button[data-size]");
@@ -486,7 +678,7 @@ body.booting .app, body.booting .mobile-bar { visibility: hidden; }
       state.pageSize = Number(btn.dataset.size);
       [...$("pageSizeSeg").querySelectorAll("button")].forEach((b) => b.classList.toggle("on", b === btn));
       state.page = 0;
-      render();
+      if (!state.cityId) renderList();
     });
     $("toggleFilters")?.addEventListener("click", () => $("sidebar")?.classList.toggle("open"));
   }
@@ -494,16 +686,17 @@ body.booting .app, body.booting .mobile-bar { visibility: hidden; }
   async function main() {
     try {
       if (!DATA) DATA = await loadCatalogFromCdn();
+      if (!DATA.cities) DATA.cities = [];
       window.CATALOG_DATA = DATA;
       initFilters();
       bind();
+      initMap();
       applyFilters();
       hideBoot();
     } catch (e) {
       setBoot(100, String(e.message || e));
     }
   }
-
   main();
 })();
 </script>

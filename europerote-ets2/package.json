@@ -4,9 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "densify": "node scripts/densify-stops.mjs",
     "generate": "node scripts/generate-routes.mjs",
+    "geocode": "node scripts/geocode-cities.mjs",
     "export:html": "node scripts/export-html.mjs",
-    "build": "npm run densify && npm run generate && npm run export:html"
+    "build": "npm run generate && npm run export:html"
   }
 }

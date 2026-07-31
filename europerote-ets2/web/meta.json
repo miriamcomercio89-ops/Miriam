@@ -1,9 +1,11 @@
 {
-  "version": "1.0.0",
-  "generado": "2026-07-31T12:48:30.642Z",
-  "total": 4217,
-  "chunks": 13,
+  "version": "3.0.0",
+  "generado": "2026-07-31T13:35:40.987Z",
+  "total": 2656,
+  "chunks": 8,
   "chunkSize": 350,
+  "cities": 308,
+  "solo_promods_real": true,
   "operador": {
     "id": "europerote",
     "nombre": "EuroPerote",
@@ -36,7 +38,6 @@
     "egypt-addon": "Complemento Egipto / Norte África",
     "ets2+promods": "Fusión base ETS2 + ProMods"
   },
-  "stops": 1520,
-  "cdnBase": "https://cdn.jsdelivr.net/gh/miriamcomercio89-ops/Miriam@c8d387bd03510f7d4c4ddafea13ed35676bd5ca6/europerote-ets2/web",
-  "commit": "c8d387bd03510f7d4c4ddafea13ed35676bd5ca6"
+  "cdnBase": "https://cdn.jsdelivr.net/gh/miriamcomercio89-ops/Miriam@94d9bff10af13fdf18e92108710237db7e107084/europerote-ets2/web",
+  "commit": "94d9bff10af13fdf18e92108710237db7e107084"
 }
