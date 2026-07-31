@@ -128,24 +128,29 @@ fs.writeFileSync(
 fs.writeFileSync(path.join(webDir, "app.js"), app);
 fs.writeFileSync(path.join(webDir, "styles.css"), styles);
 
+const LIVE_URL = process.env.EUROPEROTE_LIVE_URL || "https://flashy-ion-6tew1ep.shipstatic.com";
 const cdnIndex = `https://cdn.jsdelivr.net/gh/${REPO}@${CDN_REF}/europerote-ets2/web/index.html`;
 const abrir = `<!doctype html>
 <html lang="es">
 <head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Abrir EuroPerote</title>
-<meta http-equiv="refresh" content="0;url=${cdnIndex}"/>
+<meta http-equiv="refresh" content="0;url=${LIVE_URL}/"/>
 <style>body{font-family:system-ui;margin:0;padding:1.25rem;background:#0a1628;color:#e8eef6;line-height:1.45}a{color:#F2A900;font-weight:700}.card{background:#13233d;border-radius:16px;padding:1rem;margin:1rem 0}code{word-break:break-all;font-size:.85rem}</style>
 </head><body>
 <h1>EuroPerote</h1>
-<p>Catálogo con mapa ProMods (ets2.online), etiquetas ferry/peaje/frontera y PDFs por país.</p>
+<p>Catálogo con mapa ProMods (ets2.online).</p>
 <div class="card">
-<p><strong>PC / móvil — abrir aquí:</strong><br/><a href="${cdnIndex}">${cdnIndex}</a></p>
-<p>Si el enlace anterior no carga aún (CDN cache), espera 1–2 minutos o fuerza recarga.</p>
+<p><strong>Abrir en el PC (recomendado):</strong><br/>
+<a href="${LIVE_URL}/">${LIVE_URL}/</a></p>
+<p>Copia y pega el enlace en Chrome/Edge/Firefox. No uses htmlpreview ni el enlace de jsDelivr del HTML (el navegador lo muestra como texto).</p>
+</div>
+<div class="card">
+<p>Rutas: ${routes.length} · Ciudades: ${cities.length} · Cobertura: ${summary.cobertura_pct}%</p>
 <p>Commit: <code>${CDN_REF}</code></p>
 </div>
-<p>Rutas: ${routes.length} · Ciudades: ${cities.length} · Cobertura: ${summary.cobertura_pct}%</p>
 </body></html>`;
 fs.writeFileSync(path.join(root, "ABRIR-EN-MOVIL.html"), abrir);
 fs.writeFileSync(path.join(webDir, "ABRIR.html"), abrir);
+fs.writeFileSync(path.join(webDir, "LIVE_URL.txt"), LIVE_URL + "\n");
 console.log(`Export OK: ${routes.length} routes, ${cities.length} cities, ${chunks.length} chunks`);
-console.log(`Abrir en PC: ${cdnIndex}`);
+console.log(`Abrir en PC: ${LIVE_URL}/`);
