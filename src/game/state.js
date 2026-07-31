@@ -116,7 +116,8 @@ export function createNewGame(options = {}) {
       queue: [],
       current: null,
       servedToday: 0,
-      nextSpawnAtMs: start.getTime() + 10 * 1000,
+      // ~40 s reales al ritmo Normal (1 min real = 30 min juego)
+      nextSpawnAtMs: start.getTime() + 40_000 * 30,
     },
     settings: {
       music: true,
@@ -208,6 +209,13 @@ export function migrateState(data) {
     data.customers.penas = data.customers.penas || penas;
   }
   if (!data.customers.queue) data.customers.queue = [];
+  // v1.4: el día va ×30; si el próximo spawn quedó en segundos de juego, reescalar
+  if (data.customers && data.clock) {
+    const gap = (data.customers.nextSpawnAtMs || 0) - data.clock.gameTimeMs;
+    if (gap >= 0 && gap < 10 * 60 * 1000) {
+      data.customers.nextSpawnAtMs = data.clock.gameTimeMs + 40_000 * 30;
+    }
+  }
   if (data.finance && data.finance.dayPrizesReimbursableCents == null) {
     data.finance.dayPrizesReimbursableCents = 0;
   }

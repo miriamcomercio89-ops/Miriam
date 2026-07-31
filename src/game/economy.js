@@ -1,6 +1,6 @@
 import { MONTHLY_EXPENSES, OFFICE } from './state.js';
 import { defaultFloatDrawer, drawerTotalCents, formatEuro } from '../data/money.js';
-import { gameDate, gameYmd, nextBusinessDayStart, closedReason } from './time.js';
+import { gameDate, gameYmd, nextBusinessDayStart, closedReason, BASE_SCALE } from './time.js';
 import { processArrivingOrders } from './customers.js';
 import { ensureDrawsResolved } from './draws.js';
 import { getProduct } from '../data/products.js';
@@ -243,7 +243,8 @@ export function closeDay(state) {
 
   processArrivingOrders(state);
   ensureDrawsResolved(state);
-  state.customers.nextSpawnAtMs = state.clock.gameTimeMs + 2 * 60 * 1000;
+  // ~8 min reales de respiro al abrir el día (equivalente al ritmo anterior)
+  state.customers.nextSpawnAtMs = state.clock.gameTimeMs + 8 * 60 * 1000 * BASE_SCALE;
   state.ui.lastCloseSummary = summary;
   state.ui.screen = 'day-results';
   state.dayLog.push({

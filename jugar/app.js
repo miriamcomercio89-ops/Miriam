@@ -2524,7 +2524,8 @@
         queue: [],
         current: null,
         servedToday: 0,
-        nextSpawnAtMs: start.getTime() + 10 * 1e3
+        // ~40 s reales al ritmo Normal (1 min real = 30 min juego)
+        nextSpawnAtMs: start.getTime() + 4e4 * 30
       },
       settings: {
         music: true,
@@ -2711,8 +2712,7 @@
     const d = gameDate(state2);
     const hh = String(d.getUTCHours()).padStart(2, "0");
     const mm = String(d.getUTCMinutes()).padStart(2, "0");
-    const ss = String(d.getUTCSeconds()).padStart(2, "0");
-    return `${hh}:${mm}:${ss}`;
+    return `${hh}:${mm}`;
   }
   function isWeekend(state2) {
     const day = gameDate(state2).getUTCDay();
@@ -4415,10 +4415,12 @@
     scheduleNextSpawn(state2);
     return state2;
   }
+  var SPAWN_MIN_REAL_MS = 64e3;
+  var SPAWN_MAX_REAL_MS = 28e4;
   function scheduleNextSpawn(state2) {
-    const factor = crowdFactor(state2);
-    const minMs = 16 * 1e3 / factor;
-    const maxMs = 70 * 1e3 / factor;
+    const factor = Math.max(0.35, crowdFactor(state2));
+    const minMs = SPAWN_MIN_REAL_MS * BASE_SCALE / factor;
+    const maxMs = SPAWN_MAX_REAL_MS * BASE_SCALE / factor;
     state2.customers.nextSpawnAtMs = state2.clock.gameTimeMs + minMs + Math.random() * (maxMs - minMs);
   }
   function maybeSpawnPenaDay(state2) {
@@ -5141,7 +5143,7 @@
     state2.office.isOpen = true;
     processArrivingOrders(state2);
     ensureDrawsResolved(state2);
-    state2.customers.nextSpawnAtMs = state2.clock.gameTimeMs + 2 * 60 * 1e3;
+    state2.customers.nextSpawnAtMs = state2.clock.gameTimeMs + 8 * 60 * 1e3 * BASE_SCALE;
     state2.ui.lastCloseSummary = summary;
     state2.ui.screen = "day-results";
     state2.dayLog.push({

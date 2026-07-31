@@ -57,7 +57,6 @@ export function formatGameDateTime(state) {
     day: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
-    second: '2-digit',
     timeZone: 'UTC',
   });
 }
@@ -66,8 +65,7 @@ export function formatGameClock(state) {
   const d = gameDate(state);
   const hh = String(d.getUTCHours()).padStart(2, '0');
   const mm = String(d.getUTCMinutes()).padStart(2, '0');
-  const ss = String(d.getUTCSeconds()).padStart(2, '0');
-  return `${hh}:${mm}:${ss}`;
+  return `${hh}:${mm}`;
 }
 
 export function weekdayName(state) {

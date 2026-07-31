@@ -1,6 +1,6 @@
 import { getProduct, PRODUCTS, REGIONAL_IDS } from '../data/products.js';
 import { makeVisitor } from '../data/customers.js';
-import { isOpenHours, gameDate, gameYmd } from './time.js';
+import { isOpenHours, gameDate, gameYmd, BASE_SCALE } from './time.js';
 import { startPayment } from './cash.js';
 import { formatEuro } from '../data/money.js';
 import { eventOn } from '../data/events.js';
@@ -103,10 +103,19 @@ export function maybeSpawnCustomers(state) {
   return state;
 }
 
+/**
+ * Ritmo real deseado (como con el BASE_SCALE antiguo 0.25):
+ * ~64–280 s reales entre llegadas a velocidad Normal.
+ * Se convierte a tiempo de juego con BASE_SCALE para que, al ir el día ×30,
+ * no lleguen clientes cada pocos segundos reales.
+ */
+const SPAWN_MIN_REAL_MS = 64_000;
+const SPAWN_MAX_REAL_MS = 280_000;
+
 function scheduleNextSpawn(state) {
-  const factor = crowdFactor(state);
-  const minMs = (16 * 1000) / factor;
-  const maxMs = (70 * 1000) / factor;
+  const factor = Math.max(0.35, crowdFactor(state));
+  const minMs = (SPAWN_MIN_REAL_MS * BASE_SCALE) / factor;
+  const maxMs = (SPAWN_MAX_REAL_MS * BASE_SCALE) / factor;
   state.customers.nextSpawnAtMs = state.clock.gameTimeMs + minMs + Math.random() * (maxMs - minMs);
 }
 
