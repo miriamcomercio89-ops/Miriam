@@ -1,57 +1,57 @@
 {
-  "version": "0.1.0",
+  "version": "0.2.0",
   "tipos": [
     {
       "id": "urb",
-      "prefijo": "U",
+      "prefijo": "URB",
       "nombre": "Urbano",
       "desc": "Líneas urbanas/metropolitanas dentro de una gran ciudad ProMods."
     },
     {
       "id": "reg",
-      "prefijo": "R",
+      "prefijo": "REG",
       "nombre": "Regional",
       "desc": "Interurbanos regionales entre pueblos y ciudades cercanas."
     },
     {
       "id": "exp",
-      "prefijo": "X",
+      "prefijo": "EXP",
       "nombre": "Express",
       "desc": "Servicios semirrápidos con menos paradas."
     },
     {
       "id": "int",
-      "prefijo": "I",
+      "prefijo": "INT",
       "nombre": "Internacional",
       "desc": "Líneas que cruzan fronteras ProMods / addons."
     },
     {
       "id": "noc",
-      "prefijo": "N",
+      "prefijo": "NOC",
       "nombre": "Nocturno",
       "desc": "Servicios nocturnos de media y larga distancia."
     },
     {
       "id": "tur",
-      "prefijo": "T",
+      "prefijo": "TUR",
       "nombre": "Turístico",
       "desc": "Rutas panorámicas, costas, islas y destinos temáticos."
     },
     {
       "id": "ae",
-      "prefijo": "A",
+      "prefijo": "AER",
       "nombre": "Aeropuerto",
       "desc": "Enlaces estación/ciudad ↔ aeropuerto."
     },
     {
       "id": "fer",
-      "prefijo": "F",
+      "prefijo": "FER",
       "nombre": "Ferry-bus",
       "desc": "Rutas que combinan tramos de carretera con ferris ProMods."
     },
     {
       "id": "brt",
-      "prefijo": "B",
+      "prefijo": "BRT",
       "nombre": "BRT / Busway",
       "desc": "Corredores de alta capacidad tipo BRT en áreas densas."
     }

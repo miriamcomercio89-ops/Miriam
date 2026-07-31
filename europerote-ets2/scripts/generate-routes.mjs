@@ -2,6 +2,15 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+/**
+ * EuroPerote route generator v2
+ * - Codes: EP-{TIPO}-{####}  (EP-REG-0001, EP-INT-0045, …)
+ * - Names start with tipo
+ * - Intercity only on real ProMods coords; invented = local near madre
+ * - Paths: progress-to-destination + axis corridors
+ * - Strict geography for EXP/INT (short hub detours allowed)
+ */
+
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const outDir = path.join(root, "output");
 fs.mkdirSync(outDir, { recursive: true });
@@ -15,13 +24,10 @@ const addonsDoc = JSON.parse(fs.readFileSync(path.join(root, "data/addons.json")
 const stops = stopsDoc.stops;
 const byId = Object.fromEntries(stops.map((s) => [s.id, s]));
 const tipoById = Object.fromEntries(lineTypes.map((t) => [t.id, t]));
-
-const SCALE_KM = 0.019; // game units → km approx
+const SCALE_KM = 0.019;
 
 function dist(a, b) {
-  const dx = a.x - b.x;
-  const dz = a.z - b.z;
-  return Math.hypot(dx, dz) * SCALE_KM;
+  return Math.hypot(a.x - b.x, a.z - b.z) * SCALE_KM;
 }
 
 function pathKm(ids) {
@@ -38,6 +44,28 @@ function uniqAddons(ids) {
 
 function countries(ids) {
   return [...new Set(ids.map((id) => byId[id]?.pais).filter(Boolean))];
+}
+
+function isRealCity(s) {
+  return s && !s.parent && s.origen_datos !== "inventada" && (s.parada_tipo === "ciudad" || s.parada_tipo === "pueblo");
+}
+
+function isLocalChild(s) {
+  return s && s.parent && byId[s.parent] && isRealCity(byId[s.parent]);
+}
+
+/** Nearest real ProMods city (madre) for an invented place */
+function nearestReal(s, reals) {
+  let best = null;
+  let bestD = Infinity;
+  for (const r of reals) {
+    const d = dist(s, r);
+    if (d < bestD) {
+      bestD = d;
+      best = r;
+    }
+  }
+  return { madre: best, d: bestD };
 }
 
 function pickFleet(tipoId, km) {
@@ -59,46 +87,137 @@ function pickFleet(tipoId, km) {
   return pool[Math.abs(km + tipoId.length * 17) % pool.length];
 }
 
-function nearestPath(seedIds, maxStops = 8, maxHopKm = 280) {
-  const used = new Set(seedIds);
-  const path = [...seedIds];
-  let cur = byId[seedIds[seedIds.length - 1]];
-  while (path.length < maxStops) {
+/**
+ * Geographic path from A → B.
+ * Each hop must reduce distance to destination (progress).
+ * Optional short detour via hub (capital/port/airport parent city) if still progressing overall.
+ */
+function pathToward(origin, dest, pool, opts = {}) {
+  const {
+    maxStops = 10,
+    minHop = 25,
+    maxHop = 320,
+    minProgress = 8,
+    detourSlack = 0.12,
+    allowHubDetour = true,
+    maxDetourKm = 90,
+  } = opts;
+
+  if (!origin || !dest || origin.id === dest.id) return null;
+  const straight = dist(origin, dest);
+  if (straight < minHop * 0.5) return null;
+
+  const chain = [origin.id];
+  const used = new Set([origin.id, dest.id]);
+  let cur = origin;
+
+  while (chain.length < maxStops - 1) {
+    const rem = dist(cur, dest);
+    if (rem <= maxHop * 0.95) break;
+
     let best = null;
-    let bestD = Infinity;
-    for (const s of stops) {
-      if (used.has(s.id)) continue;
-      const d = dist(cur, s);
-      if (d < 8 || d > maxHopKm) continue;
-      if (d < bestD) {
-        bestD = d;
-        best = s;
+    let bestScore = Infinity;
+
+    for (const c of pool) {
+      if (used.has(c.id)) continue;
+      const fromCur = dist(cur, c);
+      if (fromCur < minHop || fromCur > maxHop) continue;
+      const toDest = dist(c, dest);
+      const progress = rem - toDest;
+      if (progress < minProgress) continue; // must get closer to dest
+      // avoid sharp zigzags: don't go farther from origin than needed
+      const score = fromCur + toDest * 0.9;
+      if (score < bestScore) {
+        bestScore = score;
+        best = c;
       }
     }
+
+    // optional hub detour: allow small non-progress hop to a tier-1 hub if next would progress
+    if (!best && allowHubDetour) {
+      for (const c of pool) {
+        if (used.has(c.id) || c.tier > 1) continue;
+        const fromCur = dist(cur, c);
+        if (fromCur < minHop || fromCur > maxDetourKm) continue;
+        const toDest = dist(c, dest);
+        if (toDest > rem + rem * detourSlack) continue;
+        const score = fromCur * 1.2 + toDest;
+        if (score < bestScore) {
+          bestScore = score;
+          best = c;
+        }
+      }
+    }
+
     if (!best) break;
-    path.push(best.id);
+    chain.push(best.id);
     used.add(best.id);
     cur = best;
   }
-  return path;
+
+  chain.push(dest.id);
+
+  // Validate monotonic progress (except one allowed hub detour)
+  let backtracks = 0;
+  for (let i = 1; i < chain.length - 1; i++) {
+    const prev = byId[chain[i - 1]];
+    const mid = byId[chain[i]];
+    const d0 = dist(prev, dest);
+    const d1 = dist(mid, dest);
+    if (d1 >= d0 - 1) backtracks++;
+  }
+  if (backtracks > (allowHubDetour ? 1 : 0)) return null;
+
+  const km = pathKm(chain);
+  if (km > straight * 2.2 + 80) return null; // absurd detour
+  if (chain.length < 2) return null;
+  return chain;
 }
 
-function chainSorted(list, limit) {
-  if (list.length < 2) return null;
-  const start = list[0];
-  const rest = list.slice(1).sort((a, b) => dist(start, a) - dist(start, b));
-  const path = [start.id];
-  let cur = start;
-  const used = new Set([start.id]);
-  for (const s of rest) {
-    if (path.length >= limit) break;
-    if (used.has(s.id)) continue;
-    if (dist(cur, s) > 320) continue;
-    path.push(s.id);
-    used.add(s.id);
-    cur = s;
+/** Axis corridor: sort by coordinate, take contiguous window */
+function corridorWindow(list, axis, start, len) {
+  const sorted = [...list].sort((a, b) => (axis === "x" ? a.x - b.x : a.z - b.z) || a.nombre.localeCompare(b.nombre, "es"));
+  const slice = sorted.slice(start, start + len);
+  if (slice.length < 3) return null;
+  // Ensure consecutive hops aren't insane
+  const ids = [slice[0].id];
+  for (let i = 1; i < slice.length; i++) {
+    if (dist(slice[i - 1], slice[i]) > 380) break;
+    ids.push(slice[i].id);
   }
-  return path.length >= 2 ? path : null;
+  return ids.length >= 3 ? ids : null;
+}
+
+function pathIsCoherent(ids, maxBacktracks = 0) {
+  if (!ids || ids.length < 2) return false;
+  const dest = byId[ids[ids.length - 1]];
+  let backtracks = 0;
+  for (let i = 1; i < ids.length - 1; i++) {
+    if (dist(byId[ids[i]], dest) >= dist(byId[ids[i - 1]], dest) - 1) backtracks++;
+  }
+  if (backtracks > maxBacktracks) return false;
+  const straight = dist(byId[ids[0]], dest);
+  const km = pathKm(ids);
+  if (km > straight * 1.85 + 60) return false;
+  for (let i = 1; i < ids.length; i++) {
+    if (dist(byId[ids[i - 1]], byId[ids[i]]) > 420) return false;
+  }
+  // consecutive bearings shouldn't reverse sharply for 3+ stop paths
+  if (ids.length >= 4) {
+    for (let i = 1; i < ids.length - 1; i++) {
+      const a = byId[ids[i - 1]];
+      const b = byId[ids[i]];
+      const c = byId[ids[i + 1]];
+      const abx = b.x - a.x;
+      const abz = b.z - a.z;
+      const bcx = c.x - b.x;
+      const bcz = c.z - b.z;
+      const dot = abx * bcx + abz * bcz;
+      const mag = Math.hypot(abx, abz) * Math.hypot(bcx, bcz);
+      if (mag > 1 && dot / mag < -0.35) return false; // >~110° turn
+    }
+  }
+  return true;
 }
 
 const counters = Object.fromEntries(lineTypes.map((t) => [t.id, 0]));
@@ -107,8 +226,7 @@ const seen = new Set();
 
 function codeFor(tipoId) {
   counters[tipoId]++;
-  const pref = tipoById[tipoId].prefijo;
-  return `EP-${pref}${String(counters[tipoId]).padStart(4, "0")}`;
+  return `EP-${tipoById[tipoId].prefijo}-${String(counters[tipoId]).padStart(4, "0")}`;
 }
 
 function fingerprint(ids, tipo) {
@@ -127,60 +245,60 @@ function describe(route) {
     .join("; ");
   const atraviesa =
     paises.length > 1
-      ? ` Cruza ${paises.length} territorios ProMods (${paises.join(", ")}), con controles fronterizos y peajes posibles según el tramo.`
-      : ` Circula íntegramente en ${paises[0]}, enlazando paradas urbanas, estaciones de viajeros y nodos de transferencia.`;
+      ? ` Cruza ${paises.length} territorios (${paises.join(", ")}); peajes y fronteras posibles según el mapa.`
+      : ` Circula en ${paises[0]}, siguiendo un eje geográfico coherente entre nodos ProMods.`;
   const interTxt =
     inter.length === 0
-      ? "Servicio casi directo, con paradas mínimas pensadas para acortar tiempo de viaje."
-      : inter.length <= 3
-        ? `Paradas intermedias en ${inter.join(", ")}.`
-        : `Itinerario denso con ${inter.length} paradas intermedias: ${inter.slice(0, 6).join(", ")}${inter.length > 6 ? "…" : ""}.`;
-  const material = route.material_nombre;
-  const km = route.distancia_km;
+      ? "Servicio directo, sin paradas intermedias."
+      : inter.length <= 4
+        ? `Paradas intermedias en orden geográfico: ${inter.join(", ")}.`
+        : `Itinerario con ${inter.length} paradas en progresión hacia destino: ${inter.slice(0, 6).join(", ")}…`;
   const tipExtra = {
-    urb: "Pensada para moverse dentro de la misma ciudad o área metropolitana, con cabeceras en barrio, universidad, puerto o aeropuerto según el mapa.",
-    brt: "Corredor de alta capacidad tipo BRT: prioridad visual de plataforma, pocas desviaciones y ritmo urbano constante.",
-    reg: "Interurbano regional: une pueblos y ciudades cercanas siguiendo carreteras nacionales y autovías secundarias del mapa.",
-    exp: "Express semirrápido: salta localidades menores para priorizar nodos de mayor demanda.",
-    int: "Línea internacional EuroPerote: diseñada para viajes largos entre países, con trasbordo opcional en hubs fronterizos.",
-    noc: "Servicio nocturno de media/larga distancia. Ideal para salir al anochecer y llegar de madrugada a la terminal destino.",
-    tur: "Ruta turística panorámica: costa, fjords, montaña o patrimonio según el corredor. Ritmo más contemplativo.",
-    ae: "Lanzadera aeroportuaria: ciudad/estación ↔ aeropuerto, con maletas y tiempo de conexión en mente.",
-    fer: "Combinado ferry-bus: el itinerario asume embarque en terminal portuaria ProMods y continuación por carretera al otro lado.",
+    urb: "Servicio urbano local: solo paradas de la misma ciudad (centro, barrio, universidad, puerto o aeropuerto).",
+    brt: "Corredor BRT intramunicipal de alta capacidad.",
+    reg: "Interurbano regional sobre ciudades con coordenadas reales ProMods, o enlace local inventado↔madre.",
+    exp: "Express geográfico: avanza siempre hacia el destino, con desvío corto opcional por hub.",
+    int: "Internacional con camino estricto origen→destino sin zigzags absurdos.",
+    noc: "Nocturno sobre un corredor largo ya validado geográficamente.",
+    tur: "Turístico a lo largo de un eje costero/portuario ordenado.",
+    ae: "Lanzadera aeroportuaria corta y directa.",
+    fer: "Ferry-bus: ciudad→puerto→puerto→ciudad en progresión marítima/carretera.",
   }[route.tipo_id];
 
   return [
-    `${tipo.nombre} ${route.codigo} de EuroPerote entre ${origen} y ${destino} (${km} km estimados sobre coordenadas de juego).`,
+    `${tipo.nombre} ${route.codigo} de EuroPerote entre ${origen} y ${destino} (${route.distancia_km} km estimados).`,
     tipExtra,
     interTxt + atraviesa,
-    `Cobertura de mapa: ${addons || "ETS2 + ProMods"}.`,
-    `Material típico asignado: ${material}. Un solo operador: EuroPerote.`,
-    `Uso previsto: planificación de líneas, roleplay y recorridos in-game sobre ProMods completo y addons listados.`,
-    names.length > 4
-      ? `Cadena completa de paradas (${names.length}): ${names.join(" → ")}.`
-      : `Paradas: ${names.join(" → ")}.`,
+    `Mapa: ${addons || "ETS2 + ProMods"}. Material: ${route.material_nombre}. Operador único: EuroPerote.`,
+    names.length > 3 ? `Itinerario completo (${names.length}): ${names.join(" → ")}.` : `Paradas: ${names.join(" → ")}.`,
   ].join(" ");
 }
 
 function pushRoute(tipoId, ids, extra = {}) {
-  if (!ids || ids.length < 2) return null;
-  // sanitize missing
-  ids = ids.filter((id) => byId[id]);
+  ids = (ids || []).filter((id) => byId[id]);
   if (ids.length < 2) return null;
+  if (!extra.skipCoherence && !pathIsCoherent(ids, extra.maxBacktracks ?? 0) && tipoId !== "urb" && tipoId !== "brt" && tipoId !== "ae") {
+    if (tipoId !== "fer" || !extra.force) return null;
+  }
   const fp = fingerprint(ids, tipoId);
   const fpRev = fingerprint([...ids].reverse(), tipoId);
   if (seen.has(fp) || seen.has(fpRev)) return null;
   seen.add(fp);
-  const codigo = codeFor(tipoId);
+
+  const tipo = tipoById[tipoId];
+  const nombres = ids.map((id) => byId[id].nombre);
   const km = pathKm(ids);
   const mat = pickFleet(tipoId, km);
-  const nombres = ids.map((id) => byId[id].nombre);
+  const codigo = codeFor(tipoId);
+  const baseName = extra.nombreCore || `${nombres[0]} — ${nombres[nombres.length - 1]}`;
+  const nombre = extra.nombre || `${tipo.nombre} ${baseName}`;
+
   const route = {
-    id: codigo.toLowerCase(),
+    id: codigo.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
     codigo,
-    nombre: extra.nombre || `${nombres[0]} — ${nombres[nombres.length - 1]}`,
+    nombre,
     tipo_id: tipoId,
-    prefijo: tipoById[tipoId].prefijo,
+    prefijo: tipo.prefijo,
     operador_id: operator.id,
     operador_nombre: operator.nombre,
     color: operator.color,
@@ -194,7 +312,8 @@ function pushRoute(tipoId, ids, extra = {}) {
     paises: countries(ids),
     addons: uniqAddons(ids),
     patron: extra.patron || "base",
-    origen_datos: extra.origen_datos || "generada",
+    origen_datos: extra.origen_datos || "generada-v2",
+    eje: extra.eje || "",
     notas: extra.notas || "",
   };
   route.descripcion = describe(route);
@@ -202,231 +321,294 @@ function pushRoute(tipoId, ids, extra = {}) {
   return route;
 }
 
-// —— Index helpers ——
-const cities = stops.filter((s) => s.parada_tipo === "ciudad" || (!s.parent && s.parada_tipo !== "aeropuerto"));
-const byPais = {};
-for (const s of cities) (byPais[s.pais] ||= []).push(s);
-
+// ——— pools ———
+const reals = stops.filter(isRealCity);
+const inventadas = stops.filter((s) => !s.parent && s.origen_datos === "inventada");
 const childrenOf = {};
 for (const s of stops) {
-  if (s.parent) (childrenOf[s.parent] ||= []).push(s);
+  if (s.parent && byId[s.parent]) (childrenOf[s.parent] ||= []).push(s);
+}
+const hubs = reals.filter((s) => s.tier <= 2).sort((a, b) => a.tier - b.tier || a.nombre.localeCompare(b.nombre, "es"));
+const capitals = reals.filter((s) => s.tier === 1);
+const airports = stops.filter((s) => s.parada_tipo === "aeropuerto" && isLocalChild(s));
+const ports = stops.filter((s) => s.parada_tipo === "puerto" && isLocalChild(s));
+
+const byPais = {};
+for (const s of reals) (byPais[s.pais] ||= []).push(s);
+
+// Madre map for invented
+const madreOf = new Map();
+for (const inv of inventadas) {
+  const { madre, d } = nearestReal(inv, reals);
+  if (madre && d < 220) madreOf.set(inv.id, { madre, d });
 }
 
-const hubs = cities.filter((s) => s.tier <= 2).sort((a, b) => a.tier - b.tier || a.nombre.localeCompare(b.nombre, "es"));
-const airports = stops.filter((s) => s.parada_tipo === "aeropuerto");
-const ports = stops.filter((s) => s.parada_tipo === "puerto");
+console.log(`Reales: ${reals.length} | Inventadas locales: ${madreOf.size} | Hubs: ${hubs.length}`);
 
-// 1) Urban + BRT inside multi-stop cities
-for (const [parentId, kids] of Object.entries(childrenOf)) {
-  const parent = byId[parentId];
-  if (!parent) continue;
-  const nodes = [parent, ...kids];
-  if (nodes.length < 2) continue;
-  // Urban loops / lines
-  const order = [parent, ...kids.sort((a, b) => a.parada_tipo.localeCompare(b.parada_tipo))];
+// 1) URB + BRT + AER intramunicipales (reales e inventadas con hijas locales)
+const urbanRoots = stops.filter((s) => !s.parent && (childrenOf[s.id] || []).length);
+for (const city of urbanRoots) {
+  const kids = childrenOf[city.id] || [];
+  const order = [city, ...kids.sort((a, b) => a.parada_tipo.localeCompare(b.parada_tipo))];
   pushRoute("urb", order.map((s) => s.id), {
-    nombre: `${parent.nombre} Urbano`,
+    nombreCore: city.nombre,
     patron: "parador",
+    skipCoherence: true,
   });
-  if (nodes.length >= 3) {
-    const mid = [nodes[0], nodes[Math.floor(nodes.length / 2)], nodes[nodes.length - 1]];
-    pushRoute("brt", mid.map((s) => s.id), {
-      nombre: `${parent.nombre} BRT`,
+  if (order.length >= 3) {
+    pushRoute("brt", [order[0].id, order[Math.floor(order.length / 2)].id, order[order.length - 1].id], {
+      nombreCore: city.nombre,
       patron: "directo",
+      skipCoherence: true,
     });
   }
-  // Airport shuttle
   const ap = kids.find((k) => k.parada_tipo === "aeropuerto");
   if (ap) {
-    pushRoute("ae", [parent.id, ap.id], {
-      nombre: `${parent.nombre} ↔ Aeropuerto`,
+    pushRoute("ae", [city.id, ap.id], {
+      nombreCore: `${city.nombre}: ciudad ↔ aeropuerto`,
       patron: "directo",
+      skipCoherence: true,
     });
   }
 }
 
-// 2) Regional nearest-neighbor within each country
+// 2) Inventadas solo locales: inventada → madre ProMods real (nunca encadenar inventadas entre sí)
+for (const [invId, { madre, d }] of madreOf) {
+  if (d < 8 || d > 180) continue;
+  pushRoute("reg", [invId, madre.id], {
+    nombreCore: `${byId[invId].nombre} — ${madre.nombre} (local)`,
+    patron: "base",
+    notas: "Enlace local inventado↔ciudad madre ProMods",
+    skipCoherence: true,
+  });
+}
+
+// 3) REGIONAL — axis corridors within country (endpoints + pathToward) and progressive pairs
 for (const [pais, list] of Object.entries(byPais)) {
-  const sorted = [...list].sort((a, b) => a.z - b.z || a.x - b.x);
-  // sliding windows
-  for (let i = 0; i < sorted.length; i++) {
-    const seed = sorted[i];
-    const path = nearestPath([seed.id], 5 + (i % 4), pais === "Rusia" || pais === "Kazajistán" ? 420 : 260);
-    if (path && path.length >= 3) {
-      pushRoute("reg", path, { nombre: `Regional ${pais}: ${byId[path[0]].nombre} — ${byId[path[path.length - 1]].nombre}` });
+  if (list.length < 3) continue;
+  for (const axis of ["z", "x"]) {
+    const sorted = [...list].sort((a, b) => (axis === "x" ? a.x - b.x : a.z - b.z) || a.nombre.localeCompare(b.nombre, "es"));
+    for (let win = 4; win <= 8; win++) {
+      for (let i = 0; i + win <= sorted.length; i += Math.max(2, Math.floor(win / 2))) {
+        const a = sorted[i];
+        const b = sorted[i + win - 1];
+        const chain = pathToward(a, b, list, {
+          maxStops: Math.min(win, 7),
+          maxHop: 300,
+          minHop: 18,
+          minProgress: 12,
+          allowHubDetour: true,
+          maxDetourKm: 65,
+        });
+        if (chain && chain.length >= 3) {
+          pushRoute("reg", chain, {
+            nombreCore: `${byId[chain[0]].nombre} — ${byId[chain[chain.length - 1]].nombre}`,
+            patron: "parador",
+            eje: axis === "z" ? `norte-sur ${pais}` : `este-oeste ${pais}`,
+          });
+        }
+      }
     }
   }
-  // longitude bands
-  for (let i = 0; i < sorted.length - 4; i += 2) {
-    const slice = sorted.slice(i, i + 6);
-    const path = chainSorted(slice, 6);
-    if (path) pushRoute("reg", path, { patron: "parador" });
+
+  const sorted = [...list].sort((a, b) => a.z - b.z || a.x - b.x);
+  for (let i = 0; i < sorted.length; i++) {
+    for (let j = i + 2; j < Math.min(sorted.length, i + 7); j++) {
+      const chain = pathToward(sorted[i], sorted[j], list, {
+        maxStops: 6,
+        maxHop: 280,
+        minHop: 20,
+        allowHubDetour: true,
+        maxDetourKm: 70,
+      });
+      if (chain) {
+        pushRoute("reg", chain, {
+          nombreCore: `${byId[chain[0]].nombre} — ${byId[chain[chain.length - 1]].nombre}`,
+          patron: chain.length > 3 ? "parador" : "base",
+          eje: `progresión ${pais}`,
+        });
+      }
+    }
   }
 }
 
-// 3) Express between hubs (same country + neighboring)
+// 4) EXPRESS — hub to hub, strict geography
 for (let i = 0; i < hubs.length; i++) {
   const a = hubs[i];
   const candidates = hubs
     .filter((b) => b.id !== a.id)
     .map((b) => ({ b, d: dist(a, b) }))
-    .filter((x) => x.d > 40 && x.d < 900)
+    .filter((x) => x.d > 60 && x.d < 1100)
     .sort((x, y) => x.d - y.d)
-    .slice(0, 6);
+    .slice(0, 8);
+
   for (const { b } of candidates) {
     // direct
-    pushRoute("exp", [a.id, b.id], {
-      nombre: `Express ${a.nombre} — ${b.nombre}`,
-      patron: "directo",
+    if (dist(a, b) <= 450) {
+      pushRoute("exp", [a.id, b.id], {
+        nombreCore: `${a.nombre} — ${b.nombre}`,
+        patron: "directo",
+      });
+    }
+    // with progressive intermediates from same-country or full reals
+    const pool = a.pais === b.pais ? byPais[a.pais] : reals;
+    const chain = pathToward(a, b, pool, {
+      maxStops: a.pais === b.pais ? 5 : 7,
+      maxHop: 380,
+      minHop: 40,
+      minProgress: 15,
+      allowHubDetour: true,
+      maxDetourKm: 100,
     });
-    // one intermediate
-    const mid = cities
-      .filter((c) => c.id !== a.id && c.id !== b.id)
-      .map((c) => ({ c, score: dist(a, c) + dist(c, b) }))
-      .filter((x) => x.score < dist(a, b) * 1.35 && dist(a, x.c) > 25)
-      .sort((x, y) => x.score - y.score)[0];
-    if (mid) {
-      pushRoute("exp", [a.id, mid.c.id, b.id], {
-        nombre: `Express ${a.nombre} — ${b.nombre} (vía ${mid.c.nombre})`,
-        patron: "base",
+    if (chain && chain.length >= 2) {
+      pushRoute("exp", chain, {
+        nombreCore: `${a.nombre} — ${b.nombre}`,
+        patron: chain.length <= 3 ? "directo" : "base",
+        eje: "hub-progresión",
+        maxBacktracks: 1,
       });
     }
   }
 }
 
-// 4) International long corridors (hub pairs different country)
+// 5) INTERNATIONAL — different country, strict path on all reals
 for (let i = 0; i < hubs.length; i++) {
   const a = hubs[i];
   const foreign = hubs
     .filter((b) => b.pais !== a.pais)
     .map((b) => ({ b, d: dist(a, b) }))
-    .filter((x) => x.d > 80 && x.d < 2200)
+    .filter((x) => x.d > 100 && x.d < 2000)
     .sort((x, y) => x.d - y.d)
-    .slice(0, 5);
+    .slice(0, 6);
+
   for (const { b } of foreign) {
-    // build geographic chain toward b
-    const chain = [a.id];
-    let cur = a;
-    const used = new Set([a.id, b.id]);
-    for (let step = 0; step < 8; step++) {
-      const remaining = dist(cur, b);
-      if (remaining < 120) break;
-      let best = null;
-      let bestScore = Infinity;
-      for (const c of cities) {
-        if (used.has(c.id)) continue;
-        const toB = dist(c, b);
-        const fromCur = dist(cur, c);
-        if (fromCur < 30 || fromCur > 450) continue;
-        if (toB >= remaining - 10) continue;
-        const score = fromCur + toB * 0.85;
-        if (score < bestScore) {
-          bestScore = score;
-          best = c;
-        }
-      }
-      if (!best) break;
-      chain.push(best.id);
-      used.add(best.id);
-      cur = best;
-    }
-    chain.push(b.id);
-    pushRoute("int", chain, {
-      nombre: `Internacional ${a.nombre} — ${b.nombre}`,
-      patron: chain.length > 4 ? "parador" : "directo",
+    const chain = pathToward(a, b, reals, {
+      maxStops: 9,
+      maxHop: 420,
+      minHop: 45,
+      minProgress: 20,
+      allowHubDetour: true,
+      maxDetourKm: 110,
     });
-    if (chain.length >= 4 && dist(a, b) > 400) {
+    if (!chain || chain.length < 2) continue;
+    // must actually cross countries
+    if (countries(chain).length < 2) continue;
+    pushRoute("int", chain, {
+      nombreCore: `${a.nombre} — ${b.nombre}`,
+      patron: chain.length > 4 ? "parador" : "directo",
+      eje: "internacional-progresión",
+      maxBacktracks: 1,
+    });
+    if (pathKm(chain) > 450) {
       pushRoute("noc", chain, {
-        nombre: `Nocturno ${a.nombre} — ${b.nombre}`,
+        nombreCore: `${a.nombre} — ${b.nombre}`,
         patron: "base",
+        eje: "nocturno-internacional",
+        maxBacktracks: 1,
       });
     }
   }
 }
 
-// 5) Tourist coastal / scenic (ports + coastal countries)
-const touristSeeds = ports.slice(0, 80);
-for (const p of touristSeeds) {
-  const path = nearestPath([p.id], 5, 220);
-  if (path && path.length >= 3) {
+// 6) TOURIST — ports ordered along coast (by x then z), progressive
+const portCities = [...new Set(ports.map((p) => p.parent).filter(Boolean))]
+  .map((id) => byId[id])
+  .filter(Boolean);
+const portsSorted = [...portCities].sort((a, b) => a.x - b.x || a.z - b.z);
+for (let i = 0; i + 3 < portsSorted.length; i += 2) {
+  const slice = portsSorted.slice(i, i + 5);
+  const path = [];
+  for (const s of slice) {
+    if (path.length && dist(byId[path[path.length - 1]], s) > 400) break;
+    path.push(s.id);
+  }
+  if (path.length >= 3 && pathIsCoherent(path)) {
     pushRoute("tur", path, {
-      nombre: `Turístico ${byId[path[0]].nombre} — ${byId[path[path.length - 1]].nombre}`,
+      nombreCore: `${byId[path[0]].nombre} — ${byId[path[path.length - 1]].nombre}`,
       patron: "parador",
-      notas: "Itinerario costero / panorámico",
+      eje: "costa",
+      notas: "Eje costero ordenado",
     });
   }
 }
 
-// 6) Ferry-bus: port to nearby foreign/coastal port
+// 7) FERRY — port pairs with geographic progress; city-port-port-city
 for (let i = 0; i < ports.length; i++) {
-  const a = ports[i];
+  const pa = ports[i];
+  const cityA = byId[pa.parent];
+  if (!cityA) continue;
   const mates = ports
-    .filter((b) => b.id !== a.id)
-    .map((b) => ({ b, d: dist(a, b) }))
-    .filter((x) => x.d > 60 && x.d < 1400)
-    .sort((x, y) => x.d - y.d)
-    .slice(0, 3);
-  for (const { b } of mates) {
-    const cityA = a.parent && byId[a.parent] ? byId[a.parent].id : a.id;
-    const cityB = b.parent && byId[b.parent] ? byId[b.parent].id : b.id;
-    pushRoute("fer", [cityA, a.id, b.id, cityB], {
-      nombre: `Ferry-bus ${byId[cityA].nombre} — ${byId[cityB].nombre}`,
-      patron: "base",
-      notas: "Incluye tramo marítimo ProMods",
-    });
-  }
-}
-
-// 7) Extra airport links from nearby cities
-for (const ap of airports) {
-  const parent = ap.parent ? byId[ap.parent] : null;
-  const nearCities = cities
-    .filter((c) => !parent || c.id !== parent.id)
-    .map((c) => ({ c, d: dist(ap, c) }))
-    .filter((x) => x.d > 15 && x.d < 180)
-    .sort((x, y) => x.d - y.d)
-    .slice(0, 3);
-  for (const { c } of nearCities) {
-    pushRoute("ae", [c.id, ap.id], {
-      nombre: `${c.nombre} ↔ ${ap.nombre}`,
-      patron: "directo",
-    });
-  }
-}
-
-// 8) Dense filler: every city to its 2 nearest neighbors (short regional)
-for (const c of cities) {
-  const near = cities
-    .filter((o) => o.id !== c.id && o.pais === c.pais)
-    .map((o) => ({ o, d: dist(c, o) }))
-    .filter((x) => x.d > 12 && x.d < 200)
+    .filter((pb) => pb.id !== pa.id && pb.parent !== pa.parent)
+    .map((pb) => ({ pb, d: dist(pa, pb) }))
+    .filter((x) => x.d > 80 && x.d < 1200)
     .sort((x, y) => x.d - y.d)
     .slice(0, 2);
-  if (near.length === 2) {
-    pushRoute("reg", [near[0].o.id, c.id, near[1].o.id], { patron: "parador" });
-  } else if (near.length === 1) {
-    pushRoute("reg", [c.id, near[0].o.id], { patron: "base" });
+  for (const { pb } of mates) {
+    const cityB = byId[pb.parent];
+    if (!cityB) continue;
+    const ids = [cityA.id, pa.id, pb.id, cityB.id];
+    // ferry can skip normal coherence (sea hop) but cities should not zigzag wildly
+    const roadish = dist(cityA, cityB);
+    if (pathKm([cityA.id, cityB.id]) > roadish * 1.01) {
+      /* ok */
+    }
+    pushRoute("fer", ids, {
+      nombreCore: `${cityA.nombre} — ${cityB.nombre}`,
+      patron: "base",
+      notas: "Tramo ferry ProMods",
+      force: true,
+      skipCoherence: true,
+    });
   }
 }
 
-// Sort by code
+// 8) Extra AER — nearby real city → airport (short, progressive)
+for (const ap of airports) {
+  const parent = byId[ap.parent];
+  const near = reals
+    .filter((c) => c.id !== parent?.id)
+    .map((c) => ({ c, d: dist(ap, c) }))
+    .filter((x) => x.d > 20 && x.d < 150)
+    .sort((x, y) => x.d - y.d)
+    .slice(0, 2);
+  for (const { c } of near) {
+    pushRoute("ae", [c.id, ap.id], {
+      nombreCore: `${c.nombre} ↔ ${ap.nombre.replace(/^.*—\s*/, "")}`,
+      patron: "directo",
+      skipCoherence: true,
+    });
+  }
+}
+
+// 9) Extra long NOC from domestic express corridors > 500km
+for (const r of [...routes]) {
+  if (r.tipo_id === "exp" && r.distancia_km > 500 && r.paises.length === 1) {
+    pushRoute("noc", r.paradas, {
+      nombreCore: `${r.paradas_nombres[0]} — ${r.paradas_nombres[r.paradas_nombres.length - 1]}`,
+      patron: "base",
+      eje: "nocturno-nacional",
+    });
+  }
+}
+
 routes.sort((a, b) => a.codigo.localeCompare(b.codigo, "es"));
 
 const summary = {
-  version: "1.0.0",
+  version: "2.0.0",
   generado: new Date().toISOString(),
   operador: operator,
   total_rutas: routes.length,
   total_paradas: stops.length,
+  ciudades_reales: reals.length,
+  inventadas_locales: madreOf.size,
   por_tipo: Object.fromEntries(lineTypes.map((t) => [t.id, routes.filter((r) => r.tipo_id === t.id).length])),
-  por_pais_origen: {},
+  codigos_ejemplo: routes.slice(0, 5).map((r) => r.codigo),
 };
-for (const r of routes) {
-  const p = r.paises[0] || "?";
-  summary.por_pais_origen[p] = (summary.por_pais_origen[p] || 0) + 1;
-}
 
-fs.writeFileSync(path.join(outDir, "lines-mass.json"), JSON.stringify({ version: summary.version, generado: summary.generado, total: routes.length, lines: routes }));
+fs.writeFileSync(
+  path.join(outDir, "lines-mass.json"),
+  JSON.stringify({ version: summary.version, generado: summary.generado, total: routes.length, lines: routes })
+);
 fs.writeFileSync(path.join(outDir, "summary.json"), JSON.stringify(summary, null, 2));
 console.log(JSON.stringify(summary.por_tipo, null, 2));
-console.log(`Generated ${routes.length} routes; stops ${stops.length}`);
+console.log(`Generated ${routes.length} routes | examples ${summary.codigos_ejemplo.join(", ")}`);
