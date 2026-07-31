@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Ferrocarriles UK — Catálogo interactivo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/miriamcomercio89-ops/Miriam@cursor/red-ferroviaria-alemania-555a/ferrocarriles-uk/web/styles.css"/>
+<style>
+  #boot {
+    position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 1.25rem;
+    background:
+      radial-gradient(900px 500px at 10% -10%, rgba(11,110,79,.18), transparent 55%),
+      linear-gradient(180deg, #efe7da, #f4efe6);
+    font-family: "Outfit", system-ui, sans-serif; color: #101820;
+  }
+  #boot[hidden] { display: none !important; }
+  .boot-card {
+    width: min(420px, 100%); background: rgba(255,250,243,.97);
+    border: 1px solid #d9d0c2; border-radius: 22px; padding: 1.35rem 1.25rem;
+    box-shadow: 0 18px 50px rgba(16,24,32,.12);
+  }
+  .boot-card h1 { font-family: "Fraunces", Georgia, serif; margin: 0 0 .35rem; font-size: 1.4rem; }
+  .boot-card p { margin: 0; color: #6b645a; line-height: 1.45; }
+  .bar { height: 8px; border-radius: 99px; background: #efe7da; margin: 1rem 0 .5rem; overflow: hidden; }
+  .bar > i { display:block; height:100%; width:6%; background:#0b6e4f; border-radius:99px; transition: width .2s ease; }
+  #bootPct { font-size: .82rem; font-weight: 700; color: #0b6e4f; }
+  #bootErr { color: #9a4a12; margin-top: .75rem; font-size: .9rem; }
+  body.booting .app, body.booting .mobile-bar, body.booting .drawer, body.booting .drawer-backdrop { visibility: hidden; }
+</style>
+</head>
+<body class="booting">
+<div id="boot">
+  <div class="boot-card">
+    <h1>UK Rail Atlas</h1>
+    <p>Cargando la web interactiva (rutas, filtros y detalle)…</p>
+    <div class="bar"><i id="bootBar"></i></div>
+    <div id="bootPct">0%</div>
+    <div id="bootErr" hidden></div>
+  </div>
+</div>
+<div class="mobile-bar">
+  <strong>Ferrocarriles UK</strong>
+  <button id="toggleFilters" type="button">Filtros</button>
+</div>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true"></div>
+      <div>
+        <h1>UK Rail Atlas</h1>
+        <p>Catálogo interactivo · operadores y rutas</p>
+      </div>
+    </div>
+    <div class="nav">
+      <button type="button" class="active" data-view="routes">Rutas</button>
+      <button type="button" data-view="ops">Operadores</button>
+    </div>
+
+    <div id="filters-routes">
+      <div class="section-label">Búsqueda</div>
+      <div class="field"><label for="q">Texto libre</label><input id="q" placeholder="código, ruta, estación, operador…"/></div>
+      <div class="field"><label for="qStation">Estación concreta</label><input id="qStation" placeholder="p.ej. York, Euston, Cardiff…"/></div>
+      <div class="field"><label for="qEndpoint">Solo origen o destino</label><input id="qEndpoint" placeholder="extremo de la ruta"/></div>
+
+      <div class="section-label">Clasificación</div>
+      <div class="field"><label>Estado del operador</label><div class="chips" id="estChips"></div></div>
+      <div class="field"><label for="tipo">Tipo de línea</label><select id="tipo"><option value="">Todos</option></select></div>
+      <div class="field"><label for="prefijo">Prefijo</label><select id="prefijo"><option value="">Todos</option></select></div>
+      <div class="field"><label for="op">Operador</label><select id="op"><option value="">Todos</option></select></div>
+      <div class="field"><label for="opTipo">Tipo de operador</label><select id="opTipo"><option value="">Todos</option></select></div>
+      <div class="field"><label for="corredor">Corredor</label><select id="corredor"><option value="">Todos / sin filtrar</option></select></div>
+      <div class="field"><label for="land">Región</label><select id="land"><option value="">Todas</option></select></div>
+      <div class="field"><label for="origenDatos">Origen de datos</label><select id="origenDatos">
+        <option value="">Todos</option><option value="real">Real</option><option value="hibrida">Híbrida</option><option value="ficticia">Ficticia</option>
+      </select></div>
+      <div class="field"><label for="patron">Patrón</label><select id="patron">
+        <option value="">Todos</option><option value="parador">Parador</option><option value="base">Base</option><option value="directo">Directo</option><option value="retorno">Retorno</option>
+      </select></div>
+
+      <div class="section-label">Servicio y material</div>
+      <div class="field"><label for="material">Material móvil</label><select id="material"><option value="">Todos</option></select></div>
+      <div class="field"><label for="qMaterial">Buscar material</label><input id="qMaterial" placeholder="Class 800, Pendolino…"/></div>
+      <div class="field"><label>Primer tren (desde–hasta HH:MM)</label><div class="range-row"><input id="minPrimer" placeholder="05:00"/><input id="maxPrimer" placeholder="08:00"/></div></div>
+      <div class="field"><label>Último tren (desde–hasta HH:MM)</label><div class="range-row"><input id="minUltimo" placeholder="20:00"/><input id="maxUltimo" placeholder="23:59"/></div></div>
+
+      <div class="section-label">Rangos</div>
+      <div class="field"><label>Paradas (min–max)</label><div class="range-row"><input id="minN" type="number" min="2" placeholder="mín"/><input id="maxN" type="number" min="2" placeholder="máx"/></div></div>
+      <div class="field"><label>Distancia km (min–max)</label><div class="range-row"><input id="minKm" type="number" min="0" placeholder="mín"/><input id="maxKm" type="number" min="0" placeholder="máx"/></div></div>
+      <div class="field"><label>Frecuencia min (min–max)</label><div class="range-row"><input id="minFreq" type="number" min="0" placeholder="mín"/><input id="maxFreq" type="number" min="0" placeholder="máx"/></div></div>
+      <div class="field"><label>Trenes asignados (min–max)</label><div class="range-row"><input id="minTrenes" type="number" min="1" placeholder="mín"/><input id="maxTrenes" type="number" min="1" placeholder="máx"/></div></div>
+      <div class="field"><label>Precio completo £ (min–max)</label><div class="range-row"><input id="minPrice" type="number" min="0" step="0.1" placeholder="mín"/><input id="maxPrice" type="number" min="0" step="0.1" placeholder="máx"/></div></div>
+    </div>
+
+    <div id="filters-ops" hidden>
+      <div class="section-label">Operadores</div>
+      <div class="field"><label for="opq">Buscar</label><input id="opq" placeholder="nombre, sede, eslogan…"/></div>
+      <div class="field"><label>Estado</label><div class="chips" id="opEstChips"></div></div>
+      <div class="field"><label for="opTipo2">Tipo</label><select id="opTipo2"><option value="">Todos</option></select></div>
+      <div class="field"><label for="opComp">Competencia</label><select id="opComp">
+        <option value="">Todas</option><option value="dominante">Dominante</option><option value="competitiva">Competitiva</option><option value="nicho">Nicho</option>
+      </select></div>
+      <div class="field"><label for="opLand">Región</label><select id="opLand"><option value="">Todas</option></select></div>
+      <div class="field"><label for="opServ">Servicio</label><select id="opServ"><option value="">Todos</option></select></div>
+    </div>
+
+    <div class="actions">
+      <button class="btn-primary" id="applyBtn" type="button">Aplicar filtros</button>
+      <button class="btn-ghost" id="resetBtn" type="button">Limpiar todo</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="search-hero">
+        <label for="qTop">Explorar catálogo</label>
+        <input id="qTop" placeholder="Escribe y filtra al instante…"/>
+      </div>
+      <div class="metrics" id="metrics"></div>
+    </div>
+    <div class="active-filters" id="activeFilters"></div>
+    <div class="toolbar">
+      <div class="left"><span id="resultCount" class="meta"></span></div>
+      <div class="right">
+        <label class="meta" for="sort">Orden</label>
+        <select id="sort">
+          <option value="relevancia">Relevancia</option>
+          <option value="codigo">Código</option>
+          <option value="nombre">Nombre</option>
+          <option value="paradas_desc">Más paradas</option>
+          <option value="paradas_asc">Menos paradas</option>
+          <option value="km_desc">Más km</option>
+          <option value="km_asc">Menos km</option>
+          <option value="freq_asc">Más frecuente</option>
+          <option value="precio_asc">Precio ↑</option>
+          <option value="precio_desc">Precio ↓</option>
+          <option value="trenes_desc">Más trenes</option>
+          <option value="primer_asc">Primer tren ↑</option>
+        </select>
+        <div class="seg" id="pageSizeSeg">
+          <button type="button" data-size="24" class="on">24</button>
+          <button type="button" data-size="48">48</button>
+          <button type="button" data-size="96">96</button>
+        </div>
+      </div>
+    </div>
+    <div class="list" id="list"></div>
+    <div class="pager">
+      <button type="button" id="prev">Anterior</button>
+      <span id="pageInfo" class="meta"></span>
+      <button type="button" id="next">Siguiente</button>
+    </div>
+  </main>
+</div>
+
+<div class="drawer-backdrop" id="backdrop"></div>
+<aside class="drawer" id="drawer" aria-live="polite">
+  <button class="close" id="closeDrawer" type="button" aria-label="Cerrar">×</button>
+  <div id="drawerBody"></div>
+</aside>
+<script>window.CATALOG_BASE = "https://cdn.jsdelivr.net/gh/miriamcomercio89-ops/Miriam@cursor/red-ferroviaria-alemania-555a/ferrocarriles-uk/web";</script>
+<script src="https://cdn.jsdelivr.net/gh/miriamcomercio89-ops/Miriam@cursor/red-ferroviaria-alemania-555a/ferrocarriles-uk/web/app.js"></script>
+</body>
+</html>

@@ -11,6 +11,15 @@ Diseño + generador de una red ferroviaria del **Reino Unido** para Nimby Rails.
 - Miles de rutas con **lista completa de paradas**
 - Catálogo navegable en **HTML** (no hace falta PDF)
 
+## Descargas / móvil
+
+**Importante:** el enlace “Raw” de GitHub muestra el archivo como texto. En el móvil abre esta URL (web interactiva):
+
+- Catálogo interactivo: https://htmlpreview.github.io/?https://github.com/miriamcomercio89-ops/Miriam/blob/cursor/red-ferroviaria-alemania-555a/ferrocarriles-uk/web/index.html
+- Landing: https://htmlpreview.github.io/?https://github.com/miriamcomercio89-ops/Miriam/blob/cursor/red-ferroviaria-alemania-555a/ferrocarriles-uk/ABRIR-EN-MOVIL.html
+
+Offline: descarga `catalogo-uk.zip` y abre `catalogo-uk.html` en el navegador.
+
 ## Uso
 
 ```bash
@@ -20,9 +29,4 @@ npm run generate:mass
 npm run export:html
 ```
 
-Abre `output/catalogo-uk.html` o `catalogo-uk.html`.
-
-## Descargas
-
-- HTML: `catalogo-uk.html`
-- Datos: `data/operators.json`, `output/lines-mass.json`
+Abre `web/index-local.html` con un servidor local, o `catalogo-uk.html` (todo en un archivo).
