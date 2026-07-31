@@ -1,6 +1,6 @@
 {
   "version": "3.0.0",
-  "generado": "2026-07-31T13:47:41.895Z",
+  "generado": "2026-07-31T13:47:42.318Z",
   "total": 9519,
   "chunks": 28,
   "chunkSize": 350,
@@ -38,6 +38,6 @@
     "egypt-addon": "Complemento Egipto / Norte África",
     "ets2+promods": "Fusión base ETS2 + ProMods"
   },
-  "cdnBase": "https://cdn.jsdelivr.net/gh/miriamcomercio89-ops/Miriam@6315e06f8e26a95d75ef9c457437b88ce07adb5d/europerote-ets2/web",
-  "commit": "6315e06f8e26a95d75ef9c457437b88ce07adb5d"
+  "cdnBase": "https://cdn.jsdelivr.net/gh/miriamcomercio89-ops/Miriam@eb4a11447a11f3eb9f7321e4a0c1c6627a7ca5b1/europerote-ets2/web",
+  "commit": "eb4a11447a11f3eb9f7321e4a0c1c6627a7ca5b1"
 }
