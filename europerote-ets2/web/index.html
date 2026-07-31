@@ -322,7 +322,7 @@ body.booting .app, body.booting .mobile-bar { visibility: hidden; }
     document.write('<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"><\\/script>');
   }
 </script>
-<script>window.CATALOG_BASE = "https://cdn.jsdelivr.net/gh/miriamcomercio89-ops/Miriam@4d317febfdd7ae88bdd1d48304a3f1b6ab2fce8f/europerote-ets2/web";</script>
+<script>window.CATALOG_BASE = "https://cdn.jsdelivr.net/gh/miriamcomercio89-ops/Miriam@92dd45fea6af7c54550a2e073003e5740ebca232/europerote-ets2/web";</script>
 <script>(() => {
   let DATA = window.CATALOG_DATA && window.CATALOG_DATA.routes ? window.CATALOG_DATA : null;
   const FAV_KEY = "europerote-favs";
@@ -375,7 +375,17 @@ body.booting .app, body.booting .mobile-bar { visibility: hidden; }
   }
 
   async function loadCatalogFromCdn() {
+    const pageDir = (() => {
+      try {
+        const u = new URL(window.location.href);
+        if (u.protocol === "file:") return "";
+        return u.href.replace(/\/[^/]*$/, "");
+      } catch (_) {
+        return "";
+      }
+    })();
     const bases = [
+      pageDir, // same folder as index.html (jsDelivr / servidor local)
       (window.CATALOG_BASE || "").replace(/\/$/, ""),
       "https://cdn.jsdelivr.net/gh/miriamcomercio89-ops/Miriam@cursor/red-ferroviaria-alemania-555a/europerote-ets2/web",
     ].filter((b, i, arr) => b && arr.indexOf(b) === i);

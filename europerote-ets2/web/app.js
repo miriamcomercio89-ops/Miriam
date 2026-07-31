@@ -50,7 +50,17 @@
   }
 
   async function loadCatalogFromCdn() {
+    const pageDir = (() => {
+      try {
+        const u = new URL(window.location.href);
+        if (u.protocol === "file:") return "";
+        return u.href.replace(/\/[^/]*$/, "");
+      } catch (_) {
+        return "";
+      }
+    })();
     const bases = [
+      pageDir, // same folder as index.html (jsDelivr / servidor local)
       (window.CATALOG_BASE || "").replace(/\/$/, ""),
       "https://cdn.jsdelivr.net/gh/miriamcomercio89-ops/Miriam@cursor/red-ferroviaria-alemania-555a/europerote-ets2/web",
     ].filter((b, i, arr) => b && arr.indexOf(b) === i);

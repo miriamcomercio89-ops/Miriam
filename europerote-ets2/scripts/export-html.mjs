@@ -128,19 +128,24 @@ fs.writeFileSync(
 fs.writeFileSync(path.join(webDir, "app.js"), app);
 fs.writeFileSync(path.join(webDir, "styles.css"), styles);
 
+const cdnIndex = `https://cdn.jsdelivr.net/gh/${REPO}@${CDN_REF}/europerote-ets2/web/index.html`;
 const abrir = `<!doctype html>
 <html lang="es">
 <head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Abrir EuroPerote</title>
+<meta http-equiv="refresh" content="0;url=${cdnIndex}"/>
 <style>body{font-family:system-ui;margin:0;padding:1.25rem;background:#0a1628;color:#e8eef6;line-height:1.45}a{color:#F2A900;font-weight:700}.card{background:#13233d;border-radius:16px;padding:1rem;margin:1rem 0}code{word-break:break-all;font-size:.85rem}</style>
 </head><body>
 <h1>EuroPerote</h1>
 <p>Catálogo con mapa ProMods (ets2.online), etiquetas ferry/peaje/frontera y PDFs por país.</p>
 <div class="card">
-<p><a href="https://htmlpreview.github.io/?https://github.com/${REPO}/blob/${CDN_REF}/europerote-ets2/web/index.html">Abrir catálogo</a></p>
-<p>Commit CDN: <code>${CDN_REF}</code></p>
+<p><strong>PC / móvil — abrir aquí:</strong><br/><a href="${cdnIndex}">${cdnIndex}</a></p>
+<p>Si el enlace anterior no carga aún (CDN cache), espera 1–2 minutos o fuerza recarga.</p>
+<p>Commit: <code>${CDN_REF}</code></p>
 </div>
 <p>Rutas: ${routes.length} · Ciudades: ${cities.length} · Cobertura: ${summary.cobertura_pct}%</p>
 </body></html>`;
 fs.writeFileSync(path.join(root, "ABRIR-EN-MOVIL.html"), abrir);
+fs.writeFileSync(path.join(webDir, "ABRIR.html"), abrir);
 console.log(`Export OK: ${routes.length} routes, ${cities.length} cities, ${chunks.length} chunks`);
+console.log(`Abrir en PC: ${cdnIndex}`);
