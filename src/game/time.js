@@ -2,11 +2,12 @@ import { OFFICE } from './state.js';
 import { isHoliday, holidayName } from '../data/holidays.js';
 
 /**
- * Escala base: 1 minuto real = 30 minutos de juego.
- * (60_000 ms reales → 1_800_000 ms de juego → factor 30)
+ * Escala base: 1 segundo real = 1 minuto de juego
+ * (= 1 minuto real = 1 hora de juego).
+ * (1_000 ms reales → 60_000 ms de juego → factor 60)
  * speed multiplica: 1 normal, 2 rápido, 4 muy rápido.
  */
-export const BASE_SCALE = 30;
+export const BASE_SCALE = 60;
 
 export function advanceClock(state, nowRealMs = Date.now()) {
   const clock = state.clock;
@@ -116,9 +117,9 @@ export function nextBusinessDayStart(state) {
 
 export function speedLabel(speed, paused) {
   if (paused || speed === 0) return 'Pausa';
-  if (speed === 1) return 'Normal (1 min = 30 min)';
-  if (speed === 2) return 'Rápido (1 min = 1 h)';
-  if (speed === 4) return 'Muy rápido (1 min = 2 h)';
+  if (speed === 1) return 'Normal (1 s = 1 min)';
+  if (speed === 2) return 'Rápido (1 s = 2 min)';
+  if (speed === 4) return 'Muy rápido (1 s = 4 min)';
   // Compat saves antiguos
   if (speed === 15) return 'Rápido';
   if (speed === 60) return 'Muy rápido';

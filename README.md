@@ -13,7 +13,7 @@ No abras `index.html` de la raíz.
 
 ## Novedades v1.4
 
-- **Tiempo:** 1 minuto real = 30 minutos de juego (Normal); Rápido ×2; Muy rápido ×4
+- **Tiempo:** 1 segundo real = 1 minuto de juego (Normal); Rápido ×2; Muy rápido ×4
 - **Teclado numérico grande** en el TPV + atajos del **numpad** (0–9, ⌫, Enter)
 - **Billetes grandes sin cambio:** el cliente debe pagar de otra forma
 - **«Quédate el céntimo»:** a veces el cliente te deja el cambio pequeño

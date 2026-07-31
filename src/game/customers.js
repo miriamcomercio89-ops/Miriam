@@ -106,7 +106,7 @@ export function maybeSpawnCustomers(state) {
 /**
  * Ritmo real deseado (como con el BASE_SCALE antiguo 0.25):
  * ~64–280 s reales entre llegadas a velocidad Normal.
- * Se convierte a tiempo de juego con BASE_SCALE para que, al ir el día ×30,
+ * Se convierte a tiempo de juego con BASE_SCALE para que, al acelerar el día,
  * no lleguen clientes cada pocos segundos reales.
  */
 const SPAWN_MIN_REAL_MS = 64_000;

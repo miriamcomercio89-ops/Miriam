@@ -4604,8 +4604,8 @@ try {
         queue: [],
         current: null,
         servedToday: 0,
-        // ~40 s reales al ritmo Normal (1 min real = 30 min juego)
-        nextSpawnAtMs: start.getTime() + 4e4 * 30
+        // ~40 s reales al ritmo Normal (1 s real = 1 min juego → factor 60)
+        nextSpawnAtMs: start.getTime() + 4e4 * 60
       },
       settings: {
         music: true,
@@ -4699,7 +4699,7 @@ try {
     if (data.customers && data.clock) {
       const gap = (data.customers.nextSpawnAtMs || 0) - data.clock.gameTimeMs;
       if (gap >= 0 && gap < 10 * 60 * 1e3) {
-        data.customers.nextSpawnAtMs = data.clock.gameTimeMs + 4e4 * 30;
+        data.customers.nextSpawnAtMs = data.clock.gameTimeMs + 4e4 * 60;
       }
     }
     if (data.finance && data.finance.dayPrizesReimbursableCents == null) {
@@ -4759,7 +4759,7 @@ try {
   }
 
   // src/game/time.js
-  var BASE_SCALE = 30;
+  var BASE_SCALE = 60;
   function advanceClock(state2, nowRealMs = Date.now()) {
     const clock = state2.clock;
     if (clock.paused || clock.speed === 0) {
@@ -4837,9 +4837,9 @@ try {
   }
   function speedLabel(speed, paused) {
     if (paused || speed === 0) return "Pausa";
-    if (speed === 1) return "Normal (1 min = 30 min)";
-    if (speed === 2) return "R\xE1pido (1 min = 1 h)";
-    if (speed === 4) return "Muy r\xE1pido (1 min = 2 h)";
+    if (speed === 1) return "Normal (1 s = 1 min)";
+    if (speed === 2) return "R\xE1pido (1 s = 2 min)";
+    if (speed === 4) return "Muy r\xE1pido (1 s = 4 min)";
     if (speed === 15) return "R\xE1pido";
     if (speed === 60) return "Muy r\xE1pido";
     return `${speed}\xD7`;
@@ -10516,7 +10516,7 @@ ${xrefPos}
         </div>
         <p class="disclaimer">
           Fan-made / no oficial. Nombres de Loter\xEDas y Apuestas del Estado y ONCE usados solo con fines de simulaci\xF3n.
-          Juego responsable \xB7 +18. Versi\xF3n ${GAME_VERSION}: 1 min real = 30 min juego \xB7 teclado num\xE9rico \xB7 fondo de cambio lunes \xB7 propinas / sin cambio.
+          Juego responsable \xB7 +18. Versi\xF3n ${GAME_VERSION}: 1 s real = 1 min juego \xB7 teclado num\xE9rico \xB7 fondo de cambio lunes \xB7 propinas / sin cambio.
         </p>
       </div>
     </div>
@@ -10639,9 +10639,9 @@ ${xrefPos}
       </div>
       <div class="speed-controls">
         <button class="btn ${speed === 0 ? "active" : ""}" data-speed="0">Pausa</button>
-        <button class="btn ${speed === 1 ? "active" : ""}" data-speed="1" title="1 min real = 30 min juego">Normal</button>
-        <button class="btn ${speed === 2 ? "active" : ""}" data-speed="2" title="1 min real = 1 h juego">R\xE1pido</button>
-        <button class="btn ${speed === 4 ? "active" : ""}" data-speed="4" title="1 min real = 2 h juego">Muy r\xE1pido</button>
+        <button class="btn ${speed === 1 ? "active" : ""}" data-speed="1" title="1 segundo real = 1 minuto de juego">Normal</button>
+        <button class="btn ${speed === 2 ? "active" : ""}" data-speed="2" title="1 segundo real = 2 minutos de juego">R\xE1pido</button>
+        <button class="btn ${speed === 4 ? "active" : ""}" data-speed="4" title="1 segundo real = 4 minutos de juego">Muy r\xE1pido</button>
       </div>
     </header>
     ${drawNoticeBannerHTML()}

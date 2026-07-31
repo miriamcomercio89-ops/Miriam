@@ -594,7 +594,7 @@ function renderMenu() {
         </div>
         <p class="disclaimer">
           Fan-made / no oficial. Nombres de Loterías y Apuestas del Estado y ONCE usados solo con fines de simulación.
-          Juego responsable · +18. Versión ${GAME_VERSION}: 1 min real = 30 min juego · teclado numérico · fondo de cambio lunes · propinas / sin cambio.
+          Juego responsable · +18. Versión ${GAME_VERSION}: 1 s real = 1 min juego · teclado numérico · fondo de cambio lunes · propinas / sin cambio.
         </p>
       </div>
     </div>
@@ -734,9 +734,9 @@ function topbarHTML() {
       </div>
       <div class="speed-controls">
         <button class="btn ${speed === 0 ? 'active' : ''}" data-speed="0">Pausa</button>
-        <button class="btn ${speed === 1 ? 'active' : ''}" data-speed="1" title="1 min real = 30 min juego">Normal</button>
-        <button class="btn ${speed === 2 ? 'active' : ''}" data-speed="2" title="1 min real = 1 h juego">Rápido</button>
-        <button class="btn ${speed === 4 ? 'active' : ''}" data-speed="4" title="1 min real = 2 h juego">Muy rápido</button>
+        <button class="btn ${speed === 1 ? 'active' : ''}" data-speed="1" title="1 segundo real = 1 minuto de juego">Normal</button>
+        <button class="btn ${speed === 2 ? 'active' : ''}" data-speed="2" title="1 segundo real = 2 minutos de juego">Rápido</button>
+        <button class="btn ${speed === 4 ? 'active' : ''}" data-speed="4" title="1 segundo real = 4 minutos de juego">Muy rápido</button>
       </div>
     </header>
     ${drawNoticeBannerHTML()}
@@ -4392,9 +4392,9 @@ function renderSettings() {
             </label>
             <label>Velocidad por defecto<br/>
               <select id="set-speed" style="padding:8px;border-radius:10px;border:1px solid var(--line);width:100%">
-                <option value="1" ${normalizeSpeed(speed) === 1 ? 'selected' : ''}>Normal (1 min = 30 min)</option>
-                <option value="2" ${normalizeSpeed(speed) === 2 ? 'selected' : ''}>Rápido (1 min = 1 h)</option>
-                <option value="4" ${normalizeSpeed(speed) === 4 ? 'selected' : ''}>Muy rápido (1 min = 2 h)</option>
+                <option value="1" ${normalizeSpeed(speed) === 1 ? 'selected' : ''}>Normal (1 s = 1 min)</option>
+                <option value="2" ${normalizeSpeed(speed) === 2 ? 'selected' : ''}>Rápido (1 s = 2 min)</option>
+                <option value="4" ${normalizeSpeed(speed) === 4 ? 'selected' : ''}>Muy rápido (1 s = 4 min)</option>
               </select>
             </label>
             <label>Autoguardado (minutos)<br/>
