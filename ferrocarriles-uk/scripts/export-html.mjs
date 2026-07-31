@@ -10,7 +10,9 @@ const webDir = path.join(root, "web");
 const artifactDir = "/opt/cursor/artifacts";
 const REPO = "miriamcomercio89-ops/Miriam";
 const BRANCH = "cursor/red-ferroviaria-alemania-555a";
-const CDN_BASE = `https://cdn.jsdelivr.net/gh/${REPO}@${BRANCH}/ferrocarriles-uk/web`;
+const gitSha = spawnSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).stdout.trim();
+const CDN_REF = gitSha || BRANCH;
+const CDN_BASE = `https://cdn.jsdelivr.net/gh/${REPO}@${CDN_REF}/ferrocarriles-uk/web`;
 const CHUNK = 400;
 
 const operators = JSON.parse(fs.readFileSync(path.join(root, "data/operators.json"), "utf8"));
@@ -126,8 +128,14 @@ chunks.forEach((c, i) => {
   fs.writeFileSync(path.join(webDir, "chunks", `routes-${i}.json`), JSON.stringify(c), "utf8");
 });
 
-const onlineHtml = bootShell.replaceAll("__BASE__", CDN_BASE);
-const localHtml = bootShell.replaceAll("__BASE__", ".");
+const onlineHtml = bootShell
+  .replaceAll("__BASE__", CDN_BASE)
+  .replace("__STYLES__", styles)
+  .replace("__APP__", app.replace(/<\/script/gi, "<\\/script"));
+const localHtml = bootShell
+  .replaceAll("__BASE__", ".")
+  .replace("__STYLES__", styles)
+  .replace("__APP__", app.replace(/<\/script/gi, "<\\/script"));
 fs.writeFileSync(path.join(webDir, "index.html"), onlineHtml, "utf8");
 fs.writeFileSync(path.join(webDir, "index-local.html"), localHtml, "utf8");
 

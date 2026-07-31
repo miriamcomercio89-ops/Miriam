@@ -37,32 +37,47 @@
   }
 
   async function loadCatalogFromCdn() {
-    const base = (window.CATALOG_BASE || ".").replace(/\/$/, "");
-    setBoot(8);
-    const meta = await fetch(base + "/meta.json", { cache: "force-cache" }).then((r) => {
-      if (!r.ok) throw new Error("No se pudo cargar meta.json (" + r.status + ")");
+    const bases = [
+      (window.CATALOG_BASE || "").replace(/\/$/, ""),
+      "https://cdn.jsdelivr.net/gh/miriamcomercio89-ops/Miriam@cursor/red-ferroviaria-alemania-555a/ferrocarriles-uk/web",
+    ].filter((b, i, arr) => b && arr.indexOf(b) === i);
+
+    setBoot(3);
+    let lastErr = null;
+    for (const base of bases) {
+      try {
+        setBoot(6);
+        const meta = await fetchJson(base + "/meta.json");
+        setBoot(15);
+        const total = meta.chunks || 0;
+        if (!total) throw new Error("meta.json sin chunks");
+        const routes = [];
+        const batch = 3;
+        for (let i = 0; i < total; i += batch) {
+          const slice = [];
+          for (let j = i; j < Math.min(total, i + batch); j++) slice.push(j);
+          const parts = await Promise.all(
+            slice.map((j) => fetchJson(base + "/chunks/routes-" + j + ".json"))
+          );
+          parts.forEach((p) => routes.push(...p));
+          setBoot(15 + (80 * Math.min(total, i + batch)) / Math.max(total, 1));
+        }
+        if (!routes.length) throw new Error("No se cargaron rutas");
+        setBoot(98);
+        return { ...meta, routes };
+      } catch (e) {
+        lastErr = e;
+        console.warn("Fallo carga desde", base, e);
+      }
+    }
+    throw lastErr || new Error("No se pudo cargar el catálogo");
+  }
+
+  function fetchJson(url) {
+    return fetch(url, { cache: "no-cache", mode: "cors" }).then(async (r) => {
+      if (!r.ok) throw new Error("HTTP " + r.status + " en " + url.split("/").slice(-2).join("/"));
       return r.json();
     });
-    setBoot(18);
-    const total = meta.chunks || 0;
-    const routes = [];
-    // carga en paralelo por lotes para no saturar el móvil
-    const batch = 4;
-    for (let i = 0; i < total; i += batch) {
-      const slice = [];
-      for (let j = i; j < Math.min(total, i + batch); j++) slice.push(j);
-      const parts = await Promise.all(
-        slice.map((j) =>
-          fetch(base + "/chunks/routes-" + j + ".json", { cache: "force-cache" }).then((r) => {
-            if (!r.ok) throw new Error("Fallo chunk " + j);
-            return r.json();
-          })
-        )
-      );
-      parts.forEach((p) => routes.push(...p));
-      setBoot(18 + (82 * Math.min(total, i + batch)) / Math.max(total, 1));
-    }
-    return { ...meta, routes };
   }
 
   function routeDescription(r) {
