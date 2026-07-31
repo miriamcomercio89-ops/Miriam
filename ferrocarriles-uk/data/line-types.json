@@ -1,0 +1,169 @@
+{
+  "version": "0.1.0",
+  "idioma": "es",
+  "regla_color": "El color de línea visible en mapa/UI es el color corporativo del operador, no del tipo.",
+  "regla_codigo": "CODIGO = {PREFIJO}{NUMERO}[SUFIJO_OPCIONAL]. Prefijo fija el tipo; el número es único dentro del prefijo a escala nacional.",
+  "tipos": [
+    {
+      "id": "av",
+      "prefijo": "AV",
+      "nombre": "Alta velocidad",
+      "descripcion": "Servicios ≥250 km/h entre grandes nodos. Pocos trenes, alta frecuencia en corredores troncales.",
+      "velocidad_objetivo_kmh": 300,
+      "parada": "pocas",
+      "ambito": ["nacional", "internacional"],
+      "rango_numeros": [1, 199]
+    },
+    {
+      "id": "ld",
+      "prefijo": "LD",
+      "nombre": "Larga distancia",
+      "descripcion": "Intercity clásico 160–230 km/h con paradas en capitales de Land y nodos secundarios.",
+      "velocidad_objetivo_kmh": 200,
+      "parada": "medias",
+      "ambito": ["nacional", "internacional"],
+      "rango_numeros": [1, 999]
+    },
+    {
+      "id": "ir",
+      "prefijo": "IR",
+      "nombre": "Interregional",
+      "descripcion": "Puente entre regiones vecinas; más lento que LD, más rápido y largo que RE.",
+      "velocidad_objetivo_kmh": 160,
+      "parada": "medias",
+      "ambito": ["multiregional"],
+      "rango_numeros": [1, 999]
+    },
+    {
+      "id": "re",
+      "prefijo": "RE",
+      "nombre": "Regional exprés",
+      "descripcion": "Exprés regional con saltos de parada; columna vertebral de cada Land.",
+      "velocidad_objetivo_kmh": 160,
+      "parada": "semirrápida",
+      "ambito": ["regional"],
+      "rango_numeros": [1, 2999]
+    },
+    {
+      "id": "rb",
+      "prefijo": "RB",
+      "nombre": "Regional básico",
+      "descripcion": "Todas las paradas en corredores regionales y ramales.",
+      "velocidad_objetivo_kmh": 120,
+      "parada": "todas",
+      "ambito": ["regional", "local"],
+      "rango_numeros": [1, 4999]
+    },
+    {
+      "id": "s",
+      "prefijo": "S",
+      "nombre": "Cercanías",
+      "descripcion": "Red tipo S-Bahn metropolitana y periurbana de alta frecuencia.",
+      "velocidad_objetivo_kmh": 140,
+      "parada": "todas",
+      "ambito": ["metropolitano"],
+      "rango_numeros": [1, 99],
+      "nota": "El número es local al área metropolitana; el generador antepone un código de área en metadatos (p.ej. S-BER-3) pero el código público es S3."
+    },
+    {
+      "id": "u",
+      "prefijo": "U",
+      "nombre": "Metro",
+      "descripcion": "Metro urbano de alta capacidad.",
+      "velocidad_objetivo_kmh": 80,
+      "parada": "todas",
+      "ambito": ["urbano"],
+      "rango_numeros": [1, 99]
+    },
+    {
+      "id": "t",
+      "prefijo": "T",
+      "nombre": "Tranvía",
+      "descripcion": "Tranvía / light rail urbano y suburbano.",
+      "velocidad_objetivo_kmh": 70,
+      "parada": "todas",
+      "ambito": ["urbano"],
+      "rango_numeros": [1, 199]
+    },
+    {
+      "id": "tt",
+      "prefijo": "TT",
+      "nombre": "Tranvía-tren",
+      "descripcion": "Circula en vías urbanas y ferroviarias regionales.",
+      "velocidad_objetivo_kmh": 100,
+      "parada": "mixta",
+      "ambito": ["metropolitano", "regional"],
+      "rango_numeros": [1, 299]
+    },
+    {
+      "id": "ae",
+      "prefijo": "AE",
+      "nombre": "Aeropuerto exprés",
+      "descripcion": "Enlace premium estación central ↔ aeropuerto.",
+      "velocidad_objetivo_kmh": 160,
+      "parada": "pocas",
+      "ambito": ["metropolitano"],
+      "rango_numeros": [1, 49]
+    },
+    {
+      "id": "n",
+      "prefijo": "N",
+      "nombre": "Nocturno",
+      "descripcion": "Servicios nocturnos de larga y media distancia.",
+      "velocidad_objetivo_kmh": 160,
+      "parada": "medias",
+      "ambito": ["nacional", "internacional"],
+      "rango_numeros": [1, 199]
+    },
+    {
+      "id": "tur",
+      "prefijo": "TUR",
+      "nombre": "Turístico",
+      "descripcion": "Rutas panorámicas, costa, Alpes, rutas temáticas.",
+      "velocidad_objetivo_kmh": 100,
+      "parada": "tematica",
+      "ambito": ["regional", "turistico"],
+      "rango_numeros": [1, 199]
+    },
+    {
+      "id": "or",
+      "prefijo": "OR",
+      "nombre": "Orbital",
+      "descripcion": "Anillos suburbanos y orbitales metropolitanos.",
+      "velocidad_objetivo_kmh": 120,
+      "parada": "todas",
+      "ambito": ["metropolitano"],
+      "rango_numeros": [1, 49]
+    },
+    {
+      "id": "px",
+      "prefijo": "PX",
+      "nombre": "Premium exprés",
+      "descripcion": "Servicio comercial premium con menos paradas que LD.",
+      "velocidad_objetivo_kmh": 230,
+      "parada": "pocas",
+      "ambito": ["nacional"],
+      "rango_numeros": [1, 99]
+    },
+    {
+      "id": "mc",
+      "prefijo": "MC",
+      "nombre": "Metropolitano cruzado",
+      "descripcion": "Líneas transversales entre dos o más áreas S/U sin pasar por el centro histórico.",
+      "velocidad_objetivo_kmh": 140,
+      "parada": "semirrápida",
+      "ambito": ["metropolitano"],
+      "rango_numeros": [1, 199]
+    },
+    {
+      "id": "rl",
+      "prefijo": "RL",
+      "nombre": "Ramal local",
+      "descripcion": "Ramales cortos a pueblos y valles; frecuencias bajas-medias.",
+      "velocidad_objetivo_kmh": 100,
+      "parada": "todas",
+      "ambito": ["local"],
+      "rango_numeros": [1, 2999]
+    }
+  ]
+}

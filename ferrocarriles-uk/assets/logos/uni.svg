@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 128 128" role="img" aria-label="Universidad Express Alemania">
+  <rect width="128" height="128" rx="24" fill="#4E342E"/>
+  <g transform="translate(0,-6)"><g fill="#FFFFFF"><path d="M28 28 H60 V100 H28 C36 88 36 40 28 28 Z"/><path d="M100 28 H68 V100 H100 C92 88 92 40 100 28 Z"/></g></g>
+  <rect x="16" y="96" width="96" height="22" rx="8" fill="#FFFFFF" opacity="0.95"/>
+  <text x="64" y="112" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="700" fill="#4E342E">UEA</text>
+  <title>Universidad Express Alemania</title>
+</svg>

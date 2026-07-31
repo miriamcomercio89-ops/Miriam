@@ -1,0 +1,380 @@
+{
+  "citiesList": [
+    {
+      "gameName": "afula",
+      "realName": "Afula",
+      "country": "israel",
+      "x": "113560",
+      "y": "57",
+      "z": "87648.5"
+    },
+    {
+      "gameName": "akko",
+      "realName": "Akko",
+      "country": "israel",
+      "x": "111914",
+      "y": "60.2969",
+      "z": "85981.9"
+    },
+    {
+      "gameName": "amman",
+      "realName": "Amman",
+      "country": "jordan",
+      "x": "117997",
+      "y": "100.125",
+      "z": "91263"
+    },
+    {
+      "gameName": "aqaba",
+      "realName": "Aqaba",
+      "country": "jordan",
+      "x": "115676",
+      "y": "51.793",
+      "z": "104015"
+    },
+    {
+      "gameName": "ashdod",
+      "realName": "Ashdod",
+      "country": "israel",
+      "x": "111424",
+      "y": "57.0195",
+      "z": "92862"
+    },
+    {
+      "gameName": "ashkelon",
+      "realName": "Ashkelon",
+      "country": "israel",
+      "x": "110913",
+      "y": "64.4766",
+      "z": "93785.6"
+    },
+    {
+      "gameName": "beersheva",
+      "realName": "Beer Sheva",
+      "country": "israel",
+      "x": "112506",
+      "y": "69.9688",
+      "z": "96046.8"
+    },
+    {
+      "gameName": "beirut",
+      "realName": "Beirut",
+      "country": "lebanon",
+      "x": "113037",
+      "y": "52.3984",
+      "z": "80662.3"
+    },
+    {
+      "gameName": "betshean",
+      "realName": "Bet She'an",
+      "country": "israel",
+      "x": "114693",
+      "y": "47",
+      "z": "87845.3"
+    },
+    {
+      "gameName": "byblos",
+      "realName": "Byblos",
+      "country": "lebanon",
+      "x": "113231",
+      "y": "68.3594",
+      "z": "79176.8"
+    },
+    {
+      "gameName": "damascus",
+      "realName": "Damascus",
+      "country": "syria",
+      "x": "117900",
+      "y": "80.8086",
+      "z": "81594.5"
+    },
+    {
+      "gameName": "damietta",
+      "realName": "Damietta",
+      "country": "egypt",
+      "x": "99855.5",
+      "y": "41.5742",
+      "z": "97062.2"
+    },
+    {
+      "gameName": "deraa",
+      "realName": "Deraa",
+      "country": "syria",
+      "x": "117740",
+      "y": "87.918",
+      "z": "86145"
+    },
+    {
+      "gameName": "dimona",
+      "realName": "Dimona",
+      "country": "israel",
+      "x": "114006",
+      "y": "61.0664",
+      "z": "97336.5"
+    },
+    {
+      "gameName": "eilat",
+      "realName": "Eilat",
+      "country": "israel",
+      "x": "114979",
+      "y": "51.793",
+      "z": "103848"
+    },
+    {
+      "gameName": "eingedi",
+      "realName": "Ein Gedi",
+      "country": "israel",
+      "x": "115452",
+      "y": "52.6445",
+      "z": "94729.5"
+    },
+    {
+      "gameName": "elarish",
+      "realName": "El Arish",
+      "country": "egypt",
+      "x": "108031",
+      "y": "46.6875",
+      "z": "97150.4"
+    },
+    {
+      "gameName": "hadera",
+      "realName": "Hadera",
+      "country": "israel",
+      "x": "112148",
+      "y": "57.6328",
+      "z": "87975.3"
+    },
+    {
+      "gameName": "haifa",
+      "realName": "Haifa",
+      "country": "israel",
+      "x": "111796",
+      "y": "54.3359",
+      "z": "86732.1"
+    },
+    {
+      "gameName": "haql",
+      "realName": "Haql",
+      "country": "saudia",
+      "x": "115406",
+      "y": "55.7461",
+      "z": "106289"
+    },
+    {
+      "gameName": "herzliya",
+      "realName": "Herzliya",
+      "country": "israel",
+      "x": "112615",
+      "y": "55.918",
+      "z": "89625.3"
+    },
+    {
+      "gameName": "irbid",
+      "realName": "Irbid",
+      "country": "jordan",
+      "x": "116337",
+      "y": "81.125",
+      "z": "87668.7"
+    },
+    {
+      "gameName": "izra",
+      "realName": "Izra",
+      "country": "syria",
+      "x": "118402",
+      "y": "87.5",
+      "z": "84567.7"
+    },
+    {
+      "gameName": "jericho",
+      "realName": "Jericho",
+      "country": "westbank",
+      "x": "115719",
+      "y": "43.0195",
+      "z": "92042.1"
+    },
+    {
+      "gameName": "jerusalem",
+      "realName": "Jerusalem",
+      "country": "israel",
+      "x": "113691",
+      "y": "73.5977",
+      "z": "92277.8"
+    },
+    {
+      "gameName": "kshmona",
+      "realName": "Kiryat Shmona",
+      "country": "israel",
+      "x": "114562",
+      "y": "68.5",
+      "z": "84137.3"
+    },
+    {
+      "gameName": "madaba",
+      "realName": "Madaba",
+      "country": "jordan",
+      "x": "117547",
+      "y": "100.125",
+      "z": "92957.8"
+    },
+    {
+      "gameName": "mafraq",
+      "realName": "Mafraq",
+      "country": "jordan",
+      "x": "118322",
+      "y": "84.918",
+      "z": "88451.3"
+    },
+    {
+      "gameName": "mitzpe",
+      "realName": "Mitzpe Ramon",
+      "country": "israel",
+      "x": "112703",
+      "y": "81.0195",
+      "z": "98894.4"
+    },
+    {
+      "gameName": "nabatieh",
+      "realName": "Nabatieh",
+      "country": "lebanon",
+      "x": "113769",
+      "y": "85",
+      "z": "83721.5"
+    },
+    {
+      "gameName": "nazareth",
+      "realName": "Nazareth",
+      "country": "israel",
+      "x": "113551",
+      "y": "71",
+      "z": "87167.6"
+    },
+    {
+      "gameName": "netanya",
+      "realName": "Netanya",
+      "country": "israel",
+      "x": "111696",
+      "y": "53.9141",
+      "z": "88953.3"
+    },
+    {
+      "gameName": "portsaid",
+      "realName": "Port Said",
+      "country": "egypt",
+      "x": "101740",
+      "y": "42.1758",
+      "z": "97628.5"
+    },
+    {
+      "gameName": "ramallah",
+      "realName": "Ramallah",
+      "country": "westbank",
+      "x": "114230",
+      "y": "73.4805",
+      "z": "91507.8"
+    },
+    {
+      "gameName": "rishon",
+      "realName": "Rishon LeZion",
+      "country": "israel",
+      "x": "111850",
+      "y": "56.918",
+      "z": "91479.3"
+    },
+    {
+      "gameName": "rutba",
+      "realName": "Ar-Rutbah",
+      "country": "iraq",
+      "x": "137980",
+      "y": "100.199",
+      "z": "80112"
+    },
+    {
+      "gameName": "ruwaished",
+      "realName": "Ruwaished",
+      "country": "jordan",
+      "x": "127939",
+      "y": "99.8984",
+      "z": "84836.5"
+    },
+    {
+      "gameName": "safawi",
+      "realName": "Safawi",
+      "country": "jordan",
+      "x": "123366",
+      "y": "99.8984",
+      "z": "88165.9"
+    },
+    {
+      "gameName": "sayda",
+      "realName": "Sayda",
+      "country": "lebanon",
+      "x": "112609",
+      "y": "54.8984",
+      "z": "82771.8"
+    },
+    {
+      "gameName": "taba",
+      "realName": "Taba",
+      "country": "egypt",
+      "x": "114517",
+      "y": "51.8281",
+      "z": "104701"
+    },
+    {
+      "gameName": "tanta",
+      "realName": "Tanta",
+      "country": "egypt",
+      "x": "71731.7",
+      "y": "60.6133",
+      "z": "30870.9"
+    },
+    {
+      "gameName": "telaviv",
+      "realName": "Tel Aviv",
+      "country": "israel",
+      "x": "111764",
+      "y": "55.918",
+      "z": "90591.5"
+    },
+    {
+      "gameName": "tiberias",
+      "realName": "Tiberias",
+      "country": "israel",
+      "x": "114292",
+      "y": "52",
+      "z": "86046.6"
+    },
+    {
+      "gameName": "tripolilb",
+      "realName": "Tripoli",
+      "country": "lebanon",
+      "x": "113601",
+      "y": "52.5977",
+      "z": "77400.8"
+    },
+    {
+      "gameName": "tyr",
+      "realName": "Tyr",
+      "country": "lebanon",
+      "x": "112294",
+      "y": "55.8984",
+      "z": "83905.7"
+    },
+    {
+      "gameName": "zahle",
+      "realName": "Zahle",
+      "country": "lebanon",
+      "x": "114997",
+      "y": "73.2227",
+      "z": "80176"
+    },
+    {
+      "gameName": "zarka",
+      "realName": "Zarka",
+      "country": "jordan",
+      "x": "118257",
+      "y": "100.125",
+      "z": "90744.4"
+    }
+  ]
+}

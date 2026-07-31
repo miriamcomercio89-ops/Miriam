@@ -1,0 +1,36 @@
+{
+  "citiesList": [
+    {
+      "gameName": "larnaka",
+      "realName": "Λάρνακα",
+      "country": "cyprus",
+      "x": "103263",
+      "y": "55.0859",
+      "z": "77087.2"
+    },
+    {
+      "gameName": "lefkosia",
+      "realName": "Λευκωσία",
+      "country": "cyprus",
+      "x": "101945",
+      "y": "69.0859",
+      "z": "75661"
+    },
+    {
+      "gameName": "lemesos",
+      "realName": "Λεμεσός",
+      "country": "cyprus",
+      "x": "100517",
+      "y": "54.0859",
+      "z": "79269.4"
+    },
+    {
+      "gameName": "pafos",
+      "realName": "Πάφος",
+      "country": "cyprus",
+      "x": "97732.6",
+      "y": "55.0859",
+      "z": "79057.9"
+    }
+  ]
+}

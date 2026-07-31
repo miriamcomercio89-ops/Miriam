@@ -1,0 +1,46 @@
+{
+  "version": "4.0.0",
+  "generado": "2026-07-31T16:00:25.577Z",
+  "operador": {
+    "id": "europerote",
+    "nombre": "EuroPerote",
+    "nombre_corto": "EP",
+    "color": "#0B3D91",
+    "color_secundario": "#F2A900",
+    "eslogan": "Toda Europa ProMods en autobús",
+    "sede": "Colonia",
+    "tipo": "internacional",
+    "descripcion": "Único operador de la red EuroPerote: servicios urbanos, interurbanos, express, nocturnos, turísticos, aeroportuarios e internacionales sobre el mapa ProMods (Europe + Middle East + The Great Steppe) y complementos compatibles."
+  },
+  "total_rutas": 8523,
+  "ciudades_reales": 1058,
+  "ciudades_con_ruta": 1058,
+  "cobertura_pct": 100,
+  "solo_promods_real": true,
+  "por_tipo": {
+    "urb": 0,
+    "reg": 4694,
+    "exp": 2451,
+    "int": 820,
+    "noc": 199,
+    "tur": 15,
+    "ae": 0,
+    "fer": 344,
+    "brt": 0
+  },
+  "con_etiquetas": {
+    "ferry": 612,
+    "peaje": 4204,
+    "frontera": 2046
+  },
+  "codigos_ejemplo": [
+    "AL-REG-0002",
+    "AL-REG-0003",
+    "AL-REG-0004",
+    "AL-REG-0005",
+    "AL-REG-0006",
+    "AL-REG-0007",
+    "AL-REG-0008",
+    "AL-REG-0009"
+  ]
+}

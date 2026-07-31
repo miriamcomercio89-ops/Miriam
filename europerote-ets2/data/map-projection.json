@@ -1,0 +1,13 @@
+{
+  "tileUrl": "https://ets2.online/map/ets2mappromods_158/{z}/{x}/{y}.png",
+  "maxZoom": 8,
+  "minZoom": 2,
+  "tileSize": 256,
+  "MAX_X": 65536,
+  "MAX_Y": 65536,
+  "x1": -135110.156,
+  "x2": 168923.75,
+  "y1": -179273.531,
+  "y2": 124760.375,
+  "attribution": "Mapa ProMods vía ets2.online"
+}

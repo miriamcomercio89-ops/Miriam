@@ -1,0 +1,84 @@
+{
+  "citiesList": [
+    {
+      "gameName": "brod",
+      "realName": "Brod",
+      "country": "bosnia",
+      "x": "28427",
+      "y": "51.6484",
+      "z": "31904.5"
+    },
+    {
+      "gameName": "doboj",
+      "realName": "Doboj",
+      "country": "bosnia",
+      "x": "28738.5",
+      "y": "65.1211",
+      "z": "33952"
+    },
+    {
+      "gameName": "ljubljana",
+      "realName": "Ljubljana",
+      "country": "slovenia",
+      "x": "14583",
+      "y": "96.9883",
+      "z": "26544.1"
+    },
+    {
+      "gameName": "maribor",
+      "realName": "Maribor",
+      "country": "slovenia",
+      "x": "18319.2",
+      "y": "79.1992",
+      "z": "24176.3"
+    },
+    {
+      "gameName": "mitrovica",
+      "realName": "Сремска Митровица (Sremska Mitrovica)",
+      "country": "serbia",
+      "x": "34996",
+      "y": "61.3672",
+      "z": "32520.7"
+    },
+    {
+      "gameName": "novomesto",
+      "realName": "Novo mesto",
+      "country": "slovenia",
+      "x": "17082.4",
+      "y": "58.2578",
+      "z": "28594.2"
+    },
+    {
+      "gameName": "osijek",
+      "realName": "Osijek",
+      "country": "croatia",
+      "x": "30999.1",
+      "y": "84.6719",
+      "z": "29231.6"
+    },
+    {
+      "gameName": "sla_brod",
+      "realName": "Slavonski Brod",
+      "country": "croatia",
+      "x": "28441.5",
+      "y": "49.3047",
+      "z": "31539.2"
+    },
+    {
+      "gameName": "udine",
+      "realName": "Udine",
+      "country": "italy",
+      "x": "9876.48",
+      "y": "68.9219",
+      "z": "26440.5"
+    },
+    {
+      "gameName": "virovitica",
+      "realName": "Virovitica",
+      "country": "croatia",
+      "x": "25820.5",
+      "y": "63.9453",
+      "z": "27611.5"
+    }
+  ]
+}

@@ -1,0 +1,124 @@
+{
+  "citiesList": [
+    {
+      "gameName": "budapest",
+      "realName": "Budapest",
+      "country": "hungary",
+      "x": "32367.8",
+      "y": "123.836",
+      "z": "17882.7"
+    },
+    {
+      "gameName": "bystrica",
+      "realName": "Banská Bystrica",
+      "country": "slovakia",
+      "x": "32657.6",
+      "y": "100",
+      "z": "10680.5"
+    },
+    {
+      "gameName": "debrecen",
+      "realName": "Debrecen",
+      "country": "hungary",
+      "x": "41641.6",
+      "y": "123.836",
+      "z": "17483.7"
+    },
+    {
+      "gameName": "gdansk",
+      "realName": "Gdańsk",
+      "country": "poland",
+      "x": "28343.1",
+      "y": "91.2305",
+      "z": "-20619.5"
+    },
+    {
+      "gameName": "gdyne",
+      "realName": "Gdynia",
+      "country": "poland",
+      "x": "28154.4",
+      "y": "124.887",
+      "z": "-22045.9"
+    },
+    {
+      "gameName": "katowice",
+      "realName": "Katowice",
+      "country": "poland",
+      "x": "30728.8",
+      "y": "144.246",
+      "z": "2458.83"
+    },
+    {
+      "gameName": "kosice",
+      "realName": "Košice",
+      "country": "slovakia",
+      "x": "39843.9",
+      "y": "90",
+      "z": "10494.4"
+    },
+    {
+      "gameName": "krakow",
+      "realName": "Kraków",
+      "country": "poland",
+      "x": "34470.3",
+      "y": "144.246",
+      "z": "3249.68"
+    },
+    {
+      "gameName": "lodz",
+      "realName": "Łódź",
+      "country": "poland",
+      "x": "32014.5",
+      "y": "60",
+      "z": "-6143.92"
+    },
+    {
+      "gameName": "lublin",
+      "realName": "Lublin",
+      "country": "poland",
+      "x": "42859.6",
+      "y": "123",
+      "z": "-3967.52"
+    },
+    {
+      "gameName": "olsztyn",
+      "realName": "Olsztyn",
+      "country": "poland",
+      "x": "34758.6",
+      "y": "92.1094",
+      "z": "-17885.9"
+    },
+    {
+      "gameName": "ostrava",
+      "realName": "Ostrava",
+      "country": "czech",
+      "x": "28231.9",
+      "y": "125.836",
+      "z": "5136.1"
+    },
+    {
+      "gameName": "pecs",
+      "realName": "Pécs",
+      "country": "Hungary",
+      "x": "29039.9",
+      "y": "74.6836",
+      "z": "26311.6"
+    },
+    {
+      "gameName": "szeged",
+      "realName": "Szeged",
+      "country": "hungary",
+      "x": "36880.7",
+      "y": "74.0469",
+      "z": "24565.7"
+    },
+    {
+      "gameName": "warszawa",
+      "realName": "Warszawa",
+      "country": "poland",
+      "x": "37353.6",
+      "y": "93.1836",
+      "z": "-9467.43"
+    }
+  ]
+}

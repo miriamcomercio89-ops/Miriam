@@ -1,0 +1,11 @@
+{
+  "id": "europerote",
+  "nombre": "EuroPerote",
+  "nombre_corto": "EP",
+  "color": "#0B3D91",
+  "color_secundario": "#F2A900",
+  "eslogan": "Toda Europa ProMods en autobús",
+  "sede": "Colonia",
+  "tipo": "internacional",
+  "descripcion": "Único operador de la red EuroPerote: servicios urbanos, interurbanos, express, nocturnos, turísticos, aeroportuarios e internacionales sobre el mapa ProMods (Europe + Middle East + The Great Steppe) y complementos compatibles."
+}

@@ -1,0 +1,125 @@
+{
+  "version": "0.1.0",
+  "unidades": [
+    {
+      "id": "mb-citaro",
+      "nombre": "Mercedes-Benz Citaro",
+      "clase": "urbano"
+    },
+    {
+      "id": "mb-citaro-g",
+      "nombre": "Mercedes-Benz Citaro G (articulado)",
+      "clase": "urbano"
+    },
+    {
+      "id": "mb-intouro",
+      "nombre": "Mercedes-Benz Intouro",
+      "clase": "regional"
+    },
+    {
+      "id": "mb-tourismo",
+      "nombre": "Mercedes-Benz Tourismo",
+      "clase": "largo"
+    },
+    {
+      "id": "mb-travego",
+      "nombre": "Mercedes-Benz Travego",
+      "clase": "largo"
+    },
+    {
+      "id": "setra-s516",
+      "nombre": "Setra S 516 HD",
+      "clase": "largo"
+    },
+    {
+      "id": "setra-s531",
+      "nombre": "Setra S 531 DT (doble piso)",
+      "clase": "largo"
+    },
+    {
+      "id": "man-lions-city",
+      "nombre": "MAN Lion's City",
+      "clase": "urbano"
+    },
+    {
+      "id": "man-lions-coach",
+      "nombre": "MAN Lion's Coach",
+      "clase": "largo"
+    },
+    {
+      "id": "man-lions-intercity",
+      "nombre": "MAN Lion's Intercity",
+      "clase": "regional"
+    },
+    {
+      "id": "scania-touring",
+      "nombre": "Scania Touring",
+      "clase": "largo"
+    },
+    {
+      "id": "scania-citywide",
+      "nombre": "Scania Citywide",
+      "clase": "urbano"
+    },
+    {
+      "id": "volvo-7900",
+      "nombre": "Volvo 7900 Hybrid",
+      "clase": "urbano"
+    },
+    {
+      "id": "volvo-9700",
+      "nombre": "Volvo 9700",
+      "clase": "largo"
+    },
+    {
+      "id": "volvo-9900",
+      "nombre": "Volvo 9900",
+      "clase": "premium"
+    },
+    {
+      "id": "irizar-i6",
+      "nombre": "Irizar i6",
+      "clase": "largo"
+    },
+    {
+      "id": "irizar-ie",
+      "nombre": "Irizar ie tram (BRT)",
+      "clase": "urbano"
+    },
+    {
+      "id": "solaris-urbino",
+      "nombre": "Solaris Urbino 18",
+      "clase": "urbano"
+    },
+    {
+      "id": "iveco-crossway",
+      "nombre": "Iveco Crossway",
+      "clase": "regional"
+    },
+    {
+      "id": "iveco-magelys",
+      "nombre": "Iveco Magelys",
+      "clase": "largo"
+    },
+    {
+      "id": "temsa-safari",
+      "nombre": "TEMSA Safari",
+      "clase": "largo"
+    },
+    {
+      "id": "neoplan-skyliner",
+      "nombre": "Neoplan Skyliner",
+      "clase": "premium"
+    },
+    {
+      "id": "vanhool-ex",
+      "nombre": "Van Hool EX",
+      "clase": "largo"
+    },
+    {
+      "id": "alexander-enviro",
+      "nombre": "Alexander Dennis Enviro400",
+      "clase": "urbano"
+    }
+  ]
+}

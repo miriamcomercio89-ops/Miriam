@@ -1,0 +1,734 @@
+{
+  "version": "0.5.0",
+  "pais": "Alemania",
+  "nota": "Corredores alemanes densificados para maximizar paradas por línea (incl. metro y tranvía).",
+  "corredores": [
+    {
+      "id": "av-norte-sur",
+      "nombre": "ICE Norte–Sur (Hamburgo–Múnich)",
+      "tipo_preferido": [
+        "av",
+        "ld",
+        "px",
+        "n"
+      ],
+      "hubs": [
+        "hamburg-hbf",
+        "fx-hh-021",
+        "hamburg-harburg",
+        "dn-ni-12",
+        "hannover-hbf",
+        "dn-ni-15",
+        "goettingen",
+        "kassel-wilhelmshoehe",
+        "fulda",
+        "wuerzburg-hbf",
+        "nuernberg-hbf",
+        "ingolstadt-hbf",
+        "fx-by-061",
+        "muenchen-hbf"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "av-rin",
+      "nombre": "Corredor del Rin (Duisburgo–Basilea)",
+      "tipo_preferido": [
+        "av",
+        "ld",
+        "re",
+        "tur"
+      ],
+      "hubs": [
+        "duisburg-hbf",
+        "duesseldorf-hbf",
+        "dn-nw-09",
+        "koeln-hbf",
+        "dn-nw-15",
+        "bonn-hbf",
+        "dn-nw-17",
+        "koblenz-hbf",
+        "dn-rp-16",
+        "mainz-hbf",
+        "dn-he-04",
+        "frankfurt-hbf",
+        "dn-he-06",
+        "mannheim-hbf",
+        "karlsruhe-hbf",
+        "offenburg",
+        "freiburg-hbf",
+        "basel-bad"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "av-este",
+      "nombre": "Eje Este (Berlín–Múnich vía Leipzig)",
+      "tipo_preferido": [
+        "av",
+        "ld",
+        "px"
+      ],
+      "hubs": [
+        "berlin-hbf",
+        "dn-be-09",
+        "berlin-suedkreuz",
+        "dn-be-06",
+        "wittenberg",
+        "dn-sn-09",
+        "leipzig-hbf",
+        "leipzig-t-augustusplatz",
+        "hof",
+        "regensburg-hbf",
+        "landshut",
+        "dn-by-14",
+        "muenchen-ost",
+        "fx-by-061",
+        "muenchen-hbf"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "ld-berlin-hamburg",
+      "nombre": "Berlín–Hamburgo",
+      "tipo_preferido": [
+        "av",
+        "ld",
+        "px"
+      ],
+      "hubs": [
+        "berlin-hbf",
+        "dn-be-16",
+        "berlin-spandau",
+        "fx-be-033",
+        "stendal",
+        "fx-st-048",
+        "salzwedel",
+        "uelzen",
+        "lueneburg",
+        "fx-hh-021",
+        "hamburg-hbf"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "ld-berlin-koeln",
+      "nombre": "Berlín–Colonia / Ruhr",
+      "tipo_preferido": [
+        "av",
+        "ld",
+        "ir"
+      ],
+      "hubs": [
+        "berlin-hbf",
+        "berlin-orbital-w",
+        "wolfsburg-hbf",
+        "dn-ni-18",
+        "hannover-hbf",
+        "dn-ni-04",
+        "bielefeld-hbf",
+        "hamm",
+        "dortmund-hbf",
+        "ruhr-orbital",
+        "essen-hbf",
+        "duesseldorf-hbf",
+        "dn-nw-09",
+        "koeln-hbf"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "ld-saxon",
+      "nombre": "Eje Sajón Leipzig–Dresde–Chemnitz",
+      "tipo_preferido": [
+        "ld",
+        "re",
+        "s"
+      ],
+      "hubs": [
+        "leipzig-hbf",
+        "dn-sn-18",
+        "riesa",
+        "dresden-t-postplatz",
+        "dresden-neustadt",
+        "dresden-hbf",
+        "chemnitz-hbf",
+        "zwickau",
+        "plauen"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "ld-baltico",
+      "nombre": "Costa Báltica",
+      "tipo_preferido": [
+        "ld",
+        "re",
+        "tur"
+      ],
+      "hubs": [
+        "hamburg-hbf",
+        "fx-hh-021",
+        "luebeck-hbf",
+        "schwerin-hbf",
+        "dn-mv-13",
+        "rostock-hbf",
+        "dn-mv-18",
+        "stralsund",
+        "greifswald"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "re-selva-negra",
+      "nombre": "Selva Negra / Lago Constanza",
+      "tipo_preferido": [
+        "re",
+        "rb",
+        "tur",
+        "rl"
+      ],
+      "hubs": [
+        "karlsruhe-hbf",
+        "baden-baden",
+        "offenburg",
+        "hausach",
+        "villingen",
+        "donaueschingen",
+        "singen",
+        "konstanz"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "re-baviera-este",
+      "nombre": "Baviera Oriental",
+      "tipo_preferido": [
+        "re",
+        "rb",
+        "tur"
+      ],
+      "hubs": [
+        "muenchen-ost",
+        "dn-by-17",
+        "rosenheim",
+        "traunstein",
+        "freilassing",
+        "berchtesgaden",
+        "passau-hbf"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "ld-frankfurt-stuttgart",
+      "nombre": "Fráncfort–Stuttgart",
+      "tipo_preferido": [
+        "av",
+        "ld",
+        "re"
+      ],
+      "hubs": [
+        "frankfurt-hbf",
+        "dn-he-06",
+        "darmstadt-hbf",
+        "fx-he-025",
+        "heidelberg-hbf",
+        "fx-bw-076",
+        "heilbronn",
+        "dn-bw-09",
+        "stuttgart-hbf"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "re-turingia",
+      "nombre": "Turingia Central",
+      "tipo_preferido": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "hubs": [
+        "erfurt-hbf",
+        "dn-th-18",
+        "weimar",
+        "fx-th-078",
+        "jena-paradies",
+        "gera",
+        "dn-th-04",
+        "gotha",
+        "fx-th-030",
+        "eisenach"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "re-brandeburgo",
+      "nombre": "Anillo Brandeburgo",
+      "tipo_preferido": [
+        "re",
+        "rb",
+        "s",
+        "or"
+      ],
+      "hubs": [
+        "berlin-hbf",
+        "dn-be-09",
+        "oranienburg",
+        "fx-bb-050",
+        "neuruppin",
+        "fx-bb-066",
+        "brandenburg-hbf",
+        "dn-bb-16",
+        "potsdam-hbf",
+        "dn-bb-18",
+        "fuerstenwalde",
+        "frankfurt-oder"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "s-ruhr",
+      "nombre": "S-Bahn Rin-Ruhr",
+      "tipo_preferido": [
+        "s",
+        "or",
+        "mc",
+        "re"
+      ],
+      "hubs": [
+        "duisburg-hbf",
+        "muehlheim",
+        "essen-hbf",
+        "ruhr-orbital",
+        "bochum-hbf",
+        "dortmund-hbf",
+        "hagen-hbf",
+        "wuppertal-hbf"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "s-munich",
+      "nombre": "S-Bahn Múnich",
+      "tipo_preferido": [
+        "s",
+        "or",
+        "mc",
+        "ae"
+      ],
+      "hubs": [
+        "muenchen-pasing",
+        "fx-by-061",
+        "muenchen-hbf",
+        "muenchen-ost",
+        "dn-by-05",
+        "freising",
+        "muenchen-flughafen",
+        "dn-by-10",
+        "dachau",
+        "fuerstenfeldbruck"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "s-berlin",
+      "nombre": "S-Bahn Berlín",
+      "tipo_preferido": [
+        "s",
+        "or",
+        "mc",
+        "u",
+        "ae"
+      ],
+      "hubs": [
+        "berlin-spandau",
+        "berlin-orbital-w",
+        "berlin-zoo",
+        "dn-be-09",
+        "berlin-hbf",
+        "berlin-alexanderplatz",
+        "dn-be-18",
+        "berlin-ost",
+        "berlin-suedkreuz",
+        "berlin-gesundbrunnen",
+        "dn-bb-14",
+        "potsdam-hbf",
+        "dn-bb-18",
+        "berlin-brandenburg-airport"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "s-hamburg",
+      "nombre": "S-Bahn Hamburgo",
+      "tipo_preferido": [
+        "s",
+        "or",
+        "mc"
+      ],
+      "hubs": [
+        "hamburg-altona",
+        "fx-hh-021",
+        "hamburg-dammtor",
+        "hamburg-hbf",
+        "hamburg-harburg",
+        "dn-hh-06",
+        "hamburg-orbital"
+      ],
+      "origen_datos": "hibrida"
+    },
+    {
+      "id": "s-frankfurt",
+      "nombre": "S-Bahn Rin-Meno",
+      "tipo_preferido": [
+        "s",
+        "mc",
+        "ae"
+      ],
+      "hubs": [
+        "wiesbaden-hbf",
+        "dn-rp-09",
+        "mainz-hbf",
+        "dn-rp-18",
+        "frankfurt-flughafen",
+        "dn-he-13",
+        "frankfurt-hbf",
+        "dn-he-09",
+        "frankfurt-sued",
+        "dn-he-06",
+        "darmstadt-hbf",
+        "frankfurt-orbital"
+      ],
+      "origen_datos": "hibrida"
+    },
+    {
+      "id": "u-berlin",
+      "nombre": "Metro Berlín",
+      "tipo_preferido": [
+        "u",
+        "t"
+      ],
+      "hubs": [
+        "berlin-hbf",
+        "dn-be-09",
+        "berlin-alexanderplatz",
+        "dn-be-18",
+        "berlin-u-friedrichstrasse",
+        "berlin-u-potsdamer",
+        "berlin-zoo",
+        "dn-be-06",
+        "berlin-suedkreuz"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "u-munich",
+      "nombre": "Metro Múnich",
+      "tipo_preferido": [
+        "u",
+        "t"
+      ],
+      "hubs": [
+        "muenchen-hbf",
+        "fx-by-061",
+        "muenchen-u-marienplatz",
+        "dn-by-18",
+        "muenchen-ost",
+        "muenchen-orbital",
+        "muenchen-pasing"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "u-hamburg",
+      "nombre": "Metro Hamburgo",
+      "tipo_preferido": [
+        "u"
+      ],
+      "hubs": [
+        "hamburg-hbf",
+        "fx-hh-021",
+        "hamburg-u-jungfernstieg",
+        "hamburg-orbital",
+        "hamburg-altona",
+        "hamburg-dammtor"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "t-rhine",
+      "nombre": "Tranvías Rin (Colonia–Düsseldorf)",
+      "tipo_preferido": [
+        "t",
+        "tt",
+        "u"
+      ],
+      "hubs": [
+        "koeln-hbf",
+        "koeln-u-neumarkt",
+        "dn-nw-09",
+        "koeln-messe",
+        "duesseldorf-hbf",
+        "duesseldorf-u-heinrich"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "tt-karlsruhe",
+      "nombre": "Tranvía-tren Karlsruhe",
+      "tipo_preferido": [
+        "tt",
+        "t",
+        "re"
+      ],
+      "hubs": [
+        "karlsruhe-hbf",
+        "baden-baden",
+        "fx-bw-076",
+        "heilbronn",
+        "heidelberg-hbf"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "ae-airports",
+      "nombre": "Eje aeropuertos Alemania",
+      "tipo_preferido": [
+        "ae",
+        "px",
+        "s"
+      ],
+      "hubs": [
+        "berlin-brandenburg-airport",
+        "dn-he-14",
+        "frankfurt-flughafen",
+        "dn-he-06",
+        "muenchen-flughafen",
+        "dn-bw-17",
+        "stuttgart-flughafen",
+        "fx-hh-021",
+        "hamburg-hbf",
+        "duesseldorf-hbf"
+      ],
+      "origen_datos": "hibrida"
+    },
+    {
+      "id": "tur-alps",
+      "nombre": "Turístico Alpes bávaros",
+      "tipo_preferido": [
+        "tur",
+        "rl",
+        "rb"
+      ],
+      "hubs": [
+        "muenchen-hbf",
+        "fx-by-061",
+        "garmisch",
+        "oberstdorf",
+        "fx-by-013",
+        "berchtesgaden",
+        "rosenheim",
+        "lindau-hbf"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "or-berlin",
+      "nombre": "Orbital Berlín",
+      "tipo_preferido": [
+        "or",
+        "s",
+        "mc"
+      ],
+      "hubs": [
+        "berlin-orbital-n",
+        "dn-be-02",
+        "berlin-orbital-e",
+        "dn-be-11",
+        "berlin-orbital-s",
+        "dn-be-06",
+        "berlin-orbital-w",
+        "dn-be-09",
+        "berlin-gesundbrunnen",
+        "berlin-suedkreuz"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-university",
+      "nombre": "Eje universidades Alemania",
+      "tipo_preferido": [
+        "re",
+        "ir",
+        "mc"
+      ],
+      "hubs": [
+        "berlin-hbf",
+        "dn-sn-09",
+        "leipzig-hbf",
+        "dn-sn-07",
+        "halle-hbf",
+        "fx-th-078",
+        "jena-paradies",
+        "dn-th-02",
+        "erfurt-hbf",
+        "dn-th-16",
+        "goettingen",
+        "fx-bw-076",
+        "heidelberg-hbf",
+        "fx-by-061",
+        "muenchen-hbf"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-messe",
+      "nombre": "Eje ferias Alemania",
+      "tipo_preferido": [
+        "px",
+        "ae",
+        "ld"
+      ],
+      "hubs": [
+        "frankfurt-hbf",
+        "dn-he-16",
+        "koeln-messe",
+        "dn-ni-13",
+        "hannover-hbf",
+        "fx-by-061",
+        "muenchen-hbf",
+        "stuttgart-hbf",
+        "dn-sn-01",
+        "leipzig-hbf",
+        "dn-sn-09",
+        "berlin-hbf"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "re-baja-sajonia",
+      "nombre": "Baja Sajonia / Weser",
+      "tipo_preferido": [
+        "re",
+        "rb",
+        "rl"
+      ],
+      "hubs": [
+        "hannover-hbf",
+        "dn-ni-11",
+        "braunschweig-hbf",
+        "wolfsburg-hbf",
+        "dn-ni-17",
+        "goettingen",
+        "fx-ni-070",
+        "bremen-hbf",
+        "fx-hb-007",
+        "oldenburg-hbf",
+        "osnabrueck-hbf"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "u-cologne",
+      "nombre": "Metro/Tranvía Colonia",
+      "tipo_preferido": [
+        "u",
+        "t",
+        "tt"
+      ],
+      "hubs": [
+        "koeln-hbf",
+        "koeln-u-neumarkt",
+        "dn-nw-09",
+        "koeln-messe",
+        "dn-nw-15",
+        "bonn-hbf"
+      ],
+      "origen_datos": "hibrida"
+    },
+    {
+      "id": "t-leipzig-dresden",
+      "nombre": "Tranvías Sajonia Leipzig–Dresde",
+      "tipo_preferido": [
+        "t",
+        "s",
+        "re"
+      ],
+      "hubs": [
+        "leipzig-hbf",
+        "leipzig-t-augustusplatz",
+        "dn-sn-02",
+        "riesa",
+        "dresden-neustadt",
+        "dresden-hbf",
+        "dresden-t-postplatz"
+      ],
+      "origen_datos": "hibrida"
+    },
+    {
+      "id": "s-stuttgart",
+      "nombre": "S-Bahn Stuttgart densificado",
+      "tipo_preferido": [
+        "s",
+        "or",
+        "tt",
+        "u"
+      ],
+      "hubs": [
+        "stuttgart-hbf",
+        "dn-bw-06",
+        "stuttgart-flughafen",
+        "stuttgart-orbital",
+        "dn-bw-09",
+        "heilbronn",
+        "fx-bw-012",
+        "ulm-hbf"
+      ],
+      "origen_datos": "hibrida"
+    },
+    {
+      "id": "t-nationwide-sample",
+      "nombre": "Eje tranviario multi-ciudad",
+      "tipo_preferido": [
+        "t",
+        "tt"
+      ],
+      "hubs": [
+        "berlin-alexanderplatz",
+        "dn-be-06",
+        "leipzig-t-augustusplatz",
+        "dn-sn-06",
+        "nuernberg-hbf",
+        "dn-by-03",
+        "muenchen-u-marienplatz",
+        "fx-by-061",
+        "stuttgart-u-schlossplatz",
+        "dn-bw-07",
+        "karlsruhe-hbf",
+        "dn-he-06",
+        "frankfurt-u-hauptwache",
+        "koeln-u-neumarkt"
+      ],
+      "origen_datos": "ficticia"
+    }
+  ],
+  "cuotas_por_tipo": {
+    "av": 0.035,
+    "ld": 0.08,
+    "px": 0.03,
+    "ir": 0.055,
+    "re": 0.13,
+    "rb": 0.12,
+    "rl": 0.07,
+    "s": 0.12,
+    "or": 0.04,
+    "mc": 0.04,
+    "u": 0.08,
+    "t": 0.08,
+    "tt": 0.035,
+    "ae": 0.025,
+    "n": 0.015,
+    "tur": 0.03
+  }
+}

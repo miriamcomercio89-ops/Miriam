@@ -1,0 +1,18 @@
+{
+  "name": "europerote-ets2",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "rebuild-stops": "node scripts/rebuild-stops.mjs",
+    "import-cities": "node scripts/import-all-cities.mjs",
+    "generate": "node scripts/generate-routes.mjs",
+    "geocode": "node scripts/geocode-cities.mjs",
+    "export:html": "node scripts/export-html.mjs",
+    "export:pdf": "node scripts/export-pdf-maps.mjs",
+    "build": "npm run generate && npm run export:pdf && npm run export:html"
+  },
+  "dependencies": {
+    "pdfkit": "^0.19.1"
+  }
+}

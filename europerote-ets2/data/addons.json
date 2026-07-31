@@ -1,0 +1,45 @@
+{
+  "version": "0.1.0",
+  "addons": [
+    {
+      "id": "ets2-base",
+      "nombre": "ETS2 mapa base + DLCs SCS",
+      "tipo": "base"
+    },
+    {
+      "id": "promods",
+      "nombre": "ProMods Europe (última)",
+      "tipo": "promods"
+    },
+    {
+      "id": "promods-middle-east",
+      "nombre": "ProMods Middle East",
+      "tipo": "promods-addon"
+    },
+    {
+      "id": "promods-great-steppe",
+      "nombre": "ProMods The Great Steppe",
+      "tipo": "promods-addon"
+    },
+    {
+      "id": "rusmap",
+      "nombre": "RusMap (compatible ProMods)",
+      "tipo": "addon"
+    },
+    {
+      "id": "balkans-addon",
+      "nombre": "Complementos Balcanes",
+      "tipo": "addon"
+    },
+    {
+      "id": "egypt-addon",
+      "nombre": "Complemento Egipto / Norte África",
+      "tipo": "addon"
+    },
+    {
+      "id": "ets2+promods",
+      "nombre": "Fusión base ETS2 + ProMods",
+      "tipo": "meta"
+    }
+  ]
+}

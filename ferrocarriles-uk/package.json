@@ -1,0 +1,23 @@
+{
+  "name": "ferrocarriles-alemania",
+  "version": "0.4.0",
+  "private": true,
+  "description": "Generador y diseño de la red ferroviaria de Alemania (Nimby Rails): operadores actuales/futuros/inventados (nombres en español) y miles de rutas con paradas, metro y tranvía",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "generate:logos": "node scripts/generate-logos.mjs",
+    "generate:docs": "node scripts/build.mjs",
+    "generate:sample": "node generator/cli.mjs sample",
+    "generate:mass": "node generator/cli.mjs mass 10000",
+    "export:html": "node scripts/export-html.mjs",
+    "export:pdf": "node scripts/export-pdf.mjs",
+    "stats": "node scripts/stats.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "marked": "^18.0.7"
+  }
+}
