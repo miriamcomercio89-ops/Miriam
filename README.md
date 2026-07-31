@@ -1,21 +1,44 @@
-# Miriam — Administración de Loterías (proyecto)
+# Loterías Álora
 
-Proyecto: videojuego/simulador de gestión de una administración de loterías ubicado en Álora.
+Simulador realista de administración de loterías en **Álora**. Tú eres **Miriam**.
 
-Este repositorio contiene el scaffold inicial del proyecto: una aplicación en HTML/CSS/JS que corre totalmente en el navegador (sin servidor), usa localStorage para persistencia y permite exportar/importar el estado en JSON.
+**Versión: 1.4**
 
-Características del scaffold inicial:
-- Reloj de juego con escala temporal: el tiempo del juego va 4× más lento que el real (gameTime = start + elapsed * 0.25).
-- Lógica de apertura de oficina: 09:00–14:00 y 17:00–22:00 (hora del juego). Cerrado sábados y domingos. Festivos habilitables manualmente.
-- Funciones básicas de exportar/importar JSON del estado del juego.
-- Estructura básica para añadir los juegos, ventas, contabilidad, clientes, etc.
+## Cómo jugar
 
-Cómo usar:
-1. Clona el repo o descarga los archivos.
-2. Abre `index.html` en un navegador moderno.
-3. Usa los botones "Exportar" / "Importar" para guardar o restaurar el estado.
+1. Descarga el ZIP del juego  
+2. Abre **`LOTERIAS-ALORA.html`** (doble clic)
 
-Siguiente paso:
-- Crear la rama `feature/lottery-full` desde la rama por defecto y continuar con la implementación completa de juegos, contabilidad y UI.
+No abras `index.html` de la raíz.
 
-Commit inicial: scaffold con reloj escalado y export/import JSON.
+## Novedades v1.4
+
+- **Tiempo:** 1 segundo real = 1 minuto de juego (Normal); Rápido ×2; Muy rápido ×4
+- **Teclado numérico grande** en el TPV + atajos del **numpad** (0–9, ⌫, Enter)
+- **Billetes grandes sin cambio:** el cliente debe pagar de otra forma
+- **«Quédate el céntimo»:** a veces el cliente te deja el cambio pequeño
+- **Fondo de cambio del lunes:** retirada rápida banco → monedas y billetes pequeños
+- Más sonidos de oficina (monedas, TPV, papel)
+
+## Novedades v1.3
+
+- El **cliente decide** cómo pagar → se abre su ventana (efectivo / tarjeta / Bizum / transferencia)
+- En **efectivo**, el cliente entrega el dinero solo; tú **calculas el cambio** a mano
+
+## Novedades v1.2
+
+- Casillas por número en cada lotería; generar una a una / todas
+
+## Novedades v1.1
+
+- Peticiones de cifras, atajos TPV, fallos de cobro, PDF expediente, más color
+
+## Desarrollo
+
+```bash
+npm install
+npm run dev
+npm run build
+```
+
+Fan-made / no oficial · +18
