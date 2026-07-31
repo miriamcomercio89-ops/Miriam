@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 128 128" role="img" aria-label="InterCiudades Alemania">
-  <rect width="128" height="128" rx="24" fill="#0E7C7B"/>
-  <g transform="translate(0,-6)"><circle cx="44" cy="64" r="18" fill="#FFFFFF"/><circle cx="84" cy="64" r="18" fill="#FFFFFF" opacity="0.7"/></g>
-  <rect x="16" y="96" width="96" height="22" rx="8" fill="#FFFFFF" opacity="0.95"/>
-  <text x="64" y="112" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="700" fill="#0E7C7B">ICA</text>
-  <title>InterCiudades Alemania</title>
-</svg>

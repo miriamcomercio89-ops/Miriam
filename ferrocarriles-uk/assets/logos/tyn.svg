@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 128 128" role="img" aria-label="Tyne Express Sur">
+  <rect width="128" height="128" rx="24" fill="#F57F17"/>
+  <g transform="translate(0,-6)"><g fill="#111827"><rect x="22" y="54" width="84" height="20" rx="6"/><rect x="22" y="30" width="28" height="12" rx="4"/><rect x="78" y="86" width="28" height="12" rx="4"/></g></g>
+  <rect x="16" y="96" width="96" height="22" rx="8" fill="#111827" opacity="0.95"/>
+  <text x="64" y="112" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="700" fill="#F57F17">TES</text>
+  <title>Tyne Express Sur</title>
+</svg>

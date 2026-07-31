@@ -1,0 +1,7147 @@
+{
+  "version": "0.3.0",
+  "pais": "Reino Unido",
+  "nota": "Estaciones reales UK + nodos metropolitanos + ficticios de densificación.",
+  "total": 504,
+  "hubs": [
+    {
+      "id": "london-euston",
+      "nombre": "Londres Euston",
+      "land": "lon",
+      "lat": 51.528,
+      "lon": -0.133,
+      "tier": 1,
+      "roles": [
+        "av",
+        "ld",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "london-kings-cross",
+      "nombre": "Londres King's Cross",
+      "land": "lon",
+      "lat": 51.532,
+      "lon": -0.123,
+      "tier": 1,
+      "roles": [
+        "av",
+        "ld",
+        "s",
+        "u"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "london-st-pancras",
+      "nombre": "Londres St Pancras",
+      "land": "lon",
+      "lat": 51.531,
+      "lon": -0.126,
+      "tier": 1,
+      "roles": [
+        "av",
+        "ld",
+        "s",
+        "u"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "london-paddington",
+      "nombre": "Londres Paddington",
+      "land": "lon",
+      "lat": 51.515,
+      "lon": -0.175,
+      "tier": 1,
+      "roles": [
+        "av",
+        "ld",
+        "s",
+        "ae",
+        "u"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "london-waterloo",
+      "nombre": "Londres Waterloo",
+      "land": "lon",
+      "lat": 51.503,
+      "lon": -0.113,
+      "tier": 1,
+      "roles": [
+        "ld",
+        "re",
+        "s",
+        "u"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "london-victoria",
+      "nombre": "Londres Victoria",
+      "land": "lon",
+      "lat": 51.495,
+      "lon": -0.144,
+      "tier": 1,
+      "roles": [
+        "re",
+        "s",
+        "ae",
+        "u"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "london-liverpool-street",
+      "nombre": "Londres Liverpool Street",
+      "land": "lon",
+      "lat": 51.518,
+      "lon": -0.081,
+      "tier": 1,
+      "roles": [
+        "ld",
+        "re",
+        "s",
+        "ae",
+        "u"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "london-london-bridge",
+      "nombre": "Londres London Bridge",
+      "land": "lon",
+      "lat": 51.505,
+      "lon": -0.086,
+      "tier": 1,
+      "roles": [
+        "re",
+        "s",
+        "u"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "london-charing-cross",
+      "nombre": "Londres Charing Cross",
+      "land": "lon",
+      "lat": 51.508,
+      "lon": -0.125,
+      "tier": 1,
+      "roles": [
+        "re",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "london-fenchurch",
+      "nombre": "Londres Fenchurch Street",
+      "land": "lon",
+      "lat": 51.511,
+      "lon": -0.078,
+      "tier": 1,
+      "roles": [
+        "re",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "london-marylebone",
+      "nombre": "Londres Marylebone",
+      "land": "lon",
+      "lat": 51.522,
+      "lon": -0.163,
+      "tier": 1,
+      "roles": [
+        "ld",
+        "re"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "london-cannon-street",
+      "nombre": "Londres Cannon Street",
+      "land": "lon",
+      "lat": 51.511,
+      "lon": -0.09,
+      "tier": 2,
+      "roles": [
+        "re",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "london-blackfriars",
+      "nombre": "Londres Blackfriars",
+      "land": "lon",
+      "lat": 51.512,
+      "lon": -0.103,
+      "tier": 2,
+      "roles": [
+        "s",
+        "u"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "stratford",
+      "nombre": "Stratford",
+      "land": "lon",
+      "lat": 51.541,
+      "lon": -0.004,
+      "tier": 1,
+      "roles": [
+        "s",
+        "u",
+        "re",
+        "ae"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "clapham-junction",
+      "nombre": "Clapham Junction",
+      "land": "lon",
+      "lat": 51.464,
+      "lon": -0.17,
+      "tier": 1,
+      "roles": [
+        "s",
+        "re",
+        "mc"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "birmingham-new-street",
+      "nombre": "Birmingham New Street",
+      "land": "wm",
+      "lat": 52.478,
+      "lon": -1.899,
+      "tier": 1,
+      "roles": [
+        "av",
+        "ld",
+        "re",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "birmingham-moor-street",
+      "nombre": "Birmingham Moor Street",
+      "land": "wm",
+      "lat": 52.479,
+      "lon": -1.892,
+      "tier": 2,
+      "roles": [
+        "re",
+        "ld"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "birmingham-curzon",
+      "nombre": "Birmingham Curzon Street",
+      "land": "wm",
+      "lat": 52.482,
+      "lon": -1.885,
+      "tier": 1,
+      "roles": [
+        "av",
+        "px"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "manchester-piccadilly",
+      "nombre": "Manchester Piccadilly",
+      "land": "nw",
+      "lat": 53.477,
+      "lon": -2.23,
+      "tier": 1,
+      "roles": [
+        "ld",
+        "re",
+        "s",
+        "ae"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "manchester-victoria",
+      "nombre": "Manchester Victoria",
+      "land": "nw",
+      "lat": 53.487,
+      "lon": -2.243,
+      "tier": 1,
+      "roles": [
+        "re",
+        "s",
+        "t"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "liverpool-lime-street",
+      "nombre": "Liverpool Lime Street",
+      "land": "nw",
+      "lat": 53.408,
+      "lon": -2.978,
+      "tier": 1,
+      "roles": [
+        "ld",
+        "re",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "leeds",
+      "nombre": "Leeds",
+      "land": "yh",
+      "lat": 53.795,
+      "lon": -1.548,
+      "tier": 1,
+      "roles": [
+        "ld",
+        "re",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "sheffield",
+      "nombre": "Sheffield",
+      "land": "yh",
+      "lat": 53.378,
+      "lon": -1.462,
+      "tier": 1,
+      "roles": [
+        "ld",
+        "re",
+        "t"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "york",
+      "nombre": "York",
+      "land": "yh",
+      "lat": 53.958,
+      "lon": -1.093,
+      "tier": 1,
+      "roles": [
+        "av",
+        "ld",
+        "re"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "newcastle",
+      "nombre": "Newcastle",
+      "land": "ne",
+      "lat": 54.968,
+      "lon": -1.617,
+      "tier": 1,
+      "roles": [
+        "av",
+        "ld",
+        "u"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "edinburgh-waverley",
+      "nombre": "Edimburgo Waverley",
+      "land": "sct",
+      "lat": 55.952,
+      "lon": -3.188,
+      "tier": 1,
+      "roles": [
+        "av",
+        "ld",
+        "re",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "edinburgh-haymarket",
+      "nombre": "Edimburgo Haymarket",
+      "land": "sct",
+      "lat": 55.945,
+      "lon": -3.218,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "t"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "glasgow-central",
+      "nombre": "Glasgow Central",
+      "land": "sct",
+      "lat": 55.859,
+      "lon": -4.258,
+      "tier": 1,
+      "roles": [
+        "ld",
+        "re",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "glasgow-queen-street",
+      "nombre": "Glasgow Queen Street",
+      "land": "sct",
+      "lat": 55.862,
+      "lon": -4.251,
+      "tier": 1,
+      "roles": [
+        "re",
+        "ld",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "cardiff-central",
+      "nombre": "Cardiff Central",
+      "land": "wls",
+      "lat": 51.476,
+      "lon": -3.179,
+      "tier": 1,
+      "roles": [
+        "ld",
+        "re",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "bristol-temple-meads",
+      "nombre": "Bristol Temple Meads",
+      "land": "sw",
+      "lat": 51.449,
+      "lon": -2.58,
+      "tier": 1,
+      "roles": [
+        "ld",
+        "re",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "reading",
+      "nombre": "Reading",
+      "land": "se",
+      "lat": 51.458,
+      "lon": -0.971,
+      "tier": 1,
+      "roles": [
+        "av",
+        "ld",
+        "re",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "gatwick-airport",
+      "nombre": "Gatwick Airport",
+      "land": "se",
+      "lat": 51.156,
+      "lon": -0.161,
+      "tier": 1,
+      "roles": [
+        "ae",
+        "s",
+        "re"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "heathrow-t2-3",
+      "nombre": "Heathrow Terminals 2 & 3",
+      "land": "lon",
+      "lat": 51.471,
+      "lon": -0.454,
+      "tier": 1,
+      "roles": [
+        "ae",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "stansted-airport",
+      "nombre": "Stansted Airport",
+      "land": "ee",
+      "lat": 51.889,
+      "lon": 0.261,
+      "tier": 1,
+      "roles": [
+        "ae",
+        "re"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "luton-airport-parkway",
+      "nombre": "Luton Airport Parkway",
+      "land": "ee",
+      "lat": 51.873,
+      "lon": -0.396,
+      "tier": 2,
+      "roles": [
+        "ae",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "birmingham-airport",
+      "nombre": "Birmingham International",
+      "land": "wm",
+      "lat": 52.451,
+      "lon": -1.725,
+      "tier": 2,
+      "roles": [
+        "ae",
+        "re",
+        "ld"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "manchester-airport",
+      "nombre": "Manchester Airport",
+      "land": "nw",
+      "lat": 53.365,
+      "lon": -2.273,
+      "tier": 1,
+      "roles": [
+        "ae",
+        "s",
+        "re"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "belfast-grand-central",
+      "nombre": "Belfast Grand Central",
+      "land": "nir",
+      "lat": 54.595,
+      "lon": -5.941,
+      "tier": 1,
+      "roles": [
+        "ld",
+        "re",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "belfast-lanyon",
+      "nombre": "Belfast Lanyon Place",
+      "land": "nir",
+      "lat": 54.595,
+      "lon": -5.917,
+      "tier": 2,
+      "roles": [
+        "re",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "watford-junction",
+      "nombre": "Watford Junction",
+      "land": "lon",
+      "lat": 51.663,
+      "lon": -0.396,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "milton-keynes",
+      "nombre": "Milton Keynes Central",
+      "land": "se",
+      "lat": 52.034,
+      "lon": -0.774,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "northampton",
+      "nombre": "Northampton",
+      "land": "em",
+      "lat": 52.238,
+      "lon": -0.907,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "rugby",
+      "nombre": "Rugby",
+      "land": "wm",
+      "lat": 52.379,
+      "lon": -1.25,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "coventry",
+      "nombre": "Coventry",
+      "land": "wm",
+      "lat": 52.401,
+      "lon": -1.513,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "birmingham-international",
+      "nombre": "Birmingham International",
+      "land": "wm",
+      "lat": 52.451,
+      "lon": -1.725,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "wolverhampton",
+      "nombre": "Wolverhampton",
+      "land": "wm",
+      "lat": 52.587,
+      "lon": -2.12,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "stafford",
+      "nombre": "Stafford",
+      "land": "wm",
+      "lat": 52.804,
+      "lon": -2.122,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "stoke",
+      "nombre": "Stoke-on-Trent",
+      "land": "wm",
+      "lat": 53.008,
+      "lon": -2.181,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "crewe",
+      "nombre": "Crewe",
+      "land": "nw",
+      "lat": 53.089,
+      "lon": -2.433,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "warrington-bank-quay",
+      "nombre": "Warrington Bank Quay",
+      "land": "nw",
+      "lat": 53.386,
+      "lon": -2.603,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "wigan-north-western",
+      "nombre": "Wigan North Western",
+      "land": "nw",
+      "lat": 53.543,
+      "lon": -2.633,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "preston",
+      "nombre": "Preston",
+      "land": "nw",
+      "lat": 53.756,
+      "lon": -2.708,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "lancaster",
+      "nombre": "Lancaster",
+      "land": "nw",
+      "lat": 54.049,
+      "lon": -2.808,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "oxenholme",
+      "nombre": "Oxenholme Lake District",
+      "land": "nw",
+      "lat": 54.305,
+      "lon": -2.722,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "penrith",
+      "nombre": "Penrith",
+      "land": "nw",
+      "lat": 54.662,
+      "lon": -2.757,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "carlisle",
+      "nombre": "Carlisle",
+      "land": "nw",
+      "lat": 54.891,
+      "lon": -2.933,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "lockerbie",
+      "nombre": "Lockerbie",
+      "land": "sct",
+      "lat": 55.123,
+      "lon": -3.354,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "motherwell",
+      "nombre": "Motherwell",
+      "land": "sct",
+      "lat": 55.791,
+      "lon": -3.994,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "stevenage",
+      "nombre": "Stevenage",
+      "land": "ee",
+      "lat": 51.902,
+      "lon": -0.207,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "hitchin",
+      "nombre": "Hitchin",
+      "land": "ee",
+      "lat": 51.953,
+      "lon": -0.263,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "peterborough",
+      "nombre": "Peterborough",
+      "land": "ee",
+      "lat": 52.575,
+      "lon": -0.25,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "grantham",
+      "nombre": "Grantham",
+      "land": "em",
+      "lat": 52.906,
+      "lon": -0.642,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "newark-north-gate",
+      "nombre": "Newark North Gate",
+      "land": "em",
+      "lat": 53.081,
+      "lon": -0.81,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "retford",
+      "nombre": "Retford",
+      "land": "em",
+      "lat": 53.315,
+      "lon": -0.948,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "doncaster",
+      "nombre": "Doncaster",
+      "land": "yh",
+      "lat": 53.522,
+      "lon": -1.14,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "selby",
+      "nombre": "Selby",
+      "land": "yh",
+      "lat": 53.783,
+      "lon": -1.064,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "northallerton",
+      "nombre": "Northallerton",
+      "land": "yh",
+      "lat": 54.333,
+      "lon": -1.441,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "darlington",
+      "nombre": "Darlington",
+      "land": "ne",
+      "lat": 54.524,
+      "lon": -1.547,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "durham",
+      "nombre": "Durham",
+      "land": "ne",
+      "lat": 54.779,
+      "lon": -1.582,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "morpeth",
+      "nombre": "Morpeth",
+      "land": "ne",
+      "lat": 55.162,
+      "lon": -1.683,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "alnmouth",
+      "nombre": "Alnmouth",
+      "land": "ne",
+      "lat": 55.392,
+      "lon": -1.728,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "berwick",
+      "nombre": "Berwick-upon-Tweed",
+      "land": "ne",
+      "lat": 55.774,
+      "lon": -2.01,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "dunbar",
+      "nombre": "Dunbar",
+      "land": "sct",
+      "lat": 55.998,
+      "lon": -2.513,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "slough",
+      "nombre": "Slough",
+      "land": "se",
+      "lat": 51.512,
+      "lon": -0.592,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "maidenhead",
+      "nombre": "Maidenhead",
+      "land": "se",
+      "lat": 51.519,
+      "lon": -0.722,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "twyford",
+      "nombre": "Twyford",
+      "land": "se",
+      "lat": 51.476,
+      "lon": -0.863,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "didcot",
+      "nombre": "Didcot Parkway",
+      "land": "se",
+      "lat": 51.611,
+      "lon": -1.243,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "swindon",
+      "nombre": "Swindon",
+      "land": "sw",
+      "lat": 51.565,
+      "lon": -1.785,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "chippenham",
+      "nombre": "Chippenham",
+      "land": "sw",
+      "lat": 51.462,
+      "lon": -2.116,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "bath-spa",
+      "nombre": "Bath Spa",
+      "land": "sw",
+      "lat": 51.378,
+      "lon": -2.357,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "bristol-parkway",
+      "nombre": "Bristol Parkway",
+      "land": "sw",
+      "lat": 51.514,
+      "lon": -2.543,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "newport",
+      "nombre": "Newport",
+      "land": "wls",
+      "lat": 51.589,
+      "lon": -2.999,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "bridgend",
+      "nombre": "Bridgend",
+      "land": "wls",
+      "lat": 51.507,
+      "lon": -3.575,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "port-talbot",
+      "nombre": "Port Talbot Parkway",
+      "land": "wls",
+      "lat": 51.592,
+      "lon": -3.781,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "neath",
+      "nombre": "Neath",
+      "land": "wls",
+      "lat": 51.662,
+      "lon": -3.807,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "swansea",
+      "nombre": "Swansea",
+      "land": "wls",
+      "lat": 51.625,
+      "lon": -3.941,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "st-albans",
+      "nombre": "St Albans City",
+      "land": "ee",
+      "lat": 51.75,
+      "lon": -0.327,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "luton",
+      "nombre": "Luton",
+      "land": "ee",
+      "lat": 51.882,
+      "lon": -0.414,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "bedford",
+      "nombre": "Bedford",
+      "land": "ee",
+      "lat": 52.136,
+      "lon": -0.479,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "wellingborough",
+      "nombre": "Wellingborough",
+      "land": "em",
+      "lat": 52.304,
+      "lon": -0.674,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "kettering",
+      "nombre": "Kettering",
+      "land": "em",
+      "lat": 52.393,
+      "lon": -0.732,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "market-harborough",
+      "nombre": "Market Harborough",
+      "land": "em",
+      "lat": 52.479,
+      "lon": -0.909,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "leicester",
+      "nombre": "Leicester",
+      "land": "em",
+      "lat": 52.631,
+      "lon": -1.125,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "loughborough",
+      "nombre": "Loughborough",
+      "land": "em",
+      "lat": 52.779,
+      "lon": -1.196,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "derby",
+      "nombre": "Derby",
+      "land": "em",
+      "lat": 52.916,
+      "lon": -1.463,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "chesterfield",
+      "nombre": "Chesterfield",
+      "land": "em",
+      "lat": 53.238,
+      "lon": -1.37,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "stratford-intl",
+      "nombre": "Stratford International",
+      "land": "lon",
+      "lat": 51.545,
+      "lon": -0.009,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "romford",
+      "nombre": "Romford",
+      "land": "lon",
+      "lat": 51.575,
+      "lon": 0.183,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "chelmsford",
+      "nombre": "Chelmsford",
+      "land": "ee",
+      "lat": 51.736,
+      "lon": 0.469,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "colchester",
+      "nombre": "Colchester",
+      "land": "ee",
+      "lat": 51.901,
+      "lon": 0.893,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "ipswich",
+      "nombre": "Ipswich",
+      "land": "ee",
+      "lat": 52.051,
+      "lon": 1.144,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "norwich",
+      "nombre": "Norwich",
+      "land": "ee",
+      "lat": 52.627,
+      "lon": 1.307,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "cambridge",
+      "nombre": "Cambridge",
+      "land": "ee",
+      "lat": 52.194,
+      "lon": 0.137,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "ely",
+      "nombre": "Ely",
+      "land": "ee",
+      "lat": 52.391,
+      "lon": 0.267,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "kings-lynn",
+      "nombre": "King's Lynn",
+      "land": "ee",
+      "lat": 52.754,
+      "lon": 0.403,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "woking",
+      "nombre": "Woking",
+      "land": "se",
+      "lat": 51.318,
+      "lon": -0.557,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "basingstoke",
+      "nombre": "Basingstoke",
+      "land": "se",
+      "lat": 51.268,
+      "lon": -1.087,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "winchester",
+      "nombre": "Winchester",
+      "land": "se",
+      "lat": 51.067,
+      "lon": -1.32,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "southampton-central",
+      "nombre": "Southampton Central",
+      "land": "se",
+      "lat": 50.908,
+      "lon": -1.414,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "bournemouth",
+      "nombre": "Bournemouth",
+      "land": "se",
+      "lat": 50.727,
+      "lon": -1.864,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "poole",
+      "nombre": "Poole",
+      "land": "se",
+      "lat": 50.719,
+      "lon": -1.983,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "dorchester",
+      "nombre": "Dorchester South",
+      "land": "sw",
+      "lat": 50.711,
+      "lon": -2.437,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "weymouth",
+      "nombre": "Weymouth",
+      "land": "sw",
+      "lat": 50.616,
+      "lon": -2.455,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "salisbury",
+      "nombre": "Salisbury",
+      "land": "sw",
+      "lat": 51.071,
+      "lon": -1.806,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "exeter-st-davids",
+      "nombre": "Exeter St Davids",
+      "land": "sw",
+      "lat": 50.729,
+      "lon": -3.544,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "newton-abbot",
+      "nombre": "Newton Abbot",
+      "land": "sw",
+      "lat": 50.53,
+      "lon": -3.599,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "plymouth",
+      "nombre": "Plymouth",
+      "land": "sw",
+      "lat": 50.378,
+      "lon": -4.143,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "truro",
+      "nombre": "Truro",
+      "land": "sw",
+      "lat": 50.264,
+      "lon": -5.064,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "penzance",
+      "nombre": "Penzance",
+      "land": "sw",
+      "lat": 50.122,
+      "lon": -5.533,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "ashford-intl",
+      "nombre": "Ashford International",
+      "land": "se",
+      "lat": 51.143,
+      "lon": 0.875,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "canterbury-west",
+      "nombre": "Canterbury West",
+      "land": "se",
+      "lat": 51.284,
+      "lon": 1.075,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "dover-priory",
+      "nombre": "Dover Priory",
+      "land": "se",
+      "lat": 51.126,
+      "lon": 1.305,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "ramsgate",
+      "nombre": "Ramsgate",
+      "land": "se",
+      "lat": 51.341,
+      "lon": 1.406,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "brighton",
+      "nombre": "Brighton",
+      "land": "se",
+      "lat": 50.829,
+      "lon": -0.141,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "eastbourne",
+      "nombre": "Eastbourne",
+      "land": "se",
+      "lat": 50.769,
+      "lon": 0.281,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "hastings",
+      "nombre": "Hastings",
+      "land": "se",
+      "lat": 50.855,
+      "lon": 0.577,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "guildford",
+      "nombre": "Guildford",
+      "land": "se",
+      "lat": 51.237,
+      "lon": -0.58,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "portsmouth-harbour",
+      "nombre": "Portsmouth Harbour",
+      "land": "se",
+      "lat": 50.797,
+      "lon": -1.108,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "brighton-airport-fictional",
+      "nombre": "Brighton Airport Parkway",
+      "land": "se",
+      "lat": 50.84,
+      "lon": -0.2,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "oxford",
+      "nombre": "Oxford",
+      "land": "se",
+      "lat": 51.753,
+      "lon": -1.27,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "banbury",
+      "nombre": "Banbury",
+      "land": "se",
+      "lat": 52.06,
+      "lon": -1.328,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "leamington",
+      "nombre": "Leamington Spa",
+      "land": "wm",
+      "lat": 52.285,
+      "lon": -1.536,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "nottingham",
+      "nombre": "Nottingham",
+      "land": "em",
+      "lat": 52.947,
+      "lon": -1.147,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "lincoln",
+      "nombre": "Lincoln",
+      "land": "em",
+      "lat": 53.226,
+      "lon": -0.539,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "hull",
+      "nombre": "Hull",
+      "land": "yh",
+      "lat": 53.744,
+      "lon": -0.346,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "bradford-interchange",
+      "nombre": "Bradford Interchange",
+      "land": "yh",
+      "lat": 53.791,
+      "lon": -1.749,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "huddersfield",
+      "nombre": "Huddersfield",
+      "land": "yh",
+      "lat": 53.648,
+      "lon": -1.785,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "wakefield-westgate",
+      "nombre": "Wakefield Westgate",
+      "land": "yh",
+      "lat": 53.682,
+      "lon": -1.506,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "chester",
+      "nombre": "Chester",
+      "land": "nw",
+      "lat": 53.197,
+      "lon": -2.88,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "shrewsbury",
+      "nombre": "Shrewsbury",
+      "land": "wm",
+      "lat": 52.711,
+      "lon": -2.75,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "hereford",
+      "nombre": "Hereford",
+      "land": "wm",
+      "lat": 52.061,
+      "lon": -2.708,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "worcester-foregate",
+      "nombre": "Worcester Foregate Street",
+      "land": "wm",
+      "lat": 52.195,
+      "lon": -2.221,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "gloucester",
+      "nombre": "Gloucester",
+      "land": "sw",
+      "lat": 51.865,
+      "lon": -2.239,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "stirling",
+      "nombre": "Stirling",
+      "land": "sct",
+      "lat": 56.119,
+      "lon": -3.935,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "perth",
+      "nombre": "Perth",
+      "land": "sct",
+      "lat": 56.392,
+      "lon": -3.44,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "dundee",
+      "nombre": "Dundee",
+      "land": "sct",
+      "lat": 56.457,
+      "lon": -2.971,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "aberdeen",
+      "nombre": "Aberdeen",
+      "land": "sct",
+      "lat": 57.144,
+      "lon": -2.098,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "inverness",
+      "nombre": "Inverness",
+      "land": "sct",
+      "lat": 57.48,
+      "lon": -4.223,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "fort-william",
+      "nombre": "Fort William",
+      "land": "sct",
+      "lat": 56.82,
+      "lon": -5.106,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "oban",
+      "nombre": "Oban",
+      "land": "sct",
+      "lat": 56.412,
+      "lon": -5.475,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "mallaig",
+      "nombre": "Mallaig",
+      "land": "sct",
+      "lat": 57.006,
+      "lon": -5.83,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "kyle",
+      "nombre": "Kyle of Lochalsh",
+      "land": "sct",
+      "lat": 57.28,
+      "lon": -5.714,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "wick",
+      "nombre": "Wick",
+      "land": "sct",
+      "lat": 58.442,
+      "lon": -3.098,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "thurso",
+      "nombre": "Thurso",
+      "land": "sct",
+      "lat": 58.59,
+      "lon": -3.528,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "aviermore",
+      "nombre": "Aviemore",
+      "land": "sct",
+      "lat": 57.189,
+      "lon": -3.827,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "kirkcaldy",
+      "nombre": "Kirkcaldy",
+      "land": "sct",
+      "lat": 56.112,
+      "lon": -3.167,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "paisley-gilmour",
+      "nombre": "Paisley Gilmour Street",
+      "land": "sct",
+      "lat": 55.847,
+      "lon": -4.424,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "ayr",
+      "nombre": "Ayr",
+      "land": "sct",
+      "lat": 55.458,
+      "lon": -4.626,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "wrexham-general",
+      "nombre": "Wrexham General",
+      "land": "wls",
+      "lat": 53.05,
+      "lon": -3,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "bangor",
+      "nombre": "Bangor",
+      "land": "wls",
+      "lat": 53.223,
+      "lon": -4.136,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "holyhead",
+      "nombre": "Holyhead",
+      "land": "wls",
+      "lat": 53.308,
+      "lon": -4.631,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "aberystwyth",
+      "nombre": "Aberystwyth",
+      "land": "wls",
+      "lat": 52.414,
+      "lon": -4.082,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "machynlleth",
+      "nombre": "Machynlleth",
+      "land": "wls",
+      "lat": 52.595,
+      "lon": -3.855,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "llandudno",
+      "nombre": "Llandudno",
+      "land": "wls",
+      "lat": 53.321,
+      "lon": -3.827,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "carmarthen",
+      "nombre": "Carmarthen",
+      "land": "wls",
+      "lat": 51.853,
+      "lon": -4.306,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "pembroke-dock",
+      "nombre": "Pembroke Dock",
+      "land": "wls",
+      "lat": 51.694,
+      "lon": -4.938,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "lisburn",
+      "nombre": "Lisburn",
+      "land": "nir",
+      "lat": 54.514,
+      "lon": -6.044,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "portadown",
+      "nombre": "Portadown",
+      "land": "nir",
+      "lat": 54.424,
+      "lon": -6.443,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "newry",
+      "nombre": "Newry",
+      "land": "nir",
+      "lat": 54.188,
+      "lon": -6.362,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "coleraine",
+      "nombre": "Coleraine",
+      "land": "nir",
+      "lat": 55.134,
+      "lon": -6.661,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "derry",
+      "nombre": "Derry~Londonderry",
+      "land": "nir",
+      "lat": 54.998,
+      "lon": -7.315,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "bangor-ni",
+      "nombre": "Bangor (NI)",
+      "land": "nir",
+      "lat": 54.657,
+      "lon": -5.67,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "larne",
+      "nombre": "Larne Harbour",
+      "land": "nir",
+      "lat": 54.854,
+      "lon": -5.798,
+      "tier": 2,
+      "roles": [
+        "ld",
+        "re",
+        "rb",
+        "s"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "london-bridge-corridor",
+      "nombre": "London Bridge East",
+      "land": "lon",
+      "lat": 51.505,
+      "lon": -0.07,
+      "tier": 2,
+      "roles": [
+        "s",
+        "u",
+        "t",
+        "mc"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "canary-wharf",
+      "nombre": "Canary Wharf",
+      "land": "lon",
+      "lat": 51.505,
+      "lon": -0.02,
+      "tier": 2,
+      "roles": [
+        "s",
+        "u",
+        "t",
+        "mc"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "woolwich",
+      "nombre": "Woolwich",
+      "land": "lon",
+      "lat": 51.492,
+      "lon": 0.07,
+      "tier": 2,
+      "roles": [
+        "s",
+        "u",
+        "t",
+        "mc"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "abbey-wood",
+      "nombre": "Abbey Wood",
+      "land": "lon",
+      "lat": 51.491,
+      "lon": 0.12,
+      "tier": 2,
+      "roles": [
+        "s",
+        "u",
+        "t",
+        "mc"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "tottenham-hale",
+      "nombre": "Tottenham Hale",
+      "land": "lon",
+      "lat": 51.588,
+      "lon": -0.06,
+      "tier": 2,
+      "roles": [
+        "s",
+        "u",
+        "t",
+        "mc"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "finsbury-park",
+      "nombre": "Finsbury Park",
+      "land": "lon",
+      "lat": 51.564,
+      "lon": -0.106,
+      "tier": 2,
+      "roles": [
+        "s",
+        "u",
+        "t",
+        "mc"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "highbury",
+      "nombre": "Highbury & Islington",
+      "land": "lon",
+      "lat": 51.546,
+      "lon": -0.104,
+      "tier": 2,
+      "roles": [
+        "s",
+        "u",
+        "t",
+        "mc"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "willesden-junction",
+      "nombre": "Willesden Junction",
+      "land": "lon",
+      "lat": 51.532,
+      "lon": -0.245,
+      "tier": 2,
+      "roles": [
+        "s",
+        "u",
+        "t",
+        "mc"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "richmond",
+      "nombre": "Richmond",
+      "land": "lon",
+      "lat": 51.463,
+      "lon": -0.301,
+      "tier": 2,
+      "roles": [
+        "s",
+        "u",
+        "t",
+        "mc"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "wimbledon",
+      "nombre": "Wimbledon",
+      "land": "lon",
+      "lat": 51.421,
+      "lon": -0.206,
+      "tier": 2,
+      "roles": [
+        "s",
+        "u",
+        "t",
+        "mc"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "east-croydon",
+      "nombre": "East Croydon",
+      "land": "lon",
+      "lat": 51.375,
+      "lon": -0.092,
+      "tier": 2,
+      "roles": [
+        "s",
+        "u",
+        "t",
+        "mc"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "west-croydon",
+      "nombre": "West Croydon",
+      "land": "lon",
+      "lat": 51.378,
+      "lon": -0.102,
+      "tier": 2,
+      "roles": [
+        "s",
+        "u",
+        "t",
+        "mc"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "lewisham",
+      "nombre": "Lewisham",
+      "land": "lon",
+      "lat": 51.465,
+      "lon": -0.014,
+      "tier": 2,
+      "roles": [
+        "s",
+        "u",
+        "t",
+        "mc"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "greenwich",
+      "nombre": "Greenwich",
+      "land": "lon",
+      "lat": 51.478,
+      "lon": -0.013,
+      "tier": 2,
+      "roles": [
+        "s",
+        "u",
+        "t",
+        "mc"
+      ],
+      "origen_datos": "real"
+    },
+    {
+      "id": "fx-lon-001",
+      "nombre": "Villa Estación 1",
+      "land": "lon",
+      "lat": 51.2,
+      "lon": -0.52,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-se-002",
+      "nombre": "Nueva Bridge 1",
+      "land": "se",
+      "lat": 51.15500000000001,
+      "lon": -0.32000000000000006,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sw-003",
+      "nombre": "Alto Estación 1",
+      "land": "sw",
+      "lat": 51.01,
+      "lon": -3.54,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ee-004",
+      "nombre": "Bajo Bridge 1",
+      "land": "ee",
+      "lat": 52.065000000000005,
+      "lon": 0.03999999999999998,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-em-005",
+      "nombre": "Puerto Estación 1",
+      "land": "em",
+      "lat": 52.92,
+      "lon": -0.88,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-wm-006",
+      "nombre": "Campo Bridge 1",
+      "land": "wm",
+      "lat": 52.275000000000006,
+      "lon": -1.7999999999999998,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nw-007",
+      "nombre": "Parque Estación 1",
+      "land": "nw",
+      "lat": 53.53,
+      "lon": -2.6199999999999997,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ne-008",
+      "nombre": "Cruz Bridge 1",
+      "land": "ne",
+      "lat": 55.185,
+      "lon": -1.94,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-yh-009",
+      "nombre": "Valle Estación 1",
+      "land": "yh",
+      "lat": 53.74,
+      "lon": -1.26,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sct-010",
+      "nombre": "Muelles Bridge 1",
+      "land": "sct",
+      "lat": 56.695,
+      "lon": -3.98,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-wls-011",
+      "nombre": "Universidad Estación 1",
+      "land": "wls",
+      "lat": 51.85,
+      "lon": -3.6999999999999997,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nir-012",
+      "nombre": "Feria Bridge 1",
+      "land": "nir",
+      "lat": 54.705000000000005,
+      "lon": -5.62,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-lon-013",
+      "nombre": "Villa Estación 2",
+      "land": "lon",
+      "lat": 51.260000000000005,
+      "lon": 0.040000000000000036,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-se-014",
+      "nombre": "Nueva Bridge 2",
+      "land": "se",
+      "lat": 51.215,
+      "lon": -0.56,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sw-015",
+      "nombre": "Alto Estación 2",
+      "land": "sw",
+      "lat": 51.07,
+      "lon": -3.78,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ee-016",
+      "nombre": "Bajo Bridge 2",
+      "land": "ee",
+      "lat": 52.12500000000001,
+      "lon": 0.6,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-em-017",
+      "nombre": "Puerto Estación 2",
+      "land": "em",
+      "lat": 52.98,
+      "lon": -1.12,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-wm-018",
+      "nombre": "Campo Bridge 2",
+      "land": "wm",
+      "lat": 52.335,
+      "lon": -2.04,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nw-019",
+      "nombre": "Parque Estación 2",
+      "land": "nw",
+      "lat": 53.59,
+      "lon": -2.86,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ne-020",
+      "nombre": "Cruz Bridge 2",
+      "land": "ne",
+      "lat": 54.645,
+      "lon": -1.3800000000000001,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-yh-021",
+      "nombre": "Valle Estación 2",
+      "land": "yh",
+      "lat": 53.8,
+      "lon": -1.5,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sct-022",
+      "nombre": "Muelles Bridge 2",
+      "land": "sct",
+      "lat": 56.755,
+      "lon": -4.22,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-wls-023",
+      "nombre": "Universidad Estación 2",
+      "land": "wls",
+      "lat": 51.910000000000004,
+      "lon": -3.14,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nir-024",
+      "nombre": "Feria Bridge 2",
+      "land": "nir",
+      "lat": 54.76500000000001,
+      "lon": -5.86,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-lon-025",
+      "nombre": "Villa Estación 3",
+      "land": "lon",
+      "lat": 51.32,
+      "lon": -0.2,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-se-026",
+      "nombre": "Nueva Bridge 3",
+      "land": "se",
+      "lat": 51.275000000000006,
+      "lon": -0.8,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sw-027",
+      "nombre": "Alto Estación 3",
+      "land": "sw",
+      "lat": 50.53,
+      "lon": -3.2199999999999998,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ee-028",
+      "nombre": "Bajo Bridge 3",
+      "land": "ee",
+      "lat": 52.185,
+      "lon": 0.36,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-em-029",
+      "nombre": "Puerto Estación 3",
+      "land": "em",
+      "lat": 53.04,
+      "lon": -1.3599999999999999,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-wm-030",
+      "nombre": "Campo Bridge 3",
+      "land": "wm",
+      "lat": 52.395,
+      "lon": -2.28,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nw-031",
+      "nombre": "Parque Estación 3",
+      "land": "nw",
+      "lat": 53.650000000000006,
+      "lon": -2.3,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ne-032",
+      "nombre": "Cruz Bridge 3",
+      "land": "ne",
+      "lat": 54.705,
+      "lon": -1.62,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-yh-033",
+      "nombre": "Valle Estación 3",
+      "land": "yh",
+      "lat": 53.86,
+      "lon": -1.7400000000000002,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sct-034",
+      "nombre": "Muelles Bridge 3",
+      "land": "sct",
+      "lat": 56.215,
+      "lon": -3.6599999999999997,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-wls-035",
+      "nombre": "Universidad Estación 3",
+      "land": "wls",
+      "lat": 51.970000000000006,
+      "lon": -3.38,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nir-036",
+      "nombre": "Feria Bridge 3",
+      "land": "nir",
+      "lat": 54.825,
+      "lon": -6.1000000000000005,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-lon-037",
+      "nombre": "Villa Estación 4",
+      "land": "lon",
+      "lat": 51.38,
+      "lon": -0.44,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-se-038",
+      "nombre": "Nueva Bridge 4",
+      "land": "se",
+      "lat": 51.33500000000001,
+      "lon": -0.24,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sw-039",
+      "nombre": "Alto Estación 4",
+      "land": "sw",
+      "lat": 50.59,
+      "lon": -3.46,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ee-040",
+      "nombre": "Bajo Bridge 4",
+      "land": "ee",
+      "lat": 52.245000000000005,
+      "lon": 0.12,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-em-041",
+      "nombre": "Puerto Estación 4",
+      "land": "em",
+      "lat": 52.5,
+      "lon": -1.6,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-wm-042",
+      "nombre": "Campo Bridge 4",
+      "land": "wm",
+      "lat": 52.455000000000005,
+      "lon": -1.7199999999999998,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nw-043",
+      "nombre": "Parque Estación 4",
+      "land": "nw",
+      "lat": 53.71,
+      "lon": -2.54,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ne-044",
+      "nombre": "Cruz Bridge 4",
+      "land": "ne",
+      "lat": 54.765,
+      "lon": -1.8599999999999999,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-yh-045",
+      "nombre": "Valle Estación 4",
+      "land": "yh",
+      "lat": 53.92,
+      "lon": -1.1800000000000002,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sct-046",
+      "nombre": "Muelles Bridge 4",
+      "land": "sct",
+      "lat": 56.275000000000006,
+      "lon": -3.9,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-wls-047",
+      "nombre": "Universidad Estación 4",
+      "land": "wls",
+      "lat": 52.03,
+      "lon": -3.6199999999999997,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nir-048",
+      "nombre": "Feria Bridge 4",
+      "land": "nir",
+      "lat": 54.885000000000005,
+      "lon": -6.340000000000001,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-lon-049",
+      "nombre": "Villa Estación 5",
+      "land": "lon",
+      "lat": 51.440000000000005,
+      "lon": 0.12,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-se-050",
+      "nombre": "Nueva Bridge 5",
+      "land": "se",
+      "lat": 51.395,
+      "lon": -0.48000000000000004,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sw-051",
+      "nombre": "Alto Estación 5",
+      "land": "sw",
+      "lat": 50.65,
+      "lon": -3.6999999999999997,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ee-052",
+      "nombre": "Bajo Bridge 5",
+      "land": "ee",
+      "lat": 52.30500000000001,
+      "lon": 0.68,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-em-053",
+      "nombre": "Puerto Estación 5",
+      "land": "em",
+      "lat": 52.56,
+      "lon": -1.04,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-wm-054",
+      "nombre": "Campo Bridge 5",
+      "land": "wm",
+      "lat": 52.515,
+      "lon": -1.96,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nw-055",
+      "nombre": "Parque Estación 5",
+      "land": "nw",
+      "lat": 53.77,
+      "lon": -2.78,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ne-056",
+      "nombre": "Cruz Bridge 5",
+      "land": "ne",
+      "lat": 54.825,
+      "lon": -1.3,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-yh-057",
+      "nombre": "Valle Estación 5",
+      "land": "yh",
+      "lat": 53.98,
+      "lon": -1.42,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sct-058",
+      "nombre": "Muelles Bridge 5",
+      "land": "sct",
+      "lat": 56.335,
+      "lon": -4.140000000000001,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-wls-059",
+      "nombre": "Universidad Estación 5",
+      "land": "wls",
+      "lat": 52.09,
+      "lon": -3.86,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nir-060",
+      "nombre": "Feria Bridge 5",
+      "land": "nir",
+      "lat": 54.345000000000006,
+      "lon": -5.78,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-lon-061",
+      "nombre": "Villa Estación 6",
+      "land": "lon",
+      "lat": 51.5,
+      "lon": -0.12,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-se-062",
+      "nombre": "Nueva Bridge 6",
+      "land": "se",
+      "lat": 51.455000000000005,
+      "lon": -0.72,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sw-063",
+      "nombre": "Alto Estación 6",
+      "land": "sw",
+      "lat": 50.71,
+      "lon": -3.14,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ee-064",
+      "nombre": "Bajo Bridge 6",
+      "land": "ee",
+      "lat": 52.36500000000001,
+      "lon": 0.44000000000000006,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-em-065",
+      "nombre": "Puerto Estación 6",
+      "land": "em",
+      "lat": 52.62,
+      "lon": -1.2799999999999998,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-wm-066",
+      "nombre": "Campo Bridge 6",
+      "land": "wm",
+      "lat": 52.575,
+      "lon": -2.1999999999999997,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nw-067",
+      "nombre": "Parque Estación 6",
+      "land": "nw",
+      "lat": 53.230000000000004,
+      "lon": -2.2199999999999998,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ne-068",
+      "nombre": "Cruz Bridge 6",
+      "land": "ne",
+      "lat": 54.885,
+      "lon": -1.54,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-yh-069",
+      "nombre": "Valle Estación 6",
+      "land": "yh",
+      "lat": 54.04,
+      "lon": -1.6600000000000001,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sct-070",
+      "nombre": "Muelles Bridge 6",
+      "land": "sct",
+      "lat": 56.395,
+      "lon": -4.38,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-wls-071",
+      "nombre": "Universidad Estación 6",
+      "land": "wls",
+      "lat": 52.150000000000006,
+      "lon": -3.3,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nir-072",
+      "nombre": "Feria Bridge 6",
+      "land": "nir",
+      "lat": 54.405,
+      "lon": -6.0200000000000005,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-lon-073",
+      "nombre": "Villa Estación 7",
+      "land": "lon",
+      "lat": 51.56,
+      "lon": -0.36,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-se-074",
+      "nombre": "Nueva Bridge 7",
+      "land": "se",
+      "lat": 50.915000000000006,
+      "lon": -0.16000000000000003,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sw-075",
+      "nombre": "Alto Estación 7",
+      "land": "sw",
+      "lat": 50.77,
+      "lon": -3.38,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ee-076",
+      "nombre": "Bajo Bridge 7",
+      "land": "ee",
+      "lat": 52.425000000000004,
+      "lon": 0.19999999999999996,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-em-077",
+      "nombre": "Puerto Estación 7",
+      "land": "em",
+      "lat": 52.68,
+      "lon": -1.52,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-wm-078",
+      "nombre": "Campo Bridge 7",
+      "land": "wm",
+      "lat": 52.635000000000005,
+      "lon": -1.6399999999999997,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nw-079",
+      "nombre": "Parque Estación 7",
+      "land": "nw",
+      "lat": 53.290000000000006,
+      "lon": -2.46,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ne-080",
+      "nombre": "Cruz Bridge 7",
+      "land": "ne",
+      "lat": 54.945,
+      "lon": -1.7800000000000002,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-yh-081",
+      "nombre": "Valle Estación 7",
+      "land": "yh",
+      "lat": 53.5,
+      "lon": -1.9,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sct-082",
+      "nombre": "Muelles Bridge 7",
+      "land": "sct",
+      "lat": 56.455000000000005,
+      "lon": -3.82,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-wls-083",
+      "nombre": "Universidad Estación 7",
+      "land": "wls",
+      "lat": 52.21,
+      "lon": -3.54,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nir-084",
+      "nombre": "Feria Bridge 7",
+      "land": "nir",
+      "lat": 54.465,
+      "lon": -6.260000000000001,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-lon-085",
+      "nombre": "Villa Estación 8",
+      "land": "lon",
+      "lat": 51.620000000000005,
+      "lon": 0.19999999999999996,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-se-086",
+      "nombre": "Nueva Bridge 8",
+      "land": "se",
+      "lat": 50.97500000000001,
+      "lon": -0.4,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sw-087",
+      "nombre": "Alto Estación 8",
+      "land": "sw",
+      "lat": 50.83,
+      "lon": -3.6199999999999997,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ee-088",
+      "nombre": "Bajo Bridge 8",
+      "land": "ee",
+      "lat": 52.48500000000001,
+      "lon": -0.040000000000000036,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-em-089",
+      "nombre": "Puerto Estación 8",
+      "land": "em",
+      "lat": 52.74,
+      "lon": -0.96,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-wm-090",
+      "nombre": "Campo Bridge 8",
+      "land": "wm",
+      "lat": 52.695,
+      "lon": -1.88,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nw-091",
+      "nombre": "Parque Estación 8",
+      "land": "nw",
+      "lat": 53.35,
+      "lon": -2.6999999999999997,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ne-092",
+      "nombre": "Cruz Bridge 8",
+      "land": "ne",
+      "lat": 55.005,
+      "lon": -1.2200000000000002,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-yh-093",
+      "nombre": "Valle Estación 8",
+      "land": "yh",
+      "lat": 53.56,
+      "lon": -1.3399999999999999,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sct-094",
+      "nombre": "Muelles Bridge 8",
+      "land": "sct",
+      "lat": 56.515,
+      "lon": -4.0600000000000005,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-wls-095",
+      "nombre": "Universidad Estación 8",
+      "land": "wls",
+      "lat": 52.27,
+      "lon": -3.78,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nir-096",
+      "nombre": "Feria Bridge 8",
+      "land": "nir",
+      "lat": 54.525000000000006,
+      "lon": -5.7,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-lon-097",
+      "nombre": "Villa Estación 9",
+      "land": "lon",
+      "lat": 51.68,
+      "lon": -0.040000000000000036,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-se-098",
+      "nombre": "Nueva Bridge 9",
+      "land": "se",
+      "lat": 51.035000000000004,
+      "lon": -0.64,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sw-099",
+      "nombre": "Alto Estación 9",
+      "land": "sw",
+      "lat": 50.89,
+      "lon": -3.86,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ee-100",
+      "nombre": "Bajo Bridge 9",
+      "land": "ee",
+      "lat": 51.94500000000001,
+      "lon": 0.5199999999999999,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-em-101",
+      "nombre": "Puerto Estación 9",
+      "land": "em",
+      "lat": 52.8,
+      "lon": -1.2,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-wm-102",
+      "nombre": "Campo Bridge 9",
+      "land": "wm",
+      "lat": 52.755,
+      "lon": -2.12,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nw-103",
+      "nombre": "Parque Estación 9",
+      "land": "nw",
+      "lat": 53.410000000000004,
+      "lon": -2.14,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ne-104",
+      "nombre": "Cruz Bridge 9",
+      "land": "ne",
+      "lat": 55.065000000000005,
+      "lon": -1.46,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-yh-105",
+      "nombre": "Valle Estación 9",
+      "land": "yh",
+      "lat": 53.62,
+      "lon": -1.58,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sct-106",
+      "nombre": "Muelles Bridge 9",
+      "land": "sct",
+      "lat": 56.575,
+      "lon": -4.3,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-wls-107",
+      "nombre": "Universidad Estación 9",
+      "land": "wls",
+      "lat": 51.730000000000004,
+      "lon": -3.2199999999999998,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nir-108",
+      "nombre": "Feria Bridge 9",
+      "land": "nir",
+      "lat": 54.585,
+      "lon": -5.94,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-lon-109",
+      "nombre": "Villa Estación 10",
+      "land": "lon",
+      "lat": 51.74,
+      "lon": -0.28,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-se-110",
+      "nombre": "Nueva Bridge 10",
+      "land": "se",
+      "lat": 51.095000000000006,
+      "lon": -0.88,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sw-111",
+      "nombre": "Alto Estación 10",
+      "land": "sw",
+      "lat": 50.95,
+      "lon": -3.3,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ee-112",
+      "nombre": "Bajo Bridge 10",
+      "land": "ee",
+      "lat": 52.005,
+      "lon": 0.2799999999999999,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-em-113",
+      "nombre": "Puerto Estación 10",
+      "land": "em",
+      "lat": 52.86,
+      "lon": -1.44,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-wm-114",
+      "nombre": "Campo Bridge 10",
+      "land": "wm",
+      "lat": 52.215,
+      "lon": -1.56,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nw-115",
+      "nombre": "Parque Estación 10",
+      "land": "nw",
+      "lat": 53.470000000000006,
+      "lon": -2.38,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ne-116",
+      "nombre": "Cruz Bridge 10",
+      "land": "ne",
+      "lat": 55.125,
+      "lon": -1.7000000000000002,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-yh-117",
+      "nombre": "Valle Estación 10",
+      "land": "yh",
+      "lat": 53.68,
+      "lon": -1.8199999999999998,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sct-118",
+      "nombre": "Muelles Bridge 10",
+      "land": "sct",
+      "lat": 56.635000000000005,
+      "lon": -3.7399999999999998,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-wls-119",
+      "nombre": "Universidad Estación 10",
+      "land": "wls",
+      "lat": 51.790000000000006,
+      "lon": -3.46,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nir-120",
+      "nombre": "Feria Bridge 10",
+      "land": "nir",
+      "lat": 54.645,
+      "lon": -6.180000000000001,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-lon-121",
+      "nombre": "Villa Estación 11",
+      "land": "lon",
+      "lat": 51.2,
+      "lon": -0.52,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-se-122",
+      "nombre": "Nueva Bridge 11",
+      "land": "se",
+      "lat": 51.15500000000001,
+      "lon": -0.32000000000000006,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sw-123",
+      "nombre": "Alto Estación 11",
+      "land": "sw",
+      "lat": 51.01,
+      "lon": -3.54,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ee-124",
+      "nombre": "Bajo Bridge 11",
+      "land": "ee",
+      "lat": 52.065000000000005,
+      "lon": 0.03999999999999998,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-em-125",
+      "nombre": "Puerto Estación 11",
+      "land": "em",
+      "lat": 52.92,
+      "lon": -0.88,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-wm-126",
+      "nombre": "Campo Bridge 11",
+      "land": "wm",
+      "lat": 52.275000000000006,
+      "lon": -1.7999999999999998,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nw-127",
+      "nombre": "Parque Estación 11",
+      "land": "nw",
+      "lat": 53.53,
+      "lon": -2.6199999999999997,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ne-128",
+      "nombre": "Cruz Bridge 11",
+      "land": "ne",
+      "lat": 55.185,
+      "lon": -1.94,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-yh-129",
+      "nombre": "Valle Estación 11",
+      "land": "yh",
+      "lat": 53.74,
+      "lon": -1.26,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sct-130",
+      "nombre": "Muelles Bridge 11",
+      "land": "sct",
+      "lat": 56.695,
+      "lon": -3.98,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-wls-131",
+      "nombre": "Universidad Estación 11",
+      "land": "wls",
+      "lat": 51.85,
+      "lon": -3.6999999999999997,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nir-132",
+      "nombre": "Feria Bridge 11",
+      "land": "nir",
+      "lat": 54.705000000000005,
+      "lon": -5.62,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-lon-133",
+      "nombre": "Villa Estación 12",
+      "land": "lon",
+      "lat": 51.260000000000005,
+      "lon": 0.040000000000000036,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-se-134",
+      "nombre": "Nueva Bridge 12",
+      "land": "se",
+      "lat": 51.215,
+      "lon": -0.56,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sw-135",
+      "nombre": "Alto Estación 12",
+      "land": "sw",
+      "lat": 51.07,
+      "lon": -3.78,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ee-136",
+      "nombre": "Bajo Bridge 12",
+      "land": "ee",
+      "lat": 52.12500000000001,
+      "lon": 0.6,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-em-137",
+      "nombre": "Puerto Estación 12",
+      "land": "em",
+      "lat": 52.98,
+      "lon": -1.12,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-wm-138",
+      "nombre": "Campo Bridge 12",
+      "land": "wm",
+      "lat": 52.335,
+      "lon": -2.04,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nw-139",
+      "nombre": "Parque Estación 12",
+      "land": "nw",
+      "lat": 53.59,
+      "lon": -2.86,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ne-140",
+      "nombre": "Cruz Bridge 12",
+      "land": "ne",
+      "lat": 54.645,
+      "lon": -1.3800000000000001,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-yh-141",
+      "nombre": "Valle Estación 12",
+      "land": "yh",
+      "lat": 53.8,
+      "lon": -1.5,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sct-142",
+      "nombre": "Muelles Bridge 12",
+      "land": "sct",
+      "lat": 56.755,
+      "lon": -4.22,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-wls-143",
+      "nombre": "Universidad Estación 12",
+      "land": "wls",
+      "lat": 51.910000000000004,
+      "lon": -3.14,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nir-144",
+      "nombre": "Feria Bridge 12",
+      "land": "nir",
+      "lat": 54.76500000000001,
+      "lon": -5.86,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-lon-145",
+      "nombre": "Villa Estación 13",
+      "land": "lon",
+      "lat": 51.32,
+      "lon": -0.2,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-se-146",
+      "nombre": "Nueva Bridge 13",
+      "land": "se",
+      "lat": 51.275000000000006,
+      "lon": -0.8,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sw-147",
+      "nombre": "Alto Estación 13",
+      "land": "sw",
+      "lat": 50.53,
+      "lon": -3.2199999999999998,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ee-148",
+      "nombre": "Bajo Bridge 13",
+      "land": "ee",
+      "lat": 52.185,
+      "lon": 0.36,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-em-149",
+      "nombre": "Puerto Estación 13",
+      "land": "em",
+      "lat": 53.04,
+      "lon": -1.3599999999999999,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-wm-150",
+      "nombre": "Campo Bridge 13",
+      "land": "wm",
+      "lat": 52.395,
+      "lon": -2.28,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nw-151",
+      "nombre": "Parque Estación 13",
+      "land": "nw",
+      "lat": 53.650000000000006,
+      "lon": -2.3,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ne-152",
+      "nombre": "Cruz Bridge 13",
+      "land": "ne",
+      "lat": 54.705,
+      "lon": -1.62,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-yh-153",
+      "nombre": "Valle Estación 13",
+      "land": "yh",
+      "lat": 53.86,
+      "lon": -1.7400000000000002,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sct-154",
+      "nombre": "Muelles Bridge 13",
+      "land": "sct",
+      "lat": 56.215,
+      "lon": -3.6599999999999997,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-wls-155",
+      "nombre": "Universidad Estación 13",
+      "land": "wls",
+      "lat": 51.970000000000006,
+      "lon": -3.38,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nir-156",
+      "nombre": "Feria Bridge 13",
+      "land": "nir",
+      "lat": 54.825,
+      "lon": -6.1000000000000005,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-lon-157",
+      "nombre": "Villa Estación 14",
+      "land": "lon",
+      "lat": 51.38,
+      "lon": -0.44,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-se-158",
+      "nombre": "Nueva Bridge 14",
+      "land": "se",
+      "lat": 51.33500000000001,
+      "lon": -0.24,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sw-159",
+      "nombre": "Alto Estación 14",
+      "land": "sw",
+      "lat": 50.59,
+      "lon": -3.46,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ee-160",
+      "nombre": "Bajo Bridge 14",
+      "land": "ee",
+      "lat": 52.245000000000005,
+      "lon": 0.12,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-em-161",
+      "nombre": "Puerto Estación 14",
+      "land": "em",
+      "lat": 52.5,
+      "lon": -1.6,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-wm-162",
+      "nombre": "Campo Bridge 14",
+      "land": "wm",
+      "lat": 52.455000000000005,
+      "lon": -1.7199999999999998,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nw-163",
+      "nombre": "Parque Estación 14",
+      "land": "nw",
+      "lat": 53.71,
+      "lon": -2.54,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ne-164",
+      "nombre": "Cruz Bridge 14",
+      "land": "ne",
+      "lat": 54.765,
+      "lon": -1.8599999999999999,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-yh-165",
+      "nombre": "Valle Estación 14",
+      "land": "yh",
+      "lat": 53.92,
+      "lon": -1.1800000000000002,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sct-166",
+      "nombre": "Muelles Bridge 14",
+      "land": "sct",
+      "lat": 56.275000000000006,
+      "lon": -3.9,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-wls-167",
+      "nombre": "Universidad Estación 14",
+      "land": "wls",
+      "lat": 52.03,
+      "lon": -3.6199999999999997,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nir-168",
+      "nombre": "Feria Bridge 14",
+      "land": "nir",
+      "lat": 54.885000000000005,
+      "lon": -6.340000000000001,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-lon-169",
+      "nombre": "Villa Estación 15",
+      "land": "lon",
+      "lat": 51.440000000000005,
+      "lon": 0.12,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-se-170",
+      "nombre": "Nueva Bridge 15",
+      "land": "se",
+      "lat": 51.395,
+      "lon": -0.48000000000000004,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sw-171",
+      "nombre": "Alto Estación 15",
+      "land": "sw",
+      "lat": 50.65,
+      "lon": -3.6999999999999997,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ee-172",
+      "nombre": "Bajo Bridge 15",
+      "land": "ee",
+      "lat": 52.30500000000001,
+      "lon": 0.68,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-em-173",
+      "nombre": "Puerto Estación 15",
+      "land": "em",
+      "lat": 52.56,
+      "lon": -1.04,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-wm-174",
+      "nombre": "Campo Bridge 15",
+      "land": "wm",
+      "lat": 52.515,
+      "lon": -1.96,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nw-175",
+      "nombre": "Parque Estación 15",
+      "land": "nw",
+      "lat": 53.77,
+      "lon": -2.78,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ne-176",
+      "nombre": "Cruz Bridge 15",
+      "land": "ne",
+      "lat": 54.825,
+      "lon": -1.3,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-yh-177",
+      "nombre": "Valle Estación 15",
+      "land": "yh",
+      "lat": 53.98,
+      "lon": -1.42,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sct-178",
+      "nombre": "Muelles Bridge 15",
+      "land": "sct",
+      "lat": 56.335,
+      "lon": -4.140000000000001,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-wls-179",
+      "nombre": "Universidad Estación 15",
+      "land": "wls",
+      "lat": 52.09,
+      "lon": -3.86,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nir-180",
+      "nombre": "Feria Bridge 15",
+      "land": "nir",
+      "lat": 54.345000000000006,
+      "lon": -5.78,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-lon-181",
+      "nombre": "Villa Estación 16",
+      "land": "lon",
+      "lat": 51.5,
+      "lon": -0.12,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-se-182",
+      "nombre": "Nueva Bridge 16",
+      "land": "se",
+      "lat": 51.455000000000005,
+      "lon": -0.72,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sw-183",
+      "nombre": "Alto Estación 16",
+      "land": "sw",
+      "lat": 50.71,
+      "lon": -3.14,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ee-184",
+      "nombre": "Bajo Bridge 16",
+      "land": "ee",
+      "lat": 52.36500000000001,
+      "lon": 0.44000000000000006,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-em-185",
+      "nombre": "Puerto Estación 16",
+      "land": "em",
+      "lat": 52.62,
+      "lon": -1.2799999999999998,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-wm-186",
+      "nombre": "Campo Bridge 16",
+      "land": "wm",
+      "lat": 52.575,
+      "lon": -2.1999999999999997,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nw-187",
+      "nombre": "Parque Estación 16",
+      "land": "nw",
+      "lat": 53.230000000000004,
+      "lon": -2.2199999999999998,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ne-188",
+      "nombre": "Cruz Bridge 16",
+      "land": "ne",
+      "lat": 54.885,
+      "lon": -1.54,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-yh-189",
+      "nombre": "Valle Estación 16",
+      "land": "yh",
+      "lat": 54.04,
+      "lon": -1.6600000000000001,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sct-190",
+      "nombre": "Muelles Bridge 16",
+      "land": "sct",
+      "lat": 56.395,
+      "lon": -4.38,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-wls-191",
+      "nombre": "Universidad Estación 16",
+      "land": "wls",
+      "lat": 52.150000000000006,
+      "lon": -3.3,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nir-192",
+      "nombre": "Feria Bridge 16",
+      "land": "nir",
+      "lat": 54.405,
+      "lon": -6.0200000000000005,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-lon-193",
+      "nombre": "Villa Estación 17",
+      "land": "lon",
+      "lat": 51.56,
+      "lon": -0.36,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-se-194",
+      "nombre": "Nueva Bridge 17",
+      "land": "se",
+      "lat": 50.915000000000006,
+      "lon": -0.16000000000000003,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sw-195",
+      "nombre": "Alto Estación 17",
+      "land": "sw",
+      "lat": 50.77,
+      "lon": -3.38,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ee-196",
+      "nombre": "Bajo Bridge 17",
+      "land": "ee",
+      "lat": 52.425000000000004,
+      "lon": 0.19999999999999996,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-em-197",
+      "nombre": "Puerto Estación 17",
+      "land": "em",
+      "lat": 52.68,
+      "lon": -1.52,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-wm-198",
+      "nombre": "Campo Bridge 17",
+      "land": "wm",
+      "lat": 52.635000000000005,
+      "lon": -1.6399999999999997,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nw-199",
+      "nombre": "Parque Estación 17",
+      "land": "nw",
+      "lat": 53.290000000000006,
+      "lon": -2.46,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ne-200",
+      "nombre": "Cruz Bridge 17",
+      "land": "ne",
+      "lat": 54.945,
+      "lon": -1.7800000000000002,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-yh-201",
+      "nombre": "Valle Estación 17",
+      "land": "yh",
+      "lat": 53.5,
+      "lon": -1.9,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sct-202",
+      "nombre": "Muelles Bridge 17",
+      "land": "sct",
+      "lat": 56.455000000000005,
+      "lon": -3.82,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-wls-203",
+      "nombre": "Universidad Estación 17",
+      "land": "wls",
+      "lat": 52.21,
+      "lon": -3.54,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nir-204",
+      "nombre": "Feria Bridge 17",
+      "land": "nir",
+      "lat": 54.465,
+      "lon": -6.260000000000001,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-lon-205",
+      "nombre": "Villa Estación 18",
+      "land": "lon",
+      "lat": 51.620000000000005,
+      "lon": 0.19999999999999996,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-se-206",
+      "nombre": "Nueva Bridge 18",
+      "land": "se",
+      "lat": 50.97500000000001,
+      "lon": -0.4,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sw-207",
+      "nombre": "Alto Estación 18",
+      "land": "sw",
+      "lat": 50.83,
+      "lon": -3.6199999999999997,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ee-208",
+      "nombre": "Bajo Bridge 18",
+      "land": "ee",
+      "lat": 52.48500000000001,
+      "lon": -0.040000000000000036,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-em-209",
+      "nombre": "Puerto Estación 18",
+      "land": "em",
+      "lat": 52.74,
+      "lon": -0.96,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-wm-210",
+      "nombre": "Campo Bridge 18",
+      "land": "wm",
+      "lat": 52.695,
+      "lon": -1.88,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nw-211",
+      "nombre": "Parque Estación 18",
+      "land": "nw",
+      "lat": 53.35,
+      "lon": -2.6999999999999997,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ne-212",
+      "nombre": "Cruz Bridge 18",
+      "land": "ne",
+      "lat": 55.005,
+      "lon": -1.2200000000000002,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-yh-213",
+      "nombre": "Valle Estación 18",
+      "land": "yh",
+      "lat": 53.56,
+      "lon": -1.3399999999999999,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sct-214",
+      "nombre": "Muelles Bridge 18",
+      "land": "sct",
+      "lat": 56.515,
+      "lon": -4.0600000000000005,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-wls-215",
+      "nombre": "Universidad Estación 18",
+      "land": "wls",
+      "lat": 52.27,
+      "lon": -3.78,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nir-216",
+      "nombre": "Feria Bridge 18",
+      "land": "nir",
+      "lat": 54.525000000000006,
+      "lon": -5.7,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-lon-217",
+      "nombre": "Villa Estación 19",
+      "land": "lon",
+      "lat": 51.68,
+      "lon": -0.040000000000000036,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-se-218",
+      "nombre": "Nueva Bridge 19",
+      "land": "se",
+      "lat": 51.035000000000004,
+      "lon": -0.64,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sw-219",
+      "nombre": "Alto Estación 19",
+      "land": "sw",
+      "lat": 50.89,
+      "lon": -3.86,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ee-220",
+      "nombre": "Bajo Bridge 19",
+      "land": "ee",
+      "lat": 51.94500000000001,
+      "lon": 0.5199999999999999,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-em-221",
+      "nombre": "Puerto Estación 19",
+      "land": "em",
+      "lat": 52.8,
+      "lon": -1.2,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-wm-222",
+      "nombre": "Campo Bridge 19",
+      "land": "wm",
+      "lat": 52.755,
+      "lon": -2.12,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nw-223",
+      "nombre": "Parque Estación 19",
+      "land": "nw",
+      "lat": 53.410000000000004,
+      "lon": -2.14,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ne-224",
+      "nombre": "Cruz Bridge 19",
+      "land": "ne",
+      "lat": 55.065000000000005,
+      "lon": -1.46,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-yh-225",
+      "nombre": "Valle Estación 19",
+      "land": "yh",
+      "lat": 53.62,
+      "lon": -1.58,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sct-226",
+      "nombre": "Muelles Bridge 19",
+      "land": "sct",
+      "lat": 56.575,
+      "lon": -4.3,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-wls-227",
+      "nombre": "Universidad Estación 19",
+      "land": "wls",
+      "lat": 51.730000000000004,
+      "lon": -3.2199999999999998,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nir-228",
+      "nombre": "Feria Bridge 19",
+      "land": "nir",
+      "lat": 54.585,
+      "lon": -5.94,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-lon-229",
+      "nombre": "Villa Estación 20",
+      "land": "lon",
+      "lat": 51.74,
+      "lon": -0.28,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-se-230",
+      "nombre": "Nueva Bridge 20",
+      "land": "se",
+      "lat": 51.095000000000006,
+      "lon": -0.88,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sw-231",
+      "nombre": "Alto Estación 20",
+      "land": "sw",
+      "lat": 50.95,
+      "lon": -3.3,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ee-232",
+      "nombre": "Bajo Bridge 20",
+      "land": "ee",
+      "lat": 52.005,
+      "lon": 0.2799999999999999,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-em-233",
+      "nombre": "Puerto Estación 20",
+      "land": "em",
+      "lat": 52.86,
+      "lon": -1.44,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-wm-234",
+      "nombre": "Campo Bridge 20",
+      "land": "wm",
+      "lat": 52.215,
+      "lon": -1.56,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nw-235",
+      "nombre": "Parque Estación 20",
+      "land": "nw",
+      "lat": 53.470000000000006,
+      "lon": -2.38,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ne-236",
+      "nombre": "Cruz Bridge 20",
+      "land": "ne",
+      "lat": 55.125,
+      "lon": -1.7000000000000002,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-yh-237",
+      "nombre": "Valle Estación 20",
+      "land": "yh",
+      "lat": 53.68,
+      "lon": -1.8199999999999998,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sct-238",
+      "nombre": "Muelles Bridge 20",
+      "land": "sct",
+      "lat": 56.635000000000005,
+      "lon": -3.7399999999999998,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-wls-239",
+      "nombre": "Universidad Estación 20",
+      "land": "wls",
+      "lat": 51.790000000000006,
+      "lon": -3.46,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nir-240",
+      "nombre": "Feria Bridge 20",
+      "land": "nir",
+      "lat": 54.645,
+      "lon": -6.180000000000001,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-lon-241",
+      "nombre": "Villa Estación 21",
+      "land": "lon",
+      "lat": 51.2,
+      "lon": -0.52,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-se-242",
+      "nombre": "Nueva Bridge 21",
+      "land": "se",
+      "lat": 51.15500000000001,
+      "lon": -0.32000000000000006,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sw-243",
+      "nombre": "Alto Estación 21",
+      "land": "sw",
+      "lat": 51.01,
+      "lon": -3.54,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ee-244",
+      "nombre": "Bajo Bridge 21",
+      "land": "ee",
+      "lat": 52.065000000000005,
+      "lon": 0.03999999999999998,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-em-245",
+      "nombre": "Puerto Estación 21",
+      "land": "em",
+      "lat": 52.92,
+      "lon": -0.88,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-wm-246",
+      "nombre": "Campo Bridge 21",
+      "land": "wm",
+      "lat": 52.275000000000006,
+      "lon": -1.7999999999999998,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nw-247",
+      "nombre": "Parque Estación 21",
+      "land": "nw",
+      "lat": 53.53,
+      "lon": -2.6199999999999997,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ne-248",
+      "nombre": "Cruz Bridge 21",
+      "land": "ne",
+      "lat": 55.185,
+      "lon": -1.94,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-yh-249",
+      "nombre": "Valle Estación 21",
+      "land": "yh",
+      "lat": 53.74,
+      "lon": -1.26,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sct-250",
+      "nombre": "Muelles Bridge 21",
+      "land": "sct",
+      "lat": 56.695,
+      "lon": -3.98,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-wls-251",
+      "nombre": "Universidad Estación 21",
+      "land": "wls",
+      "lat": 51.85,
+      "lon": -3.6999999999999997,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nir-252",
+      "nombre": "Feria Bridge 21",
+      "land": "nir",
+      "lat": 54.705000000000005,
+      "lon": -5.62,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-lon-253",
+      "nombre": "Villa Estación 22",
+      "land": "lon",
+      "lat": 51.260000000000005,
+      "lon": 0.040000000000000036,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-se-254",
+      "nombre": "Nueva Bridge 22",
+      "land": "se",
+      "lat": 51.215,
+      "lon": -0.56,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sw-255",
+      "nombre": "Alto Estación 22",
+      "land": "sw",
+      "lat": 51.07,
+      "lon": -3.78,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ee-256",
+      "nombre": "Bajo Bridge 22",
+      "land": "ee",
+      "lat": 52.12500000000001,
+      "lon": 0.6,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-em-257",
+      "nombre": "Puerto Estación 22",
+      "land": "em",
+      "lat": 52.98,
+      "lon": -1.12,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-wm-258",
+      "nombre": "Campo Bridge 22",
+      "land": "wm",
+      "lat": 52.335,
+      "lon": -2.04,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nw-259",
+      "nombre": "Parque Estación 22",
+      "land": "nw",
+      "lat": 53.59,
+      "lon": -2.86,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ne-260",
+      "nombre": "Cruz Bridge 22",
+      "land": "ne",
+      "lat": 54.645,
+      "lon": -1.3800000000000001,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-yh-261",
+      "nombre": "Valle Estación 22",
+      "land": "yh",
+      "lat": 53.8,
+      "lon": -1.5,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sct-262",
+      "nombre": "Muelles Bridge 22",
+      "land": "sct",
+      "lat": 56.755,
+      "lon": -4.22,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-wls-263",
+      "nombre": "Universidad Estación 22",
+      "land": "wls",
+      "lat": 51.910000000000004,
+      "lon": -3.14,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nir-264",
+      "nombre": "Feria Bridge 22",
+      "land": "nir",
+      "lat": 54.76500000000001,
+      "lon": -5.86,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-lon-265",
+      "nombre": "Villa Estación 23",
+      "land": "lon",
+      "lat": 51.32,
+      "lon": -0.2,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-se-266",
+      "nombre": "Nueva Bridge 23",
+      "land": "se",
+      "lat": 51.275000000000006,
+      "lon": -0.8,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sw-267",
+      "nombre": "Alto Estación 23",
+      "land": "sw",
+      "lat": 50.53,
+      "lon": -3.2199999999999998,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ee-268",
+      "nombre": "Bajo Bridge 23",
+      "land": "ee",
+      "lat": 52.185,
+      "lon": 0.36,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-em-269",
+      "nombre": "Puerto Estación 23",
+      "land": "em",
+      "lat": 53.04,
+      "lon": -1.3599999999999999,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-wm-270",
+      "nombre": "Campo Bridge 23",
+      "land": "wm",
+      "lat": 52.395,
+      "lon": -2.28,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nw-271",
+      "nombre": "Parque Estación 23",
+      "land": "nw",
+      "lat": 53.650000000000006,
+      "lon": -2.3,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ne-272",
+      "nombre": "Cruz Bridge 23",
+      "land": "ne",
+      "lat": 54.705,
+      "lon": -1.62,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-yh-273",
+      "nombre": "Valle Estación 23",
+      "land": "yh",
+      "lat": 53.86,
+      "lon": -1.7400000000000002,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sct-274",
+      "nombre": "Muelles Bridge 23",
+      "land": "sct",
+      "lat": 56.215,
+      "lon": -3.6599999999999997,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-wls-275",
+      "nombre": "Universidad Estación 23",
+      "land": "wls",
+      "lat": 51.970000000000006,
+      "lon": -3.38,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nir-276",
+      "nombre": "Feria Bridge 23",
+      "land": "nir",
+      "lat": 54.825,
+      "lon": -6.1000000000000005,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-lon-277",
+      "nombre": "Villa Estación 24",
+      "land": "lon",
+      "lat": 51.38,
+      "lon": -0.44,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-se-278",
+      "nombre": "Nueva Bridge 24",
+      "land": "se",
+      "lat": 51.33500000000001,
+      "lon": -0.24,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sw-279",
+      "nombre": "Alto Estación 24",
+      "land": "sw",
+      "lat": 50.59,
+      "lon": -3.46,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ee-280",
+      "nombre": "Bajo Bridge 24",
+      "land": "ee",
+      "lat": 52.245000000000005,
+      "lon": 0.12,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-em-281",
+      "nombre": "Puerto Estación 24",
+      "land": "em",
+      "lat": 52.5,
+      "lon": -1.6,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-wm-282",
+      "nombre": "Campo Bridge 24",
+      "land": "wm",
+      "lat": 52.455000000000005,
+      "lon": -1.7199999999999998,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nw-283",
+      "nombre": "Parque Estación 24",
+      "land": "nw",
+      "lat": 53.71,
+      "lon": -2.54,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ne-284",
+      "nombre": "Cruz Bridge 24",
+      "land": "ne",
+      "lat": 54.765,
+      "lon": -1.8599999999999999,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-yh-285",
+      "nombre": "Valle Estación 24",
+      "land": "yh",
+      "lat": 53.92,
+      "lon": -1.1800000000000002,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sct-286",
+      "nombre": "Muelles Bridge 24",
+      "land": "sct",
+      "lat": 56.275000000000006,
+      "lon": -3.9,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-wls-287",
+      "nombre": "Universidad Estación 24",
+      "land": "wls",
+      "lat": 52.03,
+      "lon": -3.6199999999999997,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nir-288",
+      "nombre": "Feria Bridge 24",
+      "land": "nir",
+      "lat": 54.885000000000005,
+      "lon": -6.340000000000001,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-lon-289",
+      "nombre": "Villa Estación 25",
+      "land": "lon",
+      "lat": 51.440000000000005,
+      "lon": 0.12,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-se-290",
+      "nombre": "Nueva Bridge 25",
+      "land": "se",
+      "lat": 51.395,
+      "lon": -0.48000000000000004,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sw-291",
+      "nombre": "Alto Estación 25",
+      "land": "sw",
+      "lat": 50.65,
+      "lon": -3.6999999999999997,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ee-292",
+      "nombre": "Bajo Bridge 25",
+      "land": "ee",
+      "lat": 52.30500000000001,
+      "lon": 0.68,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-em-293",
+      "nombre": "Puerto Estación 25",
+      "land": "em",
+      "lat": 52.56,
+      "lon": -1.04,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-wm-294",
+      "nombre": "Campo Bridge 25",
+      "land": "wm",
+      "lat": 52.515,
+      "lon": -1.96,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nw-295",
+      "nombre": "Parque Estación 25",
+      "land": "nw",
+      "lat": 53.77,
+      "lon": -2.78,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-ne-296",
+      "nombre": "Cruz Bridge 25",
+      "land": "ne",
+      "lat": 54.825,
+      "lon": -1.3,
+      "tier": 4,
+      "roles": [
+        "tur",
+        "rl"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-yh-297",
+      "nombre": "Valle Estación 25",
+      "land": "yh",
+      "lat": 53.98,
+      "lon": -1.42,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-sct-298",
+      "nombre": "Muelles Bridge 25",
+      "land": "sct",
+      "lat": 56.335,
+      "lon": -4.140000000000001,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-wls-299",
+      "nombre": "Universidad Estación 25",
+      "land": "wls",
+      "lat": 52.09,
+      "lon": -3.86,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "fx-nir-300",
+      "nombre": "Feria Bridge 25",
+      "land": "nir",
+      "lat": 54.345000000000006,
+      "lon": -5.78,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "london-orbital-n",
+      "nombre": "Londres Orbital Norte",
+      "land": "lon",
+      "lat": 51.62,
+      "lon": -0.12,
+      "tier": 3,
+      "roles": [
+        "s",
+        "or",
+        "mc"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "london-orbital-s",
+      "nombre": "Londres Orbital Sur",
+      "land": "lon",
+      "lat": 51.38,
+      "lon": -0.12,
+      "tier": 3,
+      "roles": [
+        "s",
+        "or",
+        "mc"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "london-orbital-e",
+      "nombre": "Londres Orbital Este",
+      "land": "lon",
+      "lat": 51.52,
+      "lon": 0.1,
+      "tier": 3,
+      "roles": [
+        "s",
+        "or",
+        "mc"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "london-orbital-w",
+      "nombre": "Londres Orbital Oeste",
+      "land": "lon",
+      "lat": 51.52,
+      "lon": -0.35,
+      "tier": 3,
+      "roles": [
+        "s",
+        "or",
+        "mc"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "manchester-orbital",
+      "nombre": "Manchester Orbital",
+      "land": "nw",
+      "lat": 53.48,
+      "lon": -2.2,
+      "tier": 3,
+      "roles": [
+        "s",
+        "or",
+        "t"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "birmingham-orbital",
+      "nombre": "Birmingham Orbital",
+      "land": "wm",
+      "lat": 52.48,
+      "lon": -1.9,
+      "tier": 3,
+      "roles": [
+        "s",
+        "or",
+        "tt"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "leeds-orbital",
+      "nombre": "Leeds Orbital",
+      "land": "yh",
+      "lat": 53.8,
+      "lon": -1.55,
+      "tier": 3,
+      "roles": [
+        "s",
+        "or"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "glasgow-orbital",
+      "nombre": "Glasgow Orbital",
+      "land": "sct",
+      "lat": 55.86,
+      "lon": -4.25,
+      "tier": 3,
+      "roles": [
+        "s",
+        "or",
+        "u"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "cardiff-bay-hub",
+      "nombre": "Cardiff Bay Hub",
+      "land": "wls",
+      "lat": 51.46,
+      "lon": -3.16,
+      "tier": 3,
+      "roles": [
+        "s",
+        "t",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "hs2-old-oak",
+      "nombre": "Old Oak Common HS2",
+      "land": "lon",
+      "lat": 51.525,
+      "lon": -0.248,
+      "tier": 3,
+      "roles": [
+        "av",
+        "s",
+        "ae"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "middlesbrough",
+      "nombre": "Middlesbrough",
+      "land": "yh",
+      "lat": 54.579,
+      "lon": -1.234,
+      "tier": 3,
+      "roles": [
+        "re",
+        "ld"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "antrim",
+      "nombre": "Antrim",
+      "land": "nir",
+      "lat": 54.718,
+      "lon": -6.205,
+      "tier": 3,
+      "roles": [
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "liverpool-central",
+      "nombre": "Liverpool Central",
+      "land": "nw",
+      "lat": 53.404,
+      "lon": -2.98,
+      "tier": 3,
+      "roles": [
+        "s",
+        "u"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "southport",
+      "nombre": "Southport",
+      "land": "nw",
+      "lat": 53.647,
+      "lon": -3.002,
+      "tier": 3,
+      "roles": [
+        "s",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "ormskirk",
+      "nombre": "Ormskirk",
+      "land": "nw",
+      "lat": 53.569,
+      "lon": -2.989,
+      "tier": 3,
+      "roles": [
+        "s",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "new-cross",
+      "nombre": "New Cross",
+      "land": "lon",
+      "lat": 51.476,
+      "lon": -0.033,
+      "tier": 3,
+      "roles": [
+        "s",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    }
+  ]
+}

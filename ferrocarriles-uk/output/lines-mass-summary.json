@@ -1,0 +1,35 @@
+{
+  "total": 8982,
+  "distancia_total_km": 821062,
+  "paradas_totales_en_rutas": 42029,
+  "media_paradas": 4.7,
+  "por_tipo": {
+    "av": 393,
+    "ld": 981,
+    "ir": 687,
+    "re": 1569,
+    "rb": 1039,
+    "s": 1176,
+    "u": 392,
+    "t": 392,
+    "tt": 196,
+    "ae": 245,
+    "n": 147,
+    "tur": 294,
+    "or": 294,
+    "px": 392,
+    "mc": 294,
+    "rl": 491
+  },
+  "por_origen_datos": {
+    "real": 6145,
+    "ficticia": 730,
+    "hibrida": 2107
+  },
+  "por_estado_operador": {
+    "actual": 4828,
+    "futuro": 1158,
+    "inventado": 2996
+  },
+  "operadores_distintos": 100
+}
