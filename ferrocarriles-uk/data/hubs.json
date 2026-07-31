@@ -1,8 +1,8 @@
 {
-  "version": "0.4.0",
+  "version": "0.5.0",
   "pais": "Alemania",
-  "nota": "Estaciones reales alemanas + nodos metro/tranvía + ficticios de densificación.",
-  "total": 440,
+  "nota": "Estaciones reales + densificación para rutas con muchas paradas (incl. metro/tranvía).",
+  "total": 728,
   "hubs": [
     {
       "id": "berlin-hbf",
@@ -6125,6 +6125,4038 @@
         "s",
         "or",
         "tt"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-be-01",
+      "nombre": "Alt-Platz BE",
+      "land": "be",
+      "lat": 52.405,
+      "lon": 13.219,
+      "tier": 3,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-be-02",
+      "nombre": "See-Mitte BE",
+      "land": "be",
+      "lat": 52.515,
+      "lon": 13.456999999999999,
+      "tier": 3,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-be-03",
+      "nombre": "Hof-Platz BE",
+      "land": "be",
+      "lat": 52.625,
+      "lon": 13.344999999999999,
+      "tier": 3,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-be-04",
+      "nombre": "Messe-Mitte BE",
+      "land": "be",
+      "lat": 52.485,
+      "lon": 13.232999999999999,
+      "tier": 3,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-be-05",
+      "nombre": "Schloss-Platz BE",
+      "land": "be",
+      "lat": 52.595,
+      "lon": 13.471,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-be-06",
+      "nombre": "Neu-Mitte BE",
+      "land": "be",
+      "lat": 52.455,
+      "lon": 13.359,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-be-07",
+      "nombre": "Wald-Platz BE",
+      "land": "be",
+      "lat": 52.565,
+      "lon": 13.247,
+      "tier": 4,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-be-08",
+      "nombre": "Dorf-Mitte BE",
+      "land": "be",
+      "lat": 52.425000000000004,
+      "lon": 13.485,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-be-09",
+      "nombre": "Industrie-Platz BE",
+      "land": "be",
+      "lat": 52.535000000000004,
+      "lon": 13.373,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-be-10",
+      "nombre": "Hafen-Mitte BE",
+      "land": "be",
+      "lat": 52.645,
+      "lon": 13.261,
+      "tier": 4,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-be-11",
+      "nombre": "Kirch-Platz BE",
+      "land": "be",
+      "lat": 52.505,
+      "lon": 13.498999999999999,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-be-12",
+      "nombre": "Berg-Mitte BE",
+      "land": "be",
+      "lat": 52.615,
+      "lon": 13.386999999999999,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-be-13",
+      "nombre": "Stadt-Platz BE",
+      "land": "be",
+      "lat": 52.475,
+      "lon": 13.274999999999999,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-be-14",
+      "nombre": "Bahn-Mitte BE",
+      "land": "be",
+      "lat": 52.585,
+      "lon": 13.513,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-be-15",
+      "nombre": "Uni-Platz BE",
+      "land": "be",
+      "lat": 52.445,
+      "lon": 13.401,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-be-16",
+      "nombre": "Markt-Mitte BE",
+      "land": "be",
+      "lat": 52.555,
+      "lon": 13.289,
+      "tier": 4,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-be-17",
+      "nombre": "Alt-Platz BE",
+      "land": "be",
+      "lat": 52.415,
+      "lon": 13.527,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-be-18",
+      "nombre": "See-Mitte BE",
+      "land": "be",
+      "lat": 52.525,
+      "lon": 13.415,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-bb-01",
+      "nombre": "Hof-Platz BB",
+      "land": "bb",
+      "lat": 52.272000000000006,
+      "lon": 12.917,
+      "tier": 3,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-bb-02",
+      "nombre": "Messe-Mitte BB",
+      "land": "bb",
+      "lat": 52.382000000000005,
+      "lon": 13.155,
+      "tier": 3,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-bb-03",
+      "nombre": "Schloss-Platz BB",
+      "land": "bb",
+      "lat": 52.492000000000004,
+      "lon": 13.043,
+      "tier": 3,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-bb-04",
+      "nombre": "Neu-Mitte BB",
+      "land": "bb",
+      "lat": 52.352000000000004,
+      "lon": 12.931,
+      "tier": 3,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-bb-05",
+      "nombre": "Wald-Platz BB",
+      "land": "bb",
+      "lat": 52.462,
+      "lon": 13.169,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-bb-06",
+      "nombre": "Dorf-Mitte BB",
+      "land": "bb",
+      "lat": 52.322,
+      "lon": 13.057,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-bb-07",
+      "nombre": "Industrie-Platz BB",
+      "land": "bb",
+      "lat": 52.432,
+      "lon": 12.945,
+      "tier": 4,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-bb-08",
+      "nombre": "Hafen-Mitte BB",
+      "land": "bb",
+      "lat": 52.29200000000001,
+      "lon": 13.183,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-bb-09",
+      "nombre": "Kirch-Platz BB",
+      "land": "bb",
+      "lat": 52.40200000000001,
+      "lon": 13.071,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-bb-10",
+      "nombre": "Berg-Mitte BB",
+      "land": "bb",
+      "lat": 52.51200000000001,
+      "lon": 12.959,
+      "tier": 4,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-bb-11",
+      "nombre": "Stadt-Platz BB",
+      "land": "bb",
+      "lat": 52.37200000000001,
+      "lon": 13.197,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-bb-12",
+      "nombre": "Bahn-Mitte BB",
+      "land": "bb",
+      "lat": 52.482000000000006,
+      "lon": 13.084999999999999,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-bb-13",
+      "nombre": "Uni-Platz BB",
+      "land": "bb",
+      "lat": 52.342000000000006,
+      "lon": 12.972999999999999,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-bb-14",
+      "nombre": "Markt-Mitte BB",
+      "land": "bb",
+      "lat": 52.452000000000005,
+      "lon": 13.211,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-bb-15",
+      "nombre": "Alt-Platz BB",
+      "land": "bb",
+      "lat": 52.312000000000005,
+      "lon": 13.099,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-bb-16",
+      "nombre": "See-Mitte BB",
+      "land": "bb",
+      "lat": 52.422000000000004,
+      "lon": 12.987,
+      "tier": 4,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-bb-17",
+      "nombre": "Hof-Platz BB",
+      "land": "bb",
+      "lat": 52.282000000000004,
+      "lon": 13.225,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-bb-18",
+      "nombre": "Messe-Mitte BB",
+      "land": "bb",
+      "lat": 52.392,
+      "lon": 13.113,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-hh-01",
+      "nombre": "Schloss-Platz HH",
+      "land": "hh",
+      "lat": 53.433,
+      "lon": 9.856,
+      "tier": 3,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-hh-02",
+      "nombre": "Neu-Mitte HH",
+      "land": "hh",
+      "lat": 53.543,
+      "lon": 10.094,
+      "tier": 3,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-hh-03",
+      "nombre": "Wald-Platz HH",
+      "land": "hh",
+      "lat": 53.653,
+      "lon": 9.982,
+      "tier": 3,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-hh-04",
+      "nombre": "Dorf-Mitte HH",
+      "land": "hh",
+      "lat": 53.513,
+      "lon": 9.87,
+      "tier": 3,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-hh-05",
+      "nombre": "Industrie-Platz HH",
+      "land": "hh",
+      "lat": 53.623,
+      "lon": 10.108,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-hh-06",
+      "nombre": "Hafen-Mitte HH",
+      "land": "hh",
+      "lat": 53.483,
+      "lon": 9.996,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-hh-07",
+      "nombre": "Kirch-Platz HH",
+      "land": "hh",
+      "lat": 53.592999999999996,
+      "lon": 9.884,
+      "tier": 4,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-hh-08",
+      "nombre": "Berg-Mitte HH",
+      "land": "hh",
+      "lat": 53.453,
+      "lon": 10.122,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-hh-09",
+      "nombre": "Stadt-Platz HH",
+      "land": "hh",
+      "lat": 53.563,
+      "lon": 10.01,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-hh-10",
+      "nombre": "Bahn-Mitte HH",
+      "land": "hh",
+      "lat": 53.673,
+      "lon": 9.898,
+      "tier": 4,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-hh-11",
+      "nombre": "Uni-Platz HH",
+      "land": "hh",
+      "lat": 53.533,
+      "lon": 10.136,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-hh-12",
+      "nombre": "Markt-Mitte HH",
+      "land": "hh",
+      "lat": 53.643,
+      "lon": 10.024,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-hh-13",
+      "nombre": "Alt-Platz HH",
+      "land": "hh",
+      "lat": 53.503,
+      "lon": 9.911999999999999,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-hh-14",
+      "nombre": "See-Mitte HH",
+      "land": "hh",
+      "lat": 53.613,
+      "lon": 10.15,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-hh-15",
+      "nombre": "Hof-Platz HH",
+      "land": "hh",
+      "lat": 53.473,
+      "lon": 10.038,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-hh-16",
+      "nombre": "Messe-Mitte HH",
+      "land": "hh",
+      "lat": 53.583,
+      "lon": 9.926,
+      "tier": 4,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-hh-17",
+      "nombre": "Schloss-Platz HH",
+      "land": "hh",
+      "lat": 53.443,
+      "lon": 10.164,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-hh-18",
+      "nombre": "Neu-Mitte HH",
+      "land": "hh",
+      "lat": 53.553,
+      "lon": 10.052,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-by-01",
+      "nombre": "Wald-Platz BY",
+      "land": "by",
+      "lat": 48.02,
+      "lon": 11.408,
+      "tier": 3,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-by-02",
+      "nombre": "Dorf-Mitte BY",
+      "land": "by",
+      "lat": 48.13,
+      "lon": 11.645999999999999,
+      "tier": 3,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-by-03",
+      "nombre": "Industrie-Platz BY",
+      "land": "by",
+      "lat": 48.24,
+      "lon": 11.533999999999999,
+      "tier": 3,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-by-04",
+      "nombre": "Hafen-Mitte BY",
+      "land": "by",
+      "lat": 48.1,
+      "lon": 11.421999999999999,
+      "tier": 3,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-by-05",
+      "nombre": "Kirch-Platz BY",
+      "land": "by",
+      "lat": 48.21,
+      "lon": 11.66,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-by-06",
+      "nombre": "Berg-Mitte BY",
+      "land": "by",
+      "lat": 48.07,
+      "lon": 11.548,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-by-07",
+      "nombre": "Stadt-Platz BY",
+      "land": "by",
+      "lat": 48.18,
+      "lon": 11.436,
+      "tier": 4,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-by-08",
+      "nombre": "Bahn-Mitte BY",
+      "land": "by",
+      "lat": 48.040000000000006,
+      "lon": 11.674,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-by-09",
+      "nombre": "Uni-Platz BY",
+      "land": "by",
+      "lat": 48.150000000000006,
+      "lon": 11.562,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-by-10",
+      "nombre": "Markt-Mitte BY",
+      "land": "by",
+      "lat": 48.260000000000005,
+      "lon": 11.45,
+      "tier": 4,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-by-11",
+      "nombre": "Alt-Platz BY",
+      "land": "by",
+      "lat": 48.120000000000005,
+      "lon": 11.687999999999999,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-by-12",
+      "nombre": "See-Mitte BY",
+      "land": "by",
+      "lat": 48.230000000000004,
+      "lon": 11.575999999999999,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-by-13",
+      "nombre": "Hof-Platz BY",
+      "land": "by",
+      "lat": 48.09,
+      "lon": 11.463999999999999,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-by-14",
+      "nombre": "Messe-Mitte BY",
+      "land": "by",
+      "lat": 48.2,
+      "lon": 11.702,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-by-15",
+      "nombre": "Schloss-Platz BY",
+      "land": "by",
+      "lat": 48.06,
+      "lon": 11.59,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-by-16",
+      "nombre": "Neu-Mitte BY",
+      "land": "by",
+      "lat": 48.17,
+      "lon": 11.478,
+      "tier": 4,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-by-17",
+      "nombre": "Wald-Platz BY",
+      "land": "by",
+      "lat": 48.03,
+      "lon": 11.716,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-by-18",
+      "nombre": "Dorf-Mitte BY",
+      "land": "by",
+      "lat": 48.14,
+      "lon": 11.604,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-nw-01",
+      "nombre": "Industrie-Platz NW",
+      "land": "nw",
+      "lat": 50.823,
+      "lon": 6.808999999999999,
+      "tier": 3,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-nw-02",
+      "nombre": "Hafen-Mitte NW",
+      "land": "nw",
+      "lat": 50.933,
+      "lon": 7.047,
+      "tier": 3,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-nw-03",
+      "nombre": "Kirch-Platz NW",
+      "land": "nw",
+      "lat": 51.043,
+      "lon": 6.935,
+      "tier": 3,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-nw-04",
+      "nombre": "Berg-Mitte NW",
+      "land": "nw",
+      "lat": 50.903,
+      "lon": 6.8229999999999995,
+      "tier": 3,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-nw-05",
+      "nombre": "Stadt-Platz NW",
+      "land": "nw",
+      "lat": 51.013,
+      "lon": 7.060999999999999,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-nw-06",
+      "nombre": "Bahn-Mitte NW",
+      "land": "nw",
+      "lat": 50.873,
+      "lon": 6.948999999999999,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-nw-07",
+      "nombre": "Uni-Platz NW",
+      "land": "nw",
+      "lat": 50.983,
+      "lon": 6.836999999999999,
+      "tier": 4,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-nw-08",
+      "nombre": "Markt-Mitte NW",
+      "land": "nw",
+      "lat": 50.843,
+      "lon": 7.074999999999999,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-nw-09",
+      "nombre": "Alt-Platz NW",
+      "land": "nw",
+      "lat": 50.953,
+      "lon": 6.962999999999999,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-nw-10",
+      "nombre": "See-Mitte NW",
+      "land": "nw",
+      "lat": 51.063,
+      "lon": 6.850999999999999,
+      "tier": 4,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-nw-11",
+      "nombre": "Hof-Platz NW",
+      "land": "nw",
+      "lat": 50.923,
+      "lon": 7.0889999999999995,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-nw-12",
+      "nombre": "Messe-Mitte NW",
+      "land": "nw",
+      "lat": 51.033,
+      "lon": 6.976999999999999,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-nw-13",
+      "nombre": "Schloss-Platz NW",
+      "land": "nw",
+      "lat": 50.893,
+      "lon": 6.864999999999999,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-nw-14",
+      "nombre": "Neu-Mitte NW",
+      "land": "nw",
+      "lat": 51.003,
+      "lon": 7.102999999999999,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-nw-15",
+      "nombre": "Wald-Platz NW",
+      "land": "nw",
+      "lat": 50.863,
+      "lon": 6.991,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-nw-16",
+      "nombre": "Dorf-Mitte NW",
+      "land": "nw",
+      "lat": 50.973,
+      "lon": 6.879,
+      "tier": 4,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-nw-17",
+      "nombre": "Industrie-Platz NW",
+      "land": "nw",
+      "lat": 50.833,
+      "lon": 7.116999999999999,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-nw-18",
+      "nombre": "Hafen-Mitte NW",
+      "land": "nw",
+      "lat": 50.943,
+      "lon": 7.004999999999999,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-he-01",
+      "nombre": "Kirch-Platz HE",
+      "land": "he",
+      "lat": 49.987,
+      "lon": 8.514,
+      "tier": 3,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-he-02",
+      "nombre": "Berg-Mitte HE",
+      "land": "he",
+      "lat": 50.097,
+      "lon": 8.751999999999999,
+      "tier": 3,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-he-03",
+      "nombre": "Stadt-Platz HE",
+      "land": "he",
+      "lat": 50.207,
+      "lon": 8.639999999999999,
+      "tier": 3,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-he-04",
+      "nombre": "Bahn-Mitte HE",
+      "land": "he",
+      "lat": 50.067,
+      "lon": 8.527999999999999,
+      "tier": 3,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-he-05",
+      "nombre": "Uni-Platz HE",
+      "land": "he",
+      "lat": 50.177,
+      "lon": 8.766,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-he-06",
+      "nombre": "Markt-Mitte HE",
+      "land": "he",
+      "lat": 50.037,
+      "lon": 8.654,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-he-07",
+      "nombre": "Alt-Platz HE",
+      "land": "he",
+      "lat": 50.147,
+      "lon": 8.542,
+      "tier": 4,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-he-08",
+      "nombre": "See-Mitte HE",
+      "land": "he",
+      "lat": 50.007000000000005,
+      "lon": 8.78,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-he-09",
+      "nombre": "Hof-Platz HE",
+      "land": "he",
+      "lat": 50.117000000000004,
+      "lon": 8.668,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-he-10",
+      "nombre": "Messe-Mitte HE",
+      "land": "he",
+      "lat": 50.227000000000004,
+      "lon": 8.556,
+      "tier": 4,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-he-11",
+      "nombre": "Schloss-Platz HE",
+      "land": "he",
+      "lat": 50.087,
+      "lon": 8.793999999999999,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-he-12",
+      "nombre": "Neu-Mitte HE",
+      "land": "he",
+      "lat": 50.197,
+      "lon": 8.681999999999999,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-he-13",
+      "nombre": "Wald-Platz HE",
+      "land": "he",
+      "lat": 50.057,
+      "lon": 8.569999999999999,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-he-14",
+      "nombre": "Dorf-Mitte HE",
+      "land": "he",
+      "lat": 50.167,
+      "lon": 8.808,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-he-15",
+      "nombre": "Industrie-Platz HE",
+      "land": "he",
+      "lat": 50.027,
+      "lon": 8.696,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-he-16",
+      "nombre": "Hafen-Mitte HE",
+      "land": "he",
+      "lat": 50.137,
+      "lon": 8.584,
+      "tier": 4,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-he-17",
+      "nombre": "Kirch-Platz HE",
+      "land": "he",
+      "lat": 49.997,
+      "lon": 8.822,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-he-18",
+      "nombre": "Berg-Mitte HE",
+      "land": "he",
+      "lat": 50.107,
+      "lon": 8.709999999999999,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-bw-01",
+      "nombre": "Stadt-Platz BW",
+      "land": "bw",
+      "lat": 48.664,
+      "lon": 9.032,
+      "tier": 3,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-bw-02",
+      "nombre": "Bahn-Mitte BW",
+      "land": "bw",
+      "lat": 48.774,
+      "lon": 9.27,
+      "tier": 3,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-bw-03",
+      "nombre": "Uni-Platz BW",
+      "land": "bw",
+      "lat": 48.884,
+      "lon": 9.158,
+      "tier": 3,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-bw-04",
+      "nombre": "Markt-Mitte BW",
+      "land": "bw",
+      "lat": 48.744,
+      "lon": 9.046,
+      "tier": 3,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-bw-05",
+      "nombre": "Alt-Platz BW",
+      "land": "bw",
+      "lat": 48.854,
+      "lon": 9.284,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-bw-06",
+      "nombre": "See-Mitte BW",
+      "land": "bw",
+      "lat": 48.714,
+      "lon": 9.172,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-bw-07",
+      "nombre": "Hof-Platz BW",
+      "land": "bw",
+      "lat": 48.824,
+      "lon": 9.06,
+      "tier": 4,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-bw-08",
+      "nombre": "Messe-Mitte BW",
+      "land": "bw",
+      "lat": 48.684000000000005,
+      "lon": 9.298,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-bw-09",
+      "nombre": "Schloss-Platz BW",
+      "land": "bw",
+      "lat": 48.794000000000004,
+      "lon": 9.186,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-bw-10",
+      "nombre": "Neu-Mitte BW",
+      "land": "bw",
+      "lat": 48.904,
+      "lon": 9.074,
+      "tier": 4,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-bw-11",
+      "nombre": "Wald-Platz BW",
+      "land": "bw",
+      "lat": 48.764,
+      "lon": 9.312,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-bw-12",
+      "nombre": "Dorf-Mitte BW",
+      "land": "bw",
+      "lat": 48.874,
+      "lon": 9.2,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-bw-13",
+      "nombre": "Industrie-Platz BW",
+      "land": "bw",
+      "lat": 48.734,
+      "lon": 9.088,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-bw-14",
+      "nombre": "Hafen-Mitte BW",
+      "land": "bw",
+      "lat": 48.844,
+      "lon": 9.326,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-bw-15",
+      "nombre": "Kirch-Platz BW",
+      "land": "bw",
+      "lat": 48.704,
+      "lon": 9.214,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-bw-16",
+      "nombre": "Berg-Mitte BW",
+      "land": "bw",
+      "lat": 48.814,
+      "lon": 9.102,
+      "tier": 4,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-bw-17",
+      "nombre": "Stadt-Platz BW",
+      "land": "bw",
+      "lat": 48.674,
+      "lon": 9.34,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-bw-18",
+      "nombre": "Bahn-Mitte BW",
+      "land": "bw",
+      "lat": 48.784,
+      "lon": 9.228,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-ni-01",
+      "nombre": "Uni-Platz NI",
+      "land": "ni",
+      "lat": 52.257000000000005,
+      "lon": 9.591,
+      "tier": 3,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-ni-02",
+      "nombre": "Markt-Mitte NI",
+      "land": "ni",
+      "lat": 52.367000000000004,
+      "lon": 9.828999999999999,
+      "tier": 3,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-ni-03",
+      "nombre": "Alt-Platz NI",
+      "land": "ni",
+      "lat": 52.477000000000004,
+      "lon": 9.716999999999999,
+      "tier": 3,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-ni-04",
+      "nombre": "See-Mitte NI",
+      "land": "ni",
+      "lat": 52.337,
+      "lon": 9.604999999999999,
+      "tier": 3,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-ni-05",
+      "nombre": "Hof-Platz NI",
+      "land": "ni",
+      "lat": 52.447,
+      "lon": 9.843,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-ni-06",
+      "nombre": "Messe-Mitte NI",
+      "land": "ni",
+      "lat": 52.307,
+      "lon": 9.731,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-ni-07",
+      "nombre": "Schloss-Platz NI",
+      "land": "ni",
+      "lat": 52.417,
+      "lon": 9.619,
+      "tier": 4,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-ni-08",
+      "nombre": "Neu-Mitte NI",
+      "land": "ni",
+      "lat": 52.27700000000001,
+      "lon": 9.857,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-ni-09",
+      "nombre": "Wald-Platz NI",
+      "land": "ni",
+      "lat": 52.38700000000001,
+      "lon": 9.745,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-ni-10",
+      "nombre": "Dorf-Mitte NI",
+      "land": "ni",
+      "lat": 52.49700000000001,
+      "lon": 9.633,
+      "tier": 4,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-ni-11",
+      "nombre": "Industrie-Platz NI",
+      "land": "ni",
+      "lat": 52.357000000000006,
+      "lon": 9.870999999999999,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-ni-12",
+      "nombre": "Hafen-Mitte NI",
+      "land": "ni",
+      "lat": 52.467000000000006,
+      "lon": 9.758999999999999,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-ni-13",
+      "nombre": "Kirch-Platz NI",
+      "land": "ni",
+      "lat": 52.327000000000005,
+      "lon": 9.646999999999998,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-ni-14",
+      "nombre": "Berg-Mitte NI",
+      "land": "ni",
+      "lat": 52.437000000000005,
+      "lon": 9.885,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-ni-15",
+      "nombre": "Stadt-Platz NI",
+      "land": "ni",
+      "lat": 52.297000000000004,
+      "lon": 9.773,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-ni-16",
+      "nombre": "Bahn-Mitte NI",
+      "land": "ni",
+      "lat": 52.407000000000004,
+      "lon": 9.661,
+      "tier": 4,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-ni-17",
+      "nombre": "Uni-Platz NI",
+      "land": "ni",
+      "lat": 52.267,
+      "lon": 9.899,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-ni-18",
+      "nombre": "Markt-Mitte NI",
+      "land": "ni",
+      "lat": 52.377,
+      "lon": 9.786999999999999,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-hb-01",
+      "nombre": "Alt-Platz HB",
+      "land": "hb",
+      "lat": 52.963,
+      "lon": 8.664,
+      "tier": 3,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-hb-02",
+      "nombre": "See-Mitte HB",
+      "land": "hb",
+      "lat": 53.073,
+      "lon": 8.902,
+      "tier": 3,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-hb-03",
+      "nombre": "Hof-Platz HB",
+      "land": "hb",
+      "lat": 53.183,
+      "lon": 8.79,
+      "tier": 3,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-hb-04",
+      "nombre": "Messe-Mitte HB",
+      "land": "hb",
+      "lat": 53.043,
+      "lon": 8.677999999999999,
+      "tier": 3,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-hb-05",
+      "nombre": "Schloss-Platz HB",
+      "land": "hb",
+      "lat": 53.153,
+      "lon": 8.916,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-hb-06",
+      "nombre": "Neu-Mitte HB",
+      "land": "hb",
+      "lat": 53.013,
+      "lon": 8.804,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-hb-07",
+      "nombre": "Wald-Platz HB",
+      "land": "hb",
+      "lat": 53.123,
+      "lon": 8.692,
+      "tier": 4,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-hb-08",
+      "nombre": "Dorf-Mitte HB",
+      "land": "hb",
+      "lat": 52.983000000000004,
+      "lon": 8.93,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-hb-09",
+      "nombre": "Industrie-Platz HB",
+      "land": "hb",
+      "lat": 53.093,
+      "lon": 8.818,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-hb-10",
+      "nombre": "Hafen-Mitte HB",
+      "land": "hb",
+      "lat": 53.203,
+      "lon": 8.706,
+      "tier": 4,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-hb-11",
+      "nombre": "Kirch-Platz HB",
+      "land": "hb",
+      "lat": 53.063,
+      "lon": 8.943999999999999,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-hb-12",
+      "nombre": "Berg-Mitte HB",
+      "land": "hb",
+      "lat": 53.173,
+      "lon": 8.831999999999999,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-hb-13",
+      "nombre": "Stadt-Platz HB",
+      "land": "hb",
+      "lat": 53.033,
+      "lon": 8.719999999999999,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-hb-14",
+      "nombre": "Bahn-Mitte HB",
+      "land": "hb",
+      "lat": 53.143,
+      "lon": 8.958,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-hb-15",
+      "nombre": "Uni-Platz HB",
+      "land": "hb",
+      "lat": 53.003,
+      "lon": 8.846,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-hb-16",
+      "nombre": "Markt-Mitte HB",
+      "land": "hb",
+      "lat": 53.113,
+      "lon": 8.734,
+      "tier": 4,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-hb-17",
+      "nombre": "Alt-Platz HB",
+      "land": "hb",
+      "lat": 52.973,
+      "lon": 8.972,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-hb-18",
+      "nombre": "See-Mitte HB",
+      "land": "hb",
+      "lat": 53.083,
+      "lon": 8.86,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-sn-01",
+      "nombre": "Hof-Platz SN",
+      "land": "sn",
+      "lat": 51.225,
+      "lon": 12.231,
+      "tier": 3,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-sn-02",
+      "nombre": "Messe-Mitte SN",
+      "land": "sn",
+      "lat": 51.335,
+      "lon": 12.469,
+      "tier": 3,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-sn-03",
+      "nombre": "Schloss-Platz SN",
+      "land": "sn",
+      "lat": 51.445,
+      "lon": 12.357,
+      "tier": 3,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-sn-04",
+      "nombre": "Neu-Mitte SN",
+      "land": "sn",
+      "lat": 51.305,
+      "lon": 12.245,
+      "tier": 3,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-sn-05",
+      "nombre": "Wald-Platz SN",
+      "land": "sn",
+      "lat": 51.415,
+      "lon": 12.483,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-sn-06",
+      "nombre": "Dorf-Mitte SN",
+      "land": "sn",
+      "lat": 51.275,
+      "lon": 12.371,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-sn-07",
+      "nombre": "Industrie-Platz SN",
+      "land": "sn",
+      "lat": 51.385,
+      "lon": 12.259,
+      "tier": 4,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-sn-08",
+      "nombre": "Hafen-Mitte SN",
+      "land": "sn",
+      "lat": 51.245000000000005,
+      "lon": 12.497,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-sn-09",
+      "nombre": "Kirch-Platz SN",
+      "land": "sn",
+      "lat": 51.355000000000004,
+      "lon": 12.385,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-sn-10",
+      "nombre": "Berg-Mitte SN",
+      "land": "sn",
+      "lat": 51.465,
+      "lon": 12.273,
+      "tier": 4,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-sn-11",
+      "nombre": "Stadt-Platz SN",
+      "land": "sn",
+      "lat": 51.325,
+      "lon": 12.511,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-sn-12",
+      "nombre": "Bahn-Mitte SN",
+      "land": "sn",
+      "lat": 51.435,
+      "lon": 12.399,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-sn-13",
+      "nombre": "Uni-Platz SN",
+      "land": "sn",
+      "lat": 51.295,
+      "lon": 12.286999999999999,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-sn-14",
+      "nombre": "Markt-Mitte SN",
+      "land": "sn",
+      "lat": 51.405,
+      "lon": 12.525,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-sn-15",
+      "nombre": "Alt-Platz SN",
+      "land": "sn",
+      "lat": 51.265,
+      "lon": 12.413,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-sn-16",
+      "nombre": "See-Mitte SN",
+      "land": "sn",
+      "lat": 51.375,
+      "lon": 12.301,
+      "tier": 4,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-sn-17",
+      "nombre": "Hof-Platz SN",
+      "land": "sn",
+      "lat": 51.235,
+      "lon": 12.539,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-sn-18",
+      "nombre": "Messe-Mitte SN",
+      "land": "sn",
+      "lat": 51.345,
+      "lon": 12.427,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-rp-01",
+      "nombre": "Schloss-Platz RP",
+      "land": "rp",
+      "lat": 49.881,
+      "lon": 8.109,
+      "tier": 3,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-rp-02",
+      "nombre": "Neu-Mitte RP",
+      "land": "rp",
+      "lat": 49.991,
+      "lon": 8.347,
+      "tier": 3,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-rp-03",
+      "nombre": "Wald-Platz RP",
+      "land": "rp",
+      "lat": 50.101,
+      "lon": 8.235,
+      "tier": 3,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-rp-04",
+      "nombre": "Dorf-Mitte RP",
+      "land": "rp",
+      "lat": 49.961,
+      "lon": 8.123,
+      "tier": 3,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-rp-05",
+      "nombre": "Industrie-Platz RP",
+      "land": "rp",
+      "lat": 50.071,
+      "lon": 8.361,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-rp-06",
+      "nombre": "Hafen-Mitte RP",
+      "land": "rp",
+      "lat": 49.931,
+      "lon": 8.249,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-rp-07",
+      "nombre": "Kirch-Platz RP",
+      "land": "rp",
+      "lat": 50.041,
+      "lon": 8.137,
+      "tier": 4,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-rp-08",
+      "nombre": "Berg-Mitte RP",
+      "land": "rp",
+      "lat": 49.901,
+      "lon": 8.375,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-rp-09",
+      "nombre": "Stadt-Platz RP",
+      "land": "rp",
+      "lat": 50.011,
+      "lon": 8.263,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-rp-10",
+      "nombre": "Bahn-Mitte RP",
+      "land": "rp",
+      "lat": 50.121,
+      "lon": 8.151,
+      "tier": 4,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-rp-11",
+      "nombre": "Uni-Platz RP",
+      "land": "rp",
+      "lat": 49.981,
+      "lon": 8.389,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-rp-12",
+      "nombre": "Markt-Mitte RP",
+      "land": "rp",
+      "lat": 50.091,
+      "lon": 8.277,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-rp-13",
+      "nombre": "Alt-Platz RP",
+      "land": "rp",
+      "lat": 49.951,
+      "lon": 8.165,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-rp-14",
+      "nombre": "See-Mitte RP",
+      "land": "rp",
+      "lat": 50.061,
+      "lon": 8.403,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-rp-15",
+      "nombre": "Hof-Platz RP",
+      "land": "rp",
+      "lat": 49.921,
+      "lon": 8.291,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-rp-16",
+      "nombre": "Messe-Mitte RP",
+      "land": "rp",
+      "lat": 50.031,
+      "lon": 8.179,
+      "tier": 4,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-rp-17",
+      "nombre": "Schloss-Platz RP",
+      "land": "rp",
+      "lat": 49.891,
+      "lon": 8.417,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-rp-18",
+      "nombre": "Neu-Mitte RP",
+      "land": "rp",
+      "lat": 50.001,
+      "lon": 8.305,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-sl-01",
+      "nombre": "Wald-Platz SL",
+      "land": "sl",
+      "lat": 49.121,
+      "lon": 6.84,
+      "tier": 3,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-sl-02",
+      "nombre": "Dorf-Mitte SL",
+      "land": "sl",
+      "lat": 49.231,
+      "lon": 7.078,
+      "tier": 3,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-sl-03",
+      "nombre": "Industrie-Platz SL",
+      "land": "sl",
+      "lat": 49.341,
+      "lon": 6.966,
+      "tier": 3,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-sl-04",
+      "nombre": "Hafen-Mitte SL",
+      "land": "sl",
+      "lat": 49.201,
+      "lon": 6.854,
+      "tier": 3,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-sl-05",
+      "nombre": "Kirch-Platz SL",
+      "land": "sl",
+      "lat": 49.311,
+      "lon": 7.092,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-sl-06",
+      "nombre": "Berg-Mitte SL",
+      "land": "sl",
+      "lat": 49.171,
+      "lon": 6.9799999999999995,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-sl-07",
+      "nombre": "Stadt-Platz SL",
+      "land": "sl",
+      "lat": 49.281,
+      "lon": 6.867999999999999,
+      "tier": 4,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-sl-08",
+      "nombre": "Bahn-Mitte SL",
+      "land": "sl",
+      "lat": 49.141000000000005,
+      "lon": 7.106,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-sl-09",
+      "nombre": "Uni-Platz SL",
+      "land": "sl",
+      "lat": 49.251000000000005,
+      "lon": 6.994,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-sl-10",
+      "nombre": "Markt-Mitte SL",
+      "land": "sl",
+      "lat": 49.361000000000004,
+      "lon": 6.882,
+      "tier": 4,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-sl-11",
+      "nombre": "Alt-Platz SL",
+      "land": "sl",
+      "lat": 49.221000000000004,
+      "lon": 7.12,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-sl-12",
+      "nombre": "See-Mitte SL",
+      "land": "sl",
+      "lat": 49.331,
+      "lon": 7.008,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-sl-13",
+      "nombre": "Hof-Platz SL",
+      "land": "sl",
+      "lat": 49.191,
+      "lon": 6.896,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-sl-14",
+      "nombre": "Messe-Mitte SL",
+      "land": "sl",
+      "lat": 49.301,
+      "lon": 7.1339999999999995,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-sl-15",
+      "nombre": "Schloss-Platz SL",
+      "land": "sl",
+      "lat": 49.161,
+      "lon": 7.022,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-sl-16",
+      "nombre": "Neu-Mitte SL",
+      "land": "sl",
+      "lat": 49.271,
+      "lon": 6.91,
+      "tier": 4,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-sl-17",
+      "nombre": "Wald-Platz SL",
+      "land": "sl",
+      "lat": 49.131,
+      "lon": 7.148,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-sl-18",
+      "nombre": "Dorf-Mitte SL",
+      "land": "sl",
+      "lat": 49.241,
+      "lon": 7.036,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-th-01",
+      "nombre": "Industrie-Platz TH",
+      "land": "th",
+      "lat": 50.853,
+      "lon": 10.888,
+      "tier": 3,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-th-02",
+      "nombre": "Hafen-Mitte TH",
+      "land": "th",
+      "lat": 50.963,
+      "lon": 11.126,
+      "tier": 3,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-th-03",
+      "nombre": "Kirch-Platz TH",
+      "land": "th",
+      "lat": 51.073,
+      "lon": 11.014,
+      "tier": 3,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-th-04",
+      "nombre": "Berg-Mitte TH",
+      "land": "th",
+      "lat": 50.933,
+      "lon": 10.902,
+      "tier": 3,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-th-05",
+      "nombre": "Stadt-Platz TH",
+      "land": "th",
+      "lat": 51.043,
+      "lon": 11.14,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-th-06",
+      "nombre": "Bahn-Mitte TH",
+      "land": "th",
+      "lat": 50.903,
+      "lon": 11.028,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-th-07",
+      "nombre": "Uni-Platz TH",
+      "land": "th",
+      "lat": 51.013,
+      "lon": 10.916,
+      "tier": 4,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-th-08",
+      "nombre": "Markt-Mitte TH",
+      "land": "th",
+      "lat": 50.873000000000005,
+      "lon": 11.154,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-th-09",
+      "nombre": "Alt-Platz TH",
+      "land": "th",
+      "lat": 50.983000000000004,
+      "lon": 11.042,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-th-10",
+      "nombre": "See-Mitte TH",
+      "land": "th",
+      "lat": 51.093,
+      "lon": 10.93,
+      "tier": 4,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-th-11",
+      "nombre": "Hof-Platz TH",
+      "land": "th",
+      "lat": 50.953,
+      "lon": 11.168,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-th-12",
+      "nombre": "Messe-Mitte TH",
+      "land": "th",
+      "lat": 51.063,
+      "lon": 11.056,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-th-13",
+      "nombre": "Schloss-Platz TH",
+      "land": "th",
+      "lat": 50.923,
+      "lon": 10.943999999999999,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-th-14",
+      "nombre": "Neu-Mitte TH",
+      "land": "th",
+      "lat": 51.033,
+      "lon": 11.182,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-th-15",
+      "nombre": "Wald-Platz TH",
+      "land": "th",
+      "lat": 50.893,
+      "lon": 11.07,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-th-16",
+      "nombre": "Dorf-Mitte TH",
+      "land": "th",
+      "lat": 51.003,
+      "lon": 10.958,
+      "tier": 4,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-th-17",
+      "nombre": "Industrie-Platz TH",
+      "land": "th",
+      "lat": 50.863,
+      "lon": 11.196,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-th-18",
+      "nombre": "Hafen-Mitte TH",
+      "land": "th",
+      "lat": 50.973,
+      "lon": 11.084,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-st-01",
+      "nombre": "Kirch-Platz ST",
+      "land": "st",
+      "lat": 52.010000000000005,
+      "lon": 11.477,
+      "tier": 3,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-st-02",
+      "nombre": "Berg-Mitte ST",
+      "land": "st",
+      "lat": 52.120000000000005,
+      "lon": 11.715,
+      "tier": 3,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-st-03",
+      "nombre": "Stadt-Platz ST",
+      "land": "st",
+      "lat": 52.230000000000004,
+      "lon": 11.603,
+      "tier": 3,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-st-04",
+      "nombre": "Bahn-Mitte ST",
+      "land": "st",
+      "lat": 52.09,
+      "lon": 11.491,
+      "tier": 3,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-st-05",
+      "nombre": "Uni-Platz ST",
+      "land": "st",
+      "lat": 52.2,
+      "lon": 11.729000000000001,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-st-06",
+      "nombre": "Markt-Mitte ST",
+      "land": "st",
+      "lat": 52.06,
+      "lon": 11.617,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-st-07",
+      "nombre": "Alt-Platz ST",
+      "land": "st",
+      "lat": 52.17,
+      "lon": 11.505,
+      "tier": 4,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-st-08",
+      "nombre": "See-Mitte ST",
+      "land": "st",
+      "lat": 52.03000000000001,
+      "lon": 11.743,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-st-09",
+      "nombre": "Hof-Platz ST",
+      "land": "st",
+      "lat": 52.14000000000001,
+      "lon": 11.631,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-st-10",
+      "nombre": "Messe-Mitte ST",
+      "land": "st",
+      "lat": 52.25000000000001,
+      "lon": 11.519,
+      "tier": 4,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-st-11",
+      "nombre": "Schloss-Platz ST",
+      "land": "st",
+      "lat": 52.11000000000001,
+      "lon": 11.757,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-st-12",
+      "nombre": "Neu-Mitte ST",
+      "land": "st",
+      "lat": 52.220000000000006,
+      "lon": 11.645,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-st-13",
+      "nombre": "Wald-Platz ST",
+      "land": "st",
+      "lat": 52.080000000000005,
+      "lon": 11.533,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-st-14",
+      "nombre": "Dorf-Mitte ST",
+      "land": "st",
+      "lat": 52.190000000000005,
+      "lon": 11.771,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-st-15",
+      "nombre": "Industrie-Platz ST",
+      "land": "st",
+      "lat": 52.050000000000004,
+      "lon": 11.659,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-st-16",
+      "nombre": "Hafen-Mitte ST",
+      "land": "st",
+      "lat": 52.160000000000004,
+      "lon": 11.547,
+      "tier": 4,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-st-17",
+      "nombre": "Kirch-Platz ST",
+      "land": "st",
+      "lat": 52.02,
+      "lon": 11.785,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-st-18",
+      "nombre": "Berg-Mitte ST",
+      "land": "st",
+      "lat": 52.13,
+      "lon": 11.673,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-mv-01",
+      "nombre": "Stadt-Platz MV",
+      "land": "mv",
+      "lat": 53.958000000000006,
+      "lon": 11.981,
+      "tier": 3,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-mv-02",
+      "nombre": "Bahn-Mitte MV",
+      "land": "mv",
+      "lat": 54.068000000000005,
+      "lon": 12.219,
+      "tier": 3,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-mv-03",
+      "nombre": "Uni-Platz MV",
+      "land": "mv",
+      "lat": 54.178000000000004,
+      "lon": 12.107,
+      "tier": 3,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-mv-04",
+      "nombre": "Markt-Mitte MV",
+      "land": "mv",
+      "lat": 54.038000000000004,
+      "lon": 11.995,
+      "tier": 3,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-mv-05",
+      "nombre": "Alt-Platz MV",
+      "land": "mv",
+      "lat": 54.148,
+      "lon": 12.233,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-mv-06",
+      "nombre": "See-Mitte MV",
+      "land": "mv",
+      "lat": 54.008,
+      "lon": 12.121,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-mv-07",
+      "nombre": "Hof-Platz MV",
+      "land": "mv",
+      "lat": 54.118,
+      "lon": 12.009,
+      "tier": 4,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-mv-08",
+      "nombre": "Messe-Mitte MV",
+      "land": "mv",
+      "lat": 53.97800000000001,
+      "lon": 12.247,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-mv-09",
+      "nombre": "Schloss-Platz MV",
+      "land": "mv",
+      "lat": 54.08800000000001,
+      "lon": 12.135,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-mv-10",
+      "nombre": "Neu-Mitte MV",
+      "land": "mv",
+      "lat": 54.19800000000001,
+      "lon": 12.023,
+      "tier": 4,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-mv-11",
+      "nombre": "Wald-Platz MV",
+      "land": "mv",
+      "lat": 54.05800000000001,
+      "lon": 12.261,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-mv-12",
+      "nombre": "Dorf-Mitte MV",
+      "land": "mv",
+      "lat": 54.168000000000006,
+      "lon": 12.149,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-mv-13",
+      "nombre": "Industrie-Platz MV",
+      "land": "mv",
+      "lat": 54.028000000000006,
+      "lon": 12.036999999999999,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-mv-14",
+      "nombre": "Hafen-Mitte MV",
+      "land": "mv",
+      "lat": 54.138000000000005,
+      "lon": 12.275,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-mv-15",
+      "nombre": "Kirch-Platz MV",
+      "land": "mv",
+      "lat": 53.998000000000005,
+      "lon": 12.163,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-mv-16",
+      "nombre": "Berg-Mitte MV",
+      "land": "mv",
+      "lat": 54.108000000000004,
+      "lon": 12.051,
+      "tier": 4,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-mv-17",
+      "nombre": "Stadt-Platz MV",
+      "land": "mv",
+      "lat": 53.968,
+      "lon": 12.289,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-mv-18",
+      "nombre": "Bahn-Mitte MV",
+      "land": "mv",
+      "lat": 54.078,
+      "lon": 12.177,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-sh-01",
+      "nombre": "Uni-Platz SH",
+      "land": "sh",
+      "lat": 54.195,
+      "lon": 9.982,
+      "tier": 3,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-sh-02",
+      "nombre": "Markt-Mitte SH",
+      "land": "sh",
+      "lat": 54.305,
+      "lon": 10.219999999999999,
+      "tier": 3,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-sh-03",
+      "nombre": "Alt-Platz SH",
+      "land": "sh",
+      "lat": 54.415,
+      "lon": 10.107999999999999,
+      "tier": 3,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-sh-04",
+      "nombre": "See-Mitte SH",
+      "land": "sh",
+      "lat": 54.275,
+      "lon": 9.995999999999999,
+      "tier": 3,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-sh-05",
+      "nombre": "Hof-Platz SH",
+      "land": "sh",
+      "lat": 54.385,
+      "lon": 10.234,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-sh-06",
+      "nombre": "Messe-Mitte SH",
+      "land": "sh",
+      "lat": 54.245,
+      "lon": 10.122,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-sh-07",
+      "nombre": "Schloss-Platz SH",
+      "land": "sh",
+      "lat": 54.355,
+      "lon": 10.01,
+      "tier": 4,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-sh-08",
+      "nombre": "Neu-Mitte SH",
+      "land": "sh",
+      "lat": 54.215,
+      "lon": 10.248,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-sh-09",
+      "nombre": "Wald-Platz SH",
+      "land": "sh",
+      "lat": 54.325,
+      "lon": 10.136,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-sh-10",
+      "nombre": "Dorf-Mitte SH",
+      "land": "sh",
+      "lat": 54.435,
+      "lon": 10.024,
+      "tier": 4,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-sh-11",
+      "nombre": "Industrie-Platz SH",
+      "land": "sh",
+      "lat": 54.295,
+      "lon": 10.261999999999999,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-sh-12",
+      "nombre": "Hafen-Mitte SH",
+      "land": "sh",
+      "lat": 54.405,
+      "lon": 10.149999999999999,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-sh-13",
+      "nombre": "Kirch-Platz SH",
+      "land": "sh",
+      "lat": 54.265,
+      "lon": 10.037999999999998,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-sh-14",
+      "nombre": "Berg-Mitte SH",
+      "land": "sh",
+      "lat": 54.375,
+      "lon": 10.276,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-sh-15",
+      "nombre": "Stadt-Platz SH",
+      "land": "sh",
+      "lat": 54.235,
+      "lon": 10.164,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-sh-16",
+      "nombre": "Bahn-Mitte SH",
+      "land": "sh",
+      "lat": 54.345,
+      "lon": 10.052,
+      "tier": 4,
+      "roles": [
+        "s",
+        "re",
+        "rb"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-sh-17",
+      "nombre": "Uni-Platz SH",
+      "land": "sh",
+      "lat": 54.205,
+      "lon": 10.29,
+      "tier": 4,
+      "roles": [
+        "u",
+        "t",
+        "s"
+      ],
+      "origen_datos": "ficticia"
+    },
+    {
+      "id": "dn-sh-18",
+      "nombre": "Markt-Mitte SH",
+      "land": "sh",
+      "lat": 54.315,
+      "lon": 10.177999999999999,
+      "tier": 4,
+      "roles": [
+        "rb",
+        "rl",
+        "re"
       ],
       "origen_datos": "ficticia"
     }

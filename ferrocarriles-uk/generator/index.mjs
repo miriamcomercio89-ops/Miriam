@@ -88,6 +88,8 @@ function pricing(tipoId, distKm, seed) {
   return { precio_base, precio_por_km, precio_completo };
 }
 
+// Precios orientativos en EUR (tarifa base Nimby / diseño)
+
 function durationMin(tipoId, distKm, numParadas) {
   const speed = {
     av: 200, ld: 140, px: 180, ir: 110, re: 90, rb: 70, rl: 55,
@@ -301,7 +303,7 @@ export function generateLines({
   const counters = Object.fromEntries(tipos.map((t) => [t.id, t.rango_numeros[0]]));
   const lines = [];
   const usedKeys = new Set();
-  const patterns = ["parador", "base", "retorno", "parador", "base", "directo"];
+  const patterns = ["parador", "parador", "base", "retorno", "parador", "base", "parador", "directo"];
 
   const corridorCache = corridors
     .map((c) => ({ ...c, path: resolveHubs(c, hubById) }))
@@ -432,7 +434,7 @@ export function generateLines({
       precio_base: prices.precio_base,
       precio_por_km: prices.precio_por_km,
       precio_completo: prices.precio_completo,
-      moneda: "GBP",
+      moneda: "EUR",
       trenes_asignados,
       trenes_unidades,
       material_id: materialPick.material_id,
@@ -454,14 +456,14 @@ export function generateLines({
     const cors = preferCors.length ? preferCors : corridorCache;
 
     // Más peso a parador/base para listas largas de paradas
-    const routePatterns = ["parador", "base", "retorno", "parador", "base", "directo"];
-    for (let pass = 0; pass < 12 && made < quota; pass++) {
+    const routePatterns = ["parador", "parador", "base", "retorno", "parador", "base", "parador", "parador", "directo"];
+    for (let pass = 0; pass < 16 && made < quota; pass++) {
       const pattern = routePatterns[pass % routePatterns.length];
       for (const c of cors) {
         if (made >= quota) break;
         const path = c.path;
         // Preferir tramos largos primero para maximizar paradas
-        const maxJump = Math.min(14, path.length - 1);
+        const maxJump = Math.min(24, path.length - 1);
         for (let jump = maxJump; jump >= 1; jump--) {
           for (let aIdx = 0; aIdx + jump < path.length; aIdx++) {
             const bIdx = aIdx + jump;
@@ -496,9 +498,11 @@ export function generateLines({
       const pool = localPool.filter(
         (h) => h.land === a.land || h.land === b.land || ["av", "ld", "ir", "px", "n"].includes(tipoId)
       );
-      let stops = nearestPath(ordered[0], ordered[1], pool, pattern === "directo" ? 3 : 16);
-      if (pattern === "directo") stops = [ordered[0], ordered[1]];
-      const ok = tryPush({ stops, tipoId, corridor: null, i: i++, pattern });
+      const urbanDense = ["s", "u", "t", "tt", "or", "mc", "rb", "rl", "re"].includes(tipoId);
+      const maxStops = pattern === "directo" ? 3 : urbanDense ? 22 : 16;
+      let stops = nearestPath(ordered[0], ordered[1], pool, maxStops);
+      if (pattern === "directo" && !urbanDense) stops = [ordered[0], ordered[1]];
+      const ok = tryPush({ stops, tipoId, corridor: null, i: i++, pattern: urbanDense && pattern === "directo" ? "parador" : pattern });
       if (ok) made++;
     }
 
@@ -509,14 +513,19 @@ export function generateLines({
       const b = pick(hubs, seed + i * 19 + guard * 3);
       const pattern = patterns[guard % patterns.length];
       const ordered = pattern === "retorno" ? [b, a] : [a, b];
-      // Variar el número máximo de paradas para diversificar rutas
-      const maxStops = 4 + ((seed + guard + i) % 12);
+      const urbanDense = ["s", "u", "t", "tt", "or", "mc", "rb", "rl", "re"].includes(tipoId);
+      const maxStops = urbanDense ? 18 + ((seed + guard) % 10) : 8 + ((seed + guard + i) % 14);
       const stops =
-        pattern === "directo"
+        pattern === "directo" && !urbanDense
           ? ordered
           : nearestPath(ordered[0], ordered[1], hubs, maxStops);
-      // Permitir segundo operador del pool rotando el índice
-      const ok = tryPush({ stops, tipoId, corridor: null, i: i++ + guard, pattern });
+      const ok = tryPush({
+        stops,
+        tipoId,
+        corridor: null,
+        i: i++ + guard,
+        pattern: pattern === "directo" && urbanDense ? "parador" : pattern,
+      });
       if (ok) made++;
     }
   }

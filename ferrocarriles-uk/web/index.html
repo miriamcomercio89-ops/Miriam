@@ -288,7 +288,7 @@ button, input, select { font: inherit; }
       <div class="field"><label>Distancia km (min–max)</label><div class="range-row"><input id="minKm" type="number" min="0" placeholder="mín"/><input id="maxKm" type="number" min="0" placeholder="máx"/></div></div>
       <div class="field"><label>Frecuencia min (min–max)</label><div class="range-row"><input id="minFreq" type="number" min="0" placeholder="mín"/><input id="maxFreq" type="number" min="0" placeholder="máx"/></div></div>
       <div class="field"><label>Trenes asignados (min–max)</label><div class="range-row"><input id="minTrenes" type="number" min="1" placeholder="mín"/><input id="maxTrenes" type="number" min="1" placeholder="máx"/></div></div>
-      <div class="field"><label>Precio completo £ (min–max)</label><div class="range-row"><input id="minPrice" type="number" min="0" step="0.1" placeholder="mín"/><input id="maxPrice" type="number" min="0" step="0.1" placeholder="máx"/></div></div>
+      <div class="field"><label>Precio completo € (min–max)</label><div class="range-row"><input id="minPrice" type="number" min="0" step="0.1" placeholder="mín"/><input id="maxPrice" type="number" min="0" step="0.1" placeholder="máx"/></div></div>
     </div>
 
     <div id="filters-ops" hidden>
@@ -358,7 +358,7 @@ button, input, select { font: inherit; }
   <div id="drawerBody"></div>
 </aside>
 <script>
-window.CATALOG_BASE = "https://cdn.jsdelivr.net/gh/miriamcomercio89-ops/Miriam@9b93f2fc4083e736885b884762714a645047542e/ferrocarriles-uk/web";
+window.CATALOG_BASE = "https://cdn.jsdelivr.net/gh/miriamcomercio89-ops/Miriam@8ac5e14081ff6750a8d3606cc25bd353c2c7f267/ferrocarriles-uk/web";
 window.CATALOG_DATA = null;
 (() => {
   let DATA = window.CATALOG_DATA && window.CATALOG_DATA.routes ? window.CATALOG_DATA : null;
@@ -553,7 +553,9 @@ window.CATALOG_DATA = null;
 
   function money(n, moneda) {
     if (n == null || n === "") return "—";
-    return "£" + Number(n).toFixed(2) + (moneda && moneda !== "GBP" ? " " + moneda : "");
+    const cur = moneda || "EUR";
+    const sym = cur === "GBP" ? "£" : "€";
+    return sym + Number(n).toFixed(2);
   }
 
   function routeMatch(r, q, qStation, qEndpoint) {
@@ -823,7 +825,7 @@ window.CATALOG_DATA = null;
       "</div><div>Precio base</div><div>" +
       esc(money(r.pBase, r.moneda)) +
       "</div><div>Precio / km</div><div>" +
-      (r.pKm != null ? "£" + Number(r.pKm).toFixed(3) : "—") +
+      (r.pKm != null ? "€" + Number(r.pKm).toFixed(3) : "—") +
       "</div><div>Precio completo</div><div>" +
       esc(money(r.pFull, r.moneda)) +
       "</div><div>Trenes asignados</div><div>" +

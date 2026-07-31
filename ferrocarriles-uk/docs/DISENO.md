@@ -6,7 +6,7 @@ Recrear una red **supercompleta** en el Alemania para Nimby Rails:
 
 - Base **realista** (corredores, nodos y jerarquía reconocibles).
 - Miles de **líneas nuevas ficticias** que densifican la red.
-- **101 operadores** con marca en español, color y logo.
+- **249 operadores** con marca en español, color y logo.
 - Flota moderna mixta inspirada en el Workshop de Nimby Rails.
 - Solo **pasajeros**.
 
@@ -32,12 +32,12 @@ Recrear una red **supercompleta** en el Alemania para Nimby Rails:
 
 | Tipo | Cantidad | Notas |
 | --- | --- | --- |
-| nacional | 16 | Ejes federales y competencia abierta |
-| internacional | 2 | Enlaces Francia/Benelux/Alpes/Polonia/Chequia |
-| especializado | 12 | Nocturno, turismo, aeropuerto, ferias, universidades |
-| regional | 33 | 1–3 por Land + operadores transversales |
-| metropolitano | 19 | S-Bahn de grandes áreas |
-| urbano | 19 | Metro y tranvía |
+| nacional | 26 | Ejes federales y competencia abierta |
+| internacional | 8 | Enlaces Francia/Benelux/Alpes/Polonia/Chequia |
+| especializado | 18 | Nocturno, turismo, aeropuerto, ferias, universidades |
+| regional | 82 | 1–3 por Land + operadores transversales |
+| metropolitano | 51 | S-Bahn de grandes áreas |
+| urbano | 64 | Metro y tranvía |
 
 ## Lands cubiertos
 
@@ -68,8 +68,8 @@ Recrear una red **supercompleta** en el Alemania para Nimby Rails:
 
 ## Hubs y corredores
 
-- Estaciones/hubs: **440**
-- Corredores: **28**
+- Estaciones/hubs: **728**
+- Corredores: **32**
 - Detalle: `data/hubs.json`, `data/corridors.json`
 
 ## Generador

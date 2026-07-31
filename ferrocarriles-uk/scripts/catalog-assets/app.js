@@ -191,7 +191,9 @@
 
   function money(n, moneda) {
     if (n == null || n === "") return "—";
-    return "£" + Number(n).toFixed(2) + (moneda && moneda !== "GBP" ? " " + moneda : "");
+    const cur = moneda || "EUR";
+    const sym = cur === "GBP" ? "£" : "€";
+    return sym + Number(n).toFixed(2);
   }
 
   function routeMatch(r, q, qStation, qEndpoint) {
@@ -461,7 +463,7 @@
       "</div><div>Precio base</div><div>" +
       esc(money(r.pBase, r.moneda)) +
       "</div><div>Precio / km</div><div>" +
-      (r.pKm != null ? "£" + Number(r.pKm).toFixed(3) : "—") +
+      (r.pKm != null ? "€" + Number(r.pKm).toFixed(3) : "—") +
       "</div><div>Precio completo</div><div>" +
       esc(money(r.pFull, r.moneda)) +
       "</div><div>Trenes asignados</div><div>" +
