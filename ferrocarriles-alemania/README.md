@@ -8,10 +8,10 @@ No forma parte del juego de loterías del repositorio: vive en esta carpeta como
 
 - **82 operadores** (español, color único, logo SVG, Lands, flota mixta)
 - **16 tipos de línea** con nomenclatura por prefijo; color de línea = color del operador
-- **Cientos de trenes** en catálogo Workshop (bases + variantes de composición/livrea)
-- **Cientos de hubs** reales, metropolitanos y ficticios
-- **Corredores** troncales + generador por cuotas
-- Lote masivo de líneas en `output/`
+- **847 trenes** en catálogo Workshop (bases + variantes de composición/livrea/aeropuerto)
+- **568 hubs** (reales, metropolitanos y ficticios)
+- **39 corredores** + generador por cuotas/proximidad
+- **~9.800 líneas** en `output/lines-mass.json`
 - Guía de importación a partida Nimby Rails
 
 ## Estructura

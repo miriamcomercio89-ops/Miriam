@@ -10,9 +10,13 @@
     "generate:docs": "node scripts/build.mjs",
     "generate:sample": "node generator/cli.mjs sample",
     "generate:mass": "node generator/cli.mjs mass 10000",
+    "export:pdf": "node scripts/export-pdf.mjs",
     "stats": "node scripts/stats.mjs"
   },
   "engines": {
     "node": ">=18"
+  },
+  "devDependencies": {
+    "marked": "^18.0.7"
   }
 }
