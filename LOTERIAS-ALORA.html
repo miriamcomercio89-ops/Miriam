@@ -4696,6 +4696,12 @@ try {
       data.customers.penas = data.customers.penas || penas;
     }
     if (!data.customers.queue) data.customers.queue = [];
+    if (data.customers && data.clock) {
+      const gap = (data.customers.nextSpawnAtMs || 0) - data.clock.gameTimeMs;
+      if (gap >= 0 && gap < 10 * 60 * 1e3) {
+        data.customers.nextSpawnAtMs = data.clock.gameTimeMs + 4e4 * 30;
+      }
+    }
     if (data.finance && data.finance.dayPrizesReimbursableCents == null) {
       data.finance.dayPrizesReimbursableCents = 0;
     }
