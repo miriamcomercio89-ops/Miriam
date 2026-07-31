@@ -76,6 +76,7 @@ button, input, select { font: inherit; }
 }
 .metric strong { color: var(--ink); }
 .map-panel {
+  scroll-margin-top: 4.5rem;
   border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden;
   background: #fff; box-shadow: var(--shadow); margin-bottom: 1rem;
 }

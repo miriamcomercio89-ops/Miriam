@@ -1,5 +1,5 @@
 {
-  "generado": "2026-07-31T15:29:40.234Z",
+  "generado": "2026-07-31T15:48:02.171Z",
   "mapas": [
     {
       "pais": "Åland",
@@ -10,38 +10,68 @@
     {
       "pais": "Albania",
       "file": "pdfs/mapa-albania.pdf",
-      "rutas": 17,
-      "ciudades": 4
+      "rutas": 6,
+      "ciudades": 6
     },
     {
       "pais": "Alemania",
       "file": "pdfs/mapa-alemania.pdf",
-      "rutas": 139,
-      "ciudades": 37
+      "rutas": 162,
+      "ciudades": 69
+    },
+    {
+      "pais": "Andorra",
+      "file": "pdfs/mapa-andorra.pdf",
+      "rutas": 19,
+      "ciudades": 2
     },
     {
       "pais": "Austria",
       "file": "pdfs/mapa-austria.pdf",
-      "rutas": 27,
-      "ciudades": 11
+      "rutas": 34,
+      "ciudades": 14
     },
     {
       "pais": "Azerbaiyán",
       "file": "pdfs/mapa-azerbaiyan.pdf",
-      "rutas": 4,
+      "rutas": 12,
       "ciudades": 6
     },
     {
       "pais": "Bélgica",
       "file": "pdfs/mapa-belgica.pdf",
-      "rutas": 28,
+      "rutas": 36,
       "ciudades": 3
+    },
+    {
+      "pais": "Bielorrusia",
+      "file": "pdfs/mapa-bielorrusia.pdf",
+      "rutas": 14,
+      "ciudades": 16
+    },
+    {
+      "pais": "Bosnia y Herzegovina",
+      "file": "pdfs/mapa-bosnia-y-herzegovina.pdf",
+      "rutas": 32,
+      "ciudades": 9
+    },
+    {
+      "pais": "Bulgaria",
+      "file": "pdfs/mapa-bulgaria.pdf",
+      "rutas": 44,
+      "ciudades": 21
     },
     {
       "pais": "Chequia",
       "file": "pdfs/mapa-chequia.pdf",
-      "rutas": 18,
-      "ciudades": 6
+      "rutas": 35,
+      "ciudades": 7
+    },
+    {
+      "pais": "Chipre",
+      "file": "pdfs/mapa-chipre.pdf",
+      "rutas": 4,
+      "ciudades": 4
     },
     {
       "pais": "Cisjordania",
@@ -52,92 +82,104 @@
     {
       "pais": "Croacia",
       "file": "pdfs/mapa-croacia.pdf",
-      "rutas": 18,
-      "ciudades": 7
+      "rutas": 13,
+      "ciudades": 13
     },
     {
       "pais": "Dinamarca",
       "file": "pdfs/mapa-dinamarca.pdf",
-      "rutas": 47,
-      "ciudades": 10
+      "rutas": 50,
+      "ciudades": 18
     },
     {
       "pais": "Egipto",
       "file": "pdfs/mapa-egipto.pdf",
-      "rutas": 11,
-      "ciudades": 4
+      "rutas": 6,
+      "ciudades": 8
     },
     {
       "pais": "Eslovaquia",
       "file": "pdfs/mapa-eslovaquia.pdf",
-      "rutas": 26,
+      "rutas": 22,
       "ciudades": 6
     },
     {
       "pais": "Eslovenia",
       "file": "pdfs/mapa-eslovenia.pdf",
-      "rutas": 4,
-      "ciudades": 4
+      "rutas": 8,
+      "ciudades": 8
     },
     {
       "pais": "España",
       "file": "pdfs/mapa-espana.pdf",
-      "rutas": 145,
-      "ciudades": 44
+      "rutas": 190,
+      "ciudades": 62
     },
     {
       "pais": "Estonia",
       "file": "pdfs/mapa-estonia.pdf",
-      "rutas": 9,
-      "ciudades": 11
+      "rutas": 20,
+      "ciudades": 14
     },
     {
       "pais": "Finlandia",
       "file": "pdfs/mapa-finlandia.pdf",
-      "rutas": 19,
-      "ciudades": 26
+      "rutas": 54,
+      "ciudades": 40
     },
     {
       "pais": "Francia",
       "file": "pdfs/mapa-francia.pdf",
-      "rutas": 204,
-      "ciudades": 49
+      "rutas": 243,
+      "ciudades": 72
+    },
+    {
+      "pais": "Georgia",
+      "file": "pdfs/mapa-georgia.pdf",
+      "rutas": 17,
+      "ciudades": 12
+    },
+    {
+      "pais": "Grecia",
+      "file": "pdfs/mapa-grecia.pdf",
+      "rutas": 64,
+      "ciudades": 37
     },
     {
       "pais": "Hungría",
       "file": "pdfs/mapa-hungria.pdf",
-      "rutas": 20,
-      "ciudades": 9
+      "rutas": 22,
+      "ciudades": 10
     },
     {
       "pais": "Irak",
       "file": "pdfs/mapa-irak.pdf",
-      "rutas": 24,
+      "rutas": 19,
       "ciudades": 6
     },
     {
       "pais": "Irlanda",
       "file": "pdfs/mapa-irlanda.pdf",
-      "rutas": 21,
+      "rutas": 5,
       "ciudades": 7
     },
     {
       "pais": "Irlanda del Norte",
       "file": "pdfs/mapa-irlanda-del-norte.pdf",
-      "rutas": 59,
+      "rutas": 32,
       "ciudades": 7
     },
     {
       "pais": "Isla de Man",
       "file": "pdfs/mapa-isla-de-man.pdf",
-      "rutas": 11,
+      "rutas": 2,
       "ciudades": 2
     },
     {
       "pais": "Islandia",
       "file": "pdfs/mapa-islandia.pdf",
-      "rutas": 35,
-      "ciudades": 23
+      "rutas": 39,
+      "ciudades": 26
     },
     {
       "pais": "Islas Feroe",
@@ -148,104 +190,134 @@
     {
       "pais": "Israel",
       "file": "pdfs/mapa-israel.pdf",
-      "rutas": 77,
+      "rutas": 74,
       "ciudades": 20
     },
     {
       "pais": "Italia",
       "file": "pdfs/mapa-italia.pdf",
-      "rutas": 102,
-      "ciudades": 28
+      "rutas": 143,
+      "ciudades": 61
     },
     {
       "pais": "Jordania",
       "file": "pdfs/mapa-jordania.pdf",
-      "rutas": 42,
+      "rutas": 43,
       "ciudades": 11
+    },
+    {
+      "pais": "Kazajistán",
+      "file": "pdfs/mapa-kazajistan.pdf",
+      "rutas": 7,
+      "ciudades": 9
     },
     {
       "pais": "Letonia",
       "file": "pdfs/mapa-letonia.pdf",
-      "rutas": 25,
-      "ciudades": 11
+      "rutas": 40,
+      "ciudades": 18
     },
     {
       "pais": "Líbano",
       "file": "pdfs/mapa-libano.pdf",
-      "rutas": 35,
-      "ciudades": 8
+      "rutas": 48,
+      "ciudades": 9
     },
     {
       "pais": "Lituania",
       "file": "pdfs/mapa-lituania.pdf",
-      "rutas": 11,
-      "ciudades": 9
+      "rutas": 16,
+      "ciudades": 13
+    },
+    {
+      "pais": "Macedonia del Norte",
+      "file": "pdfs/mapa-macedonia-del-norte.pdf",
+      "rutas": 14,
+      "ciudades": 2
     },
     {
       "pais": "Marruecos",
       "file": "pdfs/mapa-marruecos.pdf",
-      "rutas": 21,
+      "rutas": 18,
       "ciudades": 6
     },
     {
       "pais": "Moldavia",
       "file": "pdfs/mapa-moldavia.pdf",
-      "rutas": 17,
-      "ciudades": 3
+      "rutas": 20,
+      "ciudades": 4
+    },
+    {
+      "pais": "Montenegro",
+      "file": "pdfs/mapa-montenegro.pdf",
+      "rutas": 24,
+      "ciudades": 4
     },
     {
       "pais": "Noruega",
       "file": "pdfs/mapa-noruega.pdf",
-      "rutas": 106,
-      "ciudades": 28
+      "rutas": 98,
+      "ciudades": 32
     },
     {
       "pais": "Países Bajos",
       "file": "pdfs/mapa-paises-bajos.pdf",
       "rutas": 38,
-      "ciudades": 7
+      "ciudades": 8
     },
     {
       "pais": "Polonia",
       "file": "pdfs/mapa-polonia.pdf",
-      "rutas": 103,
-      "ciudades": 45
+      "rutas": 105,
+      "ciudades": 55
     },
     {
       "pais": "Portugal",
       "file": "pdfs/mapa-portugal.pdf",
-      "rutas": 47,
-      "ciudades": 12
+      "rutas": 50,
+      "ciudades": 17
     },
     {
       "pais": "Reino Unido",
       "file": "pdfs/mapa-reino-unido.pdf",
-      "rutas": 192,
-      "ciudades": 53
+      "rutas": 146,
+      "ciudades": 68
     },
     {
       "pais": "Rumanía",
       "file": "pdfs/mapa-rumania.pdf",
-      "rutas": 66,
-      "ciudades": 23
+      "rutas": 96,
+      "ciudades": 41
+    },
+    {
+      "pais": "Rusia",
+      "file": "pdfs/mapa-rusia.pdf",
+      "rutas": 48,
+      "ciudades": 61
+    },
+    {
+      "pais": "Serbia",
+      "file": "pdfs/mapa-serbia.pdf",
+      "rutas": 16,
+      "ciudades": 7
     },
     {
       "pais": "Siria",
       "file": "pdfs/mapa-siria.pdf",
-      "rutas": 48,
+      "rutas": 27,
       "ciudades": 6
     },
     {
       "pais": "Suecia",
       "file": "pdfs/mapa-suecia.pdf",
-      "rutas": 91,
-      "ciudades": 31
+      "rutas": 90,
+      "ciudades": 41
     },
     {
       "pais": "Suiza",
       "file": "pdfs/mapa-suiza.pdf",
-      "rutas": 16,
-      "ciudades": 5
+      "rutas": 20,
+      "ciudades": 8
     },
     {
       "pais": "Svalbard",
@@ -256,14 +328,20 @@
     {
       "pais": "Túnez",
       "file": "pdfs/mapa-tunez.pdf",
-      "rutas": 8,
+      "rutas": 3,
       "ciudades": 3
     },
     {
       "pais": "Turquía",
       "file": "pdfs/mapa-turquia.pdf",
-      "rutas": 32,
-      "ciudades": 11
+      "rutas": 34,
+      "ciudades": 13
+    },
+    {
+      "pais": "Ucrania",
+      "file": "pdfs/mapa-ucrania.pdf",
+      "rutas": 19,
+      "ciudades": 14
     }
   ]
 }

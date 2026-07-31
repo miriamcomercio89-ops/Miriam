@@ -1,6 +1,6 @@
 {
   "version": "4.0.0",
-  "generado": "2026-07-31T15:29:20.690Z",
+  "generado": "2026-07-31T15:48:01.614Z",
   "operador": {
     "id": "europerote",
     "nombre": "EuroPerote",
@@ -12,35 +12,35 @@
     "tipo": "internacional",
     "descripcion": "Único operador de la red EuroPerote: servicios urbanos, interurbanos, express, nocturnos, turísticos, aeroportuarios e internacionales sobre el mapa ProMods (Europe + Middle East + The Great Steppe) y complementos compatibles."
   },
-  "total_rutas": 1326,
-  "ciudades_reales": 625,
-  "ciudades_con_ruta": 614,
-  "cobertura_pct": 98.2,
+  "total_rutas": 1675,
+  "ciudades_reales": 1058,
+  "ciudades_con_ruta": 1058,
+  "cobertura_pct": 100,
   "solo_promods_real": true,
   "por_tipo": {
     "urb": 0,
-    "reg": 404,
-    "exp": 486,
-    "int": 291,
-    "noc": 41,
+    "reg": 603,
+    "exp": 532,
+    "int": 397,
+    "noc": 37,
     "tur": 0,
     "ae": 0,
-    "fer": 104,
+    "fer": 106,
     "brt": 0
   },
   "con_etiquetas": {
-    "ferry": 174,
-    "peaje": 551,
-    "frontera": 654
+    "ferry": 145,
+    "peaje": 764,
+    "frontera": 800
   },
   "codigos_ejemplo": [
+    "AL-REG-0001",
+    "AL-REG-0002",
+    "AL-REG-0003",
+    "AL-REG-0004",
+    "AL-REG-0005",
     "AT-EXP-0001",
     "AT-EXP-0002",
-    "AT-EXP-0003",
-    "AZ-REG-0001",
-    "CH-EXP-0001",
-    "DE-EXP-0001",
-    "DE-EXP-0002",
-    "DE-EXP-0003"
+    "AT-EXP-0003"
   ]
 }

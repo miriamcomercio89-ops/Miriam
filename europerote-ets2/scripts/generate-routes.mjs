@@ -445,6 +445,59 @@ for (const r of baseSnapshot.slice(0, 400)) {
   });
 }
 
+// Coverage fill — every real city gets at least one route
+{
+  const coveredTmp = new Set();
+  for (const r of routes.filter(Boolean)) for (const id of r.paradas) coveredTmp.add(id);
+  const uncovered = reals.filter((s) => !coveredTmp.has(s.id));
+  const anchors = reals.filter((s) => coveredTmp.has(s.id) && s.tier <= 2);
+  const poolAnchors = anchors.length ? anchors : majorHubs;
+  for (const city of uncovered) {
+    const nearest = [...poolAnchors]
+      .filter((h) => h.id !== city.id)
+      .map((h) => ({ h, d: dist(city, h) }))
+      .filter((x) => x.d > 8 && x.d < 1200)
+      .sort((a, b) => a.d - b.d)[0];
+    if (!nearest) {
+      // last resort: nearest real city in same country then any
+      const same = (byPais[city.pais] || []).filter((h) => h.id !== city.id);
+      const fall =
+        same
+          .map((h) => ({ h, d: dist(city, h) }))
+          .sort((a, b) => a.d - b.d)[0] ||
+        reals
+          .filter((h) => h.id !== city.id)
+          .map((h) => ({ h, d: dist(city, h) }))
+          .sort((a, b) => a.d - b.d)[0];
+      if (!fall) continue;
+      const tipo = city.pais === fall.h.pais ? "reg" : "int";
+      pushRoute(tipo, [city.id, fall.h.id], {
+        skipCoherence: true,
+        patron: "cobertura",
+        maxBacktracks: 2,
+      });
+      coveredTmp.add(city.id);
+      continue;
+    }
+    const sameCountry = city.pais === nearest.h.pais;
+    const chain =
+      pathToward(city, nearest.h, sameCountry ? byPais[city.pais] || reals : reals, {
+        maxStops: 5,
+        maxHop: 380,
+        minHop: 20,
+        minProgress: 10,
+        maxDetourKm: 100,
+      }) || [city.id, nearest.h.id];
+    const tipo = sameCountry ? (pathKm(chain) < 280 ? "reg" : "exp") : "int";
+    pushRoute(tipo, chain, {
+      skipCoherence: true,
+      patron: "cobertura",
+      maxBacktracks: 2,
+    });
+    coveredTmp.add(city.id);
+  }
+}
+
 const finalRoutes = routes.filter(Boolean).sort((a, b) => a.codigo.localeCompare(b.codigo, "es"));
 
 // coverage

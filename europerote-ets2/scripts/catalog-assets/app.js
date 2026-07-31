@@ -10,6 +10,10 @@
     markers: new Map(),
     selectedMarker: null,
     routeLine: null,
+    routeGlow: null,
+    routeStops: null,
+    cityIndex: null,
+    cityByName: null,
     favs: new Set(JSON.parse(localStorage.getItem(FAV_KEY) || "[]")),
   };
 
@@ -149,22 +153,67 @@
   function gameToImage(xx, yy, proj) {
     const xtot = proj.x2 - proj.x1;
     const ytot = proj.y2 - proj.y1;
+    if (!xtot || !ytot) return [0, 0];
     const xrel = (xx - proj.x1) / xtot;
     const yrel = (yy - proj.y1) / ytot;
     return [xrel * proj.MAX_X, yrel * proj.MAX_Y];
   }
 
+  function cityById(id) {
+    if (!id) return null;
+    if (!state.cityIndex) {
+      state.cityIndex = new Map((DATA.cities || []).map((c) => [c.id, c]));
+      state.cityByName = new Map(
+        (DATA.cities || []).map((c) => [String(c.nombre || "").toLowerCase(), c])
+      );
+    }
+    return state.cityIndex.get(id) || null;
+  }
+
   function cityLatLng(c) {
     const proj = DATA.mapProjection;
-    if (!state.map || !proj) return null;
+    if (!state.map || !proj || !c) return null;
     const xx = c.map_x != null ? c.map_x : c.x;
     const yy = c.map_y != null ? c.map_y : c.z;
+    if (!Number.isFinite(xx) || !Number.isFinite(yy)) return null;
     const [ix, iy] = gameToImage(xx, yy, proj);
     return state.map.unproject([ix, iy], 8);
   }
 
+  function setMapHint(text) {
+    const el = $("mapHint");
+    if (el) el.textContent = text;
+  }
+
+  function clearRouteLayers() {
+    if (!state.map) return;
+    if (state.routeLine) {
+      state.map.removeLayer(state.routeLine);
+      state.routeLine = null;
+    }
+    if (state.routeGlow) {
+      state.map.removeLayer(state.routeGlow);
+      state.routeGlow = null;
+    }
+    if (state.routeStops) {
+      state.map.removeLayer(state.routeStops);
+      state.routeStops = null;
+    }
+  }
+
+  function ensureMapReady() {
+    if (!state.map) initMap();
+    if (!state.map) return false;
+    const panel = document.querySelector(".map-panel") || $("map");
+    if (panel?.scrollIntoView) panel.scrollIntoView({ behavior: "smooth", block: "center" });
+    state.map.invalidateSize();
+    return true;
+  }
+
   function initMap() {
     if (!window.L || state.map) return;
+    const mapEl = $("map");
+    if (!mapEl) return;
     const proj = DATA.mapProjection || {
       tileUrl: "https://ets2.online/map/ets2mappromods_158/{z}/{x}/{y}.png",
       maxZoom: 8,
@@ -179,55 +228,120 @@
     };
     DATA.mapProjection = proj;
 
-    state.map = L.map("map", { crs: L.CRS.Simple, minZoom: proj.minZoom || 2, maxZoom: proj.maxZoom || 8 });
+    state.map = L.map("map", {
+      crs: L.CRS.Simple,
+      minZoom: proj.minZoom || 2,
+      maxZoom: proj.maxZoom || 8,
+      zoomSnap: 0.25,
+      maxBoundsViscosity: 0.85,
+    });
     const bounds = L.latLngBounds(state.map.unproject([0, 65535], 8), state.map.unproject([65535, 0], 8));
     L.tileLayer(proj.tileUrl, {
       maxZoom: proj.maxZoom || 8,
       minZoom: proj.minZoom || 2,
       bounds,
       tileSize: proj.tileSize || 256,
-      attribution: proj.attribution || 'Mapa ProMods · <a href="https://ets2.online/map/ets2pro" target="_blank">ets2.online</a>',
+      attribution:
+        proj.attribution ||
+        'Mapa ProMods · <a href="https://ets2.online/map/ets2pro" target="_blank">ets2.online</a>',
       crossOrigin: true,
     }).addTo(state.map);
-    state.map.setMaxBounds(bounds);
-    state.map.setView(state.map.unproject([256, 256], 0), 2);
+    state.map.setMaxBounds(bounds.pad(0.05));
+    state.map.setView(state.map.unproject([32768, 32768], 8), 3);
 
     for (const c of DATA.cities || []) {
       const ll = cityLatLng(c);
       if (!ll) continue;
       const marker = L.circleMarker(ll, {
-        radius: 4,
+        radius: 3.5,
         color: "#fff",
         weight: 1,
         fillColor: "#0B3D91",
-        fillOpacity: 0.9,
+        fillOpacity: 0.85,
       });
       marker.bindTooltip(c.nombre + " (" + (c.iso || c.pais) + ")", { direction: "top" });
       marker.on("click", () => selectCity(c.id));
       marker.addTo(state.map);
       state.markers.set(c.id, marker);
     }
-    setTimeout(() => state.map.invalidateSize(), 250);
+    setTimeout(() => state.map && state.map.invalidateSize(), 250);
+    setTimeout(() => state.map && state.map.invalidateSize(), 800);
   }
 
   function drawRoute(r) {
-    if (!state.map) return;
-    if (state.routeLine) {
-      state.map.removeLayer(state.routeLine);
-      state.routeLine = null;
+    if (!ensureMapReady()) {
+      setMapHint("El mapa aún no está listo. Recarga la página.");
+      return;
     }
-    if (!r) return;
-    const ids = r.paradaIds || [];
+    clearRouteLayers();
+    if (!r) {
+      setMapHint("Mapa ProMods (ets2.online). Clic en ciudad o selecciona una ruta para ver el trazado.");
+      return;
+    }
+    const ids = r.paradaIds || r.paradas || [];
+    const names = r.paradas || r.paradas_nombres || [];
     const pts = [];
-    for (const id of ids) {
-      const c = DATA.cities.find((x) => x.id === id);
+    const stopCities = [];
+    for (let i = 0; i < ids.length; i++) {
+      let c = cityById(ids[i]);
+      if (!c && names[i]) c = state.cityByName?.get(String(names[i]).toLowerCase()) || null;
       if (!c) continue;
       const ll = cityLatLng(c);
-      if (ll) pts.push(ll);
+      if (!ll) continue;
+      pts.push(ll);
+      stopCities.push(c);
     }
-    if (pts.length < 2) return;
-    state.routeLine = L.polyline(pts, { color: "#F2A900", weight: 4, opacity: 0.9 }).addTo(state.map);
-    state.map.fitBounds(state.routeLine.getBounds(), { padding: [30, 30], maxZoom: 6 });
+    if (pts.length < 2) {
+      setMapHint("No se pudo dibujar " + (r.codigo || "la ruta") + ": faltan coordenadas de paradas.");
+      return;
+    }
+    state.routeGlow = L.polyline(pts, {
+      color: "#0B1B33",
+      weight: 10,
+      opacity: 0.45,
+      lineJoin: "round",
+      lineCap: "round",
+    }).addTo(state.map);
+    state.routeLine = L.polyline(pts, {
+      color: "#F2A900",
+      weight: 5,
+      opacity: 1,
+      lineJoin: "round",
+      lineCap: "round",
+    }).addTo(state.map);
+    state.routeStops = L.layerGroup();
+    stopCities.forEach((c, idx) => {
+      const ll = cityLatLng(c);
+      if (!ll) return;
+      const isEnd = idx === 0 || idx === stopCities.length - 1;
+      L.circleMarker(ll, {
+        radius: isEnd ? 8 : 5,
+        color: "#fff",
+        weight: 2,
+        fillColor: isEnd ? "#F2A900" : "#0B3D91",
+        fillOpacity: 1,
+      })
+        .bindTooltip((idx + 1) + ". " + c.nombre, { permanent: false })
+        .addTo(state.routeStops);
+    });
+    state.routeStops.addTo(state.map);
+    state.routeLine.bringToFront();
+    const b = state.routeLine.getBounds();
+    if (b.isValid()) {
+      state.map.fitBounds(b.pad(0.15), { padding: [48, 48], maxZoom: 6, animate: true });
+    }
+    setTimeout(() => state.map && state.map.invalidateSize(), 120);
+    setMapHint(
+      "Trazado: " +
+        r.codigo +
+        " · " +
+        (r.origen || stopCities[0]?.nombre || "") +
+        " → " +
+        (r.destino || stopCities[stopCities.length - 1]?.nombre || "") +
+        " (" +
+        pts.length +
+        " paradas en mapa)"
+    );
   }
 
   function focusCityOnMap(cityId) {
