@@ -18,7 +18,7 @@ Diseño + generador de una red ferroviaria del **Reino Unido** para Nimby Rails.
 - Catálogo interactivo: https://htmlpreview.github.io/?https://github.com/miriamcomercio89-ops/Miriam/blob/6fd2cc15fca00e418f28d13b737e002d7b1f2ee4/ferrocarriles-uk/web/index.html
 - Landing: https://htmlpreview.github.io/?https://github.com/miriamcomercio89-ops/Miriam/blob/6fd2cc15fca00e418f28d13b737e002d7b1f2ee4/ferrocarriles-uk/ABRIR-EN-MOVIL.html
 
-Offline: descarga  y abre  en el navegador.
+Offline: descarga `catalogo-uk.zip` y abre `catalogo-uk.html` en el navegador.
 
 ## Uso
 
