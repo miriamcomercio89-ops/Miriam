@@ -1,14 +1,14 @@
 {
-  "total": 8982,
-  "distancia_total_km": 821062,
-  "paradas_totales_en_rutas": 42029,
-  "media_paradas": 4.7,
+  "total": 10000,
+  "distancia_total_km": 850177,
+  "paradas_totales_en_rutas": 45468,
+  "media_paradas": 4.5,
   "por_tipo": {
     "av": 393,
     "ld": 981,
     "ir": 687,
     "re": 1569,
-    "rb": 1039,
+    "rb": 1568,
     "s": 1176,
     "u": 392,
     "t": 392,
@@ -19,17 +19,17 @@
     "or": 294,
     "px": 392,
     "mc": 294,
-    "rl": 491
+    "rl": 980
   },
   "por_origen_datos": {
-    "real": 6145,
-    "ficticia": 730,
-    "hibrida": 2107
+    "real": 6318,
+    "ficticia": 742,
+    "hibrida": 2940
   },
   "por_estado_operador": {
-    "actual": 4828,
-    "futuro": 1158,
-    "inventado": 2996
+    "inventado": 4189,
+    "futuro": 1099,
+    "actual": 4712
   },
-  "operadores_distintos": 100
+  "operadores_distintos": 101
 }

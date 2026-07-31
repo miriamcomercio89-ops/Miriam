@@ -53,6 +53,12 @@
     fillSelect($("land"), Object.entries(DATA.landNames));
     fillSelect($("opLand"), Object.entries(DATA.landNames));
     fillSelect($("opServ"), uniq(DATA.ops.flatMap((o) => o.servicios || [])));
+    fillSelect(
+      $("material"),
+      [...new Map(DATA.routes.filter((r) => r.matId).map((r) => [r.matId, r.mat || r.matId])).entries()].sort((a, b) =>
+        String(a[1]).localeCompare(String(b[1]), "es")
+      )
+    );
     mkChips($("estChips"), ["actual", "futuro", "inventado"], state.est);
     mkChips($("opEstChips"), ["actual", "futuro", "inventado"], state.opEst);
   }
@@ -62,6 +68,20 @@
     if (v === "") return null;
     const n = Number(v);
     return Number.isFinite(n) ? n : null;
+  }
+
+  function parseTime(v) {
+    const m = String(v || "").trim().match(/^(\d{1,2}):(\d{2})$/);
+    if (!m) return null;
+    const h = Number(m[1]);
+    const min = Number(m[2]);
+    if (h > 23 || min > 59) return null;
+    return h * 60 + min;
+  }
+
+  function money(n, moneda) {
+    if (n == null || n === "") return "—";
+    return "£" + Number(n).toFixed(2) + (moneda && moneda !== "GBP" ? " " + moneda : "");
   }
 
   function routeMatch(r, q, qStation, qEndpoint) {
@@ -77,6 +97,9 @@
     if ($("land").value && !(r.lands || []).includes($("land").value)) return false;
     if ($("origenDatos").value && r.origen_datos !== $("origenDatos").value) return false;
     if ($("patron").value && r.patron !== $("patron").value) return false;
+    if ($("material").value && r.matId !== $("material").value) return false;
+    const qMat = $("qMaterial").value.trim().toLowerCase();
+    if (qMat && !(r.mat || "").toLowerCase().includes(qMat) && !(r.matWs || "").toLowerCase().includes(qMat)) return false;
 
     const minN = numOr("minN");
     const maxN = numOr("maxN");
@@ -84,12 +107,31 @@
     const maxKm = numOr("maxKm");
     const minFreq = numOr("minFreq");
     const maxFreq = numOr("maxFreq");
+    const minTrenes = numOr("minTrenes");
+    const maxTrenes = numOr("maxTrenes");
+    const minPrice = numOr("minPrice");
+    const maxPrice = numOr("maxPrice");
     if (minN != null && r.n < minN) return false;
     if (maxN != null && r.n > maxN) return false;
     if (minKm != null && r.km < minKm) return false;
     if (maxKm != null && r.km > maxKm) return false;
     if (minFreq != null && r.freq < minFreq) return false;
     if (maxFreq != null && r.freq > maxFreq) return false;
+    if (minTrenes != null && (r.trenes == null || r.trenes < minTrenes)) return false;
+    if (maxTrenes != null && (r.trenes == null || r.trenes > maxTrenes)) return false;
+    if (minPrice != null && (r.pFull == null || r.pFull < minPrice)) return false;
+    if (maxPrice != null && (r.pFull == null || r.pFull > maxPrice)) return false;
+
+    const minPrimer = parseTime($("minPrimer").value);
+    const maxPrimer = parseTime($("maxPrimer").value);
+    const minUltimo = parseTime($("minUltimo").value);
+    const maxUltimo = parseTime($("maxUltimo").value);
+    const primer = parseTime(r.primer);
+    const ultimo = parseTime(r.ultimo);
+    if (minPrimer != null && (primer == null || primer < minPrimer)) return false;
+    if (maxPrimer != null && (primer == null || primer > maxPrimer)) return false;
+    if (minUltimo != null && (ultimo == null || ultimo < minUltimo)) return false;
+    if (maxUltimo != null && (ultimo == null || ultimo > maxUltimo)) return false;
 
     if (qStation) {
       if (!(r.paradas || []).some((p) => p.toLowerCase().includes(qStation))) return false;
@@ -103,10 +145,16 @@
       const hay = [
         r.codigo,
         r.nombre,
+        r.desc,
         r.opn,
         r.origen,
         r.destino,
+        r.mat,
+        r.matWs,
+        r.primer,
+        r.ultimo,
         ...(r.paradas || []),
+        ...(r.trenesU || []),
         DATA.corredorNames[r.corredor] || "",
         DATA.tipoNames[r.tipo] || "",
       ]
@@ -149,6 +197,10 @@
     else if (mode === "km_desc") arr.sort((a, b) => b.km - a.km);
     else if (mode === "km_asc") arr.sort((a, b) => a.km - b.km);
     else if (mode === "freq_asc") arr.sort((a, b) => a.freq - b.freq);
+    else if (mode === "precio_asc") arr.sort((a, b) => (a.pFull ?? 0) - (b.pFull ?? 0));
+    else if (mode === "precio_desc") arr.sort((a, b) => (b.pFull ?? 0) - (a.pFull ?? 0));
+    else if (mode === "trenes_desc") arr.sort((a, b) => (b.trenes ?? 0) - (a.trenes ?? 0));
+    else if (mode === "primer_asc") arr.sort((a, b) => cmp(a.primer || "99:99", b.primer || "99:99"));
     return arr;
   }
 
@@ -184,15 +236,25 @@
         ["land", "Región"],
         ["origenDatos", "Datos"],
         ["patron", "Patrón"],
+        ["material", "Material"],
       ].forEach(([id, label]) => {
         if ($(id).value) add(label, $(id).selectedOptions[0]?.textContent || $(id).value, () => ($(id).value = ""));
       });
+      if ($("qMaterial").value) add("Material texto", $("qMaterial").value, () => ($("qMaterial").value = ""));
       if ($("minN").value || $("maxN").value)
         add("Paradas", ($("minN").value || "…") + "-" + ($("maxN").value || "…"), () => { $("minN").value = ""; $("maxN").value = ""; });
       if ($("minKm").value || $("maxKm").value)
         add("Km", ($("minKm").value || "…") + "-" + ($("maxKm").value || "…"), () => { $("minKm").value = ""; $("maxKm").value = ""; });
       if ($("minFreq").value || $("maxFreq").value)
         add("Freq", ($("minFreq").value || "…") + "-" + ($("maxFreq").value || "…"), () => { $("minFreq").value = ""; $("maxFreq").value = ""; });
+      if ($("minTrenes").value || $("maxTrenes").value)
+        add("Trenes", ($("minTrenes").value || "…") + "-" + ($("maxTrenes").value || "…"), () => { $("minTrenes").value = ""; $("maxTrenes").value = ""; });
+      if ($("minPrice").value || $("maxPrice").value)
+        add("Precio", ($("minPrice").value || "…") + "-" + ($("maxPrice").value || "…"), () => { $("minPrice").value = ""; $("maxPrice").value = ""; });
+      if ($("minPrimer").value || $("maxPrimer").value)
+        add("Primer", ($("minPrimer").value || "…") + "-" + ($("maxPrimer").value || "…"), () => { $("minPrimer").value = ""; $("maxPrimer").value = ""; });
+      if ($("minUltimo").value || $("maxUltimo").value)
+        add("Último", ($("minUltimo").value || "…") + "-" + ($("maxUltimo").value || "…"), () => { $("minUltimo").value = ""; $("maxUltimo").value = ""; });
     } else {
       if ($("opq").value || $("qTop").value) add("Texto", $("opq").value || $("qTop").value, () => { $("opq").value = ""; $("qTop").value = ""; });
       [...state.opEst].forEach((v) => add("Estado", v, () => state.opEst.delete(v)));
@@ -239,12 +301,15 @@
 
   function openRoute(r) {
     const lands = (r.lands || []).map((id) => DATA.landNames[id] || id).join(", ");
+    const units = (r.trenesU || []).map((u) => '<span class="badge b-soft">' + esc(u) + "</span>").join(" ");
     $("drawerBody").innerHTML =
       "<h2>" +
       esc(r.codigo) +
       "</h2><div class=\"title\">" +
       esc(r.nombre) +
-      '</div><div class="meta" style="margin-top:.5rem"><span class="badge b-' +
+      '</div><p style="color:var(--muted);margin:.65rem 0 0;line-height:1.45">' +
+      esc(r.desc || "") +
+      '</p><div class="meta" style="margin-top:.7rem"><span class="badge b-' +
       esc(r.est) +
       '">' +
       esc(r.est) +
@@ -252,8 +317,15 @@
       esc(DATA.tipoNames[r.tipo] || r.tipo) +
       '</span><span class="badge b-soft">' +
       esc(r.patron) +
-      '</span></div><div class="kv"><div>Operador</div><div>' +
+      '</span><span class="badge b-soft">' +
+      esc(r.clase || "") +
+      '</span></div><div class="kv"><div>Operador</div><div><span class="swatch" style="background:' +
+      esc(r.color) +
+      '"></span> ' +
       esc(r.opn) +
+      (r.opSede ? " · " + esc(r.opSede) : "") +
+      "</div><div>Color operador</div><div>" +
+      esc(r.color) +
       "</div><div>Origen</div><div>" +
       esc(r.origen) +
       "</div><div>Destino</div><div>" +
@@ -262,15 +334,42 @@
       esc(r.n) +
       "</div><div>Distancia</div><div>" +
       esc(r.km) +
-      ' km</div><div>Frecuencia</div><div>cada ' +
+      " km</div><div>Duración</div><div>" +
+      (r.dur != null ? esc(r.dur) + " min" : "—") +
+      "</div><div>Vel. comercial</div><div>" +
+      (r.vcom != null ? esc(r.vcom) + " km/h" : "—") +
+      "</div><div>Frecuencia</div><div>cada " +
       esc(r.freq) +
-      " min</div><div>Corredor</div><div>" +
+      " min</div><div>Servicios/día</div><div>" +
+      esc(r.svcDia ?? "—") +
+      "</div><div>Primer tren</div><div>" +
+      esc(r.primer || "—") +
+      "</div><div>Último tren</div><div>" +
+      esc(r.ultimo || "—") +
+      "</div><div>Días</div><div>" +
+      esc(r.dias || "—") +
+      "</div><div>Precio base</div><div>" +
+      esc(money(r.pBase, r.moneda)) +
+      "</div><div>Precio / km</div><div>" +
+      (r.pKm != null ? "£" + Number(r.pKm).toFixed(3) : "—") +
+      "</div><div>Precio completo</div><div>" +
+      esc(money(r.pFull, r.moneda)) +
+      "</div><div>Trenes asignados</div><div>" +
+      esc(r.trenes ?? "—") +
+      "</div><div>Material móvil</div><div>" +
+      esc(r.mat || "—") +
+      (r.matWs ? " <span class=\"meta\">(" + esc(r.matWs) + ")</span>" : "") +
+      "</div><div>A bordo</div><div>" +
+      esc((r.bordo || []).join(" · ") || "—") +
+      "</div><div>Corredor</div><div>" +
       esc(DATA.corredorNames[r.corredor] || "—") +
       "</div><div>Regiones</div><div>" +
       esc(lands || "—") +
       "</div><div>Datos</div><div>" +
       esc(r.origen_datos) +
-      '</div></div><div class="section-label">Recorrido completo</div><div class="stops">' +
+      '</div></div><div class="section-label">Unidades en la línea</div><div class="meta" style="display:flex;flex-wrap:wrap;gap:.35rem">' +
+      (units || "—") +
+      '</div><div class="section-label">Recorrido completo</div><div class="stops">' +
       stopsHtml(r.paradas) +
       "</div>";
     $("drawer").classList.add("on");
@@ -374,7 +473,17 @@
             esc(r.km) +
             " km</span><span>cada " +
             esc(r.freq) +
-            ' min</span></div></div></div></div><div class="stops">' +
+            " min</span><span>" +
+            esc(r.primer || "—") +
+            "–" +
+            esc(r.ultimo || "—") +
+            "</span><span>" +
+            esc(r.trenes ?? "—") +
+            " trenes</span><span>" +
+            esc(money(r.pFull, r.moneda)) +
+            "</span><span>" +
+            esc(r.mat || "—") +
+            '</span></div></div></div></div><div class="stops">' +
             stopsHtml(r.paradas) +
             "</div></article>"
         )
@@ -438,7 +547,9 @@
   function resetAll() {
     [
       "q", "qTop", "qStation", "qEndpoint", "opq", "tipo", "prefijo", "op", "opTipo", "corredor", "land",
-      "origenDatos", "patron", "minN", "maxN", "minKm", "maxKm", "minFreq", "maxFreq", "opTipo2", "opComp", "opLand", "opServ",
+      "origenDatos", "patron", "material", "qMaterial", "minN", "maxN", "minKm", "maxKm", "minFreq", "maxFreq",
+      "minTrenes", "maxTrenes", "minPrice", "maxPrice", "minPrimer", "maxPrimer", "minUltimo", "maxUltimo",
+      "opTipo2", "opComp", "opLand", "opServ",
     ].forEach((id) => {
       if ($(id)) $(id).value = "";
     });
@@ -482,7 +593,9 @@
   );
   [
     "q", "qTop", "qStation", "qEndpoint", "opq", "tipo", "prefijo", "op", "opTipo", "corredor", "land",
-    "origenDatos", "patron", "minN", "maxN", "minKm", "maxKm", "minFreq", "maxFreq", "opTipo2", "opComp", "opLand", "opServ",
+    "origenDatos", "patron", "material", "qMaterial", "minN", "maxN", "minKm", "maxKm", "minFreq", "maxFreq",
+    "minTrenes", "maxTrenes", "minPrice", "maxPrice", "minPrimer", "maxPrimer", "minUltimo", "maxUltimo",
+    "opTipo2", "opComp", "opLand", "opServ",
   ].forEach((id) => {
     const el = $(id);
     if (!el) return;

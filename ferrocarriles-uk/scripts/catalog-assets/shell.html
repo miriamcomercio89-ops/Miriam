@@ -49,10 +49,18 @@
         <option value="">Todos</option><option value="parador">Parador</option><option value="base">Base</option><option value="directo">Directo</option><option value="retorno">Retorno</option>
       </select></div>
 
+      <div class="section-label">Servicio y material</div>
+      <div class="field"><label for="material">Material móvil</label><select id="material"><option value="">Todos</option></select></div>
+      <div class="field"><label for="qMaterial">Buscar material</label><input id="qMaterial" placeholder="Class 800, Pendolino…"/></div>
+      <div class="field"><label>Primer tren (desde–hasta HH:MM)</label><div class="range-row"><input id="minPrimer" placeholder="05:00"/><input id="maxPrimer" placeholder="08:00"/></div></div>
+      <div class="field"><label>Último tren (desde–hasta HH:MM)</label><div class="range-row"><input id="minUltimo" placeholder="20:00"/><input id="maxUltimo" placeholder="23:59"/></div></div>
+
       <div class="section-label">Rangos</div>
       <div class="field"><label>Paradas (min–max)</label><div class="range-row"><input id="minN" type="number" min="2" placeholder="mín"/><input id="maxN" type="number" min="2" placeholder="máx"/></div></div>
       <div class="field"><label>Distancia km (min–max)</label><div class="range-row"><input id="minKm" type="number" min="0" placeholder="mín"/><input id="maxKm" type="number" min="0" placeholder="máx"/></div></div>
       <div class="field"><label>Frecuencia min (min–max)</label><div class="range-row"><input id="minFreq" type="number" min="0" placeholder="mín"/><input id="maxFreq" type="number" min="0" placeholder="máx"/></div></div>
+      <div class="field"><label>Trenes asignados (min–max)</label><div class="range-row"><input id="minTrenes" type="number" min="1" placeholder="mín"/><input id="maxTrenes" type="number" min="1" placeholder="máx"/></div></div>
+      <div class="field"><label>Precio completo £ (min–max)</label><div class="range-row"><input id="minPrice" type="number" min="0" step="0.1" placeholder="mín"/><input id="maxPrice" type="number" min="0" step="0.1" placeholder="máx"/></div></div>
     </div>
 
     <div id="filters-ops" hidden>
@@ -95,6 +103,10 @@
           <option value="km_desc">Más km</option>
           <option value="km_asc">Menos km</option>
           <option value="freq_asc">Más frecuente</option>
+          <option value="precio_asc">Precio ↑</option>
+          <option value="precio_desc">Precio ↓</option>
+          <option value="trenes_desc">Más trenes</option>
+          <option value="primer_asc">Primer tren ↑</option>
         </select>
         <div class="seg" id="pageSizeSeg">
           <button type="button" data-size="24" class="on">24</button>

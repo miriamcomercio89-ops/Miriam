@@ -30,6 +30,136 @@ function frequencyFor(tipoId, distanceKm) {
   return base;
 }
 
+function pad2(n) {
+  return String(n).padStart(2, "0");
+}
+
+function minutesToHHMM(total) {
+  const m = ((total % (24 * 60)) + 24 * 60) % (24 * 60);
+  return `${pad2(Math.floor(m / 60))}:${pad2(m % 60)}`;
+}
+
+function parseHHMM(hhmm) {
+  const [h, m] = String(hhmm || "00:00").split(":").map(Number);
+  return (h || 0) * 60 + (m || 0);
+}
+
+function serviceWindow(tipoId, seed) {
+  // primer/último tren en minutos desde medianoche
+  const windows = {
+    av: [300, 1380],
+    ld: [310, 1390],
+    px: [320, 1360],
+    ir: [330, 1380],
+    re: [300, 1410],
+    rb: [300, 1410],
+    rl: [360, 1320],
+    s: [270, 1470],
+    or: [280, 1460],
+    mc: [290, 1440],
+    u: [300, 1500],
+    t: [300, 1440],
+    tt: [310, 1420],
+    ae: [240, 1440],
+    n: [1260, 360 + 24 * 60], // sale noche, llega madrugada
+    tur: [480, 1200],
+  };
+  const [a, b] = windows[tipoId] || [330, 1380];
+  const jitter = (seed * 7) % 25;
+  return {
+    primer_tren: minutesToHHMM(a + jitter),
+    ultimo_tren: minutesToHHMM(b - (seed % 20)),
+  };
+}
+
+function pricing(tipoId, distKm, seed) {
+  const baseByTipo = {
+    av: 12.5, ld: 8.5, px: 14, ir: 6.5, re: 4.2, rb: 3.2, rl: 2.5,
+    s: 2.8, or: 2.6, mc: 2.7, u: 2.2, t: 1.8, tt: 2.4, ae: 9.5, n: 18, tur: 11,
+  };
+  const perKmByTipo = {
+    av: 0.28, ld: 0.18, px: 0.32, ir: 0.14, re: 0.11, rb: 0.09, rl: 0.08,
+    s: 0.12, or: 0.11, mc: 0.11, u: 0.1, t: 0.08, tt: 0.09, ae: 0.35, n: 0.16, tur: 0.22,
+  };
+  const jitter = 1 + ((seed % 17) - 8) * 0.01;
+  const precio_base = Math.round((baseByTipo[tipoId] ?? 4) * jitter * 100) / 100;
+  const precio_por_km = Math.round((perKmByTipo[tipoId] ?? 0.1) * jitter * 1000) / 1000;
+  const precio_completo = Math.round((precio_base + precio_por_km * distKm) * 100) / 100;
+  return { precio_base, precio_por_km, precio_completo };
+}
+
+function durationMin(tipoId, distKm, numParadas) {
+  const speed = {
+    av: 200, ld: 140, px: 180, ir: 110, re: 90, rb: 70, rl: 55,
+    s: 60, or: 55, mc: 58, u: 40, t: 25, tt: 45, ae: 100, n: 100, tur: 70,
+  }[tipoId] ?? 80;
+  const dwell = Math.max(0, numParadas - 1) * (["s", "u", "t", "or"].includes(tipoId) ? 1.2 : 2.2);
+  return Math.max(8, Math.round((distKm / speed) * 60 + dwell));
+}
+
+function trainsAssigned(tipoId, freqMin, duration, seed) {
+  if (tipoId === "n") return 1 + (seed % 2);
+  const cycle = Math.max(freqMin, 5);
+  const needed = Math.ceil((duration * 2) / cycle) + 1;
+  return Math.max(2, Math.min(28, needed + (seed % 3)));
+}
+
+function trainUnitLabels(materialId, count, seed) {
+  const prefix = String(materialId || "unit")
+    .replace(/^unit-/, "")
+    .replace(/[^a-zA-Z0-9]+/g, "")
+    .slice(0, 8)
+    .toUpperCase() || "EMU";
+  const base = 100 + ((seed * 17) % 800);
+  return Array.from({ length: count }, (_, i) => `${prefix}-${String(base + i).padStart(3, "0")}`);
+}
+
+function commercialSpeed(tipoId) {
+  return ({
+    av: 200, ld: 140, px: 180, ir: 110, re: 90, rb: 70, rl: 55,
+    s: 60, or: 55, mc: 58, u: 40, t: 25, tt: 45, ae: 100, n: 100, tur: 70,
+  })[tipoId] ?? 80;
+}
+
+function onboardServices(tipoId) {
+  if (["av", "px", "n"].includes(tipoId)) return ["Wi‑Fi", "Catering", "Reservas", "Accesibilidad"];
+  if (["ld", "ae", "tur"].includes(tipoId)) return ["Wi‑Fi", "Catering ligero", "Accesibilidad"];
+  if (["ir", "re"].includes(tipoId)) return ["Wi‑Fi", "Accesibilidad"];
+  return ["Accesibilidad"];
+}
+
+function describeRoute({ tipo, a, b, pattern, corridor, dist, numParadas, op, materialNombre }) {
+  const estilo =
+    pattern === "directo"
+      ? "servicio semirrápido con pocas paradas"
+      : pattern === "parador"
+        ? "servicio parador que cubre todas las estaciones del tramo"
+        : pattern === "retorno"
+          ? "sentido inverso del corredor principal"
+          : "servicio regular de la red";
+  const eje = corridor?.nombre ? ` sobre el eje ${corridor.nombre}` : "";
+  return `${tipo.nombre} operado por ${op.nombre} entre ${a.nombre} y ${b.nombre}${eje}. ${estilo.charAt(0).toUpperCase() + estilo.slice(1)}; ${numParadas} estaciones y unos ${dist} km. Material asignado: ${materialNombre}.`;
+}
+
+function pickMaterial(op, seed) {
+  const flota = op.flota || [];
+  if (!flota.length) {
+    return {
+      material_id: "gen-emu",
+      material_nombre: "EMU genérico",
+      material_workshop: "Workshop EMU",
+    };
+  }
+  const principales = flota.filter((f) => f.papel === "principal");
+  const pool = principales.length ? principales : flota;
+  const unit = pool[seed % pool.length];
+  return {
+    material_id: unit.unidad_id,
+    material_nombre: unit.nombre,
+    material_workshop: unit.workshop_ref || unit.nombre,
+  };
+}
+
 function maxDistanceFor(tipoId) {
   return ({
     av: 900, ld: 800, px: 700, n: 1000, ir: 450, re: 280, rb: 160, rl: 90,
@@ -197,23 +327,29 @@ export function generateLines({
         (op.estado === "actual" ? 1 : 0);
       return score(y) - score(x);
     });
-    const opPool = candidates.slice(0, Math.min(8, candidates.length));
-    const op = pick(opPool, seed + i * 3 + patterns.indexOf(pattern));
-
-    const key = `${tipoId}|${op.id}|${a.id}|${b.id}|${pattern}|${stops.length}`;
-    if (usedKeys.has(key)) return false;
-    usedKeys.add(key);
-
+    const opPool = candidates.slice(0, Math.min(12, candidates.length));
     let paradas = stops.map((h) => h.id);
     if (pattern === "directo" && stops.length > 2) {
-      // solo extremos + máximo 1 intermedio importante (tier<=2)
       const mids = stops.slice(1, -1).filter((h) => h.tier <= 2);
       const mid = mids.length ? [mids[Math.floor(mids.length / 2)].id] : [];
       paradas = [a.id, ...mid, b.id];
     } else if (pattern === "parador" && corridor?.path?.length) {
-      // ya es completo en corredor
       paradas = stops.map((h) => h.id);
     }
+
+    let op = null;
+    let key = null;
+    for (let oi = 0; oi < opPool.length; oi++) {
+      const candidate = pick(opPool, seed + i * 3 + patterns.indexOf(pattern) + oi);
+      const k = `${tipoId}|${candidate.id}|${paradas.join(">")}|${pattern}`;
+      if (!usedKeys.has(k)) {
+        op = candidate;
+        key = k;
+        break;
+      }
+    }
+    if (!op) return false;
+    usedKeys.add(key);
 
     const num = counters[tipoId]++;
     const areaCode = a.metro_area || a.land;
@@ -227,26 +363,53 @@ export function generateLines({
           ? "real"
           : "ficticia");
 
-    const material = (op.flota || [])
-      .filter((f) => f.papel === "principal")
-      .slice(0, 3)
-      .map((f) => f.unidad_id);
-    if (!material.length && op.flota?.length) material.push(op.flota[0].unidad_id);
+    const materialPick = pickMaterial(op, seed + i);
+    const freq = frequencyFor(tipoId, dist) + (pattern === "parador" ? 10 : 0);
+    const win = serviceWindow(tipoId, seed + i);
+    const prices = pricing(tipoId, Math.round(dist), seed + i);
+    const duracion_min = durationMin(tipoId, dist, paradas.length);
+    const trenes_asignados = trainsAssigned(tipoId, freq, duracion_min, seed + i);
+    const trenes_unidades = trainUnitLabels(materialPick.material_id, trenes_asignados, seed + i);
+    const velocidad_comercial_kmh = commercialSpeed(tipoId);
+    const servicios_bordo = onboardServices(tipoId);
+    const dias_servicio =
+      tipoId === "n" ? "Diario" : tipoId === "tur" ? "Viernes–domingo y festivos" : "Lunes–domingo";
+    const clase =
+      ["av", "ld", "px", "n"].includes(tipoId) ? "Estándar y Primera" : "Estándar";
+    const servicios_dia =
+      tipoId === "n"
+        ? trenes_asignados
+        : Math.max(1, Math.floor(((parseHHMM(win.ultimo_tren) - parseHHMM(win.primer_tren) + 24 * 60) % (24 * 60) || 18 * 60) / Math.max(freq, 1)));
 
     const patternLabel =
       pattern === "retorno" ? " (retorno)" : pattern === "directo" ? " directo" : pattern === "parador" ? " parador" : "";
 
     const via = paradas.slice(1, -1);
+    const nombre = `${tipo.nombre} ${shortName(a.nombre)}–${shortName(b.nombre)}${patternLabel}`;
+    const descripcion = describeRoute({
+      tipo,
+      a,
+      b,
+      pattern,
+      corridor,
+      dist: Math.round(dist),
+      numParadas: paradas.length,
+      op,
+      materialNombre: materialPick.material_nombre,
+    });
+
     lines.push({
       id: `line-${String(lines.length + 1).padStart(5, "0")}`,
       codigo,
       codigo_interno,
-      nombre: `${tipo.nombre} ${shortName(a.nombre)}–${shortName(b.nombre)}${patternLabel}`,
+      nombre,
+      descripcion,
       tipo_id: tipoId,
       prefijo: tipo.prefijo,
       operador_id: op.id,
       operador_nombre: op.nombre,
       operador_estado: op.estado || "inventado",
+      operador_sede: op.sede || "",
       color: op.color,
       origen: a.id,
       destino: b.id,
@@ -255,8 +418,25 @@ export function generateLines({
       paradas_nombres: paradas.map((id) => hubById.get(id)?.nombre || id),
       num_paradas: paradas.length,
       distancia_km: Math.round(dist),
-      frecuencia_min: frequencyFor(tipoId, dist) + (pattern === "parador" ? 10 : 0),
-      material,
+      duracion_min,
+      velocidad_comercial_kmh,
+      frecuencia_min: freq,
+      servicios_dia,
+      primer_tren: win.primer_tren,
+      ultimo_tren: win.ultimo_tren,
+      dias_servicio,
+      clase,
+      precio_base: prices.precio_base,
+      precio_por_km: prices.precio_por_km,
+      precio_completo: prices.precio_completo,
+      moneda: "GBP",
+      trenes_asignados,
+      trenes_unidades,
+      material_id: materialPick.material_id,
+      material_nombre: materialPick.material_nombre,
+      material_workshop: materialPick.material_workshop,
+      material: [materialPick.material_id],
+      servicios_bordo,
       origen_datos,
       patron: pattern,
       lands: [...new Set(paradas.map((id) => hubById.get(id)?.land).filter(Boolean))],
@@ -301,16 +481,15 @@ export function generateLines({
     });
 
     let guard = 0;
-    while (made < quota && guard < quota * 40) {
+    while (made < quota && guard < quota * 60) {
       guard++;
       const a = pick(localPool, seed + i * 7 + guard);
-      const neighbors = nearestHubs(a, localPool, 18, maxDistanceFor(tipoId));
+      const neighbors = nearestHubs(a, localPool, 24, maxDistanceFor(tipoId));
       if (!neighbors.length) continue;
       const b = pick(neighbors, seed + i * 13 + guard);
       if (!["av", "ld", "px", "n", "ir", "tur"].includes(tipoId) && a.land !== b.land) continue;
       const pattern = patterns[guard % patterns.length];
       const ordered = pattern === "retorno" ? [b, a] : [a, b];
-      // construir paradas intermedias por proximidad en el mismo land / vecinos
       const pool = localPool.filter(
         (h) => h.land === a.land || h.land === b.land || ["av", "ld", "ir", "px", "n"].includes(tipoId)
       );
@@ -321,17 +500,20 @@ export function generateLines({
     }
 
     guard = 0;
-    while (made < quota && guard < quota * 25) {
+    while (made < quota && guard < quota * 50) {
       guard++;
       const a = pick(hubs, seed + i * 17 + guard);
       const b = pick(hubs, seed + i * 19 + guard * 3);
       const pattern = patterns[guard % patterns.length];
       const ordered = pattern === "retorno" ? [b, a] : [a, b];
+      // Variar el número máximo de paradas para diversificar rutas
+      const maxStops = 4 + ((seed + guard + i) % 12);
       const stops =
         pattern === "directo"
           ? ordered
-          : nearestPath(ordered[0], ordered[1], hubs, 8);
-      const ok = tryPush({ stops, tipoId, corridor: null, i: i++, pattern });
+          : nearestPath(ordered[0], ordered[1], hubs, maxStops);
+      // Permitir segundo operador del pool rotando el índice
+      const ok = tryPush({ stops, tipoId, corridor: null, i: i++ + guard, pattern });
       if (ok) made++;
     }
   }
