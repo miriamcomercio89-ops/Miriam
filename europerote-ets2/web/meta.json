@@ -1,6 +1,6 @@
 {
   "version": "4.0.0",
-  "generado": "2026-07-31T15:48:02.294Z",
+  "generado": "2026-07-31T15:48:19.742Z",
   "total": 1675,
   "chunks": 5,
   "chunkSize": 350,
@@ -52,6 +52,6 @@
     "y2": 124760.375,
     "attribution": "Mapa ProMods vía ets2.online"
   },
-  "cdnBase": "https://cdn.jsdelivr.net/gh/miriamcomercio89-ops/Miriam@2b64a0ff64ec126187726c598d52a4a8a9cb5fdf/europerote-ets2/web",
-  "commit": "2b64a0ff64ec126187726c598d52a4a8a9cb5fdf"
+  "cdnBase": "https://cdn.jsdelivr.net/gh/miriamcomercio89-ops/Miriam@93769cfe8ca576fe4ffcb61d000beb631c4ee240/europerote-ets2/web",
+  "commit": "93769cfe8ca576fe4ffcb61d000beb631c4ee240"
 }
