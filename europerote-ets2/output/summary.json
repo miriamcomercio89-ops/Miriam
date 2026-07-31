@@ -1,6 +1,6 @@
 {
   "version": "3.0.0",
-  "generado": "2026-07-31T13:29:54.314Z",
+  "generado": "2026-07-31T13:45:44.479Z",
   "operador": {
     "id": "europerote",
     "nombre": "EuroPerote",
@@ -12,18 +12,18 @@
     "tipo": "internacional",
     "descripcion": "Único operador de la red EuroPerote: servicios urbanos, interurbanos, express, nocturnos, turísticos, aeroportuarios e internacionales sobre el mapa ProMods (Europe + Middle East + The Great Steppe) y complementos compatibles."
   },
-  "total_rutas": 2656,
-  "ciudades_reales": 308,
+  "total_rutas": 9519,
+  "ciudades_reales": 647,
   "solo_promods_real": true,
   "por_tipo": {
     "urb": 0,
-    "reg": 969,
-    "exp": 748,
-    "int": 668,
-    "noc": 99,
-    "tur": 2,
+    "reg": 2657,
+    "exp": 3103,
+    "int": 2733,
+    "noc": 339,
+    "tur": 17,
     "ae": 0,
-    "fer": 170,
+    "fer": 670,
     "brt": 0
   },
   "codigos_ejemplo": [
@@ -36,6 +36,6 @@
     "AT-EXP-0007",
     "AT-EXP-0008"
   ],
-  "nacionales": 1367,
-  "internacionales": 1289
+  "nacionales": 4695,
+  "internacionales": 4824
 }

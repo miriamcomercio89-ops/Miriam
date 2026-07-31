@@ -7,6 +7,7 @@
     "generate": "node scripts/generate-routes.mjs",
     "geocode": "node scripts/geocode-cities.mjs",
     "export:html": "node scripts/export-html.mjs",
-    "build": "npm run generate && npm run export:html"
+    "build": "npm run generate && npm run export:html",
+    "rebuild-stops": "node scripts/rebuild-stops.mjs"
   }
 }
