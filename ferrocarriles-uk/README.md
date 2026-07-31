@@ -1,24 +1,18 @@
-# Ferrocarriles UK
+# Ferrocarriles Alemania
 
-Diseño + generador de una red ferroviaria del **Reino Unido** para Nimby Rails.
+Diseño + generador de una red ferroviaria de **Alemania** para Nimby Rails.
 
 ## Contenido
 
-- **101 operadores**: actuales (TOCs/open access/metro-tranvía), futuros e inventados (nombres en español)
-- **16 tipos de línea** con nomenclatura por prefijo; color = color del operador
-- Flota amplia orientada al Workshop
-- Hubs UK + corredores (WCML, ECML, GWML, Elizabeth line, etc.)
-- Miles de rutas con **lista completa de paradas**
-- Catálogo navegable en **HTML** (no hace falta PDF)
+- **101 operadores** con nombres en español según tipo y ubicación (Länder/ciudades): actuales, futuros e inventados
+- **16 tipos de línea** (AV, LD, RE, S-Bahn, **metro U**, **tranvía T**, tranvía-tren, aeropuerto, nocturno, turístico…)
+- Color de línea = color del operador
+- Hubs alemanes + corredores (ICE Norte–Sur, Rin, Berlín–Hamburgo, S-Bahn, metros, tranvías…)
+- Miles de rutas con **lista completa de paradas**, precios, frecuencias y material
 
-## Descargas / móvil
+## Abrir en el móvil
 
-**Importante:** el enlace “Raw” de GitHub muestra el archivo como texto. En el móvil abre esta URL (web interactiva):
-
-- Catálogo interactivo: https://htmlpreview.github.io/?https://github.com/miriamcomercio89-ops/Miriam/blob/6fd2cc15fca00e418f28d13b737e002d7b1f2ee4/ferrocarriles-uk/web/index.html
-- Landing: https://htmlpreview.github.io/?https://github.com/miriamcomercio89-ops/Miriam/blob/6fd2cc15fca00e418f28d13b737e002d7b1f2ee4/ferrocarriles-uk/ABRIR-EN-MOVIL.html
-
-Offline: descarga `catalogo-uk.zip` y abre `catalogo-uk.html` en el navegador.
+Tras regenerar, usa el enlace htmlpreview del commit publicado (ver `ABRIR-EN-MOVIL.html`).
 
 ## Uso
 
@@ -28,5 +22,3 @@ npm run build
 npm run generate:mass
 npm run export:html
 ```
-
-Abre `web/index-local.html` con un servidor local, o `catalogo-uk.html` (todo en un archivo).

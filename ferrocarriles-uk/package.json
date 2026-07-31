@@ -1,8 +1,8 @@
 {
-  "name": "ferrocarriles-uk",
-  "version": "0.3.0",
+  "name": "ferrocarriles-alemania",
+  "version": "0.4.0",
   "private": true,
-  "description": "Generador y diseño de la red ferroviaria del Reino Unido (Nimby Rails): operadores actuales/futuros/inventados y miles de rutas con paradas",
+  "description": "Generador y diseño de la red ferroviaria de Alemania (Nimby Rails): operadores actuales/futuros/inventados (nombres en español) y miles de rutas con paradas, metro y tranvía",
   "type": "module",
   "scripts": {
     "build": "node scripts/build.mjs",

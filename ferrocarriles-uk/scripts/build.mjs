@@ -78,11 +78,11 @@ generateLogos(withFleet);
 
 const operatorsDoc = {
   version: "0.3.0",
-  pais: "Reino Unido",
+  pais: "Alemania",
   generado: new Date().toISOString(),
   idioma: "es",
   regla_color: "color de línea = color del operador",
-  nota: "Actuales/futuros con nombres oficiales o proyectados; inventados en español.",
+  nota: "Ambientado en Alemania. Nombres en español según tipo de servicio y ubicación (Land/ciudad).",
   total: withFleet.length,
   lands,
   operators: withFleet,

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 128 128" role="img" aria-label="Cercanías Hanseáticas">
-  <rect width="128" height="128" rx="24" fill="#172554"/>
-  <g transform="translate(0,-6)"><g fill="none" stroke="#FDE68A" stroke-width="8" stroke-linecap="round"><circle cx="64" cy="34" r="10"/><line x1="64" y1="44" x2="64" y2="96"/><path d="M36 72 Q64 104 92 72"/><line x1="48" y1="60" x2="80" y2="60"/></g></g>
-  <rect x="16" y="96" width="96" height="22" rx="8" fill="#FDE68A" opacity="0.95"/>
-  <text x="64" y="112" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="700" fill="#172554">CHA</text>
-  <title>Cercanías Hanseáticas</title>
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 128 128" role="img" aria-label="Cercanías Hamburgo">
+  <rect width="128" height="128" rx="24" fill="#8AB96E"/>
+  <g transform="translate(0,-6)"><circle cx="64" cy="64" r="34" fill="none" stroke="#FFFFFF" stroke-width="12"/></g>
+  <rect x="16" y="96" width="96" height="22" rx="8" fill="#FFFFFF" opacity="0.95"/>
+  <text x="64" y="112" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="700" fill="#8AB96E">SHH</text>
+  <title>Cercanías Hamburgo</title>
 </svg>

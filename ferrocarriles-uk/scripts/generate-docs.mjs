@@ -31,10 +31,10 @@ export function generateDocs({ operators, lands, lineTypes, fleet, hubs, corrido
     byEstado[e] = (byEstado[e] || 0) + 1;
   }
 
-  const operadoresMd = `# Catálogo de operadores — Reino Unido
+  const operadoresMd = `# Catálogo de operadores — Alemania
 
 Versión del catálogo: **${operators.length} operadores**.
-Ámbito: **Reino Unido** (actuales, futuros e inventados).
+Ámbito: **Alemania** (actuales, futuros e inventados).
 Inventados: nombres en **español**. Actuales/futuros: nombres oficiales o proyectados.
 Regla de color: **cada línea hereda el color del operador**.
 
@@ -145,11 +145,11 @@ Cada línea generada incluye:
 - \`origen_datos\`: \`real\` | \`ficticia\` | \`hibrida\`
 `;
 
-  const disenoMd = `# Diseño del sistema ferroviario — Reino Unido
+  const disenoMd = `# Diseño del sistema ferroviario — Alemania
 
 ## Objetivo
 
-Recrear una red **supercompleta** en el Reino Unido para Nimby Rails:
+Recrear una red **supercompleta** en el Alemania para Nimby Rails:
 
 - Base **realista** (corredores, nodos y jerarquía reconocibles).
 - Miles de **líneas nuevas ficticias** que densifican la red.

@@ -1,5 +1,5 @@
 /**
- * Generador UK: corredores + cuotas + paradas completas.
+ * Generador Alemania: corredores + cuotas + paradas completas.
  */
 
 function pick(arr, i) {
@@ -269,7 +269,10 @@ function makeCodigo(tipo, num, areaCode) {
 }
 
 function shortName(nombre) {
-  return nombre.replace(/^Londres /, "").replace(/ Central$/, "").replace(/ Parkway$/, "");
+  return String(nombre)
+    .replace(/ Hauptbahnhof$/, " Hbf")
+    .replace(/ Aeropuerto$/, " Aerop.")
+    .replace(/ Zoologischer Garten$/, " Zoo");
 }
 
 function nearestHubs(hub, hubs, limit, maxKm) {

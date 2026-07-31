@@ -1,8 +1,8 @@
-# Diseño del sistema ferroviario — Reino Unido
+# Diseño del sistema ferroviario — Alemania
 
 ## Objetivo
 
-Recrear una red **supercompleta** en el Reino Unido para Nimby Rails:
+Recrear una red **supercompleta** en el Alemania para Nimby Rails:
 
 - Base **realista** (corredores, nodos y jerarquía reconocibles).
 - Miles de **líneas nuevas ficticias** que densifican la red.
@@ -32,29 +32,33 @@ Recrear una red **supercompleta** en el Reino Unido para Nimby Rails:
 
 | Tipo | Cantidad | Notas |
 | --- | --- | --- |
-| nacional | 20 | Ejes federales y competencia abierta |
-| regional | 38 | 1–3 por Land + operadores transversales |
-| especializado | 13 | Nocturno, turismo, aeropuerto, ferias, universidades |
-| metropolitano | 15 | S-Bahn de grandes áreas |
+| nacional | 16 | Ejes federales y competencia abierta |
 | internacional | 2 | Enlaces Francia/Benelux/Alpes/Polonia/Chequia |
-| urbano | 13 | Metro y tranvía |
+| especializado | 12 | Nocturno, turismo, aeropuerto, ferias, universidades |
+| regional | 33 | 1–3 por Land + operadores transversales |
+| metropolitano | 19 | S-Bahn de grandes áreas |
+| urbano | 19 | Metro y tranvía |
 
 ## Lands cubiertos
 
 | Código | Land | Capital |
 | --- | --- | --- |
-| `lon` | Gran Londres | Londres |
-| `se` | Sudeste de Inglaterra | Reading |
-| `sw` | Sudoeste de Inglaterra | Bristol |
-| `ee` | Este de Inglaterra | Cambridge |
-| `em` | Midlands Orientales | Nottingham |
-| `wm` | Midlands Occidentales | Birmingham |
-| `nw` | Noroeste de Inglaterra | Manchester |
-| `ne` | Noreste de Inglaterra | Newcastle |
-| `yh` | Yorkshire y Humber | Leeds |
-| `sct` | Escocia | Edimburgo |
-| `wls` | Gales | Cardiff |
-| `nir` | Irlanda del Norte | Belfast |
+| `be` | Berlín | Berlín |
+| `bb` | Brandeburgo | Potsdam |
+| `mv` | Mecklemburgo-Pomerania Occidental | Schwerin |
+| `sh` | Schleswig-Holstein | Kiel |
+| `hh` | Hamburgo | Hamburgo |
+| `ni` | Baja Sajonia | Hannover |
+| `hb` | Bremen | Bremen |
+| `nw` | Renania del Norte-Westfalia | Düsseldorf |
+| `he` | Hesse | Wiesbaden |
+| `rp` | Renania-Palatinado | Maguncia |
+| `sl` | Sarre | Sarrebruck |
+| `bw` | Baden-Wurtemberg | Stuttgart |
+| `by` | Baviera | Múnich |
+| `th` | Turingia | Erfurt |
+| `sn` | Sajonia | Dresde |
+| `st` | Sajonia-Anhalt | Magdeburgo |
 
 ## Flota
 
@@ -64,7 +68,7 @@ Recrear una red **supercompleta** en el Reino Unido para Nimby Rails:
 
 ## Hubs y corredores
 
-- Estaciones/hubs: **504**
+- Estaciones/hubs: **440**
 - Corredores: **28**
 - Detalle: `data/hubs.json`, `data/corridors.json`
 

@@ -1,35 +1,35 @@
 {
   "total": 10000,
-  "distancia_total_km": 850177,
-  "paradas_totales_en_rutas": 45468,
-  "media_paradas": 4.5,
+  "distancia_total_km": 937162,
+  "paradas_totales_en_rutas": 37609,
+  "media_paradas": 3.8,
   "por_tipo": {
-    "av": 393,
-    "ld": 981,
-    "ir": 687,
-    "re": 1569,
-    "rb": 1568,
-    "s": 1176,
-    "u": 392,
-    "t": 392,
-    "tt": 196,
-    "ae": 245,
-    "n": 147,
-    "tur": 294,
-    "or": 294,
-    "px": 392,
-    "mc": 294,
-    "rl": 980
+    "av": 399,
+    "ld": 896,
+    "ir": 598,
+    "re": 1394,
+    "rb": 1294,
+    "s": 1194,
+    "u": 696,
+    "t": 696,
+    "tt": 298,
+    "ae": 248,
+    "n": 149,
+    "tur": 298,
+    "or": 348,
+    "px": 348,
+    "mc": 348,
+    "rl": 796
   },
   "por_origen_datos": {
-    "real": 6318,
-    "ficticia": 742,
-    "hibrida": 2940
+    "real": 7996,
+    "ficticia": 793,
+    "hibrida": 1211
   },
   "por_estado_operador": {
-    "inventado": 4189,
-    "futuro": 1099,
-    "actual": 4712
+    "futuro": 1426,
+    "actual": 3858,
+    "inventado": 4716
   },
   "operadores_distintos": 101
 }

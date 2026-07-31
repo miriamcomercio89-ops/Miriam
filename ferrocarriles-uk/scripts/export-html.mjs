@@ -145,7 +145,7 @@ const landing = `<!doctype html>
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Abrir Ferrocarriles UK</title>
+<title>Abrir Ferrocarriles Alemania</title>
 <style>
   body{margin:0;min-height:100vh;display:grid;place-items:center;padding:1.5rem;font-family:system-ui,sans-serif;
   background:linear-gradient(180deg,#efe7da,#f4efe6);color:#101820}
@@ -158,7 +158,7 @@ const landing = `<!doctype html>
 </head>
 <body>
 <div class="c">
-  <h1>UK Rail Atlas</h1>
+  <h1>Atlas Ferroviario DE</h1>
   <p>En GitHub el archivo se ve como texto. Usa este botón para abrir la <strong>web interactiva</strong> en el móvil.</p>
   <a class="btn" href="https://htmlpreview.github.io/?https://github.com/${REPO}/blob/${BRANCH}/ferrocarriles-uk/web/index.html">Abrir catálogo interactivo</a>
   <p class="note">También puedes descargar el ZIP y abrir <code>catalogo-uk.html</code> en el navegador (Chrome/Safari → Archivos).</p>
@@ -187,7 +187,9 @@ fs.mkdirSync(artifactDir, { recursive: true });
 const targets = [
   path.join(outDir, "catalogo-uk.html"),
   path.join(root, "catalogo-uk.html"),
+  path.join(artifactDir, "ferrocarriles-alemania.html"),
   path.join(artifactDir, "ferrocarriles-uk.html"),
+  path.join("/workspace", "ferrocarriles-alemania.html"),
   path.join("/workspace", "ferrocarriles-uk.html"),
 ];
 for (const t of targets) {
@@ -199,7 +201,7 @@ spawnSync(
   "zip",
   [
     "-r",
-    path.join(artifactDir, "ferrocarriles-uk-catalogo.zip"),
+    path.join(artifactDir, "ferrocarriles-alemania-catalogo.zip"),
     path.join(root, "catalogo-uk.html"),
     path.join(root, "ABRIR-EN-MOVIL.html"),
     path.join(webDir, "index.html"),
@@ -212,10 +214,11 @@ spawnSync("zip", ["-r", path.join(root, "catalogo-uk.zip"), "catalogo-uk.html", 
   cwd: root,
   stdio: "inherit",
 });
+fs.copyFileSync(path.join(root, "catalogo-uk.zip"), path.join(artifactDir, "ferrocarriles-alemania-catalogo.zip"));
 fs.copyFileSync(path.join(root, "catalogo-uk.zip"), path.join(artifactDir, "ferrocarriles-uk-catalogo.zip"));
 
-const previewUrl = `https://htmlpreview.github.io/?https://github.com/${REPO}/blob/${BRANCH}/ferrocarriles-uk/web/index.html`;
-const openUrl = `https://htmlpreview.github.io/?https://github.com/${REPO}/blob/${BRANCH}/ferrocarriles-uk/ABRIR-EN-MOVIL.html`;
+const previewUrl = `https://htmlpreview.github.io/?https://github.com/${REPO}/blob/${CDN_REF}/ferrocarriles-uk/web/index.html`;
+const openUrl = `https://htmlpreview.github.io/?https://github.com/${REPO}/blob/${CDN_REF}/ferrocarriles-uk/ABRIR-EN-MOVIL.html`;
 
 console.log(`HTML offline: ${Math.round(offlineHtml.length / 1024)} KB`);
 console.log(`Web chunks: ${chunks.length} × ~${CHUNK} rutas`);
