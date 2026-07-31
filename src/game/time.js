@@ -1,8 +1,12 @@
 import { OFFICE } from './state.js';
 import { isHoliday, holidayName } from '../data/holidays.js';
 
-/** Base: el tiempo de juego avanza 4× más lento (0.25). speed lo multiplica. */
-const BASE_SCALE = 0.25;
+/**
+ * Escala base: 1 minuto real = 30 minutos de juego.
+ * (60_000 ms reales → 1_800_000 ms de juego → factor 30)
+ * speed multiplica: 1 normal, 2 rápido, 4 muy rápido.
+ */
+export const BASE_SCALE = 30;
 
 export function advanceClock(state, nowRealMs = Date.now()) {
   const clock = state.clock;
@@ -14,9 +18,6 @@ export function advanceClock(state, nowRealMs = Date.now()) {
   const gameDelta = elapsed * BASE_SCALE * clock.speed;
   clock.gameTimeMs += gameDelta;
   clock.lastRealMs = nowRealMs;
-
-  // Si pasa de las 20:00 en día abierto, no forzamos cierre automático aquí
-  // (el jugador hace el balance). Pero paramos spawns fuera de horario vía isOpenHours.
   return state;
 }
 
@@ -104,7 +105,6 @@ export function nextBusinessDayStart(state) {
   const d = gameDate(state);
   d.setUTCDate(d.getUTCDate() + 1);
   d.setUTCHours(OFFICE.openHour, 0, 0, 0);
-  // Avanzar mientras sea fin de semana o festivo
   let guard = 0;
   while (guard++ < 370) {
     const ymd = d.toISOString().slice(0, 10);
@@ -118,8 +118,19 @@ export function nextBusinessDayStart(state) {
 
 export function speedLabel(speed, paused) {
   if (paused || speed === 0) return 'Pausa';
-  if (speed === 1) return 'Normal';
+  if (speed === 1) return 'Normal (1 min = 30 min)';
+  if (speed === 2) return 'Rápido (1 min = 1 h)';
+  if (speed === 4) return 'Muy rápido (1 min = 2 h)';
+  // Compat saves antiguos
   if (speed === 15) return 'Rápido';
   if (speed === 60) return 'Muy rápido';
   return `${speed}×`;
+}
+
+/** Normaliza velocidades antiguas (15/60) a 2/4 */
+export function normalizeSpeed(speed) {
+  if (speed === 15) return 2;
+  if (speed === 60) return 4;
+  if (speed === 0 || speed === 1 || speed === 2 || speed === 4) return speed;
+  return 1;
 }

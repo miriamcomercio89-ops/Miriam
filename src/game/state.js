@@ -9,11 +9,19 @@ import { ensureJackpots } from './jackpots.js';
 import { seedDefaultShowcase, ensureShowcase } from './showcase.js';
 
 export const STARTING_BANK_CENTS = 950000;
-export const SAVE_VERSION = 12;
-export const GAME_VERSION = '1.3';
+export const SAVE_VERSION = 13;
+export const GAME_VERSION = '1.4';
 export const SLOT_COUNT = 3;
 export const STORAGE_PREFIX = 'loterias-alora-slot-';
 export const HIGH_PRIZE_ALERT_CENTS = 200000; // 2.000 €
+
+/** Compat: velocidades antiguas 15/60 → 2/4 */
+export function normalizeSpeedSetting(speed) {
+  if (speed === 15) return 2;
+  if (speed === 60) return 4;
+  if (speed === 0 || speed === 1 || speed === 2 || speed === 4) return speed;
+  return 1;
+}
 
 export const OFFICE = {
   openHour: 8,
@@ -85,6 +93,7 @@ export function createNewGame(options = {}) {
       dayExpensesCents: 0,
       dayShortageCents: 0,
       daySurplusCents: 0,
+      dayTipCents: 0,
       arqueoLog: [],
       changeErrorsToday: 0,
       lastSettlement: null,
@@ -186,8 +195,13 @@ export function migrateState(data) {
     musicVolume: data.settings.musicVolume ?? 0.45,
     sfxVolume: data.settings.sfxVolume ?? 0.7,
     fontScale: data.settings.fontScale || 1,
-    defaultSpeed: data.settings.defaultSpeed ?? 1,
+    defaultSpeed: normalizeSpeedSetting(data.settings.defaultSpeed ?? 1),
   };
+  if (data.clock) data.clock.speed = normalizeSpeedSetting(data.clock.speed ?? data.settings.defaultSpeed);
+  data.finance = data.finance || {};
+  data.finance.dayTipCents = data.finance.dayTipCents || 0;
+  data.stats = data.stats || {};
+  data.stats.totalTipCents = data.stats.totalTipCents || 0;
   if (!data.customers.abonados || !data.customers.penas) {
     const { abonados, penas } = generateAbonadosAndPenas();
     data.customers.abonados = data.customers.abonados || abonados;

@@ -69,21 +69,79 @@ export function openClientPaymentWindow(state) {
       hashSeed('tender', state.clock.gameTimeMs, ps.clientId || 'x', ps.totalCents),
     );
     ps.tendered = generateClientTender(ps.totalCents, rng);
+    // A veces fuerza billete grande (50/100) para poner a prueba el cambio
+    if (rng() < 0.18 && ps.totalCents <= 4500) {
+      ps.tendered = emptyDrawer();
+      ps.tendered.b50 = 1;
+    } else if (rng() < 0.1 && ps.totalCents <= 9000) {
+      ps.tendered = emptyDrawer();
+      ps.tendered.b100 = 1;
+    }
     ps.tenderLocked = true;
     const given = countTotalCents(ps.tendered);
     ps.changeNeededCents = Math.max(0, given - ps.totalCents);
-    // Miriam calcula el cambio a mano: sin sugerencia automática
     ps.changeGiven = emptyDrawer();
-    ps.step = 'cash-change';
-    state.ui.toast =
-      ps.changeNeededCents > 0
-        ? `${ps.clientName} entrega ${formatEuro(given)}. Calcula el cambio.`
-        : `${ps.clientName} entrega el importe exacto.`;
+    ps.tipOffer = null;
+    ps.tipAcceptedCents = 0;
+    ps.noChangePossible = false;
+
+    if (ps.changeNeededCents > 0 && !makeChange(state.finance.drawer, ps.changeNeededCents)) {
+      ps.noChangePossible = true;
+      ps.step = 'cash-no-change';
+      ps.error = `No tienes cambio para devolver ${formatEuro(ps.changeNeededCents)}. El cliente debe pagar de otra forma.`;
+      state.ui.toast = `${ps.clientName} te da ${formatEuro(given)} y no tienes cambio.`;
+      state.dayLog.push({
+        at: state.clock.gameTimeMs,
+        text: `Sin cambio: ${ps.clientName} entregó ${formatEuro(given)} (falta ${formatEuro(ps.changeNeededCents)})`,
+      });
+    } else {
+      ps.step = 'cash-change';
+      // Propina / “quédate el céntimo”
+      if (ps.changeNeededCents > 0 && ps.changeNeededCents <= 100 && rng() < 0.4) {
+        ps.tipOffer = {
+          cents: ps.changeNeededCents,
+          message: 'Quédate el cambio / los céntimos',
+        };
+      } else if (ps.changeNeededCents > 100 && ps.changeNeededCents <= 200 && rng() < 0.18) {
+        ps.tipOffer = {
+          cents: ps.changeNeededCents,
+          message: 'Déjalo, quédate eso',
+        };
+      }
+      state.ui.toast =
+        ps.changeNeededCents > 0
+          ? `${ps.clientName} entrega ${formatEuro(given)}. Calcula el cambio.`
+          : `${ps.clientName} entrega el importe exacto.`;
+    }
   } else {
     ps.tenderLocked = false;
     ps.step = 'electronic';
     state.ui.toast = `${ps.clientName} quiere pagar con ${labelMethod(method)}.`;
   }
+  return state;
+}
+
+/** Aceptar “quédate el cambio”: no se devuelve nada; cuenta como propina. */
+export function acceptClientTip(state) {
+  const ps = state.ui.paymentSession;
+  if (!ps?.tipOffer) return state;
+  ps.tipAcceptedCents = ps.tipOffer.cents;
+  ps.changeNeededCents = 0;
+  ps.changeGiven = emptyDrawer();
+  ps.tipOffer = null;
+  ps.error = null;
+  state.ui.toast = `El cliente te deja ${formatEuro(ps.tipAcceptedCents)}. Confirma el cobro.`;
+  return state;
+}
+
+/** Rechazar propina: hay que dar el cambio completo. */
+export function declineClientTip(state) {
+  const ps = state.ui.paymentSession;
+  if (!ps?.tipOffer) return state;
+  ps.changeNeededCents = ps.tipOffer.cents;
+  ps.tipOffer = null;
+  ps.error = null;
+  state.ui.toast = 'El cliente espera su cambio.';
   return state;
 }
 
@@ -303,11 +361,21 @@ export function confirmChange(state) {
     return state;
   }
   state.finance.drawer = drawer;
+  if (ps.tipAcceptedCents > 0) {
+    state.finance.dayTipCents = (state.finance.dayTipCents || 0) + ps.tipAcceptedCents;
+    state.stats.totalTipCents = (state.stats.totalTipCents || 0) + ps.tipAcceptedCents;
+    state.dayLog.push({
+      at: state.clock.gameTimeMs,
+      text: `Propina / céntimos: ${formatEuro(ps.tipAcceptedCents)} (${ps.clientName})`,
+    });
+  }
   applySaleAccounting(state, ps, 'cash');
   ps.step = 'done';
-  state.ui.toast = changeNeeded
-    ? `Venta OK. Cambio: ${formatEuro(changeNeeded)}`
-    : `Venta OK. Importe exacto.`;
+  state.ui.toast = ps.tipAcceptedCents
+    ? `Venta OK. Te dejan ${formatEuro(ps.tipAcceptedCents)}.`
+    : changeNeeded
+      ? `Venta OK. Cambio: ${formatEuro(changeNeeded)}`
+      : `Venta OK. Importe exacto.`;
   finishSaleSideEffects(state);
   return state;
 }

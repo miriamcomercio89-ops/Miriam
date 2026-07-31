@@ -218,6 +218,7 @@ export function closeDay(state) {
   state.finance.dayExpensesCents = 0;
   state.finance.dayShortageCents = 0;
   state.finance.daySurplusCents = 0;
+  state.finance.dayTipCents = 0;
   state.finance.changeErrorsToday = 0;
   state.customers.servedToday = 0;
   state.customers.current = null;

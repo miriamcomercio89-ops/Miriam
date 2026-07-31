@@ -10,6 +10,7 @@ import {
   closedReason,
   isClosedDay,
   speedLabel,
+  normalizeSpeed,
 } from './game/time.js';
 import {
   listSlots,
@@ -48,6 +49,8 @@ import {
   drawerTotalCents,
   confirmElectronicPayment,
   clientSwitchPayment,
+  acceptClientTip,
+  declineClientTip,
 } from './game/cash.js';
 import {
   buildDayCloseSummary,
@@ -178,7 +181,14 @@ import {
   isOnceExtraSellable,
   onceExtraToday,
 } from './game/notices.js';
-import { depositCashToBank, withdrawBankToCash } from './game/bank.js';
+import {
+  depositCashToBank,
+  withdrawBankToCash,
+  withdrawMondayFloat,
+  mondayFloatDoneToday,
+  mondayFloatCents,
+  MONDAY_FLOAT_COUNTS,
+} from './game/bank.js';
 import { buildTownBoard } from './data/board.js';
 import { currentMonthStatement } from './game/monthly.js';
 import { maybeLowCashAlert, dismissLowCashAlert } from './game/alerts.js';
@@ -290,12 +300,42 @@ function maybeMondayHint() {
   if (state.ui.mondayHintYmd === ymd) return;
   state.ui.mondayHintYmd = ymd;
   const { low } = mondayScratchInventory(state);
+  const floatHint = mondayFloatDoneToday(state)
+    ? ''
+    : ` · Retira el fondo de cambio (${formatEuro(mondayFloatCents())})`;
   if (low.length) {
-    showToast(`Lunes: ${low.length} rascas bajos de stock · Extracto semanal + inventario rascas`);
+    showToast(
+      `Lunes: ${low.length} rascas bajos · Extracto semanal + inventario${floatHint}`,
+    );
   } else {
-    showToast('Lunes: revisa el extracto semanal e inventario de rascas.');
+    showToast(`Lunes: extracto semanal e inventario de rascas${floatHint}.`);
   }
   needsFullRender = true;
+}
+
+function mondayFloatBannerHTML() {
+  if (!isMonday(state) || mondayFloatDoneToday(state)) return '';
+  return `<div class="alert-banner monday-float-banner">
+    <strong>Lunes · Fondo de cambio</strong>
+    <span>Retira ${formatEuro(mondayFloatCents())} en monedas y billetes pequeños del banco.</span>
+    <button class="btn primary" style="margin-left:8px;padding:4px 12px" id="btn-monday-float-counter">Retirar ahora</button>
+    <button class="btn" style="margin-left:6px;padding:4px 10px" data-nav="bank">Ir a caja ↔ banco</button>
+  </div>`;
+}
+
+function bindMondayFloatBanner() {
+  const btn = document.getElementById('btn-monday-float-counter');
+  if (!btn) return;
+  btn.onclick = () => {
+    const ok = withdrawMondayFloat(state);
+    if (ok) {
+      sfx.coins();
+      sfx.cash();
+    } else sfx.error();
+    showToast(state.ui.toast);
+    needsFullRender = true;
+    render();
+  };
 }
 
 function renderClockOnly() {
@@ -554,7 +594,7 @@ function renderMenu() {
         </div>
         <p class="disclaimer">
           Fan-made / no oficial. Nombres de Loterías y Apuestas del Estado y ONCE usados solo con fines de simulación.
-          Juego responsable · +18. Versión ${GAME_VERSION}: cifras del cliente, atajos TPV, errores de cobro, PDF con estilo y menús a todo color.
+          Juego responsable · +18. Versión ${GAME_VERSION}: 1 min real = 30 min juego · teclado numérico · fondo de cambio lunes · propinas / sin cambio.
         </p>
       </div>
     </div>
@@ -694,9 +734,9 @@ function topbarHTML() {
       </div>
       <div class="speed-controls">
         <button class="btn ${speed === 0 ? 'active' : ''}" data-speed="0">Pausa</button>
-        <button class="btn ${speed === 1 ? 'active' : ''}" data-speed="1">Normal</button>
-        <button class="btn ${speed === 15 ? 'active' : ''}" data-speed="15">Rápido</button>
-        <button class="btn ${speed === 60 ? 'active' : ''}" data-speed="60">Muy rápido</button>
+        <button class="btn ${speed === 1 ? 'active' : ''}" data-speed="1" title="1 min real = 30 min juego">Normal</button>
+        <button class="btn ${speed === 2 ? 'active' : ''}" data-speed="2" title="1 min real = 1 h juego">Rápido</button>
+        <button class="btn ${speed === 4 ? 'active' : ''}" data-speed="4" title="1 min real = 2 h juego">Muy rápido</button>
       </div>
     </header>
     ${drawNoticeBannerHTML()}
@@ -709,7 +749,7 @@ function bindTopbar() {
   app.querySelectorAll('[data-speed]').forEach((btn) => {
     btn.onclick = () => {
       sfx.click();
-      const speed = Number(btn.getAttribute('data-speed'));
+      const speed = normalizeSpeed(Number(btn.getAttribute('data-speed')));
       setSpeed(state, speed);
       if (speed === 0) {
         state.ui.pauseSummary = {
@@ -779,6 +819,7 @@ function sideNav() {
       <div class="stat-row"><span>Beneficio hoy*</span><strong>${formatEuro(profit.profitCents)}</strong></div>
       <div class="stat-row"><span>Faltante hoy</span><strong>${formatEuro(profit.shortageCents || 0)}</strong></div>
       <div class="stat-row"><span>Clientes hoy</span><strong>${state.customers.servedToday}</strong></div>
+      <div class="stat-row"><span>Propinas hoy</span><strong>${formatEuro(state.finance.dayTipCents || 0)}</strong></div>
       <div class="stat-row"><span>En cola</span><strong>${state.customers.queue?.length || 0}</strong></div>
       <div class="stat-row"><span>Velocidad</span><strong>${speedLabel(state.clock.speed, state.clock.paused)}</strong></div>
       <p class="muted" style="font-size:0.78rem;margin-top:8px">*Comisiones − gastos − faltantes</p>
@@ -1009,6 +1050,7 @@ function renderCounter() {
         <section class="panel counter-stage">
           ${highPrizeAlertHTML()}
           ${lowCashAlertHTML()}
+          ${mondayFloatBannerHTML()}
           ${
             stockAlertBanner(state)
               ? `<div class="alert-banner stock-alert-banner">${escapeHtml(stockAlertBanner(state))}
@@ -1062,6 +1104,7 @@ function renderCounter() {
   bindNav();
   bindHighPrizeAlert();
   bindLowCashAlert();
+  bindMondayFloatBanner();
   bindClientActions();
   bindScratchOverlay();
   bindCalendarOrderButtons('counter', state.customers.current);
@@ -1517,10 +1560,29 @@ function numberEntryHTML(entry) {
     )
     .join('');
 
+  const padKeys = ['7', '8', '9', '4', '5', '6', '1', '2', '3', '⌫', '0', 'OK'];
+  const numpadHtml = `<div class="tpv-numpad" aria-label="Teclado numérico">
+    <div class="tpv-numpad-title">Teclado · Numpad 0–9 · ⌫ · Enter</div>
+    <div class="tpv-numpad-grid">
+      ${padKeys
+        .map((k) => {
+          const cls =
+            k === 'OK' ? 'numpad-key primary' : k === '⌫' ? 'numpad-key ghost' : 'numpad-key';
+          const attr =
+            k === 'OK' ? 'data-numpad="ok"' : k === '⌫' ? 'data-numpad="back"' : `data-numpad="${k}"`;
+          return `<button type="button" class="btn ${cls}" ${attr}>${k}</button>`;
+        })
+        .join('')}
+    </div>
+  </div>`;
+
   return `<div class="dictate-box number-entry-box">
     <strong>Marcar: ${escapeHtml(entry.productName || '')}</strong>
-    <p class="muted">${escapeHtml(dictateHint(entry.mode))} · Escribe en cada casilla o genera una a una</p>
-    ${slotsHtml}
+    <p class="muted">${escapeHtml(dictateHint(entry.mode))} · Casillas, teclado grande o numpad del PC</p>
+    <div class="number-entry-layout">
+      <div class="number-entry-slots">${slotsHtml}</div>
+      ${numpadHtml}
+    </div>
     <div class="actions" style="margin-top:10px;flex-wrap:wrap">
       <button class="btn primary" id="btn-dictate-ok">Confirmar números</button>
       <button class="btn" id="btn-slots-all">Generar todas</button>
@@ -2038,14 +2100,15 @@ function renderTpv() {
     const idx = Number(el.getAttribute('data-slot-idx'));
     const commit = () => {
       setNumberEntrySlot(state, idx, el.value);
-      // Auto-avance a la siguiente casilla vacía
       const inputs = [...app.querySelectorAll('[data-slot-idx]')];
       const next = inputs.find((inp, i) => i > idx && !inp.value);
       if (next && el.value !== '') next.focus();
     };
+    el.onfocus = () => {
+      if (state.ui.tpv?.numberEntry) state.ui.tpv.numberEntry.focusIdx = idx;
+    };
     el.oninput = () => {
       setNumberEntrySlot(state, idx, el.value);
-      // Digito: avanzar al escribir
       const slot = state.ui.tpv?.numberEntry?.slots?.[idx];
       if (slot?.type === 'digit' && el.value) {
         const inputs = [...app.querySelectorAll('[data-slot-idx]')];
@@ -2061,13 +2124,25 @@ function renderTpv() {
       }
     };
   });
+  // Enfocar primera casilla vacía al abrir
+  {
+    const inputs = [...app.querySelectorAll('input.slot-input[data-slot-idx]')];
+    const focusIdx = state.ui.tpv?.numberEntry?.focusIdx;
+    const preferred =
+      (focusIdx != null && inputs.find((inp) => Number(inp.getAttribute('data-slot-idx')) === focusIdx)) ||
+      inputs.find((inp) => !inp.value) ||
+      inputs[0];
+    if (preferred) {
+      setTimeout(() => preferred.focus(), 0);
+    }
+  }
+  bindNumberPad();
   app.querySelectorAll('[data-slot-rand]').forEach((btn) => {
     btn.onclick = () => {
       randomizeNumberEntrySlot(state, Number(btn.getAttribute('data-slot-rand')));
       sfx.tpv();
       needsFullRender = true;
       render();
-      // Refocus same index after re-render roughly
     };
   });
   const allBtn = document.getElementById('btn-slots-all');
@@ -2224,6 +2299,100 @@ function bindProductSheet() {
   }
 }
 
+/** Teclado en pantalla + helpers para casillas del TPV */
+function activeSlotInput() {
+  const focused = document.activeElement;
+  if (focused?.matches?.('input.slot-input[data-slot-idx], select.slot-input[data-slot-idx]')) {
+    return focused;
+  }
+  const idx = state?.ui?.tpv?.numberEntry?.focusIdx;
+  if (idx != null) {
+    const el = app.querySelector(`[data-slot-idx="${idx}"]`);
+    if (el) return el;
+  }
+  return (
+    [...app.querySelectorAll('input.slot-input[data-slot-idx]')].find((inp) => !inp.value) ||
+    app.querySelector('input.slot-input[data-slot-idx]')
+  );
+}
+
+function applyNumpadDigit(digit) {
+  const el = activeSlotInput();
+  if (!el || el.tagName === 'SELECT') return false;
+  const idx = Number(el.getAttribute('data-slot-idx'));
+  const slot = state.ui.tpv?.numberEntry?.slots?.[idx];
+  if (!slot || slot.type === 'choice') return false;
+  let next = String(el.value || '');
+  if (slot.type === 'digit') next = String(digit);
+  else next = (next + digit).replace(/\D/g, '').slice(0, 3);
+  el.value = next;
+  setNumberEntrySlot(state, idx, next);
+  state.ui.tpv.numberEntry.focusIdx = idx;
+  sfx.tpvBeep();
+  if (slot.type === 'digit' && next) {
+    const inputs = [...app.querySelectorAll('input.slot-input[data-slot-idx]')];
+    const cur = inputs.findIndex((inp) => Number(inp.getAttribute('data-slot-idx')) === idx);
+    const nxt = inputs[cur + 1];
+    if (nxt) {
+      nxt.focus();
+      state.ui.tpv.numberEntry.focusIdx = Number(nxt.getAttribute('data-slot-idx'));
+    }
+  } else {
+    el.focus();
+  }
+  return true;
+}
+
+function applyNumpadBackspace() {
+  const el = activeSlotInput();
+  if (!el || el.tagName === 'SELECT') return false;
+  const idx = Number(el.getAttribute('data-slot-idx'));
+  const slot = state.ui.tpv?.numberEntry?.slots?.[idx];
+  let next = String(el.value || '');
+  if (!next) {
+    const inputs = [...app.querySelectorAll('input.slot-input[data-slot-idx]')];
+    const cur = inputs.findIndex((inp) => Number(inp.getAttribute('data-slot-idx')) === idx);
+    const prev = inputs[cur - 1];
+    if (prev) {
+      prev.focus();
+      state.ui.tpv.numberEntry.focusIdx = Number(prev.getAttribute('data-slot-idx'));
+      if (!prev.value) {
+        /* stay */
+      } else if (state.ui.tpv.numberEntry.slots?.[Number(prev.getAttribute('data-slot-idx'))]?.type === 'digit') {
+        prev.value = '';
+        setNumberEntrySlot(state, Number(prev.getAttribute('data-slot-idx')), '');
+      }
+    }
+    sfx.click();
+    return true;
+  }
+  if (slot?.type === 'digit') next = '';
+  else next = next.slice(0, -1);
+  el.value = next;
+  setNumberEntrySlot(state, idx, next);
+  el.focus();
+  sfx.click();
+  return true;
+}
+
+function bindNumberPad() {
+  app.querySelectorAll('[data-numpad]').forEach((btn) => {
+    btn.onclick = (e) => {
+      e.preventDefault();
+      const code = btn.getAttribute('data-numpad');
+      if (code === 'ok') {
+        document.getElementById('btn-dictate-ok')?.click();
+        return;
+      }
+      if (code === 'back') {
+        applyNumpadBackspace();
+        return;
+      }
+      if (/^\d$/.test(code)) applyNumpadDigit(code);
+    };
+  });
+}
+
 function ensureTpvKeyboard() {
   if (tpvKeysBound) return;
   tpvKeysBound = true;
@@ -2231,7 +2400,12 @@ function ensureTpvKeyboard() {
     if (!state || state.ui.screen !== 'tpv' || !state.ui.tpv) return;
     const tpv = state.ui.tpv;
     const tag = (e.target?.tagName || '').toLowerCase();
-    const typing = tag === 'input' || tag === 'textarea';
+    const typing = tag === 'input' || tag === 'textarea' || tag === 'select';
+    const inNumberEntry = !!tpv.numberEntry;
+    const fromNumpad =
+      e.code?.startsWith('Numpad') ||
+      e.location === 3 ||
+      (e.key === 'Enter' && e.code === 'NumpadEnter');
 
     if ((e.ctrlKey || e.metaKey) && (e.key === 'z' || e.key === 'Z') && !typing) {
       e.preventDefault();
@@ -2264,8 +2438,44 @@ function ensureTpvKeyboard() {
       return;
     }
 
+    // Atajos numpad en entrada de cifras (también si el foco está en casilla)
+    if (inNumberEntry && fromNumpad) {
+      if (e.key === 'Enter' || e.code === 'NumpadEnter') {
+        e.preventDefault();
+        document.getElementById('btn-dictate-ok')?.click();
+        return;
+      }
+      if (e.key === 'Backspace' || e.code === 'NumpadDecimal' || e.key === 'Delete') {
+        e.preventDefault();
+        applyNumpadBackspace();
+        return;
+      }
+      const digit = e.code?.startsWith('Numpad') ? e.code.replace('Numpad', '') : '';
+      if (/^\d$/.test(digit) || (/^\d$/.test(e.key) && fromNumpad)) {
+        e.preventDefault();
+        applyNumpadDigit(/^\d$/.test(digit) ? digit : e.key);
+        return;
+      }
+    }
+
+    // Digitos del numpad sin foco en input: también funcionan
+    if (inNumberEntry && !typing && /^\d$/.test(e.key) && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      e.preventDefault();
+      applyNumpadDigit(e.key);
+      return;
+    }
+    if (inNumberEntry && !typing && e.key === 'Backspace') {
+      e.preventDefault();
+      applyNumpadBackspace();
+      return;
+    }
+
     if (e.key === 'Enter' && !typing) {
       e.preventDefault();
+      if (inNumberEntry) {
+        document.getElementById('btn-dictate-ok')?.click();
+        return;
+      }
       goTpvChargeOrReceipt();
       return;
     }
@@ -2341,35 +2551,81 @@ function renderCash() {
         </div>
         ${clientMethodSwitchHTML(ps.method)}
       </div>`;
+  } else if (ps.step === 'cash-no-change') {
+    title = 'Cobro · Sin cambio';
+    const need = ps.changeNeededCents || 0;
+    body = `
+      <div class="pay-window pay-cash pay-no-change">
+        <div class="error-box" style="margin-bottom:12px">
+          <strong>No tienes cambio</strong> para devolver ${formatEuro(need)}.
+          El cliente ha sacado un billete grande y la caja no puede componerlo.
+        </div>
+        <p><strong>${escapeHtml(ps.clientName)}</strong> entregó ${formatEuro(tendered)} (total ${formatEuro(ps.totalCents)}).</p>
+        ${tenderReadonlyHTML(ps.tendered || {})}
+        <div class="totals" style="margin:12px 0">
+          <div class="total-box">En caja<strong>${formatEuro(drawerTotalCents(state.finance.drawer))}</strong></div>
+          <div class="total-box">Falta cambio<strong>${formatEuro(need)}</strong></div>
+        </div>
+        <p class="muted">Pide otra forma de pago o cancela el cobro.</p>
+        <div class="actions" style="margin-top:12px">
+          <button class="btn danger" id="btn-cancel-pay">Cancelar cobro</button>
+        </div>
+        ${clientMethodSwitchHTML('cash')}
+      </div>`;
   } else if (ps.step === 'cash-change') {
     title = 'Cobro · Efectivo';
     const need = ps.changeNeededCents || 0;
+    const tip = ps.tipOffer;
+    const tipAccepted = ps.tipAcceptedCents || 0;
+    let mid = '';
+    if (tip) {
+      mid = `<div class="tip-offer-box">
+        <div class="tip-offer-title">El cliente dice:</div>
+        <p class="tip-offer-msg">«${escapeHtml(tip.message)}» · ${formatEuro(tip.cents)}</p>
+        <div class="actions" style="flex-wrap:wrap">
+          <button class="btn primary" id="btn-tip-accept">Aceptar (quedártelo)</button>
+          <button class="btn" id="btn-tip-decline">Dar el cambio igual</button>
+        </div>
+      </div>`;
+    } else if (tipAccepted > 0) {
+      mid = `<div class="alert-banner" style="margin-top:12px">
+        <strong>Propina / céntimos:</strong> te dejan ${formatEuro(tipAccepted)}. Confirma el cobro.
+      </div>`;
+    } else if (need > 0) {
+      mid = `<h3 style="margin-top:16px">Tu turno: calcula el cambio</h3>
+         <p class="muted">Debes devolver exactamente ${formatEuro(need)}. Usa la caja (sin ayuda automática).</p>
+         <div class="totals">
+           <div class="total-box">A devolver<strong>${formatEuro(need)}</strong></div>
+           <div class="total-box">Tu selección<strong>${formatEuro(changeSum)}</strong></div>
+           <div class="total-box">En caja<strong>${formatEuro(drawerTotalCents(state.finance.drawer))}</strong></div>
+         </div>
+         <p class="muted cash-keys-hint">Atajos: 1–7 billetes · Q–I monedas · Shift=restar · Enter=confirmar</p>
+         ${denomEditor('change')}`;
+    } else {
+      mid = `<div class="alert-banner" style="margin-top:12px"><strong>Importe exacto</strong> — no hay cambio que devolver.</div>`;
+    }
     body = `
       <div class="pay-window pay-cash">
         <p><strong>${escapeHtml(ps.clientName)}</strong> paga en efectivo. Ya ha puesto el dinero en el mostrador.</p>
         <div class="totals" style="margin:12px 0">
           <div class="total-box">A cobrar<strong>${formatEuro(ps.totalCents)}</strong></div>
           <div class="total-box">Entregado<strong>${formatEuro(tendered)}</strong></div>
-          <div class="total-box">Cambio a dar<strong>${formatEuro(need)}</strong></div>
+          <div class="total-box">Cambio a dar<strong>${formatEuro(tip ? tip.cents : need)}</strong></div>
         </div>
         ${tenderReadonlyHTML(ps.tendered || {})}
+        ${mid}
         ${
-          need > 0
-            ? `<h3 style="margin-top:16px">Tu turno: calcula el cambio</h3>
-               <p class="muted">Debes devolver exactamente ${formatEuro(need)}. Usa la caja (sin ayuda automática).</p>
-               <div class="totals">
-                 <div class="total-box">A devolver<strong>${formatEuro(need)}</strong></div>
-                 <div class="total-box">Tu selección<strong>${formatEuro(changeSum)}</strong></div>
-                 <div class="total-box">En caja<strong>${formatEuro(drawerTotalCents(state.finance.drawer))}</strong></div>
-               </div>
-               <p class="muted cash-keys-hint">Atajos: 1–7 billetes · Q–I monedas · Shift=restar · Enter=confirmar</p>
-               ${denomEditor('change')}`
-            : `<div class="alert-banner" style="margin-top:12px"><strong>Importe exacto</strong> — no hay cambio que devolver.</div>`
+          tip
+            ? `<div class="actions" style="margin-top:12px">
+                <button class="btn danger" id="btn-cancel-pay">Cancelar</button>
+              </div>`
+            : `<div class="actions" style="margin-top:12px">
+                <button class="btn primary" id="btn-confirm-change">${
+                  need > 0 ? 'Confirmar cobro y cambio' : 'Confirmar cobro'
+                }</button>
+                <button class="btn danger" id="btn-cancel-pay">Cancelar</button>
+              </div>`
         }
-        <div class="actions" style="margin-top:12px">
-          <button class="btn primary" id="btn-confirm-change">${need > 0 ? 'Confirmar cobro y cambio' : 'Confirmar cobro'}</button>
-          <button class="btn danger" id="btn-cancel-pay">Cancelar</button>
-        </div>
         ${clientMethodSwitchHTML('cash')}
       </div>`;
   } else if (ps.step === 'method') {
@@ -2461,7 +2717,9 @@ function renderCash() {
       if (kind === 'tender' && ps.tenderLocked) return;
       if (kind === 'tender') adjustTender(state, id, delta);
       else adjustChange(state, id, delta);
-      sfx.click();
+      const isCoin = String(id).startsWith('e') || String(id).startsWith('c');
+      if (isCoin) sfx.coins();
+      else sfx.click();
       needsFullRender = true;
       render();
     };
@@ -2471,9 +2729,32 @@ function renderCash() {
   if (elec) {
     elec.onclick = () => {
       confirmElectronicPayment(state);
-      if (state.ui.paymentSession?.step === 'done') sfx.cash();
-      else if (state.ui.paymentSession?.error) sfx.deny();
+      if (state.ui.paymentSession?.step === 'done') {
+        sfx.tpvBeep();
+        sfx.cash();
+      } else if (state.ui.paymentSession?.error) sfx.deny();
       else sfx.click();
+      if (state.ui.toast) showToast(state.ui.toast);
+      needsFullRender = true;
+      render();
+    };
+  }
+
+  const tipAccept = document.getElementById('btn-tip-accept');
+  if (tipAccept) {
+    tipAccept.onclick = () => {
+      acceptClientTip(state);
+      sfx.coins();
+      if (state.ui.toast) showToast(state.ui.toast);
+      needsFullRender = true;
+      render();
+    };
+  }
+  const tipDecline = document.getElementById('btn-tip-decline');
+  if (tipDecline) {
+    tipDecline.onclick = () => {
+      declineClientTip(state);
+      sfx.click();
       if (state.ui.toast) showToast(state.ui.toast);
       needsFullRender = true;
       render();
@@ -2483,9 +2764,11 @@ function renderCash() {
   const cc = document.getElementById('btn-confirm-change');
   if (cc) {
     cc.onclick = () => {
+      const hadChange = (state.ui.paymentSession?.changeNeededCents || 0) > 0;
       confirmChange(state);
       if (state.ui.paymentSession?.error) sfx.error();
       else {
+        if (hadChange) sfx.coins();
         sfx.cash();
         if (state.ui.toast) showToast(state.ui.toast);
       }
@@ -2521,6 +2804,7 @@ function renderCash() {
         method: payLabel(ps.method),
         tickets: ps.createdTickets,
       });
+      sfx.paper();
       sfx.printer();
       showToast('PDF de venta descargado');
     };
@@ -2531,6 +2815,7 @@ function renderCash() {
       const t = (ps.createdTickets || []).find((x) => x.id === id);
       if (t) {
         downloadTicketPdf(t);
+        sfx.paper();
         sfx.printer();
       }
     };
@@ -2563,15 +2848,17 @@ function ensureCashKeyboard() {
   document.addEventListener('keydown', (ev) => {
     if (!state || state.ui.screen !== 'cash') return;
     const ps = state.ui.paymentSession;
-    // Solo en cambio: el cliente ya entregó el dinero
-    if (!ps || ps.step !== 'cash-change') return;
+    // Solo en cambio (sin oferta de propina pendiente): el cliente ya entregó
+    if (!ps || ps.step !== 'cash-change' || ps.tipOffer) return;
     const tag = (ev.target?.tagName || '').toLowerCase();
     if (tag === 'input' || tag === 'textarea') return;
     if (ev.key === 'Enter') {
       ev.preventDefault();
+      const hadChange = (ps.changeNeededCents || 0) > 0;
       confirmChange(state);
       if (state.ui.paymentSession?.error) sfx.error();
       else {
+        if (hadChange) sfx.coins();
         sfx.cash();
         if (state.ui.toast) showToast(state.ui.toast);
       }
@@ -2585,7 +2872,9 @@ function ensureCashKeyboard() {
     ev.preventDefault();
     const delta = ev.shiftKey ? -1 : 1;
     adjustChange(state, denomId, delta);
-    sfx.click();
+    const isCoin = denomId.startsWith('e') || denomId.startsWith('c');
+    if (isCoin) sfx.coins();
+    else sfx.click();
     needsFullRender = true;
     render();
   });
@@ -2644,6 +2933,7 @@ function renderClose() {
             <div class="stat-row"><span>Cajón</span><strong>${formatEuro(summary.drawerCents)}</strong></div>
             <div class="stat-row"><span>Banco</span><strong>${formatEuro(summary.bankCents)}</strong></div>
             <div class="stat-row"><span>Clientes</span><strong>${summary.customersServed}</strong></div>
+            <div class="stat-row"><span>Propinas / céntimos</span><strong>${formatEuro(state.finance.dayTipCents || 0)}</strong></div>
             <div class="stat-row"><span>Siguiente laborable</span><strong>${summary.nextDay}</strong></div>
           </div>
 
@@ -3907,6 +4197,36 @@ function renderBank() {
   if (!state.ui.bankWithdrawCounts) state.ui.bankWithdrawCounts = emptyDrawer();
   const counts = state.ui.bankWithdrawCounts;
   const sum = countTotalCents(counts);
+  const monday = isMonday(state);
+  const floatDone = mondayFloatDoneToday(state);
+  const floatAmt = mondayFloatCents();
+  const floatParts = Object.entries(MONDAY_FLOAT_COUNTS)
+    .filter(([, n]) => n > 0)
+    .map(([id, n]) => {
+      const d = [...BILLS, ...COINS].find((x) => x.id === id);
+      return `${n}×${d?.label || id}`;
+    })
+    .join(', ');
+  const mondayBlock = monday
+    ? `<div class="monday-float-panel ${floatDone ? 'done' : ''}">
+        <strong>Lunes · Fondo de cambio</strong>
+        <p class="muted" style="margin:6px 0">
+          ${
+            floatDone
+              ? 'Ya retiraste el fondo de cambio de hoy.'
+              : `Retira ${formatEuro(floatAmt)} en monedas y billetes pequeños del banco.`
+          }
+        </p>
+        ${floatDone ? '' : `<p class="muted" style="font-size:0.85rem">${escapeHtml(floatParts)}</p>`}
+        ${
+          floatDone
+            ? ''
+            : `<button class="btn primary" id="btn-monday-float" ${bank < floatAmt ? 'disabled' : ''}>
+                Retirar fondo ${formatEuro(floatAmt)}
+              </button>`
+        }
+      </div>`
+    : '';
   app.innerHTML = `
     <div class="shell">
       ${topbarHTML()}
@@ -3919,6 +4239,7 @@ function renderBank() {
             <div class="stat-row"><span>Efectivo en caja</span><strong>${formatEuro(cash)}</strong></div>
             <div class="stat-row"><span>Saldo banco</span><strong>${formatEuro(bank)}</strong></div>
           </div>
+          ${mondayBlock}
           <div class="actions" style="flex-wrap:wrap;align-items:flex-end;gap:12px">
             <label>Ingresar a banco (€)<br/>
               <input id="bank-deposit" type="number" min="0" step="0.01" placeholder="100" style="padding:8px;border-radius:10px;border:1px solid var(--line);width:140px" />
@@ -3963,6 +4284,19 @@ function renderBank() {
   bindTopbar();
   bindNav();
   const eurosToCents = (el) => Math.round((Number(el?.value) || 0) * 100);
+  const mondayFloatBtn = document.getElementById('btn-monday-float');
+  if (mondayFloatBtn) {
+    mondayFloatBtn.onclick = () => {
+      const ok = withdrawMondayFloat(state);
+      if (ok) {
+        sfx.coins();
+        sfx.cash();
+      } else sfx.error();
+      showToast(state.ui.toast);
+      needsFullRender = true;
+      render();
+    };
+  }
   document.getElementById('btn-bank-deposit').onclick = () => {
     const ok = depositCashToBank(state, eurosToCents(document.getElementById('bank-deposit')));
     if (ok) sfx.cash();
@@ -4007,6 +4341,7 @@ function renderBank() {
     const amt = countTotalCents(state.ui.bankWithdrawCounts);
     const ok = withdrawBankToCash(state, amt, state.ui.bankWithdrawCounts);
     if (ok) {
+      sfx.coins();
       sfx.cash();
       state.ui.bankWithdrawCounts = emptyDrawer();
     } else sfx.error();
@@ -4057,9 +4392,9 @@ function renderSettings() {
             </label>
             <label>Velocidad por defecto<br/>
               <select id="set-speed" style="padding:8px;border-radius:10px;border:1px solid var(--line);width:100%">
-                <option value="1" ${speed === 1 ? 'selected' : ''}>Normal</option>
-                <option value="15" ${speed === 15 ? 'selected' : ''}>Rápido</option>
-                <option value="60" ${speed === 60 ? 'selected' : ''}>Muy rápido</option>
+                <option value="1" ${normalizeSpeed(speed) === 1 ? 'selected' : ''}>Normal (1 min = 30 min)</option>
+                <option value="2" ${normalizeSpeed(speed) === 2 ? 'selected' : ''}>Rápido (1 min = 1 h)</option>
+                <option value="4" ${normalizeSpeed(speed) === 4 ? 'selected' : ''}>Muy rápido (1 min = 2 h)</option>
               </select>
             </label>
             <label>Autoguardado (minutos)<br/>
@@ -4082,7 +4417,7 @@ function renderSettings() {
     state.settings.musicVolume = Number(document.getElementById('set-music-vol').value);
     state.settings.sfxVolume = Number(document.getElementById('set-sfx-vol').value);
     state.settings.fontScale = Number(document.getElementById('set-font').value) || 1;
-    state.settings.defaultSpeed = Number(document.getElementById('set-speed').value) || 1;
+    state.settings.defaultSpeed = normalizeSpeed(Number(document.getElementById('set-speed').value) || 1);
     state.settings.autosaveMinutes = Math.max(1, Math.min(30, Number(document.getElementById('set-autosave').value) || 2));
     setMusicEnabled(!!state.settings.music);
     setSfxEnabled(!!state.settings.sfx);

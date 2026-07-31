@@ -114,6 +114,25 @@ export const sfx = {
     beep({ freq: 660, dur: 0.06, type: 'sine', gain: 0.03 });
     setTimeout(() => beep({ freq: 880, dur: 0.08, type: 'sine', gain: 0.028 }), 70);
   },
+  /** Monedas / cambio en mostrador */
+  coins: () => {
+    beep({ freq: 1200, dur: 0.04, type: 'square', gain: 0.02 });
+    setTimeout(() => beep({ freq: 1500, dur: 0.035, type: 'square', gain: 0.018 }), 40);
+    setTimeout(() => beep({ freq: 900, dur: 0.05, type: 'triangle', gain: 0.025 }), 90);
+    setTimeout(() => beep({ freq: 1100, dur: 0.04, type: 'square', gain: 0.015 }), 130);
+  },
+  /** Bip corto de TPV / datáfono */
+  tpvBeep: () => {
+    beep({ freq: 1400, dur: 0.07, type: 'square', gain: 0.03 });
+    setTimeout(() => beep({ freq: 1800, dur: 0.05, type: 'square', gain: 0.022 }), 80);
+  },
+  /** Papel de ticket / resguardo */
+  paper: () => {
+    beep({ freq: 2100, dur: 0.025, type: 'sawtooth', gain: 0.012 });
+    setTimeout(() => beep({ freq: 1900, dur: 0.03, type: 'sawtooth', gain: 0.014 }), 30);
+    setTimeout(() => beep({ freq: 1700, dur: 0.04, type: 'triangle', gain: 0.016 }), 70);
+    setTimeout(() => beep({ freq: 800, dur: 0.06, type: 'triangle', gain: 0.02, slideTo: 400 }), 110);
+  },
 };
 
 export function startMusic() {

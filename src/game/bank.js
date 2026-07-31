@@ -8,6 +8,61 @@ import {
   countTotalCents,
   formatEuro,
 } from '../data/money.js';
+import { gameYmd } from './time.js';
+import { isMonday } from './audit.js';
+
+/** Fondo de cambio típico del lunes (monedas + billetes pequeños). */
+export const MONDAY_FLOAT_COUNTS = {
+  b5: 10,
+  b10: 6,
+  b20: 4,
+  b50: 0,
+  b100: 0,
+  b200: 0,
+  b500: 0,
+  e2: 25,
+  e1: 30,
+  c50: 25,
+  c20: 30,
+  c10: 35,
+  c5: 40,
+  c2: 50,
+  c1: 50,
+};
+
+export function mondayFloatCents() {
+  return countTotalCents(MONDAY_FLOAT_COUNTS);
+}
+
+export function mondayFloatDoneToday(state) {
+  return state.ui?.mondayFloatYmd === gameYmd(state);
+}
+
+/**
+ * Retirada de fondo de cambio del lunes: monedas concretas del banco a caja.
+ * Una vez por lunes.
+ */
+export function withdrawMondayFloat(state) {
+  if (!isMonday(state)) {
+    state.ui.toast = 'El fondo de cambio programado es los lunes.';
+    return false;
+  }
+  if (mondayFloatDoneToday(state)) {
+    state.ui.toast = 'Ya retiraste el fondo de cambio de este lunes.';
+    return false;
+  }
+  const amt = mondayFloatCents();
+  const ok = withdrawBankToCash(state, amt, { ...emptyDrawer(), ...MONDAY_FLOAT_COUNTS });
+  if (ok) {
+    state.ui.mondayFloatYmd = gameYmd(state);
+    state.ui.toast = `Fondo de cambio del lunes: ${formatEuro(amt)} en monedas y billetes pequeños.`;
+    state.dayLog.push({
+      at: state.clock.gameTimeMs,
+      text: `Fondo de cambio lunes: ${formatEuro(amt)}`,
+    });
+  }
+  return ok;
+}
 
 /** Cajón virtual abundante para componer retiradas del banco. */
 function bankVaultDrawer() {

@@ -2,7 +2,7 @@
 
 Simulador realista de administración de loterías en **Álora**. Tú eres **Miriam**.
 
-**Versión: 1.3**
+**Versión: 1.4**
 
 ## Cómo jugar
 
@@ -10,6 +10,15 @@ Simulador realista de administración de loterías en **Álora**. Tú eres **Mir
 2. Abre **`LOTERIAS-ALORA.html`** (doble clic)
 
 No abras `index.html` de la raíz.
+
+## Novedades v1.4
+
+- **Tiempo:** 1 minuto real = 30 minutos de juego (Normal); Rápido ×2; Muy rápido ×4
+- **Teclado numérico grande** en el TPV + atajos del **numpad** (0–9, ⌫, Enter)
+- **Billetes grandes sin cambio:** el cliente debe pagar de otra forma
+- **«Quédate el céntimo»:** a veces el cliente te deja el cambio pequeño
+- **Fondo de cambio del lunes:** retirada rápida banco → monedas y billetes pequeños
+- Más sonidos de oficina (monedas, TPV, papel)
 
 ## Novedades v1.3
 
