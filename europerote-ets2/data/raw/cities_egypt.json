@@ -1,0 +1,36 @@
+{
+  "citiesList": [
+    {
+      "gameName": "alwasta",
+      "realName": "Al Wasta",
+      "country": "egypt",
+      "x": "78780",
+      "y": "52.4297",
+      "z": "110100"
+    },
+    {
+      "gameName": "cairo",
+      "realName": "Cairo",
+      "country": "egypt",
+      "x": "78490.1",
+      "y": "53.3594",
+      "z": "104211"
+    },
+    {
+      "gameName": "fayyum",
+      "realName": "Al Fayyum",
+      "country": "egypt",
+      "x": "76362.4",
+      "y": "14.3242",
+      "z": "107667"
+    },
+    {
+      "gameName": "samalut",
+      "realName": "Samalut",
+      "country": "egypt",
+      "x": "77796.2",
+      "y": "45.2266",
+      "z": "116925"
+    }
+  ]
+}

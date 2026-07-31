@@ -1,0 +1,42 @@
+{
+  "version": "1.0.0",
+  "generado": "2026-07-31T10:52:29.557Z",
+  "total": 7104,
+  "chunks": 21,
+  "chunkSize": 350,
+  "operador": {
+    "id": "europerote",
+    "nombre": "EuroPerote",
+    "nombre_corto": "EP",
+    "color": "#0B3D91",
+    "color_secundario": "#F2A900",
+    "eslogan": "Toda Europa ProMods en autobús",
+    "sede": "Colonia",
+    "tipo": "internacional",
+    "descripcion": "Único operador de la red EuroPerote: servicios urbanos, interurbanos, express, nocturnos, turísticos, aeroportuarios e internacionales sobre el mapa ProMods (Europe + Middle East + The Great Steppe) y complementos compatibles."
+  },
+  "tipoNames": {
+    "urb": "Urbano",
+    "reg": "Regional",
+    "exp": "Express",
+    "int": "Internacional",
+    "noc": "Nocturno",
+    "tur": "Turístico",
+    "ae": "Aeropuerto",
+    "fer": "Ferry-bus",
+    "brt": "BRT / Busway"
+  },
+  "addonNames": {
+    "ets2-base": "ETS2 mapa base + DLCs SCS",
+    "promods": "ProMods Europe (última)",
+    "promods-middle-east": "ProMods Middle East",
+    "promods-great-steppe": "ProMods The Great Steppe",
+    "rusmap": "RusMap (compatible ProMods)",
+    "balkans-addon": "Complementos Balcanes",
+    "egypt-addon": "Complemento Egipto / Norte África",
+    "ets2+promods": "Fusión base ETS2 + ProMods"
+  },
+  "stops": 1520,
+  "cdnBase": "https://cdn.jsdelivr.net/gh/miriamcomercio89-ops/Miriam@58b47bbe25b089d5dd73a9b8e6af485d190bf515/europerote-ets2/web",
+  "commit": "58b47bbe25b089d5dd73a9b8e6af485d190bf515"
+}

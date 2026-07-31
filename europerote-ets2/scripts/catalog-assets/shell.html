@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EuroPerote — Catálogo de autobuses ProMods</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,600;7..72,700&family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>__STYLES__</style>
+</head>
+<body class="booting">
+<div id="boot">
+  <div class="boot-card">
+    <h1 style="font-family:Literata,serif;margin:0 0 .35rem">EuroPerote</h1>
+    <p style="margin:0;opacity:.85">Cargando red de autobuses ProMods…</p>
+    <div class="boot-bar"><div id="bootBar"></div></div>
+    <div id="bootPct">0%</div>
+    <div id="bootErr" hidden></div>
+  </div>
+</div>
+<div class="mobile-bar">
+  <strong>EuroPerote</strong>
+  <button id="toggleFilters" type="button">Filtros</button>
+</div>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true"></div>
+      <div>
+        <h1>EuroPerote</h1>
+        <p>ETS2 · ProMods completo</p>
+      </div>
+    </div>
+
+    <div id="filters-routes">
+      <div class="section-label">Búsqueda</div>
+      <div class="field"><label for="q">Texto libre</label><input id="q" placeholder="código, ciudad, descripción…"/></div>
+      <div class="field"><label for="qStop">Parada concreta</label><input id="qStop" placeholder="p.ej. Colonia, Riga, Madrid…"/></div>
+
+      <div class="section-label">Clasificación</div>
+      <div class="field"><label for="tipo">Tipo de línea</label><select id="tipo"><option value="">Todos</option></select></div>
+      <div class="field"><label for="pais">País</label><select id="pais"><option value="">Todos</option></select></div>
+      <div class="field"><label for="addon">Addon / mapa</label><select id="addon"><option value="">Todos</option></select></div>
+      <div class="field"><label for="material">Autobús</label><select id="material"><option value="">Todos</option></select></div>
+      <div class="field"><label for="patron">Patrón</label><select id="patron">
+        <option value="">Todos</option>
+        <option value="parador">Parador</option>
+        <option value="base">Base</option>
+        <option value="directo">Directo</option>
+      </select></div>
+
+      <div class="section-label">Rangos</div>
+      <div class="field"><label>Paradas (min–max)</label><div class="range-row"><input id="minN" type="number" min="2" placeholder="mín"/><input id="maxN" type="number" min="2" placeholder="máx"/></div></div>
+      <div class="field"><label>Distancia km (min–max)</label><div class="range-row"><input id="minKm" type="number" min="0" placeholder="mín"/><input id="maxKm" type="number" min="0" placeholder="máx"/></div></div>
+    </div>
+
+    <div class="actions">
+      <button class="btn-primary" id="applyBtn" type="button">Aplicar filtros</button>
+      <button class="btn-ghost" id="resetBtn" type="button">Limpiar todo</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="search-hero">
+        <label for="qTop">Explorar EuroPerote</label>
+        <input id="qTop" placeholder="Busca rutas, códigos o ciudades…"/>
+      </div>
+      <div class="metrics" id="metrics"></div>
+    </div>
+    <div class="toolbar">
+      <div class="left"><span id="resultCount" class="meta"></span></div>
+      <div class="right">
+        <label class="meta" for="sort">Orden</label>
+        <select id="sort">
+          <option value="codigo">Código</option>
+          <option value="nombre">Nombre</option>
+          <option value="paradas_desc">Más paradas</option>
+          <option value="paradas_asc">Menos paradas</option>
+          <option value="km_desc">Más km</option>
+          <option value="km_asc">Menos km</option>
+        </select>
+        <div class="seg" id="pageSizeSeg">
+          <button type="button" data-size="24" class="on">24</button>
+          <button type="button" data-size="48">48</button>
+          <button type="button" data-size="96">96</button>
+        </div>
+      </div>
+    </div>
+    <div class="list" id="list"></div>
+    <div class="pager">
+      <button type="button" id="prev">Anterior</button>
+      <span class="meta" id="pageInfo"></span>
+      <button type="button" id="next">Siguiente</button>
+    </div>
+  </main>
+</div>
+<script>window.CATALOG_BASE = "__CDN_BASE__";</script>
+<script>__APP__</script>
+</body>
+</html>

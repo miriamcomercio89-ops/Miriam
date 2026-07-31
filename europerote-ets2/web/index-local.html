@@ -1,0 +1,511 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EuroPerote — Catálogo de autobuses ProMods</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,600;7..72,700&family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>:root {
+  --ink: #0a1628;
+  --paper: #e8eef6;
+  --panel: rgba(255,255,255,.9);
+  --panel-solid: #f7faff;
+  --line: #c5d0e0;
+  --muted: #5a6a7e;
+  --accent: #0B3D91;
+  --accent-2: #F2A900;
+  --accent-3: #1a6bb5;
+  --chip: #e2ebf7;
+  --shadow: 0 18px 50px rgba(10,22,40,.14);
+  --radius: 18px;
+  --sidebar: 300px;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  font-family: "Sora", system-ui, sans-serif;
+  color: var(--ink);
+  background:
+    radial-gradient(1100px 560px at 8% -8%, rgba(11,61,145,.22), transparent 55%),
+    radial-gradient(900px 480px at 100% 0%, rgba(242,169,0,.18), transparent 48%),
+    linear-gradient(165deg, #d9e4f2 0%, var(--paper) 42%, #cfdced 100%);
+  min-height: 100vh;
+}
+h1,h2,h3 { font-family: "Literata", Georgia, serif; font-weight: 700; letter-spacing: -.02em; }
+button, input, select { font: inherit; }
+.app { display: grid; grid-template-columns: var(--sidebar) 1fr; min-height: 100vh; }
+.sidebar {
+  position: sticky; top: 0; height: 100vh; overflow: auto;
+  padding: 1.15rem; border-right: 1px solid var(--line);
+  background: linear-gradient(180deg, rgba(247,250,255,.97), rgba(232,238,246,.94));
+  backdrop-filter: blur(10px);
+}
+.brand { display: flex; gap: .85rem; align-items: center; margin-bottom: 1rem; }
+.brand-mark {
+  width: 48px; height: 48px; border-radius: 14px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-3) 55%, var(--accent-2));
+  box-shadow: inset 0 0 0 2px rgba(255,255,255,.28); position: relative;
+}
+.brand-mark::after {
+  content: ""; position: absolute; left: 10px; right: 10px; top: 22px; height: 5px; border-radius: 99px;
+  background: rgba(255,255,255,.9);
+  box-shadow: 0 -8px 0 rgba(242,169,0,.85), 0 8px 0 rgba(255,255,255,.45);
+}
+.brand h1 { margin: 0; font-size: 1.28rem; line-height: 1.1; }
+.brand p { margin: .15rem 0 0; color: var(--muted); font-size: .8rem; }
+.section-label {
+  font-size: .7rem; text-transform: uppercase; letter-spacing: .08em;
+  color: var(--muted); font-weight: 700; margin: .95rem 0 .4rem;
+}
+.field { margin-bottom: .65rem; }
+.field label { display: block; font-size: .76rem; font-weight: 600; margin-bottom: .25rem; color: #334155; }
+.field input, .field select {
+  width: 100%; border: 1px solid var(--line); background: #fff; border-radius: 12px;
+  padding: .55rem .68rem; outline: none;
+}
+.field input:focus, .field select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(11,61,145,.14); }
+.range-row { display: grid; grid-template-columns: 1fr 1fr; gap: .4rem; }
+.actions { display: grid; gap: .4rem; margin-top: .9rem; }
+.actions button { border: 0; border-radius: 12px; padding: .68rem .8rem; cursor: pointer; font-weight: 700; }
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-ghost { background: transparent; border: 1px solid var(--line) !important; color: var(--ink); }
+.main { padding: 1.15rem 1.3rem 3rem; }
+.topbar { display: grid; gap: .75rem; margin-bottom: .85rem; }
+.search-hero label { display: block; font-size: .75rem; font-weight: 700; color: var(--muted); margin-bottom: .3rem; }
+.search-hero input {
+  width: 100%; border: 1px solid var(--line); border-radius: 16px; padding: .85rem 1rem;
+  background: var(--panel); box-shadow: var(--shadow); font-size: 1.02rem;
+}
+.metrics { display: flex; flex-wrap: wrap; gap: .45rem; }
+.metric {
+  background: var(--panel-solid); border: 1px solid var(--line); border-radius: 999px;
+  padding: .35rem .7rem; font-size: .78rem; font-weight: 600; color: var(--muted);
+}
+.metric strong { color: var(--ink); }
+.toolbar {
+  display: flex; flex-wrap: wrap; justify-content: space-between; gap: .6rem;
+  align-items: center; margin: .5rem 0 .85rem;
+}
+.toolbar .right { display: flex; flex-wrap: wrap; gap: .45rem; align-items: center; }
+.toolbar select { border: 1px solid var(--line); border-radius: 10px; padding: .4rem .55rem; background: #fff; }
+.seg { display: flex; gap: .25rem; }
+.seg button {
+  border: 1px solid var(--line); background: #fff; border-radius: 10px;
+  padding: .35rem .55rem; cursor: pointer; font-weight: 600;
+}
+.seg button.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+.meta { color: var(--muted); font-size: .85rem; }
+.list { display: grid; gap: .75rem; }
+.card {
+  background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 1rem 1.05rem; box-shadow: 0 8px 28px rgba(10,22,40,.06);
+  animation: rise .35s ease both;
+}
+@keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.card-head { display: flex; gap: .75rem; align-items: flex-start; justify-content: space-between; }
+.code {
+  font-weight: 800; letter-spacing: .04em; color: #fff; background: var(--accent);
+  border-radius: 10px; padding: .28rem .55rem; font-size: .82rem; white-space: nowrap;
+}
+.card h2 { margin: 0 0 .2rem; font-size: 1.12rem; }
+.card .sub { color: var(--muted); font-size: .84rem; margin: 0 0 .55rem; }
+.tags { display: flex; flex-wrap: wrap; gap: .3rem; margin: .35rem 0 .55rem; }
+.tag {
+  font-size: .72rem; font-weight: 700; border-radius: 999px; padding: .22rem .5rem;
+  background: var(--chip); color: var(--accent); border: 1px solid #b8cae3;
+}
+.tag.gold { background: #fff4d6; color: #8a6200; border-color: #ecd48a; }
+.desc { font-size: .9rem; line-height: 1.45; color: #243447; margin: .4rem 0; }
+.stops {
+  font-size: .82rem; color: var(--muted); line-height: 1.4;
+  border-top: 1px dashed var(--line); padding-top: .55rem; margin-top: .45rem;
+}
+.pager {
+  display: flex; justify-content: center; align-items: center; gap: .75rem; margin-top: 1.2rem;
+}
+.pager button {
+  border: 1px solid var(--line); background: #fff; border-radius: 12px;
+  padding: .55rem .9rem; cursor: pointer; font-weight: 700;
+}
+.pager button:disabled { opacity: .4; cursor: not-allowed; }
+.mobile-bar {
+  display: none; position: sticky; top: 0; z-index: 20;
+  background: rgba(10,22,40,.92); color: #fff; padding: .65rem .9rem;
+  justify-content: space-between; align-items: center; backdrop-filter: blur(8px);
+}
+.mobile-bar button {
+  border: 0; background: var(--accent-2); color: #111; font-weight: 800;
+  border-radius: 10px; padding: .4rem .7rem; cursor: pointer;
+}
+#boot {
+  position: fixed; inset: 0; z-index: 50; display: grid; place-items: center;
+  background: linear-gradient(160deg, #0B3D91, #0a1628 60%);
+  color: #fff; text-align: center; padding: 1.5rem;
+}
+#boot[hidden] { display: none !important; }
+.boot-card { width: min(420px, 100%); }
+.boot-bar {
+  height: 8px; border-radius: 99px; background: rgba(255,255,255,.15); overflow: hidden; margin: 1rem 0 .5rem;
+}
+#bootBar { height: 100%; width: 8%; background: linear-gradient(90deg, var(--accent-2), #fff); transition: width .25s ease; }
+#bootErr { color: #ffb4b4; margin-top: .8rem; }
+body.booting .app, body.booting .mobile-bar { visibility: hidden; }
+@media (max-width: 900px) {
+  .mobile-bar { display: flex; }
+  .app { grid-template-columns: 1fr; }
+  .sidebar {
+    position: fixed; inset: 52px 0 auto; z-index: 30; height: auto; max-height: calc(100vh - 52px);
+    transform: translateY(-120%); transition: transform .25s ease; border-bottom: 1px solid var(--line);
+  }
+  .sidebar.open { transform: none; }
+  .main { padding: 1rem .85rem 2.5rem; }
+}
+</style>
+</head>
+<body class="booting">
+<div id="boot">
+  <div class="boot-card">
+    <h1 style="font-family:Literata,serif;margin:0 0 .35rem">EuroPerote</h1>
+    <p style="margin:0;opacity:.85">Cargando red de autobuses ProMods…</p>
+    <div class="boot-bar"><div id="bootBar"></div></div>
+    <div id="bootPct">0%</div>
+    <div id="bootErr" hidden></div>
+  </div>
+</div>
+<div class="mobile-bar">
+  <strong>EuroPerote</strong>
+  <button id="toggleFilters" type="button">Filtros</button>
+</div>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true"></div>
+      <div>
+        <h1>EuroPerote</h1>
+        <p>ETS2 · ProMods completo</p>
+      </div>
+    </div>
+
+    <div id="filters-routes">
+      <div class="section-label">Búsqueda</div>
+      <div class="field"><label for="q">Texto libre</label><input id="q" placeholder="código, ciudad, descripción…"/></div>
+      <div class="field"><label for="qStop">Parada concreta</label><input id="qStop" placeholder="p.ej. Colonia, Riga, Madrid…"/></div>
+
+      <div class="section-label">Clasificación</div>
+      <div class="field"><label for="tipo">Tipo de línea</label><select id="tipo"><option value="">Todos</option></select></div>
+      <div class="field"><label for="pais">País</label><select id="pais"><option value="">Todos</option></select></div>
+      <div class="field"><label for="addon">Addon / mapa</label><select id="addon"><option value="">Todos</option></select></div>
+      <div class="field"><label for="material">Autobús</label><select id="material"><option value="">Todos</option></select></div>
+      <div class="field"><label for="patron">Patrón</label><select id="patron">
+        <option value="">Todos</option>
+        <option value="parador">Parador</option>
+        <option value="base">Base</option>
+        <option value="directo">Directo</option>
+      </select></div>
+
+      <div class="section-label">Rangos</div>
+      <div class="field"><label>Paradas (min–max)</label><div class="range-row"><input id="minN" type="number" min="2" placeholder="mín"/><input id="maxN" type="number" min="2" placeholder="máx"/></div></div>
+      <div class="field"><label>Distancia km (min–max)</label><div class="range-row"><input id="minKm" type="number" min="0" placeholder="mín"/><input id="maxKm" type="number" min="0" placeholder="máx"/></div></div>
+    </div>
+
+    <div class="actions">
+      <button class="btn-primary" id="applyBtn" type="button">Aplicar filtros</button>
+      <button class="btn-ghost" id="resetBtn" type="button">Limpiar todo</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="search-hero">
+        <label for="qTop">Explorar EuroPerote</label>
+        <input id="qTop" placeholder="Busca rutas, códigos o ciudades…"/>
+      </div>
+      <div class="metrics" id="metrics"></div>
+    </div>
+    <div class="toolbar">
+      <div class="left"><span id="resultCount" class="meta"></span></div>
+      <div class="right">
+        <label class="meta" for="sort">Orden</label>
+        <select id="sort">
+          <option value="codigo">Código</option>
+          <option value="nombre">Nombre</option>
+          <option value="paradas_desc">Más paradas</option>
+          <option value="paradas_asc">Menos paradas</option>
+          <option value="km_desc">Más km</option>
+          <option value="km_asc">Menos km</option>
+        </select>
+        <div class="seg" id="pageSizeSeg">
+          <button type="button" data-size="24" class="on">24</button>
+          <button type="button" data-size="48">48</button>
+          <button type="button" data-size="96">96</button>
+        </div>
+      </div>
+    </div>
+    <div class="list" id="list"></div>
+    <div class="pager">
+      <button type="button" id="prev">Anterior</button>
+      <span class="meta" id="pageInfo"></span>
+      <button type="button" id="next">Siguiente</button>
+    </div>
+  </main>
+</div>
+<script>window.CATALOG_BASE = "";</script>
+<script>window.CATALOG_DATA = {"version":"1.0.0","generado":"2026-07-31T10:52:29.557Z","total":7104,"chunks":21,"chunkSize":350,"operador":{"id":"europerote","nombre":"EuroPerote","nombre_corto":"EP","color":"#0B3D91","color_secundario":"#F2A900","eslogan":"Toda Europa ProMods en autobús","sede":"Colonia","tipo":"internacional","descripcion":"Único operador de la red EuroPerote: servicios urbanos, interurbanos, express, nocturnos, turísticos, aeroportuarios e internacionales sobre el mapa ProMods (Europe + Middle East + The Great Steppe) y complementos compatibles."},"tipoNames":{"urb":"Urbano","reg":"Regional","exp":"Express","int":"Internacional","noc":"Nocturno","tur":"Turístico","ae":"Aeropuerto","fer":"Ferry-bus","brt":"BRT / Busway"},"addonNames":{"ets2-base":"ETS2 mapa base + DLCs SCS","promods":"ProMods Europe (última)","promods-middle-east":"ProMods Middle East","promods-great-steppe":"ProMods The Great Steppe","rusmap":"RusMap (compatible ProMods)","balkans-addon":"Complementos Balcanes","egypt-addon":"Complemento Egipto / Norte África","ets2+promods":"Fusión base ETS2 + ProMods"},"stops":1520,"cdnBase":"https://cdn.jsdelivr.net/gh/miriamcomercio89-ops/Miriam@58b47bbe25b089d5dd73a9b8e6af485d190bf515/europerote-ets2/web","commit":"58b47bbe25b089d5dd73a9b8e6af485d190bf515","routes":[{"id":"ep-a0001","codigo":"EP-A0001","nombre":"Aalborg ↔ Aeropuerto","desc":"Aeropuerto EP-A0001 de EuroPerote entre Aalborg y Aalborg — Aeropuerto (4 km estimados sobre coordenadas de juego). Lanzadera aeroportuaria: ciudad/estación ↔ aeropuerto, con maletas y tiempo de conexión en mente. Servicio casi directo, con paradas mínimas pensadas para acortar tiempo de viaje. Circula íntegramente en Dinamarca, enlazando paradas urbanas, estaciones de viajeros y nodos de transferencia. Cobertura de mapa: ProMods Europe (última). Material típico asignado: Scania Citywide. Un solo operador: EuroPerote. Uso previsto: planificación de líneas, roleplay y recorridos in-game sobre ProMods completo y addons listados. Paradas: Aalborg → Aalborg — Aeropuerto.","tipo":"ae","prefijo":"A","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Aalborg","Aalborg — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Dinamarca"],"addons":["promods"],"patron":"directo","origen":"Aalborg","destino":"Aalborg — Aeropuerto"},{"id":"ep-a0002","codigo":"EP-A0002","nombre":"Ámsterdam ↔ Aeropuerto","desc":"Aeropuerto EP-A0002 de EuroPerote entre Ámsterdam y Ámsterdam — Aeropuerto (4 km estimados sobre coordenadas de juego). Lanzadera aeroportuaria: ciudad/estación ↔ aeropuerto, con maletas y tiempo de conexión en mente. Servicio casi directo, con paradas mínimas pensadas para acortar tiempo de viaje. Circula íntegramente en Países Bajos, enlazando paradas urbanas, estaciones de viajeros y nodos de transferencia. Cobertura de mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material típico asignado: Scania Citywide. Un solo operador: EuroPerote. Uso previsto: planificación de líneas, roleplay y recorridos in-game sobre ProMods completo y addons listados. Paradas: Ámsterdam → Ámsterdam — Aeropuerto.","tipo":"ae","prefijo":"A","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Ámsterdam","Ámsterdam — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Países Bajos"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Ámsterdam","destino":"Ámsterdam — Aeropuerto"},{"id":"ep-a0003","codigo":"EP-A0003","nombre":"Bergen ↔ Aeropuerto","desc":"Aeropuerto EP-A0003 de EuroPerote entre Bergen y Bergen — Aeropuerto (4 km estimados sobre coordenadas de juego). Lanzadera aeroportuaria: ciudad/estación ↔ aeropuerto, con maletas y tiempo de conexión en mente. Servicio casi directo, con paradas mínimas pensadas para acortar tiempo de viaje. Circula íntegramente en Noruega, enlazando paradas urbanas, estaciones de viajeros y nodos de transferencia. Cobertura de mapa: ProMods Europe (última). Material típico asignado: Scania Citywide. Un solo operador: EuroPerote. Uso previsto: planificación de líneas, roleplay y recorridos in-game sobre ProMods completo y addons listados. Paradas: Bergen → Bergen — Aeropuerto.","tipo":"ae","prefijo":"A","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Bergen","Bergen — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Noruega"],"addons":["promods"],"patron":"directo","origen":"Bergen","destino":"Bergen — Aeropuerto"},{"id":"ep-a0004","codigo":"EP-A0004","nombre":"Berlín ↔ Aeropuerto","desc":"Aeropuerto EP-A0004 de EuroPerote entre Berlín y Berlín — Aeropuerto (4 km estimados sobre coordenadas de juego). Lanzadera aeroportuaria: ciudad/estación ↔ aeropuerto, con maletas y tiempo de conexión en mente. Servicio casi directo, con paradas mínimas pensadas para acortar tiempo de viaje. Circula íntegramente en Alemania, enlazando paradas urbanas, estaciones de viajeros y nodos de transferencia. Cobertura de mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material típico asignado: Scania Citywide. Un solo operador: EuroPerote. Uso previsto: planificación de líneas, roleplay y recorridos in-game sobre ProMods completo y addons listados. Paradas: Berlín → Berlín — Aeropuerto.","tipo":"ae","prefijo":"A","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Berlín","Berlín — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Alemania"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Berlín","destino":"Berlín — Aeropuerto"},{"id":"ep-a0005","codigo":"EP-A0005","nombre":"Berna ↔ Aeropuerto","desc":"Aeropuerto EP-A0005 de EuroPerote entre Berna y Berna — Aeropuerto (4 km estimados sobre coordenadas de juego). Lanzadera aeroportuaria: ciudad/estación ↔ aeropuerto, con maletas y tiempo de conexión en mente. Servicio casi directo, con paradas mínimas pensadas para acortar tiempo de viaje. Circula íntegramente en Suiza, enlazando paradas urbanas, estaciones de viajeros y nodos de transferencia. Cobertura de mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material típico asignado: Scania Citywide. Un solo operador: EuroPerote. Uso previsto: planificación de líneas, roleplay y recorridos in-game sobre ProMods completo y addons listados. Paradas: Berna → Berna — Aeropuerto.","tipo":"ae","prefijo":"A","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Berna","Berna — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Suiza"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Berna","destino":"Berna — Aeropuerto"},{"id":"ep-a0006","codigo":"EP-A0006","nombre":"Białystok ↔ Aeropuerto","desc":"Aeropuerto EP-A0006 de EuroPerote entre Białystok y Białystok — Aeropuerto (4 km estimados sobre coordenadas de juego). Lanzadera aeroportuaria: ciudad/estación ↔ aeropuerto, con maletas y tiempo de conexión en mente. Servicio casi directo, con paradas mínimas pensadas para acortar tiempo de viaje. Circula íntegramente en Polonia, enlazando paradas urbanas, estaciones de viajeros y nodos de transferencia. Cobertura de mapa: ProMods Europe (última). Material típico asignado: Scania Citywide. Un solo operador: EuroPerote. Uso previsto: planificación de líneas, roleplay y recorridos in-game sobre ProMods completo y addons listados. Paradas: Białystok → Białystok — Aeropuerto.","tipo":"ae","prefijo":"A","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Białystok","Białystok — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Polonia"],"addons":["promods"],"patron":"directo","origen":"Białystok","destino":"Białystok — Aeropuerto"},{"id":"ep-a0007","codigo":"EP-A0007","nombre":"Birmingham ↔ Aeropuerto","desc":"Aeropuerto EP-A0007 de EuroPerote entre Birmingham y Birmingham — Aeropuerto (4 km estimados sobre coordenadas de juego). Lanzadera aeroportuaria: ciudad/estación ↔ aeropuerto, con maletas y tiempo de conexión en mente. Servicio casi directo, con paradas mínimas pensadas para acortar tiempo de viaje. Circula íntegramente en Reino Unido, enlazando paradas urbanas, estaciones de viajeros y nodos de transferencia. Cobertura de mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material típico asignado: Scania Citywide. Un solo operador: EuroPerote. Uso previsto: planificación de líneas, roleplay y recorridos in-game sobre ProMods completo y addons listados. Paradas: Birmingham → Birmingham — Aeropuerto.","tipo":"ae","prefijo":"A","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Birmingham","Birmingham — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Reino Unido"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Birmingham","destino":"Birmingham — Aeropuerto"},{"id":"ep-a0008","codigo":"EP-A0008","nombre":"Bratislava ↔ Aeropuerto","desc":"Aeropuerto EP-A0008 de EuroPerote entre Bratislava y Bratislava — Aeropuerto (4 km estimados sobre coordenadas de juego). Lanzadera aeroportuaria: ciudad/estación ↔ aeropuerto, con maletas y tiempo de conexión en mente. Servicio casi directo, con paradas mínimas pensadas para acortar tiempo de viaje. Circula íntegramente en Eslovaquia, enlazando paradas urbanas, estaciones de viajeros y nodos de transferencia. Cobertura de mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material típico asignado: Scania Citywide. Un solo operador: EuroPerote. Uso previsto: planificación de líneas, roleplay y recorridos in-game sobre ProMods completo y addons listados. Paradas: Bratislava → Bratislava — Aeropuerto.","tipo":"ae","prefijo":"A","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Bratislava","Bratislava — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Eslovaquia"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Bratislava","destino":"Bratislava — Aeropuerto"},{"id":"ep-a0009","codigo":"EP-A0009","nombre":"Bremen ↔ Aeropuerto","desc":"Aeropuerto EP-A0009 de EuroPerote entre Bremen y Bremen — Aeropuerto (4 km estimados sobre coordenadas de juego). Lanzadera aeroportuaria: ciudad/estación ↔ aeropuerto, con maletas y tiempo de conexión en mente. Servicio casi directo, con paradas mínimas pensadas para acortar tiempo de viaje. Circula íntegramente en Alemania, enlazando paradas urbanas, estaciones de viajeros y nodos de transferencia. Cobertura de mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material típico asignado: Scania Citywide. Un solo operador: EuroPerote. Uso previsto: planificación de líneas, roleplay y recorridos in-game sobre ProMods completo y addons listados. Paradas: Bremen → Bremen — Aeropuerto.","tipo":"ae","prefijo":"A","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Bremen","Bremen — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Alemania"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Bremen","destino":"Bremen — Aeropuerto"},{"id":"ep-a0010","codigo":"EP-A0010","nombre":"Brno ↔ Aeropuerto","desc":"Aeropuerto EP-A0010 de EuroPerote entre Brno y Brno — Aeropuerto (4 km estimados sobre coordenadas de juego). Lanzadera aeroportuaria: ciudad/estación ↔ aeropuerto, con maletas y tiempo de conexión en mente. Servicio casi directo, con paradas mínimas pensadas para acortar tiempo de viaje. Circula íntegramente en Chequia, enlazando paradas urbanas, estaciones de viajeros y nodos de transferencia. Cobertura de mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material típico asignado: Scania Citywide. Un solo operador: EuroPerote. Uso previsto: planificación de líneas, roleplay y recorridos in-game sobre ProMods completo y addons listados. Paradas: Brno → Brno — Aeropuerto.","tipo":"ae","prefijo":"A","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Brno","Brno — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Chequia"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Brno","destino":"Brno — Aeropuerto"},{"id":"ep-a0011","codigo":"EP-A0011","nombre":"Bruselas ↔ Aeropuerto","desc":"Aeropuerto EP-A0011 de EuroPerote entre Bruselas y Bruselas — Aeropuerto (4 km estimados sobre coordenadas de juego). Lanzadera aeroportuaria: ciudad/estación ↔ aeropuerto, con maletas y tiempo de conexión en mente. Servicio casi directo, con paradas mínimas pensadas para acortar tiempo de viaje. Circula íntegramente en Bélgica, enlazando paradas urbanas, estaciones de viajeros y nodos de transferencia. Cobertura de mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material típico asignado: Scania Citywide. Un solo operador: EuroPerote. Uso previsto: planificación de líneas, roleplay y recorridos in-game sobre ProMods completo y addons listados. Paradas: Bruselas → Bruselas — Aeropuerto.","tipo":"ae","prefijo":"A","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Bruselas","Bruselas — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Bélgica"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Bruselas","destino":"Bruselas — Aeropuerto"},{"id":"ep-a0012","codigo":"EP-A0012","nombre":"Budapest ↔ Aeropuerto","desc":"Aeropuerto EP-A0012 de EuroPerote entre Budapest y Budapest — Aeropuerto (4 km estimados sobre coordenadas de juego). Lanzadera aeroportuaria: ciudad/estación ↔ aeropuerto, con maletas y tiempo de conexión en mente. Servicio casi directo, con paradas mínimas pensadas para acortar tiempo de viaje. Circula íntegramente en Hungría, enlazando paradas urbanas, estaciones de viajeros y nodos de transferencia. Cobertura de mapa: ProMods Europe (última). Material típico asignado: Scania Citywide. Un solo operador: EuroPerote. Uso previsto: planificación de líneas, roleplay y recorridos in-game sobre ProMods completo y addons listados. Paradas: Budapest → Budapest — Aeropuerto.","tipo":"ae","prefijo":"A","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Budapest","Budapest — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Hungría"],"addons":["promods"],"patron":"directo","origen":"Budapest","destino":"Budapest — Aeropuerto"},{"id":"ep-a0013","codigo":"EP-A0013","nombre":"Banská Bystrica ↔ Aeropuerto","desc":"Aeropuerto EP-A0013 de EuroPerote entre Banská Bystrica y Banská Bystrica — Aeropuerto (4 km estimados sobre coordenadas de juego). Lanzadera aeroportuaria: ciudad/estación ↔ aeropuerto, con maletas y tiempo de conexión en mente. Servicio casi directo, con paradas mínimas pensadas para acortar tiempo de viaje. Circula íntegramente en Eslovaquia, enlazando paradas urbanas, estaciones de viajeros y nodos de transferencia. Cobertura de mapa: ProMods Europe (última). Material típico asignado: Scania Citywide. Un solo operador: EuroPerote. Uso previsto: planificación de líneas, roleplay y recorridos in-game sobre ProMods completo y addons listados. Paradas: Banská Bystrica → Banská Bystrica — Aeropuerto.","tipo":"ae","prefijo":"A","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Banská Bystrica","Banská Bystrica — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Eslovaquia"],"addons":["promods"],"patron":"directo","origen":"Banská Bystrica","destino":"Banská Bystrica — Aeropuerto"},{"id":"ep-a0014","codigo":"EP-A0014","nombre":"Calais ↔ Aeropuerto","desc":"Aeropuerto EP-A0014 de EuroPerote entre Calais y Calais — Aeropuerto (4 km estimados sobre coordenadas de juego). Lanzadera aeroportuaria: ciudad/estación ↔ aeropuerto, con maletas y tiempo de conexión en mente. Servicio casi directo, con paradas mínimas pensadas para acortar tiempo de viaje. Circula íntegramente en Francia, enlazando paradas urbanas, estaciones de viajeros y nodos de transferencia. Cobertura de mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material típico asignado: Scania Citywide. Un solo operador: EuroPerote. Uso previsto: planificación de líneas, roleplay y recorridos in-game sobre ProMods completo y addons listados. Paradas: Calais → Calais — Aeropuerto.","tipo":"ae","prefijo":"A","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Calais","Calais — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Francia"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Calais","destino":"Calais — Aeropuerto"},{"id":"ep-a0015","codigo":"EP-A0015","nombre":"Cambridge ↔ Aeropuerto","desc":"Aeropuerto EP-A0015 de EuroPerote entre Cambridge y Cambridge — Aeropuerto (4 km estimados sobre coordenadas de juego). Lanzadera aeroportuaria: ciudad/estación ↔ aeropuerto, con maletas y tiempo de conexión en mente. Servicio casi directo, con paradas mínimas pensadas para acortar tiempo de viaje. Circula íntegramente en Reino Unido, enlazando paradas urbanas, estaciones de viajeros y nodos de transferencia. Cobertura de mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material típico asignado: Scania Citywide. Un solo operador: EuroPerote. Uso previsto: planificación de líneas, roleplay y recorridos in-game sobre ProMods completo y addons listados. Paradas: Cambridge → Cambridge — Aeropuerto.","tipo":"ae","prefijo":"A","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Cambridge","Cambridge — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Reino Unido"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Cambridge","destino":"Cambridge — Aeropuerto"},{"id":"ep-a0016","codigo":"EP-A0016","nombre":"Cardiff ↔ Aeropuerto","desc":"Aeropuerto EP-A0016 de EuroPerote entre Cardiff y Cardiff — Aeropuerto (4 km estimados sobre coordenadas de juego). Lanzadera aeroportuaria: ciudad/estación ↔ aeropuerto, con maletas y tiempo de conexión en mente. Servicio casi directo, con paradas mínimas pensadas para acortar tiempo de viaje. Circula íntegramente en Reino Unido, enlazando paradas urbanas, estaciones de viajeros y nodos de transferencia. Cobertura de mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material típico asignado: Scania Citywide. Un solo operador: EuroPerote. Uso previsto: planificación de líneas, roleplay y recorridos in-game sobre ProMods completo y addons listados. Paradas: Cardiff → Cardiff — Aeropuerto.","tipo":"ae","prefijo":"A","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Cardiff","Cardiff — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Reino Unido"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Cardiff","destino":"Cardiff — Aeropuerto"},{"id":"ep-a0017","codigo":"EP-A0017","nombre":"Debrecen ↔ Aeropuerto","desc":"Aeropuerto EP-A0017 de EuroPerote entre Debrecen y Debrecen — Aeropuerto (4 km estimados sobre coordenadas de juego). Lanzadera aeroportuaria: ciudad/estación ↔ aeropuerto, con maletas y tiempo de conexión en mente. Servicio casi directo, con paradas mínimas pensadas para acortar tiempo de viaje. Circula íntegramente en Hungría, enlazando paradas urbanas, estaciones de viajeros y nodos de transferencia. Cobertura de mapa: ProMods Europe (última). Material típico asignado: Scania Citywide. Un solo operador: EuroPerote. Uso previsto: planificación de líneas, roleplay y recorridos in-game sobre ProMods completo y addons listados. Paradas: Debrecen → Debrecen — Aeropuerto.","tipo":"ae","prefijo":"A","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Debrecen","Debrecen — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Hungría"],"addons":["promods"],"patron":"directo","origen":"Debrecen","destino":"Debrecen — Aeropuerto"},{"id":"ep-a0018","codigo":"EP-A0018","nombre":"Dijon ↔ Aeropuerto","desc":"Aeropuerto EP-A0018 de EuroPerote entre Dijon y Dijon — Aeropuerto (4 km estimados sobre coordenadas de juego). Lanzadera aeroportuaria: ciudad/estación ↔ aeropuerto, con maletas y tiempo de conexión en mente. Servicio casi directo, con paradas mínimas pensadas para acortar tiempo de viaje. Circula íntegramente en Francia, enlazando paradas urbanas, estaciones de viajeros y nodos de transferencia. Cobertura de mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material típico asignado: Scania Citywide. Un solo operador: EuroPerote. Uso previsto: planificación de líneas, roleplay y recorridos in-game sobre ProMods completo y addons listados. Paradas: Dijon → Dijon — Aeropuerto.","tipo":"ae","prefijo":"A","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Dijon","Dijon — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Francia"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Dijon","destino":"Dijon — Aeropuerto"},{"id":"ep-a0019","codigo":"EP-A0019","nombre":"Dortmund ↔ Aeropuerto","desc":"Aeropuerto EP-A0019 de EuroPerote entre Dortmund y Dortmund — Aeropuerto (4 km estimados sobre coordenadas de juego). Lanzadera aeroportuaria: ciudad/estación ↔ aeropuerto, con maletas y tiempo de conexión en mente. Servicio casi directo, con paradas mínimas pensadas para acortar tiempo de viaje. Circula íntegramente en Alemania, enlazando paradas urbanas, estaciones de viajeros y nodos de transferencia. Cobertura de mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material típico asignado: Scania Citywide. Un solo operador: EuroPerote. Uso previsto: planificación de líneas, roleplay y recorridos in-game sobre ProMods completo y addons listados. Paradas: Dortmund → Dortmund — Aeropuerto.","tipo":"ae","prefijo":"A","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Dortmund","Dortmund — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Alemania"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Dortmund","destino":"Dortmund — Aeropuerto"},{"id":"ep-a0020","codigo":"EP-A0020","nombre":"Dover ↔ Aeropuerto","desc":"Aeropuerto EP-A0020 de EuroPerote entre Dover y Dover — Aeropuerto (4 km estimados sobre coordenadas de juego). Lanzadera aeroportuaria: ciudad/estación ↔ aeropuerto, con maletas y tiempo de conexión en mente. Servicio casi directo, con paradas mínimas pensadas para acortar tiempo de viaje. Circula íntegramente en Reino Unido, enlazando paradas urbanas, estaciones de viajeros y nodos de transferencia. Cobertura de mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material típico asignado: Scania Citywide. Un solo operador: EuroPerote. Uso previsto: planificación de líneas, roleplay y recorridos in-game sobre ProMods completo y addons listados. Paradas: Dover → Dover — Aeropuerto.","tipo":"ae","prefijo":"A","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Dover","Dover — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Reino Unido"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Dover","destino":"Dover — Aeropuerto"},{"id":"ep-a0021","codigo":"EP-A0021","nombre":"Dresden ↔ Aeropuerto","desc":"Aeropuerto EP-A0021 de EuroPerote entre Dresden y Dresden — Aeropuerto (4 km estimados sobre coordenadas de juego). Lanzadera aeroportuaria: ciudad/estación ↔ aeropuerto, con maletas y tiempo de conexión en mente. Servicio casi directo, con paradas mínimas pensadas para acortar tiempo de viaje. Circula íntegramente en Alemania, enlazando paradas urbanas, estaciones de viajeros y nodos de transferencia. Cobertura de mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material típico asignado: Scania Citywide. Un solo operador: EuroPerote. Uso previsto: planificación de líneas, roleplay y recorridos in-game sobre ProMods completo y addons listados. Paradas: Dresden → Dresden — Aeropuerto.","tipo":"ae","prefijo":"A","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Dresden","Dresden — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Alemania"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Dresden","destino":"Dresden — Aeropuerto"},{"id":"ep-a0022","codigo":"EP-A0022","nombre":"Duisburg ↔ Aeropuerto","desc":"Aeropuerto EP-A0022 de EuroPerote entre Duisburg y Duisburg — Aeropuerto (4 km estimados sobre coordenadas de juego). Lanzadera aeroportuaria: ciudad/estación ↔ aeropuerto, con maletas y tiempo de conexión en mente. Servicio casi directo, con paradas mínimas pensadas para acortar tiempo de viaje. Circula íntegramente en Alemania, enlazando paradas urbanas, estaciones de viajeros y nodos de transferencia. Cobertura de mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material típico asignado: Scania Citywide. Un solo operador: EuroPerote. Uso previsto: planificación de líneas, roleplay y recorridos in-game sobre ProMods completo y addons listados. Paradas: Duisburg → Duisburg — Aeropuerto.","tipo":"ae","prefijo":"A","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Duisburg","Duisburg — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Alemania"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Duisburg","destino":"Duisburg — Aeropuerto"},{"id":"ep-a0023","codigo":"EP-A0023","nombre":"Düsseldorf ↔ Aeropuerto","desc":"Aeropuerto EP-A0023 de EuroPerote entre Düsseldorf y Düsseldorf — Aeropuerto (4 km estimados sobre coordenadas de juego). Lanzadera aeroportuaria: ciudad/estación ↔ aeropuerto, con maletas y tiempo de conexión en mente. Servicio casi directo, con paradas mínimas pensadas para acortar tiempo de viaje. Circula íntegramente en Alemania, enlazando paradas urbanas, estaciones de viajeros y nodos de transferencia. Cobertura de mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material típico asignado: Scania Citywide. Un solo operador: EuroPerote. Uso previsto: planificación de líneas, roleplay y recorridos in-game sobre ProMods completo y addons listados. Paradas: Düsseldorf → Düsseldorf — Aeropuerto.","tipo":"ae","prefijo":"A","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Düsseldorf","Düsseldorf — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Alemania"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Düsseldorf","destino":"Düsseldorf — Aeropuerto"},{"id":"ep-a0024","codigo":"EP-A0024","nombre":"Erfurt ↔ Aeropuerto","desc":"Aeropuerto EP-A0024 de EuroPerote entre Erfurt y Erfurt — Aeropuerto (4 km estimados sobre coordenadas de juego). Lanzadera aeroportuaria: ciudad/estación ↔ aeropuerto, con maletas y tiempo de conexión en mente. Servicio casi directo, con paradas mínimas pensadas para acortar tiempo de viaje. Circula íntegramente en Alemania, enlazando paradas urbanas, estaciones de viajeros y nodos de transferencia. Cobertura de mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material típico asignado: Scania Citywide. Un solo operador: EuroPerote. Uso previsto: planificación de líneas, roleplay y recorridos in-game sobre ProMods completo y addons listados. Paradas: Erfurt → Erfurt — Aeropuerto.","tipo":"ae","prefijo":"A","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Erfurt","Erfurt — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Alemania"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Erfurt","destino":"Erfurt — Aeropuerto"},{"id":"ep-a0025","codigo":"EP-A0025","nombre":"Esbjerg ↔ Aeropuerto","desc":"Aeropuerto EP-A0025 de EuroPerote entre Esbjerg y Esbjerg — Aeropuerto (4 km estimados sobre coordenadas de juego). Lanzadera aeroportuaria: ciudad/estación ↔ aeropuerto, con maletas y tiempo de conexión en mente. Servicio casi directo, con paradas mínimas pensadas para acortar tiempo de viaje. Circula íntegramente en Dinamarca, enlazando paradas urbanas, estaciones de viajeros y nodos de transferencia. Cobertura de mapa: ProMods Europe (última). Material típico asignado: Scania Citywide. Un solo operador: EuroPerote. Uso previsto: planificación de líneas, roleplay y recorridos in-game sobre ProMods completo y addons listados. Paradas: Esbjerg → Esbjerg — Aeropuerto.","tipo":"ae","prefijo":"A","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Esbjerg","Esbjerg — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Dinamarca"],"addons":["promods"],"patron":"directo","origen":"Esbjerg","destino":"Esbjerg — Aeropuerto"},{"id":"ep-a0026","codigo":"EP-A0026","nombre":"Felixstowe ↔ Aeropuerto","desc":"Aeropuerto EP-A0026 de EuroPerote entre Felixstowe y Felixstowe — Aeropuerto (4 km estimados sobre coordenadas de juego). Lanzadera aeroportuaria: ciudad/estación ↔ aeropuerto, con maletas y tiempo de conexión en mente. Servicio casi directo, con paradas mínimas pensadas para acortar tiempo de viaje. Circula íntegramente en Reino Unido, enlazando paradas urbanas, estaciones de viajeros y nodos de transferencia. Cobertura de mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material típico asignado: Scania Citywide. Un solo operador: EuroPerote. Uso previsto: planificación de líneas, roleplay y recorridos in-game sobre ProMods completo y addons listados. Paradas: Felixstowe → Felixstowe — Aeropuerto.","tipo":"ae","prefijo":"A","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Felixstowe","Felixstowe — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Reino Unido"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Felixstowe","destino":"Felixstowe — Aeropuerto"},{"id":"ep-a0027","codigo":"EP-A0027","nombre":"Frankfurt am Main ↔ Aeropuerto","desc":"Aeropuerto EP-A0027 de EuroPerote entre Frankfurt am Main y Frankfurt am Main — Aeropuerto (4 km estimados sobre coordenadas de juego). Lanzadera aeroportuaria: ciudad/estación ↔ aeropuerto, con maletas y tiempo de conexión en mente. Servicio casi directo, con paradas mínimas pensadas para acortar tiempo de viaje. Circula íntegramente en Alemania, enlazando paradas urbanas, estaciones de viajeros y nodos de transferencia. Cobertura de mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material típico asignado: Scania Citywide. Un solo operador: EuroPerote. Uso previsto: planificación de líneas, roleplay y recorridos in-game sobre ProMods completo y addons listados. Paradas: Frankfurt am Main → Frankfurt am Main — Aeropuerto.","tipo":"ae","prefijo":"A","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Frankfurt am Main","Frankfurt am Main — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Alemania"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Frankfurt am Main","destino":"Frankfurt am Main — Aeropuerto"},{"id":"ep-a0028","codigo":"EP-A0028","nombre":"Frederikshavn ↔ Aeropuerto","desc":"Aeropuerto EP-A0028 de EuroPerote entre Frederikshavn y Frederikshavn — Aeropuerto (4 km estimados sobre coordenadas de juego). Lanzadera aeroportuaria: ciudad/estación ↔ aeropuerto, con maletas y tiempo de conexión en mente. Servicio casi directo, con paradas mínimas pensadas para acortar tiempo de viaje. Circula íntegramente en Dinamarca, enlazando paradas urbanas, estaciones de viajeros y nodos de transferencia. Cobertura de mapa: ProMods Europe (última). Material típico asignado: Scania Citywide. Un solo operador: EuroPerote. Uso previsto: planificación de líneas, roleplay y recorridos in-game sobre ProMods completo y addons listados. Paradas: Frederikshavn → Frederikshavn — Aeropuerto.","tipo":"ae","prefijo":"A","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Frederikshavn","Frederikshavn — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Dinamarca"],"addons":["promods"],"patron":"directo","origen":"Frederikshavn","destino":"Frederikshavn — Aeropuerto"},{"id":"ep-a0029","codigo":"EP-A0029","nombre":"Gdańsk ↔ Aeropuerto","desc":"Aeropuerto EP-A0029 de EuroPerote entre Gdańsk y Gdańsk — Aeropuerto (4 km estimados sobre coordenadas de juego). Lanzadera aeroportuaria: ciudad/estación ↔ aeropuerto, con maletas y tiempo de conexión en mente. Servicio casi directo, con paradas mínimas pensadas para acortar tiempo de viaje. Circula íntegramente en Polonia, enlazando paradas urbanas, estaciones de viajeros y nodos de transferencia. Cobertura de mapa: ProMods Europe (última). Material típico asignado: Scania Citywide. Un solo operador: EuroPerote. Uso previsto: planificación de líneas, roleplay y recorridos in-game sobre ProMods completo y addons listados. Paradas: Gdańsk → Gdańsk — Aeropuerto.","tipo":"ae","prefijo":"A","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Gdańsk","Gdańsk — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Polonia"],"addons":["promods"],"patron":"directo","origen":"Gdańsk","destino":"Gdańsk — Aeropuerto"},{"id":"ep-a0030","codigo":"EP-A0030","nombre":"Gedser ↔ Aeropuerto","desc":"Aeropuerto EP-A0030 de EuroPerote entre Gedser y Gedser — Aeropuerto (4 km estimados sobre coordenadas de juego). Lanzadera aeroportuaria: ciudad/estación ↔ aeropuerto, con maletas y tiempo de conexión en mente. Servicio casi directo, con paradas mínimas pensadas para acortar tiempo de viaje. Circula íntegramente en Dinamarca, enlazando paradas urbanas, estaciones de viajeros y nodos de transferencia. Cobertura de mapa: ProMods Europe (última). Material típico asignado: Scania Citywide. Un solo operador: EuroPerote. Uso previsto: planificación de líneas, roleplay y recorridos in-game sobre ProMods completo y addons listados. Paradas: Gedser → Gedser — Aeropuerto.","tipo":"ae","prefijo":"A","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Gedser","Gedser — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Dinamarca"],"addons":["promods"],"patron":"directo","origen":"Gedser","destino":"Gedser — Aeropuerto"},{"id":"ep-a0031","codigo":"EP-A0031","nombre":"Ginebra ↔ Aeropuerto","desc":"Aeropuerto EP-A0031 de EuroPerote entre Ginebra y Ginebra — Aeropuerto (4 km estimados sobre coordenadas de juego). Lanzadera aeroportuaria: ciudad/estación ↔ aeropuerto, con maletas y tiempo de conexión en mente. Servicio casi directo, con paradas mínimas pensadas para acortar tiempo de viaje. Circula íntegramente en Suiza, enlazando paradas urbanas, estaciones de viajeros y nodos de transferencia. Cobertura de mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material típico asignado: Scania Citywide. Un solo operador: EuroPerote. Uso previsto: planificación de líneas, roleplay y recorridos in-game sobre ProMods completo y addons listados. Paradas: Ginebra → Ginebra — Aeropuerto.","tipo":"ae","prefijo":"A","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Ginebra","Ginebra — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Suiza"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Ginebra","destino":"Ginebra — Aeropuerto"},{"id":"ep-a0032","codigo":"EP-A0032","nombre":"Göteborg ↔ Aeropuerto","desc":"Aeropuerto EP-A0032 de EuroPerote entre Göteborg y Göteborg — Aeropuerto (4 km estimados sobre coordenadas de juego). Lanzadera aeroportuaria: ciudad/estación ↔ aeropuerto, con maletas y tiempo de conexión en mente. Servicio casi directo, con paradas mínimas pensadas para acortar tiempo de viaje. Circula íntegramente en Suecia, enlazando paradas urbanas, estaciones de viajeros y nodos de transferencia. Cobertura de mapa: ProMods Europe (última). Material típico asignado: Scania Citywide. Un solo operador: EuroPerote. Uso previsto: planificación de líneas, roleplay y recorridos in-game sobre ProMods completo y addons listados. Paradas: Göteborg → Göteborg — Aeropuerto.","tipo":"ae","prefijo":"A","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Göteborg","Göteborg — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Suecia"],"addons":["promods"],"patron":"directo","origen":"Göteborg","destino":"Göteborg — Aeropuerto"},{"id":"ep-a0033","codigo":"EP-A0033","nombre":"Graz ↔ Aeropuerto","desc":"Aeropuerto EP-A0033 de EuroPerote entre Graz y Graz — Aeropuerto (4 km estimados sobre coordenadas de juego). Lanzadera aeroportuaria: ciudad/estación ↔ aeropuerto, con maletas y tiempo de conexión en mente. Servicio casi directo, con paradas mínimas pensadas para acortar tiempo de viaje. Circula íntegramente en Austria, enlazando paradas urbanas, estaciones de viajeros y nodos de transferencia. Cobertura de mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material típico asignado: Scania Citywide. Un solo operador: EuroPerote. Uso previsto: planificación de líneas, roleplay y recorridos in-game sobre ProMods completo y addons listados. Paradas: Graz → Graz — Aeropuerto.","tipo":"ae","prefijo":"A","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Graz","Graz — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Austria"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Graz","destino":"Graz — Aeropuerto"},{"id":"ep-a0034","codigo":"EP-A0034","nombre":"Grimsby ↔ Aeropuerto","desc":"Aeropuerto EP-A0034 de EuroPerote entre Grimsby y Grimsby — Aeropuerto (4 km estimados sobre coordenadas de juego). Lanzadera aeroportuaria: ciudad/estación ↔ aeropuerto, con maletas y tiempo de conexión en mente. Servicio casi directo, con paradas mínimas pensadas para acortar tiempo de viaje. Circula íntegramente en Reino Unido, enlazando paradas urbanas, estaciones de viajeros y nodos de transferencia. Cobertura de mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material típico asignado: Scania Citywide. Un solo operador: EuroPerote. Uso previsto: planificación de líneas, roleplay y recorridos in-game sobre ProMods completo y addons listados. Paradas: Grimsby → Grimsby — Aeropuerto.","tipo":"ae","prefijo":"A","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Grimsby","Grimsby — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Reino Unido"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Grimsby","destino":"Grimsby — Aeropuerto"},{"id":"ep-a0035","codigo":"EP-A0035","nombre":"Groningen ↔ Aeropuerto","desc":"Aeropuerto EP-A0035 de EuroPerote entre Groningen y Groningen — Aeropuerto (4 km estimados sobre coordenadas de juego). Lanzadera aeroportuaria: ciudad/estación ↔ aeropuerto, con maletas y tiempo de conexión en mente. Servicio casi directo, con paradas mínimas pensadas para acortar tiempo de viaje. Circula íntegramente en Países Bajos, enlazando paradas urbanas, estaciones de viajeros y nodos de transferencia. Cobertura de mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material típico asignado: Scania Citywide. Un solo operador: EuroPerote. Uso previsto: planificación de líneas, roleplay y recorridos in-game sobre ProMods completo y addons listados. Paradas: Groningen → Groningen — Aeropuerto.","tipo":"ae","prefijo":"A","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Groningen","Groningen — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Países Bajos"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Groningen","destino":"Groningen — Aeropuerto"},{"id":"ep-a0036","codigo":"EP-A0036","nombre":"Hamburg ↔ Aeropuerto","desc":"Aeropuerto EP-A0036 de EuroPerote entre Hamburg y Hamburg — Aeropuerto (4 km estimados sobre coordenadas de juego). Lanzadera aeroportuaria: ciudad/estación ↔ aeropuerto, con maletas y tiempo de conexión en mente. Servicio casi directo, con paradas mínimas pensadas para acortar tiempo de viaje. Circula íntegramente en Alemania, enlazando paradas urbanas, estaciones de viajeros y nodos de transferencia. Cobertura de mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material típico asignado: Scania Citywide. Un solo operador: EuroPerote. Uso previsto: planificación de líneas, roleplay y recorridos in-game sobre ProMods completo y addons listados. Paradas: Hamburg → Hamburg — Aeropuerto.","tipo":"ae","prefijo":"A","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Hamburg","Hamburg — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Alemania"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Hamburg","destino":"Hamburg — Aeropuerto"},{"id":"ep-a0037","codigo":"EP-A0037","nombre":"Hannover ↔ Aeropuerto","desc":"Aeropuerto EP-A0037 de EuroPerote entre Hannover y Hannover — Aeropuerto (4 km estimados sobre coordenadas de juego). Lanzadera aeroportuaria: ciudad/estación ↔ aeropuerto, con maletas y tiempo de conexión en mente. Servicio casi directo, con paradas mínimas pensadas para acortar tiempo de viaje. Circula íntegramente en Alemania, enlazando paradas urbanas, estaciones de viajeros y nodos de transferencia. Cobertura de mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material típico asignado: Scania Citywide. Un solo operador: EuroPerote. Uso previsto: planificación de líneas, roleplay y recorridos in-game sobre ProMods completo y addons listados. Paradas: Hannover → Hannover — Aeropuerto.","tipo":"ae","prefijo":"A","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Hannover","Hannover — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Alemania"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Hannover","destino":"Hannover — Aeropuerto"},{"id":"ep-a0038","codigo":"EP-A0038","nombre":"Helsingborg ↔ Aeropuerto","desc":"Aeropuerto EP-A0038 de EuroPerote entre Helsingborg y Helsingborg — Aeropuerto (4 km estimados sobre coordenadas de juego). Lanzadera aeroportuaria: ciudad/estación ↔ aeropuerto, con maletas y tiempo de conexión en mente. Servicio casi directo, con paradas mínimas pensadas para acortar tiempo de viaje. Circula íntegramente en Suecia, enlazando paradas urbanas, estaciones de viajeros y nodos de transferencia. Cobertura de mapa: ProMods Europe (última). Material típico asignado: Scania Citywide. Un solo operador: EuroPerote. Uso previsto: planificación de líneas, roleplay y recorridos in-game sobre ProMods completo y addons listados. Paradas: Helsingborg → Helsingborg — Aeropuerto.","tipo":"ae","prefijo":"A","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Helsingborg","Helsingborg — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Suecia"],"addons":["promods"],"patron":"directo","origen":"Helsingborg","destino":"Helsingborg — Aeropuerto"},{"id":"ep-a0039","codigo":"EP-A0039","nombre":"Hirtshals ↔ Aeropuerto","desc":"Aeropuerto EP-A0039 de EuroPerote entre Hirtshals y Hirtshals — Aeropuerto (4 km estimados sobre coordenadas de juego). Lanzadera aeroportuaria: ciudad/estación ↔ aeropuerto, con maletas y tiempo de conexión en mente. Servicio casi directo, con paradas mínimas pensadas para acortar tiempo de viaje. Circula íntegramente en Dinamarca, enlazando paradas urbanas, estaciones de viajeros y nodos de transferencia. Cobertura de mapa: ProMods Europe (última). Material típico asignado: Scania Citywide. Un solo operador: EuroPerote. Uso previsto: planificación de líneas, roleplay y recorridos in-game sobre ProMods completo y addons listados. Paradas: Hirtshals → Hirtshals — Aeropuerto.","tipo":"ae","prefijo":"A","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Hirtshals","Hirtshals — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Dinamarca"],"addons":["promods"],"patron":"directo","origen":"Hirtshals","destino":"Hirtshals — Aeropuerto"},{"id":"ep-a0040","codigo":"EP-A0040","nombre":"Innsbruck ↔ Aeropuerto","desc":"Aeropuerto EP-A0040 de EuroPerote entre Innsbruck y Innsbruck — Aeropuerto (4 km estimados sobre coordenadas de juego). Lanzadera aeroportuaria: ciudad/estación ↔ aeropuerto, con maletas y tiempo de conexión en mente. Servicio casi directo, con paradas mínimas pensadas para acortar tiempo de viaje. Circula íntegramente en Austria, enlazando paradas urbanas, estaciones de viajeros y nodos de transferencia. Cobertura de mapa: ProMods Europe (última); Fusión base ETS2 + ProMods. Material típico asignado: Scania Citywide. Un solo operador: EuroPerote. Uso previsto: planificación de líneas, roleplay y recorridos in-game sobre ProMods completo y addons listados. Paradas: Innsbruck → Innsbruck — Aeropuerto.","tipo":"ae","prefijo":"A","op":"europerote","opn":"EuroPerote","color":"#0B3D91","paradas":["Innsbruck","Innsbruck — Aeropuerto"],"n":2,"km":4,"matId":"scania-citywide","mat":"Scania Citywide","paises":["Austria"],"addons":["promods","ets2+promods"],"patron":"directo","origen":"Innsbruck","destino":"Innsbruck — Aeropuerto"}]};
+(() => {
+  let DATA = window.CATALOG_DATA && window.CATALOG_DATA.routes ? window.CATALOG_DATA : null;
+  const state = { page: 0, pageSize: 24, filtered: [] };
+
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) =>
+    String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+  const uniq = (arr) =>
+    [...new Set(arr)].filter(Boolean).sort((a, b) => String(a).localeCompare(String(b), "es"));
+
+  function setBoot(pct, err) {
+    const bar = $("bootBar");
+    const label = $("bootPct");
+    const errEl = $("bootErr");
+    if (bar) bar.style.width = Math.max(6, Math.min(100, pct)) + "%";
+    if (label) label.textContent = err ? "Error" : Math.round(pct) + "%";
+    if (errEl && err) {
+      errEl.hidden = false;
+      errEl.textContent = err;
+    }
+  }
+
+  function hideBoot() {
+    const boot = $("boot");
+    if (boot) boot.hidden = true;
+    document.body.classList.remove("booting");
+  }
+
+  function fetchJson(url) {
+    return fetch(url, { cache: "no-cache", mode: "cors" }).then(async (r) => {
+      if (!r.ok) throw new Error("HTTP " + r.status + " en " + url.split("/").slice(-2).join("/"));
+      return r.json();
+    });
+  }
+
+  async function loadCatalogFromCdn() {
+    const bases = [
+      (window.CATALOG_BASE || "").replace(/\/$/, ""),
+      "https://cdn.jsdelivr.net/gh/miriamcomercio89-ops/Miriam@cursor/red-ferroviaria-alemania-555a/europerote-ets2/web",
+    ].filter((b, i, arr) => b && arr.indexOf(b) === i);
+
+    setBoot(4);
+    let lastErr = null;
+    for (const base of bases) {
+      try {
+        const meta = await fetchJson(base + "/meta.json");
+        setBoot(14);
+        const total = meta.chunks || 0;
+        if (!total) throw new Error("meta.json sin chunks");
+        const routes = [];
+        const batch = 3;
+        for (let i = 0; i < total; i += batch) {
+          const slice = [];
+          for (let j = i; j < Math.min(total, i + batch); j++) slice.push(j);
+          const parts = await Promise.all(slice.map((j) => fetchJson(base + "/chunks/routes-" + j + ".json")));
+          parts.forEach((p) => routes.push(...p));
+          setBoot(14 + (82 * Math.min(total, i + batch)) / Math.max(total, 1));
+        }
+        if (!routes.length) throw new Error("No se cargaron rutas");
+        setBoot(98);
+        return { ...meta, routes };
+      } catch (e) {
+        lastErr = e;
+        console.warn("Fallo carga desde", base, e);
+      }
+    }
+    throw lastErr || new Error("No se pudo cargar el catálogo");
+  }
+
+  function fillSelect(id, values, labelFn) {
+    const el = $(id);
+    if (!el) return;
+    const cur = el.value;
+    el.innerHTML = '<option value="">Todos</option>';
+    for (const v of values) {
+      const opt = document.createElement("option");
+      opt.value = v;
+      opt.textContent = labelFn ? labelFn(v) : v;
+      el.appendChild(opt);
+    }
+    if (cur) el.value = cur;
+  }
+
+  function initFilters() {
+    fillSelect("tipo", uniq(DATA.routes.map((r) => r.tipo)), (id) => DATA.tipoNames[id] || id);
+    fillSelect("pais", uniq(DATA.routes.flatMap((r) => r.paises || [])));
+    fillSelect("addon", uniq(DATA.routes.flatMap((r) => r.addons || [])), (id) => DATA.addonNames[id] || id);
+    fillSelect("material", uniq(DATA.routes.map((r) => r.mat)));
+  }
+
+  function applyFilters() {
+    const q = (($("q")?.value || "") + " " + ($("qTop")?.value || "")).trim().toLowerCase();
+    const qStop = ($("qStop")?.value || "").trim().toLowerCase();
+    const tipo = $("tipo")?.value || "";
+    const pais = $("pais")?.value || "";
+    const addon = $("addon")?.value || "";
+    const material = $("material")?.value || "";
+    const patron = $("patron")?.value || "";
+    const minN = Number($("minN")?.value || 0);
+    const maxN = Number($("maxN")?.value || 0);
+    const minKm = Number($("minKm")?.value || 0);
+    const maxKm = Number($("maxKm")?.value || 0);
+
+    state.filtered = DATA.routes.filter((r) => {
+      if (tipo && r.tipo !== tipo) return false;
+      if (pais && !(r.paises || []).includes(pais)) return false;
+      if (addon && !(r.addons || []).includes(addon)) return false;
+      if (material && r.mat !== material) return false;
+      if (patron && r.patron !== patron) return false;
+      if (minN && r.n < minN) return false;
+      if (maxN && r.n > maxN) return false;
+      if (minKm && r.km < minKm) return false;
+      if (maxKm && r.km > maxKm) return false;
+      if (qStop) {
+        const hit = (r.paradas || []).some((p) => String(p).toLowerCase().includes(qStop));
+        if (!hit) return false;
+      }
+      if (q) {
+        const blob = [r.codigo, r.nombre, r.desc, r.mat, ...(r.paradas || []), ...(r.paises || [])].join(" ").toLowerCase();
+        if (!blob.includes(q)) return false;
+      }
+      return true;
+    });
+
+    const sort = $("sort")?.value || "codigo";
+    state.filtered.sort((a, b) => {
+      if (sort === "nombre") return a.nombre.localeCompare(b.nombre, "es");
+      if (sort === "paradas_desc") return b.n - a.n;
+      if (sort === "paradas_asc") return a.n - b.n;
+      if (sort === "km_desc") return b.km - a.km;
+      if (sort === "km_asc") return a.km - b.km;
+      return String(a.codigo).localeCompare(String(b.codigo), "es");
+    });
+    state.page = 0;
+    render();
+  }
+
+  function render() {
+    const list = $("list");
+    const total = state.filtered.length;
+    const pages = Math.max(1, Math.ceil(total / state.pageSize));
+    if (state.page >= pages) state.page = pages - 1;
+    const start = state.page * state.pageSize;
+    const slice = state.filtered.slice(start, start + state.pageSize);
+
+    if ($("resultCount")) $("resultCount").textContent = total + " rutas · página " + (state.page + 1) + "/" + pages;
+    if ($("pageInfo")) $("pageInfo").textContent = state.page + 1 + " / " + pages;
+    if ($("prev")) $("prev").disabled = state.page <= 0;
+    if ($("next")) $("next").disabled = state.page >= pages - 1;
+
+    if ($("metrics")) {
+      $("metrics").innerHTML =
+        '<span class="metric"><strong>' +
+        (DATA.total || DATA.routes.length) +
+        "</strong> en catálogo</span>" +
+        '<span class="metric"><strong>' +
+        total +
+        "</strong> filtradas</span>" +
+        '<span class="metric">Operador <strong>EuroPerote</strong></span>';
+    }
+
+    list.innerHTML = slice
+      .map((r) => {
+        const tipo = DATA.tipoNames[r.tipo] || r.tipo;
+        const addons = (r.addons || []).map((a) => DATA.addonNames[a] || a).join(" · ");
+        return (
+          '<article class="card">' +
+          '<div class="card-head"><div>' +
+          "<h2>" +
+          esc(r.nombre) +
+          "</h2>" +
+          '<p class="sub">' +
+          esc(tipo) +
+          " · " +
+          esc((r.paises || []).join(", ")) +
+          " · " +
+          esc(r.km) +
+          " km · " +
+          esc(r.n) +
+          " paradas</p>" +
+          "</div><span class=\"code\">" +
+          esc(r.codigo) +
+          "</span></div>" +
+          '<div class="tags">' +
+          '<span class="tag">' +
+          esc(tipo) +
+          "</span>" +
+          '<span class="tag gold">' +
+          esc(r.mat || "") +
+          "</span>" +
+          (r.patron ? '<span class="tag">' + esc(r.patron) + "</span>" : "") +
+          (addons ? '<span class="tag">' + esc(addons) + "</span>" : "") +
+          "</div>" +
+          '<p class="desc">' +
+          esc(r.desc || "") +
+          "</p>" +
+          '<div class="stops"><strong>Itinerario:</strong> ' +
+          esc((r.paradas || []).join(" → ")) +
+          "</div></article>"
+        );
+      })
+      .join("");
+  }
+
+  function bind() {
+    $("applyBtn")?.addEventListener("click", applyFilters);
+    $("resetBtn")?.addEventListener("click", () => {
+      ["q", "qTop", "qStop", "tipo", "pais", "addon", "material", "patron", "minN", "maxN", "minKm", "maxKm"].forEach((id) => {
+        const el = $(id);
+        if (el) el.value = "";
+      });
+      applyFilters();
+    });
+    ["q", "qTop", "qStop"].forEach((id) => $(id)?.addEventListener("input", () => applyFilters()));
+    ["tipo", "pais", "addon", "material", "patron", "sort"].forEach((id) =>
+      $(id)?.addEventListener("change", () => applyFilters())
+    );
+    $("prev")?.addEventListener("click", () => {
+      state.page--;
+      render();
+    });
+    $("next")?.addEventListener("click", () => {
+      state.page++;
+      render();
+    });
+    $("pageSizeSeg")?.addEventListener("click", (e) => {
+      const btn = e.target.closest("button[data-size]");
+      if (!btn) return;
+      state.pageSize = Number(btn.dataset.size);
+      [...$("pageSizeSeg").querySelectorAll("button")].forEach((b) => b.classList.toggle("on", b === btn));
+      state.page = 0;
+      render();
+    });
+    $("toggleFilters")?.addEventListener("click", () => $("sidebar")?.classList.toggle("open"));
+  }
+
+  async function main() {
+    try {
+      if (!DATA) DATA = await loadCatalogFromCdn();
+      window.CATALOG_DATA = DATA;
+      initFilters();
+      bind();
+      applyFilters();
+      hideBoot();
+    } catch (e) {
+      setBoot(100, String(e.message || e));
+    }
+  }
+
+  main();
+})();
+</script>
+</body>
+</html>

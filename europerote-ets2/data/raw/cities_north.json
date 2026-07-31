@@ -1,0 +1,204 @@
+{
+  "citiesList": [
+    {
+      "gameName": "aalborg",
+      "realName": "Aalborg",
+      "country": "denmark",
+      "x": "855.258",
+      "y": "46.6875",
+      "z": "-35995.1"
+    },
+    {
+      "gameName": "bergen",
+      "realName": "Bergen",
+      "country": "norway",
+      "x": "-10371.6",
+      "y": "52.6406",
+      "z": "-55777.6"
+    },
+    {
+      "gameName": "esbjerg",
+      "realName": "Esbjerg",
+      "country": "denmark",
+      "x": "-4699.43",
+      "y": "69.6875",
+      "z": "-27555.9"
+    },
+    {
+      "gameName": "frederikshv",
+      "realName": "Frederikshavn",
+      "country": "denmark",
+      "x": "2711.7",
+      "y": "46.6875",
+      "z": "-38141.5"
+    },
+    {
+      "gameName": "gedser",
+      "realName": "Gedser",
+      "country": "denmark",
+      "x": "6271.11",
+      "y": "52.3789",
+      "z": "-22000.3"
+    },
+    {
+      "gameName": "goteborg",
+      "realName": "Göteborg",
+      "country": "sweden",
+      "x": "7235.89",
+      "y": "73.875",
+      "z": "-40227.5"
+    },
+    {
+      "gameName": "helsingborg",
+      "realName": "Helsingborg",
+      "country": "sweden",
+      "x": "9405.2",
+      "y": "66.1016",
+      "z": "-29882.4"
+    },
+    {
+      "gameName": "hirtshals",
+      "realName": "Hirtshals",
+      "country": "denmark",
+      "x": "1425.47",
+      "y": "54.4688",
+      "z": "-38873.3"
+    },
+    {
+      "gameName": "jonkoping",
+      "realName": "Jönköping",
+      "country": "sweden",
+      "x": "14177.3",
+      "y": "70.543",
+      "z": "-39575.6"
+    },
+    {
+      "gameName": "kalmar",
+      "realName": "Kalmar",
+      "country": "sweden",
+      "x": "20559.5",
+      "y": "70.3945",
+      "z": "-33634.5"
+    },
+    {
+      "gameName": "karlskrona",
+      "realName": "Karlskrona",
+      "country": "sweden",
+      "x": "17145.6",
+      "y": "46.6875",
+      "z": "-30862.4"
+    },
+    {
+      "gameName": "kobenhavn",
+      "realName": "København",
+      "country": "denmark",
+      "x": "8100.74",
+      "y": "58.7266",
+      "z": "-28097.8"
+    },
+    {
+      "gameName": "kristiansand",
+      "realName": "Kristiansand",
+      "country": "norway",
+      "x": "-4638.28",
+      "y": "58",
+      "z": "-42891.5"
+    },
+    {
+      "gameName": "linkoping",
+      "realName": "Linköping",
+      "country": "sweden",
+      "x": "18586.1",
+      "y": "61",
+      "z": "-43325.2"
+    },
+    {
+      "gameName": "nynashamn",
+      "realName": "Nynäshamn",
+      "country": "sweden",
+      "x": "26448.2",
+      "y": "62.6484",
+      "z": "-46165.7"
+    },
+    {
+      "gameName": "odense",
+      "realName": "Odense",
+      "country": "denmark",
+      "x": "1617.69",
+      "y": "69.9023",
+      "z": "-26700.4"
+    },
+    {
+      "gameName": "orebro",
+      "realName": "Örebro",
+      "country": "sweden",
+      "x": "17087.8",
+      "y": "62",
+      "z": "-48374.7"
+    },
+    {
+      "gameName": "oslo",
+      "realName": "Oslo",
+      "country": "norway",
+      "x": "4390.91",
+      "y": "52.5117",
+      "z": "-53410.5"
+    },
+    {
+      "gameName": "sodertalje",
+      "realName": "Södertälje",
+      "country": "sweden",
+      "x": "23525.2",
+      "y": "50.9922",
+      "z": "-46319.9"
+    },
+    {
+      "gameName": "stavanger",
+      "realName": "Stavanger",
+      "country": "norway",
+      "x": "-10553.7",
+      "y": "62.6094",
+      "z": "-48126.8"
+    },
+    {
+      "gameName": "stockholm",
+      "realName": "Stockholm",
+      "country": "sweden",
+      "x": "24747.3",
+      "y": "68.7656",
+      "z": "-47131.9"
+    },
+    {
+      "gameName": "trelleborg",
+      "realName": "Trelleborg",
+      "country": "sweden",
+      "x": "10808.3",
+      "y": "55.3242",
+      "z": "-25887"
+    },
+    {
+      "gameName": "uppsala",
+      "realName": "Uppsala",
+      "country": "sweden",
+      "x": "24021.5",
+      "y": "77.4219",
+      "z": "-51634.5"
+    },
+    {
+      "gameName": "vasteraas",
+      "realName": "Västerås",
+      "country": "sweden",
+      "x": "20937.7",
+      "y": "62.0859",
+      "z": "-50468.3"
+    },
+    {
+      "gameName": "vaxjo",
+      "realName": "Växjö",
+      "country": "sweden",
+      "x": "16044.4",
+      "y": "82.3125",
+      "z": "-34835.6"
+    }
+  ]
+}

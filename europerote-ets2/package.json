@@ -1,0 +1,12 @@
+{
+  "name": "europerote-ets2",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "densify": "node scripts/densify-stops.mjs",
+    "generate": "node scripts/generate-routes.mjs",
+    "export:html": "node scripts/export-html.mjs",
+    "build": "npm run densify && npm run generate && npm run export:html"
+  }
+}

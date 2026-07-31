@@ -1,0 +1,59 @@
+{
+  "version": "0.1.0",
+  "tipos": [
+    {
+      "id": "urb",
+      "prefijo": "U",
+      "nombre": "Urbano",
+      "desc": "Líneas urbanas/metropolitanas dentro de una gran ciudad ProMods."
+    },
+    {
+      "id": "reg",
+      "prefijo": "R",
+      "nombre": "Regional",
+      "desc": "Interurbanos regionales entre pueblos y ciudades cercanas."
+    },
+    {
+      "id": "exp",
+      "prefijo": "X",
+      "nombre": "Express",
+      "desc": "Servicios semirrápidos con menos paradas."
+    },
+    {
+      "id": "int",
+      "prefijo": "I",
+      "nombre": "Internacional",
+      "desc": "Líneas que cruzan fronteras ProMods / addons."
+    },
+    {
+      "id": "noc",
+      "prefijo": "N",
+      "nombre": "Nocturno",
+      "desc": "Servicios nocturnos de media y larga distancia."
+    },
+    {
+      "id": "tur",
+      "prefijo": "T",
+      "nombre": "Turístico",
+      "desc": "Rutas panorámicas, costas, islas y destinos temáticos."
+    },
+    {
+      "id": "ae",
+      "prefijo": "A",
+      "nombre": "Aeropuerto",
+      "desc": "Enlaces estación/ciudad ↔ aeropuerto."
+    },
+    {
+      "id": "fer",
+      "prefijo": "F",
+      "nombre": "Ferry-bus",
+      "desc": "Rutas que combinan tramos de carretera con ferris ProMods."
+    },
+    {
+      "id": "brt",
+      "prefijo": "B",
+      "nombre": "BRT / Busway",
+      "desc": "Corredores de alta capacidad tipo BRT en áreas densas."
+    }
+  ]
+}
