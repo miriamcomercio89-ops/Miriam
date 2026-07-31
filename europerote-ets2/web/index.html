@@ -317,7 +317,12 @@ body.booting .app, body.booting .mobile-bar { visibility: hidden; }
   </main>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
-<script>window.CATALOG_BASE = "https://cdn.jsdelivr.net/gh/miriamcomercio89-ops/Miriam@93769cfe8ca576fe4ffcb61d000beb631c4ee240/europerote-ets2/web";</script>
+<script>
+  if (!window.L) {
+    document.write('<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"><\\/script>');
+  }
+</script>
+<script>window.CATALOG_BASE = "https://cdn.jsdelivr.net/gh/miriamcomercio89-ops/Miriam@1401de05526178501bef785a3ed7a66e8353f71d/europerote-ets2/web";</script>
 <script>(() => {
   let DATA = window.CATALOG_DATA && window.CATALOG_DATA.routes ? window.CATALOG_DATA : null;
   const FAV_KEY = "europerote-favs";
@@ -521,19 +526,99 @@ body.booting .app, body.booting .mobile-bar { visibility: hidden; }
     }
   }
 
-  function ensureMapReady() {
-    if (!state.map) initMap();
-    if (!state.map) return false;
+  const LEAFLET_CSS = [
+    "https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css",
+    "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css",
+  ];
+  const LEAFLET_JS = [
+    "https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js",
+    "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js",
+  ];
+
+  function ensureCss(href) {
+    if ([...document.querySelectorAll("link[rel='stylesheet']")].some((l) => l.href.includes("leaflet"))) return;
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = href;
+    document.head.appendChild(link);
+  }
+
+  function loadScript(src) {
+    return new Promise((resolve, reject) => {
+      const existing = [...document.scripts].find((s) => s.src && s.src.includes("leaflet"));
+      if (window.L && window.L.map) return resolve(window.L);
+      const s = document.createElement("script");
+      s.src = src;
+      s.async = true;
+      s.onload = () => (window.L && window.L.map ? resolve(window.L) : reject(new Error("Leaflet sin L.map")));
+      s.onerror = () => reject(new Error("No se pudo cargar " + src));
+      document.head.appendChild(s);
+      // If a previous sync tag already loaded L mid-flight
+      if (window.L && window.L.map) resolve(window.L);
+    });
+  }
+
+  async function ensureLeaflet() {
+    if (window.L && window.L.map) return window.L;
+    ensureCss(LEAFLET_CSS[0]);
+    let lastErr = null;
+    for (const src of LEAFLET_JS) {
+      try {
+        await loadScript(src);
+        if (window.L && window.L.map) return window.L;
+      } catch (e) {
+        lastErr = e;
+      }
+    }
+    throw lastErr || new Error("Leaflet no disponible");
+  }
+
+  function waitFrame() {
+    return new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+  }
+
+  async function ensureMapReady() {
+    try {
+      await ensureLeaflet();
+    } catch (e) {
+      setMapHint("No se pudo cargar Leaflet (" + (e.message || e) + "). Comprueba la conexión.");
+      return false;
+    }
+    hideBoot();
+    await waitFrame();
+    if (!state.map) {
+      try {
+        initMap();
+      } catch (e) {
+        console.error(e);
+        setMapHint("Error al crear el mapa: " + (e.message || e));
+        return false;
+      }
+    }
+    if (!state.map) {
+      setMapHint("No hay contenedor #map en la página.");
+      return false;
+    }
     const panel = document.querySelector(".map-panel") || $("map");
     if (panel?.scrollIntoView) panel.scrollIntoView({ behavior: "smooth", block: "center" });
+    state.map.invalidateSize();
+    await waitFrame();
     state.map.invalidateSize();
     return true;
   }
 
   function initMap() {
-    if (!window.L || state.map) return;
+    if (state.map) return;
+    if (!window.L || !window.L.map) throw new Error("Leaflet no cargado");
     const mapEl = $("map");
-    if (!mapEl) return;
+    if (!mapEl) throw new Error("Falta el elemento #map");
+
+    // Avoid Leaflet "already initialized" if a previous attempt left a ref
+    if (mapEl._leaflet_id) {
+      mapEl._leaflet_id = null;
+      mapEl.innerHTML = "";
+    }
+
     const proj = DATA.mapProjection || {
       tileUrl: "https://ets2.online/map/ets2mappromods_158/{z}/{x}/{y}.png",
       maxZoom: 8,
@@ -548,7 +633,7 @@ body.booting .app, body.booting .mobile-bar { visibility: hidden; }
     };
     DATA.mapProjection = proj;
 
-    state.map = L.map("map", {
+    state.map = L.map(mapEl, {
       crs: L.CRS.Simple,
       minZoom: proj.minZoom || 2,
       maxZoom: proj.maxZoom || 8,
@@ -569,11 +654,12 @@ body.booting .app, body.booting .mobile-bar { visibility: hidden; }
     state.map.setMaxBounds(bounds.pad(0.05));
     state.map.setView(state.map.unproject([32768, 32768], 8), 3);
 
+    state.markers = new Map();
     for (const c of DATA.cities || []) {
       const ll = cityLatLng(c);
       if (!ll) continue;
       const marker = L.circleMarker(ll, {
-        radius: 3.5,
+        radius: c.tier === 1 ? 5 : 3.5,
         color: "#fff",
         weight: 1,
         fillColor: "#0B3D91",
@@ -584,26 +670,24 @@ body.booting .app, body.booting .mobile-bar { visibility: hidden; }
       marker.addTo(state.map);
       state.markers.set(c.id, marker);
     }
-    setTimeout(() => state.map && state.map.invalidateSize(), 250);
-    setTimeout(() => state.map && state.map.invalidateSize(), 800);
+    setTimeout(() => state.map && state.map.invalidateSize(), 200);
+    setTimeout(() => state.map && state.map.invalidateSize(), 700);
   }
 
-  function drawRoute(r) {
-    if (!ensureMapReady()) {
-      setMapHint("El mapa aún no está listo. Recarga la página.");
-      return;
-    }
+  async function drawRoute(r) {
+    const ready = await ensureMapReady();
+    if (!ready) return;
     clearRouteLayers();
     if (!r) {
       setMapHint("Mapa ProMods (ets2.online). Clic en ciudad o selecciona una ruta para ver el trazado.");
       return;
     }
-    const ids = r.paradaIds || r.paradas || [];
+    const ids = r.paradaIds || [];
     const names = r.paradas || r.paradas_nombres || [];
     const pts = [];
     const stopCities = [];
-    for (let i = 0; i < ids.length; i++) {
-      let c = cityById(ids[i]);
+    for (let i = 0; i < Math.max(ids.length, names.length); i++) {
+      let c = ids[i] ? cityById(ids[i]) : null;
       if (!c && names[i]) c = state.cityByName?.get(String(names[i]).toLowerCase()) || null;
       if (!c) continue;
       const ll = cityLatLng(c);
@@ -641,7 +725,7 @@ body.booting .app, body.booting .mobile-bar { visibility: hidden; }
         fillColor: isEnd ? "#F2A900" : "#0B3D91",
         fillOpacity: 1,
       })
-        .bindTooltip((idx + 1) + ". " + c.nombre, { permanent: false })
+        .bindTooltip(idx + 1 + ". " + c.nombre, { permanent: false })
         .addTo(state.routeStops);
     });
     state.routeStops.addTo(state.map);
@@ -960,7 +1044,7 @@ body.booting .app, body.booting .mobile-bar { visibility: hidden; }
       const codigo = card?.dataset.codigo;
       const r = DATA.routes.find((x) => x.codigo === codigo);
       if (!r) return;
-      if (btn.dataset.act === "map") drawRoute(r);
+      if (btn.dataset.act === "map") void drawRoute(r);
       if (btn.dataset.act === "fav") {
         if (state.favs.has(codigo)) state.favs.delete(codigo);
         else state.favs.add(codigo);
@@ -977,9 +1061,19 @@ body.booting .app, body.booting .mobile-bar { visibility: hidden; }
       window.CATALOG_DATA = DATA;
       initFilters();
       bind();
-      initMap();
       applyFilters();
       hideBoot();
+      // Init map only after the UI is visible (Leaflet needs real layout size)
+      try {
+        await ensureLeaflet();
+        await waitFrame();
+        initMap();
+        state.map?.invalidateSize();
+        setTimeout(() => state.map?.invalidateSize(), 300);
+      } catch (e) {
+        console.warn("Mapa diferido:", e);
+        setMapHint("Mapa pendiente: se cargará al pulsar «Ver en mapa».");
+      }
     } catch (e) {
       setBoot(100, String(e.message || e));
     }

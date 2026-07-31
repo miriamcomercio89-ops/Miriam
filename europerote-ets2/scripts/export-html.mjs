@@ -13,7 +13,7 @@ const gitRoot = path.resolve(root, "..");
 const gitSha = spawnSync("git", ["rev-parse", "HEAD"], { encoding: "utf8", cwd: gitRoot }).stdout.trim();
 const CDN_REF = process.env.EUROPEROTE_CDN_REF || gitSha || BRANCH;
 const CDN_BASE = `https://cdn.jsdelivr.net/gh/${REPO}@${CDN_REF}/europerote-ets2/web`;
-const CHUNK = 350;
+const CHUNK = 500;
 
 const operator = JSON.parse(fs.readFileSync(path.join(root, "data/operator.json"), "utf8"));
 const lineTypes = JSON.parse(fs.readFileSync(path.join(root, "data/line-types.json"), "utf8"));

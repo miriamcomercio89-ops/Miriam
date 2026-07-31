@@ -169,9 +169,9 @@ function pathIsCoherent(ids, maxBacktracks = 0) {
     if (dist(byId[ids[i]], dest) >= dist(byId[ids[i - 1]], dest) - 1) backtracks++;
   }
   if (backtracks > maxBacktracks) return false;
-  if (pathKm(ids) > dist(byId[ids[0]], dest) * 1.85 + 60) return false;
+  if (pathKm(ids) > dist(byId[ids[0]], dest) * 2.1 + 80) return false;
   for (let i = 1; i < ids.length; i++) {
-    if (dist(byId[ids[i - 1]], byId[ids[i]]) > 420) return false;
+    if (dist(byId[ids[i - 1]], byId[ids[i]]) > 480) return false;
   }
   if (ids.length >= 4) {
     for (let i = 1; i < ids.length - 1; i++) {
@@ -183,10 +183,80 @@ function pathIsCoherent(ids, maxBacktracks = 0) {
       const bcx = c.x - b.x;
       const bcz = c.z - b.z;
       const mag = Math.hypot(abx, abz) * Math.hypot(bcx, bcz);
-      if (mag > 1 && (abx * bcx + abz * bcz) / mag < -0.35) return false;
+      if (mag > 1 && (abx * bcx + abz * bcz) / mag < -0.45) return false;
     }
   }
   return true;
+}
+
+/** Insert cities that lie along the A→B corridor to reach a richer stop list. */
+function corridorStops(origin, dest, pool, maxStops = 8) {
+  if (!origin || !dest || origin.id === dest.id) return null;
+  const straight = dist(origin, dest);
+  if (straight < 55) return [origin.id, dest.id];
+  const ox = origin.x;
+  const oz = origin.z;
+  const dx = dest.x - ox;
+  const dz = dest.z - oz;
+  const len2 = dx * dx + dz * dz || 1;
+  const maxOffKm = Math.min(110, Math.max(45, straight * 0.22));
+  const candidates = [];
+  for (const c of pool) {
+    if (c.id === origin.id || c.id === dest.id) continue;
+    const t = ((c.x - ox) * dx + (c.z - oz) * dz) / len2;
+    if (t < 0.06 || t > 0.94) continue;
+    const projX = ox + t * dx;
+    const projZ = oz + t * dz;
+    const off = Math.hypot(c.x - projX, c.z - projZ) * SCALE_KM;
+    if (off > maxOffKm) continue;
+    candidates.push({ c, t, off, score: t * 10 + off * 0.02 - (c.tier === 1 ? 0.4 : 0) });
+  }
+  candidates.sort((a, b) => a.t - b.t || a.off - b.off);
+  const want = Math.min(maxStops - 2, Math.max(1, Math.round(straight / 140)));
+  const picked = [];
+  let lastT = -1;
+  const minGap = Math.max(0.05, 0.9 / (want + 2));
+  for (const cand of candidates) {
+    if (cand.t - lastT < minGap) continue;
+    picked.push(cand.c.id);
+    lastT = cand.t;
+    if (picked.length >= want) break;
+  }
+  // If still sparse, take evenly by t buckets
+  if (picked.length < Math.min(want, 2) && candidates.length) {
+    picked.length = 0;
+    for (let k = 1; k <= want; k++) {
+      const target = k / (want + 1);
+      let best = null;
+      let bestDiff = Infinity;
+      for (const cand of candidates) {
+        if (picked.includes(cand.c.id)) continue;
+        const d = Math.abs(cand.t - target) + cand.off / 500;
+        if (d < bestDiff) {
+          bestDiff = d;
+          best = cand;
+        }
+      }
+      if (best) picked.push(best.c.id);
+    }
+    picked.sort((idA, idB) => {
+      const ta = ((byId[idA].x - ox) * dx + (byId[idA].z - oz) * dz) / len2;
+      const tb = ((byId[idB].x - ox) * dx + (byId[idB].z - oz) * dz) / len2;
+      return ta - tb;
+    });
+  }
+  return [origin.id, ...picked, dest.id];
+}
+
+function buildPath(origin, dest, pool, opts = {}) {
+  const maxStops = opts.maxStops || 8;
+  let chain = pathToward(origin, dest, pool, opts);
+  if (!chain || chain.length < Math.min(4, maxStops)) {
+    const enriched = corridorStops(origin, dest, pool, maxStops);
+    if (enriched && (!chain || enriched.length > chain.length)) chain = enriched;
+  }
+  if (!chain) chain = [origin.id, dest.id];
+  return chain;
 }
 
 function tagsFor(ids, tipoId) {
@@ -238,11 +308,12 @@ function makeCodigo(tipoId, ids) {
 }
 
 function corridorKey(tipoId, ids) {
-  // Same endpoints + tipo = clone family; also similar mid sets
   const a = ids[0];
   const b = ids[ids.length - 1];
   const ends = [a, b].sort().join("|");
-  return `${tipoId}::${ends}`;
+  // Allow direct, medium and long variants on the same corridor
+  const bucket = ids.length <= 2 ? "d" : ids.length <= 5 ? "m" : "l";
+  return `${tipoId}::${ends}::${bucket}`;
 }
 
 function describe(route) {
@@ -279,13 +350,12 @@ function pushRoute(tipoId, ids, extra = {}) {
   const existingIdx = seenCorridor.get(cKey);
   if (existingIdx != null) {
     const prev = routes[existingIdx];
-    // Keep the better one: for exp prefer fewer stops / shorter; for reg prefer more coverage if similar km
+    // Prefer richer itineraries (more stops) when km stays reasonable
     const better =
-      tipoId === "exp" || tipoId === "int" || tipoId === "noc"
-        ? ids.length < prev.num_paradas || (ids.length === prev.num_paradas && km < prev.distancia_km)
-        : ids.length > prev.num_paradas && km < prev.distancia_km * 1.25;
+      ids.length > prev.num_paradas
+        ? km <= prev.distancia_km * 1.35 + 40
+        : ids.length === prev.num_paradas && km < prev.distancia_km;
     if (!better) return null;
-    // replace previous
     seenExact.delete(prev.tipo_id + "|" + prev.paradas.join(">"));
     seenExact.delete(prev.tipo_id + "|" + [...prev.paradas].reverse().join(">"));
     routes[existingIdx] = null;
@@ -333,109 +403,180 @@ function pushRoute(tipoId, ids, extra = {}) {
 
 const byPais = {};
 for (const s of reals) (byPais[s.pais] ||= []).push(s);
-const hubs = reals.filter((s) => s.tier <= 2).sort((a, b) => a.tier - b.tier || a.nombre.localeCompare(b.nombre, "es"));
-// Cap hubs for density control: top cities by degree to others within 800km
-const majorHubs = hubs.filter((h) => h.tier === 1).concat(hubs.filter((h) => h.tier === 2).slice(0, 180));
 
-console.log(`Ciudades: ${reals.length} | Hubs usados: ${majorHubs.length}`);
+// Rank cities by local density + name importance → tier 1/2/3 and degree budget
+const MAJOR_NAME =
+  /madrid|barcelona|lisboa|lisbon|porto|paris|lyon|marseille|marsella|berlin|hamburg|m[uü]nchen|munich|colonia|k[oö]ln|cologne|frankfurt|london|manchester|birmingham|glasgow|edinburgh|amsterdam|rotterdam|brussel|bruselas|brussels|wien|vienna|roma|rome|mil[aá]n|milan|napoles|naples|tur[ií]n|turin|varsovia|warsaw|warszawa|prague|praha|budapest|bucarest|bucharest|sof[ií]a|belgrade|belgrado|zagreb|atenas|athens|athina|estambul|istanbul|ankara|helsinki|stockholm|oslo|copenhague|copenhagen|k[oø]benhavn|dubl[ií]n|dublin|reykjav|mosc[uú]|moscow|kyiv|kiev|minsk|riga|tallinn|vilnius|warsaw|gothenburg|gotemburgo|g[oö]teborg|sevilla|val[eè]ncia|m[aá]laga|bilbao|zaragoza|granada|murcia|santiago|porto|faro|coimbra|bordeaux|burdeos|toulouse|nice|niza|strasbourg|lille|nantes|rennes|genoa|g[eé]nova|florencia|florence|firenze|bologna|palermo|catania|bari|verona|venice|venecia|venezia|zurich|geneva|ginebra|basel|bern|innsbruck|salzburg|graz|linz|bratislava|kosice|krakow|krak[oó]w|gdansk|wroclaw|poznan|lodz|katowice|cluj|timisoara|iasi|constanta|plovdiv|varna|burgas|skopje|tirana|pristina|podgorica|sarajevo|ljubljana|split|rijeka|thessaloniki|patras|heraklion|nicosia|lefkosia|beirut|tel.?aviv|jerusalem|amman|cairo|casablanca|tanger|rabat|tunis|algiers|yerevan|baku|tbilisi|batumi|almaty|astana|kaliningrad|saint.?petersburg|sankt|novosibirsk|samara|kazan|rostov|voronezh|volgograd/i;
 
-// REG — fewer windows, stronger dedupe
+function localDegree(city, radiusKm = 220) {
+  let n = 0;
+  for (const o of byPais[city.pais] || []) {
+    if (o.id === city.id) continue;
+    if (dist(city, o) <= radiusKm) n++;
+  }
+  return n;
+}
+
+for (const s of reals) {
+  const deg = localDegree(s);
+  s._deg = deg;
+  if (MAJOR_NAME.test(s.nombre) || MAJOR_NAME.test(s.nombre_juego || "")) s.tier = 1;
+  else if (deg >= 7) s.tier = 2;
+  else s.tier = 3;
+}
+
+const hubs = [...reals].sort((a, b) => a.tier - b.tier || b._deg - a._deg || a.nombre.localeCompare(b.nombre, "es"));
+const tier1 = hubs.filter((h) => h.tier === 1);
+const tier2 = hubs.filter((h) => h.tier === 2);
+const majorHubs = tier1.concat(tier2.slice(0, 220));
+
+function linkBudget(city) {
+  if (city.tier === 1) return 8;
+  if (city.tier === 2) return 5;
+  return 2;
+}
+
+console.log(`Ciudades: ${reals.length} | Hubs: ${majorHubs.length} | Tier1: ${tier1.length} | Tier2: ${tier2.length} | Tier3: ${hubs.filter((h) => h.tier === 3).length}`);
+
+// REG — denser corridors with more stops
 for (const [pais, list] of Object.entries(byPais)) {
   if (list.length < 3) continue;
   for (const axis of ["z", "x"]) {
     const sorted = [...list].sort((a, b) => (axis === "x" ? a.x - b.x : a.z - b.z));
-    for (let win = 5; win <= 7; win++) {
-      for (let i = 0; i + win <= sorted.length; i += Math.max(3, Math.floor(win / 2) + 1)) {
-        const chain = pathToward(sorted[i], sorted[i + win - 1], list, {
-          maxStops: Math.min(win, 6),
-          maxHop: 300,
-          minHop: 25,
-          minProgress: 15,
+    for (let win = 5; win <= 11; win++) {
+      const step = win <= 7 ? 2 : 3;
+      for (let i = 0; i + win <= sorted.length; i += step) {
+        const chain = buildPath(sorted[i], sorted[i + win - 1], list, {
+          maxStops: Math.min(win, 12),
+          maxHop: 280,
+          minHop: 18,
+          minProgress: 10,
+          maxDetourKm: 90,
         });
         if (chain?.length >= 3) {
-          pushRoute("reg", chain, { patron: "parador", eje: `${axis}-${pais}` });
+          pushRoute("reg", chain, { patron: "parador", eje: `${axis}-${pais}`, maxBacktracks: 1 });
         }
       }
     }
   }
+  if (list.length >= 8) {
+    const sorted = [...list].sort((a, b) => a.z - b.z);
+    const chain = buildPath(sorted[0], sorted[sorted.length - 1], list, {
+      maxStops: 12,
+      maxHop: 320,
+      minHop: 25,
+      minProgress: 12,
+      maxDetourKm: 110,
+    });
+    if (chain?.length >= 5) pushRoute("reg", chain, { patron: "eje-nacional", maxBacktracks: 1 });
+  }
 }
 
-// EXP — fewer connections per hub
+// Local feeders: every city → nearest hubs, with intermediates when far
+for (const city of reals) {
+  const budget = linkBudget(city);
+  const nearHubs = majorHubs
+    .filter((h) => h.id !== city.id && (h.pais === city.pais || city.tier === 1))
+    .map((h) => ({ h, d: dist(city, h) }))
+    .filter((x) => x.d > 20 && x.d < (city.tier === 1 ? 650 : 360))
+    .sort((a, b) => a.d - b.d)
+    .slice(0, budget);
+  for (const { h, d } of nearHubs) {
+    const pool = city.pais === h.pais ? byPais[city.pais] || reals : reals;
+    const maxStops = d > 350 ? 10 : d > 200 ? 7 : d > 100 ? 5 : 3;
+    const chain = buildPath(city, h, pool, {
+      maxStops,
+      maxHop: 300,
+      minHop: 18,
+      minProgress: 10,
+      maxDetourKm: 95,
+    });
+    if (chain?.length >= 2) {
+      pushRoute(chain.length >= 4 ? "reg" : d < 120 ? "reg" : "exp", chain, {
+        patron: "feeder",
+        maxBacktracks: 1,
+        skipCoherence: chain.length === 2,
+      });
+    }
+  }
+}
+
+// EXP — more connections for larger cities (prefer multi-stop)
 for (const a of majorHubs) {
+  const n = linkBudget(a);
   const candidates = majorHubs
     .filter((b) => b.id !== a.id)
     .map((b) => ({ b, d: dist(a, b) }))
-    .filter((x) => x.d > 80 && x.d < 900)
+    .filter((x) => x.d > 80 && x.d < (a.tier === 1 ? 1000 : 750))
     .sort((x, y) => x.d - y.d)
-    .slice(0, 4);
-  for (const { b } of candidates) {
-    if (a.pais === b.pais && dist(a, b) <= 400) {
-      pushRoute("exp", [a.id, b.id], { patron: "directo" });
-    }
+    .slice(0, n);
+  for (const { b, d } of candidates) {
     const pool = a.pais === b.pais ? byPais[a.pais] : reals;
-    const chain = pathToward(a, b, pool, {
-      maxStops: a.pais === b.pais ? 4 : 6,
+    const chain = buildPath(a, b, pool, {
+      maxStops: a.pais === b.pais ? 7 : 9,
       maxHop: 380,
-      minHop: 50,
-      minProgress: 20,
-      maxDetourKm: 90,
+      minHop: 35,
+      minProgress: 14,
+      maxDetourKm: 110,
     });
-    if (chain) pushRoute("exp", chain, { maxBacktracks: 1, eje: "hub" });
+    if (chain) pushRoute("exp", chain, { maxBacktracks: 1, eje: "hub", skipCoherence: chain.length === 2 && d < 150 });
   }
 }
 
-// INT
-for (const a of majorHubs.filter((h) => h.tier === 1).concat(majorHubs.slice(0, 120))) {
+// INT — capitals and big hubs
+for (const a of tier1.concat(majorHubs.filter((h) => h._deg >= 8).slice(0, 80))) {
   const foreign = majorHubs
     .filter((b) => b.pais !== a.pais)
     .map((b) => ({ b, d: dist(a, b) }))
-    .filter((x) => x.d > 120 && x.d < 1600)
+    .filter((x) => x.d > 100 && x.d < (a.tier === 1 ? 1800 : 1400))
     .sort((x, y) => x.d - y.d)
-    .slice(0, 3);
+    .slice(0, a.tier === 1 ? 6 : 3);
   for (const { b } of foreign) {
-    const chain = pathToward(a, b, reals, {
-      maxStops: 7,
+    const chain = buildPath(a, b, reals, {
+      maxStops: 10,
       maxHop: 420,
-      minHop: 55,
-      minProgress: 25,
-      maxDetourKm: 100,
+      minHop: 40,
+      minProgress: 16,
+      maxDetourKm: 120,
     });
     if (!chain || countries(chain).length < 2) continue;
     pushRoute("int", chain, { maxBacktracks: 1 });
-    if (pathKm(chain) > 500) pushRoute("noc", chain, { maxBacktracks: 1, eje: "nocturno" });
+    if (pathKm(chain) > 450) pushRoute("noc", chain, { maxBacktracks: 1, eje: "nocturno" });
   }
 }
 
-// FER — coastal pairs only, tagged ferry
+// FER — coastal pairs
 const seaHubs = majorHubs.filter((h) => FERRY_COUNTRIES.has(h.pais));
-for (const a of seaHubs) {
+for (const a of seaHubs.filter((h) => h.tier <= 2)) {
   const mates = seaHubs
     .filter((b) => b.pais !== a.pais)
     .map((b) => ({ b, d: dist(a, b) }))
-    .filter((x) => x.d > 100 && x.d < 700)
+    .filter((x) => x.d > 80 && x.d < 750)
     .sort((x, y) => x.d - y.d)
-    .slice(0, 1);
+    .slice(0, a.tier === 1 ? 2 : 1);
   for (const { b } of mates) {
     pushRoute("fer", [a.id, b.id], { skipCoherence: true, patron: "directo" });
   }
 }
 
-// TUR — sparse scenic
+// TUR — scenic multi-stop within country
 const byX = [...majorHubs].sort((a, b) => a.x - b.x);
-for (let i = 0; i + 5 < byX.length; i += 8) {
-  if (byX[i].pais !== byX[i + 4].pais) continue;
-  const chain = pathToward(byX[i], byX[i + 4], byPais[byX[i].pais] || reals, {
-    maxStops: 5,
-    maxHop: 320,
-    minHop: 40,
-    minProgress: 18,
+for (let i = 0; i + 6 < byX.length; i += 5) {
+  if (byX[i].pais !== byX[i + 5].pais) continue;
+  const chain = buildPath(byX[i], byX[i + 5], byPais[byX[i].pais] || reals, {
+    maxStops: 8,
+    maxHop: 300,
+    minHop: 30,
+    minProgress: 14,
   });
-  if (chain?.length >= 3) pushRoute("tur", chain, { patron: "parador" });
+  if (chain?.length >= 4) pushRoute("tur", chain, { patron: "parador", maxBacktracks: 1 });
 }
 
-// Ida/vuelta for top nationals
-const baseSnapshot = routes.filter(Boolean).filter((r) => r.nacional && (r.tipo_id === "reg" || r.tipo_id === "exp"));
-for (const r of baseSnapshot.slice(0, 400)) {
+// Ida/vuelta for nationals with many stops
+const baseSnapshot = routes
+  .filter(Boolean)
+  .filter((r) => r.nacional && (r.tipo_id === "reg" || r.tipo_id === "exp") && r.num_paradas >= 3);
+for (const r of baseSnapshot.slice(0, 700)) {
   pushRoute(r.tipo_id, [...r.paradas].reverse(), {
     nombre: `${tipoById[r.tipo_id].nombre} ${r.paradas_nombres.at(-1)} — ${r.paradas_nombres[0]}`,
     sentido: "vuelta",
