@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "generado": "2026-07-31T12:48:30.298Z",
+  "generado": "2026-07-31T12:48:30.642Z",
   "total": 4217,
   "chunks": 13,
   "chunkSize": 350,
@@ -37,6 +37,6 @@
     "ets2+promods": "Fusión base ETS2 + ProMods"
   },
   "stops": 1520,
-  "cdnBase": "https://cdn.jsdelivr.net/gh/miriamcomercio89-ops/Miriam@443ac4b2b683677417e89a8078dc9fe35a48f1b2/europerote-ets2/web",
-  "commit": "443ac4b2b683677417e89a8078dc9fe35a48f1b2"
+  "cdnBase": "https://cdn.jsdelivr.net/gh/miriamcomercio89-ops/Miriam@c8d387bd03510f7d4c4ddafea13ed35676bd5ca6/europerote-ets2/web",
+  "commit": "c8d387bd03510f7d4c4ddafea13ed35676bd5ca6"
 }
