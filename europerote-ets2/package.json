@@ -4,10 +4,14 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "rebuild-stops": "node scripts/rebuild-stops.mjs",
     "generate": "node scripts/generate-routes.mjs",
     "geocode": "node scripts/geocode-cities.mjs",
     "export:html": "node scripts/export-html.mjs",
-    "build": "npm run generate && npm run export:html",
-    "rebuild-stops": "node scripts/rebuild-stops.mjs"
+    "export:pdf": "node scripts/export-pdf-maps.mjs",
+    "build": "npm run generate && npm run export:pdf && npm run export:html"
+  },
+  "dependencies": {
+    "pdfkit": "^0.19.1"
   }
 }

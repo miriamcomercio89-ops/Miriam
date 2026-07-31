@@ -149,6 +149,17 @@ body.booting .app, body.booting .mobile-bar { visibility: hidden; }
 .leaflet-container { font: inherit; }
 .city-marker { background: var(--accent); border: 2px solid #fff; border-radius: 50%; }
 .city-marker.selected { background: var(--accent-2); }
+.tag-ferry { background: #d6f5f0; color: #0b6b5f; border-color: #9adfd3; }
+.tag-peaje { background: #ffe8cc; color: #8a4b00; border-color: #f0c78a; }
+.tag-frontera { background: #eadcf8; color: #5b2d82; border-color: #c9a6e8; }
+.card-actions { margin-top: .45rem; display: flex; gap: .35rem; flex-wrap: wrap; }
+.mini {
+  border: 1px solid var(--line); background: #fff; border-radius: 10px;
+  padding: .28rem .55rem; cursor: pointer; font-weight: 700; font-size: .75rem;
+}
+.pdf-links { font-size: .78rem; line-height: 1.55; }
+.pdf-links a { color: var(--accent); font-weight: 700; text-decoration: none; }
+.help { font-size: .75rem; color: var(--muted); line-height: 1.4; margin: .2rem 0 .8rem; }
 @media (max-width: 980px) {
   .mobile-bar { display: flex; }
   .app { grid-template-columns: 1fr; }

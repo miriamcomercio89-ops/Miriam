@@ -7,14 +7,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,600;7..72,700&family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"/>
 <style>__STYLES__</style>
 </head>
 <body class="booting">
 <div id="boot">
   <div class="boot-card">
     <h1 style="font-family:Literata,serif;margin:0 0 .35rem">EuroPerote</h1>
-    <p style="margin:0;opacity:.85">Cargando ciudades y rutas ProMods…</p>
+    <p style="margin:0;opacity:.85">Cargando mapa ProMods y rutas…</p>
     <div class="boot-bar"><div id="bootBar"></div></div>
     <div id="bootPct">0%</div>
     <div id="bootErr" hidden></div>
@@ -30,41 +30,62 @@
       <div class="brand-mark" aria-hidden="true"></div>
       <div>
         <h1>EuroPerote</h1>
-        <p>ProMods · rutas reales</p>
+        <p>ETS2 + ProMods · mapa real</p>
       </div>
     </div>
 
     <div class="section-label">Ciudad</div>
     <div class="field">
-      <label for="citySelect">Seleccionar ciudad / pueblo</label>
-      <input id="citySearch" placeholder="Buscar en el mapa…"/>
-      <select id="citySelect" size="8"></select>
+      <label for="citySelect">Seleccionar ciudad</label>
+      <input id="citySearch" placeholder="Buscar ciudad…"/>
+      <select id="citySelect" size="7"></select>
     </div>
     <div class="field">
-      <label for="cityMode">Al elegir ciudad mostrar</label>
+      <label for="cityMode">Al elegir ciudad</label>
       <select id="cityMode">
         <option value="both">Pasan y cabeceras</option>
-        <option value="through">Solo pasan por ella</option>
-        <option value="ends">Solo origen o destino</option>
+        <option value="through">Solo pasan</option>
+        <option value="ends">Solo origen/destino</option>
       </select>
     </div>
     <button class="btn-ghost" id="clearCity" type="button">Quitar ciudad</button>
 
-    <div class="section-label">Filtros de ruta</div>
-    <div class="field"><label for="q">Texto libre</label><input id="q" placeholder="código, descripción…"/></div>
+    <div class="section-label">Origen → destino</div>
+    <div class="field"><label for="fromCity">Desde</label><input id="fromCity" list="cityDatalist" placeholder="Ciudad origen"/></div>
+    <div class="field"><label for="toCity">Hasta</label><input id="toCity" list="cityDatalist" placeholder="Ciudad destino"/></div>
+    <datalist id="cityDatalist"></datalist>
+
+    <div class="section-label">Filtros</div>
+    <div class="field"><label for="q">Texto</label><input id="q" placeholder="código, descripción…"/></div>
     <div class="field"><label for="tipo">Tipo</label><select id="tipo"><option value="">Todos</option></select></div>
+    <div class="field"><label for="tag">Etiqueta</label><select id="tag">
+      <option value="">Todas</option>
+      <option value="ferry">Ferry</option>
+      <option value="peaje">Peaje</option>
+      <option value="frontera">Frontera</option>
+    </select></div>
     <div class="field"><label for="ambito">Ámbito</label><select id="ambito">
       <option value="">Todos</option>
       <option value="nacional">Nacional</option>
       <option value="internacional">Internacional</option>
     </select></div>
     <div class="field"><label for="pais">País</label><select id="pais"><option value="">Todos</option></select></div>
-    <div class="field"><label for="addon">Addon</label><select id="addon"><option value="">Todos</option></select></div>
+    <div class="field"><label for="favOnly">Favoritos</label><select id="favOnly">
+      <option value="">Todos</option>
+      <option value="1">Solo favoritos</option>
+    </select></div>
 
     <div class="actions">
       <button class="btn-primary" id="applyBtn" type="button">Aplicar</button>
-      <button class="btn-ghost" id="resetBtn" type="button">Limpiar filtros</button>
+      <button class="btn-ghost" id="resetBtn" type="button">Limpiar</button>
+      <button class="btn-ghost" id="exportCsv" type="button">Exportar CSV</button>
     </div>
+
+    <div class="section-label">PDFs por país</div>
+    <div id="pdfLinks" class="pdf-links meta">Cargando…</div>
+
+    <div class="section-label">Ayuda in-game</div>
+    <p class="help">Sigue las ciudades del itinerario en orden en el GPS de ETS2/ProMods. Si hay etiqueta <em>ferry</em>, usa el ferry del mapa. <em>Peaje</em> implica peajes posibles. <em>Frontera</em> cruza países.</p>
   </aside>
 
   <main class="main">
@@ -77,8 +98,8 @@
     </div>
 
     <section class="map-panel">
-      <div id="map" role="application" aria-label="Mapa OpenStreetMap de ciudades ProMods"></div>
-      <p class="map-hint" id="mapHint">Clic en un marcador o elige ciudad a la izquierda.</p>
+      <div id="map" role="application" aria-label="Mapa ProMods ETS2"></div>
+      <p class="map-hint" id="mapHint">Mapa ProMods (ets2.online). Clic en ciudad o selecciona una ruta para ver el trazado.</p>
     </section>
 
     <div id="cityPanels" hidden>
@@ -121,7 +142,7 @@
     </div>
   </main>
 </div>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>window.CATALOG_BASE = "__CDN_BASE__";</script>
 <script>__APP__</script>
 </body>

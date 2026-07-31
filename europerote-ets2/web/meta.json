@@ -1,10 +1,11 @@
 {
-  "version": "3.0.0",
-  "generado": "2026-07-31T13:47:42.318Z",
-  "total": 9519,
-  "chunks": 28,
+  "version": "4.0.0",
+  "generado": "2026-07-31T15:29:40.348Z",
+  "total": 1326,
+  "chunks": 4,
   "chunkSize": 350,
-  "cities": 647,
+  "cities": 625,
+  "cobertura_pct": 98.2,
   "solo_promods_real": true,
   "operador": {
     "id": "europerote",
@@ -38,6 +39,19 @@
     "egypt-addon": "Complemento Egipto / Norte África",
     "ets2+promods": "Fusión base ETS2 + ProMods"
   },
-  "cdnBase": "https://cdn.jsdelivr.net/gh/miriamcomercio89-ops/Miriam@eb4a11447a11f3eb9f7321e4a0c1c6627a7ca5b1/europerote-ets2/web",
-  "commit": "eb4a11447a11f3eb9f7321e4a0c1c6627a7ca5b1"
+  "mapProjection": {
+    "tileUrl": "https://ets2.online/map/ets2mappromods_158/{z}/{x}/{y}.png",
+    "maxZoom": 8,
+    "minZoom": 2,
+    "tileSize": 256,
+    "MAX_X": 65536,
+    "MAX_Y": 65536,
+    "x1": -135110.156,
+    "x2": 168923.75,
+    "y1": -179273.531,
+    "y2": 124760.375,
+    "attribution": "Mapa ProMods vía ets2.online"
+  },
+  "cdnBase": "https://cdn.jsdelivr.net/gh/miriamcomercio89-ops/Miriam@b97b7c599f69a96d340fd06b8979094ce431a8d7/europerote-ets2/web",
+  "commit": "b97b7c599f69a96d340fd06b8979094ce431a8d7"
 }
