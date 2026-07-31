@@ -15,10 +15,10 @@ Diseño + generador de una red ferroviaria del **Reino Unido** para Nimby Rails.
 
 **Importante:** el enlace “Raw” de GitHub muestra el archivo como texto. En el móvil abre esta URL (web interactiva):
 
-- Catálogo interactivo: https://htmlpreview.github.io/?https://github.com/miriamcomercio89-ops/Miriam/blob/cursor/red-ferroviaria-alemania-555a/ferrocarriles-uk/web/index.html
-- Landing: https://htmlpreview.github.io/?https://github.com/miriamcomercio89-ops/Miriam/blob/cursor/red-ferroviaria-alemania-555a/ferrocarriles-uk/ABRIR-EN-MOVIL.html
+- Catálogo interactivo: https://htmlpreview.github.io/?https://github.com/miriamcomercio89-ops/Miriam/blob/6fd2cc15fca00e418f28d13b737e002d7b1f2ee4/ferrocarriles-uk/web/index.html
+- Landing: https://htmlpreview.github.io/?https://github.com/miriamcomercio89-ops/Miriam/blob/6fd2cc15fca00e418f28d13b737e002d7b1f2ee4/ferrocarriles-uk/ABRIR-EN-MOVIL.html
 
-Offline: descarga `catalogo-uk.zip` y abre `catalogo-uk.html` en el navegador.
+Offline: descarga  y abre  en el navegador.
 
 ## Uso
 
