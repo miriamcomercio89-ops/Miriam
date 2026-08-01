@@ -10,7 +10,8 @@ import {
   updateReputation,
 } from '../lib/economy'
 import { activeHolidays } from '../lib/holidays'
-import type { BankDeposit, DayLedger, GameState, Hotel, NewsItem, WorldEvent } from '../types'
+import { loyaltyFromPoints, makeWeeklyReport } from '../lib/loyalty'
+import type { BankDeposit, DayLedger, GameState, Hotel, NewsItem, WeeklyReport, WorldEvent } from '../types'
 
 export type WorkerDayRequest = {
   type: 'applyDays'
@@ -27,6 +28,10 @@ export type WorkerDayRequest = {
     | 'countryEconomy'
     | 'news'
     | 'bankDeposits'
+    | 'loyaltyLevel'
+    | 'loyaltyPoints'
+    | 'lastWeeklyReportDay'
+    | 'weeklyReports'
   >
   days: number
 }
@@ -43,6 +48,10 @@ export type WorkerDayResponse = {
   countryEconomy: GameState['countryEconomy']
   news: NewsItem[]
   bankDeposits: BankDeposit[]
+  loyaltyLevel: GameState['loyaltyLevel']
+  loyaltyPoints: number
+  lastWeeklyReportDay: number
+  weeklyReports: WeeklyReport[]
   dayClosed: boolean
 }
 
@@ -66,6 +75,10 @@ function applyDays(state: WorkerDayRequest['state'], days: number): WorkerDayRes
   let countryEconomy = { ...state.countryEconomy }
   let news = state.news.slice()
   let bankDeposits = (state.bankDeposits ?? []).map((d) => ({ ...d }))
+  let loyaltyPoints = state.loyaltyPoints ?? 0
+  let loyaltyLevel = state.loyaltyLevel ?? 1
+  let lastWeeklyReportDay = state.lastWeeklyReportDay ?? 0
+  let weeklyReports = (state.weeklyReports ?? []).slice()
   const startDay = gameDay(state.gameMinutes)
   let dayClosed = false
 
@@ -78,7 +91,6 @@ function applyDays(state: WorkerDayRequest['state'], days: number): WorkerDayRes
       .map((e) => ({ ...e, daysRemaining: e.daysRemaining - 1 }))
       .filter((e) => e.daysRemaining > 0)
 
-    // Fiestas del calendario (se muestran junto a eventos)
     const holidays = activeHolidays(minutesAtDay).map((h) => ({
       ...h,
       id: `${h.id}-${currentDay}`,
@@ -106,23 +118,32 @@ function applyDays(state: WorkerDayRequest['state'], days: number): WorkerDayRes
     let dayRevenue = 0
     let dayCosts = 0
     let dayTax = 0
+    let renovations = 0
+    let dayGuests = 0
     for (let i = 0; i < hotels.length; i++) {
       const h = hotels[i]
       const key = reputationKey(h.countryCode)
       const rep = reputation[key] ?? 55
       const eco = countryEconomy[key]
-      const net = applyHotelDayInPlace(h, dayEvents, minutesAtDay, rep, eco, currentDay)
+      const { net, renovationCost } = applyHotelDayInPlace(h, dayEvents, minutesAtDay, rep, eco, currentDay, loyaltyLevel)
+      if (renovationCost > 0) renovations++
       dayRevenue += h.lastDayRevenue
       dayCosts += h.lastDayCosts
       dayTax += h.lastDayTax ?? 0
+      dayGuests += h.lifetimeGuests // will recalc points from total later
       cash += net
       reputation[key] = updateReputation(rep, net, h.lastDayOccupancy, h.satisfaction)
     }
+
+    loyaltyPoints = 0
+    for (let i = 0; i < hotels.length; i++) loyaltyPoints += hotels[i].lifetimeGuests
+    loyaltyLevel = loyaltyFromPoints(loyaltyPoints)
 
     const bankTick = tickBankDeposits(bankDeposits, cash, currentDay)
     bankDeposits = bankTick.deposits
     cash = bankTick.cash
     const bankInterest = bankTick.interestPaid
+    const bankBalance = bankDeposits.reduce((s, x) => s + x.amount, 0)
 
     let loanPayment = 0
     if (loan.balance > 0) {
@@ -155,8 +176,38 @@ function applyDays(state: WorkerDayRequest['state'], days: number): WorkerDayRes
       dayTax,
       bankInterest,
     })
+
+    if (renovations > 0) {
+      dayNews.unshift({
+        id: `reno-${currentDay}`,
+        day: currentDay,
+        title: 'Reformas de la IA',
+        body: `La IA ha renovado ${renovations} hotel${renovations === 1 ? '' : 'es'} con desgaste.`,
+        tone: 'neutral',
+      })
+    }
+
+    if (currentDay - lastWeeklyReportDay >= 7) {
+      lastWeeklyReportDay = currentDay
+      const report = makeWeeklyReport({
+        day: currentDay,
+        hotels,
+        bankBalance,
+        renovations,
+      })
+      weeklyReports = [report, ...weeklyReports].slice(0, 12)
+      dayNews.unshift({
+        id: report.id,
+        day: currentDay,
+        title: `Informe semanal · día ${currentDay}`,
+        body: `${report.summary} Mejor país ${report.bestCountry} (${Math.round(report.bestCountryNet)} €). Peor: ${report.worstHotel}. Impuestos ${Math.round(report.dayTax)} €. Banco ${Math.round(report.bankBalance)} €. Ocupación media ${(report.avgOccupancy * 100).toFixed(0)}%.`,
+        tone: 'neutral',
+      })
+    }
+
     news = [...dayNews, ...news].slice(0, 50)
     dayClosed = true
+    void dayGuests
   }
 
   return {
@@ -171,6 +222,10 @@ function applyDays(state: WorkerDayRequest['state'], days: number): WorkerDayRes
     countryEconomy,
     news,
     bankDeposits,
+    loyaltyLevel,
+    loyaltyPoints,
+    lastWeeklyReportDay,
+    weeklyReports,
     dayClosed,
   }
 }

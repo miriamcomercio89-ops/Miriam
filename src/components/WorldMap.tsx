@@ -5,7 +5,7 @@ import { useGameStore } from '../store/gameStore'
 import { resolveLocation } from '../lib/geo'
 import { filterHotels } from '../lib/economy'
 import { createHotelsCanvasLayer, findNearestHotel, hotelTooltipMeta } from '../lib/hotelsCanvasLayer'
-import { formatEUR } from '../lib/format'
+import { formatEUR, gameDay } from '../lib/format'
 import type { Hotel } from '../types'
 
 function MapClickHandler({
@@ -79,18 +79,33 @@ function HotelsCanvas({
   }, [hotels, selectedId])
 
   useEffect(() => {
+    let raf = 0
+    let lastId: string | null = null
     const onMove = (e: L.LeafletMouseEvent) => {
-      const nearest = findNearestHotel(map, hotels, e.containerPoint, map.getZoom())
-      if (!nearest) {
-        onHover(null)
-        return
-      }
-      onHover({ hotel: nearest, x: e.containerPoint.x, y: e.containerPoint.y })
+      if (raf) cancelAnimationFrame(raf)
+      raf = requestAnimationFrame(() => {
+        const nearest = findNearestHotel(map, hotels, e.containerPoint, map.getZoom())
+        const id = nearest?.id ?? null
+        if (id === lastId && nearest) {
+          onHover({ hotel: nearest, x: e.containerPoint.x, y: e.containerPoint.y })
+          return
+        }
+        lastId = id
+        if (!nearest) {
+          onHover(null)
+          return
+        }
+        onHover({ hotel: nearest, x: e.containerPoint.x, y: e.containerPoint.y })
+      })
     }
-    const clear = () => onHover(null)
+    const clear = () => {
+      lastId = null
+      onHover(null)
+    }
     map.on('mousemove', onMove)
     map.on('mouseout', clear)
     return () => {
+      if (raf) cancelAnimationFrame(raf)
       map.off('mousemove', onMove)
       map.off('mouseout', clear)
     }
@@ -135,6 +150,7 @@ function TileLayers() {
 export function WorldMap() {
   const hotels = useGameStore((s) => s.hotels)
   const filters = useGameStore((s) => s.mapFilters)
+  const gameMinutes = useGameStore((s) => s.gameMinutes)
   const selectHotel = useGameStore((s) => s.selectHotel)
   const openBuildAt = useGameStore((s) => s.openBuildAt)
   const selectedHotelId = useGameStore((s) => s.selectedHotelId)
@@ -144,7 +160,8 @@ export function WorldMap() {
   const [pending, setPending] = useState<{ lat: number; lng: number } | null>(null)
   const [hover, setHover] = useState<{ hotel: Hotel; x: number; y: number } | null>(null)
 
-  const filtered = useMemo(() => filterHotels(hotels, filters), [hotels, filters])
+  const day = gameDay(gameMinutes)
+  const filtered = useMemo(() => filterHotels(hotels, filters, day), [hotels, filters, day])
   const onHover = useCallback((p: { hotel: Hotel; x: number; y: number } | null) => setHover(p), [])
 
   async function handleBuild(lat: number, lng: number) {

@@ -2,7 +2,7 @@ import { useMemo, useRef, useState } from 'react'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { useGameStore } from '../store/gameStore'
 import { filterHotels, hotelNet } from '../lib/economy'
-import { formatEUR, formatPct } from '../lib/format'
+import { formatEUR, formatPct, gameDay } from '../lib/format'
 import { getSubsidiary, subsidiaryLogoSvg } from '../data/subsidiaries'
 import type { HotelSort } from '../types'
 
@@ -11,13 +11,14 @@ export function HotelListPanel() {
   const setShowHotels = useGameStore((s) => s.setShowHotels)
   const hotels = useGameStore((s) => s.hotels)
   const filters = useGameStore((s) => s.mapFilters)
+  const gameMinutes = useGameStore((s) => s.gameMinutes)
   const focusHotel = useGameStore((s) => s.focusHotel)
   const [q, setQ] = useState('')
   const [sort, setSort] = useState<HotelSort>('net')
   const parentRef = useRef<HTMLDivElement>(null)
 
   const rows = useMemo(() => {
-    const base = filterHotels(hotels, filters)
+    const base = filterHotels(hotels, filters, gameDay(gameMinutes))
     const qq = q.trim().toLowerCase()
     const filtered = qq
       ? base.filter(
@@ -37,7 +38,7 @@ export function HotelListPanel() {
       return hotelNet(b) - hotelNet(a)
     })
     return filtered
-  }, [hotels, filters, q, sort])
+  }, [hotels, filters, q, sort, gameMinutes])
 
   const virtualizer = useVirtualizer({
     count: rows.length,

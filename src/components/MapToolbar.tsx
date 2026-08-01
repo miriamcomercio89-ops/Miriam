@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { useGameStore } from '../store/gameStore'
 import { SUBSIDIARIES } from '../data/subsidiaries'
 import { PlaceSearch } from './PlaceSearch'
@@ -10,6 +11,15 @@ export function MapToolbar() {
   const setMapMode = useGameStore((s) => s.setMapMode)
   const filters = useGameStore((s) => s.mapFilters)
   const setMapFilters = useGameStore((s) => s.setMapFilters)
+  const hotels = useGameStore((s) => s.hotels)
+
+  const countries = useMemo(() => {
+    const map = new Map<string, string>()
+    for (const h of hotels) {
+      if (!map.has(h.countryCode)) map.set(h.countryCode, h.country)
+    }
+    return [...map.entries()].sort((a, b) => a[1].localeCompare(b[1], 'es'))
+  }, [hotels])
 
   const layers: { id: MapLayer; label: string; title: string }[] = [
     { id: 'streets', label: 'Calles', title: 'Mapa de calles OpenStreetMap' },
@@ -71,6 +81,17 @@ export function MapToolbar() {
           ))}
         </select>
         <select
+          value={filters.countryCode}
+          onChange={(e) => setMapFilters({ countryCode: e.target.value })}
+          aria-label="Filtrar país"
+          title="Filtrar por país"
+        >
+          <option value="all">Todos los países</option>
+          {countries.map(([code, name]) => (
+            <option key={code} value={code}>{name}</option>
+          ))}
+        </select>
+        <select
           value={filters.minStars}
           onChange={(e) => setMapFilters({ minStars: Number(e.target.value) })}
           aria-label="Estrellas mínimas"
@@ -90,6 +111,32 @@ export function MapToolbar() {
             <option key={p.id} value={p.id}>{p.label}</option>
           ))}
         </select>
+        <select
+          value={filters.insured}
+          onChange={(e) => setMapFilters({ insured: e.target.value as typeof filters.insured })}
+          aria-label="Seguro"
+          title="Filtrar por seguro"
+        >
+          <option value="all">Seguro: todos</option>
+          <option value="yes">Con seguro</option>
+          <option value="no">Sin seguro</option>
+        </select>
+        <button
+          type="button"
+          className={filters.vipRecent ? 'chip chip--active' : 'chip'}
+          title="VIP hoy o en los últimos 14 días"
+          onClick={() => setMapFilters({ vipRecent: !filters.vipRecent })}
+        >
+          VIP reciente
+        </button>
+        <button
+          type="button"
+          className={filters.lowCondition ? 'chip chip--active' : 'chip'}
+          title="Estado del edificio bajo (desgaste)"
+          onClick={() => setMapFilters({ lowCondition: !filters.lowCondition })}
+        >
+          Desgaste
+        </button>
       </div>
     </div>
   )

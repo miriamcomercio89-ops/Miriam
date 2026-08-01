@@ -85,6 +85,10 @@ export function generateDemoHotels(count: number, gameDayNow: number): Hotel[] {
       seaViewShare: place.beach > 50 ? 40 : 5,
       loyaltyProgram: i % 5 === 0,
       vipTonight: false,
+      lastVipDay: 0,
+      boardRegime: i % 7 === 0 ? 'ti' : i % 3 === 0 ? 'desayuno' : 'solo',
+      condition: 70 + (i % 30),
+      lastRenovationDay: 0,
     }
     out.push(hotel)
   }

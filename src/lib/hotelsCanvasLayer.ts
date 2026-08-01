@@ -60,16 +60,23 @@ export function createHotelsCanvasLayer() {
       const list: Hotel[] = this._hotels
       const selectedId: string | null = this._selectedId
 
-      if (zoom < 5 && list.length > 6000) {
+      if (zoom < 6 && list.length > 3000) {
+        this._drawClusters(ctx, map, list, zoom, size)
+        return
+      }
+      if (zoom < 5 && list.length > 1500) {
         this._drawClusters(ctx, map, list, zoom, size)
         return
       }
 
-      const useLogos = zoom >= 8
+      const useLogos = zoom >= 9 && list.length < 8000
       let logos = 0
-      const maxLogos = 350
+      const maxLogos = list.length > 5000 ? 120 : 280
 
-      for (let i = 0; i < list.length; i++) {
+      // Sampling when extremely dense at mid zoom
+      const step = zoom < 7 && list.length > 8000 ? 2 : 1
+
+      for (let i = 0; i < list.length; i += step) {
         const h = list[i]
         if (!bounds.contains([h.lat, h.lng])) continue
         const p = map.latLngToContainerPoint([h.lat, h.lng])
@@ -179,7 +186,10 @@ export function findNearestHotel(
   let bestD = maxDist * maxDist
   const bounds = map.getBounds().pad(0.05)
 
-  for (let i = 0; i < hotels.length; i++) {
+  // Fast path: skip hotels outside padded bounds; subsample at low zoom
+  const step = zoom < 5 && hotels.length > 4000 ? 3 : zoom < 7 && hotels.length > 8000 ? 2 : 1
+
+  for (let i = 0; i < hotels.length; i += step) {
     const h = hotels[i]
     if (!bounds.contains([h.lat, h.lng])) continue
     const p = map.latLngToContainerPoint([h.lat, h.lng])

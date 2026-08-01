@@ -114,5 +114,30 @@ export const TECH_OPTIONS = [
   { id: 'futuro' as const, label: 'Tecnología punta', costMult: 1.15, demandBonus: 0.035 },
 ]
 
+export const BOARD_REGIMES = [
+  { id: 'solo' as const, label: 'Solo alojamiento', costMult: 1, demandBonus: 0, dailyPerRoom: 0, priceMult: 1 },
+  { id: 'desayuno' as const, label: 'Alojamiento y desayuno', costMult: 1.04, demandBonus: 0.02, dailyPerRoom: 3.5, priceMult: 1.06 },
+  { id: 'media' as const, label: 'Media pensión', costMult: 1.1, demandBonus: 0.035, dailyPerRoom: 9, priceMult: 1.14 },
+  { id: 'completa' as const, label: 'Pensión completa', costMult: 1.18, demandBonus: 0.05, dailyPerRoom: 16, priceMult: 1.22 },
+  { id: 'ti' as const, label: 'Todo incluido', costMult: 1.28, demandBonus: 0.07, dailyPerRoom: 28, priceMult: 1.32 },
+  { id: 'ti_premium' as const, label: 'Todo incluido premium', costMult: 1.4, demandBonus: 0.09, dailyPerRoom: 38, priceMult: 1.42 },
+  { id: 'ti_gold' as const, label: 'Todo incluido gold', costMult: 1.55, demandBonus: 0.11, dailyPerRoom: 52, priceMult: 1.55 },
+  { id: 'ti_imperial' as const, label: 'Todo incluido imperial', costMult: 1.75, demandBonus: 0.14, dailyPerRoom: 72, priceMult: 1.72 },
+]
+
+/** Club Orbis · 10 niveles (puntos = huéspedes de por vida del grupo) */
+export const LOYALTY_TIERS = [
+  { level: 1 as const, name: 'Visitante', points: 0, demandBonus: 0, label: 'Nivel 1 · Visitante' },
+  { level: 2 as const, name: 'Huésped', points: 800, demandBonus: 0.01, label: 'Nivel 2 · Huésped' },
+  { level: 3 as const, name: 'Amigo Orbis', points: 3_000, demandBonus: 0.018, label: 'Nivel 3 · Amigo Orbis' },
+  { level: 4 as const, name: 'Viajero', points: 10_000, demandBonus: 0.025, label: 'Nivel 4 · Viajero' },
+  { level: 5 as const, name: 'Explorador', points: 30_000, demandBonus: 0.032, label: 'Nivel 5 · Explorador' },
+  { level: 6 as const, name: 'Embajador', points: 80_000, demandBonus: 0.04, label: 'Nivel 6 · Embajador' },
+  { level: 7 as const, name: 'Élite', points: 200_000, demandBonus: 0.048, label: 'Nivel 7 · Élite' },
+  { level: 8 as const, name: 'Platino', points: 500_000, demandBonus: 0.055, label: 'Nivel 8 · Platino' },
+  { level: 9 as const, name: 'Diamante', points: 1_200_000, demandBonus: 0.065, label: 'Nivel 9 · Diamante' },
+  { level: 10 as const, name: 'Imperial', points: 3_000_000, demandBonus: 0.08, label: 'Nivel 10 · Imperial' },
+]
+
 export const STARTING_CASH = 750_000_000
 export const REAL_MS_PER_GAME_MINUTE = 1000

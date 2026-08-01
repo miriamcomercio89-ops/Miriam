@@ -1,20 +1,19 @@
 # Orbis Hotels Group
 
-Juego de construcción de hoteles en el mapa del mundo (**v0.4**).
+Juego de construcción de hoteles en el mapa del mundo (**v0.5**).
 
-## Novedades v0.4
+## Novedades v0.5
 
-- Impuestos claros por país (panel Países, ficha y finanzas)
-- Seguro de hotel gestionado por la IA
-- Banco Orbis: depósitos a plazo con interés
-- Comparar dos hoteles cara a cara
-- Saltar entre hoteles (anterior / siguiente)
-- Más noticias (seguros, VIP, impuestos, banco, ocupación baja…)
-- Fiestas del calendario (Navidad, Año Nuevo, etc.)
-- Huéspedes VIP muy raros
-- Botón Demo 1k (unos 1000 hoteles de prueba)
-- Guardado más ligero (compacto + IndexedDB) para redes enormes
-- Constructor con más opciones (seguridad, tecnología, desayuno, vistas al mar, fidelidad…)
+- Desgaste del edificio y **reformas gestionadas por la IA**
+- **Informe semanal** (mejor país, peor hotel, impuestos, banco)
+- Filtros: país, seguro, VIP reciente, desgaste
+- Ver **opciones de construcción** de un hotel (solo lectura)
+- Más fotos / estilos (8 por hotel, según clima/marca)
+- Panel de **estadísticas globales**
+- Mejor rendimiento con miles de hoteles
+- Aviso claro de **autosave** (tamaño de la partida)
+- **Regímenes**: solo alojamiento → todo incluido imperial
+- **Club de fidelidad Orbis** con 10 niveles
 
 ## Cómo jugar
 

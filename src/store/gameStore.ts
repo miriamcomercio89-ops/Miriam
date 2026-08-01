@@ -31,8 +31,8 @@ import type {
   SpeedOption,
 } from '../types'
 
-export const STORAGE_KEY = 'orbis-hotels-group-save-v5'
-export const SAVE_VERSION = 5
+export const STORAGE_KEY = 'orbis-hotels-group-save-v6'
+export const SAVE_VERSION = 6
 
 type UiState = {
   selectedHotelId: string | null
@@ -47,6 +47,9 @@ type UiState = {
   showCountries: boolean
   showNews: boolean
   showCompare: boolean
+  showStats: boolean
+  showWeekly: boolean
+  showHotelSpecs: boolean
   mapLayer: MapLayer
   mapMode: MapMode
   mapFilters: MapFilters
@@ -54,6 +57,7 @@ type UiState = {
   rankMetric: RankMetric
   simulating: boolean
   simProgress: string
+  saveToast: string | null
 }
 
 type GameStore = GameState &
@@ -82,7 +86,11 @@ type GameStore = GameState &
     setShowCountries: (v: boolean) => void
     setShowNews: (v: boolean) => void
     setShowCompare: (v: boolean) => void
+    setShowStats: (v: boolean) => void
+    setShowWeekly: (v: boolean) => void
+    setShowHotelSpecs: (v: boolean) => void
     setCompareSlot: (slot: 0 | 1, hotelId: string | null) => void
+    clearSaveToast: () => void
     setMapLayer: (l: MapLayer) => void
     setMapMode: (m: MapMode) => void
     setMapFilters: (f: Partial<MapFilters>) => void
@@ -125,6 +133,10 @@ function initialState(): GameState {
     news: [],
     countryEconomy: {},
     bankDeposits: [],
+    loyaltyLevel: 1,
+    loyaltyPoints: 0,
+    lastWeeklyReportDay: 0,
+    weeklyReports: [],
   }
 }
 
@@ -158,6 +170,10 @@ function migrateHotel(h: Hotel): Hotel {
     seaViewShare: anyH.seaViewShare ?? 0,
     loyaltyProgram: anyH.loyaltyProgram ?? false,
     vipTonight: anyH.vipTonight ?? false,
+    lastVipDay: anyH.lastVipDay ?? 0,
+    boardRegime: anyH.boardRegime ?? (anyH.breakfastIncluded ? 'desayuno' : 'solo'),
+    condition: anyH.condition ?? 100,
+    lastRenovationDay: anyH.lastRenovationDay ?? 0,
     imageDataUrl: anyH.imageDataUrl?.startsWith('data:image/svg') ? undefined : anyH.imageDataUrl,
   }
 }
@@ -178,6 +194,10 @@ function migrate(raw: Partial<GameState> & { cash?: number }): GameState {
     news: raw.news ?? [],
     countryEconomy: raw.countryEconomy ?? {},
     bankDeposits: raw.bankDeposits ?? [],
+    loyaltyLevel: raw.loyaltyLevel ?? 1,
+    loyaltyPoints: raw.loyaltyPoints ?? hotels.reduce((s, h) => s + h.lifetimeGuests, 0),
+    lastWeeklyReportDay: raw.lastWeeklyReportDay ?? 0,
+    weeklyReports: raw.weeklyReports ?? [],
   }
 }
 
@@ -229,6 +249,10 @@ function runDaysInWorker(state: GameState, days: number): Promise<WorkerDayRespo
         countryEconomy: state.countryEconomy,
         news: state.news,
         bankDeposits: state.bankDeposits,
+        loyaltyLevel: state.loyaltyLevel,
+        loyaltyPoints: state.loyaltyPoints,
+        lastWeeklyReportDay: state.lastWeeklyReportDay,
+        weeklyReports: state.weeklyReports,
       },
     }
     w.postMessage(payload)
@@ -245,6 +269,9 @@ function closePanelsExcept(keep: Partial<UiState>): Partial<UiState> {
     showCountries: false,
     showNews: false,
     showCompare: false,
+    showStats: false,
+    showWeekly: false,
+    showHotelSpecs: false,
     ...keep,
   }
 }
@@ -263,13 +290,25 @@ export const useGameStore = create<GameStore>((set, get) => ({
   showCountries: false,
   showNews: false,
   showCompare: false,
+  showStats: false,
+  showWeekly: false,
+  showHotelSpecs: false,
   mapLayer: 'streets',
   mapMode: 'inspect',
-  mapFilters: { subsidiaryId: 'all', minStars: 1, profit: 'all' },
+  mapFilters: {
+    subsidiaryId: 'all',
+    minStars: 1,
+    profit: 'all',
+    countryCode: 'all',
+    insured: 'all',
+    vipRecent: false,
+    lowCondition: false,
+  },
   mapFocus: null,
   rankMetric: 'net',
   simulating: false,
   simProgress: '',
+  saveToast: null,
 
   tick: (deltaGameMinutes) => {
     const state = get()
@@ -353,6 +392,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
         staffLevel: draft.staffLevel,
         buildQuality: draft.buildQuality,
         roomMix: draft.roomMix,
+        boardRegime: draft.boardRegime,
       },
       season,
     )
@@ -406,10 +446,14 @@ export const useGameStore = create<GameStore>((set, get) => ({
       openingPromoDays: draft.openingPromoDays,
       securityLevel: draft.securityLevel,
       techLevel: draft.techLevel,
-      breakfastIncluded: draft.breakfastIncluded,
+      breakfastIncluded: draft.breakfastIncluded || draft.boardRegime !== 'solo',
       seaViewShare: draft.seaViewShare,
       loyaltyProgram: draft.loyaltyProgram,
       vipTonight: false,
+      lastVipDay: 0,
+      boardRegime: draft.boardRegime,
+      condition: 100,
+      lastRenovationDay: 0,
     }
 
     set({
@@ -443,6 +487,10 @@ export const useGameStore = create<GameStore>((set, get) => ({
       news: s.news,
       countryEconomy: s.countryEconomy,
       bankDeposits: s.bankDeposits,
+      loyaltyLevel: s.loyaltyLevel,
+      loyaltyPoints: s.loyaltyPoints,
+      lastWeeklyReportDay: s.lastWeeklyReportDay,
+      weeklyReports: s.weeklyReports,
     }
   },
 
@@ -460,14 +508,26 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
   persistLocal: () => {
     const snap = get().getSnapshot()
+    const json = JSON.stringify(snap)
+    const bytes = json.length
     const ok = tryLocalStorageSave(STORAGE_KEY, snap)
     void idbSave(snap).catch(() => {})
-    if (!ok) console.warn('localStorage lleno; se usó IndexedDB')
+    const size =
+      bytes > 1_000_000 ? `${(bytes / 1_000_000).toFixed(1)} MB` : `${Math.max(1, Math.round(bytes / 1000))} KB`
+    set({
+      saveToast: ok ? `Guardado · ${size}` : `Guardado en disco local · ${size}`,
+    })
+    window.setTimeout(() => {
+      if (useGameStore.getState().saveToast?.startsWith('Guardado')) {
+        useGameStore.setState({ saveToast: null })
+      }
+    }, 3200)
   },
 
   loadLocal: () => {
     const raw =
       localStorage.getItem(STORAGE_KEY) ??
+      localStorage.getItem('orbis-hotels-group-save-v5') ??
       localStorage.getItem('orbis-hotels-group-save-v4') ??
       localStorage.getItem('orbis-hotels-group-save-v3') ??
       localStorage.getItem('orbis-hotels-group-save-v2') ??
@@ -509,11 +569,15 @@ export const useGameStore = create<GameStore>((set, get) => ({
   setShowCountries: (v) => set(closePanelsExcept({ showCountries: v })),
   setShowNews: (v) => set(closePanelsExcept({ showNews: v })),
   setShowCompare: (v) => set(closePanelsExcept({ showCompare: v })),
+  setShowStats: (v) => set(closePanelsExcept({ showStats: v })),
+  setShowWeekly: (v) => set(closePanelsExcept({ showWeekly: v })),
+  setShowHotelSpecs: (v) => set({ showHotelSpecs: v }),
   setCompareSlot: (slot, hotelId) => {
     const ids = [...get().compareIds] as [string | null, string | null]
     ids[slot] = hotelId
     set({ compareIds: ids, showCompare: true })
   },
+  clearSaveToast: () => set({ saveToast: null }),
   setMapLayer: (mapLayer) => set({ mapLayer }),
   setMapMode: (mapMode) => set({ mapMode, buildLocation: mapMode === 'inspect' ? null : get().buildLocation }),
   setMapFilters: (f) => set({ mapFilters: { ...get().mapFilters, ...f } }),
@@ -632,6 +696,10 @@ async function runSkipDays(days: number, gameMinutes: number) {
       countryEconomy: result.countryEconomy,
       news: result.news,
       bankDeposits: result.bankDeposits,
+      loyaltyLevel: result.loyaltyLevel,
+      loyaltyPoints: result.loyaltyPoints,
+      lastWeeklyReportDay: result.lastWeeklyReportDay,
+      weeklyReports: result.weeklyReports,
       simulating: false,
       simProgress: '',
     })

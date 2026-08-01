@@ -1,23 +1,56 @@
 import type { Subsidiary } from '../types'
 
-export function galleryImages(sub: Subsidiary, hotelName: string): string[] {
-  return [
-    renderScene(sub, hotelName, 'day'),
-    renderScene(sub, hotelName, 'dusk'),
-    renderScene(sub, hotelName, 'night'),
-    renderScene(sub, hotelName, 'aerial'),
-  ]
+export type GalleryMood = 'day' | 'dusk' | 'night' | 'aerial' | 'storm' | 'sunny' | 'winter' | 'spring'
+
+export function galleryImages(sub: Subsidiary, hotelName: string, climateHint = ''): string[] {
+  const moods: GalleryMood[] = climateMoods(climateHint || sub.imageStyle)
+  return moods.map((mood) => renderScene(sub, hotelName, mood))
 }
 
-function renderScene(sub: Subsidiary, hotelName: string, mood: 'day' | 'dusk' | 'night' | 'aerial'): string {
-  const skies: Record<string, [string, string, string]> = {
+function climateMoods(hint: string): GalleryMood[] {
+  const h = hint.toLowerCase()
+  if (h.includes('arctic') || h.includes('winter') || h.includes('cold')) {
+    return ['winter', 'day', 'dusk', 'night', 'aerial', 'sunny', 'storm', 'spring']
+  }
+  if (h.includes('tropic') || h.includes('coast') || h.includes('beach') || h.includes('warm')) {
+    return ['sunny', 'day', 'dusk', 'aerial', 'night', 'storm', 'spring', 'winter']
+  }
+  if (h.includes('urban')) {
+    return ['day', 'dusk', 'night', 'aerial', 'storm', 'sunny', 'spring', 'winter']
+  }
+  if (h.includes('nature') || h.includes('adventure')) {
+    return ['spring', 'day', 'dusk', 'aerial', 'sunny', 'storm', 'night', 'winter']
+  }
+  if (h.includes('luxury')) {
+    return ['dusk', 'night', 'day', 'aerial', 'sunny', 'spring', 'storm', 'winter']
+  }
+  return ['day', 'dusk', 'night', 'aerial', 'sunny', 'storm', 'spring', 'winter']
+}
+
+function renderScene(sub: Subsidiary, hotelName: string, mood: GalleryMood): string {
+  const skies: Record<GalleryMood, [string, string, string]> = {
     day: [sub.color, '#3D6F86', sub.accent],
     dusk: ['#1B2A41', '#C47B4A', sub.accent],
     night: ['#070D16', '#1A3348', sub.accent],
     aerial: ['#87A8B8', sub.color, '#D9C7A0'],
+    storm: ['#2A3340', '#4A5564', '#6B7C8A'],
+    sunny: ['#4FA3C7', '#F2D083', sub.accent],
+    winter: ['#D7E4EE', '#8FA9BC', '#F7F3EA'],
+    spring: ['#6FAE8A', '#C7D9A0', sub.accent],
   }
   const [c1, c2, c3] = skies[mood]
   const style = sub.imageStyle
+  const weatherFx =
+    mood === 'storm'
+      ? `<path d="M120 80 L140 160 M200 60 L210 150 M520 70 L540 155" stroke="#F7F3EA" stroke-width="2" opacity="0.35"/>`
+      : mood === 'sunny'
+        ? `<circle cx="680" cy="90" r="46" fill="#F7E7A0" opacity="0.85"/>`
+        : mood === 'winter'
+          ? `<circle cx="160" cy="120" r="3" fill="#fff" opacity="0.8"/><circle cx="300" cy="90" r="2" fill="#fff" opacity="0.7"/><circle cx="520" cy="130" r="2.5" fill="#fff" opacity="0.75"/>`
+          : mood === 'spring'
+            ? `<circle cx="180" cy="360" r="8" fill="#E8A0B0" opacity="0.55"/><circle cx="620" cy="340" r="10" fill="#E8A0B0" opacity="0.45"/>`
+            : ''
+
   const extra =
     style === 'coast'
       ? `<ellipse cx="400" cy="460" rx="420" ry="90" fill="${c3}" opacity="0.55"/>
@@ -59,6 +92,7 @@ function renderScene(sub: Subsidiary, hotelName: string, mood: 'day' | 'dusk' | 
     </linearGradient>
   </defs>
   <rect width="800" height="500" fill="url(#sky)"/>
+  ${weatherFx}
   ${extra}
   ${building}
   <text x="400" y="56" text-anchor="middle" font-family="Georgia, serif" font-size="26" fill="#F7F3EA">${esc(sub.name)}</text>

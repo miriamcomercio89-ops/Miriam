@@ -30,11 +30,16 @@ export function TopBar() {
   const setShowCountries = useGameStore((s) => s.setShowCountries)
   const setShowNews = useGameStore((s) => s.setShowNews)
   const setShowCompare = useGameStore((s) => s.setShowCompare)
+  const setShowStats = useGameStore((s) => s.setShowStats)
+  const setShowWeekly = useGameStore((s) => s.setShowWeekly)
   const generateDemo = useGameStore((s) => s.generateDemo)
   const newGame = useGameStore((s) => s.newGame)
   const gameName = useGameStore((s) => s.gameName)
   const simulating = useGameStore((s) => s.simulating)
   const simProgress = useGameStore((s) => s.simProgress)
+  const saveToast = useGameStore((s) => s.saveToast)
+  const clearSaveToast = useGameStore((s) => s.clearSaveToast)
+  const loyaltyLevel = useGameStore((s) => s.loyaltyLevel)
   const season = seasonLabel(getSeason(20, gameMinutes))
   const bankLocked = bankDeposits.reduce((s, d) => s + d.amount, 0)
 
@@ -45,7 +50,7 @@ export function TopBar() {
         <div>
           <strong>Orbis Hotels Group</strong>
           <span className="topbar__sub">
-            {hotels.length.toLocaleString('es-ES')} hoteles · {season}
+            {hotels.length.toLocaleString('es-ES')} hoteles · {season} · Club Nv.{loyaltyLevel}
           </span>
         </div>
       </div>
@@ -83,6 +88,8 @@ export function TopBar() {
         <button type="button" className="chip" title="Lista de hoteles" onClick={() => setShowHotels(true)}>Hoteles</button>
         <button type="button" className="chip" title="Mejores hoteles" onClick={() => setShowRanking(true)}>Ranking</button>
         <button type="button" className="chip" title="Comparar dos hoteles" onClick={() => setShowCompare(true)}>Comparar</button>
+        <button type="button" className="chip" title="Estadísticas globales" onClick={() => setShowStats(true)}>Stats</button>
+        <button type="button" className="chip" title="Informe semanal" onClick={() => setShowWeekly(true)}>Semanal</button>
         <button type="button" className="chip" title="Dinero y fama" onClick={() => setShowFinance(true)}>Dinero</button>
         <button type="button" className="chip" title="Depósitos a plazo" onClick={() => setShowBank(true)}>Banco</button>
         <button type="button" className="chip" title="Pedir o devolver crédito" onClick={() => setShowLoan(true)}>Préstamos</button>
@@ -114,6 +121,11 @@ export function TopBar() {
       </div>
 
       {simulating && <div className="sim-banner" role="status">{simProgress || 'Calculando…'}</div>}
+      {saveToast && (
+        <button type="button" className="save-toast" onClick={clearSaveToast} title="Cerrar aviso">
+          {saveToast}
+        </button>
+      )}
     </header>
   )
 }

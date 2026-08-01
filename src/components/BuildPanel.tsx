@@ -11,6 +11,7 @@ import {
   DESIGN_FOCUS,
   SECURITY_OPTIONS,
   TECH_OPTIONS,
+  BOARD_REGIMES,
 } from '../data/catalog'
 import { calcConstructionCost, estimateDaily, fairPrice, getSeason, seasonLabel } from '../lib/economy'
 import { formatEUR, formatPct } from '../lib/format'
@@ -26,6 +27,7 @@ import type {
   GreenLevel,
   SecurityLevel,
   TechLevel,
+  BoardRegime,
 } from '../types'
 
 type Step = 'marca' | 'basico' | 'edificio' | 'servicios' | 'extras' | 'foto' | 'revisar'
@@ -74,6 +76,7 @@ function emptyDraft(subId: string, city: string): BuildDraft {
     quietHours: false,
     bikeRental: false,
     shuttleCity: false,
+    boardRegime: 'desayuno',
   }
 }
 
@@ -86,6 +89,7 @@ export function BuildPanel() {
   const gameMinutes = useGameStore((s) => s.gameMinutes)
   const reputation = useGameStore((s) => s.reputation)
   const countryEconomy = useGameStore((s) => s.countryEconomy)
+  const loyaltyLevel = useGameStore((s) => s.loyaltyLevel)
 
   const [step, setStep] = useState<Step>('marca')
   const [filter, setFilter] = useState('')
@@ -128,7 +132,7 @@ export function BuildPanel() {
   const season = getSeason(loc.lat, gameMinutes)
   const eco = countryEconomy[loc.countryCode]
   const cost = draft ? calcConstructionCost(draft, loc) : 0
-  const estimate = draft ? estimateDaily(draft, loc, events, gameMinutes, rep, eco) : null
+  const estimate = draft ? estimateDaily(draft, loc, events, gameMinutes, rep, eco, loyaltyLevel) : null
   const sub = draft ? getSubsidiary(draft.subsidiaryId) : null
   const aiPrice =
     draft && sub
@@ -143,6 +147,7 @@ export function BuildPanel() {
             staffLevel: draft.staffLevel,
             buildQuality: draft.buildQuality,
             roomMix: draft.roomMix,
+            boardRegime: draft.boardRegime,
           },
           season,
         )
@@ -235,7 +240,7 @@ export function BuildPanel() {
                 onClick={() => {
                   const d = emptyDraft(s.id, loc.city)
                   setDraft(d)
-                  setGallery(galleryImages(s, d.name))
+                  setGallery(galleryImages(s, d.name, loc.climateLabel || loc.geoRegion || s.imageStyle))
                   setStep('basico')
                   setError(null)
                 }}
@@ -310,6 +315,24 @@ export function BuildPanel() {
             <span>Tipo de habitaciones</span>
             <select value={draft.roomMix} onChange={(e) => setDraft({ ...draft, roomMix: e.target.value as RoomMix })}>
               {ROOM_MIX_OPTIONS.map((o) => (
+                <option key={o.id} value={o.id}>{o.label}</option>
+              ))}
+            </select>
+          </label>
+          <label className="field">
+            <span>Régimen (comidas)</span>
+            <select
+              value={draft.boardRegime}
+              onChange={(e) => {
+                const boardRegime = e.target.value as BoardRegime
+                setDraft({
+                  ...draft,
+                  boardRegime,
+                  breakfastIncluded: boardRegime !== 'solo' ? true : draft.breakfastIncluded,
+                })
+              }}
+            >
+              {BOARD_REGIMES.map((o) => (
                 <option key={o.id} value={o.id}>{o.label}</option>
               ))}
             </select>
@@ -551,8 +574,8 @@ export function BuildPanel() {
           <img src={draft.imageDataUrl} alt="Foto del hotel" className="hotel-preview" />
           <p className="panel__meta">Elige una foto de la galería Orbis o sube la tuya</p>
           <div className="gallery-grid">
-            {(gallery.length ? gallery : galleryImages(sub, draft.name)).map((src, idx) => {
-              const moods = ['day', 'dusk', 'night', 'aerial'] as const
+            {(gallery.length ? gallery : galleryImages(sub, draft.name, loc.climateLabel || loc.geoRegion)).map((src, idx) => {
+              const moods = ['day', 'dusk', 'night', 'aerial', 'sunny', 'storm', 'spring', 'winter'] as const
               const key = `${sub.imageStyle}:${moods[idx] ?? 'day'}`
               return (
                 <button
@@ -571,7 +594,7 @@ export function BuildPanel() {
               type="button"
               className="btn btn--ghost"
               onClick={() => {
-                const imgs = galleryImages(sub, draft.name)
+                const imgs = galleryImages(sub, draft.name, loc.climateLabel || loc.geoRegion)
                 setGallery(imgs)
                 setDraft({ ...draft, imageDataUrl: imgs[0], imageKey: `${sub.imageStyle}:day` })
               }}

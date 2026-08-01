@@ -9,6 +9,8 @@ import { FinancePanel } from './components/FinancePanel'
 import { LoanPanel } from './components/LoanPanel'
 import { BankPanel } from './components/BankPanel'
 import { ComparePanel } from './components/ComparePanel'
+import { StatsPanel } from './components/StatsPanel'
+import { WeeklyPanel } from './components/WeeklyPanel'
 import { MapToolbar } from './components/MapToolbar'
 import { HotelListPanel } from './components/HotelListPanel'
 import { RankingPanel } from './components/RankingPanel'
@@ -88,6 +90,8 @@ export default function App() {
         <LoanPanel />
         <BankPanel />
         <ComparePanel />
+        <StatsPanel />
+        <WeeklyPanel />
         <HotelListPanel />
         <RankingPanel />
         <CountriesPanel />

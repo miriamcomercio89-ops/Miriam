@@ -17,12 +17,15 @@ import {
   GREEN_OPTIONS,
   SECURITY_OPTIONS,
   TECH_OPTIONS,
+  BOARD_REGIMES,
+  LOYALTY_TIERS,
 } from '../data/catalog'
 import { getSubsidiary } from '../data/subsidiaries'
 import { getSeason, seasonDemandMult, clamp, pseudoNoise, reputationKey, dayOfYear } from './economyCore'
 import { getWeather } from './weather'
 import { holidayCostMult, holidayDemandMult } from './holidays'
-import type { HotelInsurance } from '../types'
+import { tickWearAndRenovate } from './loyalty'
+import type { HotelInsurance, MapFilters } from '../types'
 
 export { getSeason, dayOfYear, reputationKey, clamp }
 export { seasonWord as seasonLabel } from './weather'
@@ -37,13 +40,26 @@ const CLIENTS: Record<ContractKind, string[]> = {
 }
 
 export function fairPrice(
-  hotel: Pick<Hotel, 'stars' | 'tourismIndex' | 'beachScore' | 'target' | 'services' | 'subsidiaryId' | 'staffLevel' | 'buildQuality' | 'roomMix'>,
+  hotel: Pick<
+    Hotel,
+    | 'stars'
+    | 'tourismIndex'
+    | 'beachScore'
+    | 'target'
+    | 'services'
+    | 'subsidiaryId'
+    | 'staffLevel'
+    | 'buildQuality'
+    | 'roomMix'
+    | 'boardRegime'
+  >,
   season: SeasonName,
 ): number {
   const sub = getSubsidiary(hotel.subsidiaryId)
   const staff = STAFF_OPTIONS.find((s) => s.id === hotel.staffLevel)
   const quality = QUALITY_OPTIONS.find((q) => q.id === (hotel.buildQuality ?? 'bueno'))
   const mix = ROOM_MIX_OPTIONS.find((m) => m.id === (hotel.roomMix ?? 'estandar'))
+  const board = BOARD_REGIMES.find((b) => b.id === (hotel.boardRegime ?? 'solo'))
   let price =
     55 +
     hotel.stars * 58 +
@@ -62,6 +78,7 @@ export function fairPrice(
   if (staff?.id === 'basico') price *= 0.9
   price *= quality?.costMult ?? 1
   price *= 1 + (mix?.demandBonus ?? 0)
+  price *= board?.priceMult ?? 1
   if (season === 'alta') price *= 1.12
   if (season === 'baja') price *= 0.88
   return Math.round(clamp(price, 35, 2500))
@@ -162,6 +179,7 @@ export function calcConstructionCost(draft: BuildDraft, loc: LocationInsight): n
   const green = GREEN_OPTIONS.find((g) => g.id === draft.greenLevel)!
   const security = SECURITY_OPTIONS.find((s) => s.id === draft.securityLevel)!
   const tech = TECH_OPTIONS.find((t) => t.id === draft.techLevel)!
+  const board = BOARD_REGIMES.find((b) => b.id === draft.boardRegime)!
 
   const basePerRoom = 45_000 + draft.stars * 28_000
   const roomsCost = draft.rooms * basePerRoom
@@ -174,11 +192,12 @@ export function calcConstructionCost(draft: BuildDraft, loc: LocationInsight): n
   const parkingCost = draft.parkingSpots * 4_500
   const restaurantCost = draft.restaurantLevel * 120_000
   const seaViewCost = draft.rooms * (draft.seaViewShare / 100) * 12_000
+  const boardSetup = draft.rooms * board.dailyPerRoom * 40
   const extras =
     (draft.buffet ? 80_000 : 0) +
     (draft.lateCheckout ? 25_000 : 0) +
     (draft.airportDesk ? 60_000 : 0) +
-    (draft.breakfastIncluded ? 55_000 : 0) +
+    (draft.breakfastIncluded || draft.boardRegime !== 'solo' ? 55_000 : 0) +
     (draft.loyaltyProgram ? 40_000 : 0) +
     (draft.quietHours ? 15_000 : 0) +
     (draft.bikeRental ? 35_000 : 0) +
@@ -191,7 +210,17 @@ export function calcConstructionCost(draft: BuildDraft, loc: LocationInsight): n
   const starMult = 1 + (draft.stars - 3) * 0.12
 
   return Math.round(
-    (roomsCost + servicesCost + floorsCost + meetingCost + parkingCost + restaurantCost + seaViewCost + extras + landPremium + tourismLand) *
+    (roomsCost +
+      servicesCost +
+      floorsCost +
+      meetingCost +
+      parkingCost +
+      restaurantCost +
+      seaViewCost +
+      boardSetup +
+      extras +
+      landPremium +
+      tourismLand) *
       subMult *
       staff.costMultiplier *
       mix.costMult *
@@ -199,6 +228,7 @@ export function calcConstructionCost(draft: BuildDraft, loc: LocationInsight): n
       green.costMult *
       security.costMult *
       tech.costMult *
+      board.costMult *
       starMult *
       loc.costIndex,
   )
@@ -257,10 +287,14 @@ export function draftToTempHotel(
     openingPromoDays: draft.openingPromoDays,
     securityLevel: draft.securityLevel,
     techLevel: draft.techLevel,
-    breakfastIncluded: draft.breakfastIncluded,
+    breakfastIncluded: draft.breakfastIncluded || draft.boardRegime !== 'solo',
     seaViewShare: draft.seaViewShare,
     loyaltyProgram: draft.loyaltyProgram,
     vipTonight: false,
+    lastVipDay: 0,
+    boardRegime: draft.boardRegime,
+    condition: 100,
+    lastRenovationDay: 0,
   }
   temp.pricePerNight = fairPrice(temp, season)
   return temp
@@ -273,6 +307,7 @@ export function estimateDaily(
   gameMinutes: number,
   reputation: number,
   economy?: CountryEconomy,
+  loyaltyLevel = 1,
 ) {
   return simulateHotelDay(
     draftToTempHotel(draft, loc, gameMinutes, reputation),
@@ -280,6 +315,8 @@ export function estimateDaily(
     gameMinutes,
     reputation,
     economy,
+    1,
+    loyaltyLevel,
   )
 }
 
@@ -305,23 +342,27 @@ export function simulateHotelDay(
   reputation: number,
   economy?: CountryEconomy,
   gameDayNow = 1,
+  loyaltyLevel = 1,
 ): DayResult {
   const season = getSeason(hotel.lat, gameMinutes)
   const weather = getWeather(hotel.lat, gameMinutes, hotel.id)
   const contract = hotel.id === 'temp' ? hotel.contract : aiManageContract(hotel, season)
   const insurance = hotel.id === 'temp' ? hotel.insurance : aiManageInsurance(hotel, season)
   const vipTonight = hotel.id === 'temp' ? false : rollVipTonight(hotel, gameDayNow)
+  const board = BOARD_REGIMES.find((b) => b.id === (hotel.boardRegime ?? 'solo'))
+  const loyalty = LOYALTY_TIERS.find((t) => t.level === loyaltyLevel) ?? LOYALTY_TIERS[0]
   let price = hotel.id === 'temp' ? hotel.pricePerNight : aiAdjustPrice(hotel, season)
 
   const fx = economy?.fx ?? 1
   const inflation = economy?.inflation ?? 0
-  price = Math.round(price * fx)
+  price = Math.round(price * fx * (board?.priceMult ?? 1) ** 0.15)
   if (vipTonight) price = Math.round(price * 1.35)
 
   const blocked = contract ? Math.min(contract.blockedRooms, hotel.rooms - 1) : 0
   const openRooms = Math.max(1, hotel.rooms - blocked)
   const holidayDemand = holidayDemandMult(gameMinutes, hotel.geoRegion, hotel.countryCode)
   const holidayCost = holidayCostMult(gameMinutes, hotel.geoRegion, hotel.countryCode)
+  const conditionMod = 0.82 + ((hotel.condition ?? 100) / 100) * 0.2
 
   let occupancyOpen = calcOccupancy(
     { ...hotel, pricePerNight: price, rooms: openRooms },
@@ -329,10 +370,20 @@ export function simulateHotelDay(
     season,
     reputation,
   )
-  occupancyOpen = clamp(occupancyOpen * weather.demandMult * holidayDemand, 0.08, 0.98)
+  occupancyOpen = clamp(
+    occupancyOpen *
+      weather.demandMult *
+      holidayDemand *
+      conditionMod *
+      (1 + (board?.demandBonus ?? 0)) *
+      (hotel.loyaltyProgram ? 1 + loyalty.demandBonus : 1),
+    0.08,
+    0.98,
+  )
   if ((hotel.openingPromoDays ?? 0) > 0) occupancyOpen = clamp(occupancyOpen * 1.08, 0.08, 0.98)
-  if (hotel.breakfastIncluded) occupancyOpen = clamp(occupancyOpen * 1.02, 0.08, 0.98)
-  if (hotel.loyaltyProgram) occupancyOpen = clamp(occupancyOpen * 1.015, 0.08, 0.98)
+  if (hotel.breakfastIncluded || (hotel.boardRegime && hotel.boardRegime !== 'solo')) {
+    occupancyOpen = clamp(occupancyOpen * 1.015, 0.08, 0.98)
+  }
   if (hotel.seaViewShare > 20) occupancyOpen = clamp(occupancyOpen * (1 + hotel.seaViewShare / 2000), 0.08, 0.98)
   if (vipTonight) occupancyOpen = clamp(occupancyOpen * 1.12, 0.08, 0.98)
 
@@ -345,7 +396,6 @@ export function simulateHotelDay(
   const tax = Math.round(revenue * hotel.taxRate)
   let costs = calcDailyCosts(hotel, events, revenue, blocked, inflation, insurance)
   costs = Math.round(costs * weather.costMult * holidayCost * fx)
-  // Impuesto ya incluido en costes; lo reportamos aparte
   const guests = Math.round(blocked + openRooms * occupancyOpen)
   const security = SECURITY_OPTIONS.find((s) => s.id === (hotel.securityLevel ?? 'medio'))
   const tech = TECH_OPTIONS.find((t) => t.id === (hotel.techLevel ?? 'basico'))
@@ -356,6 +406,7 @@ export function simulateHotelDay(
     (contract ? 0.5 : 0) +
     (weather.demandMult - 1) * 4 +
     (vipTonight ? 6 : 0) +
+    ((hotel.condition ?? 100) - 70) * 0.05 +
     (security?.demandBonus ?? 0) * 20 +
     (tech?.demandBonus ?? 0) * 15
   const satisfaction = clamp(hotel.satisfaction * 0.92 + satisfactionDelta, 20, 99)
@@ -383,12 +434,14 @@ export function applyHotelDayInPlace(
   reputation: number,
   economy?: CountryEconomy,
   gameDayNow = 1,
-): number {
-  const result = simulateHotelDay(hotel, events, gameMinutes, reputation, economy, gameDayNow)
+  loyaltyLevel = 1,
+): { net: number; renovationCost: number } {
+  const result = simulateHotelDay(hotel, events, gameMinutes, reputation, economy, gameDayNow, loyaltyLevel)
   hotel.pricePerNight = result.price
   hotel.contract = result.contract
   hotel.insurance = result.insurance
   hotel.vipTonight = result.vipTonight
+  if (result.vipTonight) hotel.lastVipDay = gameDayNow
   hotel.lastDayRevenue = result.revenue
   hotel.lastDayCosts = result.costs
   hotel.lastDayOccupancy = result.occupancy
@@ -399,7 +452,8 @@ export function applyHotelDayInPlace(
   hotel.lifetimeTax += result.tax
   hotel.satisfaction = result.satisfaction
   if (hotel.openingPromoDays > 0) hotel.openingPromoDays -= 1
-  return result.net
+  const renovationCost = hotel.id === 'temp' ? 0 : tickWearAndRenovate(hotel, gameDayNow)
+  return { net: result.net - renovationCost, renovationCost }
 }
 
 const SERVICE_LOOKUP: Record<string, number> = Object.fromEntries(
@@ -499,8 +553,11 @@ function calcDailyCosts(
   const parkingCost = (hotel.parkingSpots ?? 0) * 1.2
   const securityDaily = hotel.rooms * (security?.daily ?? 0.9)
   const techDaily = hotel.rooms * (tech?.id === 'futuro' ? 2.2 : tech?.id === 'moderno' ? 1.1 : 0.4)
+  const board = BOARD_REGIMES.find((b) => b.id === (hotel.boardRegime ?? 'solo'))
+  const boardDaily = hotel.rooms * (board?.dailyPerRoom ?? 0)
+  const conditionMaint = hotel.rooms * (2.5 + (100 - (hotel.condition ?? 100)) * 0.08)
   const extrasDaily =
-    (hotel.breakfastIncluded ? hotel.rooms * 2.5 : 0) +
+    (hotel.breakfastIncluded && (hotel.boardRegime ?? 'solo') === 'solo' ? hotel.rooms * 2.5 : 0) +
     (hotel.loyaltyProgram ? 120 : 0) +
     hotel.rooms * (hotel.seaViewShare / 100) * 0.8
   const contractAdmin = blockedRooms * 4
@@ -516,6 +573,8 @@ function calcDailyCosts(
     parkingCost +
     securityDaily +
     techDaily +
+    boardDaily +
+    conditionMaint +
     extrasDaily +
     insuranceCost +
     tax +
@@ -574,15 +633,17 @@ export function hotelRoi(h: Hotel): number {
   return (h.lifetimeRevenue - h.lifetimeCosts) / h.constructionCost
 }
 
-export function filterHotels(
-  hotels: Hotel[],
-  filters: { subsidiaryId: string | 'all'; minStars: number; profit: string },
-): Hotel[] {
+export function filterHotels(hotels: Hotel[], filters: MapFilters, gameDay = 1): Hotel[] {
   const out: Hotel[] = []
   for (let i = 0; i < hotels.length; i++) {
     const h = hotels[i]
     if (filters.subsidiaryId !== 'all' && h.subsidiaryId !== filters.subsidiaryId) continue
     if (h.stars < filters.minStars) continue
+    if (filters.countryCode !== 'all' && h.countryCode.toUpperCase() !== filters.countryCode.toUpperCase()) continue
+    if (filters.insured === 'yes' && !h.insurance?.active) continue
+    if (filters.insured === 'no' && h.insurance?.active) continue
+    if (filters.vipRecent && !h.vipTonight && (h.lastVipDay ?? 0) < gameDay - 14) continue
+    if (filters.lowCondition && (h.condition ?? 100) >= 60) continue
     if (filters.profit === 'profit' && hotelNet(h) <= 0 && h.lifetimeGuests > 0) continue
     if (filters.profit === 'loss' && (hotelNet(h) >= 0 || h.lifetimeGuests === 0)) continue
     if (filters.profit === 'new' && h.lifetimeGuests > 0) continue

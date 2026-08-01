@@ -13,6 +13,18 @@ export type GreenLevel = 'ninguno' | 'basico' | 'avanzado' | 'elite'
 export type ContractKind = 'empresa' | 'aerolinea' | 'evento' | 'gobierno' | 'deportes' | 'universidad'
 export type SecurityLevel = 'bajo' | 'medio' | 'alto'
 export type TechLevel = 'basico' | 'moderno' | 'futuro'
+/** Régimen de comidas del hotel */
+export type BoardRegime =
+  | 'solo'
+  | 'desayuno'
+  | 'media'
+  | 'completa'
+  | 'ti'
+  | 'ti_premium'
+  | 'ti_gold'
+  | 'ti_imperial'
+/** Nivel 1–10 del club de fidelidad Orbis */
+export type LoyaltyLevel = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10
 
 export interface Subsidiary {
   id: string
@@ -124,6 +136,12 @@ export interface Hotel {
   seaViewShare: number
   loyaltyProgram: boolean
   vipTonight: boolean
+  /** último día (juego) con VIP */
+  lastVipDay: number
+  boardRegime: BoardRegime
+  /** 0–100 estado del edificio (desgaste) */
+  condition: number
+  lastRenovationDay: number
 }
 
 export interface WorldEvent {
@@ -197,6 +215,26 @@ export interface GameState {
   news: NewsItem[]
   countryEconomy: Record<string, CountryEconomy>
   bankDeposits: BankDeposit[]
+  /** Nivel global del club Orbis (1–10) */
+  loyaltyLevel: LoyaltyLevel
+  loyaltyPoints: number
+  lastWeeklyReportDay: number
+  weeklyReports: WeeklyReport[]
+}
+
+export interface WeeklyReport {
+  id: string
+  day: number
+  bestCountry: string
+  bestCountryNet: number
+  worstHotel: string
+  worstHotelNet: number
+  dayTax: number
+  bankBalance: number
+  hotelCount: number
+  avgOccupancy: number
+  renovations: number
+  summary: string
 }
 
 export interface BuildDraft {
@@ -229,12 +267,17 @@ export interface BuildDraft {
   quietHours: boolean
   bikeRental: boolean
   shuttleCity: boolean
+  boardRegime: BoardRegime
 }
 
 export interface MapFilters {
   subsidiaryId: string | 'all'
   minStars: number
   profit: ProfitFilter
+  countryCode: string | 'all'
+  insured: 'all' | 'yes' | 'no'
+  vipRecent: boolean
+  lowCondition: boolean
 }
 
 export interface MapFocus {
