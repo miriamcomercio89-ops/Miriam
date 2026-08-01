@@ -9,7 +9,6 @@
         --bg: #0b3d4a;
         --gold: #c4a35a;
         --paper: #f2e6c8;
-        --ink: #1a1a1a;
       }
       * { box-sizing: border-box; }
       body {
@@ -23,7 +22,7 @@
         padding: 2rem;
       }
       main {
-        max-width: 36rem;
+        max-width: 38rem;
         background: rgba(0, 0, 0, 0.25);
         border: 1px solid rgba(196, 163, 90, 0.45);
         padding: 2rem 2.2rem;
@@ -32,6 +31,11 @@
         font-size: 1.85rem;
         margin: 0 0 0.4rem;
         letter-spacing: 0.04em;
+        color: var(--gold);
+      }
+      h2 {
+        font-size: 1.1rem;
+        margin: 1.4rem 0 0.4rem;
         color: var(--gold);
       }
       p { line-height: 1.55; margin: 0.75rem 0; }
@@ -64,28 +68,38 @@
     <main>
       <h1>Orbis Hotels Group</h1>
       <p>
-        No abras el <code>index.html</code> haciendo doble clic en el archivo:
-        el juego necesita un servidor (o la carpeta <code>dist/</code> servida).
+        El ZIP del juego (<code>orbis-hotels-group-juego.zip</code>) se abre
+        a doble clic: descomprime y abre <code>index.html</code>.
       </p>
-      <p><strong>Opción A — desarrollo</strong></p>
+
+      <h2>Opción rápida — ZIP offline</h2>
+      <ol>
+        <li>Descarga <code>orbis-hotels-group-juego.zip</code></li>
+        <li>Descomprímelo</li>
+        <li>Doble clic en <code>index.html</code></li>
+      </ol>
+      <p class="note">
+        Ese ZIP usa JavaScript clásico (sin <code>type=&quot;module&quot;</code>).
+        Si ves pantalla en blanco, asegúrate de no estar abriendo la carpeta
+        <code>dist/</code> (esa sí necesita servidor).
+      </p>
+
+      <h2>Opción desarrollo</h2>
       <ol>
         <li><code>npm install</code></li>
         <li><code>npm run dev</code></li>
-        <li>Abre la URL que salga (suele ser <code>http://localhost:5173</code>)</li>
+        <li>Abre la URL (suele ser <code>http://localhost:5173</code>)</li>
       </ol>
-      <p><strong>Opción B — versión compilada</strong></p>
+
+      <h2>Generar el ZIP offline</h2>
       <ol>
-        <li><code>npm run build</code></li>
-        <li><code>npx serve dist</code> (o cualquier servidor estático)</li>
-        <li>Abre la URL que indique el servidor</li>
+        <li><code>npm run build:offline</code></li>
+        <li>La carpeta <code>offline/</code> ya se puede abrir a doble clic</li>
       </ol>
-      <p class="note">
-        Si ya tienes <code>dist/</code> generado, prueba el botón de abajo
-        (solo funciona si abres esta página a través de un servidor, no como archivo local).
-      </p>
+
       <p>
-        <a class="btn" href="./dist/index.html">Abrir juego (dist)</a>
-        <a class="btn ghost" href="./index.html">Abrir en Vite (dev)</a>
+        <a class="btn" href="./offline/index.html">Abrir offline/</a>
+        <a class="btn ghost" href="./orbis-hotels-group-juego.zip">Descargar ZIP</a>
       </p>
     </main>
   </body>

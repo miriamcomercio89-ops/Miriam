@@ -12,7 +12,8 @@
     "preview": "vite preview",
     "start": "node server/index.js",
     "plan:regions": "node scripts/generate-plan/build-regions.mjs",
-    "plan:pdfs": "node scripts/generate-plan/generate.mjs"
+    "plan:pdfs": "node scripts/generate-plan/generate.mjs",
+    "build:offline": "node scripts/build-offline.mjs"
   },
   "dependencies": {
     "@tanstack/react-virtual": "^3.14.9",

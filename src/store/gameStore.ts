@@ -14,6 +14,7 @@ import { defaultImageKey } from '../lib/images'
 import { gameDay } from '../lib/format'
 import { playBuildSound, playDaySound } from '../lib/sound'
 import { SLOT_KEYS, idbSave, tryLocalStorageSave } from '../lib/saveio'
+import { applyDays } from '../lib/daySim'
 import type { WorkerDayRequest, WorkerDayResponse } from '../workers/dayWorker'
 import type {
   BankDeposit,
@@ -214,24 +215,69 @@ function migrate(raw: Partial<GameState> & { cash?: number }): GameState {
   }
 }
 
+import { createDayWorker } from '../lib/dayWorkerHost'
+
 let worker: Worker | null = null
 let workerBusy = false
+let workerFailed = false
 
-function getWorker(): Worker {
+function canUseWorker(): boolean {
+  if (workerFailed) return false
+  if (typeof window === 'undefined') return false
+  // file:// bloquea workers módulo y type=module
+  if (window.location?.protocol === 'file:') return false
+  return typeof Worker !== 'undefined'
+}
+
+function getWorker(): Worker | null {
+  if (!canUseWorker()) return null
   if (!worker) {
-    worker = new Worker(new URL('../workers/dayWorker.ts', import.meta.url), { type: 'module' })
+    worker = createDayWorker()
+    if (!worker) {
+      workerFailed = true
+      return null
+    }
+    worker.addEventListener('error', () => {
+      workerFailed = true
+      worker = null
+    })
   }
   return worker
 }
 
+function runDaysOnMain(state: GameState, days: number): WorkerDayResponse {
+  return applyDays(
+    {
+      cash: state.cash,
+      gameMinutes: state.gameMinutes,
+      hotels: state.hotels,
+      activeEvents: state.activeEvents,
+      lastEventRollDay: state.lastEventRollDay,
+      reputation: state.reputation,
+      loan: state.loan,
+      ledger: state.ledger,
+      countryEconomy: state.countryEconomy,
+      news: state.news,
+      bankDeposits: state.bankDeposits,
+      loyaltyLevel: state.loyaltyLevel,
+      loyaltyPoints: state.loyaltyPoints,
+      lastWeeklyReportDay: state.lastWeeklyReportDay,
+      weeklyReports: state.weeklyReports,
+    },
+    days,
+  )
+}
+
 function runDaysInWorker(state: GameState, days: number): Promise<WorkerDayResponse> {
+  const w = getWorker()
+  if (!w) return Promise.resolve(runDaysOnMain(state, days))
+
   return new Promise((resolve, reject) => {
     if (workerBusy) {
       reject(new Error('busy'))
       return
     }
     workerBusy = true
-    const w = getWorker()
     const onMsg = (ev: MessageEvent<WorkerDayResponse>) => {
       if (ev.data?.type !== 'applyDaysResult') return
       w.removeEventListener('message', onMsg)
@@ -239,11 +285,14 @@ function runDaysInWorker(state: GameState, days: number): Promise<WorkerDayRespo
       workerBusy = false
       resolve(ev.data)
     }
-    const onErr = (err: ErrorEvent) => {
+    const onErr = () => {
       w.removeEventListener('message', onMsg)
       w.removeEventListener('error', onErr)
       workerBusy = false
-      reject(err.error ?? err.message)
+      workerFailed = true
+      worker = null
+      // Fallback al hilo principal
+      resolve(runDaysOnMain(state, days))
     }
     w.addEventListener('message', onMsg)
     w.addEventListener('error', onErr)
@@ -268,7 +317,11 @@ function runDaysInWorker(state: GameState, days: number): Promise<WorkerDayRespo
         weeklyReports: state.weeklyReports,
       },
     }
-    w.postMessage(payload)
+    try {
+      w.postMessage(payload)
+    } catch {
+      onErr()
+    }
   })
 }
 

@@ -84,10 +84,6 @@ export function Landing() {
           />
         </div>
         {msg && <p className="landing__lead" style={{ marginTop: '1rem' }}>{msg}</p>}
-        <p className="landing__lead" style={{ marginTop: '1.2rem', fontSize: '0.9rem', opacity: 0.8 }}>
-          No abras index.html a doble clic. Usa <code>npm run dev</code> o sirve la carpeta <code>dist/</code>.
-          Guía: <code>abrir.html</code>
-        </p>
       </div>
     </div>
   )
