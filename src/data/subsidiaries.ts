@@ -1,16 +1,56 @@
 import type { Subsidiary } from '../types'
 
 const palette = [
-  ['#0B3A4A', '#C4A35A'],
-  ['#123C4F', '#E8D5A3'],
-  ['#1B4D3E', '#D4AF37'],
-  ['#163A5F', '#7EB6C9'],
-  ['#2C3E50', '#F0C27B'],
-  ['#0F2C3A', '#A8C5B0'],
-  ['#1A2F4A', '#E0B084'],
-  ['#243B55', '#9AD0C4'],
-  ['#0E2F2A', '#D9B45B'],
-  ['#1F3A5F', '#F2E6C8'],
+  ['#6E2020', '#DD6363'],
+  ['#20873D', '#73E794'],
+  ['#6B1FA1', '#C285EF'],
+  ['#BDA81D', '#F5E998'],
+  ['#0E6D7F', '#50D6F0'],
+  ['#822558', '#E278B2'],
+  ['#439C25', '#A1EB89'],
+  ['#2924B7', '#9E9BF2'],
+  ['#7B3613', '#EE8652'],
+  ['#119663', '#68F2BD'],
+  ['#8D2B96', '#DF8DE6'],
+  ['#95B02A', '#DEEE9F'],
+  ['#174777', '#58A0E9'],
+  ['#911631', '#F16987'],
+  ['#14AD21', '#7FF489'],
+  ['#5D31A9', '#BDA2EB'],
+  ['#72551B', '#E3B65D'],
+  ['#1B8C86', '#6EECE5'],
+  ['#A71A84', '#F381D6'],
+  ['#67C417', '#C3F697'],
+  ['#202D6E', '#6377DD'],
+  ['#872C20', '#E78073'],
+  ['#1FA156', '#85EFB1'],
+  ['#8D1DBD', '#D998F5'],
+  ['#7F7F0E', '#F0F050'],
+  ['#256882', '#78C4E2'],
+  ['#9C2557', '#EB89B2'],
+  ['#37B724', '#A7F29B'],
+  ['#24137B', '#6C52EE'],
+  ['#964D11', '#F2A668'],
+  ['#2B967B', '#8DE6D0'],
+  ['#B02AAC', '#EE9FEC'],
+  ['#577717', '#B8E958'],
+  ['#164591', '#699DF1'],
+  ['#AD1421', '#F47F89'],
+  ['#31A949', '#A2EBB1'],
+  ['#471B72', '#A05DE3'],
+  ['#8C741B', '#ECD16E'],
+  ['#1A9BA7', '#81E9F3'],
+  ['#C41784', '#F697D3'],
+  ['#3A6E20', '#8CDD63'],
+  ['#202587', '#7379E7'],
+  ['#A1401F', '#EF9F85'],
+  ['#1DBD72', '#98F5CA'],
+  ['#6D0E7F', '#D650F0'],
+  ['#778225', '#D6E278'],
+  ['#256A9C', '#89C2EB'],
+  ['#B72450', '#F29BB5'],
+  ['#137B13', '#52EE52'],
+  ['#371196', '#8F68F2']
 ]
 
 type Spec = Omit<Subsidiary, 'color' | 'accent' | 'id'> & { id: string }
@@ -73,22 +113,37 @@ export const SUBSIDIARIES: Subsidiary[] = specs.map((s, i) => {
   return { ...s, color, accent }
 })
 
+export const SUBSIDIARY_COLOR: Record<string, string> = Object.fromEntries(
+  SUBSIDIARIES.map((s) => [s.id, s.color]),
+)
+
+export const SUBSIDIARY_ACCENT: Record<string, string> = Object.fromEntries(
+  SUBSIDIARIES.map((s) => [s.id, s.accent]),
+)
+
 export function getSubsidiary(id: string): Subsidiary | undefined {
   return SUBSIDIARIES.find((s) => s.id === id)
 }
 
 export function subsidiaryLogoSvg(sub: Subsidiary, size = 64): string {
-  const { color, accent, letter, name } = sub
+  const { color, accent, letter, name, imageStyle } = sub
+  const motif =
+    imageStyle === 'coast'
+      ? `<path d="M10 44c8-10 16-14 22-14s14 4 22 14" fill="none" stroke="${accent}" stroke-width="2.2"/>`
+      : imageStyle === 'urban'
+        ? `<rect x="20" y="18" width="10" height="28" fill="${accent}" opacity="0.85"/><rect x="34" y="12" width="12" height="34" fill="${accent}" opacity="0.65"/>`
+        : imageStyle === 'nature'
+          ? `<path d="M32 48 L20 28 L32 14 L44 28 Z" fill="${accent}" opacity="0.75"/>`
+          : imageStyle === 'luxury'
+            ? `<polygon points="32,14 38,28 32,26 26,28" fill="${accent}"/><circle cx="32" cy="36" r="10" fill="none" stroke="${accent}" stroke-width="2"/>`
+            : imageStyle === 'family'
+              ? `<circle cx="24" cy="30" r="6" fill="${accent}"/><circle cx="40" cy="30" r="6" fill="${accent}" opacity="0.7"/><circle cx="32" cy="42" r="7" fill="${accent}" opacity="0.85"/>`
+              : `<path d="M16 40 L32 16 L48 40 Z" fill="none" stroke="${accent}" stroke-width="2.2"/>`
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 64 64">
-  <defs>
-    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="${color}"/>
-      <stop offset="100%" stop-color="${accent}" stop-opacity="0.85"/>
-    </linearGradient>
-  </defs>
-  <rect width="64" height="64" rx="14" fill="url(#g)"/>
-  <circle cx="32" cy="32" r="22" fill="none" stroke="${accent}" stroke-width="1.5" opacity="0.7"/>
-  <text x="32" y="38" text-anchor="middle" font-family="Georgia, serif" font-size="${letter.length > 1 ? 16 : 22}" font-weight="700" fill="#F7F3EA">${letter}</text>
+  <rect width="64" height="64" rx="12" fill="${color}"/>
+  <rect x="3" y="3" width="58" height="58" rx="10" fill="none" stroke="${accent}" stroke-width="2"/>
+  ${motif}
+  <text x="32" y="56" text-anchor="middle" font-family="Georgia, serif" font-size="${letter.length > 1 ? 11 : 14}" font-weight="700" fill="#F7F3EA">${letter}</text>
   <title>${name}</title>
 </svg>`
   return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`

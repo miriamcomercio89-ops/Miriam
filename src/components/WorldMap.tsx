@@ -1,95 +1,100 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { MapContainer, TileLayer, useMap, useMapEvents, CircleMarker } from 'react-leaflet'
 import L from 'leaflet'
-import 'leaflet.markercluster'
-import 'leaflet.markercluster/dist/MarkerCluster.css'
-import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
 import { useGameStore } from '../store/gameStore'
 import { resolveLocation } from '../lib/geo'
-import { getSubsidiary, subsidiaryLogoSvg } from '../data/subsidiaries'
+import { filterHotels } from '../lib/economy'
+import { createHotelsCanvasLayer, findNearestHotel, hotelTooltipMeta } from '../lib/hotelsCanvasLayer'
+import { formatEUR } from '../lib/format'
 import type { Hotel } from '../types'
 
-function MapClickHandler({ onPick, busy }: { onPick: (lat: number, lng: number) => void; busy: boolean }) {
+function MapClickHandler({
+  busy,
+  onBuild,
+  onSelectHotel,
+  hotels,
+}: {
+  busy: boolean
+  onBuild: (lat: number, lng: number) => void
+  onSelectHotel: (id: string) => void
+  hotels: Hotel[]
+}) {
+  const mode = useGameStore((s) => s.mapMode)
   useMapEvents({
     click(e) {
       if (busy) return
-      onPick(e.latlng.lat, e.latlng.lng)
+      const map = e.target as L.Map
+      const nearest = findNearestHotel(map, hotels, e.containerPoint, map.getZoom())
+      if (nearest) {
+        onSelectHotel(nearest.id)
+        return
+      }
+      if (mode === 'build') onBuild(e.latlng.lat, e.latlng.lng)
+    },
+    mousemove(e) {
+      // hover handled in HotelsLayer via map events too
+      void e
     },
   })
   return null
 }
 
-function ZoomWatcher({ onZoom }: { onZoom: (z: number) => void }) {
+function MapFocusController() {
   const map = useMap()
+  const focus = useGameStore((s) => s.mapFocus)
+  const setMapFocus = useGameStore((s) => s.setMapFocus)
   useEffect(() => {
-    const sync = () => onZoom(map.getZoom())
-    sync()
-    map.on('zoomend', sync)
-    return () => {
-      map.off('zoomend', sync)
-    }
-  }, [map, onZoom])
+    if (!focus) return
+    map.flyTo([focus.lat, focus.lng], focus.zoom ?? Math.max(map.getZoom(), 9), { duration: 0.85 })
+    const t = window.setTimeout(() => setMapFocus(null), 900)
+    return () => window.clearTimeout(t)
+  }, [focus, map, setMapFocus])
   return null
 }
 
-function logoIcon(subsidiaryId: string, selected: boolean) {
-  const sub = getSubsidiary(subsidiaryId)
-  if (!sub) return undefined
-  const url = subsidiaryLogoSvg(sub, selected ? 52 : 44)
-  const size = selected ? 44 : 36
-  return L.divIcon({
-    className: `hotel-pin ${selected ? 'hotel-pin--selected' : ''}`,
-    html: `<img src="${url}" alt="${sub.name}" width="${size}" height="${size}" />`,
-    iconSize: [size, size],
-    iconAnchor: [size / 2, size / 2],
-  })
-}
-
-function HotelClusterLayer({
+function HotelsCanvas({
   hotels,
   selectedId,
-  onSelect,
+  onHover,
 }: {
   hotels: Hotel[]
   selectedId: string | null
-  onSelect: (id: string) => void
+  onHover: (payload: { hotel: Hotel; x: number; y: number } | null) => void
 }) {
   const map = useMap()
+  const layerRef = useRef<L.Layer & { setData: (h: Hotel[], s: string | null) => void } | null>(null)
 
   useEffect(() => {
-    const cluster = L.markerClusterGroup({
-      showCoverageOnHover: false,
-      maxClusterRadius: 50,
-      spiderfyOnMaxZoom: true,
-      disableClusteringAtZoom: 7,
-      iconCreateFunction(c) {
-        const n = c.getChildCount()
-        const size = n > 50 ? 48 : n > 15 ? 42 : 36
-        return L.divIcon({
-          html: `<div class="orbis-cluster"><span>${n}</span></div>`,
-          className: 'orbis-cluster-wrap',
-          iconSize: L.point(size, size),
-        })
-      },
-    })
-
-    for (const h of hotels) {
-      const icon = logoIcon(h.subsidiaryId, selectedId === h.id)
-      if (!icon) continue
-      const marker = L.marker([h.lat, h.lng], { icon })
-      marker.on('click', (e) => {
-        L.DomEvent.stopPropagation(e)
-        onSelect(h.id)
-      })
-      cluster.addLayer(marker)
-    }
-
-    map.addLayer(cluster)
+    const layer = createHotelsCanvasLayer() as L.Layer & { setData: (h: Hotel[], s: string | null) => void }
+    layerRef.current = layer
+    map.addLayer(layer)
     return () => {
-      map.removeLayer(cluster)
-      cluster.clearLayers()
+      map.removeLayer(layer)
+      layerRef.current = null
     }
-  }, [map, hotels, selectedId, onSelect])
+  }, [map])
+
+  useEffect(() => {
+    layerRef.current?.setData(hotels, selectedId)
+  }, [hotels, selectedId])
+
+  useEffect(() => {
+    const onMove = (e: L.LeafletMouseEvent) => {
+      const nearest = findNearestHotel(map, hotels, e.containerPoint, map.getZoom())
+      if (!nearest) {
+        onHover(null)
+        return
+      }
+      onHover({ hotel: nearest, x: e.containerPoint.x, y: e.containerPoint.y })
+    }
+    const clear = () => onHover(null)
+    map.on('mousemove', onMove)
+    map.on('mouseout', clear)
+    return () => {
+      map.off('mousemove', onMove)
+      map.off('mouseout', clear)
+    }
+  }, [map, hotels, onHover])
 
   return null
 }
@@ -133,23 +138,16 @@ export function WorldMap() {
   const selectHotel = useGameStore((s) => s.selectHotel)
   const openBuildAt = useGameStore((s) => s.openBuildAt)
   const selectedHotelId = useGameStore((s) => s.selectedHotelId)
+  const mapMode = useGameStore((s) => s.mapMode)
   const [busy, setBusy] = useState(false)
   const [hint, setHint] = useState<string | null>(null)
   const [pending, setPending] = useState<{ lat: number; lng: number } | null>(null)
-  const [zoom, setZoom] = useState(3)
+  const [hover, setHover] = useState<{ hotel: Hotel; x: number; y: number } | null>(null)
 
-  const filtered = useMemo(() => {
-    return hotels.filter((h) => {
-      if (filters.subsidiaryId !== 'all' && h.subsidiaryId !== filters.subsidiaryId) return false
-      if (h.stars < filters.minStars) return false
-      if (filters.profit === 'profit' && h.lastDayRevenue - h.lastDayCosts <= 0 && h.lifetimeGuests > 0) return false
-      if (filters.profit === 'loss' && (h.lastDayRevenue - h.lastDayCosts >= 0 || h.lifetimeGuests === 0)) return false
-      if (filters.profit === 'new' && h.lifetimeGuests > 0) return false
-      return true
-    })
-  }, [hotels, filters])
+  const filtered = useMemo(() => filterHotels(hotels, filters), [hotels, filters])
+  const onHover = useCallback((p: { hotel: Hotel; x: number; y: number } | null) => setHover(p), [])
 
-  async function handlePick(lat: number, lng: number) {
+  async function handleBuild(lat: number, lng: number) {
     setBusy(true)
     setPending({ lat, lng })
     setHint('Analizando ubicación…')
@@ -171,43 +169,28 @@ export function WorldMap() {
     }
   }
 
-  const useSoftCircles = filtered.length > 800 && zoom < 5
+  const tip = hover ? hotelTooltipMeta(hover.hotel) : null
 
   return (
-    <div className="map-shell">
-      <MapContainer center={[20, 0]} zoom={3} minZoom={2} maxZoom={18} className="world-map" worldCopyJump>
+    <div className={`map-shell map-shell--${mapMode}`}>
+      <MapContainer
+        center={[20, 0]}
+        zoom={3}
+        minZoom={2}
+        maxZoom={18}
+        className="world-map"
+        worldCopyJump
+        preferCanvas
+      >
         <TileLayers />
-        <MapClickHandler onPick={handlePick} busy={busy} />
-        <ZoomWatcher onZoom={setZoom} />
-
-        {useSoftCircles
-          ? filtered.map((h) => (
-              <CircleMarker
-                key={h.id}
-                center={[h.lat, h.lng]}
-                radius={selectedHotelId === h.id ? 7 : 4}
-                pathOptions={{
-                  color: getSubsidiary(h.subsidiaryId)?.accent ?? '#C4A35A',
-                  fillColor: getSubsidiary(h.subsidiaryId)?.color ?? '#0B1F33',
-                  fillOpacity: 0.9,
-                  weight: 1,
-                }}
-                eventHandlers={{
-                  click: (e) => {
-                    L.DomEvent.stopPropagation(e)
-                    selectHotel(h.id)
-                  },
-                }}
-              />
-            ))
-          : (
-            <HotelClusterLayer
-              hotels={filtered}
-              selectedId={selectedHotelId}
-              onSelect={selectHotel}
-            />
-          )}
-
+        <MapClickHandler
+          busy={busy}
+          onBuild={handleBuild}
+          onSelectHotel={selectHotel}
+          hotels={filtered}
+        />
+        <MapFocusController />
+        <HotelsCanvas hotels={filtered} selectedId={selectedHotelId} onHover={onHover} />
         {pending && (
           <CircleMarker
             center={[pending.lat, pending.lng]}
@@ -217,8 +200,22 @@ export function WorldMap() {
         )}
       </MapContainer>
 
+      {tip && hover && (
+        <div className="map-mini" style={{ left: hover.x + 14, top: hover.y + 14 }}>
+          {tip.logo && <img src={tip.logo} alt="" width={28} height={28} />}
+          <div>
+            <strong>{tip.title}</strong>
+            <span>{tip.sub}</span>
+            <em className={tip.net >= 0 ? 'pos' : 'neg'}>{formatEUR(tip.net)}/día</em>
+          </div>
+        </div>
+      )}
+
       <p className="map-hint">
-        {hint ?? 'Clic en tierra firme para construir · logos de filial en cada hotel · clustering suave al alejar'}
+        {hint ??
+          (mapMode === 'build'
+            ? 'Modo construir: clic en tierra firme para nueva ubicación · clic en un hotel para inspeccionarlo'
+            : 'Modo inspeccionar: clic en un hotel para ver ficha · cambia a Construir para expandir')}
       </p>
     </div>
   )

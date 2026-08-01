@@ -8,6 +8,8 @@ import { EventsBanner } from './components/EventsBanner'
 import { FinancePanel } from './components/FinancePanel'
 import { LoanPanel } from './components/LoanPanel'
 import { MapToolbar } from './components/MapToolbar'
+import { HotelListPanel } from './components/HotelListPanel'
+import { RankingPanel } from './components/RankingPanel'
 import { useGameStore } from './store/gameStore'
 import { REAL_MS_PER_GAME_MINUTE } from './data/catalog'
 import { playClickSound } from './lib/sound'
@@ -20,10 +22,7 @@ export default function App() {
   const tick = useGameStore((s) => s.tick)
   const persistLocal = useGameStore((s) => s.persistLocal)
   const setSpeed = useGameStore((s) => s.setSpeed)
-  const closeBuild = useGameStore((s) => s.closeBuild)
-  const selectHotel = useGameStore((s) => s.selectHotel)
-  const setShowFinance = useGameStore((s) => s.setShowFinance)
-  const setShowLoan = useGameStore((s) => s.setShowLoan)
+  const closeAllPanels = useGameStore((s) => s.closeAllPanels)
   const soundEnabled = useGameStore((s) => s.soundEnabled)
 
   useEffect(() => {
@@ -34,7 +33,7 @@ export default function App() {
 
   useEffect(() => {
     if (!started) return
-    const id = window.setInterval(() => persistLocal(), 15000)
+    const id = window.setInterval(() => persistLocal(), 20000)
     return () => window.clearInterval(id)
   }, [started, persistLocal])
 
@@ -61,22 +60,14 @@ export default function App() {
         const cur = useGameStore.getState().speed
         setSpeed(cur === 0 ? 1 : 0)
         playClickSound(soundEnabled)
-      } else if (e.key === '1') {
-        setSpeed(1)
-      } else if (e.key === '2') {
-        setSpeed(2)
-      } else if (e.key === '5') {
-        setSpeed(5)
-      } else if (e.key === 'Escape') {
-        closeBuild()
-        selectHotel(null)
-        setShowFinance(false)
-        setShowLoan(false)
-      }
+      } else if (e.key === '1') setSpeed(1)
+      else if (e.key === '2') setSpeed(2)
+      else if (e.key === '5') setSpeed(5)
+      else if (e.key === 'Escape') closeAllPanels()
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [started, setSpeed, closeBuild, selectHotel, setShowFinance, setShowLoan, soundEnabled])
+  }, [started, setSpeed, closeAllPanels, soundEnabled])
 
   if (showLanding) return <Landing />
 
@@ -91,6 +82,8 @@ export default function App() {
         <HotelDetail />
         <FinancePanel />
         <LoanPanel />
+        <HotelListPanel />
+        <RankingPanel />
       </main>
     </div>
   )

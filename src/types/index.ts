@@ -2,8 +2,11 @@ export type StaffLevel = 'basico' | 'estandar' | 'premium' | 'lujo'
 export type GuestTarget = 'lujo' | 'negocios' | 'familiar' | 'parejas' | 'aventura' | 'wellness' | 'playa'
 export type SpeedOption = 0 | 1 | 2 | 5
 export type MapLayer = 'streets' | 'satellite' | 'hybrid'
+export type MapMode = 'inspect' | 'build'
 export type ProfitFilter = 'all' | 'profit' | 'loss' | 'new'
 export type SeasonName = 'alta' | 'media' | 'baja'
+export type RankMetric = 'net' | 'occupancy' | 'roi' | 'satisfaction'
+export type HotelSort = 'name' | 'net' | 'occupancy' | 'city' | 'stars'
 
 export interface Subsidiary {
   id: string
@@ -64,6 +67,14 @@ export interface LocationInsight {
   confidence: number
 }
 
+/** AI-managed corporate room block */
+export interface CorporateContract {
+  clientName: string
+  blockedRooms: number
+  ratePerNight: number
+  daysRemaining: number
+}
+
 export interface Hotel {
   id: string
   name: string
@@ -72,12 +83,14 @@ export interface Hotel {
   lng: number
   stars: number
   rooms: number
-  /** Managed daily by Orbis Pricing AI */
   pricePerNight: number
   services: HotelService[]
   staffLevel: StaffLevel
   target: GuestTarget
-  imageDataUrl: string
+  /** Custom upload only; otherwise resolved from imageKey */
+  imageDataUrl?: string
+  /** Gallery key e.g. coast:day */
+  imageKey: string
   country: string
   countryCode: string
   city: string
@@ -96,6 +109,7 @@ export interface Hotel {
   lifetimeCosts: number
   lifetimeGuests: number
   satisfaction: number
+  contract: CorporateContract | null
 }
 
 export interface WorldEvent {
@@ -105,6 +119,8 @@ export interface WorldEvent {
   demandMultiplier: number
   costMultiplier: number
   scope: string
+  /** Optional season gate */
+  season?: SeasonName | 'any'
   daysRemaining: number
   startedAtDay: number
 }
@@ -121,9 +137,7 @@ export interface DayLedger {
 
 export interface LoanState {
   balance: number
-  /** Max outstanding credit */
   limit: number
-  /** Daily interest rate on balance */
   dailyRate: number
 }
 
@@ -137,7 +151,6 @@ export interface GameState {
   lastEventRollDay: number
   cloudSlotId: string | null
   started: boolean
-  /** Reputation 0-100 by country code */
   reputation: Record<string, number>
   loan: LoanState
   ledger: DayLedger[]
@@ -153,10 +166,18 @@ export interface BuildDraft {
   staffLevel: StaffLevel
   target: GuestTarget
   imageDataUrl: string
+  imageKey: string
 }
 
 export interface MapFilters {
   subsidiaryId: string | 'all'
   minStars: number
   profit: ProfitFilter
+}
+
+export interface MapFocus {
+  lat: number
+  lng: number
+  zoom?: number
+  hotelId?: string
 }

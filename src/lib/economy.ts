@@ -1,22 +1,29 @@
-import type { SeasonName, Hotel, WorldEvent, LocationInsight, BuildDraft } from '../types'
+import type { SeasonName, Hotel, WorldEvent, LocationInsight, BuildDraft, CorporateContract, GuestTarget, StaffLevel, HotelService } from '../types'
 import { SERVICE_CATALOG, STAFF_OPTIONS } from '../data/catalog'
-import { getSubsidiary } from '../data/subsidiaries'
+import { getSubsidiary, SUBSIDIARY_COLOR } from '../data/subsidiaries'
 
-/** Day of year 0-364 from game minutes */
+const CLIENTS = [
+  'Orbis Corporate Desk',
+  'Aether Airlines Crew',
+  'Norte Bank Travel',
+  'Helios Pharma',
+  'Atlas Logistics',
+  'Vega Congress',
+  'Lumen Media',
+  'Pinnacle Consulting',
+]
+
 export function dayOfYear(gameMinutes: number): number {
   const dayIndex = Math.floor(gameMinutes / (60 * 24))
   return ((dayIndex % 365) + 365) % 365
 }
 
-/** Northern meteorological-ish seasons; inverted for southern hemisphere */
 export function getSeason(lat: number, gameMinutes: number): SeasonName {
   const d = dayOfYear(gameMinutes)
-  // Dec–Feb 334-364 & 0-58, Mar–May 59-151, Jun–Aug 152-243, Sep–Nov 244-333
   let north: SeasonName
-  if (d >= 152 && d <= 243) north = 'alta' // summer
+  if (d >= 152 && d <= 243) north = 'alta'
   else if ((d >= 59 && d <= 151) || (d >= 244 && d <= 333)) north = 'media'
-  else north = 'baja' // winter
-
+  else north = 'baja'
   if (lat < 0) {
     if (north === 'alta') return 'baja'
     if (north === 'baja') return 'alta'
@@ -36,7 +43,10 @@ export function seasonDemandMult(s: SeasonName): number {
   return 0.84
 }
 
-export function fairPrice(hotel: Pick<Hotel, 'stars' | 'tourismIndex' | 'beachScore' | 'target' | 'services' | 'subsidiaryId' | 'staffLevel'>, season: SeasonName): number {
+export function fairPrice(
+  hotel: Pick<Hotel, 'stars' | 'tourismIndex' | 'beachScore' | 'target' | 'services' | 'subsidiaryId' | 'staffLevel'>,
+  season: SeasonName,
+): number {
   const sub = getSubsidiary(hotel.subsidiaryId)
   const staff = STAFF_OPTIONS.find((s) => s.id === hotel.staffLevel)
   let price =
@@ -55,31 +65,54 @@ export function fairPrice(hotel: Pick<Hotel, 'stars' | 'tourismIndex' | 'beachSc
   if (hotel.services.includes('playa_privada')) price += 25
   if (staff?.id === 'lujo') price *= 1.1
   if (staff?.id === 'basico') price *= 0.9
-
   if (season === 'alta') price *= 1.12
   if (season === 'baja') price *= 0.88
-
   return Math.round(clamp(price, 35, 2500))
 }
 
-/** Orbis Pricing AI: nudge price toward revenue-max given recent occupancy */
 export function aiAdjustPrice(hotel: Hotel, season: SeasonName): number {
   const base = fairPrice(hotel, season)
   let price = hotel.pricePerNight || base
   const occ = hotel.lastDayOccupancy
-
-  if (occ === 0 && hotel.lifetimeGuests === 0) {
-    return base
-  }
-
+  if (occ === 0 && hotel.lifetimeGuests === 0) return base
   if (occ > 0.88) price *= 1.04
   else if (occ > 0.75) price *= 1.015
   else if (occ < 0.35) price *= 0.94
   else if (occ < 0.5) price *= 0.97
-
-  // Pull gently toward fair price so AI doesn't drift forever
   price = price * 0.85 + base * 0.15
   return Math.round(clamp(price, base * 0.55, base * 1.65))
+}
+
+/** Orbis Contracts AI */
+export function aiManageContract(hotel: Hotel, season: SeasonName): CorporateContract | null {
+  const existing = hotel.contract
+  if (existing && existing.daysRemaining > 1) {
+    return { ...existing, daysRemaining: existing.daysRemaining - 1 }
+  }
+
+  const fair = fairPrice(hotel, season)
+  const wantsContract =
+    hotel.target === 'negocios' ||
+    hotel.subsidiaryId.includes('business') ||
+    hotel.subsidiaryId.includes('congress') ||
+    hotel.subsidiaryId.includes('airport') ||
+    season === 'baja' ||
+    hotel.lastDayOccupancy < 0.45
+
+  const roll = pseudoNoise(hotel.id, hotel.builtAtGameDay + Math.round(hotel.pricePerNight))
+  if (!wantsContract && roll > 0.22) return null
+  if (wantsContract && roll > 0.72 && season === 'alta' && hotel.target !== 'negocios') return null
+
+  const pct = hotel.target === 'negocios' ? 0.22 + roll * 0.2 : 0.1 + roll * 0.15
+  const blocked = Math.max(5, Math.min(hotel.rooms - 10, Math.round(hotel.rooms * pct)))
+  if (blocked < 5) return null
+
+  return {
+    clientName: CLIENTS[Math.floor(roll * CLIENTS.length)],
+    blockedRooms: blocked,
+    ratePerNight: Math.round(fair * (0.78 + roll * 0.12)),
+    daysRemaining: 12 + Math.floor(roll * 24),
+  }
 }
 
 export function calcConstructionCost(draft: BuildDraft, loc: LocationInsight): number {
@@ -95,7 +128,13 @@ export function calcConstructionCost(draft: BuildDraft, loc: LocationInsight): n
   const tourismLand = 250_000 * (loc.tourismIndex / 100)
   const subMult = sub?.costMultiplier ?? 1
   const starMult = 1 + (draft.stars - 3) * 0.12
-  return Math.round((roomsCost + servicesCost + landPremium + tourismLand) * subMult * staff.costMultiplier * starMult * loc.costIndex)
+  return Math.round(
+    (roomsCost + servicesCost + landPremium + tourismLand) *
+      subMult *
+      staff.costMultiplier *
+      starMult *
+      loc.costIndex,
+  )
 }
 
 export function draftToTempHotel(
@@ -118,6 +157,7 @@ export function draftToTempHotel(
     staffLevel: draft.staffLevel,
     target: draft.target,
     imageDataUrl: draft.imageDataUrl,
+    imageKey: draft.imageKey,
     country: loc.country,
     countryCode: loc.countryCode,
     city: loc.city,
@@ -135,11 +175,10 @@ export function draftToTempHotel(
     lifetimeRevenue: 0,
     lifetimeCosts: 0,
     lifetimeGuests: 0,
-    satisfaction: 70,
+    satisfaction: clamp(55 + reputation * 0.35, 40, 95),
+    contract: null,
   }
   temp.pricePerNight = fairPrice(temp, season)
-  // bake reputation into satisfaction baseline for estimate
-  temp.satisfaction = clamp(55 + reputation * 0.35, 40, 95)
   return temp
 }
 
@@ -150,26 +189,84 @@ export function estimateDaily(
   gameMinutes: number,
   reputation: number,
 ) {
-  const fake = draftToTempHotel(draft, loc, gameMinutes, reputation)
-  return simulateHotelDay(fake, events, gameMinutes, reputation)
+  return simulateHotelDay(draftToTempHotel(draft, loc, gameMinutes, reputation), events, gameMinutes, reputation)
 }
 
+export type DayResult = {
+  occupancy: number
+  revenue: number
+  costs: number
+  net: number
+  guests: number
+  price: number
+  satisfaction: number
+  season: SeasonName
+  contract: CorporateContract | null
+}
+
+/** Fast path used in mass simulation */
 export function simulateHotelDay(
   hotel: Hotel,
   events: WorldEvent[],
   gameMinutes: number,
   reputation: number,
-) {
+): DayResult {
   const season = getSeason(hotel.lat, gameMinutes)
+  const contract = hotel.id === 'temp' ? hotel.contract : aiManageContract(hotel, season)
   const price = hotel.id === 'temp' ? hotel.pricePerNight : aiAdjustPrice(hotel, season)
-  const priced = { ...hotel, pricePerNight: price }
-  const occupancy = calcOccupancy(priced, events, season, reputation)
-  const revenue = Math.round(priced.rooms * occupancy * priced.pricePerNight)
-  const costs = Math.round(calcDailyCosts(priced, events, revenue))
-  const guests = Math.round(priced.rooms * occupancy)
-  const satisfactionDelta = occupancy * 8 + (priced.stars - 3) * 0.8 - (costs > revenue ? 2 : 0)
+
+  const blocked = contract ? Math.min(contract.blockedRooms, hotel.rooms - 1) : 0
+  const openRooms = Math.max(1, hotel.rooms - blocked)
+
+  const occupancyOpen = calcOccupancy(
+    { ...hotel, pricePerNight: price, rooms: openRooms },
+    events,
+    season,
+    reputation,
+  )
+
+  const contractRevenue = blocked * (contract?.ratePerNight ?? 0)
+  const openRevenue = Math.round(openRooms * occupancyOpen * price)
+  const revenue = contractRevenue + openRevenue
+  const occupancy = (blocked + openRooms * occupancyOpen) / hotel.rooms
+  const costs = Math.round(calcDailyCosts(hotel, events, revenue, blocked))
+  const guests = Math.round(blocked + openRooms * occupancyOpen)
+  const satisfactionDelta = occupancy * 8 + (hotel.stars - 3) * 0.8 - (costs > revenue ? 2 : 0) + (contract ? 0.5 : 0)
   const satisfaction = clamp(hotel.satisfaction * 0.92 + satisfactionDelta, 20, 99)
-  return { occupancy, revenue, costs, net: revenue - costs, guests, price, satisfaction, season }
+
+  return {
+    occupancy,
+    revenue,
+    costs,
+    net: revenue - costs,
+    guests,
+    price,
+    satisfaction,
+    season,
+    contract,
+  }
+}
+
+/**
+ * In-place day simulation for large portfolios — mutates hotel fields, returns net cash delta.
+ */
+export function applyHotelDayInPlace(
+  hotel: Hotel,
+  events: WorldEvent[],
+  gameMinutes: number,
+  reputation: number,
+): number {
+  const result = simulateHotelDay(hotel, events, gameMinutes, reputation)
+  hotel.pricePerNight = result.price
+  hotel.contract = result.contract
+  hotel.lastDayRevenue = result.revenue
+  hotel.lastDayCosts = result.costs
+  hotel.lastDayOccupancy = result.occupancy
+  hotel.lifetimeRevenue += result.revenue
+  hotel.lifetimeCosts += result.costs
+  hotel.lifetimeGuests += result.guests
+  hotel.satisfaction = result.satisfaction
+  return result.net
 }
 
 export function calcOccupancy(
@@ -180,10 +277,11 @@ export function calcOccupancy(
 ): number {
   const sub = getSubsidiary(hotel.subsidiaryId)
   const staff = STAFF_OPTIONS.find((s) => s.id === hotel.staffLevel)!
-  const serviceBonus = hotel.services.reduce((sum, id) => {
-    const s = SERVICE_CATALOG.find((x) => x.id === id)
-    return sum + (s?.demandBonus ?? 0)
-  }, 0)
+  let serviceBonus = 0
+  for (let i = 0; i < hotel.services.length; i++) {
+    const s = SERVICE_LOOKUP[hotel.services[i]]
+    if (s) serviceBonus += s
+  }
 
   let demand =
     0.38 +
@@ -213,37 +311,48 @@ export function calcOccupancy(
   if (hotel.target === 'wellness' && hotel.services.includes('spa')) demand += 0.03
   if (hotel.target === 'familiar' && hotel.services.includes('kids_club')) demand += 0.03
 
-  for (const ev of events) {
-    if (!eventApplies(ev, hotel)) continue
+  for (let i = 0; i < events.length; i++) {
+    const ev = events[i]
+    if (!eventApplies(ev, hotel, season)) continue
     demand *= ev.demandMultiplier
   }
 
   const jitter = 1 + pseudoNoise(hotel.id, Math.round(hotel.pricePerNight + hotel.lastDayRevenue)) * 0.08 - 0.04
   demand *= jitter
-
   return clamp(demand, 0.08, 0.98)
 }
 
-function calcDailyCosts(hotel: Hotel, events: WorldEvent[], revenue: number): number {
+const SERVICE_LOOKUP: Record<string, number> = Object.fromEntries(
+  SERVICE_CATALOG.map((s) => [s.id, s.demandBonus]),
+)
+const SERVICE_DAILY: Record<string, number> = Object.fromEntries(
+  SERVICE_CATALOG.map((s) => [s.id, s.dailyCost]),
+)
+
+function calcDailyCosts(hotel: Hotel, events: WorldEvent[], revenue: number, blockedRooms: number): number {
   const staff = STAFF_OPTIONS.find((s) => s.id === hotel.staffLevel)!
-  const serviceDaily = hotel.services.reduce((sum, id) => {
-    const s = SERVICE_CATALOG.find((x) => x.id === id)
-    return sum + (s?.dailyCost ?? 0)
-  }, 0)
+  let serviceDaily = 0
+  for (let i = 0; i < hotel.services.length; i++) {
+    serviceDaily += SERVICE_DAILY[hotel.services[i]] ?? 0
+  }
   const payroll = hotel.rooms * staff.dailyPerRoom
   const maintenance = hotel.rooms * (12 + hotel.stars * 6) * hotel.costIndex
   const utilities = hotel.rooms * (8 + hotel.stars * 3)
+  const contractAdmin = blockedRooms * 4
   const tax = revenue * hotel.taxRate
-  let total = payroll + serviceDaily + maintenance + utilities + tax
+  let total = payroll + serviceDaily + maintenance + utilities + tax + contractAdmin
 
-  for (const ev of events) {
-    if (!eventApplies(ev, hotel)) continue
+  const season = 'media' as SeasonName
+  for (let i = 0; i < events.length; i++) {
+    const ev = events[i]
+    if (!eventApplies(ev, hotel, season)) continue
     total *= ev.costMultiplier
   }
   return total
 }
 
-export function eventApplies(ev: WorldEvent, hotel: Hotel): boolean {
+export function eventApplies(ev: WorldEvent, hotel: Hotel, season: SeasonName): boolean {
+  if (ev.season && ev.season !== 'any' && ev.season !== season) return false
   if (ev.scope === 'global') return true
   if (ev.scope === 'coastal') return hotel.beachScore >= 45
   if (ev.scope === 'business') {
@@ -276,13 +385,52 @@ export function updateReputation(
   return clamp(next, 5, 99)
 }
 
+export function hotelNet(h: Hotel): number {
+  return h.lastDayRevenue - h.lastDayCosts
+}
+
+export function hotelRoi(h: Hotel): number {
+  if (h.constructionCost <= 0) return 0
+  return (h.lifetimeRevenue - h.lifetimeCosts) / h.constructionCost
+}
+
 export function aggregatePortfolio(hotels: Hotel[]) {
-  const revenue = hotels.reduce((s, h) => s + h.lastDayRevenue, 0)
-  const costs = hotels.reduce((s, h) => s + h.lastDayCosts, 0)
-  const rooms = hotels.reduce((s, h) => s + h.rooms, 0)
-  const occ =
-    hotels.length === 0 ? 0 : hotels.reduce((s, h) => s + h.lastDayOccupancy, 0) / hotels.length
-  return { revenue, costs, net: revenue - costs, rooms, occupancy: occ, count: hotels.length }
+  let revenue = 0
+  let costs = 0
+  let rooms = 0
+  let occ = 0
+  for (let i = 0; i < hotels.length; i++) {
+    const h = hotels[i]
+    revenue += h.lastDayRevenue
+    costs += h.lastDayCosts
+    rooms += h.rooms
+    occ += h.lastDayOccupancy
+  }
+  return {
+    revenue,
+    costs,
+    net: revenue - costs,
+    rooms,
+    occupancy: hotels.length === 0 ? 0 : occ / hotels.length,
+    count: hotels.length,
+  }
+}
+
+export function filterHotels(
+  hotels: Hotel[],
+  filters: { subsidiaryId: string | 'all'; minStars: number; profit: string },
+): Hotel[] {
+  const out: Hotel[] = []
+  for (let i = 0; i < hotels.length; i++) {
+    const h = hotels[i]
+    if (filters.subsidiaryId !== 'all' && h.subsidiaryId !== filters.subsidiaryId) continue
+    if (h.stars < filters.minStars) continue
+    if (filters.profit === 'profit' && hotelNet(h) <= 0 && h.lifetimeGuests > 0) continue
+    if (filters.profit === 'loss' && (hotelNet(h) >= 0 || h.lifetimeGuests === 0)) continue
+    if (filters.profit === 'new' && h.lifetimeGuests > 0) continue
+    out.push(h)
+  }
+  return out
 }
 
 function clamp(n: number, min: number, max: number) {
@@ -294,3 +442,10 @@ function pseudoNoise(id: string, salt: number): number {
   for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) | 0
   return ((h >>> 0) % 1000) / 1000
 }
+
+// re-export color helper usage for map canvas
+export function hotelDotColor(subsidiaryId: string): string {
+  return SUBSIDIARY_COLOR[subsidiaryId] ?? '#C4A35A'
+}
+
+export type { GuestTarget, StaffLevel, HotelService }

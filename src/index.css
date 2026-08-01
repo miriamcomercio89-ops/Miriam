@@ -1028,3 +1028,168 @@ button {
     max-width: calc(100% - 1rem);
   }
 }
+
+.place-search {
+  position: relative;
+  width: min(320px, 100%);
+}
+
+.place-search input {
+  width: 100%;
+  border: 1px solid rgba(247, 243, 234, 0.25);
+  background: rgba(11, 31, 51, 0.92);
+  color: #f7f3ea;
+  border-radius: 999px;
+  padding: 0.5rem 0.9rem;
+  font-size: 0.8rem;
+}
+
+.place-search__busy {
+  position: absolute;
+  right: 0.8rem;
+  top: 0.45rem;
+  color: var(--gold);
+}
+
+.place-search__list {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 0.3rem);
+  margin: 0;
+  padding: 0.35rem;
+  list-style: none;
+  background: var(--panel-solid);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  z-index: 700;
+  max-height: 240px;
+  overflow: auto;
+}
+
+.place-search__list button {
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: transparent;
+  padding: 0.45rem 0.55rem;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  color: var(--ink);
+}
+
+.place-search__list button:hover {
+  background: rgba(31, 95, 115, 0.1);
+}
+
+.map-mini {
+  position: absolute;
+  z-index: 560;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  background: rgba(11, 31, 51, 0.94);
+  color: #f7f3ea;
+  border: 1px solid rgba(196, 163, 90, 0.4);
+  border-radius: 12px;
+  padding: 0.4rem 0.55rem;
+  pointer-events: none;
+  min-width: 180px;
+  max-width: 260px;
+  box-shadow: var(--shadow);
+}
+
+.map-mini strong { display: block; font-size: 0.8rem; }
+.map-mini span,
+.map-mini em {
+  display: block;
+  font-size: 0.7rem;
+  font-style: normal;
+  opacity: 0.85;
+}
+
+.map-shell--build .world-map { cursor: crosshair; }
+
+.virt-list {
+  height: min(52vh, 480px);
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: white;
+}
+
+.virt-row {
+  display: grid;
+  grid-template-columns: 32px 1fr auto;
+  gap: 0.55rem;
+  align-items: center;
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: white;
+  text-align: left;
+  padding: 0.45rem 0.55rem;
+  color: var(--ink);
+}
+
+.virt-row:hover { background: rgba(31, 95, 115, 0.06); }
+.virt-row__main strong,
+.rank-row strong { display: block; font-size: 0.82rem; }
+.virt-row__main span,
+.rank-row span { display: block; font-size: 0.7rem; color: rgba(11, 31, 51, 0.6); }
+.virt-row__meta { text-align: right; }
+.virt-row__meta em { display: block; font-style: normal; font-weight: 700; font-size: 0.78rem; }
+.virt-row__meta span { font-size: 0.68rem; }
+
+.rank-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  max-height: 55vh;
+  overflow: auto;
+}
+
+.rank-row {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 24px 28px 1fr auto;
+  gap: 0.45rem;
+  align-items: center;
+  border: 1px solid var(--line);
+  background: white;
+  border-radius: 10px;
+  padding: 0.45rem 0.55rem;
+  text-align: left;
+  color: var(--ink);
+}
+
+.rank-row:hover { border-color: var(--gold); }
+.rank-pos {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--gold-deep);
+}
+.rank-row em {
+  font-style: normal;
+  font-weight: 700;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.panel--list .chip,
+.panel--rank .chip {
+  color: var(--ink);
+  border-color: var(--line);
+  background: white;
+}
+.panel--list .chip--active,
+.panel--rank .chip--active {
+  background: rgba(196, 163, 90, 0.18);
+  border-color: var(--gold);
+}
+
+.orbis-hotels-canvas { image-rendering: auto; }

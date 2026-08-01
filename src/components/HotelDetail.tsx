@@ -5,6 +5,7 @@ import { TARGET_OPTIONS } from '../data/catalog'
 import { formatEUR, formatPct } from '../lib/format'
 import { getSeason, seasonLabel } from '../lib/economy'
 import { geoRegionLabel } from '../lib/geo'
+import { resolveHotelImage } from '../lib/images'
 
 export function HotelDetail() {
   const id = useGameStore((s) => s.selectedHotelId)
@@ -19,6 +20,7 @@ export function HotelDetail() {
   const net = hotel.lastDayRevenue - hotel.lastDayCosts
   const season = seasonLabel(getSeason(hotel.lat, gameMinutes))
   const rep = reputation[hotel.countryCode] ?? 55
+  const image = resolveHotelImage(hotel)
 
   return (
     <aside className="panel panel--detail">
@@ -34,15 +36,17 @@ export function HotelDetail() {
             </p>
           </div>
         </div>
-        <button type="button" className="icon-btn" onClick={() => selectHotel(null)} aria-label="Cerrar">×</button>
+        <button type="button" className="icon-btn" onClick={() => selectHotel(null)} aria-label="Cerrar" title="Cerrar (Esc)">
+          ×
+        </button>
       </div>
 
-      <img src={hotel.imageDataUrl} alt={hotel.name} className="hotel-hero-img" />
+      <img src={image} alt={hotel.name} className="hotel-hero-img" />
 
       <div className="insight-grid">
         <div><span>Estrellas</span><strong>{'★'.repeat(hotel.stars)}</strong></div>
         <div><span>Habitaciones</span><strong>{hotel.rooms}</strong></div>
-        <div><span>Precio IA / noche</span><strong>{formatEUR(hotel.pricePerNight)}</strong></div>
+        <div><span>Precio IA / noche</span><strong title="Gestionado por Orbis Pricing AI">{formatEUR(hotel.pricePerNight)}</strong></div>
         <div><span>Personal</span><strong>{staffLabel(hotel.staffLevel)}</strong></div>
         <div><span>Público</span><strong>{targetLabel}</strong></div>
         <div><span>Satisfacción</span><strong>{Math.round(hotel.satisfaction)}/100</strong></div>
@@ -56,6 +60,17 @@ export function HotelDetail() {
         <div><span>Reputación país</span><strong>{Math.round(rep)}</strong></div>
         <div><span>Temporada local</span><strong>{season}</strong></div>
       </div>
+
+      {hotel.contract && (
+        <div className="detail-block">
+          <h3>Contrato corporativo (IA)</h3>
+          <p>
+            {hotel.contract.clientName}: {hotel.contract.blockedRooms} hab. a{' '}
+            {formatEUR(hotel.contract.ratePerNight)}/noche · {hotel.contract.daysRemaining} días restantes
+          </p>
+          <p className="muted">La IA Orbis Contracts abre, renueva o cierra estos bloques automáticamente.</p>
+        </div>
+      )}
 
       <div className="detail-block">
         <h3>Ubicación</h3>

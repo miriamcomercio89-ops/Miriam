@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useGameStore } from '../store/gameStore'
-import { SUBSIDIARIES, getSubsidiary, hotelPlaceholderImage, subsidiaryLogoSvg } from '../data/subsidiaries'
+import { SUBSIDIARIES, getSubsidiary, subsidiaryLogoSvg } from '../data/subsidiaries'
 import { SERVICE_CATALOG, STAFF_OPTIONS, TARGET_OPTIONS } from '../data/catalog'
 import { calcConstructionCost, estimateDaily, fairPrice, getSeason, seasonLabel } from '../lib/economy'
 import { formatEUR, formatPct } from '../lib/format'
@@ -61,6 +61,7 @@ export function BuildPanel() {
   function pickSubsidiary(id: string) {
     const sub = getSubsidiary(id)!
     const name = `${sub.name.replace('Orbis ', '')} ${loc!.city}`
+    const imgs = galleryImages(sub, name)
     const next: BuildDraft = {
       name,
       subsidiaryId: id,
@@ -69,10 +70,11 @@ export function BuildPanel() {
       services: ['wifi_premium', 'restaurante'],
       staffLevel: 'estandar',
       target: sub.targets[0],
-      imageDataUrl: hotelPlaceholderImage(sub, name),
+      imageDataUrl: imgs[0],
+      imageKey: `${sub.imageStyle}:day`,
     }
     setDraft(next)
-    setGallery(galleryImages(sub, name))
+    setGallery(imgs)
     setStep('concepto')
     setError(null)
   }
@@ -286,18 +288,22 @@ export function BuildPanel() {
       {step === 'imagen' && draft && sub && (
         <div className="panel__body">
           <img src={draft.imageDataUrl} alt="Vista del hotel" className="hotel-preview" />
-          <p className="panel__meta">Galería Orbis · {sub.imageStyle}</p>
+          <p className="panel__meta">Galería Orbis · estilo {sub.imageStyle}</p>
           <div className="gallery-grid">
-            {(gallery.length ? gallery : galleryImages(sub, draft.name)).map((src) => (
-              <button
-                key={src.slice(0, 80)}
-                type="button"
-                className={`gallery-thumb ${draft.imageDataUrl === src ? 'is-selected' : ''}`}
-                onClick={() => setDraft({ ...draft, imageDataUrl: src })}
-              >
-                <img src={src} alt="" />
-              </button>
-            ))}
+            {(gallery.length ? gallery : galleryImages(sub, draft.name)).map((src, idx) => {
+              const moods = ['day', 'dusk', 'night', 'aerial'] as const
+              const key = `${sub.imageStyle}:${moods[idx] ?? 'day'}`
+              return (
+                <button
+                  key={key}
+                  type="button"
+                  className={`gallery-thumb ${draft.imageKey === key ? 'is-selected' : ''}`}
+                  onClick={() => setDraft({ ...draft, imageDataUrl: src, imageKey: key })}
+                >
+                  <img src={src} alt="" />
+                </button>
+              )
+            })}
           </div>
           <div className="image-actions">
             <button
@@ -306,7 +312,7 @@ export function BuildPanel() {
               onClick={() => {
                 const imgs = galleryImages(sub, draft.name)
                 setGallery(imgs)
-                setDraft({ ...draft, imageDataUrl: imgs[0] })
+                setDraft({ ...draft, imageDataUrl: imgs[0], imageKey: `${sub.imageStyle}:day` })
               }}
             >
               Regenerar galería

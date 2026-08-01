@@ -6,18 +6,19 @@ export function Landing() {
   const newGame = useGameStore((s) => s.newGame)
   const hasSave =
     typeof localStorage !== 'undefined' &&
-    (!!localStorage.getItem('orbis-hotels-group-save-v2') ||
+    (!!localStorage.getItem('orbis-hotels-group-save-v3') ||
+      !!localStorage.getItem('orbis-hotels-group-save-v2') ||
       !!localStorage.getItem('orbis-hotels-group-save-v1'))
 
   return (
     <div className="landing">
       <div className="landing__veil" />
       <div className="landing__content">
-        <p className="landing__eyebrow">Simulador hotelero mundial · v0.1</p>
+        <p className="landing__eyebrow">Simulador hotelero mundial · v0.2</p>
         <h1 className="landing__brand">Orbis Hotels Group</h1>
         <p className="landing__lead">
-          Dirige la expansión global de Orbis. Cincuenta filiales. Miles de hoteles.
-          Temporadas, reputación, crédito y pricing por IA.
+          Dirige la expansión global de Orbis. Cincuenta filiales. Decenas de miles de hoteles.
+          Contratos y precios por IA, temporadas y mapa a escala.
         </p>
         <div className="landing__actions">
           <button
