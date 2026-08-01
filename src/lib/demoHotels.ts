@@ -87,6 +87,12 @@ export function generateDemoHotels(count: number, gameDayNow: number): Hotel[] {
       vipTonight: false,
       lastVipDay: 0,
       boardRegime: i % 7 === 0 ? 'ti' : i % 3 === 0 ? 'desayuno' : 'solo',
+      availableRegimes:
+        i % 7 === 0
+          ? ['ti', 'ti_premium', 'completa', 'media']
+          : i % 3 === 0
+            ? ['solo', 'desayuno', 'media']
+            : ['solo', 'desayuno'],
       condition: 70 + (i % 30),
       lastRenovationDay: 0,
     }

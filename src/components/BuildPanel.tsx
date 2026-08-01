@@ -77,6 +77,7 @@ function emptyDraft(subId: string, city: string): BuildDraft {
     bikeRental: false,
     shuttleCity: false,
     boardRegime: 'desayuno',
+    availableRegimes: ['solo', 'desayuno', 'media', 'completa'],
   }
 }
 
@@ -320,23 +321,57 @@ export function BuildPanel() {
             </select>
           </label>
           <label className="field">
-            <span>Régimen (comidas)</span>
+            <span>Régimen principal (precio IA)</span>
             <select
               value={draft.boardRegime}
               onChange={(e) => {
                 const boardRegime = e.target.value as BoardRegime
+                const available = draft.availableRegimes.includes(boardRegime)
+                  ? draft.availableRegimes
+                  : [...draft.availableRegimes, boardRegime]
                 setDraft({
                   ...draft,
                   boardRegime,
+                  availableRegimes: available,
                   breakfastIncluded: boardRegime !== 'solo' ? true : draft.breakfastIncluded,
                 })
               }}
             >
-              {BOARD_REGIMES.map((o) => (
+              {BOARD_REGIMES.filter((o) => draft.availableRegimes.includes(o.id)).map((o) => (
                 <option key={o.id} value={o.id}>{o.label}</option>
               ))}
             </select>
           </label>
+          <fieldset className="services">
+            <legend>Regímenes disponibles (varios a la vez)</legend>
+            <div className="services__grid">
+              {BOARD_REGIMES.map((o) => (
+                <label key={o.id} className="check">
+                  <input
+                    type="checkbox"
+                    checked={draft.availableRegimes.includes(o.id)}
+                    onChange={() => {
+                      const has = draft.availableRegimes.includes(o.id)
+                      let availableRegimes = has
+                        ? draft.availableRegimes.filter((x) => x !== o.id)
+                        : [...draft.availableRegimes, o.id]
+                      if (availableRegimes.length === 0) availableRegimes = ['solo']
+                      const boardRegime = availableRegimes.includes(draft.boardRegime)
+                        ? draft.boardRegime
+                        : availableRegimes[0]
+                      setDraft({
+                        ...draft,
+                        availableRegimes,
+                        boardRegime,
+                        breakfastIncluded: boardRegime !== 'solo' ? true : draft.breakfastIncluded,
+                      })
+                    }}
+                  />
+                  <span>{o.label}</span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
           <p className="ai-price-note">
             El precio por noche lo pone solo la IA (ahora unos {formatEUR(aiPrice)}).
           </p>

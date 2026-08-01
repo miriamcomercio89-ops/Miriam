@@ -138,7 +138,10 @@ export interface Hotel {
   vipTonight: boolean
   /** último día (juego) con VIP */
   lastVipDay: number
+  /** Régimen por defecto / principal */
   boardRegime: BoardRegime
+  /** Regímenes que ofrece el hotel (varios a la vez) */
+  availableRegimes: BoardRegime[]
   /** 0–100 estado del edificio (desgaste) */
   condition: number
   lastRenovationDay: number
@@ -268,6 +271,7 @@ export interface BuildDraft {
   bikeRental: boolean
   shuttleCity: boolean
   boardRegime: BoardRegime
+  availableRegimes: BoardRegime[]
 }
 
 export interface MapFilters {

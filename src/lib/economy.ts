@@ -293,6 +293,7 @@ export function draftToTempHotel(
     vipTonight: false,
     lastVipDay: 0,
     boardRegime: draft.boardRegime,
+    availableRegimes: [...draft.availableRegimes],
     condition: 100,
     lastRenovationDay: 0,
   }

@@ -172,6 +172,10 @@ function migrateHotel(h: Hotel): Hotel {
     vipTonight: anyH.vipTonight ?? false,
     lastVipDay: anyH.lastVipDay ?? 0,
     boardRegime: anyH.boardRegime ?? (anyH.breakfastIncluded ? 'desayuno' : 'solo'),
+    availableRegimes:
+      anyH.availableRegimes?.length
+        ? anyH.availableRegimes
+        : [anyH.boardRegime ?? (anyH.breakfastIncluded ? 'desayuno' : 'solo')],
     condition: anyH.condition ?? 100,
     lastRenovationDay: anyH.lastRenovationDay ?? 0,
     imageDataUrl: anyH.imageDataUrl?.startsWith('data:image/svg') ? undefined : anyH.imageDataUrl,
@@ -452,6 +456,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       vipTonight: false,
       lastVipDay: 0,
       boardRegime: draft.boardRegime,
+      availableRegimes: [...draft.availableRegimes],
       condition: 100,
       lastRenovationDay: 0,
     }

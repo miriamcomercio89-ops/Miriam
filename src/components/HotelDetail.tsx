@@ -124,6 +124,14 @@ export function HotelDetail() {
             <div><span>Clientes</span><strong>{targetLabel}</strong></div>
             <div><span>Habitaciones tipo</span><strong>{ROOM_MIX_OPTIONS.find((m) => m.id === hotel.roomMix)?.label}</strong></div>
             <div><span>Régimen</span><strong>{BOARD_REGIMES.find((b) => b.id === hotel.boardRegime)?.label}</strong></div>
+            <div>
+              <span>Regímenes disponibles</span>
+              <strong>
+                {(hotel.availableRegimes?.length ? hotel.availableRegimes : [hotel.boardRegime ?? 'solo'])
+                  .map((id) => BOARD_REGIMES.find((b) => b.id === id)?.label ?? id)
+                  .join(', ')}
+              </strong>
+            </div>
             <div><span>Calidad</span><strong>{QUALITY_OPTIONS.find((q) => q.id === hotel.buildQuality)?.label}</strong></div>
             <div><span>Plantas</span><strong>{hotel.floors}</strong></div>
             <div><span>Plan verde</span><strong>{GREEN_OPTIONS.find((g) => g.id === hotel.greenLevel)?.label}</strong></div>
