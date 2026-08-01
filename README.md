@@ -1,21 +1,32 @@
-# Miriam — Administración de Loterías (proyecto)
+# Orbis Hotels Group
 
-Proyecto: videojuego/simulador de gestión de una administración de loterías ubicado en Álora.
+Simulador de construcción hotelera mundial. Dirige **Orbis Hotels Group**, una cadena con **50 filiales**, y construye hoteles en cualquier punto de tierra firme del mapa.
 
-Este repositorio contiene el scaffold inicial del proyecto: una aplicación en HTML/CSS/JS que corre totalmente en el navegador (sin servidor), usa localStorage para persistencia y permite exportar/importar el estado en JSON.
+## Cómo jugar
 
-Características del scaffold inicial:
-- Reloj de juego con escala temporal: el tiempo del juego va 4× más lento que el real (gameTime = start + elapsed * 0.25).
-- Lógica de apertura de oficina: 09:00–14:00 y 17:00–22:00 (hora del juego). Cerrado sábados y domingos. Festivos habilitables manualmente.
-- Funciones básicas de exportar/importar JSON del estado del juego.
-- Estructura básica para añadir los juegos, ventas, contabilidad, clientes, etc.
+1. Abre el mapa y haz clic en tierra firme.
+2. Revisa el índice turístico, afinidad costera, coste local e impuestos.
+3. Elige una filial y configura el hotel (estrellas, habitaciones, precio, servicios, personal, imagen…).
+4. La construcción es instantánea y consume capital en euros.
+5. El tiempo avanza en tiempo real: **1 minuto real = 1 hora de juego** (con pausa, x1, x2, x5 y saltar día).
+6. Cada día de juego se liquidan ingresos, costes variables y eventos mundiales ocasionales.
 
-Cómo usar:
-1. Clona el repo o descarga los archivos.
-2. Abre `index.html` en un navegador moderno.
-3. Usa los botones "Exportar" / "Importar" para guardar o restaurar el estado.
+## Desarrollo
 
-Siguiente paso:
-- Crear la rama `feature/lottery-full` desde la rama por defecto y continuar con la implementación completa de juegos, contabilidad y UI.
+```bash
+npm install
+npm run dev
+```
 
-Commit inicial: scaffold con reloj escalado y export/import JSON.
+- Web: http://localhost:5173
+- API de guardado en nube: http://localhost:8787
+
+## Guardado
+
+- Automático en el navegador
+- Exportar / importar archivo JSON
+- Nube local mediante código de partida (`/api/saves`)
+
+## Stack
+
+React + TypeScript + Vite + Leaflet (OpenStreetMap) + Zustand + Express
