@@ -60,21 +60,26 @@ export function createHotelsCanvasLayer() {
       const list: Hotel[] = this._hotels
       const selectedId: string | null = this._selectedId
 
-      if (zoom < 6 && list.length > 3000) {
+      if (zoom < 8 && list.length > 2000) {
         this._drawClusters(ctx, map, list, zoom, size)
         return
       }
-      if (zoom < 5 && list.length > 1500) {
+      if (zoom < 7 && list.length > 1500) {
+        this._drawClusters(ctx, map, list, zoom, size)
+        return
+      }
+      if (zoom < 6 && list.length > 800) {
         this._drawClusters(ctx, map, list, zoom, size)
         return
       }
 
-      const useLogos = zoom >= 9 && list.length < 8000
+      const useLogos = zoom >= 10 && list.length < 4000
       let logos = 0
-      const maxLogos = list.length > 5000 ? 120 : 280
+      const maxLogos = list.length > 5000 ? 60 : list.length > 3000 ? 100 : 220
 
       // Sampling when extremely dense at mid zoom
-      const step = zoom < 7 && list.length > 8000 ? 2 : 1
+      const step =
+        zoom < 8 && list.length > 8000 ? 4 : zoom < 7 && list.length > 4000 ? 3 : zoom < 7 && list.length > 2000 ? 2 : 1
 
       for (let i = 0; i < list.length; i += step) {
         const h = list[i]

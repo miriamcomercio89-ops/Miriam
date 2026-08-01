@@ -31,8 +31,8 @@ import type {
   SpeedOption,
 } from '../types'
 
-export const STORAGE_KEY = 'orbis-hotels-group-save-v6'
-export const SAVE_VERSION = 6
+export const STORAGE_KEY = 'orbis-hotels-group-save-v7'
+export const SAVE_VERSION = 7
 
 type UiState = {
   selectedHotelId: string | null
@@ -50,6 +50,7 @@ type UiState = {
   showStats: boolean
   showWeekly: boolean
   showHotelSpecs: boolean
+  showPlan: boolean
   mapLayer: MapLayer
   mapMode: MapMode
   mapFilters: MapFilters
@@ -89,6 +90,7 @@ type GameStore = GameState &
     setShowStats: (v: boolean) => void
     setShowWeekly: (v: boolean) => void
     setShowHotelSpecs: (v: boolean) => void
+    setShowPlan: (v: boolean) => void
     setCompareSlot: (slot: 0 | 1, hotelId: string | null) => void
     clearSaveToast: () => void
     setMapLayer: (l: MapLayer) => void
@@ -103,6 +105,9 @@ type GameStore = GameState &
     repayLoan: (amount: number) => { ok: true } | { ok: false; error: string }
     openDeposit: (amount: number, termDays: number) => { ok: true } | { ok: false; error: string }
     generateDemo: (count?: number) => { ok: true; added: number } | { ok: false; error: string }
+    markPlanDone: (order: number) => void
+    skipPlanHotel: (order: number) => void
+    setPlanCursor: (order: number) => void
     closeAllPanels: () => void
     setGameName: (name: string) => void
     saveToSlot: (slot: 1 | 2 | 3) => void
@@ -137,6 +142,8 @@ function initialState(): GameState {
     loyaltyPoints: 0,
     lastWeeklyReportDay: 0,
     weeklyReports: [],
+    planDoneOrders: [],
+    planCursor: 1,
   }
 }
 
@@ -202,6 +209,8 @@ function migrate(raw: Partial<GameState> & { cash?: number }): GameState {
     loyaltyPoints: raw.loyaltyPoints ?? hotels.reduce((s, h) => s + h.lifetimeGuests, 0),
     lastWeeklyReportDay: raw.lastWeeklyReportDay ?? 0,
     weeklyReports: raw.weeklyReports ?? [],
+    planDoneOrders: Array.isArray(raw.planDoneOrders) ? raw.planDoneOrders : [],
+    planCursor: typeof raw.planCursor === 'number' && raw.planCursor > 0 ? raw.planCursor : 1,
   }
 }
 
@@ -276,6 +285,7 @@ function closePanelsExcept(keep: Partial<UiState>): Partial<UiState> {
     showStats: false,
     showWeekly: false,
     showHotelSpecs: false,
+    showPlan: false,
     ...keep,
   }
 }
@@ -297,6 +307,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   showStats: false,
   showWeekly: false,
   showHotelSpecs: false,
+  showPlan: false,
   mapLayer: 'streets',
   mapMode: 'inspect',
   mapFilters: {
@@ -496,6 +507,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
       loyaltyPoints: s.loyaltyPoints,
       lastWeeklyReportDay: s.lastWeeklyReportDay,
       weeklyReports: s.weeklyReports,
+      planDoneOrders: s.planDoneOrders,
+      planCursor: s.planCursor,
     }
   },
 
@@ -532,6 +545,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   loadLocal: () => {
     const raw =
       localStorage.getItem(STORAGE_KEY) ??
+      localStorage.getItem('orbis-hotels-group-save-v6') ??
       localStorage.getItem('orbis-hotels-group-save-v5') ??
       localStorage.getItem('orbis-hotels-group-save-v4') ??
       localStorage.getItem('orbis-hotels-group-save-v3') ??
@@ -577,6 +591,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   setShowStats: (v) => set(closePanelsExcept({ showStats: v })),
   setShowWeekly: (v) => set(closePanelsExcept({ showWeekly: v })),
   setShowHotelSpecs: (v) => set({ showHotelSpecs: v }),
+  setShowPlan: (v) => set(closePanelsExcept({ showPlan: v })),
   setCompareSlot: (slot, hotelId) => {
     const ids = [...get().compareIds] as [string | null, string | null]
     ids[slot] = hotelId
@@ -675,6 +690,19 @@ export const useGameStore = create<GameStore>((set, get) => ({
     set({ hotels: [...state.hotels, ...added] })
     return { ok: true, added: added.length }
   },
+
+  markPlanDone: (order) => {
+    const done = new Set(get().planDoneOrders)
+    done.add(order)
+    const next = order + 1
+    set({ planDoneOrders: [...done].sort((a, b) => a - b), planCursor: next })
+  },
+
+  skipPlanHotel: (order) => {
+    set({ planCursor: order + 1 })
+  },
+
+  setPlanCursor: (order) => set({ planCursor: Math.max(1, order) }),
 }))
 
 async function runSkipDays(days: number, gameMinutes: number) {

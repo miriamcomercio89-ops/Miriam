@@ -1,983 +1,215 @@
 {
   "version": "0.5-plan",
   "totalHotels": 10000,
-  "totalRegions": 393,
-  "totalCountries": 162,
+  "totalRegions": 231,
+  "totalCountries": 34,
   "startRegionId": "es-malaga-costa-sol",
   "method": "Primero se reparte por país (peso turístico mundial). Solo si el país tiene bastantes hoteles se subdivide en regiones.",
-  "note": "Sin PDFs todavía. Confirmar listado antes de generar.",
+  "note": "Cuotas ajustadas a hoteles reales disponibles en OpenStreetMap (sin descargas extra).",
   "countries": [
     {
       "code": "US",
       "name": "Estados Unidos",
-      "hotels": 914,
+      "hotels": 1016,
       "regions": 24
     },
     {
       "code": "CN",
       "name": "China",
-      "hotels": 529,
+      "hotels": 631,
       "regions": 12
     },
     {
       "code": "FR",
       "name": "Francia",
-      "hotels": 433,
+      "hotels": 535,
       "regions": 14
     },
     {
       "code": "ES",
       "name": "España",
-      "hotels": 404,
+      "hotels": 506,
       "regions": 28
     },
     {
       "code": "IT",
       "name": "Italia",
-      "hotels": 385,
+      "hotels": 487,
       "regions": 13
     },
     {
       "code": "DE",
       "name": "Alemania",
-      "hotels": 308,
+      "hotels": 410,
       "regions": 10
     },
     {
       "code": "GB",
       "name": "Reino Unido",
-      "hotels": 289,
+      "hotels": 391,
       "regions": 10
     },
     {
       "code": "JP",
       "name": "Japón",
-      "hotels": 269,
+      "hotels": 371,
       "regions": 8
     },
     {
       "code": "MX",
       "name": "México",
-      "hotels": 241,
+      "hotels": 343,
       "regions": 9
     },
     {
       "code": "TR",
       "name": "Turquía",
-      "hotels": 231,
+      "hotels": 333,
       "regions": 6
     },
     {
       "code": "TH",
       "name": "Tailandia",
-      "hotels": 192,
+      "hotels": 293,
       "regions": 6
     },
     {
       "code": "GR",
       "name": "Grecia",
-      "hotels": 173,
+      "hotels": 275,
       "regions": 7
     },
     {
       "code": "CA",
       "name": "Canadá",
-      "hotels": 154,
+      "hotels": 255,
       "regions": 6
     },
     {
       "code": "IN",
       "name": "India",
-      "hotels": 144,
+      "hotels": 245,
       "regions": 7
-    },
-    {
-      "code": "PT",
-      "name": "Portugal",
-      "hotels": 135,
-      "regions": 5
     },
     {
       "code": "AU",
       "name": "Australia",
-      "hotels": 135,
+      "hotels": 236,
       "regions": 6
     },
     {
-      "code": "AT",
-      "name": "Austria",
-      "hotels": 115,
-      "regions": 4
+      "code": "PT",
+      "name": "Portugal",
+      "hotels": 236,
+      "regions": 5
     },
     {
       "code": "ID",
       "name": "Indonesia",
-      "hotels": 115,
+      "hotels": 217,
       "regions": 4
     },
     {
-      "code": "AE",
-      "name": "Emiratos Árabes",
-      "hotels": 115,
-      "regions": 3
+      "code": "AT",
+      "name": "Austria",
+      "hotels": 216,
+      "regions": 4
     },
     {
       "code": "BR",
       "name": "Brasil",
-      "hotels": 115,
+      "hotels": 216,
       "regions": 5
+    },
+    {
+      "code": "AE",
+      "name": "Emiratos Árabes",
+      "hotels": 216,
+      "regions": 3
     },
     {
       "code": "MY",
       "name": "Malasia",
-      "hotels": 96,
-      "regions": 4
-    },
-    {
-      "code": "NL",
-      "name": "Países Bajos",
-      "hotels": 96,
-      "regions": 2
-    },
-    {
-      "code": "CH",
-      "name": "Suiza",
-      "hotels": 96,
+      "hotels": 198,
       "regions": 4
     },
     {
       "code": "KR",
       "name": "Corea del Sur",
-      "hotels": 96,
+      "hotels": 197,
       "regions": 3
     },
     {
       "code": "EG",
       "name": "Egipto",
-      "hotels": 96,
+      "hotels": 197,
       "regions": 4
     },
     {
-      "code": "VN",
-      "name": "Vietnam",
-      "hotels": 87,
+      "code": "NL",
+      "name": "Países Bajos",
+      "hotels": 197,
+      "regions": 2
+    },
+    {
+      "code": "CH",
+      "name": "Suiza",
+      "hotels": 197,
+      "regions": 4
+    },
+    {
+      "code": "HR",
+      "name": "Croacia",
+      "hotels": 189,
       "regions": 4
     },
     {
       "code": "PL",
       "name": "Polonia",
-      "hotels": 87,
+      "hotels": 188,
       "regions": 3
     },
     {
-      "code": "HR",
-      "name": "Croacia",
-      "hotels": 87,
-      "regions": 4
-    },
-    {
-      "code": "SA",
-      "name": "Arabia Saudí",
-      "hotels": 77,
-      "regions": 3
-    },
-    {
-      "code": "AR",
-      "name": "Argentina",
-      "hotels": 77,
-      "regions": 3
-    },
-    {
-      "code": "ZA",
-      "name": "Sudáfrica",
-      "hotels": 77,
-      "regions": 3
-    },
-    {
-      "code": "MA",
-      "name": "Marruecos",
-      "hotels": 77,
+      "code": "VN",
+      "name": "Vietnam",
+      "hotels": 188,
       "regions": 4
     },
     {
       "code": "SG",
       "name": "Singapur",
-      "hotels": 77,
+      "hotels": 179,
       "regions": 1
+    },
+    {
+      "code": "AR",
+      "name": "Argentina",
+      "hotels": 178,
+      "regions": 3
+    },
+    {
+      "code": "MA",
+      "name": "Marruecos",
+      "hotels": 178,
+      "regions": 4
+    },
+    {
+      "code": "ZA",
+      "name": "Sudáfrica",
+      "hotels": 178,
+      "regions": 3
     },
     {
       "code": "IE",
       "name": "Irlanda",
-      "hotels": 67,
+      "hotels": 168,
       "regions": 2
     },
     {
-      "code": "BE",
-      "name": "Bélgica",
-      "hotels": 67,
-      "regions": 2
-    },
-    {
-      "code": "CZ",
-      "name": "Chequia",
-      "hotels": 67,
-      "regions": 2
-    },
-    {
-      "code": "HU",
-      "name": "Hungría",
-      "hotels": 67,
-      "regions": 2
-    },
-    {
-      "code": "SE",
-      "name": "Suecia",
-      "hotels": 67,
-      "regions": 2
-    },
-    {
-      "code": "PH",
-      "name": "Filipinas",
-      "hotels": 67,
+      "code": "SA",
+      "name": "Arabia Saudí",
+      "hotels": 140,
       "regions": 3
-    },
-    {
-      "code": "NZ",
-      "name": "Nueva Zelanda",
-      "hotels": 67,
-      "regions": 3
-    },
-    {
-      "code": "CL",
-      "name": "Chile",
-      "hotels": 58,
-      "regions": 2
-    },
-    {
-      "code": "CO",
-      "name": "Colombia",
-      "hotels": 58,
-      "regions": 3
-    },
-    {
-      "code": "PE",
-      "name": "Perú",
-      "hotels": 58,
-      "regions": 2
-    },
-    {
-      "code": "DO",
-      "name": "República Dominicana",
-      "hotels": 58,
-      "regions": 2
-    },
-    {
-      "code": "TW",
-      "name": "Taiwán",
-      "hotels": 58,
-      "regions": 2
-    },
-    {
-      "code": "NO",
-      "name": "Noruega",
-      "hotels": 58,
-      "regions": 3
-    },
-    {
-      "code": "DK",
-      "name": "Dinamarca",
-      "hotels": 58,
-      "regions": 1
-    },
-    {
-      "code": "FI",
-      "name": "Finlandia",
-      "hotels": 48,
-      "regions": 2
-    },
-    {
-      "code": "QA",
-      "name": "Catar",
-      "hotels": 48,
-      "regions": 1
-    },
-    {
-      "code": "CU",
-      "name": "Cuba",
-      "hotels": 48,
-      "regions": 2
-    },
-    {
-      "code": "CR",
-      "name": "Costa Rica",
-      "hotels": 48,
-      "regions": 2
-    },
-    {
-      "code": "KE",
-      "name": "Kenia",
-      "hotels": 48,
-      "regions": 2
-    },
-    {
-      "code": "TZ",
-      "name": "Tanzania",
-      "hotels": 48,
-      "regions": 2
-    },
-    {
-      "code": "JO",
-      "name": "Jordania",
-      "hotels": 48,
-      "regions": 2
-    },
-    {
-      "code": "IL",
-      "name": "Israel",
-      "hotels": 48,
-      "regions": 3
-    },
-    {
-      "code": "MV",
-      "name": "Maldivas",
-      "hotels": 48,
-      "regions": 1
-    },
-    {
-      "code": "LK",
-      "name": "Sri Lanka",
-      "hotels": 39,
-      "regions": 2
-    },
-    {
-      "code": "RO",
-      "name": "Rumanía",
-      "hotels": 39,
-      "regions": 2
-    },
-    {
-      "code": "BG",
-      "name": "Bulgaria",
-      "hotels": 39,
-      "regions": 2
-    },
-    {
-      "code": "IS",
-      "name": "Islandia",
-      "hotels": 38,
-      "regions": 1
-    },
-    {
-      "code": "TN",
-      "name": "Túnez",
-      "hotels": 38,
-      "regions": 2
-    },
-    {
-      "code": "OM",
-      "name": "Omán",
-      "hotels": 38,
-      "regions": 1
-    },
-    {
-      "code": "PA",
-      "name": "Panamá",
-      "hotels": 38,
-      "regions": 1
-    },
-    {
-      "code": "UY",
-      "name": "Uruguay",
-      "hotels": 38,
-      "regions": 2
-    },
-    {
-      "code": "EC",
-      "name": "Ecuador",
-      "hotels": 38,
-      "regions": 2
-    },
-    {
-      "code": "KH",
-      "name": "Camboya",
-      "hotels": 38,
-      "regions": 2
-    },
-    {
-      "code": "MT",
-      "name": "Malta",
-      "hotels": 38,
-      "regions": 1
-    },
-    {
-      "code": "CY",
-      "name": "Chipre",
-      "hotels": 38,
-      "regions": 1
-    },
-    {
-      "code": "MU",
-      "name": "Mauricio",
-      "hotels": 38,
-      "regions": 1
-    },
-    {
-      "code": "JM",
-      "name": "Jamaica",
-      "hotels": 38,
-      "regions": 1
-    },
-    {
-      "code": "PR",
-      "name": "Puerto Rico",
-      "hotels": 38,
-      "regions": 1
-    },
-    {
-      "code": "GE",
-      "name": "Georgia",
-      "hotels": 29,
-      "regions": 1
-    },
-    {
-      "code": "AZ",
-      "name": "Azerbaiyán",
-      "hotels": 29,
-      "regions": 1
-    },
-    {
-      "code": "RS",
-      "name": "Serbia",
-      "hotels": 29,
-      "regions": 1
-    },
-    {
-      "code": "SI",
-      "name": "Eslovenia",
-      "hotels": 29,
-      "regions": 1
-    },
-    {
-      "code": "SK",
-      "name": "Eslovaquia",
-      "hotels": 29,
-      "regions": 1
-    },
-    {
-      "code": "EE",
-      "name": "Estonia",
-      "hotels": 29,
-      "regions": 1
-    },
-    {
-      "code": "LV",
-      "name": "Letonia",
-      "hotels": 29,
-      "regions": 1
-    },
-    {
-      "code": "LT",
-      "name": "Lituania",
-      "hotels": 29,
-      "regions": 1
-    },
-    {
-      "code": "SC",
-      "name": "Seychelles",
-      "hotels": 29,
-      "regions": 1
-    },
-    {
-      "code": "BS",
-      "name": "Bahamas",
-      "hotels": 29,
-      "regions": 1
-    },
-    {
-      "code": "BB",
-      "name": "Barbados",
-      "hotels": 29,
-      "regions": 1
-    },
-    {
-      "code": "AW",
-      "name": "Aruba",
-      "hotels": 29,
-      "regions": 1
-    },
-    {
-      "code": "BH",
-      "name": "Baréin",
-      "hotels": 29,
-      "regions": 1
-    },
-    {
-      "code": "AD",
-      "name": "Andorra",
-      "hotels": 29,
-      "regions": 1
-    },
-    {
-      "code": "ME",
-      "name": "Montenegro",
-      "hotels": 29,
-      "regions": 1
-    },
-    {
-      "code": "AL",
-      "name": "Albania",
-      "hotels": 29,
-      "regions": 1
-    },
-    {
-      "code": "UA",
-      "name": "Ucrania",
-      "hotels": 29,
-      "regions": 2
-    },
-    {
-      "code": "NP",
-      "name": "Nepal",
-      "hotels": 29,
-      "regions": 1
-    },
-    {
-      "code": "UZ",
-      "name": "Uzbekistán",
-      "hotels": 29,
-      "regions": 1
-    },
-    {
-      "code": "IR",
-      "name": "Irán",
-      "hotels": 29,
-      "regions": 2
-    },
-    {
-      "code": "NG",
-      "name": "Nigeria",
-      "hotels": 29,
-      "regions": 2
-    },
-    {
-      "code": "PF",
-      "name": "Polinesia Francesa",
-      "hotels": 29,
-      "regions": 1
-    },
-    {
-      "code": "CW",
-      "name": "Curazao",
-      "hotels": 19,
-      "regions": 1
-    },
-    {
-      "code": "KW",
-      "name": "Kuwait",
-      "hotels": 19,
-      "regions": 1
-    },
-    {
-      "code": "LU",
-      "name": "Luxemburgo",
-      "hotels": 19,
-      "regions": 1
-    },
-    {
-      "code": "MC",
-      "name": "Mónaco",
-      "hotels": 19,
-      "regions": 1
-    },
-    {
-      "code": "BA",
-      "name": "Bosnia y Herzegovina",
-      "hotels": 19,
-      "regions": 1
-    },
-    {
-      "code": "MK",
-      "name": "Macedonia del Norte",
-      "hotels": 19,
-      "regions": 1
-    },
-    {
-      "code": "KZ",
-      "name": "Kazajistán",
-      "hotels": 19,
-      "regions": 1
-    },
-    {
-      "code": "LA",
-      "name": "Laos",
-      "hotels": 19,
-      "regions": 1
-    },
-    {
-      "code": "MM",
-      "name": "Myanmar",
-      "hotels": 19,
-      "regions": 1
-    },
-    {
-      "code": "BD",
-      "name": "Bangladés",
-      "hotels": 19,
-      "regions": 1
-    },
-    {
-      "code": "PK",
-      "name": "Pakistán",
-      "hotels": 19,
-      "regions": 1
-    },
-    {
-      "code": "LB",
-      "name": "Líbano",
-      "hotels": 19,
-      "regions": 1
-    },
-    {
-      "code": "AM",
-      "name": "Armenia",
-      "hotels": 19,
-      "regions": 1
-    },
-    {
-      "code": "GT",
-      "name": "Guatemala",
-      "hotels": 19,
-      "regions": 1
-    },
-    {
-      "code": "BZ",
-      "name": "Belice",
-      "hotels": 19,
-      "regions": 1
-    },
-    {
-      "code": "HN",
-      "name": "Honduras",
-      "hotels": 19,
-      "regions": 1
-    },
-    {
-      "code": "BO",
-      "name": "Bolivia",
-      "hotels": 19,
-      "regions": 1
-    },
-    {
-      "code": "VE",
-      "name": "Venezuela",
-      "hotels": 19,
-      "regions": 1
-    },
-    {
-      "code": "NA",
-      "name": "Namibia",
-      "hotels": 19,
-      "regions": 1
-    },
-    {
-      "code": "BW",
-      "name": "Botsuana",
-      "hotels": 19,
-      "regions": 1
-    },
-    {
-      "code": "ZW",
-      "name": "Zimbabue",
-      "hotels": 19,
-      "regions": 1
-    },
-    {
-      "code": "GH",
-      "name": "Ghana",
-      "hotels": 19,
-      "regions": 1
-    },
-    {
-      "code": "SN",
-      "name": "Senegal",
-      "hotels": 19,
-      "regions": 1
-    },
-    {
-      "code": "ET",
-      "name": "Etiopía",
-      "hotels": 19,
-      "regions": 1
-    },
-    {
-      "code": "CV",
-      "name": "Cabo Verde",
-      "hotels": 19,
-      "regions": 1
-    },
-    {
-      "code": "DZ",
-      "name": "Argelia",
-      "hotels": 19,
-      "regions": 1
-    },
-    {
-      "code": "FJ",
-      "name": "Fiyi",
-      "hotels": 19,
-      "regions": 1
-    },
-    {
-      "code": "KY",
-      "name": "Islas Caimán",
-      "hotels": 19,
-      "regions": 1
-    },
-    {
-      "code": "VI",
-      "name": "Islas Vírgenes",
-      "hotels": 19,
-      "regions": 1
-    },
-    {
-      "code": "SX",
-      "name": "Sint Maarten",
-      "hotels": 19,
-      "regions": 1
-    },
-    {
-      "code": "GI",
-      "name": "Gibraltar",
-      "hotels": 10,
-      "regions": 1
-    },
-    {
-      "code": "MN",
-      "name": "Mongolia",
-      "hotels": 10,
-      "regions": 1
-    },
-    {
-      "code": "SV",
-      "name": "El Salvador",
-      "hotels": 10,
-      "regions": 1
-    },
-    {
-      "code": "NI",
-      "name": "Nicaragua",
-      "hotels": 10,
-      "regions": 1
-    },
-    {
-      "code": "PY",
-      "name": "Paraguay",
-      "hotels": 10,
-      "regions": 1
-    },
-    {
-      "code": "GY",
-      "name": "Guyana",
-      "hotels": 10,
-      "regions": 1
-    },
-    {
-      "code": "SR",
-      "name": "Surinam",
-      "hotels": 10,
-      "regions": 1
-    },
-    {
-      "code": "ZM",
-      "name": "Zambia",
-      "hotels": 10,
-      "regions": 1
-    },
-    {
-      "code": "CI",
-      "name": "Costa de Marfil",
-      "hotels": 10,
-      "regions": 1
-    },
-    {
-      "code": "RW",
-      "name": "Ruanda",
-      "hotels": 10,
-      "regions": 1
-    },
-    {
-      "code": "UG",
-      "name": "Uganda",
-      "hotels": 10,
-      "regions": 1
-    },
-    {
-      "code": "AO",
-      "name": "Angola",
-      "hotels": 10,
-      "regions": 1
-    },
-    {
-      "code": "MZ",
-      "name": "Mozambique",
-      "hotels": 10,
-      "regions": 1
-    },
-    {
-      "code": "MG",
-      "name": "Madagascar",
-      "hotels": 10,
-      "regions": 1
-    },
-    {
-      "code": "RE",
-      "name": "Reunión",
-      "hotels": 10,
-      "regions": 1
-    },
-    {
-      "code": "LY",
-      "name": "Libia",
-      "hotels": 10,
-      "regions": 1
-    },
-    {
-      "code": "NC",
-      "name": "Nueva Caledonia",
-      "hotels": 10,
-      "regions": 1
-    },
-    {
-      "code": "GU",
-      "name": "Guam",
-      "hotels": 10,
-      "regions": 1
-    },
-    {
-      "code": "CK",
-      "name": "Islas Cook",
-      "hotels": 10,
-      "regions": 1
-    },
-    {
-      "code": "WS",
-      "name": "Samoa",
-      "hotels": 10,
-      "regions": 1
-    },
-    {
-      "code": "BT",
-      "name": "Bután",
-      "hotels": 10,
-      "regions": 1
-    },
-    {
-      "code": "BN",
-      "name": "Brunéi",
-      "hotels": 10,
-      "regions": 1
-    },
-    {
-      "code": "SM",
-      "name": "San Marino",
-      "hotels": 10,
-      "regions": 1
-    },
-    {
-      "code": "LI",
-      "name": "Liechtenstein",
-      "hotels": 10,
-      "regions": 1
-    },
-    {
-      "code": "FO",
-      "name": "Islas Feroe",
-      "hotels": 10,
-      "regions": 1
-    },
-    {
-      "code": "GL",
-      "name": "Groenlandia",
-      "hotels": 10,
-      "regions": 1
-    },
-    {
-      "code": "TT",
-      "name": "Trinidad y Tobago",
-      "hotels": 10,
-      "regions": 1
-    },
-    {
-      "code": "HT",
-      "name": "Haití",
-      "hotels": 10,
-      "regions": 1
-    },
-    {
-      "code": "IQ",
-      "name": "Irak",
-      "hotels": 10,
-      "regions": 1
-    },
-    {
-      "code": "SY",
-      "name": "Siria",
-      "hotels": 10,
-      "regions": 1
-    },
-    {
-      "code": "YE",
-      "name": "Yemen",
-      "hotels": 10,
-      "regions": 1
-    },
-    {
-      "code": "AF",
-      "name": "Afganistán",
-      "hotels": 10,
-      "regions": 1
-    },
-    {
-      "code": "TL",
-      "name": "Timor Oriental",
-      "hotels": 10,
-      "regions": 1
-    },
-    {
-      "code": "PG",
-      "name": "Papúa Nueva Guinea",
-      "hotels": 10,
-      "regions": 1
-    },
-    {
-      "code": "TO",
-      "name": "Tonga",
-      "hotels": 10,
-      "regions": 1
-    },
-    {
-      "code": "VU",
-      "name": "Vanuatu",
-      "hotels": 10,
-      "regions": 1
-    },
-    {
-      "code": "AS",
-      "name": "Samoa Americana",
-      "hotels": 10,
-      "regions": 1
-    },
-    {
-      "code": "MP",
-      "name": "Islas Marianas",
-      "hotels": 10,
-      "regions": 1
-    },
-    {
-      "code": "GF",
-      "name": "Guayana Francesa",
-      "hotels": 10,
-      "regions": 1
     }
   ],
   "regions": [
@@ -988,7 +220,7 @@
       "countryCode": "ES",
       "lat": 36.62,
       "lng": -4.5,
-      "hotels": 34,
+      "hotels": 41,
       "order": 1
     },
     {
@@ -998,7 +230,7 @@
       "countryCode": "ES",
       "lat": 41.39,
       "lng": 2.17,
-      "hotels": 30,
+      "hotels": 31,
       "order": 2
     },
     {
@@ -1008,7 +240,7 @@
       "countryCode": "ES",
       "lat": 40.42,
       "lng": -3.7,
-      "hotels": 27,
+      "hotels": 32,
       "order": 3
     },
     {
@@ -1018,7 +250,7 @@
       "countryCode": "ES",
       "lat": 39.57,
       "lng": 2.65,
-      "hotels": 27,
+      "hotels": 29,
       "order": 4
     },
     {
@@ -1028,7 +260,7 @@
       "countryCode": "ES",
       "lat": 38.54,
       "lng": -0.13,
-      "hotels": 20,
+      "hotels": 26,
       "order": 5
     },
     {
@@ -1038,7 +270,7 @@
       "countryCode": "ES",
       "lat": 36.72,
       "lng": -4.42,
-      "hotels": 20,
+      "hotels": 22,
       "order": 6
     },
     {
@@ -1048,7 +280,7 @@
       "countryCode": "ES",
       "lat": 36.51,
       "lng": -4.88,
-      "hotels": 20,
+      "hotels": 26,
       "order": 7
     },
     {
@@ -1058,7 +290,7 @@
       "countryCode": "ES",
       "lat": 28.05,
       "lng": -16.72,
-      "hotels": 20,
+      "hotels": 21,
       "order": 8
     },
     {
@@ -1068,7 +300,7 @@
       "countryCode": "ES",
       "lat": 41.82,
       "lng": 3.08,
-      "hotels": 17,
+      "hotels": 23,
       "order": 9
     },
     {
@@ -1078,7 +310,7 @@
       "countryCode": "ES",
       "lat": 28.12,
       "lng": -15.43,
-      "hotels": 17,
+      "hotels": 18,
       "order": 10
     },
     {
@@ -1088,7 +320,7 @@
       "countryCode": "ES",
       "lat": 39.47,
       "lng": -0.38,
-      "hotels": 17,
+      "hotels": 24,
       "order": 11
     },
     {
@@ -1098,7 +330,7 @@
       "countryCode": "ES",
       "lat": 41.12,
       "lng": 1.25,
-      "hotels": 14,
+      "hotels": 15,
       "order": 12
     },
     {
@@ -1108,7 +340,7 @@
       "countryCode": "ES",
       "lat": 37.18,
       "lng": -3.6,
-      "hotels": 13,
+      "hotels": 19,
       "order": 13
     },
     {
@@ -1118,7 +350,7 @@
       "countryCode": "ES",
       "lat": 38.91,
       "lng": 1.43,
-      "hotels": 13,
+      "hotels": 15,
       "order": 14
     },
     {
@@ -1128,7 +360,7 @@
       "countryCode": "ES",
       "lat": 37.39,
       "lng": -5.99,
-      "hotels": 13,
+      "hotels": 18,
       "order": 15
     },
     {
@@ -1138,7 +370,7 @@
       "countryCode": "ES",
       "lat": 38.35,
       "lng": -0.48,
-      "hotels": 10,
+      "hotels": 12,
       "order": 16
     },
     {
@@ -1148,7 +380,7 @@
       "countryCode": "ES",
       "lat": 36.53,
       "lng": -6.29,
-      "hotels": 10,
+      "hotels": 16,
       "order": 17
     },
     {
@@ -1158,7 +390,7 @@
       "countryCode": "ES",
       "lat": 42.88,
       "lng": -8.54,
-      "hotels": 10,
+      "hotels": 11,
       "order": 18
     },
     {
@@ -1168,7 +400,7 @@
       "countryCode": "ES",
       "lat": 28.96,
       "lng": -13.55,
-      "hotels": 10,
+      "hotels": 17,
       "order": 19
     },
     {
@@ -1178,7 +410,7 @@
       "countryCode": "ES",
       "lat": 43.26,
       "lng": -2.93,
-      "hotels": 10,
+      "hotels": 11,
       "order": 20
     },
     {
@@ -1188,7 +420,7 @@
       "countryCode": "ES",
       "lat": 41.65,
       "lng": -0.88,
-      "hotels": 7,
+      "hotels": 12,
       "order": 21
     },
     {
@@ -1198,7 +430,7 @@
       "countryCode": "ES",
       "lat": 43.46,
       "lng": -3.8,
-      "hotels": 7,
+      "hotels": 8,
       "order": 22
     },
     {
@@ -1208,7 +440,7 @@
       "countryCode": "ES",
       "lat": 40.97,
       "lng": -5.66,
-      "hotels": 7,
+      "hotels": 13,
       "order": 23
     },
     {
@@ -1218,7 +450,7 @@
       "countryCode": "ES",
       "lat": 37.89,
       "lng": -4.78,
-      "hotels": 7,
+      "hotels": 9,
       "order": 24
     },
     {
@@ -1228,7 +460,7 @@
       "countryCode": "ES",
       "lat": 28.36,
       "lng": -14.02,
-      "hotels": 7,
+      "hotels": 12,
       "order": 25
     },
     {
@@ -1238,7 +470,7 @@
       "countryCode": "ES",
       "lat": 39.89,
       "lng": 4.26,
-      "hotels": 7,
+      "hotels": 8,
       "order": 26
     },
     {
@@ -1248,7 +480,7 @@
       "countryCode": "ES",
       "lat": 37.64,
       "lng": -0.7,
-      "hotels": 7,
+      "hotels": 13,
       "order": 27
     },
     {
@@ -1258,7 +490,7 @@
       "countryCode": "ES",
       "lat": 39.48,
       "lng": -6.37,
-      "hotels": 3,
+      "hotels": 4,
       "order": 28
     },
     {
@@ -1268,7 +500,7 @@
       "countryCode": "US",
       "lat": 40.71,
       "lng": -74.01,
-      "hotels": 101,
+      "hotels": 106,
       "order": 29
     },
     {
@@ -1278,7 +510,7 @@
       "countryCode": "US",
       "lat": 34.05,
       "lng": -118.24,
-      "hotels": 84,
+      "hotels": 89,
       "order": 30
     },
     {
@@ -1288,7 +520,7 @@
       "countryCode": "US",
       "lat": 25.76,
       "lng": -80.19,
-      "hotels": 75,
+      "hotels": 80,
       "order": 31
     },
     {
@@ -1308,7 +540,7 @@
       "countryCode": "US",
       "lat": 28.54,
       "lng": -81.38,
-      "hotels": 59,
+      "hotels": 69,
       "order": 33
     },
     {
@@ -1328,7 +560,7 @@
       "countryCode": "US",
       "lat": 37.77,
       "lng": -122.42,
-      "hotels": 50,
+      "hotels": 56,
       "order": 35
     },
     {
@@ -1338,7 +570,7 @@
       "countryCode": "US",
       "lat": 41.88,
       "lng": -87.63,
-      "hotels": 42,
+      "hotels": 47,
       "order": 36
     },
     {
@@ -1348,7 +580,7 @@
       "countryCode": "US",
       "lat": 29.76,
       "lng": -95.37,
-      "hotels": 42,
+      "hotels": 47,
       "order": 37
     },
     {
@@ -1368,7 +600,7 @@
       "countryCode": "US",
       "lat": 42.36,
       "lng": -71.06,
-      "hotels": 33,
+      "hotels": 43,
       "order": 39
     },
     {
@@ -1388,7 +620,7 @@
       "countryCode": "US",
       "lat": 33.75,
       "lng": -84.39,
-      "hotels": 25,
+      "hotels": 30,
       "order": 41
     },
     {
@@ -1398,7 +630,7 @@
       "countryCode": "US",
       "lat": 39.74,
       "lng": -104.99,
-      "hotels": 25,
+      "hotels": 30,
       "order": 42
     },
     {
@@ -1408,7 +640,7 @@
       "countryCode": "US",
       "lat": 29.95,
       "lng": -90.07,
-      "hotels": 25,
+      "hotels": 30,
       "order": 43
     },
     {
@@ -1428,7 +660,7 @@
       "countryCode": "US",
       "lat": 32.72,
       "lng": -117.16,
-      "hotels": 25,
+      "hotels": 36,
       "order": 45
     },
     {
@@ -1448,7 +680,7 @@
       "countryCode": "US",
       "lat": 39.19,
       "lng": -106.82,
-      "hotels": 17,
+      "hotels": 22,
       "order": 47
     },
     {
@@ -1458,7 +690,7 @@
       "countryCode": "US",
       "lat": 32.78,
       "lng": -79.93,
-      "hotels": 17,
+      "hotels": 21,
       "order": 48
     },
     {
@@ -1468,7 +700,7 @@
       "countryCode": "US",
       "lat": 36.11,
       "lng": -112.11,
-      "hotels": 17,
+      "hotels": 23,
       "order": 49
     },
     {
@@ -1488,7 +720,7 @@
       "countryCode": "US",
       "lat": 38.5,
       "lng": -122.29,
-      "hotels": 17,
+      "hotels": 27,
       "order": 51
     },
     {
@@ -1508,7 +740,7 @@
       "countryCode": "CN",
       "lat": 31.23,
       "lng": 121.47,
-      "hotels": 96,
+      "hotels": 105,
       "order": 53
     },
     {
@@ -1518,7 +750,7 @@
       "countryCode": "CN",
       "lat": 39.9,
       "lng": 116.41,
-      "hotels": 87,
+      "hotels": 98,
       "order": 54
     },
     {
@@ -1538,7 +770,7 @@
       "countryCode": "CN",
       "lat": 23.13,
       "lng": 113.26,
-      "hotels": 48,
+      "hotels": 68,
       "order": 56
     },
     {
@@ -1558,7 +790,7 @@
       "countryCode": "CN",
       "lat": 18.25,
       "lng": 109.5,
-      "hotels": 38,
+      "hotels": 48,
       "order": 58
     },
     {
@@ -1568,7 +800,7 @@
       "countryCode": "CN",
       "lat": 30.27,
       "lng": 120.16,
-      "hotels": 29,
+      "hotels": 39,
       "order": 59
     },
     {
@@ -1578,7 +810,7 @@
       "countryCode": "CN",
       "lat": 22.2,
       "lng": 113.54,
-      "hotels": 29,
+      "hotels": 39,
       "order": 60
     },
     {
@@ -1598,7 +830,7 @@
       "countryCode": "CN",
       "lat": 34.34,
       "lng": 108.94,
-      "hotels": 29,
+      "hotels": 50,
       "order": 62
     },
     {
@@ -1618,7 +850,7 @@
       "countryCode": "CN",
       "lat": 36.07,
       "lng": 120.38,
-      "hotels": 19,
+      "hotels": 30,
       "order": 64
     },
     {
@@ -1628,7 +860,7 @@
       "countryCode": "FR",
       "lat": 48.86,
       "lng": 2.35,
-      "hotels": 93,
+      "hotels": 104,
       "order": 65
     },
     {
@@ -1638,7 +870,7 @@
       "countryCode": "FR",
       "lat": 43.7,
       "lng": 7.27,
-      "hotels": 67,
+      "hotels": 70,
       "order": 66
     },
     {
@@ -1648,7 +880,7 @@
       "countryCode": "FR",
       "lat": 43.95,
       "lng": 4.81,
-      "hotels": 40,
+      "hotels": 53,
       "order": 67
     },
     {
@@ -1658,7 +890,7 @@
       "countryCode": "FR",
       "lat": 45.92,
       "lng": 6.87,
-      "hotels": 33,
+      "hotels": 36,
       "order": 68
     },
     {
@@ -1668,7 +900,7 @@
       "countryCode": "FR",
       "lat": 44.84,
       "lng": -0.58,
-      "hotels": 27,
+      "hotels": 38,
       "order": 69
     },
     {
@@ -1678,7 +910,7 @@
       "countryCode": "FR",
       "lat": 45.76,
       "lng": 4.84,
-      "hotels": 27,
+      "hotels": 29,
       "order": 70
     },
     {
@@ -1688,7 +920,7 @@
       "countryCode": "FR",
       "lat": 48.58,
       "lng": 7.75,
-      "hotels": 20,
+      "hotels": 32,
       "order": 71
     },
     {
@@ -1698,7 +930,7 @@
       "countryCode": "FR",
       "lat": 43.48,
       "lng": -1.56,
-      "hotels": 20,
+      "hotels": 23,
       "order": 72
     },
     {
@@ -1708,7 +940,7 @@
       "countryCode": "FR",
       "lat": 48.39,
       "lng": -4.49,
-      "hotels": 20,
+      "hotels": 32,
       "order": 73
     },
     {
@@ -1718,7 +950,7 @@
       "countryCode": "FR",
       "lat": 41.92,
       "lng": 8.74,
-      "hotels": 20,
+      "hotels": 22,
       "order": 74
     },
     {
@@ -1728,7 +960,7 @@
       "countryCode": "FR",
       "lat": 49.18,
       "lng": -0.37,
-      "hotels": 20,
+      "hotels": 32,
       "order": 75
     },
     {
@@ -1738,7 +970,7 @@
       "countryCode": "FR",
       "lat": 47.39,
       "lng": 0.69,
-      "hotels": 20,
+      "hotels": 23,
       "order": 76
     },
     {
@@ -1748,7 +980,7 @@
       "countryCode": "FR",
       "lat": 43.3,
       "lng": 5.37,
-      "hotels": 13,
+      "hotels": 25,
       "order": 77
     },
     {
@@ -1758,7 +990,7 @@
       "countryCode": "FR",
       "lat": 43.6,
       "lng": 1.44,
-      "hotels": 13,
+      "hotels": 16,
       "order": 78
     },
     {
@@ -1768,7 +1000,7 @@
       "countryCode": "IT",
       "lat": 41.9,
       "lng": 12.5,
-      "hotels": 71,
+      "hotels": 79,
       "order": 79
     },
     {
@@ -1778,7 +1010,7 @@
       "countryCode": "IT",
       "lat": 45.46,
       "lng": 9.19,
-      "hotels": 47,
+      "hotels": 54,
       "order": 80
     },
     {
@@ -1788,7 +1020,7 @@
       "countryCode": "IT",
       "lat": 43.77,
       "lng": 11.26,
-      "hotels": 41,
+      "hotels": 49,
       "order": 81
     },
     {
@@ -1798,7 +1030,7 @@
       "countryCode": "IT",
       "lat": 45.44,
       "lng": 12.32,
-      "hotels": 41,
+      "hotels": 49,
       "order": 82
     },
     {
@@ -1808,7 +1040,7 @@
       "countryCode": "IT",
       "lat": 40.63,
       "lng": 14.6,
-      "hotels": 35,
+      "hotels": 43,
       "order": 83
     },
     {
@@ -1818,7 +1050,7 @@
       "countryCode": "IT",
       "lat": 37.5,
       "lng": 14,
-      "hotels": 30,
+      "hotels": 38,
       "order": 84
     },
     {
@@ -1828,7 +1060,7 @@
       "countryCode": "IT",
       "lat": 39.22,
       "lng": 9.12,
-      "hotels": 24,
+      "hotels": 31,
       "order": 85
     },
     {
@@ -1838,7 +1070,7 @@
       "countryCode": "IT",
       "lat": 45.6,
       "lng": 10.7,
-      "hotels": 24,
+      "hotels": 32,
       "order": 86
     },
     {
@@ -1848,7 +1080,7 @@
       "countryCode": "IT",
       "lat": 41.12,
       "lng": 16.87,
-      "hotels": 18,
+      "hotels": 26,
       "order": 87
     },
     {
@@ -1858,7 +1090,7 @@
       "countryCode": "IT",
       "lat": 44.41,
       "lng": 8.93,
-      "hotels": 18,
+      "hotels": 26,
       "order": 88
     },
     {
@@ -1868,7 +1100,7 @@
       "countryCode": "IT",
       "lat": 44.49,
       "lng": 11.34,
-      "hotels": 12,
+      "hotels": 20,
       "order": 89
     },
     {
@@ -1878,7 +1110,7 @@
       "countryCode": "IT",
       "lat": 44.06,
       "lng": 12.57,
-      "hotels": 12,
+      "hotels": 20,
       "order": 90
     },
     {
@@ -1888,7 +1120,7 @@
       "countryCode": "IT",
       "lat": 45.07,
       "lng": 7.69,
-      "hotels": 12,
+      "hotels": 20,
       "order": 91
     },
     {
@@ -1898,7 +1130,7 @@
       "countryCode": "DE",
       "lat": 52.52,
       "lng": 13.4,
-      "hotels": 68,
+      "hotels": 85,
       "order": 92
     },
     {
@@ -1908,7 +1140,7 @@
       "countryCode": "DE",
       "lat": 48.14,
       "lng": 11.58,
-      "hotels": 60,
+      "hotels": 64,
       "order": 93
     },
     {
@@ -1918,7 +1150,7 @@
       "countryCode": "DE",
       "lat": 53.55,
       "lng": 9.99,
-      "hotels": 38,
+      "hotels": 54,
       "order": 94
     },
     {
@@ -1928,7 +1160,7 @@
       "countryCode": "DE",
       "lat": 50.94,
       "lng": 6.96,
-      "hotels": 30,
+      "hotels": 34,
       "order": 95
     },
     {
@@ -1938,7 +1170,7 @@
       "countryCode": "DE",
       "lat": 50.11,
       "lng": 8.68,
-      "hotels": 30,
+      "hotels": 47,
       "order": 96
     },
     {
@@ -1948,7 +1180,7 @@
       "countryCode": "DE",
       "lat": 47.57,
       "lng": 10.7,
-      "hotels": 22,
+      "hotels": 25,
       "order": 97
     },
     {
@@ -1958,7 +1190,7 @@
       "countryCode": "DE",
       "lat": 51.05,
       "lng": 13.74,
-      "hotels": 15,
+      "hotels": 31,
       "order": 98
     },
     {
@@ -1968,7 +1200,7 @@
       "countryCode": "DE",
       "lat": 49.4,
       "lng": 8.67,
-      "hotels": 15,
+      "hotels": 19,
       "order": 99
     },
     {
@@ -1978,7 +1210,7 @@
       "countryCode": "DE",
       "lat": 48,
       "lng": 8.2,
-      "hotels": 15,
+      "hotels": 32,
       "order": 100
     },
     {
@@ -1988,7 +1220,7 @@
       "countryCode": "DE",
       "lat": 48.78,
       "lng": 9.18,
-      "hotels": 15,
+      "hotels": 19,
       "order": 101
     },
     {
@@ -1998,7 +1230,7 @@
       "countryCode": "GB",
       "lat": 51.51,
       "lng": -0.13,
-      "hotels": 104,
+      "hotels": 121,
       "order": 102
     },
     {
@@ -2008,7 +1240,7 @@
       "countryCode": "GB",
       "lat": 55.95,
       "lng": -3.19,
-      "hotels": 37,
+      "hotels": 40,
       "order": 103
     },
     {
@@ -2018,7 +1250,7 @@
       "countryCode": "GB",
       "lat": 53.48,
       "lng": -2.24,
-      "hotels": 29,
+      "hotels": 45,
       "order": 104
     },
     {
@@ -2028,7 +1260,7 @@
       "countryCode": "GB",
       "lat": 51.38,
       "lng": -2.36,
-      "hotels": 22,
+      "hotels": 26,
       "order": 105
     },
     {
@@ -2038,7 +1270,7 @@
       "countryCode": "GB",
       "lat": 50.27,
       "lng": -5.05,
-      "hotels": 22,
+      "hotels": 39,
       "order": 106
     },
     {
@@ -2048,7 +1280,7 @@
       "countryCode": "GB",
       "lat": 54.6,
       "lng": -5.93,
-      "hotels": 15,
+      "hotels": 19,
       "order": 107
     },
     {
@@ -2058,7 +1290,7 @@
       "countryCode": "GB",
       "lat": 50.82,
       "lng": -0.14,
-      "hotels": 15,
+      "hotels": 32,
       "order": 108
     },
     {
@@ -2068,7 +1300,7 @@
       "countryCode": "GB",
       "lat": 51.48,
       "lng": -3.18,
-      "hotels": 15,
+      "hotels": 19,
       "order": 109
     },
     {
@@ -2078,7 +1310,7 @@
       "countryCode": "GB",
       "lat": 55.86,
       "lng": -4.25,
-      "hotels": 15,
+      "hotels": 31,
       "order": 110
     },
     {
@@ -2088,7 +1320,7 @@
       "countryCode": "GB",
       "lat": 54.46,
       "lng": -3.09,
-      "hotels": 15,
+      "hotels": 19,
       "order": 111
     },
     {
@@ -2098,7 +1330,7 @@
       "countryCode": "JP",
       "lat": 35.68,
       "lng": 139.69,
-      "hotels": 83,
+      "hotels": 88,
       "order": 112
     },
     {
@@ -2108,7 +1340,7 @@
       "countryCode": "JP",
       "lat": 34.69,
       "lng": 135.5,
-      "hotels": 48,
+      "hotels": 69,
       "order": 113
     },
     {
@@ -2118,7 +1350,7 @@
       "countryCode": "JP",
       "lat": 35.01,
       "lng": 135.77,
-      "hotels": 41,
+      "hotels": 46,
       "order": 114
     },
     {
@@ -2128,7 +1360,7 @@
       "countryCode": "JP",
       "lat": 43.06,
       "lng": 141.35,
-      "hotels": 28,
+      "hotels": 49,
       "order": 115
     },
     {
@@ -2138,7 +1370,7 @@
       "countryCode": "JP",
       "lat": 26.21,
       "lng": 127.68,
-      "hotels": 27,
+      "hotels": 32,
       "order": 116
     },
     {
@@ -2148,7 +1380,7 @@
       "countryCode": "JP",
       "lat": 33.59,
       "lng": 130.4,
-      "hotels": 14,
+      "hotels": 34,
       "order": 117
     },
     {
@@ -2158,7 +1390,7 @@
       "countryCode": "JP",
       "lat": 34.39,
       "lng": 132.46,
-      "hotels": 14,
+      "hotels": 18,
       "order": 118
     },
     {
@@ -2168,7 +1400,7 @@
       "countryCode": "JP",
       "lat": 35.18,
       "lng": 136.91,
-      "hotels": 14,
+      "hotels": 35,
       "order": 119
     },
     {
@@ -2178,7 +1410,7 @@
       "countryCode": "MX",
       "lat": 21.16,
       "lng": -86.85,
-      "hotels": 74,
+      "hotels": 81,
       "order": 120
     },
     {
@@ -2188,7 +1420,7 @@
       "countryCode": "MX",
       "lat": 19.43,
       "lng": -99.13,
-      "hotels": 43,
+      "hotels": 50,
       "order": 121
     },
     {
@@ -2198,7 +1430,7 @@
       "countryCode": "MX",
       "lat": 22.89,
       "lng": -109.91,
-      "hotels": 31,
+      "hotels": 50,
       "order": 122
     },
     {
@@ -2208,7 +1440,7 @@
       "countryCode": "MX",
       "lat": 20.65,
       "lng": -105.23,
-      "hotels": 25,
+      "hotels": 32,
       "order": 123
     },
     {
@@ -2218,7 +1450,7 @@
       "countryCode": "MX",
       "lat": 20.66,
       "lng": -103.35,
-      "hotels": 19,
+      "hotels": 26,
       "order": 124
     },
     {
@@ -2228,7 +1460,7 @@
       "countryCode": "MX",
       "lat": 17.07,
       "lng": -96.72,
-      "hotels": 13,
+      "hotels": 33,
       "order": 125
     },
     {
@@ -2238,7 +1470,7 @@
       "countryCode": "MX",
       "lat": 16.85,
       "lng": -99.82,
-      "hotels": 12,
+      "hotels": 19,
       "order": 126
     },
     {
@@ -2248,7 +1480,7 @@
       "countryCode": "MX",
       "lat": 20.97,
       "lng": -89.62,
-      "hotels": 12,
+      "hotels": 19,
       "order": 127
     },
     {
@@ -2258,7 +1490,7 @@
       "countryCode": "MX",
       "lat": 25.69,
       "lng": -100.32,
-      "hotels": 12,
+      "hotels": 33,
       "order": 128
     },
     {
@@ -2268,7 +1500,7 @@
       "countryCode": "TR",
       "lat": 41.01,
       "lng": 28.98,
-      "hotels": 77,
+      "hotels": 96,
       "order": 129
     },
     {
@@ -2278,7 +1510,7 @@
       "countryCode": "TR",
       "lat": 36.9,
       "lng": 30.7,
-      "hotels": 62,
+      "hotels": 83,
       "order": 130
     },
     {
@@ -2298,7 +1530,7 @@
       "countryCode": "TR",
       "lat": 38.64,
       "lng": 34.83,
-      "hotels": 23,
+      "hotels": 64,
       "order": 132
     },
     {
@@ -2318,7 +1550,7 @@
       "countryCode": "TR",
       "lat": 39.93,
       "lng": 32.86,
-      "hotels": 15,
+      "hotels": 36,
       "order": 134
     },
     {
@@ -2328,7 +1560,7 @@
       "countryCode": "TH",
       "lat": 13.76,
       "lng": 100.5,
-      "hotels": 59,
+      "hotels": 77,
       "order": 135
     },
     {
@@ -2338,7 +1570,7 @@
       "countryCode": "TH",
       "lat": 7.88,
       "lng": 98.39,
-      "hotels": 52,
+      "hotels": 73,
       "order": 136
     },
     {
@@ -2358,7 +1590,7 @@
       "countryCode": "TH",
       "lat": 9.51,
       "lng": 100,
-      "hotels": 22,
+      "hotels": 63,
       "order": 138
     },
     {
@@ -2378,7 +1610,7 @@
       "countryCode": "TH",
       "lat": 12.92,
       "lng": 100.88,
-      "hotels": 15,
+      "hotels": 36,
       "order": 140
     },
     {
@@ -2388,7 +1620,7 @@
       "countryCode": "GR",
       "lat": 37.98,
       "lng": 23.73,
-      "hotels": 41,
+      "hotels": 56,
       "order": 141
     },
     {
@@ -2398,7 +1630,7 @@
       "countryCode": "GR",
       "lat": 35.34,
       "lng": 25.13,
-      "hotels": 34,
+      "hotels": 49,
       "order": 142
     },
     {
@@ -2408,7 +1640,7 @@
       "countryCode": "GR",
       "lat": 36.39,
       "lng": 25.46,
-      "hotels": 28,
+      "hotels": 42,
       "order": 143
     },
     {
@@ -2418,7 +1650,7 @@
       "countryCode": "GR",
       "lat": 37.45,
       "lng": 25.33,
-      "hotels": 21,
+      "hotels": 35,
       "order": 144
     },
     {
@@ -2428,7 +1660,7 @@
       "countryCode": "GR",
       "lat": 36.43,
       "lng": 28.22,
-      "hotels": 21,
+      "hotels": 36,
       "order": 145
     },
     {
@@ -2438,7 +1670,7 @@
       "countryCode": "GR",
       "lat": 39.62,
       "lng": 19.92,
-      "hotels": 14,
+      "hotels": 28,
       "order": 146
     },
     {
@@ -2448,7 +1680,7 @@
       "countryCode": "GR",
       "lat": 40.64,
       "lng": 22.94,
-      "hotels": 14,
+      "hotels": 29,
       "order": 147
     },
     {
@@ -2468,7 +1700,7 @@
       "countryCode": "CA",
       "lat": 49.28,
       "lng": -123.12,
-      "hotels": 35,
+      "hotels": 76,
       "order": 149
     },
     {
@@ -2488,7 +1720,7 @@
       "countryCode": "CA",
       "lat": 51.18,
       "lng": -115.57,
-      "hotels": 21,
+      "hotels": 42,
       "order": 151
     },
     {
@@ -2498,7 +1730,7 @@
       "countryCode": "CA",
       "lat": 51.04,
       "lng": -114.07,
-      "hotels": 14,
+      "hotels": 32,
       "order": 152
     },
     {
@@ -2508,7 +1740,7 @@
       "countryCode": "CA",
       "lat": 46.81,
       "lng": -71.21,
-      "hotels": 14,
+      "hotels": 35,
       "order": 153
     },
     {
@@ -2518,7 +1750,7 @@
       "countryCode": "IN",
       "lat": 19.08,
       "lng": 72.88,
-      "hotels": 30,
+      "hotels": 44,
       "order": 154
     },
     {
@@ -2528,7 +1760,7 @@
       "countryCode": "IN",
       "lat": 28.61,
       "lng": 77.21,
-      "hotels": 30,
+      "hotels": 44,
       "order": 155
     },
     {
@@ -2538,7 +1770,7 @@
       "countryCode": "IN",
       "lat": 15.3,
       "lng": 74.12,
-      "hotels": 24,
+      "hotels": 39,
       "order": 156
     },
     {
@@ -2548,7 +1780,7 @@
       "countryCode": "IN",
       "lat": 26.91,
       "lng": 75.79,
-      "hotels": 18,
+      "hotels": 33,
       "order": 157
     },
     {
@@ -2558,7 +1790,7 @@
       "countryCode": "IN",
       "lat": 9.93,
       "lng": 76.27,
-      "hotels": 18,
+      "hotels": 33,
       "order": 158
     },
     {
@@ -2568,7 +1800,7 @@
       "countryCode": "IN",
       "lat": 27.18,
       "lng": 78.01,
-      "hotels": 12,
+      "hotels": 26,
       "order": 159
     },
     {
@@ -2578,7 +1810,7 @@
       "countryCode": "IN",
       "lat": 12.97,
       "lng": 77.59,
-      "hotels": 12,
+      "hotels": 26,
       "order": 160
     },
     {
@@ -2598,7 +1830,7 @@
       "countryCode": "AU",
       "lat": -37.81,
       "lng": 144.96,
-      "hotels": 28,
+      "hotels": 49,
       "order": 162
     },
     {
@@ -2608,7 +1840,7 @@
       "countryCode": "AU",
       "lat": -27.47,
       "lng": 153.03,
-      "hotels": 28,
+      "hotels": 46,
       "order": 163
     },
     {
@@ -2618,7 +1850,7 @@
       "countryCode": "AU",
       "lat": -16.92,
       "lng": 145.78,
-      "hotels": 17,
+      "hotels": 38,
       "order": 164
     },
     {
@@ -2638,7 +1870,7 @@
       "countryCode": "AU",
       "lat": -31.95,
       "lng": 115.86,
-      "hotels": 11,
+      "hotels": 52,
       "order": 166
     },
     {
@@ -2648,7 +1880,7 @@
       "countryCode": "PT",
       "lat": 38.72,
       "lng": -9.14,
-      "hotels": 41,
+      "hotels": 62,
       "order": 167
     },
     {
@@ -2658,7 +1890,7 @@
       "countryCode": "PT",
       "lat": 37.02,
       "lng": -7.93,
-      "hotels": 35,
+      "hotels": 55,
       "order": 168
     },
     {
@@ -2668,7 +1900,7 @@
       "countryCode": "PT",
       "lat": 41.15,
       "lng": -8.61,
-      "hotels": 29,
+      "hotels": 49,
       "order": 169
     },
     {
@@ -2678,7 +1910,7 @@
       "countryCode": "PT",
       "lat": 32.67,
       "lng": -16.92,
-      "hotels": 18,
+      "hotels": 38,
       "order": 170
     },
     {
@@ -2688,7 +1920,7 @@
       "countryCode": "PT",
       "lat": 37.74,
       "lng": -25.67,
-      "hotels": 12,
+      "hotels": 32,
       "order": 171
     },
     {
@@ -2698,7 +1930,7 @@
       "countryCode": "AT",
       "lat": 48.21,
       "lng": 16.37,
-      "hotels": 43,
+      "hotels": 85,
       "order": 172
     },
     {
@@ -2708,7 +1940,7 @@
       "countryCode": "AT",
       "lat": 47.81,
       "lng": 13.04,
-      "hotels": 29,
+      "hotels": 38,
       "order": 173
     },
     {
@@ -2718,7 +1950,7 @@
       "countryCode": "AT",
       "lat": 47.27,
       "lng": 11.39,
-      "hotels": 29,
+      "hotels": 70,
       "order": 174
     },
     {
@@ -2728,7 +1960,7 @@
       "countryCode": "AT",
       "lat": 47.07,
       "lng": 15.44,
-      "hotels": 14,
+      "hotels": 23,
       "order": 175
     },
     {
@@ -2738,7 +1970,7 @@
       "countryCode": "BR",
       "lat": -22.91,
       "lng": -43.17,
-      "hotels": 38,
+      "hotels": 58,
       "order": 176
     },
     {
@@ -2748,7 +1980,7 @@
       "countryCode": "BR",
       "lat": -23.55,
       "lng": -46.63,
-      "hotels": 26,
+      "hotels": 46,
       "order": 177
     },
     {
@@ -2758,7 +1990,7 @@
       "countryCode": "BR",
       "lat": -12.97,
       "lng": -38.5,
-      "hotels": 25,
+      "hotels": 45,
       "order": 178
     },
     {
@@ -2768,7 +2000,7 @@
       "countryCode": "BR",
       "lat": -27.6,
       "lng": -48.55,
-      "hotels": 13,
+      "hotels": 34,
       "order": 179
     },
     {
@@ -2778,7 +2010,7 @@
       "countryCode": "BR",
       "lat": -3.12,
       "lng": -60.02,
-      "hotels": 13,
+      "hotels": 33,
       "order": 180
     },
     {
@@ -2788,7 +2020,7 @@
       "countryCode": "AE",
       "lat": 25.2,
       "lng": 55.27,
-      "hotels": 69,
+      "hotels": 128,
       "order": 181
     },
     {
@@ -2798,7 +2030,7 @@
       "countryCode": "AE",
       "lat": 24.45,
       "lng": 54.38,
-      "hotels": 31,
+      "hotels": 52,
       "order": 182
     },
     {
@@ -2808,7 +2040,7 @@
       "countryCode": "AE",
       "lat": 25.79,
       "lng": 55.94,
-      "hotels": 15,
+      "hotels": 36,
       "order": 183
     },
     {
@@ -2818,7 +2050,7 @@
       "countryCode": "ID",
       "lat": -8.41,
       "lng": 115.19,
-      "hotels": 62,
+      "hotels": 71,
       "order": 184
     },
     {
@@ -2828,7 +2060,7 @@
       "countryCode": "ID",
       "lat": -6.21,
       "lng": 106.85,
-      "hotels": 23,
+      "hotels": 65,
       "order": 185
     },
     {
@@ -2838,7 +2070,7 @@
       "countryCode": "ID",
       "lat": -8.65,
       "lng": 116.32,
-      "hotels": 15,
+      "hotels": 25,
       "order": 186
     },
     {
@@ -2848,7 +2080,7 @@
       "countryCode": "ID",
       "lat": -7.8,
       "lng": 110.36,
-      "hotels": 15,
+      "hotels": 56,
       "order": 187
     },
     {
@@ -2858,7 +2090,7 @@
       "countryCode": "KR",
       "lat": 37.57,
       "lng": 126.98,
-      "hotels": 56,
+      "hotels": 115,
       "order": 188
     },
     {
@@ -2868,7 +2100,7 @@
       "countryCode": "KR",
       "lat": 35.18,
       "lng": 129.08,
-      "hotels": 24,
+      "hotels": 45,
       "order": 189
     },
     {
@@ -2878,7 +2110,7 @@
       "countryCode": "KR",
       "lat": 33.5,
       "lng": 126.53,
-      "hotels": 16,
+      "hotels": 37,
       "order": 190
     },
     {
@@ -2888,7 +2120,7 @@
       "countryCode": "EG",
       "lat": 30.04,
       "lng": 31.24,
-      "hotels": 30,
+      "hotels": 72,
       "order": 191
     },
     {
@@ -2898,7 +2130,7 @@
       "countryCode": "EG",
       "lat": 27.92,
       "lng": 34.33,
-      "hotels": 29,
+      "hotels": 38,
       "order": 192
     },
     {
@@ -2908,7 +2140,7 @@
       "countryCode": "EG",
       "lat": 27.26,
       "lng": 33.81,
-      "hotels": 22,
+      "hotels": 63,
       "order": 193
     },
     {
@@ -2918,7 +2150,7 @@
       "countryCode": "EG",
       "lat": 25.69,
       "lng": 32.64,
-      "hotels": 15,
+      "hotels": 24,
       "order": 194
     },
     {
@@ -2928,7 +2160,7 @@
       "countryCode": "MY",
       "lat": 3.14,
       "lng": 101.69,
-      "hotels": 40,
+      "hotels": 50,
       "order": 195
     },
     {
@@ -2938,7 +2170,7 @@
       "countryCode": "MY",
       "lat": 6.35,
       "lng": 99.79,
-      "hotels": 24,
+      "hotels": 66,
       "order": 196
     },
     {
@@ -2948,7 +2180,7 @@
       "countryCode": "MY",
       "lat": 5.41,
       "lng": 100.33,
-      "hotels": 16,
+      "hotels": 25,
       "order": 197
     },
     {
@@ -2958,7 +2190,7 @@
       "countryCode": "MY",
       "lat": 5.98,
       "lng": 116.07,
-      "hotels": 16,
+      "hotels": 57,
       "order": 198
     },
     {
@@ -2968,7 +2200,7 @@
       "countryCode": "NL",
       "lat": 52.37,
       "lng": 4.9,
-      "hotels": 67,
+      "hotels": 85,
       "order": 199
     },
     {
@@ -2978,7 +2210,7 @@
       "countryCode": "NL",
       "lat": 51.92,
       "lng": 4.48,
-      "hotels": 29,
+      "hotels": 112,
       "order": 200
     },
     {
@@ -2988,7 +2220,7 @@
       "countryCode": "CH",
       "lat": 47.38,
       "lng": 8.54,
-      "hotels": 30,
+      "hotels": 39,
       "order": 201
     },
     {
@@ -2998,7 +2230,7 @@
       "countryCode": "CH",
       "lat": 46.02,
       "lng": 7.75,
-      "hotels": 29,
+      "hotels": 71,
       "order": 202
     },
     {
@@ -3008,7 +2240,7 @@
       "countryCode": "CH",
       "lat": 46.2,
       "lng": 6.14,
-      "hotels": 22,
+      "hotels": 31,
       "order": 203
     },
     {
@@ -3018,7 +2250,7 @@
       "countryCode": "CH",
       "lat": 47.05,
       "lng": 8.31,
-      "hotels": 15,
+      "hotels": 56,
       "order": 204
     },
     {
@@ -3028,7 +2260,7 @@
       "countryCode": "HR",
       "lat": 42.65,
       "lng": 18.09,
-      "hotels": 31,
+      "hotels": 72,
       "order": 205
     },
     {
@@ -3038,7 +2270,7 @@
       "countryCode": "HR",
       "lat": 43.51,
       "lng": 16.44,
-      "hotels": 24,
+      "hotels": 34,
       "order": 206
     },
     {
@@ -3048,7 +2280,7 @@
       "countryCode": "HR",
       "lat": 45.23,
       "lng": 13.77,
-      "hotels": 16,
+      "hotels": 58,
       "order": 207
     },
     {
@@ -3058,7 +2290,7 @@
       "countryCode": "HR",
       "lat": 45.81,
       "lng": 15.98,
-      "hotels": 16,
+      "hotels": 25,
       "order": 208
     },
     {
@@ -3068,7 +2300,7 @@
       "countryCode": "PL",
       "lat": 50.06,
       "lng": 19.94,
-      "hotels": 35,
+      "hotels": 56,
       "order": 209
     },
     {
@@ -3078,7 +2310,7 @@
       "countryCode": "PL",
       "lat": 52.23,
       "lng": 21.01,
-      "hotels": 35,
+      "hotels": 94,
       "order": 210
     },
     {
@@ -3088,7 +2320,7 @@
       "countryCode": "PL",
       "lat": 54.35,
       "lng": 18.65,
-      "hotels": 17,
+      "hotels": 38,
       "order": 211
     },
     {
@@ -3098,7 +2330,7 @@
       "countryCode": "VN",
       "lat": 10.82,
       "lng": 106.63,
-      "hotels": 29,
+      "hotels": 71,
       "order": 212
     },
     {
@@ -3108,7 +2340,7 @@
       "countryCode": "VN",
       "lat": 16.05,
       "lng": 108.2,
-      "hotels": 22,
+      "hotels": 31,
       "order": 213
     },
     {
@@ -3118,7 +2350,7 @@
       "countryCode": "VN",
       "lat": 21.03,
       "lng": 105.85,
-      "hotels": 22,
+      "hotels": 63,
       "order": 214
     },
     {
@@ -3128,7 +2360,7 @@
       "countryCode": "VN",
       "lat": 10.23,
       "lng": 103.96,
-      "hotels": 14,
+      "hotels": 23,
       "order": 215
     },
     {
@@ -3138,7 +2370,7 @@
       "countryCode": "SA",
       "lat": 24.71,
       "lng": 46.68,
-      "hotels": 34,
+      "hotels": 55,
       "order": 216
     },
     {
@@ -3148,7 +2380,7 @@
       "countryCode": "SA",
       "lat": 21.49,
       "lng": 39.18,
-      "hotels": 26,
+      "hotels": 47,
       "order": 217
     },
     {
@@ -3158,7 +2390,7 @@
       "countryCode": "SA",
       "lat": 26.61,
       "lng": 37.92,
-      "hotels": 17,
+      "hotels": 38,
       "order": 218
     },
     {
@@ -3168,7 +2400,7 @@
       "countryCode": "AR",
       "lat": -34.6,
       "lng": -58.38,
-      "hotels": 39,
+      "hotels": 98,
       "order": 219
     },
     {
@@ -3178,7 +2410,7 @@
       "countryCode": "AR",
       "lat": -41.13,
       "lng": -71.31,
-      "hotels": 23,
+      "hotels": 44,
       "order": 220
     },
     {
@@ -3188,7 +2420,7 @@
       "countryCode": "AR",
       "lat": -32.89,
       "lng": -68.84,
-      "hotels": 15,
+      "hotels": 36,
       "order": 221
     },
     {
@@ -3198,7 +2430,7 @@
       "countryCode": "MA",
       "lat": 31.63,
       "lng": -8,
-      "hotels": 31,
+      "hotels": 40,
       "order": 222
     },
     {
@@ -3208,7 +2440,7 @@
       "countryCode": "MA",
       "lat": 33.57,
       "lng": -7.59,
-      "hotels": 16,
+      "hotels": 57,
       "order": 223
     },
     {
@@ -3218,7 +2450,7 @@
       "countryCode": "MA",
       "lat": 30.43,
       "lng": -9.6,
-      "hotels": 15,
+      "hotels": 24,
       "order": 224
     },
     {
@@ -3228,7 +2460,7 @@
       "countryCode": "MA",
       "lat": 34.02,
       "lng": -5,
-      "hotels": 15,
+      "hotels": 57,
       "order": 225
     },
     {
@@ -3238,7 +2470,7 @@
       "countryCode": "SG",
       "lat": 1.35,
       "lng": 103.82,
-      "hotels": 77,
+      "hotels": 179,
       "order": 226
     },
     {
@@ -3248,7 +2480,7 @@
       "countryCode": "ZA",
       "lat": -33.92,
       "lng": 18.42,
-      "hotels": 39,
+      "hotels": 60,
       "order": 227
     },
     {
@@ -3258,7 +2490,7 @@
       "countryCode": "ZA",
       "lat": -26.2,
       "lng": 28.04,
-      "hotels": 23,
+      "hotels": 82,
       "order": 228
     },
     {
@@ -3268,98 +2500,8 @@
       "countryCode": "ZA",
       "lat": -24,
       "lng": 31.5,
-      "hotels": 15,
+      "hotels": 36,
       "order": 229
-    },
-    {
-      "id": "be-bruselas",
-      "name": "Bruselas",
-      "country": "Bélgica",
-      "countryCode": "BE",
-      "lat": 50.85,
-      "lng": 4.35,
-      "hotels": 38,
-      "order": 230
-    },
-    {
-      "id": "be-brujas",
-      "name": "Brujas / Flandes",
-      "country": "Bélgica",
-      "countryCode": "BE",
-      "lat": 51.21,
-      "lng": 3.22,
-      "hotels": 29,
-      "order": 231
-    },
-    {
-      "id": "cz-praga",
-      "name": "Praga",
-      "country": "Chequia",
-      "countryCode": "CZ",
-      "lat": 50.08,
-      "lng": 14.44,
-      "hotels": 50,
-      "order": 232
-    },
-    {
-      "id": "cz-bohemia",
-      "name": "Bohemia / Český Krumlov",
-      "country": "Chequia",
-      "countryCode": "CZ",
-      "lat": 48.81,
-      "lng": 14.32,
-      "hotels": 17,
-      "order": 233
-    },
-    {
-      "id": "ph-boracay",
-      "name": "Boracay / Visayas",
-      "country": "Filipinas",
-      "countryCode": "PH",
-      "lat": 11.97,
-      "lng": 121.93,
-      "hotels": 25,
-      "order": 234
-    },
-    {
-      "id": "ph-manila",
-      "name": "Manila",
-      "country": "Filipinas",
-      "countryCode": "PH",
-      "lat": 14.6,
-      "lng": 120.98,
-      "hotels": 25,
-      "order": 235
-    },
-    {
-      "id": "ph-palawan",
-      "name": "Palawan",
-      "country": "Filipinas",
-      "countryCode": "PH",
-      "lat": 9.83,
-      "lng": 118.74,
-      "hotels": 17,
-      "order": 236
-    },
-    {
-      "id": "hu-budapest",
-      "name": "Budapest",
-      "country": "Hungría",
-      "countryCode": "HU",
-      "lat": 47.5,
-      "lng": 19.04,
-      "hotels": 50,
-      "order": 237
-    },
-    {
-      "id": "hu-balaton",
-      "name": "Lago Balatón",
-      "country": "Hungría",
-      "countryCode": "HU",
-      "lat": 46.83,
-      "lng": 17.75,
-      "hotels": 17,
-      "order": 238
     },
     {
       "id": "ie-dublin",
@@ -3368,8 +2510,8 @@
       "countryCode": "IE",
       "lat": 53.35,
       "lng": -6.26,
-      "hotels": 42,
-      "order": 239
+      "hotels": 125,
+      "order": 230
     },
     {
       "id": "ie-oeste-ie",
@@ -3378,1538 +2520,8 @@
       "countryCode": "IE",
       "lat": 53.27,
       "lng": -9.05,
-      "hotels": 25,
-      "order": 240
-    },
-    {
-      "id": "nz-auckland",
-      "name": "Auckland",
-      "country": "Nueva Zelanda",
-      "countryCode": "NZ",
-      "lat": -36.85,
-      "lng": 174.76,
-      "hotels": 25,
-      "order": 241
-    },
-    {
-      "id": "nz-queenstown",
-      "name": "Queenstown / Isla Sur",
-      "country": "Nueva Zelanda",
-      "countryCode": "NZ",
-      "lat": -45.03,
-      "lng": 168.66,
-      "hotels": 25,
-      "order": 242
-    },
-    {
-      "id": "nz-wellington",
-      "name": "Wellington / Norte",
-      "country": "Nueva Zelanda",
-      "countryCode": "NZ",
-      "lat": -41.29,
-      "lng": 174.78,
-      "hotels": 17,
-      "order": 243
-    },
-    {
-      "id": "se-estocolmo",
-      "name": "Estocolmo",
-      "country": "Suecia",
-      "countryCode": "SE",
-      "lat": 59.33,
-      "lng": 18.07,
-      "hotels": 48,
-      "order": 244
-    },
-    {
-      "id": "se-gotemburgo",
-      "name": "Gotemburgo / Oeste",
-      "country": "Suecia",
-      "countryCode": "SE",
-      "lat": 57.71,
-      "lng": 11.97,
-      "hotels": 19,
-      "order": 245
-    },
-    {
-      "id": "cl-santiago-cl",
-      "name": "Santiago de Chile",
-      "country": "Chile",
-      "countryCode": "CL",
-      "lat": -33.45,
-      "lng": -70.67,
-      "hotels": 33,
-      "order": 246
-    },
-    {
-      "id": "cl-patagonia-cl",
-      "name": "Patagonia / Atacama",
-      "country": "Chile",
-      "countryCode": "CL",
-      "lat": -51,
-      "lng": -73,
-      "hotels": 25,
-      "order": 247
-    },
-    {
-      "id": "co-bogota",
-      "name": "Bogotá",
-      "country": "Colombia",
-      "countryCode": "CO",
-      "lat": 4.71,
-      "lng": -74.07,
-      "hotels": 22,
-      "order": 248
-    },
-    {
-      "id": "co-cartagena-co",
-      "name": "Cartagena / Caribe",
-      "country": "Colombia",
-      "countryCode": "CO",
-      "lat": 10.4,
-      "lng": -75.51,
-      "hotels": 22,
-      "order": 249
-    },
-    {
-      "id": "co-medellin",
-      "name": "Medellín",
-      "country": "Colombia",
-      "countryCode": "CO",
-      "lat": 6.25,
-      "lng": -75.56,
-      "hotels": 14,
-      "order": 250
-    },
-    {
-      "id": "dk-copenhague",
-      "name": "Copenhague / Dinamarca",
-      "country": "Dinamarca",
-      "countryCode": "DK",
-      "lat": 55.68,
-      "lng": 12.57,
-      "hotels": 58,
-      "order": 251
-    },
-    {
-      "id": "no-bergen",
-      "name": "Bergen / Fiordos",
-      "country": "Noruega",
-      "countryCode": "NO",
-      "lat": 60.39,
-      "lng": 5.32,
-      "hotels": 22,
-      "order": 252
-    },
-    {
-      "id": "no-oslo",
-      "name": "Oslo",
-      "country": "Noruega",
-      "countryCode": "NO",
-      "lat": 59.91,
-      "lng": 10.75,
-      "hotels": 22,
-      "order": 253
-    },
-    {
-      "id": "no-tromso",
-      "name": "Tromsø / Norte",
-      "country": "Noruega",
-      "countryCode": "NO",
-      "lat": 69.65,
-      "lng": 18.96,
-      "hotels": 14,
-      "order": 254
-    },
-    {
-      "id": "pe-cusco",
-      "name": "Cusco / Machu Picchu",
-      "country": "Perú",
-      "countryCode": "PE",
-      "lat": -13.53,
-      "lng": -71.97,
-      "hotels": 33,
-      "order": 255
-    },
-    {
-      "id": "pe-lima",
-      "name": "Lima",
-      "country": "Perú",
-      "countryCode": "PE",
-      "lat": -12.05,
-      "lng": -77.04,
-      "hotels": 25,
-      "order": 256
-    },
-    {
-      "id": "do-punta-cana",
-      "name": "Punta Cana / Este",
-      "country": "República Dominicana",
-      "countryCode": "DO",
-      "lat": 18.58,
-      "lng": -68.4,
-      "hotels": 41,
-      "order": 257
-    },
-    {
-      "id": "do-santo-domingo",
-      "name": "Santo Domingo",
-      "country": "República Dominicana",
-      "countryCode": "DO",
-      "lat": 18.49,
-      "lng": -69.93,
-      "hotels": 17,
-      "order": 258
-    },
-    {
-      "id": "tw-taipei",
-      "name": "Taipéi",
-      "country": "Taiwán",
-      "countryCode": "TW",
-      "lat": 25.03,
-      "lng": 121.57,
-      "hotels": 41,
-      "order": 259
-    },
-    {
-      "id": "tw-kaohsiung",
-      "name": "Kaohsiung / Sur",
-      "country": "Taiwán",
-      "countryCode": "TW",
-      "lat": 22.63,
-      "lng": 120.3,
-      "hotels": 17,
-      "order": 260
-    },
-    {
-      "id": "qa-doha",
-      "name": "Doha",
-      "country": "Catar",
-      "countryCode": "QA",
-      "lat": 25.29,
-      "lng": 51.53,
-      "hotels": 48,
-      "order": 261
-    },
-    {
-      "id": "cr-pacifico-cr",
-      "name": "Pacífico (Guanacaste / Jacó)",
-      "country": "Costa Rica",
-      "countryCode": "CR",
-      "lat": 10.5,
-      "lng": -85.5,
-      "hotels": 29,
-      "order": 262
-    },
-    {
-      "id": "cr-san-jose-cr",
-      "name": "San José / Valle Central",
-      "country": "Costa Rica",
-      "countryCode": "CR",
-      "lat": 9.93,
-      "lng": -84.09,
-      "hotels": 19,
-      "order": 263
-    },
-    {
-      "id": "cu-la-habana",
-      "name": "La Habana",
-      "country": "Cuba",
-      "countryCode": "CU",
-      "lat": 23.11,
-      "lng": -82.37,
-      "hotels": 29,
-      "order": 264
-    },
-    {
-      "id": "cu-varadero",
-      "name": "Varadero / Varadero-Matanzas",
-      "country": "Cuba",
-      "countryCode": "CU",
-      "lat": 23.14,
-      "lng": -81.29,
-      "hotels": 19,
-      "order": 265
-    },
-    {
-      "id": "fi-helsinki",
-      "name": "Helsinki",
-      "country": "Finlandia",
-      "countryCode": "FI",
-      "lat": 60.17,
-      "lng": 24.94,
-      "hotels": 32,
-      "order": 266
-    },
-    {
-      "id": "fi-laponia",
-      "name": "Laponia",
-      "country": "Finlandia",
-      "countryCode": "FI",
-      "lat": 66.5,
-      "lng": 25.7,
-      "hotels": 16,
-      "order": 267
-    },
-    {
-      "id": "il-tel-aviv",
-      "name": "Tel Aviv",
-      "country": "Israel",
-      "countryCode": "IL",
-      "lat": 32.09,
-      "lng": 34.78,
-      "hotels": 20,
-      "order": 268
-    },
-    {
-      "id": "il-eilat",
-      "name": "Eilat",
-      "country": "Israel",
-      "countryCode": "IL",
-      "lat": 29.56,
-      "lng": 34.95,
-      "hotels": 14,
-      "order": 269
-    },
-    {
-      "id": "il-jerusalen",
-      "name": "Jerusalén",
-      "country": "Israel",
-      "countryCode": "IL",
-      "lat": 31.77,
-      "lng": 35.21,
-      "hotels": 14,
-      "order": 270
-    },
-    {
-      "id": "jo-petra",
-      "name": "Petra / Wadi Rum / Áqaba",
-      "country": "Jordania",
-      "countryCode": "JO",
-      "lat": 30.33,
-      "lng": 35.44,
-      "hotels": 29,
-      "order": 271
-    },
-    {
-      "id": "jo-amman",
-      "name": "Amán",
-      "country": "Jordania",
-      "countryCode": "JO",
-      "lat": 31.95,
-      "lng": 35.91,
-      "hotels": 19,
-      "order": 272
-    },
-    {
-      "id": "ke-nairobi",
-      "name": "Nairobi / Safaris",
-      "country": "Kenia",
-      "countryCode": "KE",
-      "lat": -1.29,
-      "lng": 36.82,
-      "hotels": 29,
-      "order": 273
-    },
-    {
-      "id": "ke-mombasa",
-      "name": "Mombasa / Costa",
-      "country": "Kenia",
-      "countryCode": "KE",
-      "lat": -4.04,
-      "lng": 39.67,
-      "hotels": 19,
-      "order": 274
-    },
-    {
-      "id": "mv-maldivas",
-      "name": "Maldivas",
-      "country": "Maldivas",
-      "countryCode": "MV",
-      "lat": 4.18,
-      "lng": 73.51,
-      "hotels": 48,
-      "order": 275
-    },
-    {
-      "id": "tz-zanzibar",
-      "name": "Zanzíbar",
-      "country": "Tanzania",
-      "countryCode": "TZ",
-      "lat": -6.16,
-      "lng": 39.2,
-      "hotels": 29,
-      "order": 276
-    },
-    {
-      "id": "tz-serengeti",
-      "name": "Serengueti / Kilimanjaro",
-      "country": "Tanzania",
-      "countryCode": "TZ",
-      "lat": -2.33,
-      "lng": 34.83,
-      "hotels": 19,
-      "order": 277
-    },
-    {
-      "id": "bg-costa-negra",
-      "name": "Costa del Mar Negro",
-      "country": "Bulgaria",
-      "countryCode": "BG",
-      "lat": 43.21,
-      "lng": 27.91,
-      "hotels": 23,
-      "order": 278
-    },
-    {
-      "id": "bg-sofia",
-      "name": "Sofía",
-      "country": "Bulgaria",
-      "countryCode": "BG",
-      "lat": 42.7,
-      "lng": 23.32,
-      "hotels": 16,
-      "order": 279
-    },
-    {
-      "id": "ro-bucarest",
-      "name": "Bucarest",
-      "country": "Rumanía",
-      "countryCode": "RO",
-      "lat": 44.43,
-      "lng": 26.1,
-      "hotels": 23,
-      "order": 280
-    },
-    {
-      "id": "ro-transilvania",
-      "name": "Transilvania",
-      "country": "Rumanía",
-      "countryCode": "RO",
-      "lat": 46.77,
-      "lng": 23.59,
-      "hotels": 16,
-      "order": 281
-    },
-    {
-      "id": "lk-colombo",
-      "name": "Colombo / Sur",
-      "country": "Sri Lanka",
-      "countryCode": "LK",
-      "lat": 6.93,
-      "lng": 79.85,
-      "hotels": 23,
-      "order": 282
-    },
-    {
-      "id": "lk-kandy",
-      "name": "Kandy / Centro",
-      "country": "Sri Lanka",
-      "countryCode": "LK",
-      "lat": 7.29,
-      "lng": 80.63,
-      "hotels": 16,
-      "order": 283
-    },
-    {
-      "id": "kh-siem-reap",
-      "name": "Siem Reap / Angkor",
-      "country": "Camboya",
-      "countryCode": "KH",
-      "lat": 13.36,
-      "lng": 103.86,
-      "hotels": 23,
-      "order": 284
-    },
-    {
-      "id": "kh-phnom-penh",
-      "name": "Nom Pen",
-      "country": "Camboya",
-      "countryCode": "KH",
-      "lat": 11.56,
-      "lng": 104.93,
-      "hotels": 15,
-      "order": 285
-    },
-    {
-      "id": "cy-chipre",
-      "name": "Chipre",
-      "country": "Chipre",
-      "countryCode": "CY",
-      "lat": 34.92,
-      "lng": 33.63,
-      "hotels": 38,
-      "order": 286
-    },
-    {
-      "id": "ec-galapagos",
-      "name": "Galápagos",
-      "country": "Ecuador",
-      "countryCode": "EC",
-      "lat": -0.95,
-      "lng": -90.97,
-      "hotels": 19,
-      "order": 287
-    },
-    {
-      "id": "ec-quito",
-      "name": "Quito",
-      "country": "Ecuador",
-      "countryCode": "EC",
-      "lat": -0.18,
-      "lng": -78.47,
-      "hotels": 19,
-      "order": 288
-    },
-    {
-      "id": "is-reikiavik",
-      "name": "Reikiavik / Anillo de Oro",
-      "country": "Islandia",
-      "countryCode": "IS",
-      "lat": 64.15,
-      "lng": -21.94,
-      "hotels": 38,
-      "order": 289
-    },
-    {
-      "id": "jm-montego-bay",
-      "name": "Montego Bay / Jamaica",
-      "country": "Jamaica",
-      "countryCode": "JM",
-      "lat": 18.48,
-      "lng": -77.92,
-      "hotels": 38,
-      "order": 290
-    },
-    {
-      "id": "mt-malta",
-      "name": "Malta / Gozo",
-      "country": "Malta",
-      "countryCode": "MT",
-      "lat": 35.9,
-      "lng": 14.51,
-      "hotels": 38,
-      "order": 291
-    },
-    {
-      "id": "mu-mauricio",
-      "name": "Mauricio",
-      "country": "Mauricio",
-      "countryCode": "MU",
-      "lat": -20.35,
-      "lng": 57.55,
-      "hotels": 38,
-      "order": 292
-    },
-    {
-      "id": "om-mascate",
-      "name": "Mascate / Omán",
-      "country": "Omán",
-      "countryCode": "OM",
-      "lat": 23.59,
-      "lng": 58.41,
-      "hotels": 38,
-      "order": 293
-    },
-    {
-      "id": "pa-ciudad-panama",
-      "name": "Ciudad de Panamá / Bocas",
-      "country": "Panamá",
-      "countryCode": "PA",
-      "lat": 8.98,
-      "lng": -79.52,
-      "hotels": 38,
-      "order": 294
-    },
-    {
-      "id": "pr-san-juan",
-      "name": "San Juan / Puerto Rico",
-      "country": "Puerto Rico",
-      "countryCode": "PR",
-      "lat": 18.47,
-      "lng": -66.11,
-      "hotels": 38,
-      "order": 295
-    },
-    {
-      "id": "tn-djerba",
-      "name": "Djerba / Costa",
-      "country": "Túnez",
-      "countryCode": "TN",
-      "lat": 33.81,
-      "lng": 10.85,
-      "hotels": 19,
-      "order": 296
-    },
-    {
-      "id": "tn-tunez",
-      "name": "Túnez / Norte",
-      "country": "Túnez",
-      "countryCode": "TN",
-      "lat": 36.81,
-      "lng": 10.18,
-      "hotels": 19,
-      "order": 297
-    },
-    {
-      "id": "uy-montevideo",
-      "name": "Montevideo",
-      "country": "Uruguay",
-      "countryCode": "UY",
-      "lat": -34.9,
-      "lng": -56.16,
-      "hotels": 19,
-      "order": 298
-    },
-    {
-      "id": "uy-punta-del-este",
-      "name": "Punta del Este",
-      "country": "Uruguay",
-      "countryCode": "UY",
-      "lat": -34.95,
-      "lng": -54.93,
-      "hotels": 19,
-      "order": 299
-    },
-    {
-      "id": "al-tirana",
-      "name": "Tirana / Costa albanesa",
-      "country": "Albania",
-      "countryCode": "AL",
-      "lat": 41.33,
-      "lng": 19.82,
-      "hotels": 29,
-      "order": 300
-    },
-    {
-      "id": "ad-andorra",
-      "name": "Andorra",
-      "country": "Andorra",
-      "countryCode": "AD",
-      "lat": 42.51,
-      "lng": 1.52,
-      "hotels": 29,
-      "order": 301
-    },
-    {
-      "id": "aw-aruba",
-      "name": "Aruba",
-      "country": "Aruba",
-      "countryCode": "AW",
-      "lat": 12.52,
-      "lng": -70.04,
-      "hotels": 29,
-      "order": 302
-    },
-    {
-      "id": "az-baku",
-      "name": "Bakú",
-      "country": "Azerbaiyán",
-      "countryCode": "AZ",
-      "lat": 40.41,
-      "lng": 49.87,
-      "hotels": 29,
-      "order": 303
-    },
-    {
-      "id": "bs-nassau",
-      "name": "Nasáu / Bahamas",
-      "country": "Bahamas",
-      "countryCode": "BS",
-      "lat": 25.04,
-      "lng": -77.35,
-      "hotels": 29,
-      "order": 304
-    },
-    {
-      "id": "bb-barbados",
-      "name": "Barbados",
-      "country": "Barbados",
-      "countryCode": "BB",
-      "lat": 13.1,
-      "lng": -59.61,
-      "hotels": 29,
-      "order": 305
-    },
-    {
-      "id": "bh-manama",
-      "name": "Manama",
-      "country": "Baréin",
-      "countryCode": "BH",
-      "lat": 26.23,
-      "lng": 50.59,
-      "hotels": 29,
-      "order": 306
-    },
-    {
-      "id": "sk-bratislava",
-      "name": "Bratislava / Tatras",
-      "country": "Eslovaquia",
-      "countryCode": "SK",
-      "lat": 48.15,
-      "lng": 17.11,
-      "hotels": 29,
-      "order": 307
-    },
-    {
-      "id": "si-liubliana",
-      "name": "Liubliana / Bled",
-      "country": "Eslovenia",
-      "countryCode": "SI",
-      "lat": 46.05,
-      "lng": 14.51,
-      "hotels": 29,
-      "order": 308
-    },
-    {
-      "id": "ee-tallin",
-      "name": "Tallin",
-      "country": "Estonia",
-      "countryCode": "EE",
-      "lat": 59.44,
-      "lng": 24.75,
-      "hotels": 29,
-      "order": 309
-    },
-    {
-      "id": "ge-tiflis",
-      "name": "Tiflis / Batumi",
-      "country": "Georgia",
-      "countryCode": "GE",
-      "lat": 41.72,
-      "lng": 44.79,
-      "hotels": 29,
-      "order": 310
-    },
-    {
-      "id": "ir-teheran",
-      "name": "Teherán",
-      "country": "Irán",
-      "countryCode": "IR",
-      "lat": 35.69,
-      "lng": 51.39,
-      "hotels": 19,
-      "order": 311
-    },
-    {
-      "id": "ir-isfahan",
-      "name": "Isfahán / Shiraz",
-      "country": "Irán",
-      "countryCode": "IR",
-      "lat": 32.65,
-      "lng": 51.67,
-      "hotels": 10,
-      "order": 312
-    },
-    {
-      "id": "lv-riga",
-      "name": "Riga",
-      "country": "Letonia",
-      "countryCode": "LV",
-      "lat": 56.95,
-      "lng": 24.11,
-      "hotels": 29,
-      "order": 313
-    },
-    {
-      "id": "lt-vilna",
-      "name": "Vilna",
-      "country": "Lituania",
-      "countryCode": "LT",
-      "lat": 54.69,
-      "lng": 25.28,
-      "hotels": 29,
-      "order": 314
-    },
-    {
-      "id": "me-kotor",
-      "name": "Bahía de Kotor / Budva",
-      "country": "Montenegro",
-      "countryCode": "ME",
-      "lat": 42.42,
-      "lng": 18.77,
-      "hotels": 29,
-      "order": 315
-    },
-    {
-      "id": "np-katmandu",
-      "name": "Katmandú / Pokhara",
-      "country": "Nepal",
-      "countryCode": "NP",
-      "lat": 27.72,
-      "lng": 85.32,
-      "hotels": 29,
-      "order": 316
-    },
-    {
-      "id": "ng-lagos",
-      "name": "Lagos",
-      "country": "Nigeria",
-      "countryCode": "NG",
-      "lat": 6.52,
-      "lng": 3.38,
-      "hotels": 19,
-      "order": 317
-    },
-    {
-      "id": "ng-abuja",
-      "name": "Abuya",
-      "country": "Nigeria",
-      "countryCode": "NG",
-      "lat": 9.08,
-      "lng": 7.4,
-      "hotels": 10,
-      "order": 318
-    },
-    {
-      "id": "pf-tahiti",
-      "name": "Tahití / Bora Bora",
-      "country": "Polinesia Francesa",
-      "countryCode": "PF",
-      "lat": -17.55,
-      "lng": -149.57,
-      "hotels": 29,
-      "order": 319
-    },
-    {
-      "id": "rs-belgrado",
-      "name": "Belgrado",
-      "country": "Serbia",
-      "countryCode": "RS",
-      "lat": 44.79,
-      "lng": 20.45,
-      "hotels": 29,
-      "order": 320
-    },
-    {
-      "id": "sc-seychelles",
-      "name": "Seychelles",
-      "country": "Seychelles",
-      "countryCode": "SC",
-      "lat": -4.68,
-      "lng": 55.49,
-      "hotels": 29,
-      "order": 321
-    },
-    {
-      "id": "ua-kiev",
-      "name": "Kiev",
-      "country": "Ucrania",
-      "countryCode": "UA",
-      "lat": 50.45,
-      "lng": 30.52,
-      "hotels": 19,
-      "order": 322
-    },
-    {
-      "id": "ua-lviv",
-      "name": "Leópolis",
-      "country": "Ucrania",
-      "countryCode": "UA",
-      "lat": 49.84,
-      "lng": 24.03,
-      "hotels": 10,
-      "order": 323
-    },
-    {
-      "id": "uz-samarcanda",
-      "name": "Samarcanda / Bujará",
-      "country": "Uzbekistán",
-      "countryCode": "UZ",
-      "lat": 39.63,
-      "lng": 66.97,
-      "hotels": 29,
-      "order": 324
-    },
-    {
-      "id": "dz-argel",
-      "name": "Argel",
-      "country": "Argelia",
-      "countryCode": "DZ",
-      "lat": 36.75,
-      "lng": 3.06,
-      "hotels": 19,
-      "order": 325
-    },
-    {
-      "id": "am-erevan",
-      "name": "Ereván",
-      "country": "Armenia",
-      "countryCode": "AM",
-      "lat": 40.18,
-      "lng": 44.51,
-      "hotels": 19,
-      "order": 326
-    },
-    {
-      "id": "bd-dhaka",
-      "name": "Daca",
-      "country": "Bangladés",
-      "countryCode": "BD",
-      "lat": 23.81,
-      "lng": 90.41,
-      "hotels": 19,
-      "order": 327
-    },
-    {
-      "id": "bz-san-pedro-bz",
-      "name": "San Pedro / Belice",
-      "country": "Belice",
-      "countryCode": "BZ",
-      "lat": 17.92,
-      "lng": -87.96,
-      "hotels": 19,
-      "order": 328
-    },
-    {
-      "id": "bo-la-paz",
-      "name": "La Paz / Uyuni",
-      "country": "Bolivia",
-      "countryCode": "BO",
-      "lat": -16.5,
-      "lng": -68.15,
-      "hotels": 19,
-      "order": 329
-    },
-    {
-      "id": "ba-sarajevo",
-      "name": "Sarajevo / Mostar",
-      "country": "Bosnia y Herzegovina",
-      "countryCode": "BA",
-      "lat": 43.86,
-      "lng": 18.41,
-      "hotels": 19,
-      "order": 330
-    },
-    {
-      "id": "bw-okavango",
-      "name": "Delta del Okavango",
-      "country": "Botsuana",
-      "countryCode": "BW",
-      "lat": -19.3,
-      "lng": 22.9,
-      "hotels": 19,
-      "order": 331
-    },
-    {
-      "id": "cv-cabo-verde",
-      "name": "Cabo Verde",
-      "country": "Cabo Verde",
-      "countryCode": "CV",
-      "lat": 14.92,
-      "lng": -23.51,
-      "hotels": 19,
-      "order": 332
-    },
-    {
-      "id": "cw-willemstad",
-      "name": "Curazao",
-      "country": "Curazao",
-      "countryCode": "CW",
-      "lat": 12.12,
-      "lng": -68.93,
-      "hotels": 19,
-      "order": 333
-    },
-    {
-      "id": "et-adis",
-      "name": "Adís Abeba",
-      "country": "Etiopía",
-      "countryCode": "ET",
-      "lat": 9.03,
-      "lng": 38.74,
-      "hotels": 19,
-      "order": 334
-    },
-    {
-      "id": "fj-nadi",
-      "name": "Nadi / Fiyi",
-      "country": "Fiyi",
-      "countryCode": "FJ",
-      "lat": -17.78,
-      "lng": 177.44,
-      "hotels": 19,
-      "order": 335
-    },
-    {
-      "id": "gh-accra",
-      "name": "Accra",
-      "country": "Ghana",
-      "countryCode": "GH",
-      "lat": 5.6,
-      "lng": -0.19,
-      "hotels": 19,
-      "order": 336
-    },
-    {
-      "id": "gt-antigua-gt",
-      "name": "Antigua / Tikal",
-      "country": "Guatemala",
-      "countryCode": "GT",
-      "lat": 14.56,
-      "lng": -90.73,
-      "hotels": 19,
-      "order": 337
-    },
-    {
-      "id": "hn-roatan",
-      "name": "Roatán / Honduras",
-      "country": "Honduras",
-      "countryCode": "HN",
-      "lat": 16.33,
-      "lng": -86.53,
-      "hotels": 19,
-      "order": 338
-    },
-    {
-      "id": "ky-gran-caiman",
-      "name": "Gran Caimán",
-      "country": "Islas Caimán",
-      "countryCode": "KY",
-      "lat": 19.29,
-      "lng": -81.37,
-      "hotels": 19,
-      "order": 339
-    },
-    {
-      "id": "vi-st-thomas",
-      "name": "St. Thomas / USVI",
-      "country": "Islas Vírgenes",
-      "countryCode": "VI",
-      "lat": 18.34,
-      "lng": -64.93,
-      "hotels": 19,
-      "order": 340
-    },
-    {
-      "id": "kz-almaty",
-      "name": "Almatý",
-      "country": "Kazajistán",
-      "countryCode": "KZ",
-      "lat": 43.22,
-      "lng": 76.85,
-      "hotels": 19,
-      "order": 341
-    },
-    {
-      "id": "kw-kuwait",
-      "name": "Kuwait",
-      "country": "Kuwait",
-      "countryCode": "KW",
-      "lat": 29.38,
-      "lng": 47.98,
-      "hotels": 19,
-      "order": 342
-    },
-    {
-      "id": "la-luang-prabang",
-      "name": "Luang Prabang",
-      "country": "Laos",
-      "countryCode": "LA",
-      "lat": 19.89,
-      "lng": 102.14,
-      "hotels": 19,
-      "order": 343
-    },
-    {
-      "id": "lb-beirut",
-      "name": "Beirut",
-      "country": "Líbano",
-      "countryCode": "LB",
-      "lat": 33.89,
-      "lng": 35.5,
-      "hotels": 19,
-      "order": 344
-    },
-    {
-      "id": "lu-luxemburgo",
-      "name": "Luxemburgo",
-      "country": "Luxemburgo",
-      "countryCode": "LU",
-      "lat": 49.61,
-      "lng": 6.13,
-      "hotels": 19,
-      "order": 345
-    },
-    {
-      "id": "mk-skopje",
-      "name": "Skopie / Ohrid",
-      "country": "Macedonia del Norte",
-      "countryCode": "MK",
-      "lat": 41.99,
-      "lng": 21.43,
-      "hotels": 19,
-      "order": 346
-    },
-    {
-      "id": "mc-monaco",
-      "name": "Mónaco",
-      "country": "Mónaco",
-      "countryCode": "MC",
-      "lat": 43.74,
-      "lng": 7.42,
-      "hotels": 19,
-      "order": 347
-    },
-    {
-      "id": "mm-yangon",
-      "name": "Yangón / Bagan",
-      "country": "Myanmar",
-      "countryCode": "MM",
-      "lat": 16.87,
-      "lng": 96.2,
-      "hotels": 19,
-      "order": 348
-    },
-    {
-      "id": "na-windhoek",
-      "name": "Windhoek / Sossusvlei",
-      "country": "Namibia",
-      "countryCode": "NA",
-      "lat": -22.56,
-      "lng": 17.08,
-      "hotels": 19,
-      "order": 349
-    },
-    {
-      "id": "pk-islamabad",
-      "name": "Islamabad / Lahore",
-      "country": "Pakistán",
-      "countryCode": "PK",
-      "lat": 33.68,
-      "lng": 73.05,
-      "hotels": 19,
-      "order": 350
-    },
-    {
-      "id": "sn-dakar",
-      "name": "Dakar",
-      "country": "Senegal",
-      "countryCode": "SN",
-      "lat": 14.72,
-      "lng": -17.47,
-      "hotels": 19,
-      "order": 351
-    },
-    {
-      "id": "sx-philipsburg",
-      "name": "Sint Maarten",
-      "country": "Sint Maarten",
-      "countryCode": "SX",
-      "lat": 18.03,
-      "lng": -63.05,
-      "hotels": 19,
-      "order": 352
-    },
-    {
-      "id": "ve-caracas",
-      "name": "Caracas / Margarita",
-      "country": "Venezuela",
-      "countryCode": "VE",
-      "lat": 10.48,
-      "lng": -66.9,
-      "hotels": 19,
-      "order": 353
-    },
-    {
-      "id": "zw-victoria-falls",
-      "name": "Cataratas Victoria",
-      "country": "Zimbabue",
-      "countryCode": "ZW",
-      "lat": -17.92,
-      "lng": 25.86,
-      "hotels": 19,
-      "order": 354
-    },
-    {
-      "id": "af-kabul",
-      "name": "Kabul",
-      "country": "Afganistán",
-      "countryCode": "AF",
-      "lat": 34.56,
-      "lng": 69.21,
-      "hotels": 10,
-      "order": 355
-    },
-    {
-      "id": "ao-luanda",
-      "name": "Luanda",
-      "country": "Angola",
-      "countryCode": "AO",
-      "lat": -8.84,
-      "lng": 13.23,
-      "hotels": 10,
-      "order": 356
-    },
-    {
-      "id": "bn-bandar",
-      "name": "Bandar Seri Begawan",
-      "country": "Brunéi",
-      "countryCode": "BN",
-      "lat": 4.9,
-      "lng": 114.94,
-      "hotels": 10,
-      "order": 357
-    },
-    {
-      "id": "bt-timbu",
-      "name": "Timbu",
-      "country": "Bután",
-      "countryCode": "BT",
-      "lat": 27.47,
-      "lng": 89.64,
-      "hotels": 10,
-      "order": 358
-    },
-    {
-      "id": "ci-abidjan",
-      "name": "Abiyán",
-      "country": "Costa de Marfil",
-      "countryCode": "CI",
-      "lat": 5.36,
-      "lng": -4.01,
-      "hotels": 10,
-      "order": 359
-    },
-    {
-      "id": "sv-san-salvador",
-      "name": "San Salvador",
-      "country": "El Salvador",
-      "countryCode": "SV",
-      "lat": 13.69,
-      "lng": -89.22,
-      "hotels": 10,
-      "order": 360
-    },
-    {
-      "id": "gi-gibraltar",
-      "name": "Gibraltar",
-      "country": "Gibraltar",
-      "countryCode": "GI",
-      "lat": 36.14,
-      "lng": -5.35,
-      "hotels": 10,
-      "order": 361
-    },
-    {
-      "id": "gl-nuuk",
-      "name": "Nuuk",
-      "country": "Groenlandia",
-      "countryCode": "GL",
-      "lat": 64.18,
-      "lng": -51.72,
-      "hotels": 10,
-      "order": 362
-    },
-    {
-      "id": "gu-guam",
-      "name": "Guam",
-      "country": "Guam",
-      "countryCode": "GU",
-      "lat": 13.44,
-      "lng": 144.79,
-      "hotels": 10,
-      "order": 363
-    },
-    {
-      "id": "gf-cayena",
-      "name": "Cayena",
-      "country": "Guayana Francesa",
-      "countryCode": "GF",
-      "lat": 4.92,
-      "lng": -52.33,
-      "hotels": 10,
-      "order": 364
-    },
-    {
-      "id": "gy-georgetown",
-      "name": "Georgetown",
-      "country": "Guyana",
-      "countryCode": "GY",
-      "lat": 6.8,
-      "lng": -58.16,
-      "hotels": 10,
-      "order": 365
-    },
-    {
-      "id": "ht-puerto-principe",
-      "name": "Puerto Príncipe",
-      "country": "Haití",
-      "countryCode": "HT",
-      "lat": 18.59,
-      "lng": -72.31,
-      "hotels": 10,
-      "order": 366
-    },
-    {
-      "id": "iq-bagdad",
-      "name": "Bagdad",
-      "country": "Irak",
-      "countryCode": "IQ",
-      "lat": 33.32,
-      "lng": 44.37,
-      "hotels": 10,
-      "order": 367
-    },
-    {
-      "id": "ck-rarotonga",
-      "name": "Rarotonga",
-      "country": "Islas Cook",
-      "countryCode": "CK",
-      "lat": -21.21,
-      "lng": -159.78,
-      "hotels": 10,
-      "order": 368
-    },
-    {
-      "id": "fo-torshavn",
-      "name": "Tórshavn",
-      "country": "Islas Feroe",
-      "countryCode": "FO",
-      "lat": 62.01,
-      "lng": -6.77,
-      "hotels": 10,
-      "order": 369
-    },
-    {
-      "id": "mp-saipan",
-      "name": "Saipán",
-      "country": "Islas Marianas",
-      "countryCode": "MP",
-      "lat": 15.18,
-      "lng": 145.75,
-      "hotels": 10,
-      "order": 370
-    },
-    {
-      "id": "ly-tripoli",
-      "name": "Trípoli",
-      "country": "Libia",
-      "countryCode": "LY",
-      "lat": 32.89,
-      "lng": 13.19,
-      "hotels": 10,
-      "order": 371
-    },
-    {
-      "id": "li-vaduz",
-      "name": "Vaduz",
-      "country": "Liechtenstein",
-      "countryCode": "LI",
-      "lat": 47.14,
-      "lng": 9.52,
-      "hotels": 10,
-      "order": 372
-    },
-    {
-      "id": "mg-antananarivo",
-      "name": "Antananarivo",
-      "country": "Madagascar",
-      "countryCode": "MG",
-      "lat": -18.88,
-      "lng": 47.51,
-      "hotels": 10,
-      "order": 373
-    },
-    {
-      "id": "mn-ulan-bator",
-      "name": "Ulán Bator",
-      "country": "Mongolia",
-      "countryCode": "MN",
-      "lat": 47.92,
-      "lng": 106.92,
-      "hotels": 10,
-      "order": 374
-    },
-    {
-      "id": "mz-maputo",
-      "name": "Maputo",
-      "country": "Mozambique",
-      "countryCode": "MZ",
-      "lat": -25.97,
-      "lng": 32.57,
-      "hotels": 10,
-      "order": 375
-    },
-    {
-      "id": "ni-granada-ni",
-      "name": "Granada (Nicaragua)",
-      "country": "Nicaragua",
-      "countryCode": "NI",
-      "lat": 11.93,
-      "lng": -85.96,
-      "hotels": 10,
-      "order": 376
-    },
-    {
-      "id": "nc-noumea",
-      "name": "Numea",
-      "country": "Nueva Caledonia",
-      "countryCode": "NC",
-      "lat": -22.28,
-      "lng": 166.46,
-      "hotels": 10,
-      "order": 377
-    },
-    {
-      "id": "pg-port-moresby",
-      "name": "Port Moresby",
-      "country": "Papúa Nueva Guinea",
-      "countryCode": "PG",
-      "lat": -9.44,
-      "lng": 147.18,
-      "hotels": 10,
-      "order": 378
-    },
-    {
-      "id": "py-asuncion",
-      "name": "Asunción",
-      "country": "Paraguay",
-      "countryCode": "PY",
-      "lat": -25.26,
-      "lng": -57.58,
-      "hotels": 10,
-      "order": 379
-    },
-    {
-      "id": "re-reunion",
-      "name": "Reunión",
-      "country": "Reunión",
-      "countryCode": "RE",
-      "lat": -21.12,
-      "lng": 55.54,
-      "hotels": 10,
-      "order": 380
-    },
-    {
-      "id": "rw-kigali",
-      "name": "Kigali",
-      "country": "Ruanda",
-      "countryCode": "RW",
-      "lat": -1.94,
-      "lng": 30.06,
-      "hotels": 10,
-      "order": 381
-    },
-    {
-      "id": "ws-apia",
-      "name": "Apia",
-      "country": "Samoa",
-      "countryCode": "WS",
-      "lat": -13.83,
-      "lng": -171.77,
-      "hotels": 10,
-      "order": 382
-    },
-    {
-      "id": "as-pago-pago",
-      "name": "Pago Pago",
-      "country": "Samoa Americana",
-      "countryCode": "AS",
-      "lat": -14.28,
-      "lng": -170.7,
-      "hotels": 10,
-      "order": 383
-    },
-    {
-      "id": "sm-san-marino",
-      "name": "San Marino",
-      "country": "San Marino",
-      "countryCode": "SM",
-      "lat": 43.94,
-      "lng": 12.45,
-      "hotels": 10,
-      "order": 384
-    },
-    {
-      "id": "sy-damasco",
-      "name": "Damasco",
-      "country": "Siria",
-      "countryCode": "SY",
-      "lat": 33.51,
-      "lng": 36.29,
-      "hotels": 10,
-      "order": 385
-    },
-    {
-      "id": "sr-paramaribo",
-      "name": "Paramaribo",
-      "country": "Surinam",
-      "countryCode": "SR",
-      "lat": 5.85,
-      "lng": -55.2,
-      "hotels": 10,
-      "order": 386
-    },
-    {
-      "id": "tl-dili",
-      "name": "Dili",
-      "country": "Timor Oriental",
-      "countryCode": "TL",
-      "lat": -8.56,
-      "lng": 125.57,
-      "hotels": 10,
-      "order": 387
-    },
-    {
-      "id": "to-nukualofa",
-      "name": "Nukualofa",
-      "country": "Tonga",
-      "countryCode": "TO",
-      "lat": -21.14,
-      "lng": -175.2,
-      "hotels": 10,
-      "order": 388
-    },
-    {
-      "id": "tt-puerto-espana",
-      "name": "Puerto España",
-      "country": "Trinidad y Tobago",
-      "countryCode": "TT",
-      "lat": 10.65,
-      "lng": -61.52,
-      "hotels": 10,
-      "order": 389
-    },
-    {
-      "id": "ug-kampala",
-      "name": "Kampala",
-      "country": "Uganda",
-      "countryCode": "UG",
-      "lat": 0.35,
-      "lng": 32.58,
-      "hotels": 10,
-      "order": 390
-    },
-    {
-      "id": "vu-port-vila",
-      "name": "Port Vila",
-      "country": "Vanuatu",
-      "countryCode": "VU",
-      "lat": -17.73,
-      "lng": 168.33,
-      "hotels": 10,
-      "order": 391
-    },
-    {
-      "id": "ye-sana",
-      "name": "Saná",
-      "country": "Yemen",
-      "countryCode": "YE",
-      "lat": 15.37,
-      "lng": 44.19,
-      "hotels": 10,
-      "order": 392
-    },
-    {
-      "id": "zm-lusaka",
-      "name": "Lusaka / Victoria Falls",
-      "country": "Zambia",
-      "countryCode": "ZM",
-      "lat": -15.39,
-      "lng": 28.32,
-      "hotels": 10,
-      "order": 393
+      "hotels": 43,
+      "order": 231
     }
   ]
 }

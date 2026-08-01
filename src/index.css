@@ -1312,3 +1312,70 @@ button {
 @media (max-width: 700px) {
   .gallery-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+
+/* Plan de construcción */
+.panel--plan {
+  width: min(420px, 94vw);
+  max-height: calc(100vh - 6rem);
+}
+.plan-region {
+  font-size: 0.85rem;
+  line-height: 1.45;
+  margin: 0 0 0.75rem;
+}
+.plan-warn {
+  color: var(--bad);
+  font-size: 0.82rem;
+}
+.plan-card {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 0.85rem 1rem;
+  background: #fff;
+}
+.plan-order {
+  margin: 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  color: var(--sea);
+  font-weight: 600;
+}
+.plan-buy {
+  margin: 0.35rem 0 0;
+  color: #8b1e1e;
+  font-weight: 700;
+  font-size: 0.92rem;
+}
+.plan-new {
+  margin: 0.25rem 0 0.45rem;
+  color: #0b4f2f;
+  font-weight: 700;
+  font-size: 0.92rem;
+}
+.plan-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.65rem;
+}
+.plan-list {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+  max-height: 280px;
+  overflow: auto;
+  border-top: 1px solid var(--line);
+}
+.plan-list li {
+  border-bottom: 1px solid var(--line);
+}
+.plan-list li.done .plan-list__btn { opacity: 0.55; }
+.plan-list li.current .plan-list__btn { background: rgba(196, 163, 90, 0.18); }
+.plan-list__btn {
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: transparent;
+  padding: 0.45rem 0.2rem;
+  font-size: 0.75rem;
+}

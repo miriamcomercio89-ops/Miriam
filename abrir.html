@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Orbis Hotels Group — Cómo abrir</title>
+    <style>
+      :root {
+        --bg: #0b3d4a;
+        --gold: #c4a35a;
+        --paper: #f2e6c8;
+        --ink: #1a1a1a;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: Georgia, 'Times New Roman', serif;
+        background: linear-gradient(160deg, #062a33 0%, #0b3d4a 45%, #163028 100%);
+        color: var(--paper);
+        display: grid;
+        place-items: center;
+        padding: 2rem;
+      }
+      main {
+        max-width: 36rem;
+        background: rgba(0, 0, 0, 0.25);
+        border: 1px solid rgba(196, 163, 90, 0.45);
+        padding: 2rem 2.2rem;
+      }
+      h1 {
+        font-size: 1.85rem;
+        margin: 0 0 0.4rem;
+        letter-spacing: 0.04em;
+        color: var(--gold);
+      }
+      p { line-height: 1.55; margin: 0.75rem 0; }
+      code {
+        font-family: ui-monospace, monospace;
+        font-size: 0.9em;
+        color: var(--gold);
+      }
+      ol { margin: 0.5rem 0 1rem 1.2rem; padding: 0; line-height: 1.6; }
+      a.btn {
+        display: inline-block;
+        margin-top: 0.75rem;
+        margin-right: 0.5rem;
+        padding: 0.65rem 1.1rem;
+        background: var(--gold);
+        color: var(--bg);
+        text-decoration: none;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+      }
+      a.btn.ghost {
+        background: transparent;
+        color: var(--paper);
+        border: 1px solid rgba(242, 230, 200, 0.45);
+      }
+      .note { font-size: 0.92rem; opacity: 0.85; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Orbis Hotels Group</h1>
+      <p>
+        No abras el <code>index.html</code> haciendo doble clic en el archivo:
+        el juego necesita un servidor (o la carpeta <code>dist/</code> servida).
+      </p>
+      <p><strong>Opción A — desarrollo</strong></p>
+      <ol>
+        <li><code>npm install</code></li>
+        <li><code>npm run dev</code></li>
+        <li>Abre la URL que salga (suele ser <code>http://localhost:5173</code>)</li>
+      </ol>
+      <p><strong>Opción B — versión compilada</strong></p>
+      <ol>
+        <li><code>npm run build</code></li>
+        <li><code>npx serve dist</code> (o cualquier servidor estático)</li>
+        <li>Abre la URL que indique el servidor</li>
+      </ol>
+      <p class="note">
+        Si ya tienes <code>dist/</code> generado, prueba el botón de abajo
+        (solo funciona si abres esta página a través de un servidor, no como archivo local).
+      </p>
+      <p>
+        <a class="btn" href="./dist/index.html">Abrir juego (dist)</a>
+        <a class="btn ghost" href="./index.html">Abrir en Vite (dev)</a>
+      </p>
+    </main>
+  </body>
+</html>

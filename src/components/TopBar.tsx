@@ -32,6 +32,7 @@ export function TopBar() {
   const setShowCompare = useGameStore((s) => s.setShowCompare)
   const setShowStats = useGameStore((s) => s.setShowStats)
   const setShowWeekly = useGameStore((s) => s.setShowWeekly)
+  const setShowPlan = useGameStore((s) => s.setShowPlan)
   const generateDemo = useGameStore((s) => s.generateDemo)
   const newGame = useGameStore((s) => s.newGame)
   const gameName = useGameStore((s) => s.gameName)
@@ -90,6 +91,7 @@ export function TopBar() {
         <button type="button" className="chip" title="Comparar dos hoteles" onClick={() => setShowCompare(true)}>Comparar</button>
         <button type="button" className="chip" title="Estadísticas globales" onClick={() => setShowStats(true)}>Stats</button>
         <button type="button" className="chip" title="Informe semanal" onClick={() => setShowWeekly(true)}>Semanal</button>
+        <button type="button" className="chip" title="Plan de construcción" onClick={() => setShowPlan(true)}>Plan</button>
         <button type="button" className="chip" title="Dinero y fama" onClick={() => setShowFinance(true)}>Dinero</button>
         <button type="button" className="chip" title="Depósitos a plazo" onClick={() => setShowBank(true)}>Banco</button>
         <button type="button" className="chip" title="Pedir o devolver crédito" onClick={() => setShowLoan(true)}>Préstamos</button>
@@ -99,12 +101,25 @@ export function TopBar() {
           title="Añadir ~1000 hoteles de prueba"
           disabled={simulating}
           onClick={() => {
-            if (!window.confirm('¿Añadir unos 1000 hoteles de prueba en ciudades reales?')) return
+            if (!window.confirm('¿Añadir unos 1000 hoteles de prueba?')) return
             const res = generateDemo(1000)
             if (!res.ok) window.alert(res.error)
           }}
         >
           Demo 1k
+        </button>
+        <button
+          type="button"
+          className="chip"
+          title="Prueba de rendimiento con muchos hoteles"
+          disabled={simulating}
+          onClick={() => {
+            if (!window.confirm('¿Añadir unos 5000 hoteles de prueba? Puede ir más lento.')) return
+            const res = generateDemo(5000)
+            if (!res.ok) window.alert(res.error)
+          }}
+        >
+          Demo 5k
         </button>
         <button type="button" className="chip" title="Sonido sí/no" onClick={toggleSound}>{soundEnabled ? 'Sonido' : 'Mudo'}</button>
         <button

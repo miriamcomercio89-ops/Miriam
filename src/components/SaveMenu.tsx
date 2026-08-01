@@ -133,13 +133,13 @@ export function SaveMenu() {
 
           <hr />
           <button type="button" className="btn btn--ghost btn--block" onClick={downloadGz}>
-            Exportar comprimido
+            Descargar partida (.orbis.gz)
           </button>
           <button type="button" className="btn btn--ghost btn--block" onClick={downloadJson}>
-            Exportar JSON
+            Descargar JSON
           </button>
           <button type="button" className="btn btn--ghost btn--block" onClick={() => fileRef.current?.click()}>
-            Importar archivo
+            Cargar partida desde archivo
           </button>
           <input
             ref={fileRef}

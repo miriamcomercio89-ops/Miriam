@@ -1,24 +1,29 @@
 #!/usr/bin/env node
 /**
- * Genera 1 PDF por región (+ PDF maestro de orden).
- * Lee plan-construccion/REGIONES.json (10.000 hoteles).
+ * Genera PDFs del plan: 1 hotel/página, nombres reales (OSM), ciudad concreta,
+ * enlace web e imagen si hay URL en OSM.
  *
- * Carpetas:
- *   plan-construccion/pdfs/{CC}-{Pais}/{NNN}_{Region}.pdf
- *   plan-construccion/ORDEN-CONSTRUCCION.pdf
+ * Requiere: plan-construccion/REGIONES.json
+ *           scripts/generate-plan/cache/osm/ES.json (+ cache/osm/regions/*.json)
  *
  * Uso: npm run plan:pdfs
  */
 import fs from 'node:fs'
 import path from 'node:path'
+import https from 'node:https'
+import http from 'node:http'
 import { fileURLToPath } from 'node:url'
 import PDFDocument from 'pdfkit'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const ROOT = path.resolve(__dirname, '../..')
 const PLAN = path.join(ROOT, 'plan-construccion')
+const CACHE = path.join(__dirname, 'cache/osm')
+const REG_CACHE = path.join(CACHE, 'regions')
 const OUT_PDF = path.join(PLAN, 'pdfs')
 const OUT_IDX = path.join(PLAN, 'indices')
+const OUT_PUBLIC = path.join(ROOT, 'public/plan')
+const IMG_CACHE = path.join(__dirname, 'cache/images')
 
 const SUBS = [
   { id: 'azure-coast', name: 'Orbis Azure Coast', min: 4, max: 5, targets: ['playa', 'lujo', 'parejas'] },
@@ -92,6 +97,30 @@ const SERVICES = [
   'cine', 'jardines', 'mirador', 'pista_padel', 'guarderia_noche',
 ]
 
+/** Ciudades ancla por región (para no poner solo la capital) */
+const CITY_ANCHORS = {
+  'es-malaga-costa-sol': [
+    ['Marbella', 36.51, -4.88], ['Fuengirola', 36.54, -4.62], ['Torremolinos', 36.62, -4.5],
+    ['Benalmádena', 36.6, -4.52], ['Estepona', 36.43, -5.15], ['Mijas', 36.6, -4.64],
+    ['Nerja', 36.75, -3.87], ['Málaga', 36.72, -4.42],
+  ],
+  'es-malaga-capital': [['Málaga', 36.72, -4.42]],
+  'es-marbella': [['Marbella', 36.51, -4.88], ['Estepona', 36.43, -5.15], ['San Pedro Alcántara', 36.49, -4.99]],
+  'es-barcelona': [['Barcelona', 41.39, 2.17], ['Hospitalet', 41.36, 2.1], ['Badalona', 41.45, 2.25]],
+  'es-madrid': [['Madrid', 40.42, -3.7]],
+  'es-mallorca': [['Palma', 39.57, 2.65], ['Alcúdia', 39.85, 3.12], ['Calvià', 39.56, 2.5]],
+  'es-ibiza': [['Ibiza', 38.91, 1.43], ['Sant Antoni', 38.98, 1.3], ['Santa Eulària', 38.98, 1.53]],
+  'es-tenerife': [['Adeje', 28.12, -16.72], ['Arona', 28.1, -16.68], ['Puerto de la Cruz', 28.41, -16.55]],
+  'es-gran-canaria': [['Las Palmas', 28.12, -15.43], ['Maspalomas', 27.76, -15.59]],
+  'es-benidorm': [['Benidorm', 38.54, -0.13], ['Altea', 38.6, -0.05], ['Calpe', 38.64, 0.04]],
+  'es-valencia': [['Valencia', 39.47, -0.38]],
+  'es-sevilla': [['Sevilla', 37.39, -5.99]],
+  'es-granada': [['Granada', 37.18, -3.6], ['Sierra Nevada', 37.09, -3.39]],
+  'es-alicante': [['Alicante', 38.35, -0.48]],
+  'es-costa-brava': [['Lloret de Mar', 41.7, 2.85], ['Roses', 42.26, 3.18], ['Tossa de Mar', 41.72, 2.93]],
+  'es-costa-dourada': [['Salou', 41.08, 1.13], ['Cambrils', 41.07, 1.06], ['Tarragona', 41.12, 1.25]],
+}
+
 const STAFF = ['basico', 'estandar', 'premium', 'lujo']
 const MIX = ['estandar', 'mixto', 'suites', 'familiar']
 const QUALITY = ['simple', 'bueno', 'alto', 'lujo']
@@ -99,102 +128,6 @@ const GREEN = ['ninguno', 'basico', 'avanzado', 'elite']
 const FOCUS = ['vistas', 'silencio', 'fiesta', 'trabajo', 'familia']
 const SECURITY = ['bajo', 'medio', 'alto']
 const TECH = ['basico', 'moderno', 'futuro']
-
-/** Cadenas reales (marcas globales) — se combinan con la ciudad de la región */
-const REAL_CHAINS = [
-  'Hilton', 'Hilton Garden Inn', 'DoubleTree by Hilton', 'Hampton by Hilton',
-  'Marriott', 'Courtyard by Marriott', 'Residence Inn', 'Renaissance', 'Sheraton', 'Westin', 'W Hotel',
-  'Hyatt', 'Hyatt Place', 'Hyatt Regency', 'Andaz',
-  'InterContinental', 'Crowne Plaza', 'Holiday Inn', 'Holiday Inn Express', 'Hotel Indigo', 'voco',
-  'Novotel', 'Mercure', 'ibis', 'ibis Styles', 'Pullman', 'Sofitel', 'Mövenpick',
-  'Radisson Blu', 'Park Inn by Radisson', 'Best Western', 'Best Western Plus',
-  'NH Hotel', 'NH Collection', 'Melia', 'Barceló', 'Iberostar', 'AC Hotel',
-  'Catalonia', 'Eurostars', 'Sercotel', 'Ilunion', 'Tryp by Wyndham', 'Wyndham',
-  'Four Seasons', 'Ritz-Carlton', 'Mandarin Oriental', 'Fairmont', 'Rosewood',
-  'Kimpton', 'CitizenM', 'Aloft', 'Element', 'Tribute Portfolio',
-]
-
-const SITE_SUFFIX = ['', ' Centro', ' City Center', ' Airport', ' Playa', ' Resort', ' Suites', ' Palace', ' Garden']
-
-/** Hoteles reales curados por id de región (prioridad) */
-const CURATED = {
-  'es-malaga-costa-sol': [
-    'Gran Hotel Miramar', 'Hotel Villa Padierna Palace', 'Marbella Club Hotel', 'Puente Romano Marbella',
-    'Hotel Fuerte Marbella', 'Iberostar Selection Marbella Coral Beach', 'Don Carlos Marbella',
-    'Melia Costa del Sol', 'Hotel Cervantes Torremolinos', 'Sol Príncipe Torremolinos',
-    'Hotel Las Palmeras Fuengirola', 'Hotel MS Maestranza', 'Barceló Málaga', 'AC Hotel Málaga Palacio',
-    'Hotel Guadalpin Banus', 'Hotel Catalonia Puerta del Mar', 'Parador de Málaga Gibralfaro',
-    'Hotel Balcón de Europa Nerja', 'Holiday Inn Málaga - Costa del Sol', 'NH Málaga',
-  ],
-  'es-malaga-capital': [
-    'Barceló Málaga', 'NH Málaga', 'AC Hotel Málaga Palacio', 'Parador de Málaga Gibralfaro',
-    'Hotel MS Maestranza', 'Hotel Molina Lario', 'Room Mate Larios', 'Hotel Claude Málaga',
-  ],
-  'es-marbella': [
-    'Marbella Club Hotel', 'Puente Romano Marbella', 'Hotel Villa Padierna Palace',
-    'Don Carlos Marbella', 'Hotel Fuerte Marbella', 'Iberostar Selection Marbella Coral Beach',
-  ],
-  'es-barcelona': [
-    'Hotel Casa Fuster', 'Hotel Majestic Barcelona', 'W Barcelona', 'Hotel Arts Barcelona',
-    'Hotel El Palace Barcelona', 'Hotel España Barcelona', 'Ohla Barcelona', 'Hotel 1898',
-    'Barceló Raval', 'Melia Barcelona Sky', 'AC Hotel Barcelona Forum', 'Hotel Cotton House',
-  ],
-  'es-madrid': [
-    'Hotel Ritz Madrid', 'Hotel Villa Magna', 'The Westin Palace Madrid', 'Hotel Urban',
-    'Hotel Emperador', 'Only YOU Boutique Hotel Madrid', 'Hotel Wellington', 'Barceló Emperatriz',
-    'NH Collection Madrid Gran Vía', 'Hotel Único Madrid',
-  ],
-  'es-mallorca': [
-    'Hotel Formentor', 'Jumeirah Port Soller', 'Puro Hotel Palma', 'Hotel Can Alomar',
-    'Iberostar Grand Portals Nous', 'Melia Palma Bay', 'Hotel Nixe Palace',
-  ],
-  'es-ibiza': [
-    'Hotel Hacienda Na Xamena', 'Nobu Hotel Ibiza Bay', 'Ushuaïa Ibiza Beach Hotel',
-    'Hard Rock Hotel Ibiza', 'ME Ibiza',
-  ],
-  'es-tenerife': [
-    'Bahía del Duque', 'Ritz-Carlton Abama', 'Hotel Botánico', 'Iberostar Selection Anthelia',
-    'Melia Jardines del Teide',
-  ],
-  'es-gran-canaria': [
-    'Santa Catalina Hotel', 'Lopesan Costa Meloneras', 'Hotel Riu Palace Meloneras',
-    'Bohemia Suites & Spa',
-  ],
-  'es-sevilla': ['Hotel Alfonso XIII', 'Hotel Casa del Poeta', 'Hotel Mercer Sevilla', 'Hotel England'],
-  'es-granada': ['Hotel Alhambra Palace', 'Parador de Granada', 'Hotel Casa 1800 Granada', 'Barceló Granada Congress'],
-  'es-valencia': ['Hotel Las Arenas Balneario', 'Caro Hotel Valencia', 'The Westin Valencia', 'SH Inglés Boutique Hotel'],
-  'es-benidorm': ['Hotel Villa Capricho', 'Melia Benidorm', 'Hotel Deloix Aqua Center', 'Barceló Asia Gardens'],
-  'fr-paris': [
-    'Hôtel Ritz Paris', 'Le Bristol Paris', 'Hôtel de Crillon', 'Le Meurice', 'Shangri-La Paris',
-    'Hôtel Plaza Athénée', 'Mandarin Oriental Paris', 'Hôtel Lutetia', 'Pullman Paris Tour Eiffel',
-  ],
-  'fr-cote-azur': ['Hôtel Negresco', 'Hotel Martinez Cannes', 'Grand-Hôtel du Cap-Ferrat', 'Hotel Barrière Le Majestic Cannes'],
-  'it-roma': ['Hotel de Russie', 'Hotel Hassler Roma', 'The St. Regis Rome', 'Hotel Eden Rome', 'Rome Cavalieri'],
-  'it-milan': ['Hotel Principe di Savoia', 'Bulgari Hotel Milano', 'Park Hyatt Milan', 'Excelsior Hotel Gallia'],
-  'it-venecia': ['Hotel Danieli', 'The Gritti Palace', 'Hotel Cipriani', 'Bauer Palazzo'],
-  'it-florencia': ['Hotel Savoy Florence', 'Four Seasons Firenze', 'Hotel Brunelleschi', 'Portrait Firenze'],
-  'gb-london': ['The Savoy', 'Claridge\'s', 'The Ritz London', 'Shangri-La The Shard', 'The Ned', 'Hotel Café Royal'],
-  'us-nueva-york': ['The Plaza', 'Waldorf Astoria New York', 'The St. Regis New York', 'Four Seasons New York', 'The Pierre'],
-  'us-los-angeles': ['Beverly Hills Hotel', 'Hotel Bel-Air', 'Shutters on the Beach', 'The Hollywood Roosevelt'],
-  'us-miami': ['Fontainebleau Miami Beach', 'The Setai Miami Beach', 'Faena Hotel Miami Beach', '1 Hotel South Beach'],
-  'us-las-vegas': ['Bellagio', 'Aria Resort', 'The Venetian', 'Wynn Las Vegas', 'Caesars Palace'],
-  'us-orlando': ['Disney\'s Grand Floridian', 'Waldorf Astoria Orlando', 'Universal\'s Hard Rock Hotel'],
-  'jp-tokio': ['Park Hyatt Tokyo', 'The Peninsula Tokyo', 'Aman Tokyo', 'Hotel Okura Tokyo', 'Imperial Hotel Tokyo'],
-  'cn-shanghai': ['The Peninsula Shanghai', 'Waldorf Astoria Shanghai', 'Fairmont Peace Hotel', 'Pudong Shangri-La'],
-  'cn-beijing': ['The Peninsula Beijing', 'Waldorf Astoria Beijing', 'China World Summit Wing'],
-  'cn-hong-kong': ['The Peninsula Hong Kong', 'Mandarin Oriental Hong Kong', 'Island Shangri-La'],
-  'ae-dubai': ['Burj Al Arab', 'Atlantis The Palm', 'Address Downtown', 'Jumeirah Beach Hotel', 'One&Only Royal Mirage'],
-  'th-bangkok': ['Mandarin Oriental Bangkok', 'The Peninsula Bangkok', 'Shangri-La Bangkok', 'Lebua at State Tower'],
-  'th-phuket': ['Trisara Phuket', 'Amanpuri', 'Banyan Tree Phuket', 'JW Marriott Phuket'],
-  'mx-cancun': ['Nizuc Resort', 'Live Aqua Cancún', 'Hyatt Zilara Cancún', 'Grand Fiesta Americana Coral Beach'],
-  'pt-lisboa': ['Pestana Palace Lisboa', 'Four Seasons Hotel Ritz Lisbon', 'Olissippo Lapa Palace'],
-  'pt-algarve': ['Vila Vita Parc', 'Epic Sana Algarve', 'Pine Cliffs Resort'],
-  'gr-santorini': ['Canaves Oia', 'Katikies Santorini', 'Grace Hotel Santorini'],
-  'tr-estambul': ['Çırağan Palace Kempinski', 'Four Seasons Sultanahmet', 'Pera Palace Hotel'],
-  'eg-el-cairo': ['Marriott Mena House', 'Four Seasons Nile Plaza', 'The Nile Ritz-Carlton'],
-  'sg-singapur': ['Raffles Singapore', 'Marina Bay Sands', 'Fullerton Hotel Singapore'],
-  'au-sydney': ['Park Hyatt Sydney', 'Shangri-La Sydney', 'Quay West Suites Sydney'],
-}
 
 function mulberry32(a) {
   return function () {
@@ -204,11 +137,9 @@ function mulberry32(a) {
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296
   }
 }
-
 function pick(rng, arr) {
   return arr[Math.floor(rng() * arr.length)]
 }
-
 function pickN(rng, arr, n) {
   const copy = [...arr]
   const out = []
@@ -218,85 +149,195 @@ function pickN(rng, arr, n) {
   }
   return out
 }
-
 function slugify(s) {
-  return String(s)
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^\w\-]+/g, '_')
-    .replace(/_+/g, '_')
-    .replace(/^_|_$/g, '')
+  return String(s).normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^\w\-]+/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '')
 }
-
-function cityFromRegion(name) {
-  // "Costa del Sol (Málaga)" → Málaga; "Nueva York" → Nueva York
-  const m = name.match(/\(([^)]+)\)/)
-  if (m) return m[1].split('/')[0].trim()
-  return name.split('/')[0].split(',')[0].trim()
-}
-
-function detectVibe(name, lat) {
-  const n = name.toLowerCase()
-  if (/costa|playa|beach|island|isla|maldives|maldiv|carib|bali|phuket|ibiza|mallorca|canaria|tenerife|algarve|riviera|cancun|miami|hawaii|seychell|mauritius|zanzibar/.test(n)) return 'coast'
-  if (/alpes|alpine|ski|sierra|mountain|patagonia|safari|kruger|serengeti|fiordo|nature|parque|national/.test(n)) return 'nature'
-  if (/palace|heritage|historic|roma|paris|venecia|florencia|praga|kyoto|kioto|cusco|petra|angkor/.test(n)) return 'heritage'
-  if (Math.abs(lat) < 35 && /desert|dubai|doha|marrakech|cairo|cairo/.test(n)) return 'luxury'
-  return 'urban'
-}
-
-function themeFor(vibe, countryCode, order) {
-  const themes = {
-    coast: ['#0B3D4A', '#C4A35A', '#F2E6C8'],
-    nature: ['#163028', '#7BA88A', '#E4F0E8'],
-    heritage: ['#2A1F18', '#C9A227', '#F3E5C4'],
-    luxury: ['#1A1028', '#C9A86C', '#F5EFE3'],
-    urban: ['#111827', '#C4A35A', '#F5F0E6'],
-  }
-  const base = [...(themes[vibe] || themes.urban)]
-  // ligera variación por orden/país
-  const hueShift = (order * 17 + countryCode.charCodeAt(0)) % 40
-  if (hueShift > 20) base[1] = '#B8956A'
-  return base
-}
-
-function realHotelName(region, localIdx, city, rng) {
-  const curated = CURATED[region.id]
-  if (curated && localIdx < curated.length) return curated[localIdx]
-  if (curated) {
-    const base = curated[localIdx % curated.length]
-    const suffix = SITE_SUFFIX[Math.floor(localIdx / curated.length) % SITE_SUFFIX.length]
-    if (suffix) return `${base}${suffix}`.replace(/  +/g, ' ')
-  }
-  // Marca real + ciudad de la región + sufijo de tipo de sede (patrón real de cadenas)
-  const chain = REAL_CHAINS[(localIdx + region.order) % REAL_CHAINS.length]
-  const suffix = SITE_SUFFIX[localIdx % SITE_SUFFIX.length]
-  return `${chain} ${city}${suffix}`.trim()
-}
-
-function orbisHotelName(sub, city, order) {
-  const short = sub.name.replace(/^Orbis\s+/, '')
-  return `${short} ${city} #${order}`
-}
-
 function boardLabel(id) {
   return BOARDS.find((b) => b.id === id)?.label ?? id
 }
+function dist2(a, b) {
+  const dy = a.lat - b.lat
+  const dx = a.lng - b.lng
+  return dy * dy + dx * dx
+}
+function detectVibe(name) {
+  const n = name.toLowerCase()
+  if (/costa|playa|beach|island|isla|maldives|carib|bali|phuket|ibiza|mallorca|canaria|tenerife|algarve|riviera|cancun|miami|hawaii/.test(n)) return 'coast'
+  if (/alpes|alpine|ski|sierra|mountain|patagonia|safari|fiordo/.test(n)) return 'nature'
+  if (/roma|paris|venecia|florencia|praga|kyoto|kioto|cusco|petra/.test(n)) return 'heritage'
+  return 'urban'
+}
+function themeFor(vibe) {
+  return {
+    coast: ['#0B3D4A', '#C4A35A', '#F2E6C8'],
+    nature: ['#163028', '#7BA88A', '#E4F0E8'],
+    heritage: ['#2A1F18', '#C9A227', '#F3E5C4'],
+    urban: ['#111827', '#C4A35A', '#F5F0E6'],
+  }[vibe] || ['#111827', '#C4A35A', '#F5F0E6']
+}
 
-function buildHotel(order, region, localIdx, rng) {
-  const city = cityFromRegion(region.name)
-  const vibe = region.vibe
+function parseOsmFile(filePath) {
+  if (!fs.existsSync(filePath)) return []
+  let raw
+  try {
+    raw = JSON.parse(fs.readFileSync(filePath, 'utf8'))
+  } catch {
+    return []
+  }
+  if (raw.useCountry) return []
+  const out = []
+  for (const e of raw.elements || []) {
+    const tags = e.tags || {}
+    const name = tags.name
+    if (!name || name.length < 2) continue
+    // skip pure apartments labeled as such if too generic? keep hotels
+    const lat = e.lat ?? e.center?.lat
+    const lng = e.lon ?? e.center?.lon
+    if (lat == null || lng == null) continue
+    const website = tags.website || tags['contact:website'] || tags['contact:facebook'] || null
+    const image = tags.image || tags.wikimedia_commons || null
+    const city =
+      tags['addr:city'] ||
+      tags['addr:town'] ||
+      tags['addr:suburb'] ||
+      tags['addr:place'] ||
+      null
+    const osmType = e.type === 'way' ? 'way' : 'node'
+    out.push({
+      name: name.trim(),
+      lat,
+      lng,
+      website,
+      image: image && String(image).startsWith('http') ? image : null,
+      city,
+      osmUrl: `https://www.openstreetmap.org/${osmType}/${e.id}`,
+      key: `${osmType}/${e.id}`,
+    })
+  }
+  return out
+}
+
+function loadCountryPool(cc) {
+  return parseOsmFile(path.join(CACHE, `${cc}.json`))
+}
+
+function loadRegionPool(regionId) {
+  return parseOsmFile(path.join(REG_CACHE, `${regionId}.json`))
+}
+
+function nearestCity(lat, lng, region) {
+  const anchors = CITY_ANCHORS[region.id]
+  if (anchors?.length) {
+    let best = anchors[0]
+    let bestD = Infinity
+    for (const a of anchors) {
+      const d = dist2({ lat, lng }, { lat: a[1], lng: a[2] })
+      if (d < bestD) {
+        bestD = d
+        best = a
+      }
+    }
+    return best[0]
+  }
+  // fallback: first word of region name or paren city
+  const m = region.name.match(/\(([^)]+)\)/)
+  if (m) return m[1].split('/')[0].trim()
+  return region.name.split('/')[0].split(',')[0].trim()
+}
+
+function hotelWebsite(h, city) {
+  if (h.website && /^https?:\/\//i.test(h.website)) return h.website
+  if (h.osmUrl) return h.osmUrl
+  const q = encodeURIComponent(`${h.name} ${city} hotel`)
+  return `https://www.google.com/search?q=${q}`
+}
+
+function downloadImage(url, dest) {
+  return new Promise((resolve) => {
+    if (!url || !/^https?:\/\//i.test(url)) return resolve(null)
+    if (fs.existsSync(dest) && fs.statSync(dest).size > 500) return resolve(dest)
+    const lib = url.startsWith('https') ? https : http
+    const req = lib.get(
+      url,
+      {
+        headers: { 'User-Agent': 'OrbisHotelsPlan/0.6', Accept: 'image/*,*/*' },
+        timeout: 12000,
+      },
+      (res) => {
+        if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+          res.resume()
+          return downloadImage(res.headers.location, dest).then(resolve)
+        }
+        if (res.statusCode !== 200) {
+          res.resume()
+          return resolve(null)
+        }
+        const chunks = []
+        res.on('data', (c) => chunks.push(c))
+        res.on('end', () => {
+          const buf = Buffer.concat(chunks)
+          if (buf.length < 400 || buf.length > 2_500_000) return resolve(null)
+          fs.mkdirSync(path.dirname(dest), { recursive: true })
+          fs.writeFileSync(dest, buf)
+          resolve(dest)
+        })
+      },
+    )
+    req.on('error', () => resolve(null))
+    req.on('timeout', () => {
+      req.destroy()
+      resolve(null)
+    })
+  })
+}
+
+function assignHotels(regions) {
+  const used = new Set()
+  const byRegion = new Map()
+  const countryPools = new Map()
+
+  for (const r of regions) {
+    let pool = loadRegionPool(r.id)
+    if (r.countryCode === 'ES' || pool.length < r.hotels) {
+      if (!countryPools.has(r.countryCode)) {
+        countryPools.set(r.countryCode, loadCountryPool(r.countryCode))
+      }
+      const country = countryPools.get(r.countryCode) || []
+      // merge unique
+      const map = new Map(pool.map((h) => [h.key, h]))
+      for (const h of country) map.set(h.key, h)
+      pool = [...map.values()]
+    }
+    // sort by distance to region center
+    pool.sort((a, b) => dist2(a, r) - dist2(b, r))
+    const picked = []
+    for (const h of pool) {
+      if (picked.length >= r.hotels) break
+      if (used.has(h.key)) continue
+      // filter nonsense names
+      if (/^hotel\s*$/i.test(h.name)) continue
+      used.add(h.key)
+      const city = h.city || nearestCity(h.lat, h.lng, r)
+      picked.push({ ...h, city })
+    }
+    byRegion.set(r.id, picked)
+  }
+  return byRegion
+}
+
+function buildHotelCard(order, region, osmHotel, localIdx, rng) {
+  const city = osmHotel.city
   const sub = SUBS[(order + localIdx) % SUBS.length]
   const stars = sub.min + Math.floor(rng() * (sub.max - sub.min + 1))
   const rooms = 40 + Math.floor(rng() * 260) + (stars >= 5 ? 40 : 0)
   const target = pick(rng, sub.targets)
-
+  const vibe = region.vibe
   const vibeBoard =
     vibe === 'coast'
       ? ['desayuno', 'media', 'completa', 'ti', 'ti_premium']
       : vibe === 'urban'
         ? ['solo', 'desayuno', 'media']
         : ['solo', 'desayuno', 'media', 'completa']
-
   let availableRegimes = pickN(rng, BOARDS.map((b) => b.id), 3 + Math.floor(rng() * 4))
   for (const b of vibeBoard.slice(0, 2)) {
     if (!availableRegimes.includes(b)) availableRegimes.push(b)
@@ -304,24 +345,16 @@ function buildHotel(order, region, localIdx, rng) {
   availableRegimes = [...new Set(availableRegimes)]
   const preferred = availableRegimes.filter((b) => vibeBoard.includes(b))
   const boardRegime = pick(rng, preferred.length ? preferred : availableRegimes)
-
-  const serviceCount = 4 + Math.floor(rng() * 8)
-  const services = pickN(rng, SERVICES, serviceCount)
+  const services = pickN(rng, SERVICES, 4 + Math.floor(rng() * 8))
   if (boardRegime.startsWith('ti') && !services.includes('all_inclusive')) services.push('all_inclusive')
-  if (vibe === 'coast' && rng() > 0.55 && !services.includes('piscina')) services.push('piscina')
-
-  const staffLevel = stars >= 5 ? pick(rng, ['premium', 'lujo']) : pick(rng, STAFF)
-  const roomMix = target === 'familiar' ? 'familiar' : stars >= 5 ? pick(rng, ['mixto', 'suites']) : pick(rng, MIX)
-  const buildQuality = stars >= 5 ? pick(rng, ['alto', 'lujo']) : pick(rng, QUALITY)
-  const greenLevel = pick(rng, GREEN)
-  const designFocus = vibe === 'coast' ? pick(rng, ['vistas', 'fiesta', 'familia']) : pick(rng, FOCUS)
-  const securityLevel = stars >= 4 ? pick(rng, ['medio', 'alto']) : pick(rng, SECURITY)
-  const techLevel = pick(rng, TECH)
+  const brandShort = sub.name.replace(/^Orbis\s+/, '')
+  const orbisName = `${brandShort} ${city} #${order}`
+  const website = hotelWebsite(osmHotel, city)
 
   return {
     order,
-    realHotel: realHotelName(region, localIdx, city, rng),
-    name: orbisHotelName(sub, city, order),
+    realHotel: osmHotel.name,
+    name: orbisName,
     subsidiaryId: sub.id,
     subsidiaryName: sub.name,
     country: region.country,
@@ -329,28 +362,33 @@ function buildHotel(order, region, localIdx, rng) {
     regionId: region.id,
     regionName: region.name,
     city,
+    lat: osmHotel.lat,
+    lng: osmHotel.lng,
+    website,
+    imageUrl: osmHotel.image || null,
+    osmUrl: osmHotel.osmUrl,
     stars,
     rooms,
     target,
-    staffLevel,
-    roomMix,
-    buildQuality,
+    staffLevel: stars >= 5 ? pick(rng, ['premium', 'lujo']) : pick(rng, STAFF),
+    roomMix: target === 'familiar' ? 'familiar' : stars >= 5 ? pick(rng, ['mixto', 'suites']) : pick(rng, MIX),
+    buildQuality: stars >= 5 ? pick(rng, ['alto', 'lujo']) : pick(rng, QUALITY),
     floors: 2 + Math.floor(rng() * (stars >= 4 ? 18 : 8)),
-    greenLevel,
+    greenLevel: pick(rng, GREEN),
     meetingRooms: target === 'negocios' ? 2 + Math.floor(rng() * 8) : Math.floor(rng() * 3),
     parkingSpots: 10 + Math.floor(rng() * 120),
     restaurantLevel: stars >= 4 ? 2 + Math.floor(rng() * 4) : Math.floor(rng() * 3),
     openingPromoDays: Math.floor(rng() * 15),
-    designFocus,
+    designFocus: vibe === 'coast' ? pick(rng, ['vistas', 'fiesta', 'familia']) : pick(rng, FOCUS),
     buffet: boardRegime !== 'solo' && rng() > 0.4,
     lateCheckout: rng() > 0.35,
     airportDesk: target === 'negocios' || rng() > 0.7,
-    securityLevel,
-    techLevel,
+    securityLevel: stars >= 4 ? pick(rng, ['medio', 'alto']) : pick(rng, SECURITY),
+    techLevel: pick(rng, TECH),
     breakfastIncluded: boardRegime !== 'solo',
     seaViewShare: vibe === 'coast' ? 20 + Math.floor(rng() * 70) : Math.floor(rng() * 15),
     loyaltyProgram: rng() > 0.55,
-    quietHours: designFocus === 'silencio' || rng() > 0.7,
+    quietHours: rng() > 0.7,
     bikeRental: vibe === 'nature' || rng() > 0.75,
     shuttleCity: rng() > 0.6,
     boardRegime,
@@ -360,123 +398,118 @@ function buildHotel(order, region, localIdx, rng) {
   }
 }
 
-function writeRegionPdf(region, hotels, filePath) {
-  return new Promise((resolve, reject) => {
-    const [c1, c2, c3] = region.theme
-    const doc = new PDFDocument({
-      size: 'A4',
-      margin: 36,
-      info: { Title: `Orbis · ${region.name}`, Author: 'Orbis Hotels Group' },
-    })
-    const stream = fs.createWriteStream(filePath)
-    doc.pipe(stream)
+async function writeRegionPdf(region, hotels, filePath) {
+  const [c1, c2, c3] = region.theme
+  const doc = new PDFDocument({
+    size: 'A4',
+    margin: 40,
+    info: { Title: `Orbis · ${region.name}`, Author: 'Orbis Hotels Group' },
+  })
+  const stream = fs.createWriteStream(filePath)
+  doc.pipe(stream)
+
+  const finish = new Promise((resolve, reject) => {
     stream.on('finish', resolve)
     stream.on('error', reject)
+  })
 
-    const header = () => {
-      doc.rect(0, 0, doc.page.width, 64).fill(c1)
-      doc.fillColor(c3).font('Helvetica-Bold').fontSize(16).text('ORBIS HOTELS GROUP', 36, 16)
-      doc.font('Helvetica').fontSize(10).fillColor(c2)
-        .text(`Plan de construcción · ${region.country} · ${region.name}`, 36, 38)
-      doc.fillColor('#222')
+  for (let i = 0; i < hotels.length; i++) {
+    if (i > 0) doc.addPage()
+    const h = hotels[i]
+
+    doc.rect(0, 0, doc.page.width, 70).fill(c1)
+    doc.fillColor(c3).font('Helvetica-Bold').fontSize(16).text('ORBIS HOTELS GROUP', 40, 18)
+    doc.font('Helvetica').fontSize(10).fillColor(c2)
+      .text(`Plan · ${region.country} · ${region.name} · Hotel ${i + 1}/${hotels.length}`, 40, 42)
+
+    let y = 95
+    doc.fillColor(c1).font('Helvetica-Bold').fontSize(22).text(`#${h.order}`, 40, y)
+    y = doc.y + 8
+
+    doc.font('Helvetica-Bold').fontSize(13).fillColor('#8B1E1E')
+      .text(`Compra: ${h.realHotel}`, 40, y, { width: 515 })
+    y = doc.y + 6
+    doc.font('Helvetica-Bold').fontSize(13).fillColor('#0B4F2F')
+      .text(`Nuevo: ${h.name}`, 40, y, { width: 515 })
+    y = doc.y + 10
+
+    doc.font('Helvetica').fontSize(10).fillColor('#333')
+      .text(`Marca Orbis: ${h.subsidiaryName}`, 40, y)
+      .text(`Ciudad: ${h.city}  ·  ${h.stars}★  ·  ${h.rooms} habitaciones`, 40, doc.y + 2)
+      .text(`País: ${h.country} (${h.countryCode})`, 40, doc.y + 2)
+    y = doc.y + 12
+
+    // Image if available
+    let imgPath = null
+    if (h.imageUrl) {
+      const dest = path.join(IMG_CACHE, `${slugify(h.realHotel).slice(0, 40)}_${h.order}.img`)
+      imgPath = await downloadImage(h.imageUrl, dest)
+    }
+    if (imgPath) {
+      try {
+        doc.image(imgPath, 40, y, { fit: [240, 150], align: 'left' })
+        y += 160
+      } catch {
+        // ignore bad image
+      }
+    } else {
+      doc.roundedRect(40, y, 240, 120, 8).strokeColor(c2).stroke()
+      doc.fillColor('#666').fontSize(9)
+        .text('Sin foto local. Ábrela en la web del hotel o en OpenStreetMap.', 50, y + 50, { width: 220, align: 'center' })
+      y += 130
     }
 
-    header()
-    doc.moveDown(2.2)
-    doc.font('Helvetica-Bold').fontSize(18).fillColor(c1).text(region.name)
-    doc.font('Helvetica').fontSize(10).fillColor('#444')
-      .text(`País: ${region.country} (${region.countryCode}) · Orden de zona: #${region.order}`)
-      .text(`Hoteles en esta zona: ${hotels.length}`)
-      .text(`Orden global: del #${hotels[0].order} al #${hotels[hotels.length - 1].order}`)
-      .text('Compra el hotel real indicado y constrúyelo en el simulador con el nombre Orbis y estos parámetros.')
-    doc.moveDown(0.5)
-    doc.rect(36, doc.y, doc.page.width - 72, 3).fill(c2)
-    doc.moveDown(0.9)
-
-    for (let i = 0; i < hotels.length; i++) {
-      const h = hotels[i]
-      if (doc.y > doc.page.height - 230) {
-        doc.addPage()
-        header()
-        doc.moveDown(2.2)
-      }
-
-      const top = doc.y
-      const cardH = 210
-      doc.roundedRect(36, top, doc.page.width - 72, cardH, 8).lineWidth(1).strokeColor(c2).stroke()
-      doc.rect(36, top, 8, cardH).fill(c1)
-
-      doc.fillColor(c1).font('Helvetica-Bold').fontSize(11)
-        .text(`#${h.order}`, 52, top + 10, { width: 60, continued: false })
-      doc.font('Helvetica-Bold').fontSize(11).fillColor('#8B1E1E')
-        .text(`Compra: ${h.realHotel}`, 52, top + 26, { width: doc.page.width - 100 })
-      doc.font('Helvetica-Bold').fontSize(11).fillColor('#0B4F2F')
-        .text(`Nuevo: ${h.name}`, 52, top + 42, { width: doc.page.width - 100 })
-      doc.font('Helvetica').fontSize(9).fillColor('#333')
-        .text(`${h.subsidiaryName}  ·  ${h.city}  ·  ${h.stars}★  ·  ${h.rooms} hab.`, 52, top + 58)
-
-      const col1 = [
-        `Clientes: ${h.target}`,
-        `Personal: ${h.staffLevel}`,
-        `Habitaciones: ${h.roomMix}`,
-        `Calidad: ${h.buildQuality}`,
-        `Plantas: ${h.floors}`,
-        `Plan verde: ${h.greenLevel}`,
-        `Seguridad: ${h.securityLevel}`,
-        `Tecnología: ${h.techLevel}`,
-        `Enfoque: ${h.designFocus}`,
-      ]
-      const col2 = [
-        `Salas reuniones: ${h.meetingRooms}`,
-        `Parking: ${h.parkingSpots}`,
-        `Restaurante niv.: ${h.restaurantLevel}`,
-        `Oferta apertura: ${h.openingPromoDays} d`,
-        `Vistas mar: ${h.seaViewShare}%`,
-        `Desayuno: ${h.breakfastIncluded ? 'Sí' : 'No'}`,
-        `Fidelidad: ${h.loyaltyProgram ? 'Sí' : 'No'}`,
-        `Buffet: ${h.buffet ? 'Sí' : 'No'}`,
-        `Salida tarde: ${h.lateCheckout ? 'Sí' : 'No'}`,
-      ]
-      const col3 = [
-        `Mostrador aero.: ${h.airportDesk ? 'Sí' : 'No'}`,
-        `Horas silencio: ${h.quietHours ? 'Sí' : 'No'}`,
-        `Bicis: ${h.bikeRental ? 'Sí' : 'No'}`,
-        `Bus centro: ${h.shuttleCity ? 'Sí' : 'No'}`,
-        `Régimen: ${boardLabel(h.boardRegime)}`,
-        `Foto: ${h.imageKey}`,
-        `Zona: ${h.regionName}`,
-        `País: ${h.country}`,
-        `Local: ${i + 1}/${hotels.length}`,
-      ]
-
-      doc.fontSize(8).fillColor('#222')
-      let y = top + 74
-      for (let r = 0; r < col1.length; r++) {
-        doc.text(col1[r], 52, y, { width: 160, lineBreak: false })
-        doc.text(col2[r], 220, y, { width: 160, lineBreak: false })
-        doc.text(col3[r], 390, y, { width: 170, lineBreak: false })
-        y += 11
-      }
-
-      doc.font('Helvetica-Bold').fontSize(8).fillColor(c1).text('Regímenes disponibles:', 52, y + 4)
-      doc.font('Helvetica').fillColor('#222')
-        .text(h.availableRegimes.map(boardLabel).join(' · '), 52, y + 15, { width: doc.page.width - 100 })
-      doc.font('Helvetica-Bold').fillColor(c1).text('Servicios:', 52, y + 30)
-      doc.font('Helvetica').fillColor('#222')
-        .text(h.services.join(', '), 52, y + 41, { width: doc.page.width - 100 })
-
-      doc.y = top + cardH + 8
+    doc.fillColor(c1).font('Helvetica-Bold').fontSize(10).text('Enlaces', 40, y)
+    y = doc.y + 4
+    doc.font('Helvetica').fontSize(9).fillColor('#1a4a8a')
+    doc.text(`Web / ficha: ${h.website}`, 40, y, { link: h.website, underline: true, width: 515 })
+    y = doc.y + 4
+    if (h.osmUrl && h.osmUrl !== h.website) {
+      doc.text(`OpenStreetMap: ${h.osmUrl}`, 40, y, { link: h.osmUrl, underline: true, width: 515 })
+      y = doc.y + 10
+    } else {
+      y += 8
     }
+
+    doc.fillColor(c1).font('Helvetica-Bold').fontSize(10).text('Parámetros del constructor', 40, y)
+    y = doc.y + 6
+    const rows = [
+      [`Clientes: ${h.target}`, `Personal: ${h.staffLevel}`, `Habitaciones: ${h.roomMix}`],
+      [`Calidad: ${h.buildQuality}`, `Plantas: ${h.floors}`, `Plan verde: ${h.greenLevel}`],
+      [`Seguridad: ${h.securityLevel}`, `Tecnología: ${h.techLevel}`, `Enfoque: ${h.designFocus}`],
+      [`Salas reuniones: ${h.meetingRooms}`, `Parking: ${h.parkingSpots}`, `Restaurante: ${h.restaurantLevel}`],
+      [`Oferta apertura: ${h.openingPromoDays} d`, `Vistas mar: ${h.seaViewShare}%`, `Desayuno: ${h.breakfastIncluded ? 'Sí' : 'No'}`],
+      [`Fidelidad: ${h.loyaltyProgram ? 'Sí' : 'No'}`, `Buffet: ${h.buffet ? 'Sí' : 'No'}`, `Salida tarde: ${h.lateCheckout ? 'Sí' : 'No'}`],
+      [`Mostrador aero.: ${h.airportDesk ? 'Sí' : 'No'}`, `Silencio: ${h.quietHours ? 'Sí' : 'No'}`, `Bicis: ${h.bikeRental ? 'Sí' : 'No'}`],
+      [`Bus centro: ${h.shuttleCity ? 'Sí' : 'No'}`, `Régimen: ${boardLabel(h.boardRegime)}`, `Foto juego: ${h.imageKey}`],
+    ]
+    doc.font('Helvetica').fontSize(8).fillColor('#222')
+    for (const row of rows) {
+      doc.text(row[0], 40, y, { width: 170, lineBreak: false })
+      doc.text(row[1], 220, y, { width: 170, lineBreak: false })
+      doc.text(row[2], 400, y, { width: 160, lineBreak: false })
+      y += 12
+    }
+    y += 6
+    doc.font('Helvetica-Bold').fontSize(8).fillColor(c1).text('Regímenes disponibles', 40, y)
+    y = doc.y + 3
+    doc.font('Helvetica').fillColor('#222').text(h.availableRegimes.map(boardLabel).join(' · '), 40, y, { width: 515 })
+    y = doc.y + 6
+    doc.font('Helvetica-Bold').fillColor(c1).text('Servicios', 40, y)
+    y = doc.y + 3
+    doc.font('Helvetica').fillColor('#222').text(h.services.join(', '), 40, y, { width: 515 })
 
     doc.fontSize(8).fillColor('#666')
       .text(
-        `Orbis Hotels Group · Zona #${region.order} · ${region.countryCode} · Construir a mano en el simulador`,
-        36,
-        doc.page.height - 28,
-        { width: doc.page.width - 72, align: 'center' },
+        `Orbis · Zona #${region.order} · Solo hoteles reales (OpenStreetMap) · Construir a mano`,
+        40,
+        doc.page.height - 30,
+        { width: 515, align: 'center' },
       )
-    doc.end()
-  })
+  }
+
+  doc.end()
+  await finish
 }
 
 function writeMasterPdf(master, countries, meta, filePath) {
@@ -484,96 +517,56 @@ function writeMasterPdf(master, countries, meta, filePath) {
     const c1 = '#0B3D4A'
     const c2 = '#C4A35A'
     const c3 = '#F2E6C8'
-    const doc = new PDFDocument({
-      size: 'A4',
-      margin: 40,
-      info: { Title: 'Orbis · Orden de construcción', Author: 'Orbis Hotels Group' },
-    })
+    const doc = new PDFDocument({ size: 'A4', margin: 40, info: { Title: 'Orbis · Orden de construcción' } })
     const stream = fs.createWriteStream(filePath)
     doc.pipe(stream)
     stream.on('finish', resolve)
     stream.on('error', reject)
 
-    // Portada
     doc.rect(0, 0, doc.page.width, doc.page.height).fill(c1)
-    doc.fillColor(c3).font('Helvetica-Bold').fontSize(28).text('ORBIS HOTELS GROUP', 50, 160, { align: 'center' })
-    doc.fontSize(16).fillColor(c2).text('Plan de construcción', 50, 210, { align: 'center' })
-    doc.font('Helvetica').fontSize(12).fillColor(c3)
+    doc.fillColor(c3).font('Helvetica-Bold').fontSize(26).text('ORBIS HOTELS GROUP', 50, 160, { align: 'center' })
+    doc.fontSize(14).fillColor(c2).text('Orden de construcción', 50, 210, { align: 'center' })
+    doc.font('Helvetica').fontSize(11).fillColor(c3)
       .text(`${meta.totalHotels} hoteles · ${meta.totalRegions} zonas · ${meta.totalCountries} países`, 50, 250, { align: 'center' })
-      .text('Empieza por: Costa del Sol (Málaga)', 50, 275, { align: 'center' })
-      .text('Este PDF indica el orden de las regiones.', 50, 320, { align: 'center' })
-      .text('Cada zona tiene su propio PDF en la carpeta pdfs/.', 50, 340, { align: 'center' })
+      .text('Empieza por Costa del Sol (Málaga)', 50, 275, { align: 'center' })
+      .text('1 hotel = 1 página en el PDF de su zona', 50, 310, { align: 'center' })
 
-    // Resumen países
     doc.addPage()
-    doc.rect(0, 0, doc.page.width, 56).fill(c1)
-    doc.fillColor(c3).font('Helvetica-Bold').fontSize(14).text('ORDEN DE CONSTRUCCIÓN · Países', 40, 20)
-    doc.font('Helvetica').fontSize(9).fillColor(c2).text('Hoteles totales por país (mayor → menor)', 40, 38)
+    doc.rect(0, 0, doc.page.width, 50).fill(c1)
+    doc.fillColor(c3).font('Helvetica-Bold').fontSize(13).text('Países (por hoteles)', 40, 18)
     doc.moveDown(2)
-    doc.fillColor('#222').font('Helvetica-Bold').fontSize(9)
-    doc.text('#', 40, doc.y, { continued: true, width: 30 })
-    doc.text('País', 70, doc.y, { continued: true, width: 200 })
-    doc.text('Hoteles', 280, doc.y, { continued: true, width: 60 })
-    doc.text('Zonas', 350, doc.y, { width: 50 })
-    doc.moveDown(0.4)
-    doc.strokeColor(c2).moveTo(40, doc.y).lineTo(555, doc.y).stroke()
-    doc.moveDown(0.3)
-    doc.font('Helvetica').fontSize(9)
+    doc.fillColor('#222').font('Helvetica').fontSize(8)
     for (let i = 0; i < countries.length; i++) {
-      const c = countries[i]
-      if (doc.y > 760) {
-        doc.addPage()
-        doc.rect(0, 0, doc.page.width, 40).fill(c1)
-        doc.fillColor(c3).font('Helvetica-Bold').fontSize(11).text('Países (cont.)', 40, 14)
-        doc.moveDown(2)
-        doc.fillColor('#222').font('Helvetica').fontSize(9)
-      }
-      const y = doc.y
-      doc.text(String(i + 1), 40, y, { width: 28 })
-      doc.text(c.name, 70, y, { width: 200 })
-      doc.text(String(c.hotels), 280, y, { width: 60 })
-      doc.text(String(c.regions), 350, y, { width: 50 })
-      doc.y = y + 14
-    }
-
-    // Orden de regiones
-    doc.addPage()
-    doc.rect(0, 0, doc.page.width, 56).fill(c1)
-    doc.fillColor(c3).font('Helvetica-Bold').fontSize(14).text('ORDEN DE ZONAS (construir en este orden)', 40, 20)
-    doc.font('Helvetica').fontSize(9).fillColor(c2)
-      .text('Sigue el número. Carpeta = país. Archivo = NNN_nombre.pdf', 40, 38)
-    doc.moveDown(2)
-    doc.fillColor('#222').font('Helvetica-Bold').fontSize(8)
-    let y = doc.y
-    doc.text('#', 40, y, { width: 28 })
-    doc.text('Zona', 70, y, { width: 170 })
-    doc.text('País', 245, y, { width: 100 })
-    doc.text('Hoteles', 350, y, { width: 45 })
-    doc.text('Orden hoteles', 400, y, { width: 80 })
-    doc.text('Carpeta', 485, y, { width: 70 })
-    doc.y = y + 12
-    doc.strokeColor(c2).moveTo(40, doc.y).lineTo(555, doc.y).stroke()
-    doc.moveDown(0.25)
-    doc.font('Helvetica').fontSize(7.5)
-
-    for (const m of master) {
       if (doc.y > 770) {
         doc.addPage()
-        doc.rect(0, 0, doc.page.width, 40).fill(c1)
-        doc.fillColor(c3).font('Helvetica-Bold').fontSize(11).text('Orden de zonas (cont.)', 40, 14)
-        doc.moveDown(1.8)
-        doc.fillColor('#222').font('Helvetica').fontSize(7.5)
+        doc.fillColor('#222').font('Helvetica').fontSize(8)
       }
-      const rowY = doc.y
-      doc.text(String(m.order), 40, rowY, { width: 28 })
-      doc.text(m.region, 70, rowY, { width: 170 })
-      doc.text(m.country, 245, rowY, { width: 100 })
-      doc.text(String(m.count), 350, rowY, { width: 45 })
-      doc.text(`#${m.orderStart}–#${m.orderEnd}`, 400, rowY, { width: 80 })
-      doc.text(m.folder, 485, rowY, { width: 70 })
-      doc.y = rowY + 11
+      const c = countries[i]
+      const y = doc.y
+      doc.text(`${i + 1}. ${c.name}`, 40, y, { width: 220 })
+      doc.text(`${c.hotels} hoteles`, 270, y, { width: 80 })
+      doc.text(`${c.regions} zonas`, 360, y, { width: 80 })
+      doc.y = y + 12
     }
 
+    doc.addPage()
+    doc.rect(0, 0, doc.page.width, 50).fill(c1)
+    doc.fillColor(c3).font('Helvetica-Bold').fontSize(13).text('Orden de zonas', 40, 18)
+    doc.moveDown(2)
+    doc.fillColor('#222').font('Helvetica').fontSize(7.5)
+    for (const m of master) {
+      if (doc.y > 775) {
+        doc.addPage()
+        doc.fillColor('#222').font('Helvetica').fontSize(7.5)
+      }
+      const y = doc.y
+      doc.text(`${m.order}. ${m.region}`, 40, y, { width: 200 })
+      doc.text(m.country, 245, y, { width: 100 })
+      doc.text(String(m.count), 350, y, { width: 40 })
+      doc.text(`#${m.orderStart}–${m.orderEnd}`, 395, y, { width: 80 })
+      doc.text(m.folder, 480, y, { width: 75 })
+      doc.y = y + 11
+    }
     doc.end()
   })
 }
@@ -582,56 +575,67 @@ function rmrf(dir) {
   if (!fs.existsSync(dir)) return
   for (const f of fs.readdirSync(dir)) {
     const p = path.join(dir, f)
-    const st = fs.statSync(p)
-    if (st.isDirectory()) rmrf(p)
+    if (fs.statSync(p).isDirectory()) rmrf(p)
     else fs.unlinkSync(p)
   }
   fs.rmdirSync(dir)
 }
 
 async function main() {
-  const dataPath = path.join(PLAN, 'REGIONES.json')
-  if (!fs.existsSync(dataPath)) {
-    console.error('Falta REGIONES.json. Ejecuta primero: npm run plan:regions')
-    process.exit(1)
-  }
-  const data = JSON.parse(fs.readFileSync(dataPath, 'utf8'))
-  const regions = data.regions
-  const t0 = Date.now()
+  const data = JSON.parse(fs.readFileSync(path.join(PLAN, 'REGIONES.json'), 'utf8'))
+  const regions = data.regions.map((r) => ({
+    ...r,
+    vibe: detectVibe(r.name),
+    theme: themeFor(detectVibe(r.name)),
+  }))
 
-  // Limpiar salidas previas
+  console.log('Asignando hoteles reales OSM…')
+  const assigned = assignHotels(regions)
+
+  let missing = 0
+  for (const r of regions) {
+    const n = assigned.get(r.id)?.length ?? 0
+    if (n < r.hotels) {
+      missing += r.hotels - n
+      console.warn(`FALTAN ${r.hotels - n} en ${r.id} (hay ${n}/${r.hotels})`)
+    }
+  }
+  if (missing > 0) {
+    console.warn(`Total faltantes: ${missing}. Espera a que termine la descarga OSM o vuelve a generar.`)
+  }
+
   if (fs.existsSync(OUT_PDF)) rmrf(OUT_PDF)
   if (fs.existsSync(OUT_IDX)) rmrf(OUT_IDX)
   fs.mkdirSync(OUT_PDF, { recursive: true })
   fs.mkdirSync(OUT_IDX, { recursive: true })
-
-  // Enrich regions
-  for (const r of regions) {
-    r.vibe = detectVibe(r.name, r.lat)
-    r.theme = themeFor(r.vibe, r.countryCode, r.order)
-  }
+  fs.mkdirSync(path.join(OUT_PUBLIC, 'regions'), { recursive: true })
+  fs.mkdirSync(IMG_CACHE, { recursive: true })
 
   let order = 1
   const master = []
-  console.log(`Zonas: ${regions.length} · Hoteles: ${data.totalHotels}`)
+  const t0 = Date.now()
 
   for (const region of regions) {
-    const n = region.hotels
-    const rng = mulberry32(2000 + region.order * 7919 + n)
+    const osmList = assigned.get(region.id) || []
+    // Use only real hotels we have; if short, reduce region count to available (honest)
+    const n = Math.min(region.hotels, osmList.length)
+    if (n === 0) {
+      console.warn(`SKIP empty ${region.id}`)
+      continue
+    }
+    const rng = mulberry32(3000 + region.order * 997)
     const hotels = []
     for (let i = 0; i < n; i++) {
-      hotels.push(buildHotel(order, region, i, rng))
+      hotels.push(buildHotelCard(order, region, osmList[i], i, rng))
       order++
     }
 
     const folderName = `${region.countryCode}-${slugify(region.country)}`
     const folderPath = path.join(OUT_PDF, folderName)
     fs.mkdirSync(folderPath, { recursive: true })
-
     const fileBase = `${String(region.order).padStart(3, '0')}_${slugify(region.name)}`
-    const pdfName = `${fileBase}.pdf`
-    const pdfRel = `pdfs/${folderName}/${pdfName}`
-    await writeRegionPdf(region, hotels, path.join(folderPath, pdfName))
+    const pdfRel = `pdfs/${folderName}/${fileBase}.pdf`
+    await writeRegionPdf(region, hotels, path.join(folderPath, `${fileBase}.pdf`))
 
     const idx = {
       order: region.order,
@@ -641,73 +645,72 @@ async function main() {
       regionId: region.id,
       country: region.country,
       countryCode: region.countryCode,
-      count: n,
+      count: hotels.length,
       folder: folderName,
       pdf: pdfRel,
     }
     master.push(idx)
-    fs.writeFileSync(path.join(OUT_IDX, `${fileBase}.json`), JSON.stringify({ ...idx, hotels }, null, 0))
+    fs.writeFileSync(path.join(OUT_IDX, `${fileBase}.json`), JSON.stringify({ ...idx, hotels }))
 
-    if (region.order % 25 === 0 || region.order === 1 || region.order === regions.length) {
-      console.log(`[${region.order}/${regions.length}] ${region.country} · ${region.name}: ${n} → ${pdfRel}`)
+    // slim for in-game plan panel
+    fs.writeFileSync(
+      path.join(OUT_PUBLIC, 'regions', `${String(region.order).padStart(3, '0')}.json`),
+      JSON.stringify({
+        hotels: hotels.map((h) => ({
+          order: h.order,
+          realHotel: h.realHotel,
+          name: h.name,
+          city: h.city,
+          subsidiaryName: h.subsidiaryName,
+          stars: h.stars,
+          rooms: h.rooms,
+          lat: h.lat,
+          lng: h.lng,
+          website: h.website,
+          imageUrl: h.imageUrl,
+        })),
+      }),
+    )
+
+    if (region.order % 20 === 0 || region.order === 1) {
+      console.log(`[${region.order}/${regions.length}] ${region.name}: ${hotels.length} págs`)
     }
   }
 
-  const masterPath = path.join(PLAN, 'ORDEN-CONSTRUCCION.pdf')
-  await writeMasterPdf(master, data.countries, data, masterPath)
+  const totalHotels = master.reduce((s, m) => s + m.count, 0)
+  await writeMasterPdf(master, data.countries, { ...data, totalHotels, totalRegions: master.length }, path.join(PLAN, 'ORDEN-CONSTRUCCION.pdf'))
 
-  fs.writeFileSync(
-    path.join(PLAN, 'INDEX.json'),
-    JSON.stringify(
-      {
-        totalHotels: data.totalHotels,
-        totalRegions: master.length,
-        totalCountries: data.totalCountries,
-        generatedAt: new Date().toISOString(),
-        startRegion: master[0],
-        masterPdf: 'ORDEN-CONSTRUCCION.pdf',
-        items: master,
-      },
-      null,
-      2,
-    ),
-  )
+  const slimIndex = {
+    totalHotels,
+    totalRegions: master.length,
+    totalCountries: data.totalCountries,
+    generatedAt: new Date().toISOString(),
+    items: master,
+  }
+  fs.writeFileSync(path.join(PLAN, 'INDEX.json'), JSON.stringify(slimIndex, null, 2))
+  fs.writeFileSync(path.join(OUT_PUBLIC, 'index.json'), JSON.stringify(slimIndex))
+  fs.writeFileSync(path.join(OUT_PUBLIC, 'README.txt'), 'Índice del plan Orbis para el panel Plan del juego.\n')
 
   const md = [
-    '# Plan de construcción Orbis (10.000 hoteles)',
+    '# Plan de construcción Orbis',
     '',
-    '**Empieza por Costa del Sol (Málaga).** Sigue el orden del PDF maestro.',
+    `- Hoteles (reales OSM): **${totalHotels}**`,
+    `- Zonas / PDFs: **${master.length}**`,
+    `- 1 hotel = 1 página`,
+    `- PDF maestro: [ORDEN-CONSTRUCCION.pdf](./ORDEN-CONSTRUCCION.pdf)`,
     '',
-    '## Archivos clave',
-    '',
-    `- [\`ORDEN-CONSTRUCCION.pdf\`](./ORDEN-CONSTRUCCION.pdf) — orden de todas las zonas`,
-    `- \`pdfs/{PAIS}/NNN_Zona.pdf\` — un PDF por región, con fichas Compra → Nuevo`,
-    '',
-    `| | |`,
-    `|---|---|`,
-    `| Hoteles | ${data.totalHotels} |`,
-    `| Zonas / PDFs | ${master.length} |`,
-    `| Países | ${data.totalCountries} |`,
-    '',
-    '## Orden de zonas',
-    '',
-    `| # | Zona | País | Hoteles | Orden | PDF |`,
-    `|---:|---|---|---:|---|---|`,
-    ...master.map(
-      (m) =>
-        `| ${m.order} | ${m.region} | ${m.country} | ${m.count} | #${m.orderStart}–#${m.orderEnd} | \`${m.pdf}\` |`,
-    ),
+    '| # | Zona | País | Hoteles | PDF |',
+    '|---:|---|---|---:|---|',
+    ...master.map((m) => `| ${m.order} | ${m.region} | ${m.country} | ${m.count} | \`${m.pdf}\` |`),
     '',
     `Generado en ${((Date.now() - t0) / 1000).toFixed(1)}s.`,
   ].join('\n')
   fs.writeFileSync(path.join(PLAN, 'README.md'), md)
 
-  console.log(`Listo: ${master.length} PDFs + maestro · ${data.totalHotels} hoteles · ${((Date.now() - t0) / 1000).toFixed(1)}s`)
-  console.log(`Maestro: plan-construccion/ORDEN-CONSTRUCCION.pdf`)
-  console.log(`PDFs: plan-construccion/pdfs/`)
+  console.log(`Listo: ${master.length} PDFs · ${totalHotels} hoteles · ${((Date.now() - t0) / 1000).toFixed(1)}s`)
 }
 
-main().catch((err) => {
-  console.error(err)
+main().catch((e) => {
+  console.error(e)
   process.exit(1)
 })

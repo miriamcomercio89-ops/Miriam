@@ -223,6 +223,10 @@ export interface GameState {
   loyaltyPoints: number
   lastWeeklyReportDay: number
   weeklyReports: WeeklyReport[]
+  /** Órdenes globales del plan marcados como construidos */
+  planDoneOrders: number[]
+  /** Siguiente hotel del plan a construir */
+  planCursor: number
 }
 
 export interface WeeklyReport {

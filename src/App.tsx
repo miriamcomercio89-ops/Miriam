@@ -16,6 +16,7 @@ import { HotelListPanel } from './components/HotelListPanel'
 import { RankingPanel } from './components/RankingPanel'
 import { CountriesPanel } from './components/CountriesPanel'
 import { NewsPanel } from './components/NewsPanel'
+import { PlanPanel } from './components/PlanPanel'
 import { useGameStore } from './store/gameStore'
 import { REAL_MS_PER_GAME_MINUTE } from './data/catalog'
 import { playClickSound } from './lib/sound'
@@ -96,6 +97,7 @@ export default function App() {
         <RankingPanel />
         <CountriesPanel />
         <NewsPanel />
+        <PlanPanel />
       </main>
     </div>
   )
