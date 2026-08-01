@@ -1,19 +1,18 @@
 import { create } from 'zustand'
 import { v4 as uuid } from 'uuid'
 import { STARTING_CASH } from '../data/catalog'
-import { EVENT_POOL } from '../data/events'
 import { getSubsidiary } from '../data/subsidiaries'
 import {
-  applyHotelDayInPlace,
   calcConstructionCost,
   fairPrice,
   getSeason,
   reputationKey,
-  updateReputation,
 } from '../lib/economy'
 import { defaultImageKey } from '../lib/images'
 import { gameDay } from '../lib/format'
 import { playBuildSound, playDaySound } from '../lib/sound'
+import { SLOT_KEYS } from '../lib/saveio'
+import type { WorkerDayRequest, WorkerDayResponse } from '../workers/dayWorker'
 import type {
   BuildDraft,
   GameState,
@@ -26,11 +25,10 @@ import type {
   MapMode,
   RankMetric,
   SpeedOption,
-  WorldEvent,
 } from '../types'
 
-export const STORAGE_KEY = 'orbis-hotels-group-save-v3'
-export const SAVE_VERSION = 3
+export const STORAGE_KEY = 'orbis-hotels-group-save-v4'
+export const SAVE_VERSION = 4
 
 type UiState = {
   selectedHotelId: string | null
@@ -40,18 +38,22 @@ type UiState = {
   showLoan: boolean
   showHotels: boolean
   showRanking: boolean
+  showCountries: boolean
+  showNews: boolean
   mapLayer: MapLayer
   mapMode: MapMode
   mapFilters: MapFilters
   mapFocus: MapFocus | null
   rankMetric: RankMetric
+  simulating: boolean
+  simProgress: string
 }
 
 type GameStore = GameState &
   UiState & {
     tick: (deltaGameMinutes: number) => void
     setSpeed: (s: SpeedOption) => void
-    skipDay: () => void
+    skipDay: () => Promise<void>
     startGame: () => void
     newGame: () => void
     openBuildAt: (loc: LocationInsight) => void
@@ -62,13 +64,15 @@ type GameStore = GameState &
     loadLocal: () => boolean
     exportSave: () => string
     importSave: (json: string) => { ok: true } | { ok: false; error: string }
-    setCloudSlot: (id: string | null) => void
+    importState: (state: GameState) => { ok: true } | { ok: false; error: string }
     getSnapshot: () => GameState
     hydrate: (state: GameState) => void
     setShowFinance: (v: boolean) => void
     setShowLoan: (v: boolean) => void
     setShowHotels: (v: boolean) => void
     setShowRanking: (v: boolean) => void
+    setShowCountries: (v: boolean) => void
+    setShowNews: (v: boolean) => void
     setMapLayer: (l: MapLayer) => void
     setMapMode: (m: MapMode) => void
     setMapFilters: (f: Partial<MapFilters>) => void
@@ -79,6 +83,10 @@ type GameStore = GameState &
     takeLoan: (amount: number) => { ok: true } | { ok: false; error: string }
     repayLoan: (amount: number) => { ok: true } | { ok: false; error: string }
     closeAllPanels: () => void
+    setGameName: (name: string) => void
+    saveToSlot: (slot: 1 | 2 | 3) => void
+    loadFromSlot: (slot: 1 | 2 | 3) => boolean
+    setCloudSlot: (id: string | null) => void
   }
 
 function defaultLoan(): LoanState {
@@ -100,20 +108,35 @@ function initialState(): GameState {
     loan: defaultLoan(),
     ledger: [],
     soundEnabled: true,
+    gameName: 'Mi partida Orbis',
+    news: [],
+    countryEconomy: {},
   }
 }
 
 function migrate(raw: Partial<GameState> & { cash?: number }): GameState {
   const base = initialState()
   const hotels = (raw.hotels ?? []).map((h) => {
-    const anyH = h as Hotel & { imageDataUrl?: string }
+    const anyH = h as Hotel
     return {
       ...anyH,
       satisfaction: anyH.satisfaction ?? 70,
       geoRegion: anyH.geoRegion ?? 'global',
       imageKey: anyH.imageKey || defaultImageKey(anyH.subsidiaryId),
-      contract: anyH.contract ?? null,
-      // Drop huge legacy inline images from mass saves unless custom upload marker needed
+      contract: anyH.contract
+        ? {
+            ...anyH.contract,
+            kind: (anyH.contract as { kind?: string }).kind ?? 'empresa',
+          }
+        : null,
+      roomMix: anyH.roomMix ?? 'estandar',
+      buildQuality: anyH.buildQuality ?? 'bueno',
+      floors: anyH.floors ?? 4,
+      greenLevel: anyH.greenLevel ?? 'ninguno',
+      meetingRooms: anyH.meetingRooms ?? 0,
+      parkingSpots: anyH.parkingSpots ?? 20,
+      restaurantLevel: anyH.restaurantLevel ?? 1,
+      openingPromoDays: anyH.openingPromoDays ?? 0,
       imageDataUrl: anyH.imageDataUrl?.startsWith('data:image/svg') ? undefined : anyH.imageDataUrl,
     } as Hotel
   })
@@ -126,83 +149,63 @@ function migrate(raw: Partial<GameState> & { cash?: number }): GameState {
     loan: raw.loan ?? defaultLoan(),
     ledger: raw.ledger ?? [],
     soundEnabled: raw.soundEnabled ?? true,
+    gameName: raw.gameName ?? 'Mi partida Orbis',
+    news: raw.news ?? [],
+    countryEconomy: raw.countryEconomy ?? {},
   }
 }
 
-function applyDays(state: GameState, days: number): Partial<GameState> & { _dayClosed?: boolean } {
-  if (days <= 0) return {}
-  let cash = state.cash
-  // Shallow-clone hotel objects once; mutate fields in place for speed
-  const hotels = state.hotels.map((h) => ({ ...h, services: h.services, contract: h.contract ? { ...h.contract } : null }))
-  let activeEvents = state.activeEvents.map((e) => ({ ...e }))
-  let lastEventRollDay = state.lastEventRollDay
-  const reputation = { ...state.reputation }
-  let loan = { ...state.loan }
-  let ledger = state.ledger.slice()
-  const startDay = gameDay(state.gameMinutes)
-  let dayClosed = false
+let worker: Worker | null = null
+let workerBusy = false
 
-  for (let d = 0; d < days; d++) {
-    const currentDay = startDay + d
-    const minutesAtDay = (currentDay - 1) * 24 * 60 + 12 * 60
-    const globalSeason = getSeason(20, minutesAtDay)
-
-    activeEvents = activeEvents
-      .map((e) => ({ ...e, daysRemaining: e.daysRemaining - 1 }))
-      .filter((e) => e.daysRemaining > 0)
-
-    if (currentDay - lastEventRollDay >= 5 + Math.floor(Math.random() * 6)) {
-      lastEventRollDay = currentDay
-      if (Math.random() < 0.62 && activeEvents.length < 3) {
-        const seasonal = EVENT_POOL.filter((p) => !p.season || p.season === 'any' || p.season === globalSeason)
-        const pool = seasonal[Math.floor(Math.random() * seasonal.length)] ?? EVENT_POOL[0]
-        const ev: WorldEvent = {
-          ...pool,
-          id: `${pool.id}-${currentDay}-${Math.random().toString(36).slice(2, 7)}`,
-          daysRemaining: 3 + Math.floor(Math.random() * 5),
-          startedAtDay: currentDay,
-        }
-        activeEvents.push(ev)
-      }
-    }
-
-    let dayRevenue = 0
-    let dayCosts = 0
-    for (let i = 0; i < hotels.length; i++) {
-      const h = hotels[i]
-      const key = reputationKey(h.countryCode)
-      const rep = reputation[key] ?? 55
-      const net = applyHotelDayInPlace(h, activeEvents, minutesAtDay, rep)
-      dayRevenue += h.lastDayRevenue
-      dayCosts += h.lastDayCosts
-      cash += net
-      reputation[key] = updateReputation(rep, net, h.lastDayOccupancy, h.satisfaction)
-    }
-
-    let loanPayment = 0
-    if (loan.balance > 0) {
-      const interest = Math.round(loan.balance * loan.dailyRate)
-      const principal = Math.min(loan.balance, Math.max(5000, Math.round(loan.balance * 0.001)))
-      loanPayment = interest + principal
-      cash -= loanPayment
-      loan = { ...loan, balance: Math.max(0, loan.balance - principal) }
-      dayCosts += loanPayment
-    }
-
-    ledger.push({
-      day: currentDay,
-      revenue: dayRevenue,
-      costs: dayCosts,
-      net: dayRevenue - dayCosts,
-      cash,
-      loanPayment,
-      season: globalSeason,
-    })
-    if (ledger.length > 60) ledger = ledger.slice(-60)
-    dayClosed = true
+function getWorker(): Worker {
+  if (!worker) {
+    worker = new Worker(new URL('../workers/dayWorker.ts', import.meta.url), { type: 'module' })
   }
+  return worker
+}
 
-  return { cash, hotels, activeEvents, lastEventRollDay, reputation, loan, ledger, _dayClosed: dayClosed }
+function runDaysInWorker(state: GameState, days: number): Promise<WorkerDayResponse> {
+  return new Promise((resolve, reject) => {
+    if (workerBusy) {
+      reject(new Error('busy'))
+      return
+    }
+    workerBusy = true
+    const w = getWorker()
+    const onMsg = (ev: MessageEvent<WorkerDayResponse>) => {
+      if (ev.data?.type !== 'applyDaysResult') return
+      w.removeEventListener('message', onMsg)
+      w.removeEventListener('error', onErr)
+      workerBusy = false
+      resolve(ev.data)
+    }
+    const onErr = (err: ErrorEvent) => {
+      w.removeEventListener('message', onMsg)
+      w.removeEventListener('error', onErr)
+      workerBusy = false
+      reject(err.error ?? err.message)
+    }
+    w.addEventListener('message', onMsg)
+    w.addEventListener('error', onErr)
+    const payload: WorkerDayRequest = {
+      type: 'applyDays',
+      days,
+      state: {
+        cash: state.cash,
+        gameMinutes: state.gameMinutes,
+        hotels: state.hotels,
+        activeEvents: state.activeEvents,
+        lastEventRollDay: state.lastEventRollDay,
+        reputation: state.reputation,
+        loan: state.loan,
+        ledger: state.ledger,
+        countryEconomy: state.countryEconomy,
+        news: state.news,
+      },
+    }
+    w.postMessage(payload)
+  })
 }
 
 export const useGameStore = create<GameStore>((set, get) => ({
@@ -214,33 +217,38 @@ export const useGameStore = create<GameStore>((set, get) => ({
   showLoan: false,
   showHotels: false,
   showRanking: false,
+  showCountries: false,
+  showNews: false,
   mapLayer: 'streets',
   mapMode: 'inspect',
   mapFilters: { subsidiaryId: 'all', minStars: 1, profit: 'all' },
   mapFocus: null,
   rankMetric: 'net',
+  simulating: false,
+  simProgress: '',
 
   tick: (deltaGameMinutes) => {
     const state = get()
-    if (!state.started || state.speed === 0 || deltaGameMinutes <= 0) return
+    if (!state.started || state.speed === 0 || deltaGameMinutes <= 0 || state.simulating) return
     const prevDay = gameDay(state.gameMinutes)
     const gameMinutes = state.gameMinutes + deltaGameMinutes
     const nextDay = gameDay(gameMinutes)
-    const { _dayClosed, ...patch } = applyDays(state, nextDay - prevDay)
-    set({ gameMinutes, ...patch })
-    if (_dayClosed) playDaySound(get().soundEnabled)
+    const days = nextDay - prevDay
+    if (days <= 0) {
+      set({ gameMinutes })
+      return
+    }
+    void runSkipDays(days, gameMinutes)
   },
 
   setSpeed: (speed) => set({ speed }),
 
-  skipDay: () => {
+  skipDay: async () => {
     const state = get()
-    if (!state.started) return
+    if (!state.started || state.simulating) return
     const rem = 24 * 60 - (state.gameMinutes % (24 * 60))
     const advance = rem === 0 ? 24 * 60 : rem
-    const { _dayClosed, ...patch } = applyDays(state, 1)
-    set({ gameMinutes: state.gameMinutes + advance, ...patch })
-    if (_dayClosed) playDaySound(get().soundEnabled)
+    await runSkipDays(1, state.gameMinutes + advance)
   },
 
   startGame: () => set({ started: true, showLanding: false }),
@@ -256,15 +264,17 @@ export const useGameStore = create<GameStore>((set, get) => ({
       showLoan: false,
       showHotels: false,
       showRanking: false,
+      showCountries: false,
+      showNews: false,
       mapMode: 'inspect',
       mapFocus: null,
+      simulating: false,
     })
     localStorage.removeItem(STORAGE_KEY)
-    localStorage.removeItem('orbis-hotels-group-save-v2')
-    localStorage.removeItem('orbis-hotels-group-save-v1')
   },
 
-  openBuildAt: (loc) => set({ buildLocation: loc, selectedHotelId: null, showHotels: false, showRanking: false }),
+  openBuildAt: (loc) =>
+    set({ buildLocation: loc, selectedHotelId: null, showHotels: false, showRanking: false, showCountries: false, showNews: false }),
   closeBuild: () => set({ buildLocation: null }),
   selectHotel: (id) =>
     set({
@@ -276,29 +286,31 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
   buildHotel: (draft, loc) => {
     const state = get()
-    if (!loc.isLand) return { ok: false, error: 'Solo se puede construir en tierra firme.' }
+    if (!loc.isLand) return { ok: false, error: 'Solo se puede construir en tierra.' }
     const sub = getSubsidiary(draft.subsidiaryId)
-    if (!sub) return { ok: false, error: 'Filial no válida.' }
-    if (!draft.name.trim()) return { ok: false, error: 'El hotel necesita un nombre.' }
+    if (!sub) return { ok: false, error: 'Marca no válida.' }
+    if (!draft.name.trim()) return { ok: false, error: 'Pon un nombre al hotel.' }
     if (draft.stars < sub.minStars || draft.stars > sub.maxStars) {
-      return { ok: false, error: `Esta filial admite de ${sub.minStars} a ${sub.maxStars} estrellas.` }
+      return { ok: false, error: `Esta marca admite de ${sub.minStars} a ${sub.maxStars} estrellas.` }
     }
     const cost = calcConstructionCost(draft, loc)
-    if (cost > state.cash) {
-      return { ok: false, error: 'Fondos insuficientes. Puedes abrir crédito en Préstamos.' }
-    }
+    if (cost > state.cash) return { ok: false, error: 'No hay dinero suficiente. Mira Préstamos.' }
 
     const season = getSeason(loc.lat, state.gameMinutes)
-    const seed = {
-      stars: draft.stars,
-      tourismIndex: loc.tourismIndex,
-      beachScore: loc.beachScore,
-      target: draft.target,
-      services: draft.services,
-      subsidiaryId: draft.subsidiaryId,
-      staffLevel: draft.staffLevel,
-    }
-    const price = fairPrice(seed, season)
+    const price = fairPrice(
+      {
+        stars: draft.stars,
+        tourismIndex: loc.tourismIndex,
+        beachScore: loc.beachScore,
+        target: draft.target,
+        services: draft.services,
+        subsidiaryId: draft.subsidiaryId,
+        staffLevel: draft.staffLevel,
+        buildQuality: draft.buildQuality,
+        roomMix: draft.roomMix,
+      },
+      season,
+    )
     const rep = state.reputation[reputationKey(loc.countryCode)] ?? 55
     const customImage =
       draft.imageDataUrl && !draft.imageDataUrl.includes('image/svg+xml') ? draft.imageDataUrl : undefined
@@ -336,6 +348,14 @@ export const useGameStore = create<GameStore>((set, get) => ({
       lifetimeGuests: 0,
       satisfaction: clamp(60 + rep * 0.25, 45, 90),
       contract: null,
+      roomMix: draft.roomMix,
+      buildQuality: draft.buildQuality,
+      floors: draft.floors,
+      greenLevel: draft.greenLevel,
+      meetingRooms: draft.meetingRooms,
+      parkingSpots: draft.parkingSpots,
+      restaurantLevel: draft.restaurantLevel,
+      openingPromoDays: draft.openingPromoDays,
     }
 
     set({
@@ -365,6 +385,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
       loan: s.loan,
       ledger: s.ledger,
       soundEnabled: s.soundEnabled,
+      gameName: s.gameName,
+      news: s.news,
+      countryEconomy: s.countryEconomy,
     }
   },
 
@@ -378,21 +401,24 @@ export const useGameStore = create<GameStore>((set, get) => ({
       showLoan: false,
       showHotels: false,
       showRanking: false,
+      showCountries: false,
+      showNews: false,
       mapFocus: null,
+      simulating: false,
     }),
 
   persistLocal: () => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(get().getSnapshot()))
     } catch {
-      // Quota exceeded with huge saves — try compacting by stripping optional fields already handled
-      console.warn('No se pudo guardar: almacenamiento lleno')
+      console.warn('No se pudo guardar: poco espacio')
     }
   },
 
   loadLocal: () => {
     const raw =
       localStorage.getItem(STORAGE_KEY) ??
+      localStorage.getItem('orbis-hotels-group-save-v3') ??
       localStorage.getItem('orbis-hotels-group-save-v2') ??
       localStorage.getItem('orbis-hotels-group-save-v1')
     if (!raw) return false
@@ -409,21 +435,27 @@ export const useGameStore = create<GameStore>((set, get) => ({
   importSave: (json) => {
     try {
       const parsed = JSON.parse(json) as GameState
-      if (!parsed || typeof parsed.cash !== 'number' || !Array.isArray(parsed.hotels)) {
-        return { ok: false, error: 'Archivo de guardado no válido.' }
-      }
-      get().hydrate({ ...migrate(parsed), started: true })
-      return { ok: true }
+      return get().importState(parsed)
     } catch {
-      return { ok: false, error: 'No se pudo leer el JSON.' }
+      return { ok: false, error: 'No se pudo leer el archivo.' }
     }
   },
 
+  importState: (parsed) => {
+    if (!parsed || typeof parsed.cash !== 'number' || !Array.isArray(parsed.hotels)) {
+      return { ok: false, error: 'Archivo no válido.' }
+    }
+    get().hydrate({ ...migrate(parsed), started: true })
+    return { ok: true }
+  },
+
   setCloudSlot: (id) => set({ cloudSlotId: id }),
-  setShowFinance: (v) => set({ showFinance: v, showLoan: false, showHotels: false, showRanking: false }),
-  setShowLoan: (v) => set({ showLoan: v, showFinance: false, showHotels: false, showRanking: false }),
-  setShowHotels: (v) => set({ showHotels: v, showFinance: false, showLoan: false, showRanking: false }),
-  setShowRanking: (v) => set({ showRanking: v, showFinance: false, showLoan: false, showHotels: false }),
+  setShowFinance: (v) => set({ showFinance: v, showLoan: false, showHotels: false, showRanking: false, showCountries: false, showNews: false }),
+  setShowLoan: (v) => set({ showLoan: v, showFinance: false, showHotels: false, showRanking: false, showCountries: false, showNews: false }),
+  setShowHotels: (v) => set({ showHotels: v, showFinance: false, showLoan: false, showRanking: false, showCountries: false, showNews: false }),
+  setShowRanking: (v) => set({ showRanking: v, showFinance: false, showLoan: false, showHotels: false, showCountries: false, showNews: false }),
+  setShowCountries: (v) => set({ showCountries: v, showFinance: false, showLoan: false, showHotels: false, showRanking: false, showNews: false }),
+  setShowNews: (v) => set({ showNews: v, showFinance: false, showLoan: false, showHotels: false, showRanking: false, showCountries: false }),
   setMapLayer: (mapLayer) => set({ mapLayer }),
   setMapMode: (mapMode) => set({ mapMode, buildLocation: mapMode === 'inspect' ? null : get().buildLocation }),
   setMapFilters: (f) => set({ mapFilters: { ...get().mapFilters, ...f } }),
@@ -438,6 +470,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
       buildLocation: null,
       showHotels: false,
       showRanking: false,
+      showCountries: false,
+      showNews: false,
     })
   },
   toggleSound: () => set({ soundEnabled: !get().soundEnabled }),
@@ -449,26 +483,83 @@ export const useGameStore = create<GameStore>((set, get) => ({
       showLoan: false,
       showHotels: false,
       showRanking: false,
+      showCountries: false,
+      showNews: false,
     }),
+  setGameName: (gameName) => set({ gameName }),
+
+  saveToSlot: (slot) => {
+    const key = SLOT_KEYS[slot - 1]
+    localStorage.setItem(key, JSON.stringify(get().getSnapshot()))
+    get().persistLocal()
+  },
+
+  loadFromSlot: (slot) => {
+    const key = SLOT_KEYS[slot - 1]
+    const raw = localStorage.getItem(key)
+    if (!raw) return false
+    try {
+      get().hydrate({ ...migrate(JSON.parse(raw) as GameState), started: true })
+      return true
+    } catch {
+      return false
+    }
+  },
 
   takeLoan: (amount) => {
     const { loan, cash } = get()
     const room = loan.limit - loan.balance
-    if (amount <= 0) return { ok: false, error: 'Importe no válido.' }
-    if (amount > room) return { ok: false, error: `Crédito disponible insuficiente.` }
+    if (amount <= 0) return { ok: false, error: 'Cantidad no válida.' }
+    if (amount > room) return { ok: false, error: 'No queda tanto crédito.' }
     set({ cash: cash + amount, loan: { ...loan, balance: loan.balance + amount } })
     return { ok: true }
   },
 
   repayLoan: (amount) => {
     const { loan, cash } = get()
-    if (amount <= 0) return { ok: false, error: 'Importe no válido.' }
-    if (amount > cash) return { ok: false, error: 'No hay caja suficiente.' }
-    if (amount > loan.balance) return { ok: false, error: 'El importe supera la deuda.' }
+    if (amount <= 0) return { ok: false, error: 'Cantidad no válida.' }
+    if (amount > cash) return { ok: false, error: 'No hay dinero suficiente.' }
+    if (amount > loan.balance) return { ok: false, error: 'Es más de lo que debes.' }
     set({ cash: cash - amount, loan: { ...loan, balance: loan.balance - amount } })
     return { ok: true }
   },
 }))
+
+async function runSkipDays(days: number, gameMinutes: number) {
+  const state = useGameStore.getState()
+  if (state.simulating || days <= 0) {
+    useGameStore.setState({ gameMinutes })
+    return
+  }
+  useGameStore.setState({
+    simulating: true,
+    simProgress: `Calculando ${days > 1 ? 'días' : 'el día'}… (${state.hotels.length.toLocaleString('es-ES')} hoteles)`,
+  })
+  try {
+    const result = await runDaysInWorker(state, days)
+    useGameStore.setState({
+      gameMinutes,
+      cash: result.cash,
+      hotels: result.hotels,
+      activeEvents: result.activeEvents,
+      lastEventRollDay: result.lastEventRollDay,
+      reputation: result.reputation,
+      loan: result.loan,
+      ledger: result.ledger,
+      countryEconomy: result.countryEconomy,
+      news: result.news,
+      simulating: false,
+      simProgress: '',
+    })
+    if (result.dayClosed) playDaySound(useGameStore.getState().soundEnabled)
+  } catch {
+    useGameStore.setState({
+      simulating: false,
+      simProgress: 'Error al calcular. Intenta otra vez.',
+      gameMinutes,
+    })
+  }
+}
 
 function clamp(n: number, min: number, max: number) {
   return Math.max(min, Math.min(max, n))

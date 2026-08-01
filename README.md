@@ -1,21 +1,21 @@
 # Orbis Hotels Group
 
-Simulador de construcción hotelera mundial (**v0.2**). Dirige **Orbis Hotels Group**, una cadena con **50 filiales**, pensado para escalar a **más de 50.000 hoteles**.
+Juego de construcción de hoteles en el mapa del mundo (**v0.3**).
 
-## Novedades v0.2
+## Novedades v0.3
 
-- Buscador de ciudad/país (centra el mapa)
-- Ranking top 25 (beneficio, ocupación, ROI, satisfacción)
-- Lista de hoteles virtualizada (buscar / ordenar / ir al mapa)
-- Contratos corporativos gestionados por IA
-- Modos **Inspeccionar** / **Construir**
-- Mini-ficha al pasar el cursor sobre un hotel
-- Textos y tooltips en español
-- Eventos ligados a temporada
-- Logos y colores de filial más distintivos
-- Mapa canvas + clustering para carteras masivas
+- Panel por **países** (hoteles, dinero, fama, inflación y cambio)
+- Inflación y tipo de cambio por país
+- **Noticias Orbis** del día
+- Más tipos de **contratos IA** (empresa, aerolínea, evento, gobierno, deportes, universidad)
+- **Tiempo del día** en cada hotel
+- Guardado en **3 huecos** + nombre de partida
+- Export **comprimido** (.orbis.gz)
+- Cálculo del día en **Web Worker** (mejor con muchos hoteles)
+- Menú de construcción más completo (7 pasos, más opciones)
+- Textos más fáciles de entender
 
-## Desarrollo
+## Cómo jugar
 
 ```bash
 npm install
@@ -23,16 +23,12 @@ npm run dev
 ```
 
 - Web: http://localhost:5173
-- API de guardado: http://localhost:8787
+- API guardado: http://localhost:8787
 
 ## Atajos
 
 | Tecla | Acción |
 |-------|--------|
-| Espacio | Pausa / reanudar |
+| Espacio | Pausa / seguir |
 | 1 / 2 / 5 | Velocidad |
 | Esc | Cerrar paneles |
-
-## Stack
-
-React + TypeScript + Vite + Leaflet (canvas layer) + Zustand + TanStack Virtual + Express

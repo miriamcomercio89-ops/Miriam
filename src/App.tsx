@@ -10,6 +10,8 @@ import { LoanPanel } from './components/LoanPanel'
 import { MapToolbar } from './components/MapToolbar'
 import { HotelListPanel } from './components/HotelListPanel'
 import { RankingPanel } from './components/RankingPanel'
+import { CountriesPanel } from './components/CountriesPanel'
+import { NewsPanel } from './components/NewsPanel'
 import { useGameStore } from './store/gameStore'
 import { REAL_MS_PER_GAME_MINUTE } from './data/catalog'
 import { playClickSound } from './lib/sound'
@@ -24,12 +26,13 @@ export default function App() {
   const setSpeed = useGameStore((s) => s.setSpeed)
   const closeAllPanels = useGameStore((s) => s.closeAllPanels)
   const soundEnabled = useGameStore((s) => s.soundEnabled)
+  const simulating = useGameStore((s) => s.simulating)
 
   useEffect(() => {
-    if (!started || speed === 0) return
+    if (!started || speed === 0 || simulating) return
     const id = window.setInterval(() => tick(speed), REAL_MS_PER_GAME_MINUTE)
     return () => window.clearInterval(id)
-  }, [started, speed, tick])
+  }, [started, speed, tick, simulating])
 
   useEffect(() => {
     if (!started) return
@@ -54,7 +57,6 @@ export default function App() {
     const onKey = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement)?.tagName
       if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return
-
       if (e.code === 'Space') {
         e.preventDefault()
         const cur = useGameStore.getState().speed
@@ -84,6 +86,8 @@ export default function App() {
         <LoanPanel />
         <HotelListPanel />
         <RankingPanel />
+        <CountriesPanel />
+        <NewsPanel />
       </main>
     </div>
   )

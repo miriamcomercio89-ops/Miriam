@@ -7,6 +7,10 @@ export type ProfitFilter = 'all' | 'profit' | 'loss' | 'new'
 export type SeasonName = 'alta' | 'media' | 'baja'
 export type RankMetric = 'net' | 'occupancy' | 'roi' | 'satisfaction'
 export type HotelSort = 'name' | 'net' | 'occupancy' | 'city' | 'stars'
+export type RoomMix = 'estandar' | 'mixto' | 'suites' | 'familiar'
+export type BuildQuality = 'simple' | 'bueno' | 'alto' | 'lujo'
+export type GreenLevel = 'ninguno' | 'basico' | 'avanzado' | 'elite'
+export type ContractKind = 'empresa' | 'aerolinea' | 'evento' | 'gobierno' | 'deportes' | 'universidad'
 
 export interface Subsidiary {
   id: string
@@ -47,6 +51,14 @@ export type HotelService =
   | 'transfer_aeropuerto'
   | 'bar_azotea'
   | 'yoga'
+  | 'sauna'
+  | 'teatro'
+  | 'tienda'
+  | 'mascotas'
+  | 'ev_chargers'
+  | 'biblioteca'
+  | 'medico'
+  | 'boda'
 
 export interface LocationInsight {
   lat: number
@@ -67,8 +79,8 @@ export interface LocationInsight {
   confidence: number
 }
 
-/** AI-managed corporate room block */
 export interface CorporateContract {
+  kind: ContractKind
   clientName: string
   blockedRooms: number
   ratePerNight: number
@@ -87,9 +99,7 @@ export interface Hotel {
   services: HotelService[]
   staffLevel: StaffLevel
   target: GuestTarget
-  /** Custom upload only; otherwise resolved from imageKey */
   imageDataUrl?: string
-  /** Gallery key e.g. coast:day */
   imageKey: string
   country: string
   countryCode: string
@@ -110,6 +120,14 @@ export interface Hotel {
   lifetimeGuests: number
   satisfaction: number
   contract: CorporateContract | null
+  roomMix: RoomMix
+  buildQuality: BuildQuality
+  floors: number
+  greenLevel: GreenLevel
+  meetingRooms: number
+  parkingSpots: number
+  restaurantLevel: number
+  openingPromoDays: number
 }
 
 export interface WorldEvent {
@@ -119,10 +137,17 @@ export interface WorldEvent {
   demandMultiplier: number
   costMultiplier: number
   scope: string
-  /** Optional season gate */
   season?: SeasonName | 'any'
   daysRemaining: number
   startedAtDay: number
+}
+
+export interface NewsItem {
+  id: string
+  day: number
+  title: string
+  body: string
+  tone: 'good' | 'bad' | 'neutral'
 }
 
 export interface DayLedger {
@@ -141,6 +166,14 @@ export interface LoanState {
   dailyRate: number
 }
 
+/** Per-country money pressure */
+export interface CountryEconomy {
+  /** yearly-ish inflation factor applied daily as tiny drift */
+  inflation: number
+  /** local currency vs EUR (1 = parity) */
+  fx: number
+}
+
 export interface GameState {
   version: number
   cash: number
@@ -155,6 +188,9 @@ export interface GameState {
   loan: LoanState
   ledger: DayLedger[]
   soundEnabled: boolean
+  gameName: string
+  news: NewsItem[]
+  countryEconomy: Record<string, CountryEconomy>
 }
 
 export interface BuildDraft {
@@ -167,6 +203,18 @@ export interface BuildDraft {
   target: GuestTarget
   imageDataUrl: string
   imageKey: string
+  roomMix: RoomMix
+  buildQuality: BuildQuality
+  floors: number
+  greenLevel: GreenLevel
+  meetingRooms: number
+  parkingSpots: number
+  restaurantLevel: number
+  openingPromoDays: number
+  designFocus: 'vistas' | 'silencio' | 'fiesta' | 'trabajo' | 'familia'
+  buffet: boolean
+  lateCheckout: boolean
+  airportDesk: boolean
 }
 
 export interface MapFilters {
@@ -180,4 +228,11 @@ export interface MapFocus {
   lng: number
   zoom?: number
   hotelId?: string
+}
+
+export interface WeatherInfo {
+  label: string
+  detail: string
+  demandMult: number
+  costMult: number
 }

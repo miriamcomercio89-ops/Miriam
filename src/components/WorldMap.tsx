@@ -214,8 +214,8 @@ export function WorldMap() {
       <p className="map-hint">
         {hint ??
           (mapMode === 'build'
-            ? 'Modo construir: clic en tierra firme para nueva ubicación · clic en un hotel para inspeccionarlo'
-            : 'Modo inspeccionar: clic en un hotel para ver ficha · cambia a Construir para expandir')}
+            ? 'Modo construir: clic en tierra para un hotel nuevo · clic en un hotel para verlo'
+            : 'Modo ver: clic en un hotel para abrir su ficha · cambia a Construir para expandir')}
       </p>
     </div>
   )

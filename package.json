@@ -1,7 +1,7 @@
 {
   "name": "orbis-hotels-group",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.3.0",
   "type": "module",
   "scripts": {
     "dev": "concurrently -n web,api -c cyan,magenta \"vite\" \"node server/index.js\"",
@@ -16,6 +16,7 @@
     "@tanstack/react-virtual": "^3.14.9",
     "cors": "^2.8.6",
     "express": "^5.2.1",
+    "fflate": "^0.8.3",
     "leaflet": "^1.9.4",
     "leaflet.markercluster": "^1.5.3",
     "react": "^19.2.8",
