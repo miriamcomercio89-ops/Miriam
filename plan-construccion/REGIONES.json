@@ -1,0 +1,5242 @@
+{
+  "totalHotels": 100000,
+  "totalRegions": 402,
+  "totalCountries": 188,
+  "startRegion": "Málaga · Costa del Sol",
+  "distributionRule": "Por turismo / densidad hotelera real. Empieza en Málaga · Costa del Sol.",
+  "formatNote": "Cada ficha: COMPRA (hotel real) → NUEVO NOMBRE Orbis (marca). Solo hoteles reales.",
+  "spainRegions": 57,
+  "spainHotels": 25585,
+  "regions": [
+    {
+      "order": 1,
+      "code": "ES-MA-CS",
+      "country": "España",
+      "name": "Málaga · Costa del Sol",
+      "approxHotels": 2330,
+      "cities": [
+        "Málaga",
+        "Marbella",
+        "Torremolinos",
+        "Fuengirola",
+        "Estepona",
+        "Benalmádena",
+        "Mijas"
+      ]
+    },
+    {
+      "order": 2,
+      "code": "ES-MA-IN",
+      "country": "España",
+      "name": "Málaga · Interior (Ronda/Antequera)",
+      "approxHotels": 348,
+      "cities": [
+        "Ronda",
+        "Antequera",
+        "Archidona"
+      ]
+    },
+    {
+      "order": 3,
+      "code": "ES-GR",
+      "country": "España",
+      "name": "Granada",
+      "approxHotels": 813,
+      "cities": [
+        "Granada",
+        "Sierra Nevada",
+        "Almuñécar",
+        "Motril"
+      ]
+    },
+    {
+      "order": 4,
+      "code": "ES-AL",
+      "country": "España",
+      "name": "Almería",
+      "approxHotels": 503,
+      "cities": [
+        "Almería",
+        "Roquetas",
+        "Mojácar"
+      ]
+    },
+    {
+      "order": 5,
+      "code": "ES-CA",
+      "country": "España",
+      "name": "Cádiz",
+      "approxHotels": 736,
+      "cities": [
+        "Cádiz",
+        "Jerez",
+        "Chiclana",
+        "Tarifa",
+        "Conil"
+      ]
+    },
+    {
+      "order": 6,
+      "code": "ES-SE",
+      "country": "España",
+      "name": "Sevilla",
+      "approxHotels": 871,
+      "cities": [
+        "Sevilla",
+        "Carmona"
+      ]
+    },
+    {
+      "order": 7,
+      "code": "ES-CO",
+      "country": "España",
+      "name": "Córdoba",
+      "approxHotels": 465,
+      "cities": [
+        "Córdoba"
+      ]
+    },
+    {
+      "order": 8,
+      "code": "ES-JA",
+      "country": "España",
+      "name": "Jaén",
+      "approxHotels": 232,
+      "cities": [
+        "Jaén",
+        "Úbeda",
+        "Cazorla"
+      ]
+    },
+    {
+      "order": 9,
+      "code": "ES-H",
+      "country": "España",
+      "name": "Huelva",
+      "approxHotels": 387,
+      "cities": [
+        "Huelva",
+        "Isla Cristina",
+        "Ayamonte"
+      ]
+    },
+    {
+      "order": 10,
+      "code": "ES-MU",
+      "country": "España",
+      "name": "Murcia",
+      "approxHotels": 581,
+      "cities": [
+        "Murcia",
+        "Cartagena",
+        "La Manga"
+      ]
+    },
+    {
+      "order": 11,
+      "code": "ES-A",
+      "country": "España",
+      "name": "Alicante",
+      "approxHotels": 1355,
+      "cities": [
+        "Alicante",
+        "Benidorm",
+        "Torrevieja",
+        "Altea",
+        "Denia",
+        "Calpe"
+      ]
+    },
+    {
+      "order": 12,
+      "code": "ES-V",
+      "country": "España",
+      "name": "Valencia",
+      "approxHotels": 1007,
+      "cities": [
+        "Valencia",
+        "Gandía",
+        "Cullera"
+      ]
+    },
+    {
+      "order": 13,
+      "code": "ES-CS",
+      "country": "España",
+      "name": "Castellón",
+      "approxHotels": 348,
+      "cities": [
+        "Castellón",
+        "Peñíscola",
+        "Benicàssim"
+      ]
+    },
+    {
+      "order": 14,
+      "code": "ES-T",
+      "country": "España",
+      "name": "Tarragona",
+      "approxHotels": 542,
+      "cities": [
+        "Tarragona",
+        "Salou",
+        "Cambrils"
+      ]
+    },
+    {
+      "order": 15,
+      "code": "ES-B-CI",
+      "country": "España",
+      "name": "Barcelona · Ciudad",
+      "approxHotels": 1355,
+      "cities": [
+        "Barcelona"
+      ]
+    },
+    {
+      "order": 16,
+      "code": "ES-B-CO",
+      "country": "España",
+      "name": "Barcelona · Costa (Sitges/Maresme)",
+      "approxHotels": 542,
+      "cities": [
+        "Sitges",
+        "Badalona",
+        "Mataró",
+        "Vilanova"
+      ]
+    },
+    {
+      "order": 17,
+      "code": "ES-GI",
+      "country": "España",
+      "name": "Girona",
+      "approxHotels": 619,
+      "cities": [
+        "Girona",
+        "Lloret",
+        "Roses",
+        "Cadaqués"
+      ]
+    },
+    {
+      "order": 18,
+      "code": "ES-L",
+      "country": "España",
+      "name": "Lleida",
+      "approxHotels": 174,
+      "cities": [
+        "Lleida",
+        "Vielha"
+      ]
+    },
+    {
+      "order": 19,
+      "code": "ES-HU",
+      "country": "España",
+      "name": "Huesca",
+      "approxHotels": 213,
+      "cities": [
+        "Huesca",
+        "Jaca",
+        "Benasque"
+      ]
+    },
+    {
+      "order": 20,
+      "code": "ES-Z",
+      "country": "España",
+      "name": "Zaragoza",
+      "approxHotels": 426,
+      "cities": [
+        "Zaragoza"
+      ]
+    },
+    {
+      "order": 21,
+      "code": "ES-TE",
+      "country": "España",
+      "name": "Teruel",
+      "approxHotels": 116,
+      "cities": [
+        "Teruel",
+        "Albarracín"
+      ]
+    },
+    {
+      "order": 22,
+      "code": "ES-GU",
+      "country": "España",
+      "name": "Guadalajara",
+      "approxHotels": 136,
+      "cities": [
+        "Guadalajara",
+        "Sigüenza"
+      ]
+    },
+    {
+      "order": 23,
+      "code": "ES-M-CI",
+      "country": "España",
+      "name": "Madrid · Capital",
+      "approxHotels": 1549,
+      "cities": [
+        "Madrid"
+      ]
+    },
+    {
+      "order": 24,
+      "code": "ES-M-CO",
+      "country": "España",
+      "name": "Madrid · Corona (Alcalá/Aranjuez/Escorial)",
+      "approxHotels": 310,
+      "cities": [
+        "Alcalá de Henares",
+        "Aranjuez",
+        "El Escorial"
+      ]
+    },
+    {
+      "order": 25,
+      "code": "ES-TO",
+      "country": "España",
+      "name": "Toledo",
+      "approxHotels": 271,
+      "cities": [
+        "Toledo",
+        "Talavera"
+      ]
+    },
+    {
+      "order": 26,
+      "code": "ES-CR",
+      "country": "España",
+      "name": "Ciudad Real",
+      "approxHotels": 136,
+      "cities": [
+        "Ciudad Real",
+        "Almagro"
+      ]
+    },
+    {
+      "order": 27,
+      "code": "ES-AB",
+      "country": "España",
+      "name": "Albacete",
+      "approxHotels": 155,
+      "cities": [
+        "Albacete"
+      ]
+    },
+    {
+      "order": 28,
+      "code": "ES-CU",
+      "country": "España",
+      "name": "Cuenca",
+      "approxHotels": 136,
+      "cities": [
+        "Cuenca"
+      ]
+    },
+    {
+      "order": 29,
+      "code": "ES-AV",
+      "country": "España",
+      "name": "Ávila",
+      "approxHotels": 136,
+      "cities": [
+        "Ávila"
+      ]
+    },
+    {
+      "order": 30,
+      "code": "ES-SG",
+      "country": "España",
+      "name": "Segovia",
+      "approxHotels": 194,
+      "cities": [
+        "Segovia",
+        "La Granja"
+      ]
+    },
+    {
+      "order": 31,
+      "code": "ES-VA",
+      "country": "España",
+      "name": "Valladolid",
+      "approxHotels": 271,
+      "cities": [
+        "Valladolid"
+      ]
+    },
+    {
+      "order": 32,
+      "code": "ES-SA",
+      "country": "España",
+      "name": "Salamanca",
+      "approxHotels": 310,
+      "cities": [
+        "Salamanca"
+      ]
+    },
+    {
+      "order": 33,
+      "code": "ES-ZA",
+      "country": "España",
+      "name": "Zamora",
+      "approxHotels": 97,
+      "cities": [
+        "Zamora"
+      ]
+    },
+    {
+      "order": 34,
+      "code": "ES-LE",
+      "country": "España",
+      "name": "León",
+      "approxHotels": 232,
+      "cities": [
+        "León",
+        "Ponferrada"
+      ]
+    },
+    {
+      "order": 35,
+      "code": "ES-P",
+      "country": "España",
+      "name": "Palencia",
+      "approxHotels": 97,
+      "cities": [
+        "Palencia"
+      ]
+    },
+    {
+      "order": 36,
+      "code": "ES-BU",
+      "country": "España",
+      "name": "Burgos",
+      "approxHotels": 232,
+      "cities": [
+        "Burgos"
+      ]
+    },
+    {
+      "order": 37,
+      "code": "ES-SO",
+      "country": "España",
+      "name": "Soria",
+      "approxHotels": 87,
+      "cities": [
+        "Soria"
+      ]
+    },
+    {
+      "order": 38,
+      "code": "ES-LO",
+      "country": "España",
+      "name": "La Rioja",
+      "approxHotels": 213,
+      "cities": [
+        "Logroño",
+        "Haro"
+      ]
+    },
+    {
+      "order": 39,
+      "code": "ES-NA",
+      "country": "España",
+      "name": "Navarra",
+      "approxHotels": 271,
+      "cities": [
+        "Pamplona",
+        "Olite"
+      ]
+    },
+    {
+      "order": 40,
+      "code": "ES-SS",
+      "country": "España",
+      "name": "Gipuzkoa",
+      "approxHotels": 426,
+      "cities": [
+        "San Sebastián",
+        "Zarautz",
+        "Hondarribia"
+      ]
+    },
+    {
+      "order": 41,
+      "code": "ES-BI",
+      "country": "España",
+      "name": "Bizkaia",
+      "approxHotels": 503,
+      "cities": [
+        "Bilbao",
+        "Getxo"
+      ]
+    },
+    {
+      "order": 42,
+      "code": "ES-VI",
+      "country": "España",
+      "name": "Araba",
+      "approxHotels": 155,
+      "cities": [
+        "Vitoria-Gasteiz"
+      ]
+    },
+    {
+      "order": 43,
+      "code": "ES-S",
+      "country": "España",
+      "name": "Cantabria",
+      "approxHotels": 348,
+      "cities": [
+        "Santander",
+        "Laredo",
+        "Comillas"
+      ]
+    },
+    {
+      "order": 44,
+      "code": "ES-O",
+      "country": "España",
+      "name": "Asturias",
+      "approxHotels": 426,
+      "cities": [
+        "Oviedo",
+        "Gijón",
+        "Llanes"
+      ]
+    },
+    {
+      "order": 45,
+      "code": "ES-LU",
+      "country": "España",
+      "name": "Lugo",
+      "approxHotels": 136,
+      "cities": [
+        "Lugo",
+        "Ribadeo"
+      ]
+    },
+    {
+      "order": 46,
+      "code": "ES-C",
+      "country": "España",
+      "name": "A Coruña",
+      "approxHotels": 465,
+      "cities": [
+        "A Coruña",
+        "Santiago"
+      ]
+    },
+    {
+      "order": 47,
+      "code": "ES-PO",
+      "country": "España",
+      "name": "Pontevedra",
+      "approxHotels": 426,
+      "cities": [
+        "Vigo",
+        "Sanxenxo",
+        "Baiona",
+        "A Toxa"
+      ]
+    },
+    {
+      "order": 48,
+      "code": "ES-OR",
+      "country": "España",
+      "name": "Ourense",
+      "approxHotels": 116,
+      "cities": [
+        "Ourense"
+      ]
+    },
+    {
+      "order": 49,
+      "code": "ES-CC",
+      "country": "España",
+      "name": "Cáceres",
+      "approxHotels": 194,
+      "cities": [
+        "Cáceres",
+        "Trujillo",
+        "Plasencia"
+      ]
+    },
+    {
+      "order": 50,
+      "code": "ES-BA",
+      "country": "España",
+      "name": "Badajoz",
+      "approxHotels": 174,
+      "cities": [
+        "Badajoz",
+        "Mérida",
+        "Zafra"
+      ]
+    },
+    {
+      "order": 51,
+      "code": "ES-PM-MA",
+      "country": "España",
+      "name": "Mallorca",
+      "approxHotels": 968,
+      "cities": [
+        "Palma",
+        "Alcúdia",
+        "Calvià"
+      ]
+    },
+    {
+      "order": 52,
+      "code": "ES-PM-IB",
+      "country": "España",
+      "name": "Ibiza / Formentera",
+      "approxHotels": 542,
+      "cities": [
+        "Ibiza",
+        "Sant Antoni",
+        "Formentera"
+      ]
+    },
+    {
+      "order": 53,
+      "code": "ES-PM-ME",
+      "country": "España",
+      "name": "Menorca",
+      "approxHotels": 232,
+      "cities": [
+        "Mahón",
+        "Ciutadella"
+      ]
+    },
+    {
+      "order": 54,
+      "code": "ES-GC",
+      "country": "España",
+      "name": "Las Palmas (Gran Canaria / Fuerteventura / Lanzarote)",
+      "approxHotels": 774,
+      "cities": [
+        "Las Palmas",
+        "Maspalomas",
+        "Corralejo",
+        "Arrecife"
+      ]
+    },
+    {
+      "order": 55,
+      "code": "ES-TF",
+      "country": "España",
+      "name": "Santa Cruz de Tenerife (Tenerife / La Palma / La Gomera / El Hierro)",
+      "approxHotels": 813,
+      "cities": [
+        "Santa Cruz",
+        "Adeje",
+        "Puerto de la Cruz"
+      ]
+    },
+    {
+      "order": 56,
+      "code": "ES-CE",
+      "country": "España",
+      "name": "Ceuta",
+      "approxHotels": 48,
+      "cities": [
+        "Ceuta"
+      ]
+    },
+    {
+      "order": 57,
+      "code": "ES-ML",
+      "country": "España",
+      "name": "Melilla",
+      "approxHotels": 43,
+      "cities": [
+        "Melilla"
+      ]
+    },
+    {
+      "order": 58,
+      "code": "PT-LIS",
+      "country": "Portugal",
+      "name": "Lisboa e Vale do Tejo",
+      "approxHotels": 619,
+      "cities": [
+        "Lisboa",
+        "Cascais",
+        "Sintra"
+      ]
+    },
+    {
+      "order": 59,
+      "code": "PT-NOR",
+      "country": "Portugal",
+      "name": "Norte (Porto)",
+      "approxHotels": 465,
+      "cities": [
+        "Porto",
+        "Braga",
+        "Guimarães"
+      ]
+    },
+    {
+      "order": 60,
+      "code": "PT-ALG",
+      "country": "Portugal",
+      "name": "Algarve",
+      "approxHotels": 581,
+      "cities": [
+        "Faro",
+        "Albufeira",
+        "Lagos",
+        "Portimão"
+      ]
+    },
+    {
+      "order": 61,
+      "code": "PT-CEN",
+      "country": "Portugal",
+      "name": "Centro",
+      "approxHotels": 194,
+      "cities": [
+        "Coimbra",
+        "Aveiro"
+      ]
+    },
+    {
+      "order": 62,
+      "code": "PT-ALE",
+      "country": "Portugal",
+      "name": "Alentejo",
+      "approxHotels": 116,
+      "cities": [
+        "Évora",
+        "Beja"
+      ]
+    },
+    {
+      "order": 63,
+      "code": "PT-MAD",
+      "country": "Portugal",
+      "name": "Madeira",
+      "approxHotels": 271,
+      "cities": [
+        "Funchal"
+      ]
+    },
+    {
+      "order": 64,
+      "code": "PT-AZO",
+      "country": "Portugal",
+      "name": "Açores",
+      "approxHotels": 97,
+      "cities": [
+        "Ponta Delgada"
+      ]
+    },
+    {
+      "order": 65,
+      "code": "FR-IDF",
+      "country": "Francia",
+      "name": "Île-de-France (Paris)",
+      "approxHotels": 1355,
+      "cities": [
+        "Paris",
+        "Versailles"
+      ]
+    },
+    {
+      "order": 66,
+      "code": "FR-PAC",
+      "country": "Francia",
+      "name": "Provence-Alpes-Côte d’Azur",
+      "approxHotels": 871,
+      "cities": [
+        "Nice",
+        "Cannes",
+        "Marseille",
+        "Aix"
+      ]
+    },
+    {
+      "order": 67,
+      "code": "FR-OCC",
+      "country": "Francia",
+      "name": "Occitanie",
+      "approxHotels": 348,
+      "cities": [
+        "Toulouse",
+        "Montpellier"
+      ]
+    },
+    {
+      "order": 68,
+      "code": "FR-ARA",
+      "country": "Francia",
+      "name": "Auvergne-Rhône-Alpes",
+      "approxHotels": 426,
+      "cities": [
+        "Lyon",
+        "Chamonix",
+        "Annecy"
+      ]
+    },
+    {
+      "order": 69,
+      "code": "FR-NAQ",
+      "country": "Francia",
+      "name": "Nouvelle-Aquitaine",
+      "approxHotels": 310,
+      "cities": [
+        "Bordeaux",
+        "Biarritz"
+      ]
+    },
+    {
+      "order": 70,
+      "code": "FR-BRE",
+      "country": "Francia",
+      "name": "Bretagne",
+      "approxHotels": 194,
+      "cities": [
+        "Rennes",
+        "Quimper"
+      ]
+    },
+    {
+      "order": 71,
+      "code": "FR-NOR",
+      "country": "Francia",
+      "name": "Normandie",
+      "approxHotels": 174,
+      "cities": [
+        "Deauville",
+        "Rouen"
+      ]
+    },
+    {
+      "order": 72,
+      "code": "FR-GES",
+      "country": "Francia",
+      "name": "Grand Est",
+      "approxHotels": 194,
+      "cities": [
+        "Strasbourg",
+        "Reims"
+      ]
+    },
+    {
+      "order": 73,
+      "code": "FR-HDF",
+      "country": "Francia",
+      "name": "Hauts-de-France",
+      "approxHotels": 155,
+      "cities": [
+        "Lille"
+      ]
+    },
+    {
+      "order": 74,
+      "code": "FR-PDL",
+      "country": "Francia",
+      "name": "Pays de la Loire",
+      "approxHotels": 155,
+      "cities": [
+        "Nantes"
+      ]
+    },
+    {
+      "order": 75,
+      "code": "FR-CVL",
+      "country": "Francia",
+      "name": "Centre-Val de Loire",
+      "approxHotels": 136,
+      "cities": [
+        "Tours",
+        "Orléans"
+      ]
+    },
+    {
+      "order": 76,
+      "code": "FR-BFC",
+      "country": "Francia",
+      "name": "Bourgogne-Franche-Comté",
+      "approxHotels": 136,
+      "cities": [
+        "Dijon"
+      ]
+    },
+    {
+      "order": 77,
+      "code": "FR-COR",
+      "country": "Francia",
+      "name": "Corse",
+      "approxHotels": 174,
+      "cities": [
+        "Ajaccio",
+        "Bastia"
+      ]
+    },
+    {
+      "order": 78,
+      "code": "FR-DOM",
+      "country": "Francia",
+      "name": "Antillas / Réunion (DOM)",
+      "approxHotels": 194,
+      "cities": [
+        "Fort-de-France",
+        "Saint-Denis"
+      ]
+    },
+    {
+      "order": 79,
+      "code": "IT-LAZ",
+      "country": "Italia",
+      "name": "Lazio (Roma)",
+      "approxHotels": 1065,
+      "cities": [
+        "Roma"
+      ]
+    },
+    {
+      "order": 80,
+      "code": "IT-LOM",
+      "country": "Italia",
+      "name": "Lombardia (Milano)",
+      "approxHotels": 736,
+      "cities": [
+        "Milano",
+        "Como"
+      ]
+    },
+    {
+      "order": 81,
+      "code": "IT-VEN",
+      "country": "Italia",
+      "name": "Veneto",
+      "approxHotels": 619,
+      "cities": [
+        "Venezia",
+        "Verona",
+        "Padova"
+      ]
+    },
+    {
+      "order": 82,
+      "code": "IT-TOS",
+      "country": "Italia",
+      "name": "Toscana",
+      "approxHotels": 542,
+      "cities": [
+        "Firenze",
+        "Siena",
+        "Pisa"
+      ]
+    },
+    {
+      "order": 83,
+      "code": "IT-CAM",
+      "country": "Italia",
+      "name": "Campania",
+      "approxHotels": 503,
+      "cities": [
+        "Napoli",
+        "Sorrento",
+        "Capri",
+        "Amalfi"
+      ]
+    },
+    {
+      "order": 84,
+      "code": "IT-SIC",
+      "country": "Italia",
+      "name": "Sicilia",
+      "approxHotels": 426,
+      "cities": [
+        "Palermo",
+        "Taormina",
+        "Catania"
+      ]
+    },
+    {
+      "order": 85,
+      "code": "IT-SAR",
+      "country": "Italia",
+      "name": "Sardegna",
+      "approxHotels": 310,
+      "cities": [
+        "Cagliari",
+        "Olbia"
+      ]
+    },
+    {
+      "order": 86,
+      "code": "IT-EMR",
+      "country": "Italia",
+      "name": "Emilia-Romagna",
+      "approxHotels": 271,
+      "cities": [
+        "Bologna",
+        "Rimini"
+      ]
+    },
+    {
+      "order": 87,
+      "code": "IT-PIE",
+      "country": "Italia",
+      "name": "Piemonte",
+      "approxHotels": 232,
+      "cities": [
+        "Torino"
+      ]
+    },
+    {
+      "order": 88,
+      "code": "IT-LIG",
+      "country": "Italia",
+      "name": "Liguria",
+      "approxHotels": 213,
+      "cities": [
+        "Genova",
+        "Portofino"
+      ]
+    },
+    {
+      "order": 89,
+      "code": "IT-PUG",
+      "country": "Italia",
+      "name": "Puglia",
+      "approxHotels": 232,
+      "cities": [
+        "Bari",
+        "Lecce"
+      ]
+    },
+    {
+      "order": 90,
+      "code": "IT-TAA",
+      "country": "Italia",
+      "name": "Trentino-Alto Adige",
+      "approxHotels": 194,
+      "cities": [
+        "Bolzano",
+        "Trento"
+      ]
+    },
+    {
+      "order": 91,
+      "code": "GB-LON",
+      "country": "Reino Unido",
+      "name": "Greater London",
+      "approxHotels": 1258,
+      "cities": [
+        "London"
+      ]
+    },
+    {
+      "order": 92,
+      "code": "GB-SE",
+      "country": "Reino Unido",
+      "name": "South East England",
+      "approxHotels": 348,
+      "cities": [
+        "Brighton",
+        "Oxford",
+        "Canterbury"
+      ]
+    },
+    {
+      "order": 93,
+      "code": "GB-SW",
+      "country": "Reino Unido",
+      "name": "South West England",
+      "approxHotels": 271,
+      "cities": [
+        "Bath",
+        "Bristol",
+        "Cornwall"
+      ]
+    },
+    {
+      "order": 94,
+      "code": "GB-NW",
+      "country": "Reino Unido",
+      "name": "North West England",
+      "approxHotels": 310,
+      "cities": [
+        "Manchester",
+        "Liverpool"
+      ]
+    },
+    {
+      "order": 95,
+      "code": "GB-YH",
+      "country": "Reino Unido",
+      "name": "Yorkshire",
+      "approxHotels": 194,
+      "cities": [
+        "York",
+        "Leeds"
+      ]
+    },
+    {
+      "order": 96,
+      "code": "GB-WM",
+      "country": "Reino Unido",
+      "name": "West Midlands",
+      "approxHotels": 174,
+      "cities": [
+        "Birmingham"
+      ]
+    },
+    {
+      "order": 97,
+      "code": "GB-SCT",
+      "country": "Reino Unido",
+      "name": "Scotland",
+      "approxHotels": 348,
+      "cities": [
+        "Edinburgh",
+        "Glasgow"
+      ]
+    },
+    {
+      "order": 98,
+      "code": "GB-WLS",
+      "country": "Reino Unido",
+      "name": "Wales",
+      "approxHotels": 136,
+      "cities": [
+        "Cardiff"
+      ]
+    },
+    {
+      "order": 99,
+      "code": "GB-NIR",
+      "country": "Reino Unido",
+      "name": "Northern Ireland",
+      "approxHotels": 97,
+      "cities": [
+        "Belfast"
+      ]
+    },
+    {
+      "order": 100,
+      "code": "IE-LEI",
+      "country": "Irlanda",
+      "name": "Leinster (Dublin)",
+      "approxHotels": 348,
+      "cities": [
+        "Dublin"
+      ]
+    },
+    {
+      "order": 101,
+      "code": "IE-MUN",
+      "country": "Irlanda",
+      "name": "Munster",
+      "approxHotels": 116,
+      "cities": [
+        "Cork",
+        "Killarney"
+      ]
+    },
+    {
+      "order": 102,
+      "code": "DE-BE",
+      "country": "Alemania",
+      "name": "Berlin",
+      "approxHotels": 542,
+      "cities": [
+        "Berlin"
+      ]
+    },
+    {
+      "order": 103,
+      "code": "DE-BY",
+      "country": "Alemania",
+      "name": "Bayern",
+      "approxHotels": 503,
+      "cities": [
+        "München",
+        "Nürnberg"
+      ]
+    },
+    {
+      "order": 104,
+      "code": "DE-BW",
+      "country": "Alemania",
+      "name": "Baden-Württemberg",
+      "approxHotels": 310,
+      "cities": [
+        "Stuttgart",
+        "Freiburg"
+      ]
+    },
+    {
+      "order": 105,
+      "code": "DE-NW",
+      "country": "Alemania",
+      "name": "Nordrhein-Westfalen",
+      "approxHotels": 387,
+      "cities": [
+        "Köln",
+        "Düsseldorf"
+      ]
+    },
+    {
+      "order": 106,
+      "code": "DE-HH",
+      "country": "Alemania",
+      "name": "Hamburg",
+      "approxHotels": 271,
+      "cities": [
+        "Hamburg"
+      ]
+    },
+    {
+      "order": 107,
+      "code": "DE-HE",
+      "country": "Alemania",
+      "name": "Hessen",
+      "approxHotels": 194,
+      "cities": [
+        "Frankfurt"
+      ]
+    },
+    {
+      "order": 108,
+      "code": "DE-SN",
+      "country": "Alemania",
+      "name": "Sachsen",
+      "approxHotels": 136,
+      "cities": [
+        "Dresden",
+        "Leipzig"
+      ]
+    },
+    {
+      "order": 109,
+      "code": "NL-WH",
+      "country": "Países Bajos",
+      "name": "Noord-/Zuid-Holland",
+      "approxHotels": 503,
+      "cities": [
+        "Amsterdam",
+        "Rotterdam",
+        "Den Haag"
+      ]
+    },
+    {
+      "order": 110,
+      "code": "NL-REST",
+      "country": "Países Bajos",
+      "name": "Resto Países Bajos",
+      "approxHotels": 155,
+      "cities": [
+        "Utrecht",
+        "Maastricht"
+      ]
+    },
+    {
+      "order": 111,
+      "code": "BE-BRU",
+      "country": "Bélgica",
+      "name": "Bruxelles / Brabant",
+      "approxHotels": 271,
+      "cities": [
+        "Bruxelles",
+        "Brujas",
+        "Amberes"
+      ]
+    },
+    {
+      "order": 112,
+      "code": "BE-WAL",
+      "country": "Bélgica",
+      "name": "Wallonie",
+      "approxHotels": 97,
+      "cities": [
+        "Liège",
+        "Namur"
+      ]
+    },
+    {
+      "order": 113,
+      "code": "LU-LU",
+      "country": "Luxemburgo",
+      "name": "Luxemburgo",
+      "approxHotels": 77,
+      "cities": [
+        "Luxembourg"
+      ]
+    },
+    {
+      "order": 114,
+      "code": "CH-ZH",
+      "country": "Suiza",
+      "name": "Zürich / Ostschweiz",
+      "approxHotels": 232,
+      "cities": [
+        "Zürich"
+      ]
+    },
+    {
+      "order": 115,
+      "code": "CH-GE",
+      "country": "Suiza",
+      "name": "Genève / Lac Léman",
+      "approxHotels": 213,
+      "cities": [
+        "Genève",
+        "Lausanne",
+        "Montreux"
+      ]
+    },
+    {
+      "order": 116,
+      "code": "CH-BE",
+      "country": "Suiza",
+      "name": "Bern / Alps",
+      "approxHotels": 174,
+      "cities": [
+        "Bern",
+        "Interlaken",
+        "Zermatt"
+      ]
+    },
+    {
+      "order": 117,
+      "code": "AT-WI",
+      "country": "Austria",
+      "name": "Wien",
+      "approxHotels": 348,
+      "cities": [
+        "Wien"
+      ]
+    },
+    {
+      "order": 118,
+      "code": "AT-SZ",
+      "country": "Austria",
+      "name": "Salzburg / Tirol",
+      "approxHotels": 271,
+      "cities": [
+        "Salzburg",
+        "Innsbruck"
+      ]
+    },
+    {
+      "order": 119,
+      "code": "AT-ST",
+      "country": "Austria",
+      "name": "Steiermark / resto",
+      "approxHotels": 97,
+      "cities": [
+        "Graz"
+      ]
+    },
+    {
+      "order": 120,
+      "code": "SE-ST",
+      "country": "Suecia",
+      "name": "Stockholm",
+      "approxHotels": 271,
+      "cities": [
+        "Stockholm"
+      ]
+    },
+    {
+      "order": 121,
+      "code": "SE-VG",
+      "country": "Suecia",
+      "name": "Västra Götaland",
+      "approxHotels": 116,
+      "cities": [
+        "Göteborg"
+      ]
+    },
+    {
+      "order": 122,
+      "code": "NO-OS",
+      "country": "Noruega",
+      "name": "Oslo / Østlandet",
+      "approxHotels": 213,
+      "cities": [
+        "Oslo"
+      ]
+    },
+    {
+      "order": 123,
+      "code": "NO-WE",
+      "country": "Noruega",
+      "name": "Vestlandet (Bergen/Fjords)",
+      "approxHotels": 136,
+      "cities": [
+        "Bergen"
+      ]
+    },
+    {
+      "order": 124,
+      "code": "DK-HV",
+      "country": "Dinamarca",
+      "name": "Hovedstaden",
+      "approxHotels": 232,
+      "cities": [
+        "København"
+      ]
+    },
+    {
+      "order": 125,
+      "code": "DK-JY",
+      "country": "Dinamarca",
+      "name": "Jylland",
+      "approxHotels": 77,
+      "cities": [
+        "Aarhus"
+      ]
+    },
+    {
+      "order": 126,
+      "code": "FI-UU",
+      "country": "Finlandia",
+      "name": "Uusimaa (Helsinki)",
+      "approxHotels": 194,
+      "cities": [
+        "Helsinki"
+      ]
+    },
+    {
+      "order": 127,
+      "code": "FI-REST",
+      "country": "Finlandia",
+      "name": "Resto Finlandia",
+      "approxHotels": 58,
+      "cities": [
+        "Tampere",
+        "Lapland"
+      ]
+    },
+    {
+      "order": 128,
+      "code": "IS-HO",
+      "country": "Islandia",
+      "name": "Höfuðborgarsvæðið",
+      "approxHotels": 116,
+      "cities": [
+        "Reykjavík"
+      ]
+    },
+    {
+      "order": 129,
+      "code": "PL-MZ",
+      "country": "Polonia",
+      "name": "Mazowieckie (Warszawa)",
+      "approxHotels": 271,
+      "cities": [
+        "Warszawa"
+      ]
+    },
+    {
+      "order": 130,
+      "code": "PL-MA",
+      "country": "Polonia",
+      "name": "Małopolskie (Kraków)",
+      "approxHotels": 194,
+      "cities": [
+        "Kraków"
+      ]
+    },
+    {
+      "order": 131,
+      "code": "PL-PM",
+      "country": "Polonia",
+      "name": "Pomorskie",
+      "approxHotels": 97,
+      "cities": [
+        "Gdańsk"
+      ]
+    },
+    {
+      "order": 132,
+      "code": "CZ-PR",
+      "country": "Chequia",
+      "name": "Praha",
+      "approxHotels": 271,
+      "cities": [
+        "Praha"
+      ]
+    },
+    {
+      "order": 133,
+      "code": "CZ-REST",
+      "country": "Chequia",
+      "name": "Resto Chequia",
+      "approxHotels": 77,
+      "cities": [
+        "Brno",
+        "Karlovy Vary"
+      ]
+    },
+    {
+      "order": 134,
+      "code": "HU-BU",
+      "country": "Hungría",
+      "name": "Budapest",
+      "approxHotels": 252,
+      "cities": [
+        "Budapest"
+      ]
+    },
+    {
+      "order": 135,
+      "code": "HU-REST",
+      "country": "Hungría",
+      "name": "Resto Hungría",
+      "approxHotels": 58,
+      "cities": [
+        "Lake Balaton"
+      ]
+    },
+    {
+      "order": 136,
+      "code": "RO-B",
+      "country": "Rumanía",
+      "name": "București",
+      "approxHotels": 136,
+      "cities": [
+        "București"
+      ]
+    },
+    {
+      "order": 137,
+      "code": "RO-REST",
+      "country": "Rumanía",
+      "name": "Resto Rumanía",
+      "approxHotels": 77,
+      "cities": [
+        "Brașov",
+        "Cluj"
+      ]
+    },
+    {
+      "order": 138,
+      "code": "BG-SO",
+      "country": "Bulgaria",
+      "name": "Sofia / Mar Negro",
+      "approxHotels": 155,
+      "cities": [
+        "Sofia",
+        "Varna",
+        "Burgas"
+      ]
+    },
+    {
+      "order": 139,
+      "code": "HR-DA",
+      "country": "Croacia",
+      "name": "Dalmacija",
+      "approxHotels": 271,
+      "cities": [
+        "Split",
+        "Dubrovnik",
+        "Hvar"
+      ]
+    },
+    {
+      "order": 140,
+      "code": "HR-IS",
+      "country": "Croacia",
+      "name": "Istra / Zagreb",
+      "approxHotels": 155,
+      "cities": [
+        "Zagreb",
+        "Rovinj"
+      ]
+    },
+    {
+      "order": 141,
+      "code": "SI-LJ",
+      "country": "Eslovenia",
+      "name": "Slovenija",
+      "approxHotels": 97,
+      "cities": [
+        "Ljubljana",
+        "Bled"
+      ]
+    },
+    {
+      "order": 142,
+      "code": "SK-BA",
+      "country": "Eslovaquia",
+      "name": "Bratislava / Tatras",
+      "approxHotels": 77,
+      "cities": [
+        "Bratislava"
+      ]
+    },
+    {
+      "order": 143,
+      "code": "RS-BG",
+      "country": "Serbia",
+      "name": "Beograd",
+      "approxHotels": 97,
+      "cities": [
+        "Beograd"
+      ]
+    },
+    {
+      "order": 144,
+      "code": "BA-SA",
+      "country": "Bosnia",
+      "name": "Sarajevo / Mostar",
+      "approxHotels": 68,
+      "cities": [
+        "Sarajevo",
+        "Mostar"
+      ]
+    },
+    {
+      "order": 145,
+      "code": "ME-CG",
+      "country": "Montenegro",
+      "name": "Crna Gora costa",
+      "approxHotels": 97,
+      "cities": [
+        "Kotor",
+        "Budva"
+      ]
+    },
+    {
+      "order": 146,
+      "code": "AL-TR",
+      "country": "Albania",
+      "name": "Tiranë / Riviera",
+      "approxHotels": 77,
+      "cities": [
+        "Tiranë",
+        "Sarandë"
+      ]
+    },
+    {
+      "order": 147,
+      "code": "MK-SK",
+      "country": "Macedonia del Norte",
+      "name": "Skopje",
+      "approxHotels": 48,
+      "cities": [
+        "Skopje"
+      ]
+    },
+    {
+      "order": 148,
+      "code": "XK-PR",
+      "country": "Kosovo",
+      "name": "Prishtina",
+      "approxHotels": 39,
+      "cities": [
+        "Prishtina"
+      ]
+    },
+    {
+      "order": 149,
+      "code": "GR-ATT",
+      "country": "Grecia",
+      "name": "Attiki (Atenas)",
+      "approxHotels": 542,
+      "cities": [
+        "Athína"
+      ]
+    },
+    {
+      "order": 150,
+      "code": "GR-SAE",
+      "country": "Grecia",
+      "name": "South Aegean (Cyclades/Dodecanese)",
+      "approxHotels": 503,
+      "cities": [
+        "Mykonos",
+        "Santorini",
+        "Rodos"
+      ]
+    },
+    {
+      "order": 151,
+      "code": "GR-CRE",
+      "country": "Grecia",
+      "name": "Kriti",
+      "approxHotels": 387,
+      "cities": [
+        "Iraklio",
+        "Chania"
+      ]
+    },
+    {
+      "order": 152,
+      "code": "GR-ION",
+      "country": "Grecia",
+      "name": "Ionia Nisia",
+      "approxHotels": 155,
+      "cities": [
+        "Corfú",
+        "Zakynthos"
+      ]
+    },
+    {
+      "order": 153,
+      "code": "GR-MAC",
+      "country": "Grecia",
+      "name": "Kentriki Makedonia",
+      "approxHotels": 194,
+      "cities": [
+        "Thessaloniki"
+      ]
+    },
+    {
+      "order": 154,
+      "code": "GR-PEL",
+      "country": "Grecia",
+      "name": "Peloponnisos",
+      "approxHotels": 136,
+      "cities": [
+        "Nafplio"
+      ]
+    },
+    {
+      "order": 155,
+      "code": "CY-NI",
+      "country": "Chipre",
+      "name": "Cyprus",
+      "approxHotels": 194,
+      "cities": [
+        "Nicosia",
+        "Limassol",
+        "Ayia Napa"
+      ]
+    },
+    {
+      "order": 156,
+      "code": "MT-MA",
+      "country": "Malta",
+      "name": "Malta",
+      "approxHotels": 155,
+      "cities": [
+        "Valletta",
+        "Sliema"
+      ]
+    },
+    {
+      "order": 157,
+      "code": "TR-IST",
+      "country": "Turquía",
+      "name": "İstanbul",
+      "approxHotels": 697,
+      "cities": [
+        "İstanbul"
+      ]
+    },
+    {
+      "order": 158,
+      "code": "TR-ANT",
+      "country": "Turquía",
+      "name": "Antalya",
+      "approxHotels": 619,
+      "cities": [
+        "Antalya",
+        "Belek",
+        "Alanya"
+      ]
+    },
+    {
+      "order": 159,
+      "code": "TR-MU",
+      "country": "Turquía",
+      "name": "Muğla (Bodrum/Fethiye)",
+      "approxHotels": 271,
+      "cities": [
+        "Bodrum",
+        "Fethiye"
+      ]
+    },
+    {
+      "order": 160,
+      "code": "TR-ANK",
+      "country": "Turquía",
+      "name": "Ankara / Interior",
+      "approxHotels": 155,
+      "cities": [
+        "Ankara"
+      ]
+    },
+    {
+      "order": 161,
+      "code": "TR-IZ",
+      "country": "Turquía",
+      "name": "İzmir / Egeo",
+      "approxHotels": 194,
+      "cities": [
+        "İzmir"
+      ]
+    },
+    {
+      "order": 162,
+      "code": "US-NY",
+      "country": "EE.UU.",
+      "name": "New York",
+      "approxHotels": 1355,
+      "cities": [
+        "New York City"
+      ]
+    },
+    {
+      "order": 163,
+      "code": "US-CA-S",
+      "country": "EE.UU.",
+      "name": "California Sur (LA/SD)",
+      "approxHotels": 813,
+      "cities": [
+        "Los Angeles",
+        "San Diego"
+      ]
+    },
+    {
+      "order": 164,
+      "code": "US-CA-N",
+      "country": "EE.UU.",
+      "name": "California Norte (SF/Napa)",
+      "approxHotels": 542,
+      "cities": [
+        "San Francisco",
+        "Napa"
+      ]
+    },
+    {
+      "order": 165,
+      "code": "US-FL-S",
+      "country": "EE.UU.",
+      "name": "Florida Sur (Miami)",
+      "approxHotels": 678,
+      "cities": [
+        "Miami",
+        "Fort Lauderdale"
+      ]
+    },
+    {
+      "order": 166,
+      "code": "US-FL-C",
+      "country": "EE.UU.",
+      "name": "Florida Centro (Orlando)",
+      "approxHotels": 542,
+      "cities": [
+        "Orlando",
+        "Tampa"
+      ]
+    },
+    {
+      "order": 167,
+      "code": "US-NV",
+      "country": "EE.UU.",
+      "name": "Nevada (Las Vegas)",
+      "approxHotels": 503,
+      "cities": [
+        "Las Vegas"
+      ]
+    },
+    {
+      "order": 168,
+      "code": "US-HI",
+      "country": "EE.UU.",
+      "name": "Hawaii",
+      "approxHotels": 426,
+      "cities": [
+        "Honolulu",
+        "Maui"
+      ]
+    },
+    {
+      "order": 169,
+      "code": "US-IL",
+      "country": "EE.UU.",
+      "name": "Illinois (Chicago)",
+      "approxHotels": 310,
+      "cities": [
+        "Chicago"
+      ]
+    },
+    {
+      "order": 170,
+      "code": "US-TX",
+      "country": "EE.UU.",
+      "name": "Texas",
+      "approxHotels": 387,
+      "cities": [
+        "Houston",
+        "Austin",
+        "Dallas"
+      ]
+    },
+    {
+      "order": 171,
+      "code": "US-MA",
+      "country": "EE.UU.",
+      "name": "Massachusetts (Boston)",
+      "approxHotels": 232,
+      "cities": [
+        "Boston"
+      ]
+    },
+    {
+      "order": 172,
+      "code": "US-DC",
+      "country": "EE.UU.",
+      "name": "Washington DC / Virginia Norte",
+      "approxHotels": 232,
+      "cities": [
+        "Washington"
+      ]
+    },
+    {
+      "order": 173,
+      "code": "US-WA",
+      "country": "EE.UU.",
+      "name": "Washington State",
+      "approxHotels": 194,
+      "cities": [
+        "Seattle"
+      ]
+    },
+    {
+      "order": 174,
+      "code": "US-CO",
+      "country": "EE.UU.",
+      "name": "Colorado",
+      "approxHotels": 194,
+      "cities": [
+        "Denver",
+        "Aspen"
+      ]
+    },
+    {
+      "order": 175,
+      "code": "US-AZ",
+      "country": "EE.UU.",
+      "name": "Arizona",
+      "approxHotels": 194,
+      "cities": [
+        "Phoenix",
+        "Scottsdale"
+      ]
+    },
+    {
+      "order": 176,
+      "code": "US-NV2",
+      "country": "EE.UU.",
+      "name": "Resto Oeste (OR/UT/NM)",
+      "approxHotels": 155,
+      "cities": [
+        "Portland",
+        "Salt Lake City"
+      ]
+    },
+    {
+      "order": 177,
+      "code": "US-SE",
+      "country": "EE.UU.",
+      "name": "Sureste (GA/NC/SC/TN)",
+      "approxHotels": 271,
+      "cities": [
+        "Atlanta",
+        "Nashville",
+        "Charleston"
+      ]
+    },
+    {
+      "order": 178,
+      "code": "US-NE",
+      "country": "EE.UU.",
+      "name": "Noreste (PA/NJ/CT)",
+      "approxHotels": 232,
+      "cities": [
+        "Philadelphia",
+        "Atlantic City"
+      ]
+    },
+    {
+      "order": 179,
+      "code": "CA-ON",
+      "country": "Canadá",
+      "name": "Ontario",
+      "approxHotels": 426,
+      "cities": [
+        "Toronto",
+        "Ottawa"
+      ]
+    },
+    {
+      "order": 180,
+      "code": "CA-QC",
+      "country": "Canadá",
+      "name": "Québec",
+      "approxHotels": 348,
+      "cities": [
+        "Montréal",
+        "Québec"
+      ]
+    },
+    {
+      "order": 181,
+      "code": "CA-BC",
+      "country": "Canadá",
+      "name": "British Columbia",
+      "approxHotels": 310,
+      "cities": [
+        "Vancouver",
+        "Victoria"
+      ]
+    },
+    {
+      "order": 182,
+      "code": "CA-AB",
+      "country": "Canadá",
+      "name": "Alberta (Rockies)",
+      "approxHotels": 155,
+      "cities": [
+        "Banff",
+        "Calgary"
+      ]
+    },
+    {
+      "order": 183,
+      "code": "CA-REST",
+      "country": "Canadá",
+      "name": "Resto Canadá",
+      "approxHotels": 97,
+      "cities": [
+        "Halifax",
+        "Winnipeg"
+      ]
+    },
+    {
+      "order": 184,
+      "code": "MX-CDMX",
+      "country": "México",
+      "name": "Ciudad de México",
+      "approxHotels": 503,
+      "cities": [
+        "Ciudad de México"
+      ]
+    },
+    {
+      "order": 185,
+      "code": "MX-QR",
+      "country": "México",
+      "name": "Quintana Roo (Cancún/Riviera)",
+      "approxHotels": 871,
+      "cities": [
+        "Cancún",
+        "Playa del Carmen",
+        "Tulum"
+      ]
+    },
+    {
+      "order": 186,
+      "code": "MX-JAL",
+      "country": "México",
+      "name": "Jalisco (PV / GDL)",
+      "approxHotels": 348,
+      "cities": [
+        "Puerto Vallarta",
+        "Guadalajara"
+      ]
+    },
+    {
+      "order": 187,
+      "code": "MX-BC",
+      "country": "México",
+      "name": "Baja California / Sur",
+      "approxHotels": 271,
+      "cities": [
+        "Los Cabos",
+        "Tijuana"
+      ]
+    },
+    {
+      "order": 188,
+      "code": "MX-OAX",
+      "country": "México",
+      "name": "Oaxaca / Guerrero (Acapulco)",
+      "approxHotels": 194,
+      "cities": [
+        "Oaxaca",
+        "Acapulco"
+      ]
+    },
+    {
+      "order": 189,
+      "code": "MX-YUC",
+      "country": "México",
+      "name": "Yucatán",
+      "approxHotels": 155,
+      "cities": [
+        "Mérida"
+      ]
+    },
+    {
+      "order": 190,
+      "code": "MX-REST",
+      "country": "México",
+      "name": "Resto México",
+      "approxHotels": 194,
+      "cities": [
+        "Monterrey",
+        "Puebla"
+      ]
+    },
+    {
+      "order": 191,
+      "code": "BR-SP",
+      "country": "Brasil",
+      "name": "São Paulo",
+      "approxHotels": 503,
+      "cities": [
+        "São Paulo"
+      ]
+    },
+    {
+      "order": 192,
+      "code": "BR-RJ",
+      "country": "Brasil",
+      "name": "Rio de Janeiro",
+      "approxHotels": 581,
+      "cities": [
+        "Rio de Janeiro",
+        "Búzios"
+      ]
+    },
+    {
+      "order": 193,
+      "code": "BR-BA",
+      "country": "Brasil",
+      "name": "Bahia",
+      "approxHotels": 232,
+      "cities": [
+        "Salvador"
+      ]
+    },
+    {
+      "order": 194,
+      "code": "BR-NE",
+      "country": "Brasil",
+      "name": "Nordeste costa (CE/PE/RN)",
+      "approxHotels": 271,
+      "cities": [
+        "Fortaleza",
+        "Recife",
+        "Natal"
+      ]
+    },
+    {
+      "order": 195,
+      "code": "BR-SC",
+      "country": "Brasil",
+      "name": "Santa Catarina / Sul",
+      "approxHotels": 194,
+      "cities": [
+        "Florianópolis"
+      ]
+    },
+    {
+      "order": 196,
+      "code": "BR-AM",
+      "country": "Brasil",
+      "name": "Amazonia / Centro-Oeste",
+      "approxHotels": 116,
+      "cities": [
+        "Manaus",
+        "Brasília"
+      ]
+    },
+    {
+      "order": 197,
+      "code": "AR-CABA",
+      "country": "Argentina",
+      "name": "Buenos Aires CABA",
+      "approxHotels": 426,
+      "cities": [
+        "Buenos Aires"
+      ]
+    },
+    {
+      "order": 198,
+      "code": "AR-PAT",
+      "country": "Argentina",
+      "name": "Patagonia",
+      "approxHotels": 155,
+      "cities": [
+        "Bariloche",
+        "El Calafate"
+      ]
+    },
+    {
+      "order": 199,
+      "code": "AR-MEN",
+      "country": "Argentina",
+      "name": "Mendoza / Cuyo",
+      "approxHotels": 116,
+      "cities": [
+        "Mendoza"
+      ]
+    },
+    {
+      "order": 200,
+      "code": "AR-REST",
+      "country": "Argentina",
+      "name": "Resto Argentina",
+      "approxHotels": 97,
+      "cities": [
+        "Córdoba",
+        "Salta"
+      ]
+    },
+    {
+      "order": 201,
+      "code": "CL-RM",
+      "country": "Chile",
+      "name": "Región Metropolitana",
+      "approxHotels": 232,
+      "cities": [
+        "Santiago"
+      ]
+    },
+    {
+      "order": 202,
+      "code": "CL-PAT",
+      "country": "Chile",
+      "name": "Patagonia / Sur",
+      "approxHotels": 97,
+      "cities": [
+        "Puerto Varas",
+        "Punta Arenas"
+      ]
+    },
+    {
+      "order": 203,
+      "code": "CL-NOR",
+      "country": "Chile",
+      "name": "Norte",
+      "approxHotels": 58,
+      "cities": [
+        "San Pedro de Atacama"
+      ]
+    },
+    {
+      "order": 204,
+      "code": "CO-BOG",
+      "country": "Colombia",
+      "name": "Bogotá",
+      "approxHotels": 213,
+      "cities": [
+        "Bogotá"
+      ]
+    },
+    {
+      "order": 205,
+      "code": "CO-CAR",
+      "country": "Colombia",
+      "name": "Caribe (Cartagena/Santa Marta)",
+      "approxHotels": 232,
+      "cities": [
+        "Cartagena",
+        "Santa Marta"
+      ]
+    },
+    {
+      "order": 206,
+      "code": "CO-MED",
+      "country": "Colombia",
+      "name": "Antioquia / Eje",
+      "approxHotels": 116,
+      "cities": [
+        "Medellín"
+      ]
+    },
+    {
+      "order": 207,
+      "code": "PE-LIM",
+      "country": "Perú",
+      "name": "Lima",
+      "approxHotels": 271,
+      "cities": [
+        "Lima"
+      ]
+    },
+    {
+      "order": 208,
+      "code": "PE-CUS",
+      "country": "Perú",
+      "name": "Cusco / Valle Sagrado",
+      "approxHotels": 194,
+      "cities": [
+        "Cusco",
+        "Aguas Calientes"
+      ]
+    },
+    {
+      "order": 209,
+      "code": "PE-REST",
+      "country": "Perú",
+      "name": "Resto Perú",
+      "approxHotels": 77,
+      "cities": [
+        "Arequipa",
+        "Paracas"
+      ]
+    },
+    {
+      "order": 210,
+      "code": "UY-MO",
+      "country": "Uruguay",
+      "name": "Montevideo / Punta del Este",
+      "approxHotels": 136,
+      "cities": [
+        "Montevideo",
+        "Punta del Este"
+      ]
+    },
+    {
+      "order": 211,
+      "code": "PY-AS",
+      "country": "Paraguay",
+      "name": "Asunción",
+      "approxHotels": 48,
+      "cities": [
+        "Asunción"
+      ]
+    },
+    {
+      "order": 212,
+      "code": "BO-LP",
+      "country": "Bolivia",
+      "name": "La Paz / Uyuni",
+      "approxHotels": 58,
+      "cities": [
+        "La Paz"
+      ]
+    },
+    {
+      "order": 213,
+      "code": "EC-PI",
+      "country": "Ecuador",
+      "name": "Pichincha / Guayas / Galápagos",
+      "approxHotels": 136,
+      "cities": [
+        "Quito",
+        "Guayaquil",
+        "Galápagos"
+      ]
+    },
+    {
+      "order": 214,
+      "code": "VE-CA",
+      "country": "Venezuela",
+      "name": "Caracas / Margarita",
+      "approxHotels": 77,
+      "cities": [
+        "Caracas"
+      ]
+    },
+    {
+      "order": 215,
+      "code": "GY-GE",
+      "country": "Guyana",
+      "name": "Georgetown",
+      "approxHotels": 29,
+      "cities": [
+        "Georgetown"
+      ]
+    },
+    {
+      "order": 216,
+      "code": "SR-PA",
+      "country": "Surinam",
+      "name": "Paramaribo",
+      "approxHotels": 23,
+      "cities": [
+        "Paramaribo"
+      ]
+    },
+    {
+      "order": 217,
+      "code": "GF-CA",
+      "country": "Guayana Francesa",
+      "name": "Cayenne",
+      "approxHotels": 23,
+      "cities": [
+        "Cayenne"
+      ]
+    },
+    {
+      "order": 218,
+      "code": "CR-SJ",
+      "country": "Costa Rica",
+      "name": "San José / Pacífico / Caribe",
+      "approxHotels": 213,
+      "cities": [
+        "San José",
+        "Manuel Antonio",
+        "Liberia"
+      ]
+    },
+    {
+      "order": 219,
+      "code": "PA-PA",
+      "country": "Panamá",
+      "name": "Panamá / Bocas",
+      "approxHotels": 174,
+      "cities": [
+        "Ciudad de Panamá"
+      ]
+    },
+    {
+      "order": 220,
+      "code": "GT-GU",
+      "country": "Guatemala",
+      "name": "Guatemala / Antigua",
+      "approxHotels": 97,
+      "cities": [
+        "Antigua Guatemala"
+      ]
+    },
+    {
+      "order": 221,
+      "code": "HN-BA",
+      "country": "Honduras",
+      "name": "Bay Islands / Tegucigalpa",
+      "approxHotels": 68,
+      "cities": [
+        "Roatán"
+      ]
+    },
+    {
+      "order": 222,
+      "code": "SV-SS",
+      "country": "El Salvador",
+      "name": "San Salvador / Costa",
+      "approxHotels": 58,
+      "cities": [
+        "San Salvador"
+      ]
+    },
+    {
+      "order": 223,
+      "code": "NI-MA",
+      "country": "Nicaragua",
+      "name": "Managua / Granada",
+      "approxHotels": 58,
+      "cities": [
+        "Granada"
+      ]
+    },
+    {
+      "order": 224,
+      "code": "BZ-CZ",
+      "country": "Belice",
+      "name": "Belize / Ambergris",
+      "approxHotels": 68,
+      "cities": [
+        "San Pedro"
+      ]
+    },
+    {
+      "order": 225,
+      "code": "CU-HA",
+      "country": "Cuba",
+      "name": "La Habana",
+      "approxHotels": 232,
+      "cities": [
+        "La Habana"
+      ]
+    },
+    {
+      "order": 226,
+      "code": "CU-VAR",
+      "country": "Cuba",
+      "name": "Varadero / Oriente",
+      "approxHotels": 155,
+      "cities": [
+        "Varadero",
+        "Santiago"
+      ]
+    },
+    {
+      "order": 227,
+      "code": "DO-PC",
+      "country": "Rep. Dominicana",
+      "name": "Punta Cana / Este",
+      "approxHotels": 503,
+      "cities": [
+        "Punta Cana",
+        "Bávaro"
+      ]
+    },
+    {
+      "order": 228,
+      "code": "DO-SD",
+      "country": "Rep. Dominicana",
+      "name": "Santo Domingo / Norte",
+      "approxHotels": 194,
+      "cities": [
+        "Santo Domingo",
+        "Puerto Plata"
+      ]
+    },
+    {
+      "order": 229,
+      "code": "JM-MO",
+      "country": "Jamaica",
+      "name": "Montego Bay / Negril / Ocho Ríos",
+      "approxHotels": 232,
+      "cities": [
+        "Montego Bay",
+        "Negril"
+      ]
+    },
+    {
+      "order": 230,
+      "code": "JM-KI",
+      "country": "Jamaica",
+      "name": "Kingston",
+      "approxHotels": 58,
+      "cities": [
+        "Kingston"
+      ]
+    },
+    {
+      "order": 231,
+      "code": "BS-NA",
+      "country": "Bahamas",
+      "name": "Nassau / Paradise Island",
+      "approxHotels": 174,
+      "cities": [
+        "Nassau"
+      ]
+    },
+    {
+      "order": 232,
+      "code": "BB-BR",
+      "country": "Barbados",
+      "name": "Barbados",
+      "approxHotels": 116,
+      "cities": [
+        "Bridgetown"
+      ]
+    },
+    {
+      "order": 233,
+      "code": "TT-POS",
+      "country": "Trinidad y Tobago",
+      "name": "Trinidad y Tobago",
+      "approxHotels": 58,
+      "cities": [
+        "Port of Spain"
+      ]
+    },
+    {
+      "order": 234,
+      "code": "HT-PA",
+      "country": "Haití",
+      "name": "Port-au-Prince",
+      "approxHotels": 39,
+      "cities": [
+        "Port-au-Prince"
+      ]
+    },
+    {
+      "order": 235,
+      "code": "PR-SJ",
+      "country": "Puerto Rico",
+      "name": "San Juan / Isla",
+      "approxHotels": 194,
+      "cities": [
+        "San Juan"
+      ]
+    },
+    {
+      "order": 236,
+      "code": "VI-ST",
+      "country": "Islas Vírgenes",
+      "name": "US/UK Virgin Islands",
+      "approxHotels": 77,
+      "cities": [
+        "St. Thomas",
+        "Tortola"
+      ]
+    },
+    {
+      "order": 237,
+      "code": "AW-OR",
+      "country": "Aruba / Curaçao / Bonaire",
+      "name": "ABC Islands",
+      "approxHotels": 136,
+      "cities": [
+        "Oranjestad",
+        "Willemstad"
+      ]
+    },
+    {
+      "order": 238,
+      "code": "LC-CA",
+      "country": "Caribe Este menor",
+      "name": "Santa Lucía / Antigua / Granada / SKN",
+      "approxHotels": 155,
+      "cities": [
+        "Castries",
+        "St. John’s"
+      ]
+    },
+    {
+      "order": 239,
+      "code": "AE-DU",
+      "country": "EAU",
+      "name": "Dubai",
+      "approxHotels": 871,
+      "cities": [
+        "Dubai"
+      ]
+    },
+    {
+      "order": 240,
+      "code": "AE-AZ",
+      "country": "EAU",
+      "name": "Abu Dhabi",
+      "approxHotels": 387,
+      "cities": [
+        "Abu Dhabi"
+      ]
+    },
+    {
+      "order": 241,
+      "code": "AE-NE",
+      "country": "EAU",
+      "name": "Norte (Sharjah/RAK)",
+      "approxHotels": 116,
+      "cities": [
+        "Sharjah"
+      ]
+    },
+    {
+      "order": 242,
+      "code": "QA-DA",
+      "country": "Catar",
+      "name": "Doha",
+      "approxHotels": 271,
+      "cities": [
+        "Doha"
+      ]
+    },
+    {
+      "order": 243,
+      "code": "SA-RI",
+      "country": "Arabia Saudí",
+      "name": "Riyadh",
+      "approxHotels": 271,
+      "cities": [
+        "Riyadh"
+      ]
+    },
+    {
+      "order": 244,
+      "code": "SA-JE",
+      "country": "Arabia Saudí",
+      "name": "Jeddah / Makkah / Madinah",
+      "approxHotels": 232,
+      "cities": [
+        "Jeddah"
+      ]
+    },
+    {
+      "order": 245,
+      "code": "SA-NE",
+      "country": "Arabia Saudí",
+      "name": "NEOM / Red Sea / restante",
+      "approxHotels": 155,
+      "cities": [
+        "NEOM"
+      ]
+    },
+    {
+      "order": 246,
+      "code": "BH-MA",
+      "country": "Baréin",
+      "name": "Manama",
+      "approxHotels": 97,
+      "cities": [
+        "Manama"
+      ]
+    },
+    {
+      "order": 247,
+      "code": "KW-KU",
+      "country": "Kuwait",
+      "name": "Kuwait City",
+      "approxHotels": 77,
+      "cities": [
+        "Kuwait City"
+      ]
+    },
+    {
+      "order": 248,
+      "code": "OM-MU",
+      "country": "Omán",
+      "name": "Muscat",
+      "approxHotels": 116,
+      "cities": [
+        "Muscat"
+      ]
+    },
+    {
+      "order": 249,
+      "code": "JO-AM",
+      "country": "Jordania",
+      "name": "Amman / Petra / Mar Muerto",
+      "approxHotels": 136,
+      "cities": [
+        "Amman",
+        "Petra"
+      ]
+    },
+    {
+      "order": 250,
+      "code": "IL-TA",
+      "country": "Israel",
+      "name": "Tel Aviv / Jerusalem",
+      "approxHotels": 194,
+      "cities": [
+        "Tel Aviv",
+        "Jerusalem"
+      ]
+    },
+    {
+      "order": 251,
+      "code": "PS-WB",
+      "country": "Palestina",
+      "name": "West Bank / Gaza",
+      "approxHotels": 39,
+      "cities": [
+        "Ramallah",
+        "Belén"
+      ]
+    },
+    {
+      "order": 252,
+      "code": "LB-BE",
+      "country": "Líbano",
+      "name": "Beirut",
+      "approxHotels": 77,
+      "cities": [
+        "Beirut"
+      ]
+    },
+    {
+      "order": 253,
+      "code": "EG-CA",
+      "country": "Egipto",
+      "name": "El Cairo / Giza",
+      "approxHotels": 348,
+      "cities": [
+        "El Cairo"
+      ]
+    },
+    {
+      "order": 254,
+      "code": "EG-RS",
+      "country": "Egipto",
+      "name": "Mar Rojo (Hurghada/Sharm)",
+      "approxHotels": 426,
+      "cities": [
+        "Hurghada",
+        "Sharm el-Sheikh"
+      ]
+    },
+    {
+      "order": 255,
+      "code": "EG-LX",
+      "country": "Egipto",
+      "name": "Luxor / Aswan",
+      "approxHotels": 116,
+      "cities": [
+        "Luxor"
+      ]
+    },
+    {
+      "order": 256,
+      "code": "MA-MR",
+      "country": "Marruecos",
+      "name": "Marrakech-Safi",
+      "approxHotels": 387,
+      "cities": [
+        "Marrakech"
+      ]
+    },
+    {
+      "order": 257,
+      "code": "MA-CA",
+      "country": "Marruecos",
+      "name": "Casablanca-Settat",
+      "approxHotels": 194,
+      "cities": [
+        "Casablanca"
+      ]
+    },
+    {
+      "order": 258,
+      "code": "MA-FE",
+      "country": "Marruecos",
+      "name": "Fès / Meknès / Norte",
+      "approxHotels": 155,
+      "cities": [
+        "Fès",
+        "Tánger"
+      ]
+    },
+    {
+      "order": 259,
+      "code": "TN-TU",
+      "country": "Túnez",
+      "name": "Tunis / Hammamet / Djerba",
+      "approxHotels": 174,
+      "cities": [
+        "Tunis",
+        "Hammamet"
+      ]
+    },
+    {
+      "order": 260,
+      "code": "DZ-AL",
+      "country": "Argelia",
+      "name": "Alger / Costa",
+      "approxHotels": 77,
+      "cities": [
+        "Alger"
+      ]
+    },
+    {
+      "order": 261,
+      "code": "LY-TR",
+      "country": "Libia",
+      "name": "Tripoli",
+      "approxHotels": 29,
+      "cities": [
+        "Tripoli"
+      ]
+    },
+    {
+      "order": 262,
+      "code": "SD-KH",
+      "country": "Sudán",
+      "name": "Khartoum",
+      "approxHotels": 29,
+      "cities": [
+        "Khartoum"
+      ]
+    },
+    {
+      "order": 263,
+      "code": "ET-AA",
+      "country": "Etiopía",
+      "name": "Addis Abeba",
+      "approxHotels": 68,
+      "cities": [
+        "Addis Abeba"
+      ]
+    },
+    {
+      "order": 264,
+      "code": "KE-NA",
+      "country": "Kenia",
+      "name": "Nairobi / Costa / Safari",
+      "approxHotels": 194,
+      "cities": [
+        "Nairobi",
+        "Mombasa",
+        "Masai Mara"
+      ]
+    },
+    {
+      "order": 265,
+      "code": "TZ-DA",
+      "country": "Tanzania",
+      "name": "Dar / Zanzíbar / Serengeti",
+      "approxHotels": 174,
+      "cities": [
+        "Zanzibar",
+        "Arusha",
+        "Dar es Salaam"
+      ]
+    },
+    {
+      "order": 266,
+      "code": "UG-KA",
+      "country": "Uganda",
+      "name": "Kampala",
+      "approxHotels": 48,
+      "cities": [
+        "Kampala"
+      ]
+    },
+    {
+      "order": 267,
+      "code": "RW-KI",
+      "country": "Ruanda",
+      "name": "Kigali",
+      "approxHotels": 39,
+      "cities": [
+        "Kigali"
+      ]
+    },
+    {
+      "order": 268,
+      "code": "ZA-WC",
+      "country": "Sudáfrica",
+      "name": "Western Cape",
+      "approxHotels": 387,
+      "cities": [
+        "Cape Town",
+        "Stellenbosch"
+      ]
+    },
+    {
+      "order": 269,
+      "code": "ZA-GP",
+      "country": "Sudáfrica",
+      "name": "Gauteng",
+      "approxHotels": 194,
+      "cities": [
+        "Johannesburg",
+        "Pretoria"
+      ]
+    },
+    {
+      "order": 270,
+      "code": "ZA-KZN",
+      "country": "Sudáfrica",
+      "name": "KwaZulu-Natal",
+      "approxHotels": 116,
+      "cities": [
+        "Durban"
+      ]
+    },
+    {
+      "order": 271,
+      "code": "ZA-REST",
+      "country": "Sudáfrica",
+      "name": "Resto / Kruger",
+      "approxHotels": 97,
+      "cities": [
+        "Kruger"
+      ]
+    },
+    {
+      "order": 272,
+      "code": "NA-WH",
+      "country": "Namibia",
+      "name": "Windhoek / Coast",
+      "approxHotels": 58,
+      "cities": [
+        "Windhoek",
+        "Swakopmund"
+      ]
+    },
+    {
+      "order": 273,
+      "code": "BW-GA",
+      "country": "Botsuana",
+      "name": "Gaborone / Okavango",
+      "approxHotels": 58,
+      "cities": [
+        "Maun"
+      ]
+    },
+    {
+      "order": 274,
+      "code": "ZW-HA",
+      "country": "Zimbabue",
+      "name": "Harare / Victoria Falls",
+      "approxHotels": 58,
+      "cities": [
+        "Victoria Falls"
+      ]
+    },
+    {
+      "order": 275,
+      "code": "MZ-MP",
+      "country": "Mozambique",
+      "name": "Maputo / Costa",
+      "approxHotels": 48,
+      "cities": [
+        "Maputo"
+      ]
+    },
+    {
+      "order": 276,
+      "code": "MU-PL",
+      "country": "Mauricio",
+      "name": "Mauricio",
+      "approxHotels": 136,
+      "cities": [
+        "Port Louis"
+      ]
+    },
+    {
+      "order": 277,
+      "code": "SC-MA",
+      "country": "Seychelles",
+      "name": "Mahé / Praslin",
+      "approxHotels": 116,
+      "cities": [
+        "Victoria"
+      ]
+    },
+    {
+      "order": 278,
+      "code": "MV-AT",
+      "country": "Maldivas",
+      "name": "Malé / Atolones",
+      "approxHotels": 348,
+      "cities": [
+        "Malé",
+        "North Malé Atoll"
+      ]
+    },
+    {
+      "order": 279,
+      "code": "RE-SD",
+      "country": "Réunion",
+      "name": "Réunion",
+      "approxHotels": 58,
+      "cities": [
+        "Saint-Denis"
+      ]
+    },
+    {
+      "order": 280,
+      "code": "GH-AC",
+      "country": "Ghana",
+      "name": "Accra",
+      "approxHotels": 58,
+      "cities": [
+        "Accra"
+      ]
+    },
+    {
+      "order": 281,
+      "code": "NG-LA",
+      "country": "Nigeria",
+      "name": "Lagos / Abuja",
+      "approxHotels": 97,
+      "cities": [
+        "Lagos",
+        "Abuja"
+      ]
+    },
+    {
+      "order": 282,
+      "code": "SN-DA",
+      "country": "Senegal",
+      "name": "Dakar",
+      "approxHotels": 68,
+      "cities": [
+        "Dakar"
+      ]
+    },
+    {
+      "order": 283,
+      "code": "CI-AB",
+      "country": "Costa de Marfil",
+      "name": "Abidjan",
+      "approxHotels": 58,
+      "cities": [
+        "Abidjan"
+      ]
+    },
+    {
+      "order": 284,
+      "code": "CM-DO",
+      "country": "Camerún",
+      "name": "Douala / Yaoundé",
+      "approxHotels": 39,
+      "cities": [
+        "Douala"
+      ]
+    },
+    {
+      "order": 285,
+      "code": "AO-LU",
+      "country": "Angola",
+      "name": "Luanda",
+      "approxHotels": 39,
+      "cities": [
+        "Luanda"
+      ]
+    },
+    {
+      "order": 286,
+      "code": "CD-KI",
+      "country": "R.D. Congo",
+      "name": "Kinshasa",
+      "approxHotels": 29,
+      "cities": [
+        "Kinshasa"
+      ]
+    },
+    {
+      "order": 287,
+      "code": "MG-AN",
+      "country": "Madagascar",
+      "name": "Antananarivo / Costa",
+      "approxHotels": 48,
+      "cities": [
+        "Antananarivo"
+      ]
+    },
+    {
+      "order": 288,
+      "code": "JP-TK",
+      "country": "Japón",
+      "name": "Tokio / Kanto",
+      "approxHotels": 968,
+      "cities": [
+        "Tokio",
+        "Yokohama"
+      ]
+    },
+    {
+      "order": 289,
+      "code": "JP-KK",
+      "country": "Japón",
+      "name": "Kansai (Osaka/Kyoto)",
+      "approxHotels": 542,
+      "cities": [
+        "Osaka",
+        "Kyoto"
+      ]
+    },
+    {
+      "order": 290,
+      "code": "JP-HK",
+      "country": "Japón",
+      "name": "Hokkaido",
+      "approxHotels": 194,
+      "cities": [
+        "Sapporo"
+      ]
+    },
+    {
+      "order": 291,
+      "code": "JP-OK",
+      "country": "Japón",
+      "name": "Okinawa",
+      "approxHotels": 232,
+      "cities": [
+        "Naha"
+      ]
+    },
+    {
+      "order": 292,
+      "code": "JP-CH",
+      "country": "Japón",
+      "name": "Chubu / resto",
+      "approxHotels": 232,
+      "cities": [
+        "Nagoya",
+        "Hiroshima"
+      ]
+    },
+    {
+      "order": 293,
+      "code": "CN-SH",
+      "country": "China",
+      "name": "Shanghai",
+      "approxHotels": 774,
+      "cities": [
+        "Shanghai"
+      ]
+    },
+    {
+      "order": 294,
+      "code": "CN-BJ",
+      "country": "China",
+      "name": "Beijing",
+      "approxHotels": 619,
+      "cities": [
+        "Beijing"
+      ]
+    },
+    {
+      "order": 295,
+      "code": "CN-GD",
+      "country": "China",
+      "name": "Guangdong",
+      "approxHotels": 465,
+      "cities": [
+        "Guangzhou",
+        "Shenzhen"
+      ]
+    },
+    {
+      "order": 296,
+      "code": "CN-ZJ",
+      "country": "China",
+      "name": "Zhejiang / Jiangsu",
+      "approxHotels": 348,
+      "cities": [
+        "Hangzhou",
+        "Suzhou",
+        "Nanjing"
+      ]
+    },
+    {
+      "order": 297,
+      "code": "CN-SC",
+      "country": "China",
+      "name": "Sichuan / Chongqing",
+      "approxHotels": 232,
+      "cities": [
+        "Chengdu",
+        "Chongqing"
+      ]
+    },
+    {
+      "order": 298,
+      "code": "CN-YN",
+      "country": "China",
+      "name": "Yunnan / resto turístico",
+      "approxHotels": 194,
+      "cities": [
+        "Kunming",
+        "Lijiang"
+      ]
+    },
+    {
+      "order": 299,
+      "code": "CN-HA",
+      "country": "China",
+      "name": "Hainan",
+      "approxHotels": 194,
+      "cities": [
+        "Sanya"
+      ]
+    },
+    {
+      "order": 300,
+      "code": "HK-HK",
+      "country": "Hong Kong",
+      "name": "Hong Kong",
+      "approxHotels": 426,
+      "cities": [
+        "Hong Kong"
+      ]
+    },
+    {
+      "order": 301,
+      "code": "MO-MO",
+      "country": "Macao",
+      "name": "Macao",
+      "approxHotels": 155,
+      "cities": [
+        "Macao"
+      ]
+    },
+    {
+      "order": 302,
+      "code": "TW-TP",
+      "country": "Taiwán",
+      "name": "Taipei / Isla",
+      "approxHotels": 232,
+      "cities": [
+        "Taipei"
+      ]
+    },
+    {
+      "order": 303,
+      "code": "KR-SE",
+      "country": "Corea del Sur",
+      "name": "Seoul",
+      "approxHotels": 465,
+      "cities": [
+        "Seoul"
+      ]
+    },
+    {
+      "order": 304,
+      "code": "KR-BU",
+      "country": "Corea del Sur",
+      "name": "Busan / Jeju",
+      "approxHotels": 232,
+      "cities": [
+        "Busan",
+        "Jeju"
+      ]
+    },
+    {
+      "order": 305,
+      "code": "KP-PY",
+      "country": "Corea del Norte",
+      "name": "Pyongyang",
+      "approxHotels": 19,
+      "cities": [
+        "Pyongyang"
+      ]
+    },
+    {
+      "order": 306,
+      "code": "MN-UB",
+      "country": "Mongolia",
+      "name": "Ulaanbaatar",
+      "approxHotels": 39,
+      "cities": [
+        "Ulaanbaatar"
+      ]
+    },
+    {
+      "order": 307,
+      "code": "SG-SG",
+      "country": "Singapur",
+      "name": "Singapore",
+      "approxHotels": 426,
+      "cities": [
+        "Singapore"
+      ]
+    },
+    {
+      "order": 308,
+      "code": "MY-KL",
+      "country": "Malasia",
+      "name": "Kuala Lumpur / Valle",
+      "approxHotels": 310,
+      "cities": [
+        "Kuala Lumpur"
+      ]
+    },
+    {
+      "order": 309,
+      "code": "MY-SB",
+      "country": "Malasia",
+      "name": "Sabah / Sarawak / Penang / Langkawi",
+      "approxHotels": 232,
+      "cities": [
+        "Penang",
+        "Langkawi",
+        "Kota Kinabalu"
+      ]
+    },
+    {
+      "order": 310,
+      "code": "TH-BK",
+      "country": "Tailandia",
+      "name": "Bangkok",
+      "approxHotels": 542,
+      "cities": [
+        "Bangkok"
+      ]
+    },
+    {
+      "order": 311,
+      "code": "TH-PH",
+      "country": "Tailandia",
+      "name": "Phuket / Andamán",
+      "approxHotels": 465,
+      "cities": [
+        "Phuket"
+      ]
+    },
+    {
+      "order": 312,
+      "code": "TH-EA",
+      "country": "Tailandia",
+      "name": "Este (Pattaya/Koh Samui)",
+      "approxHotels": 310,
+      "cities": [
+        "Pattaya",
+        "Koh Samui"
+      ]
+    },
+    {
+      "order": 313,
+      "code": "TH-N",
+      "country": "Tailandia",
+      "name": "Norte (Chiang Mai)",
+      "approxHotels": 194,
+      "cities": [
+        "Chiang Mai"
+      ]
+    },
+    {
+      "order": 314,
+      "code": "VN-HN",
+      "country": "Vietnam",
+      "name": "Hà Nội / Bahía Halong",
+      "approxHotels": 271,
+      "cities": [
+        "Hà Nội"
+      ]
+    },
+    {
+      "order": 315,
+      "code": "VN-SG",
+      "country": "Vietnam",
+      "name": "Hồ Chí Minh / Sur",
+      "approxHotels": 310,
+      "cities": [
+        "Hồ Chí Minh"
+      ]
+    },
+    {
+      "order": 316,
+      "code": "VN-DN",
+      "country": "Vietnam",
+      "name": "Đà Nẵng / Centro",
+      "approxHotels": 194,
+      "cities": [
+        "Đà Nẵng",
+        "Hội An"
+      ]
+    },
+    {
+      "order": 317,
+      "code": "ID-JK",
+      "country": "Indonesia",
+      "name": "Jakarta / Java",
+      "approxHotels": 310,
+      "cities": [
+        "Jakarta",
+        "Yogyakarta"
+      ]
+    },
+    {
+      "order": 318,
+      "code": "ID-BA",
+      "country": "Indonesia",
+      "name": "Bali / Nusa Tenggara",
+      "approxHotels": 619,
+      "cities": [
+        "Denpasar",
+        "Ubud",
+        "Seminyak",
+        "Lombok"
+      ]
+    },
+    {
+      "order": 319,
+      "code": "ID-SU",
+      "country": "Indonesia",
+      "name": "Sumatra / resto",
+      "approxHotels": 116,
+      "cities": [
+        "Medan"
+      ]
+    },
+    {
+      "order": 320,
+      "code": "PH-MN",
+      "country": "Filipinas",
+      "name": "Metro Manila",
+      "approxHotels": 232,
+      "cities": [
+        "Manila"
+      ]
+    },
+    {
+      "order": 321,
+      "code": "PH-CE",
+      "country": "Filipinas",
+      "name": "Cebu / Visayas / Palawan",
+      "approxHotels": 271,
+      "cities": [
+        "Cebu",
+        "Boracay",
+        "El Nido"
+      ]
+    },
+    {
+      "order": 322,
+      "code": "KH-SR",
+      "country": "Camboya",
+      "name": "Phnom Penh / Siem Reap",
+      "approxHotels": 155,
+      "cities": [
+        "Siem Reap",
+        "Phnom Penh"
+      ]
+    },
+    {
+      "order": 323,
+      "code": "LA-VT",
+      "country": "Laos",
+      "name": "Vientiane / Luang Prabang",
+      "approxHotels": 58,
+      "cities": [
+        "Luang Prabang"
+      ]
+    },
+    {
+      "order": 324,
+      "code": "MM-YG",
+      "country": "Myanmar",
+      "name": "Yangon / Bagan",
+      "approxHotels": 58,
+      "cities": [
+        "Yangon"
+      ]
+    },
+    {
+      "order": 325,
+      "code": "BN-BS",
+      "country": "Brunéi",
+      "name": "Bandar Seri Begawan",
+      "approxHotels": 29,
+      "cities": [
+        "Bandar Seri Begawan"
+      ]
+    },
+    {
+      "order": 326,
+      "code": "TL-DI",
+      "country": "Timor Oriental",
+      "name": "Dili",
+      "approxHotels": 19,
+      "cities": [
+        "Dili"
+      ]
+    },
+    {
+      "order": 327,
+      "code": "IN-DL",
+      "country": "India",
+      "name": "Delhi NCR",
+      "approxHotels": 387,
+      "cities": [
+        "New Delhi"
+      ]
+    },
+    {
+      "order": 328,
+      "code": "IN-MH",
+      "country": "India",
+      "name": "Maharashtra (Mumbai)",
+      "approxHotels": 426,
+      "cities": [
+        "Mumbai"
+      ]
+    },
+    {
+      "order": 329,
+      "code": "IN-GA",
+      "country": "India",
+      "name": "Goa",
+      "approxHotels": 271,
+      "cities": [
+        "Panaji",
+        "Calangute"
+      ]
+    },
+    {
+      "order": 330,
+      "code": "IN-RJ",
+      "country": "India",
+      "name": "Rajasthan",
+      "approxHotels": 232,
+      "cities": [
+        "Jaipur",
+        "Udaipur"
+      ]
+    },
+    {
+      "order": 331,
+      "code": "IN-KL",
+      "country": "India",
+      "name": "Kerala / Tamil Nadu / Karnataka",
+      "approxHotels": 310,
+      "cities": [
+        "Kochi",
+        "Chennai",
+        "Bengaluru"
+      ]
+    },
+    {
+      "order": 332,
+      "code": "IN-WB",
+      "country": "India",
+      "name": "West Bengal / East",
+      "approxHotels": 155,
+      "cities": [
+        "Kolkata"
+      ]
+    },
+    {
+      "order": 333,
+      "code": "IN-HP",
+      "country": "India",
+      "name": "Himalaya (HP/UK/Ladakh)",
+      "approxHotels": 116,
+      "cities": [
+        "Shimla",
+        "Manali"
+      ]
+    },
+    {
+      "order": 334,
+      "code": "LK-WE",
+      "country": "Sri Lanka",
+      "name": "Western / Southern",
+      "approxHotels": 155,
+      "cities": [
+        "Colombo",
+        "Galle"
+      ]
+    },
+    {
+      "order": 335,
+      "code": "NP-BA",
+      "country": "Nepal",
+      "name": "Bagmati (Kathmandu)",
+      "approxHotels": 97,
+      "cities": [
+        "Kathmandu",
+        "Pokhara"
+      ]
+    },
+    {
+      "order": 336,
+      "code": "BT-TH",
+      "country": "Bután",
+      "name": "Thimphu / Paro",
+      "approxHotels": 48,
+      "cities": [
+        "Thimphu"
+      ]
+    },
+    {
+      "order": 337,
+      "code": "BD-DH",
+      "country": "Bangladés",
+      "name": "Dhaka",
+      "approxHotels": 58,
+      "cities": [
+        "Dhaka"
+      ]
+    },
+    {
+      "order": 338,
+      "code": "PK-IS",
+      "country": "Pakistán",
+      "name": "Islamabad / Karachi / Lahore",
+      "approxHotels": 77,
+      "cities": [
+        "Islamabad",
+        "Lahore",
+        "Karachi"
+      ]
+    },
+    {
+      "order": 339,
+      "code": "AF-KA",
+      "country": "Afganistán",
+      "name": "Kabul",
+      "approxHotels": 19,
+      "cities": [
+        "Kabul"
+      ]
+    },
+    {
+      "order": 340,
+      "code": "IR-TE",
+      "country": "Irán",
+      "name": "Tehran / Isfahan / Shiraz",
+      "approxHotels": 77,
+      "cities": [
+        "Tehran",
+        "Isfahan"
+      ]
+    },
+    {
+      "order": 341,
+      "code": "IQ-BG",
+      "country": "Irak",
+      "name": "Baghdad / Erbil",
+      "approxHotels": 39,
+      "cities": [
+        "Baghdad"
+      ]
+    },
+    {
+      "order": 342,
+      "code": "SY-DA",
+      "country": "Siria",
+      "name": "Damascus",
+      "approxHotels": 19,
+      "cities": [
+        "Damascus"
+      ]
+    },
+    {
+      "order": 343,
+      "code": "YE-SA",
+      "country": "Yemen",
+      "name": "Sanaa / Aden",
+      "approxHotels": 15,
+      "cities": [
+        "Sanaa"
+      ]
+    },
+    {
+      "order": 344,
+      "code": "AU-NSW",
+      "country": "Australia",
+      "name": "New South Wales",
+      "approxHotels": 503,
+      "cities": [
+        "Sydney"
+      ]
+    },
+    {
+      "order": 345,
+      "code": "AU-VIC",
+      "country": "Australia",
+      "name": "Victoria",
+      "approxHotels": 348,
+      "cities": [
+        "Melbourne"
+      ]
+    },
+    {
+      "order": 346,
+      "code": "AU-QLD",
+      "country": "Australia",
+      "name": "Queensland",
+      "approxHotels": 426,
+      "cities": [
+        "Brisbane",
+        "Gold Coast",
+        "Cairns"
+      ]
+    },
+    {
+      "order": 347,
+      "code": "AU-WA",
+      "country": "Australia",
+      "name": "Western Australia",
+      "approxHotels": 155,
+      "cities": [
+        "Perth"
+      ]
+    },
+    {
+      "order": 348,
+      "code": "AU-SA",
+      "country": "Australia",
+      "name": "South Australia / resto",
+      "approxHotels": 116,
+      "cities": [
+        "Adelaide"
+      ]
+    },
+    {
+      "order": 349,
+      "code": "NZ-AUK",
+      "country": "Nueva Zelanda",
+      "name": "Auckland / Norte",
+      "approxHotels": 194,
+      "cities": [
+        "Auckland"
+      ]
+    },
+    {
+      "order": 350,
+      "code": "NZ-OTC",
+      "country": "Nueva Zelanda",
+      "name": "Otago / South Island",
+      "approxHotels": 174,
+      "cities": [
+        "Queenstown",
+        "Christchurch"
+      ]
+    },
+    {
+      "order": 351,
+      "code": "FJ-WE",
+      "country": "Fiyi",
+      "name": "Viti Levu",
+      "approxHotels": 87,
+      "cities": [
+        "Nadi",
+        "Suva"
+      ]
+    },
+    {
+      "order": 352,
+      "code": "PG-PO",
+      "country": "Papúa Nueva Guinea",
+      "name": "Port Moresby",
+      "approxHotels": 23,
+      "cities": [
+        "Port Moresby"
+      ]
+    },
+    {
+      "order": 353,
+      "code": "NC-NO",
+      "country": "Nueva Caledonia",
+      "name": "Nouméa",
+      "approxHotels": 39,
+      "cities": [
+        "Nouméa"
+      ]
+    },
+    {
+      "order": 354,
+      "code": "PF-SO",
+      "country": "Polinesia Francesa",
+      "name": "Îles du Vent / Sous-le-Vent",
+      "approxHotels": 97,
+      "cities": [
+        "Papeete",
+        "Bora Bora"
+      ]
+    },
+    {
+      "order": 355,
+      "code": "WS-AP",
+      "country": "Samoa / Tonga / Vanuatu",
+      "name": "Pacífico Sur menor",
+      "approxHotels": 48,
+      "cities": [
+        "Apia",
+        "Nukuʻalofa",
+        "Port Vila"
+      ]
+    },
+    {
+      "order": 356,
+      "code": "AD-AN",
+      "country": "Andorra",
+      "name": "Andorra",
+      "approxHotels": 77,
+      "cities": [
+        "Andorra la Vella"
+      ]
+    },
+    {
+      "order": 357,
+      "code": "MC-MO",
+      "country": "Mónaco",
+      "name": "Monaco",
+      "approxHotels": 77,
+      "cities": [
+        "Monaco"
+      ]
+    },
+    {
+      "order": 358,
+      "code": "SM-SM",
+      "country": "San Marino",
+      "name": "San Marino",
+      "approxHotels": 19,
+      "cities": [
+        "San Marino"
+      ]
+    },
+    {
+      "order": 359,
+      "code": "VA-VA",
+      "country": "Vaticano",
+      "name": "Ciudad del Vaticano (via Roma)",
+      "approxHotels": 10,
+      "cities": [
+        "Roma"
+      ]
+    },
+    {
+      "order": 360,
+      "code": "LI-VA",
+      "country": "Liechtenstein",
+      "name": "Vaduz",
+      "approxHotels": 19,
+      "cities": [
+        "Vaduz"
+      ]
+    },
+    {
+      "order": 361,
+      "code": "EE-HA",
+      "country": "Estonia",
+      "name": "Harjumaa (Tallinn)",
+      "approxHotels": 97,
+      "cities": [
+        "Tallinn"
+      ]
+    },
+    {
+      "order": 362,
+      "code": "LV-RI",
+      "country": "Letonia",
+      "name": "Rīga",
+      "approxHotels": 87,
+      "cities": [
+        "Rīga"
+      ]
+    },
+    {
+      "order": 363,
+      "code": "LT-VI",
+      "country": "Lituania",
+      "name": "Vilnius",
+      "approxHotels": 87,
+      "cities": [
+        "Vilnius"
+      ]
+    },
+    {
+      "order": 364,
+      "code": "UA-KY",
+      "country": "Ucrania",
+      "name": "Kyiv / Lviv / Odesa",
+      "approxHotels": 116,
+      "cities": [
+        "Kyiv",
+        "Lviv"
+      ]
+    },
+    {
+      "order": 365,
+      "code": "MD-CH",
+      "country": "Moldavia",
+      "name": "Chișinău",
+      "approxHotels": 29,
+      "cities": [
+        "Chișinău"
+      ]
+    },
+    {
+      "order": 366,
+      "code": "BY-MI",
+      "country": "Bielorrusia",
+      "name": "Minsk",
+      "approxHotels": 39,
+      "cities": [
+        "Minsk"
+      ]
+    },
+    {
+      "order": 367,
+      "code": "RU-MOW",
+      "country": "Rusia",
+      "name": "Moscú",
+      "approxHotels": 310,
+      "cities": [
+        "Moscú"
+      ]
+    },
+    {
+      "order": 368,
+      "code": "RU-SPE",
+      "country": "Rusia",
+      "name": "San Petersburgo",
+      "approxHotels": 232,
+      "cities": [
+        "San Petersburgo"
+      ]
+    },
+    {
+      "order": 369,
+      "code": "RU-SO",
+      "country": "Rusia",
+      "name": "Sochi / Sur",
+      "approxHotels": 116,
+      "cities": [
+        "Sochi"
+      ]
+    },
+    {
+      "order": 370,
+      "code": "RU-REST",
+      "country": "Rusia",
+      "name": "Resto Rusia",
+      "approxHotels": 97,
+      "cities": [
+        "Ekaterimburgo",
+        "Vladivostok"
+      ]
+    },
+    {
+      "order": 371,
+      "code": "GE-TB",
+      "country": "Georgia",
+      "name": "Tbilisi / Batumi",
+      "approxHotels": 97,
+      "cities": [
+        "Tbilisi",
+        "Batumi"
+      ]
+    },
+    {
+      "order": 372,
+      "code": "AM-YE",
+      "country": "Armenia",
+      "name": "Yerevan",
+      "approxHotels": 58,
+      "cities": [
+        "Yerevan"
+      ]
+    },
+    {
+      "order": 373,
+      "code": "AZ-BA",
+      "country": "Azerbaiyán",
+      "name": "Baku",
+      "approxHotels": 77,
+      "cities": [
+        "Baku"
+      ]
+    },
+    {
+      "order": 374,
+      "code": "KZ-AL",
+      "country": "Kazajistán",
+      "name": "Almaty / Astana",
+      "approxHotels": 77,
+      "cities": [
+        "Almaty",
+        "Astana"
+      ]
+    },
+    {
+      "order": 375,
+      "code": "UZ-TA",
+      "country": "Uzbekistán",
+      "name": "Tashkent / Samarkand / Bukhara",
+      "approxHotels": 87,
+      "cities": [
+        "Samarkand",
+        "Bukhara"
+      ]
+    },
+    {
+      "order": 376,
+      "code": "KG-BI",
+      "country": "Kirguistán",
+      "name": "Bishkek",
+      "approxHotels": 29,
+      "cities": [
+        "Bishkek"
+      ]
+    },
+    {
+      "order": 377,
+      "code": "TJ-DU",
+      "country": "Tayikistán",
+      "name": "Dushanbe",
+      "approxHotels": 23,
+      "cities": [
+        "Dushanbe"
+      ]
+    },
+    {
+      "order": 378,
+      "code": "TM-AS",
+      "country": "Turkmenistán",
+      "name": "Ashgabat",
+      "approxHotels": 23,
+      "cities": [
+        "Ashgabat"
+      ]
+    },
+    {
+      "order": 379,
+      "code": "CV-PR",
+      "country": "Cabo Verde",
+      "name": "Santiago / Sal / Boa Vista",
+      "approxHotels": 68,
+      "cities": [
+        "Praia",
+        "Santa Maria"
+      ]
+    },
+    {
+      "order": 380,
+      "code": "GM-BA",
+      "country": "Gambia",
+      "name": "Banjul",
+      "approxHotels": 29,
+      "cities": [
+        "Banjul"
+      ]
+    },
+    {
+      "order": 381,
+      "code": "ML-BA",
+      "country": "Malí",
+      "name": "Bamako",
+      "approxHotels": 19,
+      "cities": [
+        "Bamako"
+      ]
+    },
+    {
+      "order": 382,
+      "code": "BF-OU",
+      "country": "Burkina Faso",
+      "name": "Ouagadougou",
+      "approxHotels": 19,
+      "cities": [
+        "Ouagadougou"
+      ]
+    },
+    {
+      "order": 383,
+      "code": "NE-NI",
+      "country": "Níger",
+      "name": "Niamey",
+      "approxHotels": 15,
+      "cities": [
+        "Niamey"
+      ]
+    },
+    {
+      "order": 384,
+      "code": "TD-NJ",
+      "country": "Chad",
+      "name": "N’Djamena",
+      "approxHotels": 15,
+      "cities": [
+        "N’Djamena"
+      ]
+    },
+    {
+      "order": 385,
+      "code": "MR-NO",
+      "country": "Mauritania",
+      "name": "Nouakchott",
+      "approxHotels": 19,
+      "cities": [
+        "Nouakchott"
+      ]
+    },
+    {
+      "order": 386,
+      "code": "GN-CK",
+      "country": "Guinea",
+      "name": "Conakry",
+      "approxHotels": 19,
+      "cities": [
+        "Conakry"
+      ]
+    },
+    {
+      "order": 387,
+      "code": "SL-FR",
+      "country": "Sierra Leona",
+      "name": "Freetown",
+      "approxHotels": 19,
+      "cities": [
+        "Freetown"
+      ]
+    },
+    {
+      "order": 388,
+      "code": "LR-MO",
+      "country": "Liberia",
+      "name": "Monrovia",
+      "approxHotels": 15,
+      "cities": [
+        "Monrovia"
+      ]
+    },
+    {
+      "order": 389,
+      "code": "TG-LO",
+      "country": "Togo",
+      "name": "Lomé",
+      "approxHotels": 19,
+      "cities": [
+        "Lomé"
+      ]
+    },
+    {
+      "order": 390,
+      "code": "BJ-CO",
+      "country": "Benín",
+      "name": "Cotonou",
+      "approxHotels": 19,
+      "cities": [
+        "Cotonou"
+      ]
+    },
+    {
+      "order": 391,
+      "code": "GA-LI",
+      "country": "Gabón",
+      "name": "Libreville",
+      "approxHotels": 23,
+      "cities": [
+        "Libreville"
+      ]
+    },
+    {
+      "order": 392,
+      "code": "CG-BZ",
+      "country": "Congo",
+      "name": "Brazzaville",
+      "approxHotels": 19,
+      "cities": [
+        "Brazzaville"
+      ]
+    },
+    {
+      "order": 393,
+      "code": "GQ-MA",
+      "country": "Guinea Ecuatorial",
+      "name": "Malabo",
+      "approxHotels": 15,
+      "cities": [
+        "Malabo"
+      ]
+    },
+    {
+      "order": 394,
+      "code": "ST-SA",
+      "country": "Santo Tomé",
+      "name": "São Tomé",
+      "approxHotels": 15,
+      "cities": [
+        "São Tomé"
+      ]
+    },
+    {
+      "order": 395,
+      "code": "ZW2",
+      "country": "Lesoto / Eswatini",
+      "name": "Lesoto / Eswatini",
+      "approxHotels": 19,
+      "cities": [
+        "Maseru",
+        "Mbabane"
+      ]
+    },
+    {
+      "order": 396,
+      "code": "MW-LI",
+      "country": "Malaui",
+      "name": "Lilongwe / Lake",
+      "approxHotels": 23,
+      "cities": [
+        "Lilongwe"
+      ]
+    },
+    {
+      "order": 397,
+      "code": "ZM-LU",
+      "country": "Zambia",
+      "name": "Lusaka / Livingstone",
+      "approxHotels": 39,
+      "cities": [
+        "Livingstone"
+      ]
+    },
+    {
+      "order": 398,
+      "code": "SS-JU",
+      "country": "Sudán del Sur",
+      "name": "Juba",
+      "approxHotels": 15,
+      "cities": [
+        "Juba"
+      ]
+    },
+    {
+      "order": 399,
+      "code": "ER-AS",
+      "country": "Eritrea",
+      "name": "Asmara",
+      "approxHotels": 15,
+      "cities": [
+        "Asmara"
+      ]
+    },
+    {
+      "order": 400,
+      "code": "DJ-DJ",
+      "country": "Yibuti",
+      "name": "Djibouti",
+      "approxHotels": 19,
+      "cities": [
+        "Djibouti"
+      ]
+    },
+    {
+      "order": 401,
+      "code": "SO-MG",
+      "country": "Somalia",
+      "name": "Mogadishu",
+      "approxHotels": 15,
+      "cities": [
+        "Mogadishu"
+      ]
+    },
+    {
+      "order": 402,
+      "code": "KM-MO",
+      "country": "Comoras / Mayotte",
+      "name": "Comoras / Mayotte",
+      "approxHotels": 19,
+      "cities": [
+        "Moroni"
+      ]
+    }
+  ],
+  "countriesSummary": [
+    {
+      "country": "España",
+      "regions": 57,
+      "approxHotels": 25585
+    },
+    {
+      "country": "EE.UU.",
+      "regions": 17,
+      "approxHotels": 7260
+    },
+    {
+      "country": "Italia",
+      "regions": 12,
+      "approxHotels": 5343
+    },
+    {
+      "country": "Francia",
+      "regions": 14,
+      "approxHotels": 4822
+    },
+    {
+      "country": "Reino Unido",
+      "regions": 9,
+      "approxHotels": 3136
+    },
+    {
+      "country": "China",
+      "regions": 7,
+      "approxHotels": 2826
+    },
+    {
+      "country": "México",
+      "regions": 7,
+      "approxHotels": 2536
+    },
+    {
+      "country": "Portugal",
+      "regions": 7,
+      "approxHotels": 2343
+    },
+    {
+      "country": "Alemania",
+      "regions": 7,
+      "approxHotels": 2343
+    },
+    {
+      "country": "Japón",
+      "regions": 5,
+      "approxHotels": 2168
+    },
+    {
+      "country": "Turquía",
+      "regions": 5,
+      "approxHotels": 1936
+    },
+    {
+      "country": "Grecia",
+      "regions": 6,
+      "approxHotels": 1917
+    },
+    {
+      "country": "Brasil",
+      "regions": 6,
+      "approxHotels": 1897
+    },
+    {
+      "country": "India",
+      "regions": 7,
+      "approxHotels": 1897
+    },
+    {
+      "country": "Australia",
+      "regions": 5,
+      "approxHotels": 1548
+    },
+    {
+      "country": "Tailandia",
+      "regions": 4,
+      "approxHotels": 1511
+    },
+    {
+      "country": "EAU",
+      "regions": 3,
+      "approxHotels": 1374
+    },
+    {
+      "country": "Canadá",
+      "regions": 5,
+      "approxHotels": 1336
+    },
+    {
+      "country": "Indonesia",
+      "regions": 3,
+      "approxHotels": 1045
+    },
+    {
+      "country": "Egipto",
+      "regions": 3,
+      "approxHotels": 890
+    },
+    {
+      "country": "Argentina",
+      "regions": 4,
+      "approxHotels": 794
+    },
+    {
+      "country": "Sudáfrica",
+      "regions": 4,
+      "approxHotels": 794
+    },
+    {
+      "country": "Vietnam",
+      "regions": 3,
+      "approxHotels": 775
+    },
+    {
+      "country": "Rusia",
+      "regions": 4,
+      "approxHotels": 755
+    },
+    {
+      "country": "Marruecos",
+      "regions": 3,
+      "approxHotels": 736
+    },
+    {
+      "country": "Austria",
+      "regions": 3,
+      "approxHotels": 716
+    },
+    {
+      "country": "Rep. Dominicana",
+      "regions": 2,
+      "approxHotels": 697
+    },
+    {
+      "country": "Corea del Sur",
+      "regions": 2,
+      "approxHotels": 697
+    },
+    {
+      "country": "Países Bajos",
+      "regions": 2,
+      "approxHotels": 658
+    },
+    {
+      "country": "Arabia Saudí",
+      "regions": 3,
+      "approxHotels": 658
+    },
+    {
+      "country": "Suiza",
+      "regions": 3,
+      "approxHotels": 619
+    },
+    {
+      "country": "Polonia",
+      "regions": 3,
+      "approxHotels": 562
+    },
+    {
+      "country": "Colombia",
+      "regions": 3,
+      "approxHotels": 561
+    },
+    {
+      "country": "Perú",
+      "regions": 3,
+      "approxHotels": 542
+    },
+    {
+      "country": "Malasia",
+      "regions": 2,
+      "approxHotels": 542
+    },
+    {
+      "country": "Filipinas",
+      "regions": 2,
+      "approxHotels": 503
+    },
+    {
+      "country": "Irlanda",
+      "regions": 2,
+      "approxHotels": 464
+    },
+    {
+      "country": "Croacia",
+      "regions": 2,
+      "approxHotels": 426
+    },
+    {
+      "country": "Hong Kong",
+      "regions": 1,
+      "approxHotels": 426
+    },
+    {
+      "country": "Singapur",
+      "regions": 1,
+      "approxHotels": 426
+    },
+    {
+      "country": "Suecia",
+      "regions": 2,
+      "approxHotels": 387
+    },
+    {
+      "country": "Chile",
+      "regions": 3,
+      "approxHotels": 387
+    },
+    {
+      "country": "Cuba",
+      "regions": 2,
+      "approxHotels": 387
+    },
+    {
+      "country": "Bélgica",
+      "regions": 2,
+      "approxHotels": 368
+    },
+    {
+      "country": "Nueva Zelanda",
+      "regions": 2,
+      "approxHotels": 368
+    },
+    {
+      "country": "Noruega",
+      "regions": 2,
+      "approxHotels": 349
+    },
+    {
+      "country": "Chequia",
+      "regions": 2,
+      "approxHotels": 348
+    },
+    {
+      "country": "Maldivas",
+      "regions": 1,
+      "approxHotels": 348
+    },
+    {
+      "country": "Hungría",
+      "regions": 2,
+      "approxHotels": 310
+    },
+    {
+      "country": "Dinamarca",
+      "regions": 2,
+      "approxHotels": 309
+    },
+    {
+      "country": "Jamaica",
+      "regions": 2,
+      "approxHotels": 290
+    },
+    {
+      "country": "Catar",
+      "regions": 1,
+      "approxHotels": 271
+    },
+    {
+      "country": "Finlandia",
+      "regions": 2,
+      "approxHotels": 252
+    },
+    {
+      "country": "Taiwán",
+      "regions": 1,
+      "approxHotels": 232
+    },
+    {
+      "country": "Rumanía",
+      "regions": 2,
+      "approxHotels": 213
+    },
+    {
+      "country": "Costa Rica",
+      "regions": 1,
+      "approxHotels": 213
+    },
+    {
+      "country": "Chipre",
+      "regions": 1,
+      "approxHotels": 194
+    },
+    {
+      "country": "Puerto Rico",
+      "regions": 1,
+      "approxHotels": 194
+    },
+    {
+      "country": "Israel",
+      "regions": 1,
+      "approxHotels": 194
+    },
+    {
+      "country": "Kenia",
+      "regions": 1,
+      "approxHotels": 194
+    },
+    {
+      "country": "Panamá",
+      "regions": 1,
+      "approxHotels": 174
+    },
+    {
+      "country": "Bahamas",
+      "regions": 1,
+      "approxHotels": 174
+    },
+    {
+      "country": "Túnez",
+      "regions": 1,
+      "approxHotels": 174
+    },
+    {
+      "country": "Tanzania",
+      "regions": 1,
+      "approxHotels": 174
+    },
+    {
+      "country": "Bulgaria",
+      "regions": 1,
+      "approxHotels": 155
+    },
+    {
+      "country": "Malta",
+      "regions": 1,
+      "approxHotels": 155
+    },
+    {
+      "country": "Caribe Este menor",
+      "regions": 1,
+      "approxHotels": 155
+    },
+    {
+      "country": "Macao",
+      "regions": 1,
+      "approxHotels": 155
+    },
+    {
+      "country": "Camboya",
+      "regions": 1,
+      "approxHotels": 155
+    },
+    {
+      "country": "Sri Lanka",
+      "regions": 1,
+      "approxHotels": 155
+    },
+    {
+      "country": "Uruguay",
+      "regions": 1,
+      "approxHotels": 136
+    },
+    {
+      "country": "Ecuador",
+      "regions": 1,
+      "approxHotels": 136
+    },
+    {
+      "country": "Aruba / Curaçao / Bonaire",
+      "regions": 1,
+      "approxHotels": 136
+    },
+    {
+      "country": "Jordania",
+      "regions": 1,
+      "approxHotels": 136
+    },
+    {
+      "country": "Mauricio",
+      "regions": 1,
+      "approxHotels": 136
+    },
+    {
+      "country": "Islandia",
+      "regions": 1,
+      "approxHotels": 116
+    },
+    {
+      "country": "Barbados",
+      "regions": 1,
+      "approxHotels": 116
+    },
+    {
+      "country": "Omán",
+      "regions": 1,
+      "approxHotels": 116
+    },
+    {
+      "country": "Seychelles",
+      "regions": 1,
+      "approxHotels": 116
+    },
+    {
+      "country": "Ucrania",
+      "regions": 1,
+      "approxHotels": 116
+    },
+    {
+      "country": "Eslovenia",
+      "regions": 1,
+      "approxHotels": 97
+    },
+    {
+      "country": "Serbia",
+      "regions": 1,
+      "approxHotels": 97
+    },
+    {
+      "country": "Montenegro",
+      "regions": 1,
+      "approxHotels": 97
+    },
+    {
+      "country": "Guatemala",
+      "regions": 1,
+      "approxHotels": 97
+    },
+    {
+      "country": "Baréin",
+      "regions": 1,
+      "approxHotels": 97
+    },
+    {
+      "country": "Nigeria",
+      "regions": 1,
+      "approxHotels": 97
+    },
+    {
+      "country": "Nepal",
+      "regions": 1,
+      "approxHotels": 97
+    },
+    {
+      "country": "Polinesia Francesa",
+      "regions": 1,
+      "approxHotels": 97
+    },
+    {
+      "country": "Estonia",
+      "regions": 1,
+      "approxHotels": 97
+    },
+    {
+      "country": "Georgia",
+      "regions": 1,
+      "approxHotels": 97
+    },
+    {
+      "country": "Fiyi",
+      "regions": 1,
+      "approxHotels": 87
+    },
+    {
+      "country": "Letonia",
+      "regions": 1,
+      "approxHotels": 87
+    },
+    {
+      "country": "Lituania",
+      "regions": 1,
+      "approxHotels": 87
+    },
+    {
+      "country": "Uzbekistán",
+      "regions": 1,
+      "approxHotels": 87
+    },
+    {
+      "country": "Luxemburgo",
+      "regions": 1,
+      "approxHotels": 77
+    },
+    {
+      "country": "Eslovaquia",
+      "regions": 1,
+      "approxHotels": 77
+    },
+    {
+      "country": "Albania",
+      "regions": 1,
+      "approxHotels": 77
+    },
+    {
+      "country": "Venezuela",
+      "regions": 1,
+      "approxHotels": 77
+    },
+    {
+      "country": "Islas Vírgenes",
+      "regions": 1,
+      "approxHotels": 77
+    },
+    {
+      "country": "Kuwait",
+      "regions": 1,
+      "approxHotels": 77
+    },
+    {
+      "country": "Líbano",
+      "regions": 1,
+      "approxHotels": 77
+    },
+    {
+      "country": "Argelia",
+      "regions": 1,
+      "approxHotels": 77
+    },
+    {
+      "country": "Pakistán",
+      "regions": 1,
+      "approxHotels": 77
+    },
+    {
+      "country": "Irán",
+      "regions": 1,
+      "approxHotels": 77
+    },
+    {
+      "country": "Andorra",
+      "regions": 1,
+      "approxHotels": 77
+    },
+    {
+      "country": "Mónaco",
+      "regions": 1,
+      "approxHotels": 77
+    },
+    {
+      "country": "Azerbaiyán",
+      "regions": 1,
+      "approxHotels": 77
+    },
+    {
+      "country": "Kazajistán",
+      "regions": 1,
+      "approxHotels": 77
+    },
+    {
+      "country": "Bosnia",
+      "regions": 1,
+      "approxHotels": 68
+    },
+    {
+      "country": "Honduras",
+      "regions": 1,
+      "approxHotels": 68
+    },
+    {
+      "country": "Belice",
+      "regions": 1,
+      "approxHotels": 68
+    },
+    {
+      "country": "Etiopía",
+      "regions": 1,
+      "approxHotels": 68
+    },
+    {
+      "country": "Senegal",
+      "regions": 1,
+      "approxHotels": 68
+    },
+    {
+      "country": "Cabo Verde",
+      "regions": 1,
+      "approxHotels": 68
+    },
+    {
+      "country": "Bolivia",
+      "regions": 1,
+      "approxHotels": 58
+    },
+    {
+      "country": "El Salvador",
+      "regions": 1,
+      "approxHotels": 58
+    },
+    {
+      "country": "Nicaragua",
+      "regions": 1,
+      "approxHotels": 58
+    },
+    {
+      "country": "Trinidad y Tobago",
+      "regions": 1,
+      "approxHotels": 58
+    },
+    {
+      "country": "Namibia",
+      "regions": 1,
+      "approxHotels": 58
+    },
+    {
+      "country": "Botsuana",
+      "regions": 1,
+      "approxHotels": 58
+    },
+    {
+      "country": "Zimbabue",
+      "regions": 1,
+      "approxHotels": 58
+    },
+    {
+      "country": "Réunion",
+      "regions": 1,
+      "approxHotels": 58
+    },
+    {
+      "country": "Ghana",
+      "regions": 1,
+      "approxHotels": 58
+    },
+    {
+      "country": "Costa de Marfil",
+      "regions": 1,
+      "approxHotels": 58
+    },
+    {
+      "country": "Laos",
+      "regions": 1,
+      "approxHotels": 58
+    },
+    {
+      "country": "Myanmar",
+      "regions": 1,
+      "approxHotels": 58
+    },
+    {
+      "country": "Bangladés",
+      "regions": 1,
+      "approxHotels": 58
+    },
+    {
+      "country": "Armenia",
+      "regions": 1,
+      "approxHotels": 58
+    },
+    {
+      "country": "Macedonia del Norte",
+      "regions": 1,
+      "approxHotels": 48
+    },
+    {
+      "country": "Paraguay",
+      "regions": 1,
+      "approxHotels": 48
+    },
+    {
+      "country": "Uganda",
+      "regions": 1,
+      "approxHotels": 48
+    },
+    {
+      "country": "Mozambique",
+      "regions": 1,
+      "approxHotels": 48
+    },
+    {
+      "country": "Madagascar",
+      "regions": 1,
+      "approxHotels": 48
+    },
+    {
+      "country": "Bután",
+      "regions": 1,
+      "approxHotels": 48
+    },
+    {
+      "country": "Samoa / Tonga / Vanuatu",
+      "regions": 1,
+      "approxHotels": 48
+    },
+    {
+      "country": "Kosovo",
+      "regions": 1,
+      "approxHotels": 39
+    },
+    {
+      "country": "Haití",
+      "regions": 1,
+      "approxHotels": 39
+    },
+    {
+      "country": "Palestina",
+      "regions": 1,
+      "approxHotels": 39
+    },
+    {
+      "country": "Ruanda",
+      "regions": 1,
+      "approxHotels": 39
+    },
+    {
+      "country": "Camerún",
+      "regions": 1,
+      "approxHotels": 39
+    },
+    {
+      "country": "Angola",
+      "regions": 1,
+      "approxHotels": 39
+    },
+    {
+      "country": "Mongolia",
+      "regions": 1,
+      "approxHotels": 39
+    },
+    {
+      "country": "Irak",
+      "regions": 1,
+      "approxHotels": 39
+    },
+    {
+      "country": "Nueva Caledonia",
+      "regions": 1,
+      "approxHotels": 39
+    },
+    {
+      "country": "Bielorrusia",
+      "regions": 1,
+      "approxHotels": 39
+    },
+    {
+      "country": "Zambia",
+      "regions": 1,
+      "approxHotels": 39
+    },
+    {
+      "country": "Guyana",
+      "regions": 1,
+      "approxHotels": 29
+    },
+    {
+      "country": "Libia",
+      "regions": 1,
+      "approxHotels": 29
+    },
+    {
+      "country": "Sudán",
+      "regions": 1,
+      "approxHotels": 29
+    },
+    {
+      "country": "R.D. Congo",
+      "regions": 1,
+      "approxHotels": 29
+    },
+    {
+      "country": "Brunéi",
+      "regions": 1,
+      "approxHotels": 29
+    },
+    {
+      "country": "Moldavia",
+      "regions": 1,
+      "approxHotels": 29
+    },
+    {
+      "country": "Kirguistán",
+      "regions": 1,
+      "approxHotels": 29
+    },
+    {
+      "country": "Gambia",
+      "regions": 1,
+      "approxHotels": 29
+    },
+    {
+      "country": "Surinam",
+      "regions": 1,
+      "approxHotels": 23
+    },
+    {
+      "country": "Guayana Francesa",
+      "regions": 1,
+      "approxHotels": 23
+    },
+    {
+      "country": "Papúa Nueva Guinea",
+      "regions": 1,
+      "approxHotels": 23
+    },
+    {
+      "country": "Tayikistán",
+      "regions": 1,
+      "approxHotels": 23
+    },
+    {
+      "country": "Turkmenistán",
+      "regions": 1,
+      "approxHotels": 23
+    },
+    {
+      "country": "Gabón",
+      "regions": 1,
+      "approxHotels": 23
+    },
+    {
+      "country": "Malaui",
+      "regions": 1,
+      "approxHotels": 23
+    },
+    {
+      "country": "Corea del Norte",
+      "regions": 1,
+      "approxHotels": 19
+    },
+    {
+      "country": "Timor Oriental",
+      "regions": 1,
+      "approxHotels": 19
+    },
+    {
+      "country": "Afganistán",
+      "regions": 1,
+      "approxHotels": 19
+    },
+    {
+      "country": "Siria",
+      "regions": 1,
+      "approxHotels": 19
+    },
+    {
+      "country": "San Marino",
+      "regions": 1,
+      "approxHotels": 19
+    },
+    {
+      "country": "Liechtenstein",
+      "regions": 1,
+      "approxHotels": 19
+    },
+    {
+      "country": "Malí",
+      "regions": 1,
+      "approxHotels": 19
+    },
+    {
+      "country": "Burkina Faso",
+      "regions": 1,
+      "approxHotels": 19
+    },
+    {
+      "country": "Mauritania",
+      "regions": 1,
+      "approxHotels": 19
+    },
+    {
+      "country": "Guinea",
+      "regions": 1,
+      "approxHotels": 19
+    },
+    {
+      "country": "Sierra Leona",
+      "regions": 1,
+      "approxHotels": 19
+    },
+    {
+      "country": "Togo",
+      "regions": 1,
+      "approxHotels": 19
+    },
+    {
+      "country": "Benín",
+      "regions": 1,
+      "approxHotels": 19
+    },
+    {
+      "country": "Congo",
+      "regions": 1,
+      "approxHotels": 19
+    },
+    {
+      "country": "Lesoto / Eswatini",
+      "regions": 1,
+      "approxHotels": 19
+    },
+    {
+      "country": "Yibuti",
+      "regions": 1,
+      "approxHotels": 19
+    },
+    {
+      "country": "Comoras / Mayotte",
+      "regions": 1,
+      "approxHotels": 19
+    },
+    {
+      "country": "Yemen",
+      "regions": 1,
+      "approxHotels": 15
+    },
+    {
+      "country": "Níger",
+      "regions": 1,
+      "approxHotels": 15
+    },
+    {
+      "country": "Chad",
+      "regions": 1,
+      "approxHotels": 15
+    },
+    {
+      "country": "Liberia",
+      "regions": 1,
+      "approxHotels": 15
+    },
+    {
+      "country": "Guinea Ecuatorial",
+      "regions": 1,
+      "approxHotels": 15
+    },
+    {
+      "country": "Santo Tomé",
+      "regions": 1,
+      "approxHotels": 15
+    },
+    {
+      "country": "Sudán del Sur",
+      "regions": 1,
+      "approxHotels": 15
+    },
+    {
+      "country": "Eritrea",
+      "regions": 1,
+      "approxHotels": 15
+    },
+    {
+      "country": "Somalia",
+      "regions": 1,
+      "approxHotels": 15
+    },
+    {
+      "country": "Vaticano",
+      "regions": 1,
+      "approxHotels": 10
+    }
+  ]
+}
