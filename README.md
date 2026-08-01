@@ -2,6 +2,16 @@
 
 Juego de construcción de hoteles en el mapa del mundo (**v0.5**).
 
+## Plan de construcción (50.000 hoteles)
+
+Carpeta [`plan-construccion/`](./plan-construccion): **177 PDF** (uno por provincia), orden global empezando por **Málaga**.
+
+```bash
+npm run plan:pdfs   # regenerar PDFs
+```
+
+Índice: [`plan-construccion/README.md`](./plan-construccion/README.md)
+
 ## Novedades v0.5
 
 - Desgaste del edificio y **reformas gestionadas por la IA**
@@ -12,7 +22,7 @@ Juego de construcción de hoteles en el mapa del mundo (**v0.5**).
 - Panel de **estadísticas globales**
 - Mejor rendimiento con miles de hoteles
 - Aviso claro de **autosave** (tamaño de la partida)
-- **Regímenes**: solo alojamiento → todo incluido imperial
+- **Regímenes**: solo alojamiento → todo incluido imperial (**varios a la vez**)
 - **Club de fidelidad Orbis** con 10 niveles
 
 ## Cómo jugar
