@@ -11,6 +11,7 @@
     "lint": "oxlint",
     "preview": "vite preview",
     "start": "node server/index.js",
+    "plan:regions": "node scripts/generate-plan/build-regions.mjs",
     "plan:pdfs": "node scripts/generate-plan/generate.mjs"
   },
   "dependencies": {
