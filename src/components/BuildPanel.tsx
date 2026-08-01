@@ -9,12 +9,24 @@ import {
   QUALITY_OPTIONS,
   GREEN_OPTIONS,
   DESIGN_FOCUS,
+  SECURITY_OPTIONS,
+  TECH_OPTIONS,
 } from '../data/catalog'
 import { calcConstructionCost, estimateDaily, fairPrice, getSeason, seasonLabel } from '../lib/economy'
 import { formatEUR, formatPct } from '../lib/format'
 import { galleryImages } from '../lib/gallery'
 import { geoRegionLabel } from '../lib/geo'
-import type { BuildDraft, HotelService, StaffLevel, GuestTarget, RoomMix, BuildQuality, GreenLevel } from '../types'
+import type {
+  BuildDraft,
+  HotelService,
+  StaffLevel,
+  GuestTarget,
+  RoomMix,
+  BuildQuality,
+  GreenLevel,
+  SecurityLevel,
+  TechLevel,
+} from '../types'
 
 type Step = 'marca' | 'basico' | 'edificio' | 'servicios' | 'extras' | 'foto' | 'revisar'
 
@@ -54,6 +66,14 @@ function emptyDraft(subId: string, city: string): BuildDraft {
     buffet: false,
     lateCheckout: true,
     airportDesk: false,
+    securityLevel: 'medio',
+    techLevel: 'moderno',
+    breakfastIncluded: true,
+    seaViewShare: 10,
+    loyaltyProgram: false,
+    quietHours: false,
+    bikeRental: false,
+    shuttleCity: false,
   }
 }
 
@@ -196,6 +216,7 @@ export function BuildPanel() {
         <div><span>Coste del sitio</span><strong>×{loc.costIndex}</strong></div>
         <div><span>Fama en el país</span><strong>{Math.round(rep)}/100</strong></div>
         <div><span>Temporada</span><strong>{seasonLabel(season)}</strong></div>
+        <div><span>Impuestos país</span><strong>{Math.round(loc.taxRate * 100)}%</strong></div>
         <div><span>Cambio local</span><strong>×{(eco?.fx ?? 1).toFixed(2)}</strong></div>
       </div>
 
@@ -333,6 +354,27 @@ export function BuildPanel() {
           </label>
           <div className="field-row">
             <label className="field">
+              <span>Seguridad</span>
+              <select
+                value={draft.securityLevel}
+                onChange={(e) => setDraft({ ...draft, securityLevel: e.target.value as SecurityLevel })}
+              >
+                {SECURITY_OPTIONS.map((o) => (
+                  <option key={o.id} value={o.id}>{o.label}</option>
+                ))}
+              </select>
+            </label>
+            <label className="field">
+              <span>Tecnología</span>
+              <select value={draft.techLevel} onChange={(e) => setDraft({ ...draft, techLevel: e.target.value as TechLevel })}>
+                {TECH_OPTIONS.map((o) => (
+                  <option key={o.id} value={o.id}>{o.label}</option>
+                ))}
+              </select>
+            </label>
+          </div>
+          <div className="field-row">
+            <label className="field">
               <span>Salas de reuniones</span>
               <input
                 type="number"
@@ -363,6 +405,16 @@ export function BuildPanel() {
               onChange={(e) => setDraft({ ...draft, restaurantLevel: Number(e.target.value) })}
             />
             <strong className="range-val">{draft.restaurantLevel}</strong>
+          </label>
+          <label className="field">
+            <span>Habitaciones con vistas al mar ({draft.seaViewShare}%)</span>
+            <input
+              type="range"
+              min={0}
+              max={100}
+              value={draft.seaViewShare}
+              onChange={(e) => setDraft({ ...draft, seaViewShare: Number(e.target.value) })}
+            />
           </label>
           <label className="field">
             <span>Enfoque del hotel</span>
@@ -423,6 +475,14 @@ export function BuildPanel() {
           <label className="check block-check">
             <input
               type="checkbox"
+              checked={draft.breakfastIncluded}
+              onChange={(e) => setDraft({ ...draft, breakfastIncluded: e.target.checked })}
+            />
+            <span>Desayuno incluido</span>
+          </label>
+          <label className="check block-check">
+            <input
+              type="checkbox"
               checked={draft.buffet}
               onChange={(e) => setDraft({ ...draft, buffet: e.target.checked })}
             />
@@ -444,7 +504,41 @@ export function BuildPanel() {
             />
             <span>Mostrador en aeropuerto</span>
           </label>
-          <p className="confirm-note">Estos extras suben el coste, pero ayudan a llenar habitaciones al empezar.</p>
+          <label className="check block-check">
+            <input
+              type="checkbox"
+              checked={draft.loyaltyProgram}
+              onChange={(e) => setDraft({ ...draft, loyaltyProgram: e.target.checked })}
+            />
+            <span>Programa de fidelidad</span>
+          </label>
+          <label className="check block-check">
+            <input
+              type="checkbox"
+              checked={draft.quietHours}
+              onChange={(e) => setDraft({ ...draft, quietHours: e.target.checked })}
+            />
+            <span>Horas de silencio</span>
+          </label>
+          <label className="check block-check">
+            <input
+              type="checkbox"
+              checked={draft.bikeRental}
+              onChange={(e) => setDraft({ ...draft, bikeRental: e.target.checked })}
+            />
+            <span>Alquiler de bicis</span>
+          </label>
+          <label className="check block-check">
+            <input
+              type="checkbox"
+              checked={draft.shuttleCity}
+              onChange={(e) => setDraft({ ...draft, shuttleCity: e.target.checked })}
+            />
+            <span>Bus al centro</span>
+          </label>
+          <p className="confirm-note">
+            Estos extras suben el coste. El seguro del hotel lo gestiona sola la IA después de abrir.
+          </p>
           <div className="nav-row">
             <button type="button" className="btn btn--ghost" onClick={goBack}>Atrás</button>
             <button type="button" className="btn btn--primary" onClick={goNext}>Seguir</button>
@@ -516,7 +610,8 @@ export function BuildPanel() {
             <div><span>Ganancia / día</span><strong className={estimate.net >= 0 ? 'pos' : 'neg'}>{formatEUR(estimate.net)}</strong></div>
           </div>
           <p className="confirm-note">
-            Se construye al momento. Luego no se puede cambiar. El precio y los contratos los gestiona la IA.
+            Se construye al momento. Luego no se puede cambiar. Precio, contratos y seguro los gestiona la IA.
+            Impuestos del país: {Math.round(loc.taxRate * 100)}%.
           </p>
           {error && <p className="error">{error}</p>}
           <div className="nav-row">

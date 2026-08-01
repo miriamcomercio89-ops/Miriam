@@ -1,7 +1,7 @@
 {
   "name": "orbis-hotels-group",
   "private": true,
-  "version": "0.3.0",
+  "version": "0.4.0",
   "type": "module",
   "scripts": {
     "dev": "concurrently -n web,api -c cyan,magenta \"vite\" \"node server/index.js\"",

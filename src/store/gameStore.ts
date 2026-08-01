@@ -3,18 +3,22 @@ import { v4 as uuid } from 'uuid'
 import { STARTING_CASH } from '../data/catalog'
 import { getSubsidiary } from '../data/subsidiaries'
 import {
+  BANK_TERMS,
   calcConstructionCost,
   fairPrice,
   getSeason,
   reputationKey,
 } from '../lib/economy'
+import { generateDemoHotels } from '../lib/demoHotels'
 import { defaultImageKey } from '../lib/images'
 import { gameDay } from '../lib/format'
 import { playBuildSound, playDaySound } from '../lib/sound'
-import { SLOT_KEYS } from '../lib/saveio'
+import { SLOT_KEYS, idbSave, tryLocalStorageSave } from '../lib/saveio'
 import type { WorkerDayRequest, WorkerDayResponse } from '../workers/dayWorker'
 import type {
+  BankDeposit,
   BuildDraft,
+  ContractKind,
   GameState,
   Hotel,
   LoanState,
@@ -27,19 +31,22 @@ import type {
   SpeedOption,
 } from '../types'
 
-export const STORAGE_KEY = 'orbis-hotels-group-save-v4'
-export const SAVE_VERSION = 4
+export const STORAGE_KEY = 'orbis-hotels-group-save-v5'
+export const SAVE_VERSION = 5
 
 type UiState = {
   selectedHotelId: string | null
+  compareIds: [string | null, string | null]
   buildLocation: LocationInsight | null
   showLanding: boolean
   showFinance: boolean
   showLoan: boolean
+  showBank: boolean
   showHotels: boolean
   showRanking: boolean
   showCountries: boolean
   showNews: boolean
+  showCompare: boolean
   mapLayer: MapLayer
   mapMode: MapMode
   mapFilters: MapFilters
@@ -69,19 +76,25 @@ type GameStore = GameState &
     hydrate: (state: GameState) => void
     setShowFinance: (v: boolean) => void
     setShowLoan: (v: boolean) => void
+    setShowBank: (v: boolean) => void
     setShowHotels: (v: boolean) => void
     setShowRanking: (v: boolean) => void
     setShowCountries: (v: boolean) => void
     setShowNews: (v: boolean) => void
+    setShowCompare: (v: boolean) => void
+    setCompareSlot: (slot: 0 | 1, hotelId: string | null) => void
     setMapLayer: (l: MapLayer) => void
     setMapMode: (m: MapMode) => void
     setMapFilters: (f: Partial<MapFilters>) => void
     setMapFocus: (f: MapFocus | null) => void
     setRankMetric: (m: RankMetric) => void
     focusHotel: (id: string) => void
+    focusNextHotel: (dir: 1 | -1) => void
     toggleSound: () => void
     takeLoan: (amount: number) => { ok: true } | { ok: false; error: string }
     repayLoan: (amount: number) => { ok: true } | { ok: false; error: string }
+    openDeposit: (amount: number, termDays: number) => { ok: true } | { ok: false; error: string }
+    generateDemo: (count?: number) => { ok: true; added: number } | { ok: false; error: string }
     closeAllPanels: () => void
     setGameName: (name: string) => void
     saveToSlot: (slot: 1 | 2 | 3) => void
@@ -111,35 +124,47 @@ function initialState(): GameState {
     gameName: 'Mi partida Orbis',
     news: [],
     countryEconomy: {},
+    bankDeposits: [],
+  }
+}
+
+function migrateHotel(h: Hotel): Hotel {
+  const anyH = h as Hotel
+  return {
+    ...anyH,
+    satisfaction: anyH.satisfaction ?? 70,
+    geoRegion: anyH.geoRegion ?? 'global',
+    imageKey: anyH.imageKey || defaultImageKey(anyH.subsidiaryId),
+    contract: anyH.contract
+      ? {
+          ...anyH.contract,
+          kind: ((anyH.contract as { kind?: string }).kind ?? 'empresa') as ContractKind,
+        }
+      : null,
+    insurance: anyH.insurance ?? null,
+    roomMix: anyH.roomMix ?? 'estandar',
+    buildQuality: anyH.buildQuality ?? 'bueno',
+    floors: anyH.floors ?? 4,
+    greenLevel: anyH.greenLevel ?? 'ninguno',
+    meetingRooms: anyH.meetingRooms ?? 0,
+    parkingSpots: anyH.parkingSpots ?? 20,
+    restaurantLevel: anyH.restaurantLevel ?? 1,
+    openingPromoDays: anyH.openingPromoDays ?? 0,
+    lastDayTax: anyH.lastDayTax ?? 0,
+    lifetimeTax: anyH.lifetimeTax ?? 0,
+    securityLevel: anyH.securityLevel ?? 'medio',
+    techLevel: anyH.techLevel ?? 'basico',
+    breakfastIncluded: anyH.breakfastIncluded ?? false,
+    seaViewShare: anyH.seaViewShare ?? 0,
+    loyaltyProgram: anyH.loyaltyProgram ?? false,
+    vipTonight: anyH.vipTonight ?? false,
+    imageDataUrl: anyH.imageDataUrl?.startsWith('data:image/svg') ? undefined : anyH.imageDataUrl,
   }
 }
 
 function migrate(raw: Partial<GameState> & { cash?: number }): GameState {
   const base = initialState()
-  const hotels = (raw.hotels ?? []).map((h) => {
-    const anyH = h as Hotel
-    return {
-      ...anyH,
-      satisfaction: anyH.satisfaction ?? 70,
-      geoRegion: anyH.geoRegion ?? 'global',
-      imageKey: anyH.imageKey || defaultImageKey(anyH.subsidiaryId),
-      contract: anyH.contract
-        ? {
-            ...anyH.contract,
-            kind: (anyH.contract as { kind?: string }).kind ?? 'empresa',
-          }
-        : null,
-      roomMix: anyH.roomMix ?? 'estandar',
-      buildQuality: anyH.buildQuality ?? 'bueno',
-      floors: anyH.floors ?? 4,
-      greenLevel: anyH.greenLevel ?? 'ninguno',
-      meetingRooms: anyH.meetingRooms ?? 0,
-      parkingSpots: anyH.parkingSpots ?? 20,
-      restaurantLevel: anyH.restaurantLevel ?? 1,
-      openingPromoDays: anyH.openingPromoDays ?? 0,
-      imageDataUrl: anyH.imageDataUrl?.startsWith('data:image/svg') ? undefined : anyH.imageDataUrl,
-    } as Hotel
-  })
+  const hotels = (raw.hotels ?? []).map(migrateHotel)
   return {
     ...base,
     ...raw,
@@ -147,11 +172,12 @@ function migrate(raw: Partial<GameState> & { cash?: number }): GameState {
     hotels,
     reputation: raw.reputation ?? {},
     loan: raw.loan ?? defaultLoan(),
-    ledger: raw.ledger ?? [],
+    ledger: (raw.ledger ?? []).map((d) => ({ ...d, tax: d.tax ?? 0 })),
     soundEnabled: raw.soundEnabled ?? true,
     gameName: raw.gameName ?? 'Mi partida Orbis',
     news: raw.news ?? [],
     countryEconomy: raw.countryEconomy ?? {},
+    bankDeposits: raw.bankDeposits ?? [],
   }
 }
 
@@ -202,23 +228,41 @@ function runDaysInWorker(state: GameState, days: number): Promise<WorkerDayRespo
         ledger: state.ledger,
         countryEconomy: state.countryEconomy,
         news: state.news,
+        bankDeposits: state.bankDeposits,
       },
     }
     w.postMessage(payload)
   })
 }
 
+function closePanelsExcept(keep: Partial<UiState>): Partial<UiState> {
+  return {
+    showFinance: false,
+    showLoan: false,
+    showBank: false,
+    showHotels: false,
+    showRanking: false,
+    showCountries: false,
+    showNews: false,
+    showCompare: false,
+    ...keep,
+  }
+}
+
 export const useGameStore = create<GameStore>((set, get) => ({
   ...initialState(),
   selectedHotelId: null,
+  compareIds: [null, null],
   buildLocation: null,
   showLanding: true,
   showFinance: false,
   showLoan: false,
+  showBank: false,
   showHotels: false,
   showRanking: false,
   showCountries: false,
   showNews: false,
+  showCompare: false,
   mapLayer: 'streets',
   mapMode: 'inspect',
   mapFilters: { subsidiaryId: 'all', minStars: 1, profit: 'all' },
@@ -259,13 +303,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
       started: true,
       showLanding: false,
       selectedHotelId: null,
+      compareIds: [null, null],
       buildLocation: null,
-      showFinance: false,
-      showLoan: false,
-      showHotels: false,
-      showRanking: false,
-      showCountries: false,
-      showNews: false,
+      ...closePanelsExcept({}),
       mapMode: 'inspect',
       mapFocus: null,
       simulating: false,
@@ -274,7 +314,11 @@ export const useGameStore = create<GameStore>((set, get) => ({
   },
 
   openBuildAt: (loc) =>
-    set({ buildLocation: loc, selectedHotelId: null, showHotels: false, showRanking: false, showCountries: false, showNews: false }),
+    set({
+      buildLocation: loc,
+      selectedHotelId: null,
+      ...closePanelsExcept({}),
+    }),
   closeBuild: () => set({ buildLocation: null }),
   selectHotel: (id) =>
     set({
@@ -282,6 +326,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       buildLocation: id ? null : get().buildLocation,
       showFinance: false,
       showLoan: false,
+      showBank: false,
     }),
 
   buildHotel: (draft, loc) => {
@@ -343,11 +388,14 @@ export const useGameStore = create<GameStore>((set, get) => ({
       lastDayRevenue: 0,
       lastDayCosts: 0,
       lastDayOccupancy: 0,
+      lastDayTax: 0,
       lifetimeRevenue: 0,
       lifetimeCosts: 0,
       lifetimeGuests: 0,
+      lifetimeTax: 0,
       satisfaction: clamp(60 + rep * 0.25, 45, 90),
       contract: null,
+      insurance: null,
       roomMix: draft.roomMix,
       buildQuality: draft.buildQuality,
       floors: draft.floors,
@@ -356,6 +404,12 @@ export const useGameStore = create<GameStore>((set, get) => ({
       parkingSpots: draft.parkingSpots,
       restaurantLevel: draft.restaurantLevel,
       openingPromoDays: draft.openingPromoDays,
+      securityLevel: draft.securityLevel,
+      techLevel: draft.techLevel,
+      breakfastIncluded: draft.breakfastIncluded,
+      seaViewShare: draft.seaViewShare,
+      loyaltyProgram: draft.loyaltyProgram,
+      vipTonight: false,
     }
 
     set({
@@ -388,6 +442,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       gameName: s.gameName,
       news: s.news,
       countryEconomy: s.countryEconomy,
+      bankDeposits: s.bankDeposits,
     }
   },
 
@@ -396,28 +451,24 @@ export const useGameStore = create<GameStore>((set, get) => ({
       ...migrate(state),
       showLanding: !state.started,
       selectedHotelId: null,
+      compareIds: [null, null],
       buildLocation: null,
-      showFinance: false,
-      showLoan: false,
-      showHotels: false,
-      showRanking: false,
-      showCountries: false,
-      showNews: false,
+      ...closePanelsExcept({}),
       mapFocus: null,
       simulating: false,
     }),
 
   persistLocal: () => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(get().getSnapshot()))
-    } catch {
-      console.warn('No se pudo guardar: poco espacio')
-    }
+    const snap = get().getSnapshot()
+    const ok = tryLocalStorageSave(STORAGE_KEY, snap)
+    void idbSave(snap).catch(() => {})
+    if (!ok) console.warn('localStorage lleno; se usó IndexedDB')
   },
 
   loadLocal: () => {
     const raw =
       localStorage.getItem(STORAGE_KEY) ??
+      localStorage.getItem('orbis-hotels-group-save-v4') ??
       localStorage.getItem('orbis-hotels-group-save-v3') ??
       localStorage.getItem('orbis-hotels-group-save-v2') ??
       localStorage.getItem('orbis-hotels-group-save-v1')
@@ -450,12 +501,19 @@ export const useGameStore = create<GameStore>((set, get) => ({
   },
 
   setCloudSlot: (id) => set({ cloudSlotId: id }),
-  setShowFinance: (v) => set({ showFinance: v, showLoan: false, showHotels: false, showRanking: false, showCountries: false, showNews: false }),
-  setShowLoan: (v) => set({ showLoan: v, showFinance: false, showHotels: false, showRanking: false, showCountries: false, showNews: false }),
-  setShowHotels: (v) => set({ showHotels: v, showFinance: false, showLoan: false, showRanking: false, showCountries: false, showNews: false }),
-  setShowRanking: (v) => set({ showRanking: v, showFinance: false, showLoan: false, showHotels: false, showCountries: false, showNews: false }),
-  setShowCountries: (v) => set({ showCountries: v, showFinance: false, showLoan: false, showHotels: false, showRanking: false, showNews: false }),
-  setShowNews: (v) => set({ showNews: v, showFinance: false, showLoan: false, showHotels: false, showRanking: false, showCountries: false }),
+  setShowFinance: (v) => set(closePanelsExcept({ showFinance: v })),
+  setShowLoan: (v) => set(closePanelsExcept({ showLoan: v })),
+  setShowBank: (v) => set(closePanelsExcept({ showBank: v })),
+  setShowHotels: (v) => set(closePanelsExcept({ showHotels: v })),
+  setShowRanking: (v) => set(closePanelsExcept({ showRanking: v })),
+  setShowCountries: (v) => set(closePanelsExcept({ showCountries: v })),
+  setShowNews: (v) => set(closePanelsExcept({ showNews: v })),
+  setShowCompare: (v) => set(closePanelsExcept({ showCompare: v })),
+  setCompareSlot: (slot, hotelId) => {
+    const ids = [...get().compareIds] as [string | null, string | null]
+    ids[slot] = hotelId
+    set({ compareIds: ids, showCompare: true })
+  },
   setMapLayer: (mapLayer) => set({ mapLayer }),
   setMapMode: (mapMode) => set({ mapMode, buildLocation: mapMode === 'inspect' ? null : get().buildLocation }),
   setMapFilters: (f) => set({ mapFilters: { ...get().mapFilters, ...f } }),
@@ -468,29 +526,28 @@ export const useGameStore = create<GameStore>((set, get) => ({
       selectedHotelId: id,
       mapFocus: { lat: h.lat, lng: h.lng, zoom: 10, hotelId: id },
       buildLocation: null,
-      showHotels: false,
-      showRanking: false,
-      showCountries: false,
-      showNews: false,
+      ...closePanelsExcept({}),
     })
+  },
+  focusNextHotel: (dir) => {
+    const { hotels, selectedHotelId } = get()
+    if (hotels.length === 0) return
+    const idx = hotels.findIndex((h) => h.id === selectedHotelId)
+    const next = hotels[(idx < 0 ? 0 : idx + dir + hotels.length) % hotels.length]
+    get().focusHotel(next.id)
   },
   toggleSound: () => set({ soundEnabled: !get().soundEnabled }),
   closeAllPanels: () =>
     set({
       buildLocation: null,
       selectedHotelId: null,
-      showFinance: false,
-      showLoan: false,
-      showHotels: false,
-      showRanking: false,
-      showCountries: false,
-      showNews: false,
+      ...closePanelsExcept({}),
     }),
   setGameName: (gameName) => set({ gameName }),
 
   saveToSlot: (slot) => {
     const key = SLOT_KEYS[slot - 1]
-    localStorage.setItem(key, JSON.stringify(get().getSnapshot()))
+    tryLocalStorageSave(key, get().getSnapshot())
     get().persistLocal()
   },
 
@@ -523,6 +580,32 @@ export const useGameStore = create<GameStore>((set, get) => ({
     set({ cash: cash - amount, loan: { ...loan, balance: loan.balance - amount } })
     return { ok: true }
   },
+
+  openDeposit: (amount, termDays) => {
+    const { cash, bankDeposits, gameMinutes } = get()
+    const term = BANK_TERMS.find((t) => t.days === termDays)
+    if (!term) return { ok: false, error: 'Plazo no válido.' }
+    if (amount < 100_000) return { ok: false, error: 'Mínimo 100.000 €.' }
+    if (amount > cash) return { ok: false, error: 'No hay dinero suficiente.' }
+    const dep: BankDeposit = {
+      id: uuid(),
+      amount: Math.round(amount),
+      daysLeft: term.days,
+      dailyRate: term.dailyRate,
+      createdDay: gameDay(gameMinutes),
+    }
+    set({ cash: cash - amount, bankDeposits: [...bankDeposits, dep] })
+    return { ok: true }
+  },
+
+  generateDemo: (count = 1000) => {
+    const state = get()
+    if (state.simulating) return { ok: false, error: 'Espera a que termine el cálculo del día.' }
+    const day = gameDay(state.gameMinutes)
+    const added = generateDemoHotels(count, day)
+    set({ hotels: [...state.hotels, ...added] })
+    return { ok: true, added: added.length }
+  },
 }))
 
 async function runSkipDays(days: number, gameMinutes: number) {
@@ -548,6 +631,7 @@ async function runSkipDays(days: number, gameMinutes: number) {
       ledger: result.ledger,
       countryEconomy: result.countryEconomy,
       news: result.news,
+      bankDeposits: result.bankDeposits,
       simulating: false,
       simProgress: '',
     })

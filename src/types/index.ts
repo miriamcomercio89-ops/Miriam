@@ -11,6 +11,8 @@ export type RoomMix = 'estandar' | 'mixto' | 'suites' | 'familiar'
 export type BuildQuality = 'simple' | 'bueno' | 'alto' | 'lujo'
 export type GreenLevel = 'ninguno' | 'basico' | 'avanzado' | 'elite'
 export type ContractKind = 'empresa' | 'aerolinea' | 'evento' | 'gobierno' | 'deportes' | 'universidad'
+export type SecurityLevel = 'bajo' | 'medio' | 'alto'
+export type TechLevel = 'basico' | 'moderno' | 'futuro'
 
 export interface Subsidiary {
   id: string
@@ -31,34 +33,12 @@ export interface Subsidiary {
 }
 
 export type HotelService =
-  | 'spa'
-  | 'piscina'
-  | 'restaurante'
-  | 'gimnasio'
-  | 'parking'
-  | 'wifi_premium'
-  | 'all_inclusive'
-  | 'kids_club'
-  | 'playa_privada'
-  | 'buceo'
-  | 'golf'
-  | 'casino'
-  | 'helipuerto'
-  | 'coworking'
-  | 'room_service_24h'
-  | 'concierge'
-  | 'lavanderia'
-  | 'transfer_aeropuerto'
-  | 'bar_azotea'
-  | 'yoga'
-  | 'sauna'
-  | 'teatro'
-  | 'tienda'
-  | 'mascotas'
-  | 'ev_chargers'
-  | 'biblioteca'
-  | 'medico'
-  | 'boda'
+  | 'spa' | 'piscina' | 'restaurante' | 'gimnasio' | 'parking' | 'wifi_premium'
+  | 'all_inclusive' | 'kids_club' | 'playa_privada' | 'buceo' | 'golf' | 'casino'
+  | 'helipuerto' | 'coworking' | 'room_service_24h' | 'concierge' | 'lavanderia'
+  | 'transfer_aeropuerto' | 'bar_azotea' | 'yoga' | 'sauna' | 'teatro' | 'tienda'
+  | 'mascotas' | 'ev_chargers' | 'biblioteca' | 'medico' | 'boda'
+  | 'cine' | 'jardines' | 'mirador' | 'pista_padel' | 'guarderia_noche'
 
 export interface LocationInsight {
   lat: number
@@ -85,6 +65,13 @@ export interface CorporateContract {
   blockedRooms: number
   ratePerNight: number
   daysRemaining: number
+}
+
+export interface HotelInsurance {
+  active: boolean
+  dailyCost: number
+  /** 0-1 portion of bad-event cost absorbed */
+  cover: number
 }
 
 export interface Hotel {
@@ -115,11 +102,14 @@ export interface Hotel {
   lastDayRevenue: number
   lastDayCosts: number
   lastDayOccupancy: number
+  lastDayTax: number
   lifetimeRevenue: number
   lifetimeCosts: number
   lifetimeGuests: number
+  lifetimeTax: number
   satisfaction: number
   contract: CorporateContract | null
+  insurance: HotelInsurance | null
   roomMix: RoomMix
   buildQuality: BuildQuality
   floors: number
@@ -128,6 +118,12 @@ export interface Hotel {
   parkingSpots: number
   restaurantLevel: number
   openingPromoDays: number
+  securityLevel: SecurityLevel
+  techLevel: TechLevel
+  breakfastIncluded: boolean
+  seaViewShare: number
+  loyaltyProgram: boolean
+  vipTonight: boolean
 }
 
 export interface WorldEvent {
@@ -138,6 +134,9 @@ export interface WorldEvent {
   costMultiplier: number
   scope: string
   season?: SeasonName | 'any'
+  /** day-of-year windows for holidays, inclusive */
+  dayFrom?: number
+  dayTo?: number
   daysRemaining: number
   startedAtDay: number
 }
@@ -157,6 +156,7 @@ export interface DayLedger {
   net: number
   cash: number
   loanPayment: number
+  tax: number
   season: SeasonName
 }
 
@@ -166,12 +166,17 @@ export interface LoanState {
   dailyRate: number
 }
 
-/** Per-country money pressure */
 export interface CountryEconomy {
-  /** yearly-ish inflation factor applied daily as tiny drift */
   inflation: number
-  /** local currency vs EUR (1 = parity) */
   fx: number
+}
+
+export interface BankDeposit {
+  id: string
+  amount: number
+  daysLeft: number
+  dailyRate: number
+  createdDay: number
 }
 
 export interface GameState {
@@ -191,6 +196,7 @@ export interface GameState {
   gameName: string
   news: NewsItem[]
   countryEconomy: Record<string, CountryEconomy>
+  bankDeposits: BankDeposit[]
 }
 
 export interface BuildDraft {
@@ -215,6 +221,14 @@ export interface BuildDraft {
   buffet: boolean
   lateCheckout: boolean
   airportDesk: boolean
+  securityLevel: SecurityLevel
+  techLevel: TechLevel
+  breakfastIncluded: boolean
+  seaViewShare: number
+  loyaltyProgram: boolean
+  quietHours: boolean
+  bikeRental: boolean
+  shuttleCity: boolean
 }
 
 export interface MapFilters {

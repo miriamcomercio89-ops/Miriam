@@ -43,6 +43,11 @@ export const SERVICE_CATALOG: {
   { id: 'biblioteca', label: 'Biblioteca / sala tranquila', group: 'Extra', cost: 95_000, demandBonus: 0.01, dailyCost: 90 },
   { id: 'medico', label: 'Puesto médico', group: 'Extra', cost: 260_000, demandBonus: 0.01, dailyCost: 450 },
   { id: 'ev_chargers', label: 'Carga de coches eléctricos', group: 'Verde', cost: 180_000, demandBonus: 0.012, dailyCost: 120 },
+  { id: 'cine', label: 'Sala de cine', group: 'Ocio', cost: 420_000, demandBonus: 0.02, dailyCost: 350 },
+  { id: 'jardines', label: 'Jardines grandes', group: 'Extra', cost: 260_000, demandBonus: 0.015, dailyCost: 200 },
+  { id: 'mirador', label: 'Mirador', group: 'Extra', cost: 190_000, demandBonus: 0.018, dailyCost: 80 },
+  { id: 'pista_padel', label: 'Pista de pádel', group: 'Ocio', cost: 310_000, demandBonus: 0.016, dailyCost: 220 },
+  { id: 'guarderia_noche', label: 'Guardería nocturna', group: 'Familia', cost: 240_000, demandBonus: 0.02, dailyCost: 380 },
 ]
 
 export const STAFF_OPTIONS: {
@@ -95,6 +100,18 @@ export const DESIGN_FOCUS = [
   { id: 'fiesta' as const, label: 'Ambiente de fiesta' },
   { id: 'trabajo' as const, label: 'Pensado para trabajar' },
   { id: 'familia' as const, label: 'Pensado para familias' },
+]
+
+export const SECURITY_OPTIONS = [
+  { id: 'bajo' as const, label: 'Seguridad baja', costMult: 0.97, demandBonus: -0.01, daily: 0.4 },
+  { id: 'medio' as const, label: 'Seguridad media', costMult: 1, demandBonus: 0.01, daily: 0.9 },
+  { id: 'alto' as const, label: 'Seguridad alta', costMult: 1.08, demandBonus: 0.025, daily: 1.8 },
+]
+
+export const TECH_OPTIONS = [
+  { id: 'basico' as const, label: 'Tecnología simple', costMult: 0.95, demandBonus: -0.01 },
+  { id: 'moderno' as const, label: 'Tecnología moderna', costMult: 1.05, demandBonus: 0.02 },
+  { id: 'futuro' as const, label: 'Tecnología punta', costMult: 1.15, demandBonus: 0.035 },
 ]
 
 export const STARTING_CASH = 750_000_000

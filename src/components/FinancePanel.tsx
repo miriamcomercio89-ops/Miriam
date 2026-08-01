@@ -68,10 +68,24 @@ export function FinancePanel() {
         <div className="cost-box">
           {slice.slice(-3).reverse().map((d) => (
             <div key={d.day}>
-              <span>Día {d.day} · {seasonLabel(d.season)}</span>
+              <span>
+                Día {d.day} · {seasonLabel(d.season)}
+                {d.tax > 0 ? ` · impuestos ${formatEUR(d.tax)}` : ''}
+              </span>
               <strong className={d.net >= 0 ? 'pos' : 'neg'}>{formatEUR(d.net)}</strong>
             </div>
           ))}
+        </div>
+
+        <div className="cost-box" style={{ marginTop: '0.75rem' }}>
+          <div>
+            <span>Impuestos (rango)</span>
+            <strong>{formatEUR(slice.reduce((s, d) => s + (d.tax ?? 0), 0))}</strong>
+          </div>
+          <div>
+            <span>Impuestos de por vida (hoteles)</span>
+            <strong>{formatEUR(hotels.reduce((s, h) => s + (h.lifetimeTax ?? 0), 0), true)}</strong>
+          </div>
         </div>
 
         <h3 className="mini-title">Reputación por país</h3>

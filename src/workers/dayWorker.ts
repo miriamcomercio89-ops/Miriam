@@ -5,16 +5,28 @@ import {
   getSeason,
   makeNewsFromDay,
   reputationKey,
+  tickBankDeposits,
   tickCountryEconomies,
   updateReputation,
 } from '../lib/economy'
-import type { DayLedger, GameState, Hotel, NewsItem, WorldEvent } from '../types'
+import { activeHolidays } from '../lib/holidays'
+import type { BankDeposit, DayLedger, GameState, Hotel, NewsItem, WorldEvent } from '../types'
 
 export type WorkerDayRequest = {
   type: 'applyDays'
   state: Pick<
     GameState,
-    'cash' | 'gameMinutes' | 'hotels' | 'activeEvents' | 'lastEventRollDay' | 'reputation' | 'loan' | 'ledger' | 'countryEconomy' | 'news'
+    | 'cash'
+    | 'gameMinutes'
+    | 'hotels'
+    | 'activeEvents'
+    | 'lastEventRollDay'
+    | 'reputation'
+    | 'loan'
+    | 'ledger'
+    | 'countryEconomy'
+    | 'news'
+    | 'bankDeposits'
   >
   days: number
 }
@@ -30,6 +42,7 @@ export type WorkerDayResponse = {
   ledger: DayLedger[]
   countryEconomy: GameState['countryEconomy']
   news: NewsItem[]
+  bankDeposits: BankDeposit[]
   dayClosed: boolean
 }
 
@@ -43,6 +56,7 @@ function applyDays(state: WorkerDayRequest['state'], days: number): WorkerDayRes
     ...h,
     services: h.services,
     contract: h.contract ? { ...h.contract } : null,
+    insurance: h.insurance ? { ...h.insurance } : null,
   }))
   let activeEvents = state.activeEvents.map((e) => ({ ...e }))
   let lastEventRollDay = state.lastEventRollDay
@@ -51,6 +65,7 @@ function applyDays(state: WorkerDayRequest['state'], days: number): WorkerDayRes
   let ledger = state.ledger.slice()
   let countryEconomy = { ...state.countryEconomy }
   let news = state.news.slice()
+  let bankDeposits = (state.bankDeposits ?? []).map((d) => ({ ...d }))
   const startDay = gameDay(state.gameMinutes)
   let dayClosed = false
 
@@ -62,6 +77,15 @@ function applyDays(state: WorkerDayRequest['state'], days: number): WorkerDayRes
     activeEvents = activeEvents
       .map((e) => ({ ...e, daysRemaining: e.daysRemaining - 1 }))
       .filter((e) => e.daysRemaining > 0)
+
+    // Fiestas del calendario (se muestran junto a eventos)
+    const holidays = activeHolidays(minutesAtDay).map((h) => ({
+      ...h,
+      id: `${h.id}-${currentDay}`,
+      daysRemaining: 1,
+      startedAtDay: currentDay,
+    }))
+    const dayEvents = [...activeEvents, ...holidays]
 
     if (currentDay - lastEventRollDay >= 5 + Math.floor(Math.random() * 6)) {
       lastEventRollDay = currentDay
@@ -81,17 +105,24 @@ function applyDays(state: WorkerDayRequest['state'], days: number): WorkerDayRes
 
     let dayRevenue = 0
     let dayCosts = 0
+    let dayTax = 0
     for (let i = 0; i < hotels.length; i++) {
       const h = hotels[i]
       const key = reputationKey(h.countryCode)
       const rep = reputation[key] ?? 55
       const eco = countryEconomy[key]
-      const net = applyHotelDayInPlace(h, activeEvents, minutesAtDay, rep, eco)
+      const net = applyHotelDayInPlace(h, dayEvents, minutesAtDay, rep, eco, currentDay)
       dayRevenue += h.lastDayRevenue
       dayCosts += h.lastDayCosts
+      dayTax += h.lastDayTax ?? 0
       cash += net
       reputation[key] = updateReputation(rep, net, h.lastDayOccupancy, h.satisfaction)
     }
+
+    const bankTick = tickBankDeposits(bankDeposits, cash, currentDay)
+    bankDeposits = bankTick.deposits
+    cash = bankTick.cash
+    const bankInterest = bankTick.interestPaid
 
     let loanPayment = 0
     if (loan.balance > 0) {
@@ -110,18 +141,21 @@ function applyDays(state: WorkerDayRequest['state'], days: number): WorkerDayRes
       net: dayRevenue - dayCosts,
       cash,
       loanPayment,
+      tax: dayTax,
       season: globalSeason,
     })
     if (ledger.length > 60) ledger = ledger.slice(-60)
 
     const dayNews = makeNewsFromDay({
       day: currentDay,
-      events: activeEvents,
+      events: dayEvents,
       hotels,
       net: dayRevenue - dayCosts,
       season: globalSeason,
+      dayTax,
+      bankInterest,
     })
-    news = [...dayNews, ...news].slice(0, 40)
+    news = [...dayNews, ...news].slice(0, 50)
     dayClosed = true
   }
 
@@ -136,6 +170,7 @@ function applyDays(state: WorkerDayRequest['state'], days: number): WorkerDayRes
     ledger,
     countryEconomy,
     news,
+    bankDeposits,
     dayClosed,
   }
 }

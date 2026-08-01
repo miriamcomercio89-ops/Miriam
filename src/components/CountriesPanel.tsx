@@ -55,7 +55,8 @@ export function CountriesPanel() {
                   <div className="country-row__meta">
                     <em className={c.net >= 0 ? 'pos' : 'neg'}>{formatEUR(c.net, true)}/día</em>
                     <span>
-                      Llenas {formatPct(c.occ)} · inflación {(c.inflation * 100).toFixed(2)}%/día · cambio ×{c.fx.toFixed(2)}
+                      Llenas {formatPct(c.occ)} · impuestos {Math.round(c.taxRate * 100)}% · hoy{' '}
+                      {formatEUR(c.tax, true)} · inflación {(c.inflation * 100).toFixed(2)}%/día · cambio ×{c.fx.toFixed(2)}
                     </span>
                   </div>
                 </button>
