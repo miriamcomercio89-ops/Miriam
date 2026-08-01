@@ -18,6 +18,8 @@ import { calcConstructionCost, estimateDaily, fairPrice, getSeason, seasonLabel 
 import { formatEUR, formatPct } from '../lib/format'
 import { galleryImages } from '../lib/gallery'
 import { geoRegionLabel } from '../lib/geo'
+import { evaluateSiteFit } from '../lib/siteFit'
+import { downloadHotelPdf, svgDataUrlToPng } from '../lib/hotelPdf'
 import type {
   BuildDraft,
   HotelService,
@@ -29,18 +31,19 @@ import type {
   SecurityLevel,
   TechLevel,
   BoardRegime,
+  Subsidiary,
 } from '../types'
 
 type Step = 'marca' | 'basico' | 'edificio' | 'servicios' | 'extras' | 'foto' | 'revisar'
 
 const STEPS: { id: Step; label: string }[] = [
-  { id: 'marca', label: '1. Marca' },
-  { id: 'basico', label: '2. Básico' },
-  { id: 'edificio', label: '3. Edificio' },
-  { id: 'servicios', label: '4. Servicios' },
-  { id: 'extras', label: '5. Extras' },
-  { id: 'foto', label: '6. Foto' },
-  { id: 'revisar', label: '7. Crear' },
+  { id: 'marca', label: 'Marca' },
+  { id: 'basico', label: 'Básico' },
+  { id: 'edificio', label: 'Edificio' },
+  { id: 'servicios', label: 'Servicios' },
+  { id: 'extras', label: 'Extras' },
+  { id: 'foto', label: 'Foto' },
+  { id: 'revisar', label: 'Crear' },
 ]
 
 function emptyDraft(subId: string, city: string): BuildDraft {
@@ -82,11 +85,16 @@ function emptyDraft(subId: string, city: string): BuildDraft {
   }
 }
 
+function brandPdfHref(id: string) {
+  return `./marcas/${id}.pdf`
+}
+
 export function BuildPanel() {
   const loc = useGameStore((s) => s.buildLocation)
   const closeBuild = useGameStore((s) => s.closeBuild)
   const buildHotel = useGameStore((s) => s.buildHotel)
   const cash = useGameStore((s) => s.cash)
+  const loan = useGameStore((s) => s.loan)
   const events = useGameStore((s) => s.activeEvents)
   const gameMinutes = useGameStore((s) => s.gameMinutes)
   const reputation = useGameStore((s) => s.reputation)
@@ -98,6 +106,10 @@ export function BuildPanel() {
   const [error, setError] = useState<string | null>(null)
   const [draft, setDraft] = useState<BuildDraft | null>(null)
   const [gallery, setGallery] = useState<string[]>([])
+  const [previewBrand, setPreviewBrand] = useState<Subsidiary | null>(null)
+  const [useFinance, setUseFinance] = useState(false)
+  const [downloadPdf, setDownloadPdf] = useState(true)
+  const [busy, setBusy] = useState(false)
 
   useEffect(() => {
     setStep('marca')
@@ -105,6 +117,9 @@ export function BuildPanel() {
     setError(null)
     setDraft(null)
     setGallery([])
+    setPreviewBrand(null)
+    setUseFinance(false)
+    setDownloadPdf(true)
   }, [loc?.lat, loc?.lng])
 
   const filtered = useMemo(() => {
@@ -114,7 +129,8 @@ export function BuildPanel() {
       (s) =>
         s.name.toLowerCase().includes(q) ||
         s.specialty.toLowerCase().includes(q) ||
-        s.tagline.toLowerCase().includes(q),
+        s.tagline.toLowerCase().includes(q) ||
+        s.lore.toLowerCase().includes(q),
     )
   }, [filter])
 
@@ -128,21 +144,37 @@ export function BuildPanel() {
     return [...map.entries()]
   }, [])
 
-  if (!loc) return null
+  const fit = useMemo(() => {
+    if (!loc || !draft) return null
+    const s = getSubsidiary(draft.subsidiaryId)
+    return s ? evaluateSiteFit(s, loc) : null
+  }, [loc, draft])
 
-  const rep = reputation[loc.countryCode] ?? 55
-  const season = getSeason(loc.lat, gameMinutes)
-  const eco = countryEconomy[loc.countryCode]
-  const cost = draft ? calcConstructionCost(draft, loc) : 0
-  const estimate = draft ? estimateDaily(draft, loc, events, gameMinutes, rep, eco, loyaltyLevel) : null
+  const previewFit = useMemo(() => {
+    if (!loc || !previewBrand) return null
+    return evaluateSiteFit(previewBrand, loc)
+  }, [loc, previewBrand])
+
+  if (!loc) return null
+  const site = loc
+
+  const rep = reputation[site.countryCode] ?? 55
+  const season = getSeason(site.lat, gameMinutes)
+  const eco = countryEconomy[site.countryCode]
+  const cost = draft ? calcConstructionCost(draft, site) : 0
+  const estimate = draft ? estimateDaily(draft, site, events, gameMinutes, rep, eco, loyaltyLevel) : null
   const sub = draft ? getSubsidiary(draft.subsidiaryId) : null
+  const shortfall = Math.max(0, cost - cash)
+  const creditLeft = Math.max(0, loan.limit - loan.balance)
+  const canFinance = shortfall > 0 && shortfall <= creditLeft
+  const canAfford = cost <= cash || (useFinance && canFinance)
   const aiPrice =
     draft && sub
       ? fairPrice(
           {
             stars: draft.stars,
-            tourismIndex: loc.tourismIndex,
-            beachScore: loc.beachScore,
+            tourismIndex: site.tourismIndex,
+            beachScore: site.beachScore,
             target: draft.target,
             services: draft.services,
             subsidiaryId: draft.subsidiaryId,
@@ -186,11 +218,52 @@ export function BuildPanel() {
     if (i > 0) setStep(order[i - 1])
   }
 
+  function pickBrand(s: Subsidiary) {
+    const d = emptyDraft(s.id, site.city)
+    setDraft(d)
+    setGallery(galleryImages(s, d.name, site.climateLabel || site.geoRegion || s.imageStyle))
+    setPreviewBrand(null)
+    setStep('basico')
+    setError(null)
+  }
+
+  async function onCreate() {
+    if (!draft) return
+    setBusy(true)
+    setError(null)
+    const res = buildHotel(draft, site, { finance: useFinance && shortfall > 0 })
+    if (!res.ok) {
+      setError(res.error)
+      setBusy(false)
+      return
+    }
+    if (downloadPdf) {
+      try {
+        const brand = getSubsidiary(res.hotel.subsidiaryId)
+        if (brand) {
+          const logoPng = await svgDataUrlToPng(subsidiaryLogoSvg(brand, 256), 256)
+          await downloadHotelPdf({
+            hotel: res.hotel,
+            sub: brand,
+            loc: site,
+            draft,
+            logoPng,
+            cost: res.hotel.constructionCost,
+            financed: res.financed,
+          })
+        }
+      } catch {
+        /* PDF opcional */
+      }
+    }
+    setBusy(false)
+  }
+
   return (
     <aside className="panel panel--build">
       <div className="panel__head">
         <div>
-          <p className="panel__eyebrow">Nuevo hotel</p>
+          <p className="panel__eyebrow">Constructor</p>
           <h2>{loc.city}</h2>
           <p className="panel__meta">
             {loc.country} · {geoRegionLabel(loc.geoRegion)}
@@ -199,6 +272,35 @@ export function BuildPanel() {
         <button type="button" className="icon-btn" onClick={closeBuild} aria-label="Cerrar" title="Cerrar">
           ×
         </button>
+      </div>
+
+      <div className="build-costbar" aria-live="polite">
+        <div>
+          <span>Obra</span>
+          <strong>{draft ? formatEUR(cost, true) : '—'}</strong>
+        </div>
+        <div>
+          <span>Caja</span>
+          <strong>{formatEUR(cash, true)}</strong>
+        </div>
+        <div className={draft ? (canAfford ? 'is-ok' : 'is-bad') : ''}>
+          <span>Saldo</span>
+          <strong>
+            {!draft
+              ? '—'
+              : shortfall <= 0
+                ? 'Te llega'
+                : canFinance
+                  ? `Faltan ${formatEUR(shortfall, true)}`
+                  : `Sin crédito (${formatEUR(shortfall, true)})`}
+          </strong>
+        </div>
+        {estimate && (
+          <div>
+            <span>Est. / día</span>
+            <strong className={estimate.net >= 0 ? 'pos' : 'neg'}>{formatEUR(estimate.net, true)}</strong>
+          </div>
+        )}
       </div>
 
       <div className="stepper">
@@ -217,56 +319,114 @@ export function BuildPanel() {
         ))}
       </div>
 
-      <div className="insight-grid">
+      <div className="insight-grid insight-grid--build">
         <div><span>Turismo</span><strong>{loc.tourismIndex}/100</strong></div>
         <div><span>Playa</span><strong>{loc.beachScore}/100</strong></div>
-        <div><span>Coste del sitio</span><strong>×{loc.costIndex}</strong></div>
-        <div><span>Fama en el país</span><strong>{Math.round(rep)}/100</strong></div>
+        <div><span>Coste sitio</span><strong>×{loc.costIndex}</strong></div>
+        <div><span>Fama</span><strong>{Math.round(rep)}/100</strong></div>
         <div><span>Temporada</span><strong>{seasonLabel(season)}</strong></div>
-        <div><span>Impuestos país</span><strong>{Math.round(loc.taxRate * 100)}%</strong></div>
+        <div><span>Impuestos</span><strong>{Math.round(loc.taxRate * 100)}%</strong></div>
         <div><span>Tasa turística</span><strong>{getCountryRules(loc.countryCode).touristTaxPerNight} €/hab.</strong></div>
-        <div><span>Cambio local</span><strong>×{(eco?.fx ?? 1).toFixed(2)}</strong></div>
+        <div><span>Cambio</span><strong>×{(eco?.fx ?? 1).toFixed(2)}</strong></div>
       </div>
 
+      {fit && step !== 'marca' && (
+        <div className={`build-fit build-fit--${fit.level}`}>
+          <strong>Afinidad marca–sitio: {fit.score}/100 ({fit.level})</strong>
+          {fit.warnings.map((w) => (
+            <p key={w} className="build-fit__warn">{w}</p>
+          ))}
+          {fit.tips.slice(0, 2).map((t) => (
+            <p key={t} className="build-fit__tip">{t}</p>
+          ))}
+        </div>
+      )}
+
       {step === 'marca' && (
-        <div className="panel__body">
-          <label className="field">
-            <span>Elige la marca (hay 50)</span>
-            <input value={filter} onChange={(e) => setFilter(e.target.value)} placeholder="Buscar marca…" />
-          </label>
-          <div className="filial-list">
-            {filtered.map((s) => (
-              <button
-                key={s.id}
-                type="button"
-                className="filial-card"
-                onClick={() => {
-                  const d = emptyDraft(s.id, loc.city)
-                  setDraft(d)
-                  setGallery(galleryImages(s, d.name, loc.climateLabel || loc.geoRegion || s.imageStyle))
-                  setStep('basico')
-                  setError(null)
-                }}
-              >
-                <img className="filial-logo" src={subsidiaryLogoSvg(s, 128)} alt="" width={72} height={72} />
-                <div>
-                  <strong>{s.name}</strong>
-                  <span>{s.specialty}</span>
-                  <em>{s.tagline}</em>
+        <div className="panel__body build-marca">
+          {previewBrand ? (
+            <div className="brand-sheet" style={{ ['--brand' as string]: previewBrand.color, ['--accent' as string]: previewBrand.accent }}>
+              <img
+                className="brand-sheet__logo"
+                src={subsidiaryLogoSvg(previewBrand, 256)}
+                alt=""
+                width={168}
+                height={168}
+              />
+              <div className="brand-sheet__body">
+                <p className="panel__eyebrow">{previewBrand.specialty}</p>
+                <h3>{previewBrand.name}</h3>
+                <p className="brand-sheet__tag">{previewBrand.tagline}</p>
+                <p className="brand-sheet__lore">{previewBrand.lore}</p>
+                <ul className="brand-sheet__meta">
+                  <li>Estrellas {previewBrand.minStars}–{previewBrand.maxStars}</li>
+                  <li>Público: {previewBrand.targets.join(', ')}</li>
+                  <li>Afinidad playa {Math.round(previewBrand.beachAffinity * 100)}%</li>
+                  <li>Coste marca ×{previewBrand.costMultiplier}</li>
+                  <li>Demanda +{Math.round(previewBrand.demandBonus * 100)}%</li>
+                  <li>Estilo {previewBrand.imageStyle}</li>
+                </ul>
+                {previewFit && (
+                  <div className={`build-fit build-fit--${previewFit.level}`}>
+                    <strong>En este solar: {previewFit.score}/100 ({previewFit.level})</strong>
+                    {previewFit.warnings.map((w) => (
+                      <p key={w} className="build-fit__warn">{w}</p>
+                    ))}
+                  </div>
+                )}
+                <div className="nav-row">
+                  <button type="button" className="btn btn--ghost" onClick={() => setPreviewBrand(null)}>
+                    Volver al listado
+                  </button>
+                  <a className="btn btn--ghost" href={brandPdfHref(previewBrand.id)} download target="_blank" rel="noreferrer">
+                    PDF de marca
+                  </a>
+                  <button type="button" className="btn btn--primary" onClick={() => pickBrand(previewBrand)}>
+                    Usar esta marca
+                  </button>
                 </div>
-              </button>
-            ))}
-          </div>
+              </div>
+            </div>
+          ) : (
+            <>
+              <label className="field">
+                <span>Elige marca · 50 filiales</span>
+                <input value={filter} onChange={(e) => setFilter(e.target.value)} placeholder="Buscar por nombre, especialidad…" />
+              </label>
+              <div className="filial-list filial-list--xl">
+                {filtered.map((s) => (
+                  <button
+                    key={s.id}
+                    type="button"
+                    className="filial-card filial-card--xl"
+                    onClick={() => setPreviewBrand(s)}
+                  >
+                    <img className="filial-logo filial-logo--xl" src={subsidiaryLogoSvg(s, 256)} alt="" width={112} height={112} />
+                    <div>
+                      <strong>{s.name}</strong>
+                      <span>{s.specialty}</span>
+                      <em>{s.tagline}</em>
+                      <small>{'★'.repeat(s.minStars)}{s.minStars !== s.maxStars ? `–${s.maxStars}★` : ''}</small>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
         </div>
       )}
 
       {step === 'basico' && draft && sub && (
         <div className="panel__body">
-          <div className="filial-selected">
-            <img className="filial-logo" src={subsidiaryLogoSvg(sub, 128)} alt="" width={72} height={72} />
+          <div className="filial-selected filial-selected--xl">
+            <img className="filial-logo filial-logo--xl" src={subsidiaryLogoSvg(sub, 256)} alt="" width={112} height={112} />
             <div>
               <strong>{sub.name}</strong>
               <span>{sub.specialty}</span>
+              <em>{sub.lore}</em>
+              <a className="linkish" href={brandPdfHref(sub.id)} download target="_blank" rel="noreferrer">
+                Descargar PDF de marca
+              </a>
             </div>
           </div>
           <label className="field">
@@ -345,7 +505,7 @@ export function BuildPanel() {
             </select>
           </label>
           <fieldset className="services">
-            <legend>Regímenes disponibles (varios a la vez)</legend>
+            <legend>Regímenes disponibles</legend>
             <div className="services__grid">
               {BOARD_REGIMES.map((o) => (
                 <label key={o.id} className="check">
@@ -374,9 +534,7 @@ export function BuildPanel() {
               ))}
             </div>
           </fieldset>
-          <p className="ai-price-note">
-            El precio por noche lo pone solo la IA (ahora unos {formatEUR(aiPrice)}).
-          </p>
+          <p className="ai-price-note">Precio IA estimado: {formatEUR(aiPrice)}/noche</p>
           <div className="nav-row">
             <button type="button" className="btn btn--ghost" onClick={() => setStep('marca')}>Atrás</button>
             <button type="button" className="btn btn--primary" onClick={goNext}>Seguir</button>
@@ -395,14 +553,8 @@ export function BuildPanel() {
             </select>
           </label>
           <label className="field">
-            <span>Plantas del edificio ({draft.floors})</span>
-            <input
-              type="range"
-              min={1}
-              max={40}
-              value={draft.floors}
-              onChange={(e) => setDraft({ ...draft, floors: Number(e.target.value) })}
-            />
+            <span>Plantas ({draft.floors})</span>
+            <input type="range" min={1} max={40} value={draft.floors} onChange={(e) => setDraft({ ...draft, floors: Number(e.target.value) })} />
           </label>
           <label className="field">
             <span>Plan verde</span>
@@ -415,10 +567,7 @@ export function BuildPanel() {
           <div className="field-row">
             <label className="field">
               <span>Seguridad</span>
-              <select
-                value={draft.securityLevel}
-                onChange={(e) => setDraft({ ...draft, securityLevel: e.target.value as SecurityLevel })}
-              >
+              <select value={draft.securityLevel} onChange={(e) => setDraft({ ...draft, securityLevel: e.target.value as SecurityLevel })}>
                 {SECURITY_OPTIONS.map((o) => (
                   <option key={o.id} value={o.id}>{o.label}</option>
                 ))}
@@ -436,52 +585,25 @@ export function BuildPanel() {
           <div className="field-row">
             <label className="field">
               <span>Salas de reuniones</span>
-              <input
-                type="number"
-                min={0}
-                max={40}
-                value={draft.meetingRooms}
-                onChange={(e) => setDraft({ ...draft, meetingRooms: Math.max(0, Number(e.target.value) || 0) })}
-              />
+              <input type="number" min={0} max={40} value={draft.meetingRooms} onChange={(e) => setDraft({ ...draft, meetingRooms: Math.max(0, Number(e.target.value) || 0) })} />
             </label>
             <label className="field">
               <span>Plazas de parking</span>
-              <input
-                type="number"
-                min={0}
-                max={2000}
-                value={draft.parkingSpots}
-                onChange={(e) => setDraft({ ...draft, parkingSpots: Math.max(0, Number(e.target.value) || 0) })}
-              />
+              <input type="number" min={0} max={2000} value={draft.parkingSpots} onChange={(e) => setDraft({ ...draft, parkingSpots: Math.max(0, Number(e.target.value) || 0) })} />
             </label>
           </div>
           <label className="field">
             <span>Nivel del restaurante (0–5)</span>
-            <input
-              type="range"
-              min={0}
-              max={5}
-              value={draft.restaurantLevel}
-              onChange={(e) => setDraft({ ...draft, restaurantLevel: Number(e.target.value) })}
-            />
+            <input type="range" min={0} max={5} value={draft.restaurantLevel} onChange={(e) => setDraft({ ...draft, restaurantLevel: Number(e.target.value) })} />
             <strong className="range-val">{draft.restaurantLevel}</strong>
           </label>
           <label className="field">
             <span>Habitaciones con vistas al mar ({draft.seaViewShare}%)</span>
-            <input
-              type="range"
-              min={0}
-              max={100}
-              value={draft.seaViewShare}
-              onChange={(e) => setDraft({ ...draft, seaViewShare: Number(e.target.value) })}
-            />
+            <input type="range" min={0} max={100} value={draft.seaViewShare} onChange={(e) => setDraft({ ...draft, seaViewShare: Number(e.target.value) })} />
           </label>
           <label className="field">
             <span>Enfoque del hotel</span>
-            <select
-              value={draft.designFocus}
-              onChange={(e) => setDraft({ ...draft, designFocus: e.target.value as BuildDraft['designFocus'] })}
-            >
+            <select value={draft.designFocus} onChange={(e) => setDraft({ ...draft, designFocus: e.target.value as BuildDraft['designFocus'] })}>
               {DESIGN_FOCUS.map((o) => (
                 <option key={o.id} value={o.id}>{o.label}</option>
               ))}
@@ -502,11 +624,7 @@ export function BuildPanel() {
               <div className="services__grid">
                 {items.map((s) => (
                   <label key={s.id} className="check">
-                    <input
-                      type="checkbox"
-                      checked={draft.services.includes(s.id)}
-                      onChange={() => toggleService(s.id)}
-                    />
+                    <input type="checkbox" checked={draft.services.includes(s.id)} onChange={() => toggleService(s.id)} />
                     <span>{s.label}</span>
                   </label>
                 ))}
@@ -524,81 +642,28 @@ export function BuildPanel() {
         <div className="panel__body">
           <label className="field">
             <span>Días de oferta de apertura ({draft.openingPromoDays})</span>
-            <input
-              type="range"
-              min={0}
-              max={30}
-              value={draft.openingPromoDays}
-              onChange={(e) => setDraft({ ...draft, openingPromoDays: Number(e.target.value) })}
-            />
+            <input type="range" min={0} max={30} value={draft.openingPromoDays} onChange={(e) => setDraft({ ...draft, openingPromoDays: Number(e.target.value) })} />
           </label>
-          <label className="check block-check">
-            <input
-              type="checkbox"
-              checked={draft.breakfastIncluded}
-              onChange={(e) => setDraft({ ...draft, breakfastIncluded: e.target.checked })}
-            />
-            <span>Desayuno incluido</span>
-          </label>
-          <label className="check block-check">
-            <input
-              type="checkbox"
-              checked={draft.buffet}
-              onChange={(e) => setDraft({ ...draft, buffet: e.target.checked })}
-            />
-            <span>Buffet incluido</span>
-          </label>
-          <label className="check block-check">
-            <input
-              type="checkbox"
-              checked={draft.lateCheckout}
-              onChange={(e) => setDraft({ ...draft, lateCheckout: e.target.checked })}
-            />
-            <span>Salida tarde flexible</span>
-          </label>
-          <label className="check block-check">
-            <input
-              type="checkbox"
-              checked={draft.airportDesk}
-              onChange={(e) => setDraft({ ...draft, airportDesk: e.target.checked })}
-            />
-            <span>Mostrador en aeropuerto</span>
-          </label>
-          <label className="check block-check">
-            <input
-              type="checkbox"
-              checked={draft.loyaltyProgram}
-              onChange={(e) => setDraft({ ...draft, loyaltyProgram: e.target.checked })}
-            />
-            <span>Programa de fidelidad</span>
-          </label>
-          <label className="check block-check">
-            <input
-              type="checkbox"
-              checked={draft.quietHours}
-              onChange={(e) => setDraft({ ...draft, quietHours: e.target.checked })}
-            />
-            <span>Horas de silencio</span>
-          </label>
-          <label className="check block-check">
-            <input
-              type="checkbox"
-              checked={draft.bikeRental}
-              onChange={(e) => setDraft({ ...draft, bikeRental: e.target.checked })}
-            />
-            <span>Alquiler de bicis</span>
-          </label>
-          <label className="check block-check">
-            <input
-              type="checkbox"
-              checked={draft.shuttleCity}
-              onChange={(e) => setDraft({ ...draft, shuttleCity: e.target.checked })}
-            />
-            <span>Bus al centro</span>
-          </label>
-          <p className="confirm-note">
-            Estos extras suben el coste. El seguro del hotel lo gestiona sola la IA después de abrir.
-          </p>
+          {([
+            ['breakfastIncluded', 'Desayuno incluido'],
+            ['buffet', 'Buffet incluido'],
+            ['lateCheckout', 'Salida tarde flexible'],
+            ['airportDesk', 'Mostrador en aeropuerto'],
+            ['loyaltyProgram', 'Programa de fidelidad'],
+            ['quietHours', 'Horas de silencio'],
+            ['bikeRental', 'Alquiler de bicis'],
+            ['shuttleCity', 'Bus al centro'],
+          ] as const).map(([key, label]) => (
+            <label key={key} className="check block-check">
+              <input
+                type="checkbox"
+                checked={draft[key]}
+                onChange={(e) => setDraft({ ...draft, [key]: e.target.checked })}
+              />
+              <span>{label}</span>
+            </label>
+          ))}
+          <p className="confirm-note">Estos extras suben el coste. El seguro lo gestiona la IA al abrir.</p>
           <div className="nav-row">
             <button type="button" className="btn btn--ghost" onClick={goBack}>Atrás</button>
             <button type="button" className="btn btn--primary" onClick={goNext}>Seguir</button>
@@ -609,7 +674,7 @@ export function BuildPanel() {
       {step === 'foto' && draft && sub && (
         <div className="panel__body">
           <img src={draft.imageDataUrl} alt="Foto del hotel" className="hotel-preview" />
-          <p className="panel__meta">Elige una foto de la galería Orbis o sube la tuya</p>
+          <p className="panel__meta">Galería Orbis o sube la tuya</p>
           <div className="gallery-grid">
             {(gallery.length ? gallery : galleryImages(sub, draft.name, loc.climateLabel || loc.geoRegion)).map((src, idx) => {
               const moods = ['day', 'dusk', 'night', 'aerial', 'sunny', 'storm', 'spring', 'winter'] as const
@@ -652,8 +717,8 @@ export function BuildPanel() {
 
       {step === 'revisar' && draft && sub && estimate && (
         <div className="panel__body">
-          <div className="confirm-card">
-            <img className="filial-logo filial-logo--md" src={subsidiaryLogoSvg(sub, 128)} alt="" width={64} height={64} />
+          <div className="confirm-card confirm-card--xl">
+            <img className="filial-logo filial-logo--xl" src={subsidiaryLogoSvg(sub, 256)} alt="" width={112} height={112} />
             <div>
               <strong>{draft.name}</strong>
               <span>
@@ -664,14 +729,36 @@ export function BuildPanel() {
           <div className="cost-box">
             <div><span>Coste de obra</span><strong>{formatEUR(cost)}</strong></div>
             <div><span>Dinero disponible</span><strong>{formatEUR(cash, true)}</strong></div>
+            <div><span>Crédito libre</span><strong>{formatEUR(creditLeft, true)}</strong></div>
             <div><span>Precio IA</span><strong>{formatEUR(aiPrice)}/noche</strong></div>
-            <div><span>Habitaciones llenas (est.)</span><strong>{formatPct(estimate.occupancy)}</strong></div>
-            <div><span>Ingresos / día</span><strong>{formatEUR(estimate.revenue)}</strong></div>
+            <div><span>Ocupación est.</span><strong>{formatPct(estimate.occupancy)}</strong></div>
             <div><span>Ganancia / día</span><strong className={estimate.net >= 0 ? 'pos' : 'neg'}>{formatEUR(estimate.net)}</strong></div>
           </div>
+
+          {shortfall > 0 && (
+            <label className={`finance-box ${canFinance ? '' : 'is-blocked'}`}>
+              <input
+                type="checkbox"
+                checked={useFinance}
+                disabled={!canFinance}
+                onChange={(e) => setUseFinance(e.target.checked)}
+              />
+              <span>
+                {canFinance
+                  ? `Financiar ${formatEUR(shortfall, true)} con el crédito del grupo (quedará como deuda).`
+                  : `No hay crédito suficiente para cubrir ${formatEUR(shortfall, true)}.`}
+              </span>
+            </label>
+          )}
+
+          <label className="check block-check">
+            <input type="checkbox" checked={downloadPdf} onChange={(e) => setDownloadPdf(e.target.checked)} />
+            <span>Descargar PDF del hotel al crear</span>
+          </label>
+
           <p className="confirm-note">
-            Se construye al momento. Luego no se puede cambiar. Precio, contratos y seguro los gestiona la IA.
-            Impuestos del país: {Math.round(loc.taxRate * 100)}%.
+            Se construye al momento. Precio, contratos y seguro los gestiona la IA.
+            Impuestos: {Math.round(loc.taxRate * 100)}%.
           </p>
           {error && <p className="error">{error}</p>}
           <div className="nav-row">
@@ -679,12 +766,10 @@ export function BuildPanel() {
             <button
               type="button"
               className="btn btn--primary"
-              onClick={() => {
-                const res = buildHotel(draft, loc)
-                if (!res.ok) setError(res.error)
-              }}
+              disabled={busy || !canAfford}
+              onClick={() => void onCreate()}
             >
-              Crear hotel
+              {busy ? 'Creando…' : 'Crear hotel'}
             </button>
           </div>
         </div>

@@ -848,6 +848,175 @@ button {
   color: var(--sea);
 }
 
+.panel--build {
+  width: min(520px, calc(100% - 1.5rem));
+}
+
+.build-costbar {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.4rem;
+  margin: 0 1rem 0.65rem;
+  padding: 0.55rem 0.6rem;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(26, 107, 124, 0.1), rgba(201, 164, 92, 0.12));
+  border: 1px solid rgba(26, 107, 124, 0.18);
+  position: sticky;
+  top: 0;
+  z-index: 3;
+}
+
+.build-costbar > div span {
+  display: block;
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(11, 31, 51, 0.55);
+}
+
+.build-costbar > div strong {
+  display: block;
+  font-size: 0.82rem;
+  margin-top: 0.1rem;
+}
+
+.build-costbar .is-ok strong { color: var(--ok); }
+.build-costbar .is-bad strong { color: var(--bad); }
+
+.insight-grid--build {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.build-fit {
+  margin: 0 1rem 0.65rem;
+  padding: 0.55rem 0.7rem;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: white;
+  font-size: 0.78rem;
+}
+
+.build-fit strong { display: block; margin-bottom: 0.25rem; }
+.build-fit__warn { margin: 0.2rem 0 0; color: var(--bad); }
+.build-fit__tip { margin: 0.15rem 0 0; color: var(--sea); }
+.build-fit--excelente { border-color: rgba(31, 122, 77, 0.35); background: rgba(31, 122, 77, 0.06); }
+.build-fit--buena { border-color: rgba(26, 107, 124, 0.3); background: rgba(26, 107, 124, 0.06); }
+.build-fit--media { border-color: rgba(201, 164, 92, 0.4); background: rgba(201, 164, 92, 0.08); }
+.build-fit--baja,
+.build-fit--mala { border-color: rgba(163, 59, 59, 0.35); background: rgba(163, 59, 59, 0.06); }
+
+.filial-list--xl { max-height: 42vh; gap: 0.65rem; }
+.filial-card--xl {
+  grid-template-columns: 112px 1fr;
+  padding: 0.7rem;
+  border-radius: 16px;
+}
+.filial-card--xl small {
+  display: block;
+  margin-top: 0.25rem;
+  color: var(--gold-deep);
+  font-size: 0.75rem;
+}
+.filial-logo--xl {
+  width: 112px;
+  height: 112px;
+  border-radius: 22px;
+}
+.filial-selected--xl {
+  grid-template-columns: 112px 1fr;
+}
+.filial-selected--xl em {
+  display: block;
+  font-style: normal;
+  font-size: 0.78rem;
+  color: rgba(11, 31, 51, 0.7);
+  margin: 0.25rem 0 0.35rem;
+  line-height: 1.35;
+}
+
+.brand-sheet {
+  display: grid;
+  gap: 1rem;
+  padding: 0.85rem;
+  border-radius: 18px;
+  border: 1px solid color-mix(in srgb, var(--brand) 35%, transparent);
+  background:
+    linear-gradient(160deg, color-mix(in srgb, var(--brand) 16%, white), white 55%),
+    white;
+}
+.brand-sheet__logo {
+  width: 168px;
+  height: 168px;
+  border-radius: 32px;
+  justify-self: center;
+  box-shadow: 0 16px 36px rgba(7, 24, 36, 0.22);
+  border: 2px solid color-mix(in srgb, var(--accent) 70%, white);
+}
+.brand-sheet__body h3 {
+  margin: 0.15rem 0 0.35rem;
+  font-family: var(--font-display);
+  font-size: 1.65rem;
+  color: var(--brand);
+}
+.brand-sheet__tag {
+  margin: 0 0 0.55rem;
+  color: var(--accent);
+  font-weight: 600;
+}
+.brand-sheet__lore {
+  margin: 0 0 0.75rem;
+  line-height: 1.45;
+  color: rgba(11, 31, 51, 0.78);
+}
+.brand-sheet__meta {
+  margin: 0 0 0.85rem;
+  padding-left: 1.1rem;
+  font-size: 0.8rem;
+  color: rgba(11, 31, 51, 0.72);
+  line-height: 1.45;
+}
+
+.finance-box {
+  display: flex;
+  gap: 0.55rem;
+  align-items: flex-start;
+  margin: 0.5rem 0 0.75rem;
+  padding: 0.7rem 0.8rem;
+  border-radius: 12px;
+  border: 1px solid rgba(201, 164, 92, 0.45);
+  background: rgba(201, 164, 92, 0.1);
+  font-size: 0.82rem;
+}
+.finance-box.is-blocked {
+  border-color: rgba(163, 59, 59, 0.35);
+  background: rgba(163, 59, 59, 0.06);
+  color: var(--bad);
+}
+
+.confirm-card--xl {
+  gap: 0.85rem;
+  padding: 0.85rem;
+  border-radius: 16px;
+}
+
+@media (max-width: 900px) {
+  .build-costbar {
+    grid-template-columns: 1fr 1fr;
+  }
+  .insight-grid--build {
+    grid-template-columns: 1fr 1fr;
+  }
+  .brand-sheet__logo,
+  .filial-logo--xl {
+    width: 96px;
+    height: 96px;
+  }
+  .filial-card--xl,
+  .filial-selected--xl {
+    grid-template-columns: 96px 1fr;
+  }
+}
+
 .nav-row {
   display: flex;
   gap: 0.5rem;

@@ -172,7 +172,7 @@ export function createHotelsCanvasLayer() {
         ctx.fill()
         return
       }
-      const s = selected ? 40 : 32
+      const s = selected ? 48 : 36
       ctx.drawImage(img, x - s / 2, y - s / 2, s, s)
     },
   })

@@ -72,7 +72,11 @@ type GameStore = GameState &
     openBuildAt: (loc: LocationInsight) => void
     closeBuild: () => void
     selectHotel: (id: string | null) => void
-    buildHotel: (draft: BuildDraft, loc: LocationInsight) => { ok: true } | { ok: false; error: string }
+    buildHotel: (
+      draft: BuildDraft,
+      loc: LocationInsight,
+      opts?: { finance?: boolean },
+    ) => { ok: true; hotel: Hotel; financed: number } | { ok: false; error: string }
     persistLocal: () => void
     loadLocal: () => Promise<boolean>
     exportSave: () => string
@@ -436,7 +440,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       showBank: false,
     }),
 
-  buildHotel: (draft, loc) => {
+  buildHotel: (draft, loc, opts) => {
     const state = get()
     if (!loc.isLand) return { ok: false, error: 'Solo se puede construir en tierra.' }
     const sub = getSubsidiary(draft.subsidiaryId)
@@ -446,7 +450,28 @@ export const useGameStore = create<GameStore>((set, get) => ({
       return { ok: false, error: `Esta marca admite de ${sub.minStars} a ${sub.maxStars} estrellas.` }
     }
     const cost = calcConstructionCost(draft, loc)
-    if (cost > state.cash) return { ok: false, error: 'No hay dinero suficiente. Mira Préstamos.' }
+    const shortfall = Math.max(0, cost - state.cash)
+    let financed = 0
+    let cash = state.cash
+    let loan = state.loan
+    if (shortfall > 0) {
+      if (!opts?.finance) {
+        return {
+          ok: false,
+          error: `Faltan ${Math.round(shortfall).toLocaleString('es-ES')} €. Activa financiación o pide un préstamo.`,
+        }
+      }
+      const room = loan.limit - loan.balance
+      if (shortfall > room) {
+        return {
+          ok: false,
+          error: `Ni con el crédito disponible (${Math.round(room).toLocaleString('es-ES')} €) te llega.`,
+        }
+      }
+      financed = shortfall
+      cash += financed
+      loan = { ...loan, balance: loan.balance + financed }
+    }
 
     const season = getSeason(loc.lat, state.gameMinutes)
     const price = fairPrice(
@@ -526,14 +551,15 @@ export const useGameStore = create<GameStore>((set, get) => ({
     }
 
     set({
-      cash: state.cash - cost,
+      cash: cash - cost,
+      loan,
       hotels: [...state.hotels, hotel],
       buildLocation: null,
       selectedHotelId: hotel.id,
       mapMode: 'inspect',
     })
     playBuildSound(state.soundEnabled)
-    return { ok: true }
+    return { ok: true, hotel, financed }
   },
 
   getSnapshot: () => {

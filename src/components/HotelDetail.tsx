@@ -16,6 +16,7 @@ import { boardLabel } from '../lib/loyalty'
 import { geoRegionLabel } from '../lib/geo'
 import { resolveHotelImage } from '../lib/images'
 import { getWeather } from '../lib/weather'
+import { downloadHotelPdf, svgDataUrlToPng } from '../lib/hotelPdf'
 
 export function HotelDetail() {
   const id = useGameStore((s) => s.selectedHotelId)
@@ -49,7 +50,7 @@ export function HotelDetail() {
     <aside className="panel panel--detail">
       <div className="panel__head">
         <div className="detail-title">
-          {sub && <img className="filial-logo filial-logo--md" src={subsidiaryLogoSvg(sub, 128)} alt="" width={64} height={64} />}
+          {sub && <img className="filial-logo filial-logo--xl" src={subsidiaryLogoSvg(sub, 256)} alt="" width={96} height={96} />}
           <div>
             <p className="panel__eyebrow">{sub?.name ?? 'Marca'}</p>
             <h2>{hotel.name}</h2>
@@ -79,6 +80,30 @@ export function HotelDetail() {
         >
           Opciones
         </button>
+        <button
+          type="button"
+          className="chip"
+          title="Descargar ficha PDF"
+          onClick={() => {
+            if (!sub) return
+            void (async () => {
+              const logoPng = await svgDataUrlToPng(subsidiaryLogoSvg(sub, 256), 256)
+              await downloadHotelPdf({
+                hotel,
+                sub,
+                logoPng,
+                cost: hotel.constructionCost,
+              })
+            })()
+          }}
+        >
+          PDF hotel
+        </button>
+        {sub && (
+          <a className="chip" href={`./marcas/${sub.id}.pdf`} download target="_blank" rel="noreferrer">
+            PDF marca
+          </a>
+        )}
         <span className="muted" style={{ fontSize: '0.75rem' }}>
           {idx + 1}/{hotels.length}
         </span>
