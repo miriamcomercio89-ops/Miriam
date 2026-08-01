@@ -75,7 +75,7 @@ export function RankingPanel() {
               <li key={h.id}>
                 <button type="button" className="rank-row" onClick={() => focusHotel(h.id)}>
                   <span className="rank-pos">{i + 1}</span>
-                  {sub && <img src={subsidiaryLogoSvg(sub, 36)} alt="" width={28} height={28} />}
+                  {sub && <img className="filial-logo filial-logo--sm" src={subsidiaryLogoSvg(sub, 96)} alt="" width={44} height={44} />}
                   <div>
                     <strong>{h.name}</strong>
                     <span>

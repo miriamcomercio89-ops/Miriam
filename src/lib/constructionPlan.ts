@@ -1,5 +1,6 @@
 /**
- * Lib del plan de construcción (PDFs → juego)
+ * Plan de construcción en el juego (listas por zona).
+ * Los PDF quedan fuera del simulador.
  */
 export type PlanIndexItem = {
   order: number
@@ -9,8 +10,6 @@ export type PlanIndexItem = {
   count: number
   orderStart: number
   orderEnd: number
-  folder: string
-  pdf: string
 }
 
 export type PlanHotel = {

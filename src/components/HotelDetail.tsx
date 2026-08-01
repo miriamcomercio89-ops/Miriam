@@ -49,7 +49,7 @@ export function HotelDetail() {
     <aside className="panel panel--detail">
       <div className="panel__head">
         <div className="detail-title">
-          {sub && <img src={subsidiaryLogoSvg(sub, 48)} alt="" width={40} height={40} />}
+          {sub && <img className="filial-logo filial-logo--md" src={subsidiaryLogoSvg(sub, 128)} alt="" width={64} height={64} />}
           <div>
             <p className="panel__eyebrow">{sub?.name ?? 'Marca'}</p>
             <h2>{hotel.name}</h2>

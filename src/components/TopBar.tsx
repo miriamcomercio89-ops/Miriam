@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useGameStore } from '../store/gameStore'
 import { formatEUR, formatGameStamp } from '../lib/format'
 import { getSeason, seasonLabel } from '../lib/economy'
@@ -5,7 +6,7 @@ import type { SpeedOption } from '../types'
 import { SaveMenu } from './SaveMenu'
 
 const SPEEDS: { value: SpeedOption; label: string; title: string }[] = [
-  { value: 0, label: 'Pausa', title: 'Tecla Espacio' },
+  { value: 0, label: 'Pausa', title: 'Espacio' },
   { value: 1, label: 'x1', title: 'Tecla 1' },
   { value: 2, label: 'x2', title: 'Tecla 2' },
   { value: 5, label: 'x5', title: 'Tecla 5' },
@@ -43,6 +44,13 @@ export function TopBar() {
   const loyaltyLevel = useGameStore((s) => s.loyaltyLevel)
   const season = seasonLabel(getSeason(20, gameMinutes))
   const bankLocked = bankDeposits.reduce((s, d) => s + d.amount, 0)
+  const [moreOpen, setMoreOpen] = useState(false)
+  const [debugOpen, setDebugOpen] = useState(false)
+
+  function openPanel(fn: (v: boolean) => void) {
+    fn(true)
+    setMoreOpen(false)
+  }
 
   return (
     <header className="topbar">
@@ -78,50 +86,79 @@ export function TopBar() {
             </button>
           ))}
           <button type="button" className="chip" title="Pasar al día siguiente" disabled={simulating} onClick={() => void skipDay()}>
-            Saltar día
+            +1 día
           </button>
         </div>
       </div>
 
-      <div className="speed-group">
-        <button type="button" className="chip" title="Ver países e impuestos" onClick={() => setShowCountries(true)}>Países</button>
-        <button type="button" className="chip" title="Noticias Orbis" onClick={() => setShowNews(true)}>Noticias</button>
-        <button type="button" className="chip" title="Lista de hoteles" onClick={() => setShowHotels(true)}>Hoteles</button>
-        <button type="button" className="chip" title="Mejores hoteles" onClick={() => setShowRanking(true)}>Ranking</button>
-        <button type="button" className="chip" title="Comparar dos hoteles" onClick={() => setShowCompare(true)}>Comparar</button>
-        <button type="button" className="chip" title="Estadísticas globales" onClick={() => setShowStats(true)}>Stats</button>
-        <button type="button" className="chip" title="Informe semanal" onClick={() => setShowWeekly(true)}>Semanal</button>
-        <button type="button" className="chip" title="Plan de construcción" onClick={() => setShowPlan(true)}>Plan</button>
-        <button type="button" className="chip" title="Dinero y fama" onClick={() => setShowFinance(true)}>Dinero</button>
-        <button type="button" className="chip" title="Depósitos a plazo" onClick={() => setShowBank(true)}>Banco</button>
-        <button type="button" className="chip" title="Pedir o devolver crédito" onClick={() => setShowLoan(true)}>Préstamos</button>
-        <button
-          type="button"
-          className="chip"
-          title="Añadir ~1000 hoteles de prueba"
-          disabled={simulating}
-          onClick={() => {
-            if (!window.confirm('¿Añadir unos 1000 hoteles de prueba?')) return
-            const res = generateDemo(1000)
-            if (!res.ok) window.alert(res.error)
-          }}
-        >
-          Demo 1k
+      <nav className="topbar__nav" aria-label="Paneles">
+        <button type="button" className="chip chip--key" title="Hoteles (H)" onClick={() => setShowHotels(true)}>
+          Hoteles <kbd>H</kbd>
         </button>
-        <button
-          type="button"
-          className="chip"
-          title="Prueba de rendimiento con muchos hoteles"
-          disabled={simulating}
-          onClick={() => {
-            if (!window.confirm('¿Añadir unos 5000 hoteles de prueba? Puede ir más lento.')) return
-            const res = generateDemo(5000)
-            if (!res.ok) window.alert(res.error)
-          }}
-        >
-          Demo 5k
+        <button type="button" className="chip chip--key" title="Plan (P)" onClick={() => setShowPlan(true)}>
+          Plan <kbd>P</kbd>
         </button>
-        <button type="button" className="chip" title="Sonido sí/no" onClick={toggleSound}>{soundEnabled ? 'Sonido' : 'Mudo'}</button>
+        <button type="button" className="chip chip--key" title="Banco (B)" onClick={() => setShowBank(true)}>
+          Banco <kbd>B</kbd>
+        </button>
+        <button type="button" className="chip" title="Dinero y fama" onClick={() => setShowFinance(true)}>
+          Dinero
+        </button>
+
+        <div className={`topbar__dropdown ${moreOpen ? 'is-open' : ''}`}>
+          <button type="button" className="chip" aria-expanded={moreOpen} onClick={() => setMoreOpen((v) => !v)}>
+            Más
+          </button>
+          {moreOpen && (
+            <div className="topbar__menu" role="menu">
+              <button type="button" role="menuitem" onClick={() => openPanel(setShowCountries)}>Países</button>
+              <button type="button" role="menuitem" onClick={() => openPanel(setShowNews)}>Noticias</button>
+              <button type="button" role="menuitem" onClick={() => openPanel(setShowRanking)}>Ranking</button>
+              <button type="button" role="menuitem" onClick={() => openPanel(setShowCompare)}>Comparar</button>
+              <button type="button" role="menuitem" onClick={() => openPanel(setShowStats)}>Stats</button>
+              <button type="button" role="menuitem" onClick={() => openPanel(setShowWeekly)}>Semanal</button>
+              <button type="button" role="menuitem" onClick={() => openPanel(setShowLoan)}>Préstamos</button>
+              <div className="topbar__menu-sep" />
+              <button type="button" role="menuitem" onClick={() => setDebugOpen((v) => !v)}>
+                Debug {debugOpen ? '▾' : '▸'}
+              </button>
+              {debugOpen && (
+                <>
+                  <button
+                    type="button"
+                    role="menuitem"
+                    disabled={simulating}
+                    onClick={() => {
+                      if (!window.confirm('¿Añadir ~1000 hoteles de prueba?')) return
+                      const res = generateDemo(1000)
+                      if (!res.ok) window.alert(res.error)
+                      setMoreOpen(false)
+                    }}
+                  >
+                    Demo 1k
+                  </button>
+                  <button
+                    type="button"
+                    role="menuitem"
+                    disabled={simulating}
+                    onClick={() => {
+                      if (!window.confirm('¿Añadir ~5000 hoteles de prueba? Puede ir más lento.')) return
+                      const res = generateDemo(5000)
+                      if (!res.ok) window.alert(res.error)
+                      setMoreOpen(false)
+                    }}
+                  >
+                    Demo 5k
+                  </button>
+                </>
+              )}
+            </div>
+          )}
+        </div>
+
+        <button type="button" className="chip" title="Sonido sí/no" onClick={toggleSound}>
+          {soundEnabled ? 'Sonido' : 'Mudo'}
+        </button>
         <button
           type="button"
           className="chip"
@@ -133,7 +170,7 @@ export function TopBar() {
           Nueva
         </button>
         <SaveMenu />
-      </div>
+      </nav>
 
       {simulating && <div className="sim-banner" role="status">{simProgress || 'Calculando…'}</div>}
       {saveToast && (

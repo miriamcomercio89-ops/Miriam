@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { useGameStore } from '../store/gameStore'
 import { buildCountryStats } from '../lib/economy'
 import { formatEUR, formatPct } from '../lib/format'
+import { formatTouristTax } from '../lib/countryRules'
 
 export function CountriesPanel() {
   const open = useGameStore((s) => s.showCountries)
@@ -51,12 +52,20 @@ export function CountriesPanel() {
                     <span>
                       {c.count} hoteles · {c.rooms.toLocaleString('es-ES')} habitaciones · fama {Math.round(c.fame)}
                     </span>
+                    <ul className="country-rules">
+                      {c.rules.slice(0, 3).map((r) => (
+                        <li key={r}>{r}</li>
+                      ))}
+                    </ul>
                   </div>
                   <div className="country-row__meta">
                     <em className={c.net >= 0 ? 'pos' : 'neg'}>{formatEUR(c.net, true)}/día</em>
                     <span>
-                      Llenas {formatPct(c.occ)} · impuestos {Math.round(c.taxRate * 100)}% · hoy{' '}
-                      {formatEUR(c.tax, true)} · inflación {(c.inflation * 100).toFixed(2)}%/día · cambio ×{c.fx.toFixed(2)}
+                      Llenas {formatPct(c.occ)} · IVA/imp. {Math.round(c.taxRate * 100)}% · tasa{' '}
+                      {formatTouristTax(c.code)} · hoy {formatEUR(c.tax, true)}
+                    </span>
+                    <span>
+                      Inflación {(c.inflation * 100).toFixed(2)}%/día · cambio ×{c.fx.toFixed(2)}
                     </span>
                   </div>
                 </button>

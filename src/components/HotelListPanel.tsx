@@ -100,7 +100,7 @@ export function HotelListPanel() {
                   onClick={() => focusHotel(h.id)}
                   title="Ir al hotel en el mapa"
                 >
-                  {sub && <img src={subsidiaryLogoSvg(sub, 40)} alt="" width={32} height={32} />}
+                  {sub && <img className="filial-logo filial-logo--sm" src={subsidiaryLogoSvg(sub, 96)} alt="" width={48} height={48} />}
                   <div className="virt-row__main">
                     <strong>{h.name}</strong>
                     <span>

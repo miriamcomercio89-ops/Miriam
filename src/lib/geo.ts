@@ -1,4 +1,5 @@
 import type { LocationInsight } from '../types'
+import { getCountryRules } from './countryRules'
 
 const NOMINATIM = 'https://nominatim.openstreetmap.org/reverse'
 const cache = new Map<string, LocationInsight>()
@@ -28,11 +29,6 @@ const HIGH_COST: Record<string, number> = {
   ES: 1.05, IT: 1.08, PT: 0.95, GR: 0.92, TR: 0.78, TH: 0.72, ID: 0.65,
   MX: 0.75, BR: 0.8, EG: 0.6, IN: 0.55, VN: 0.58, PH: 0.6, MA: 0.7,
   HR: 0.9, MV: 1.35, SC: 1.3, NZ: 1.15, CA: 1.18, KR: 1.12, HK: 1.4,
-}
-
-const TAX: Record<string, number> = {
-  ES: 0.12, FR: 0.14, IT: 0.13, DE: 0.11, US: 0.1, GB: 0.13, AE: 0.05,
-  SG: 0.08, CH: 0.09, JP: 0.1, MX: 0.12, TH: 0.08, PT: 0.11, GR: 0.13,
 }
 
 const REGION_COUNTRIES: Record<string, string[]> = {
@@ -184,15 +180,21 @@ function buildInsight(lat: number, lng: number, data: any, confidence: number): 
     98,
   )
   const costIndex = HIGH_COST[countryCode] ?? 1
-  const taxRate = TAX[countryCode] ?? 0.1
+  const countryRules = getCountryRules(countryCode)
+  const taxRate = countryRules.taxRate
   const climateLabel = climateFromLat(lat)
-  const notes: string[] = []
+  const notes: string[] = [...countryRules.rules]
   if (beachScore >= 70) notes.push('Excelente potencial costero / vacacional')
   else if (beachScore >= 45) notes.push('Buena afinidad turística de costa')
   if (tourismIndex >= 80) notes.push('Destino de alta demanda internacional')
   if (costIndex >= 1.25) notes.push('Mercado de construcción caro')
   if (costIndex <= 0.75) notes.push('Costes de obra relativamente bajos')
   if (taxRate >= 0.13) notes.push('Fiscalidad hotelera elevada')
+  if (countryRules.touristTaxPerNight >= 3) {
+    notes.push(`Tasa turística alta: ${countryRules.touristTaxPerNight} €/hab. noche`)
+  } else if (countryRules.touristTaxPerNight > 0) {
+    notes.push(`Tasa turística: ${countryRules.touristTaxPerNight} €/hab. noche`)
+  }
   if (geoRegion !== 'global') notes.push(`Región Orbis: ${geoRegionLabel(geoRegion)}`)
 
   return {

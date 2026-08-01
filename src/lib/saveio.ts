@@ -1,9 +1,9 @@
-import { gzipSync, gunzipSync, strToU8, strFromU8 } from 'fflate'
+import { gunzipSync, gzipSync, strFromU8, strToU8 } from 'fflate'
 import type { GameState, Hotel } from '../types'
 
 const IDB_NAME = 'orbis-hotels-db'
 const IDB_STORE = 'saves'
-const IDB_KEY = 'main'
+export const IDB_MAIN_KEY = 'main'
 
 /** Quita fotos pesadas para partidas enormes (se regeneran por imageKey). */
 export function compactState(state: GameState): GameState {
@@ -65,7 +65,7 @@ function openDb(): Promise<IDBDatabase> {
 }
 
 /** Guardado grande en IndexedDB (mejor para miles de hoteles). */
-export async function idbSave(state: GameState, key = IDB_KEY): Promise<void> {
+export async function idbSave(state: GameState, key = IDB_MAIN_KEY): Promise<void> {
   const db = await openDb()
   await new Promise<void>((resolve, reject) => {
     const tx = db.transaction(IDB_STORE, 'readwrite')
@@ -76,16 +76,25 @@ export async function idbSave(state: GameState, key = IDB_KEY): Promise<void> {
   db.close()
 }
 
-export async function idbLoad(key = IDB_KEY): Promise<GameState | null> {
-  const db = await openDb()
-  const result = await new Promise<GameState | null>((resolve, reject) => {
-    const tx = db.transaction(IDB_STORE, 'readonly')
-    const req = tx.objectStore(IDB_STORE).get(key)
-    req.onsuccess = () => resolve((req.result as GameState) ?? null)
-    req.onerror = () => reject(req.error)
-  })
-  db.close()
-  return result
+export async function idbLoad(key = IDB_MAIN_KEY): Promise<GameState | null> {
+  try {
+    const db = await openDb()
+    const result = await new Promise<GameState | null>((resolve, reject) => {
+      const tx = db.transaction(IDB_STORE, 'readonly')
+      const req = tx.objectStore(IDB_STORE).get(key)
+      req.onsuccess = () => resolve((req.result as GameState) ?? null)
+      req.onerror = () => reject(req.error)
+    })
+    db.close()
+    return result
+  } catch {
+    return null
+  }
+}
+
+export async function idbHasSave(key = IDB_MAIN_KEY): Promise<boolean> {
+  const state = await idbLoad(key)
+  return !!(state && typeof state.cash === 'number' && Array.isArray(state.hotels))
 }
 
 export function tryLocalStorageSave(key: string, state: GameState): boolean {
@@ -95,7 +104,6 @@ export function tryLocalStorageSave(key: string, state: GameState): boolean {
     return true
   } catch {
     try {
-      // Último intento: sin ledger largo ni noticias
       const slim = {
         ...compact,
         ledger: compact.ledger.slice(-14),
@@ -107,4 +115,17 @@ export function tryLocalStorageSave(key: string, state: GameState): boolean {
       return false
     }
   }
+}
+
+export function readLocalStorageSave(keys: string[]): GameState | null {
+  for (const key of keys) {
+    const raw = localStorage.getItem(key)
+    if (!raw) continue
+    try {
+      return JSON.parse(raw) as GameState
+    } catch {
+      /* next */
+    }
+  }
+  return null
 }

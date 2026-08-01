@@ -1,9 +1,9 @@
-import { useRef, useState } from 'react'
-import { useGameStore } from '../store/gameStore'
-import { readCompressedFile } from '../lib/saveio'
+import { useEffect, useRef, useState } from 'react'
+import { useGameStore, STORAGE_KEY } from '../store/gameStore'
+import { idbHasSave, readCompressedFile } from '../lib/saveio'
 
 const SAVE_KEYS = [
-  'orbis-hotels-group-save-v7',
+  STORAGE_KEY,
   'orbis-hotels-group-save-v6',
   'orbis-hotels-group-save-v5',
   'orbis-hotels-group-save-v4',
@@ -12,7 +12,7 @@ const SAVE_KEYS = [
   'orbis-hotels-group-save-v1',
 ]
 
-function hasLocalSave() {
+function hasLocalStorageSave() {
   if (typeof localStorage === 'undefined') return false
   return SAVE_KEYS.some((k) => !!localStorage.getItem(k))
 }
@@ -25,7 +25,34 @@ export function Landing() {
   const importState = useGameStore((s) => s.importState)
   const fileRef = useRef<HTMLInputElement>(null)
   const [msg, setMsg] = useState<string | null>(null)
-  const hasSave = hasLocalSave()
+  const [hasSave, setHasSave] = useState(hasLocalStorageSave())
+  const [loadingContinue, setLoadingContinue] = useState(false)
+
+  useEffect(() => {
+    if (hasLocalStorageSave()) {
+      setHasSave(true)
+      return
+    }
+    void idbHasSave().then((ok) => setHasSave(ok))
+  }, [])
+
+  async function onContinue() {
+    setLoadingContinue(true)
+    setMsg(null)
+    try {
+      const ok = await loadLocal()
+      if (!ok) {
+        setMsg('No se encontró una partida guardada.')
+        setHasSave(false)
+        return
+      }
+      startGame()
+    } catch {
+      setMsg('No se pudo cargar la partida.')
+    } finally {
+      setLoadingContinue(false)
+    }
+  }
 
   async function onImport(file: File | null) {
     if (!file) return
@@ -50,7 +77,7 @@ export function Landing() {
     <div className="landing">
       <div className="landing__veil" />
       <div className="landing__content">
-        <p className="landing__eyebrow">Juego de hoteles · v0.6</p>
+        <p className="landing__eyebrow">Juego de hoteles · v0.7</p>
         <h1 className="landing__brand">Orbis Hotels Group</h1>
         <p className="landing__lead">
           Construye hoteles en todo el mundo. 50 marcas. Muchos países.
@@ -64,12 +91,10 @@ export function Landing() {
             <button
               type="button"
               className="btn btn--ghost"
-              onClick={() => {
-                loadLocal()
-                startGame()
-              }}
+              disabled={loadingContinue}
+              onClick={() => void onContinue()}
             >
-              Continuar partida
+              {loadingContinue ? 'Cargando…' : 'Continuar partida'}
             </button>
           )}
           <button type="button" className="btn btn--ghost" onClick={() => fileRef.current?.click()}>
@@ -83,7 +108,8 @@ export function Landing() {
             onChange={(e) => void onImport(e.target.files?.[0] ?? null)}
           />
         </div>
-        {msg && <p className="landing__lead" style={{ marginTop: '1rem' }}>{msg}</p>}
+        {msg && <p className="landing__lead landing__msg">{msg}</p>}
+        <p className="landing__keys">Atajos en partida: H hoteles · P plan · B banco · Espacio pausa · Esc cerrar</p>
       </div>
     </div>
   )

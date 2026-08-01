@@ -161,7 +161,7 @@ export function createHotelsCanvasLayer() {
         const sub = getSubsidiary(subsidiaryId)
         if (!sub) return
         img = new Image()
-        img.src = subsidiaryLogoSvg(sub, 64)
+        img.src = subsidiaryLogoSvg(sub, 128)
         cache.set(subsidiaryId, img)
         img.onload = () => this._redraw()
       }
@@ -172,7 +172,7 @@ export function createHotelsCanvasLayer() {
         ctx.fill()
         return
       }
-      const s = selected ? 28 : 22
+      const s = selected ? 40 : 32
       ctx.drawImage(img, x - s / 2, y - s / 2, s, s)
     },
   })
@@ -215,6 +215,6 @@ export function hotelTooltipMeta(h: Hotel) {
     title: h.name,
     sub: `${sub?.name ?? 'Orbis'} · ${h.city}`,
     net: hotelNet(h),
-    logo: sub ? subsidiaryLogoSvg(sub, 40) : '',
+    logo: sub ? subsidiaryLogoSvg(sub, 96) : '',
   }
 }

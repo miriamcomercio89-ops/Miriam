@@ -62,15 +62,19 @@ export default function App() {
     const onKey = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement)?.tagName
       if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return
+      const st = useGameStore.getState()
       if (e.code === 'Space') {
         e.preventDefault()
-        const cur = useGameStore.getState().speed
+        const cur = st.speed
         setSpeed(cur === 0 ? 1 : 0)
         playClickSound(soundEnabled)
       } else if (e.key === '1') setSpeed(1)
       else if (e.key === '2') setSpeed(2)
       else if (e.key === '5') setSpeed(5)
       else if (e.key === 'Escape') closeAllPanels()
+      else if (e.key === 'h' || e.key === 'H') st.setShowHotels(true)
+      else if (e.key === 'p' || e.key === 'P') st.setShowPlan(true)
+      else if (e.key === 'b' || e.key === 'B') st.setShowBank(true)
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)

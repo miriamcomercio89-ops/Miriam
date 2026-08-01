@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useGameStore } from '../store/gameStore'
 import { SUBSIDIARIES, getSubsidiary, subsidiaryLogoSvg } from '../data/subsidiaries'
+import { getCountryRules } from '../lib/countryRules'
 import {
   SERVICE_CATALOG,
   STAFF_OPTIONS,
@@ -223,6 +224,7 @@ export function BuildPanel() {
         <div><span>Fama en el país</span><strong>{Math.round(rep)}/100</strong></div>
         <div><span>Temporada</span><strong>{seasonLabel(season)}</strong></div>
         <div><span>Impuestos país</span><strong>{Math.round(loc.taxRate * 100)}%</strong></div>
+        <div><span>Tasa turística</span><strong>{getCountryRules(loc.countryCode).touristTaxPerNight} €/hab.</strong></div>
         <div><span>Cambio local</span><strong>×{(eco?.fx ?? 1).toFixed(2)}</strong></div>
       </div>
 
@@ -246,7 +248,7 @@ export function BuildPanel() {
                   setError(null)
                 }}
               >
-                <img src={subsidiaryLogoSvg(s, 48)} alt="" width={40} height={40} />
+                <img className="filial-logo" src={subsidiaryLogoSvg(s, 128)} alt="" width={72} height={72} />
                 <div>
                   <strong>{s.name}</strong>
                   <span>{s.specialty}</span>
@@ -261,7 +263,7 @@ export function BuildPanel() {
       {step === 'basico' && draft && sub && (
         <div className="panel__body">
           <div className="filial-selected">
-            <img src={subsidiaryLogoSvg(sub, 48)} alt="" width={40} height={40} />
+            <img className="filial-logo" src={subsidiaryLogoSvg(sub, 128)} alt="" width={72} height={72} />
             <div>
               <strong>{sub.name}</strong>
               <span>{sub.specialty}</span>
@@ -651,7 +653,7 @@ export function BuildPanel() {
       {step === 'revisar' && draft && sub && estimate && (
         <div className="panel__body">
           <div className="confirm-card">
-            <img src={subsidiaryLogoSvg(sub, 48)} alt="" width={44} height={44} />
+            <img className="filial-logo filial-logo--md" src={subsidiaryLogoSvg(sub, 128)} alt="" width={64} height={64} />
             <div>
               <strong>{draft.name}</strong>
               <span>

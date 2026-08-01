@@ -125,25 +125,67 @@ export function getSubsidiary(id: string): Subsidiary | undefined {
   return SUBSIDIARIES.find((s) => s.id === id)
 }
 
-export function subsidiaryLogoSvg(sub: Subsidiary, size = 64): string {
+function logoMotif(imageStyle: Subsidiary['imageStyle'], accent: string): string {
+  switch (imageStyle) {
+    case 'coast':
+      return `
+        <path d="M18 78c14-18 28-26 46-26s32 8 46 26" fill="none" stroke="${accent}" stroke-width="5" stroke-linecap="round"/>
+        <path d="M28 68c10-12 20-17 36-17s26 5 36 17" fill="none" stroke="${accent}" stroke-width="3" opacity="0.55" stroke-linecap="round"/>
+        <circle cx="96" cy="36" r="10" fill="${accent}" opacity="0.35"/>`
+    case 'urban':
+      return `
+        <rect x="28" y="40" width="18" height="48" rx="2" fill="${accent}" opacity="0.9"/>
+        <rect x="52" y="28" width="22" height="60" rx="2" fill="${accent}" opacity="0.7"/>
+        <rect x="80" y="48" width="16" height="40" rx="2" fill="${accent}" opacity="0.55"/>
+        <rect x="34" y="48" width="6" height="6" fill="#F7F3EA" opacity="0.35"/>
+        <rect x="58" y="40" width="6" height="6" fill="#F7F3EA" opacity="0.35"/>
+        <rect x="58" y="54" width="6" height="6" fill="#F7F3EA" opacity="0.25"/>`
+    case 'nature':
+      return `
+        <path d="M64 92 L40 52 L64 24 L88 52 Z" fill="${accent}" opacity="0.8"/>
+        <path d="M64 92 L52 62 L64 40 L76 62 Z" fill="#F7F3EA" opacity="0.18"/>
+        <rect x="60" y="88" width="8" height="14" fill="${accent}" opacity="0.65"/>`
+    case 'luxury':
+      return `
+        <polygon points="64,22 72,48 64,44 56,48" fill="${accent}"/>
+        <circle cx="64" cy="68" r="20" fill="none" stroke="${accent}" stroke-width="4"/>
+        <circle cx="64" cy="68" r="10" fill="${accent}" opacity="0.35"/>
+        <circle cx="64" cy="22" r="3.5" fill="${accent}"/>`
+    case 'family':
+      return `
+        <circle cx="44" cy="52" r="14" fill="${accent}"/>
+        <circle cx="84" cy="52" r="14" fill="${accent}" opacity="0.72"/>
+        <circle cx="64" cy="78" r="16" fill="${accent}" opacity="0.88"/>
+        <circle cx="44" cy="48" r="4" fill="#F7F3EA" opacity="0.35"/>
+        <circle cx="84" cy="48" r="4" fill="#F7F3EA" opacity="0.28"/>`
+    default:
+      return `
+        <path d="M28 86 L64 30 L100 86 Z" fill="none" stroke="${accent}" stroke-width="5" stroke-linejoin="round"/>
+        <path d="M44 86 L64 52 L84 86 Z" fill="${accent}" opacity="0.28"/>`
+  }
+}
+
+/** Logo de marca (SVG data-URL). Por defecto 128px — usar tamaño grande en UI. */
+export function subsidiaryLogoSvg(sub: Subsidiary, size = 128): string {
   const { color, accent, letter, name, imageStyle } = sub
-  const motif =
-    imageStyle === 'coast'
-      ? `<path d="M10 44c8-10 16-14 22-14s14 4 22 14" fill="none" stroke="${accent}" stroke-width="2.2"/>`
-      : imageStyle === 'urban'
-        ? `<rect x="20" y="18" width="10" height="28" fill="${accent}" opacity="0.85"/><rect x="34" y="12" width="12" height="34" fill="${accent}" opacity="0.65"/>`
-        : imageStyle === 'nature'
-          ? `<path d="M32 48 L20 28 L32 14 L44 28 Z" fill="${accent}" opacity="0.75"/>`
-          : imageStyle === 'luxury'
-            ? `<polygon points="32,14 38,28 32,26 26,28" fill="${accent}"/><circle cx="32" cy="36" r="10" fill="none" stroke="${accent}" stroke-width="2"/>`
-            : imageStyle === 'family'
-              ? `<circle cx="24" cy="30" r="6" fill="${accent}"/><circle cx="40" cy="30" r="6" fill="${accent}" opacity="0.7"/><circle cx="32" cy="42" r="7" fill="${accent}" opacity="0.85"/>`
-              : `<path d="M16 40 L32 16 L48 40 Z" fill="none" stroke="${accent}" stroke-width="2.2"/>`
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="12" fill="${color}"/>
-  <rect x="3" y="3" width="58" height="58" rx="10" fill="none" stroke="${accent}" stroke-width="2"/>
-  ${motif}
-  <text x="32" y="56" text-anchor="middle" font-family="Georgia, serif" font-size="${letter.length > 1 ? 11 : 14}" font-weight="700" fill="#F7F3EA">${letter}</text>
+  const fontSize = letter.length > 1 ? 28 : 42
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="${color}"/>
+      <stop offset="100%" stop-color="${accent}" stop-opacity="0.55"/>
+    </linearGradient>
+    <linearGradient id="shine" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.22"/>
+      <stop offset="55%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="28" fill="url(#g)"/>
+  <rect width="128" height="128" rx="28" fill="url(#shine)"/>
+  <rect x="7" y="7" width="114" height="114" rx="22" fill="none" stroke="${accent}" stroke-width="3.5" opacity="0.9"/>
+  <rect x="14" y="14" width="100" height="100" rx="18" fill="none" stroke="#F7F3EA" stroke-width="1.2" opacity="0.22"/>
+  ${logoMotif(imageStyle, accent)}
+  <text x="64" y="112" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="${fontSize}" font-weight="700" fill="#F7F3EA" letter-spacing="0.04em">${letter}</text>
   <title>${name}</title>
 </svg>`
   return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`

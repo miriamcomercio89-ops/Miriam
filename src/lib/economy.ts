@@ -25,6 +25,7 @@ import { getSeason, seasonDemandMult, clamp, pseudoNoise, reputationKey, dayOfYe
 import { getWeather } from './weather'
 import { holidayCostMult, holidayDemandMult } from './holidays'
 import { tickWearAndRenovate } from './loyalty'
+import { getCountryRules } from './countryRules'
 import type { HotelInsurance, MapFilters } from '../types'
 
 export { getSeason, dayOfYear, reputationKey, clamp }
@@ -394,10 +395,13 @@ export function simulateHotelDay(
   if (vipTonight) revenue = Math.round(revenue * 1.25)
 
   const occupancy = (blocked + openRooms * occupancyOpen) / hotel.rooms
-  const tax = Math.round(revenue * hotel.taxRate)
-  let costs = calcDailyCosts(hotel, events, revenue, blocked, inflation, insurance)
-  costs = Math.round(costs * weather.costMult * holidayCost * fx)
   const guests = Math.round(blocked + openRooms * occupancyOpen)
+  const rules = getCountryRules(hotel.countryCode)
+  const corporateTax = Math.round(revenue * (hotel.taxRate || rules.taxRate))
+  const touristTax = Math.round(guests * rules.touristTaxPerNight)
+  const tax = corporateTax + touristTax
+  let costs = calcDailyCosts(hotel, events, revenue, blocked, inflation, insurance, touristTax)
+  costs = Math.round(costs * weather.costMult * holidayCost * fx)
   const security = SECURITY_OPTIONS.find((s) => s.id === (hotel.securityLevel ?? 'medio'))
   const tech = TECH_OPTIONS.find((t) => t.id === (hotel.techLevel ?? 'basico'))
   const satisfactionDelta =
@@ -537,6 +541,7 @@ function calcDailyCosts(
   blockedRooms: number,
   inflation: number,
   insurance: HotelInsurance | null,
+  touristTax = 0,
 ): number {
   const staff = STAFF_OPTIONS.find((s) => s.id === hotel.staffLevel)!
   const green = GREEN_OPTIONS.find((g) => g.id === (hotel.greenLevel ?? 'ninguno'))
@@ -579,6 +584,7 @@ function calcDailyCosts(
     extrasDaily +
     insuranceCost +
     tax +
+    touristTax +
     contractAdmin
   total *= 1 - (green?.costSave ?? 0)
   total *= 1 + inflation
@@ -691,6 +697,8 @@ export function buildCountryStats(hotels: Hotel[], reputation: Record<string, nu
       net: number
       tax: number
       taxRate: number
+      touristTaxPerNight: number
+      rules: string[]
       lifetimeTax: number
       occ: number
       fame: number
@@ -701,6 +709,7 @@ export function buildCountryStats(hotels: Hotel[], reputation: Record<string, nu
 
   for (const h of hotels) {
     const code = reputationKey(h.countryCode)
+    const rules = getCountryRules(h.countryCode)
     const cur = map.get(code) ?? {
       code,
       name: h.country,
@@ -710,7 +719,9 @@ export function buildCountryStats(hotels: Hotel[], reputation: Record<string, nu
       costs: 0,
       net: 0,
       tax: 0,
-      taxRate: h.taxRate,
+      taxRate: h.taxRate || rules.taxRate,
+      touristTaxPerNight: rules.touristTaxPerNight,
+      rules: rules.rules,
       lifetimeTax: 0,
       occ: 0,
       fame: reputation[code] ?? 55,
@@ -724,7 +735,9 @@ export function buildCountryStats(hotels: Hotel[], reputation: Record<string, nu
     cur.net += hotelNet(h)
     cur.tax += h.lastDayTax ?? 0
     cur.lifetimeTax += h.lifetimeTax ?? 0
-    cur.taxRate = h.taxRate
+    cur.taxRate = h.taxRate || rules.taxRate
+    cur.touristTaxPerNight = rules.touristTaxPerNight
+    cur.rules = rules.rules
     cur.occ += h.lastDayOccupancy
     map.set(code, cur)
   }

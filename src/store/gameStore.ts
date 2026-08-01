@@ -13,7 +13,7 @@ import { generateDemoHotels } from '../lib/demoHotels'
 import { defaultImageKey } from '../lib/images'
 import { gameDay } from '../lib/format'
 import { playBuildSound, playDaySound } from '../lib/sound'
-import { SLOT_KEYS, idbSave, tryLocalStorageSave } from '../lib/saveio'
+import { SLOT_KEYS, idbSave, tryLocalStorageSave, readLocalStorageSave, idbLoad } from '../lib/saveio'
 import { applyDays } from '../lib/daySim'
 import type { WorkerDayRequest, WorkerDayResponse } from '../workers/dayWorker'
 import type {
@@ -74,7 +74,7 @@ type GameStore = GameState &
     selectHotel: (id: string | null) => void
     buildHotel: (draft: BuildDraft, loc: LocationInsight) => { ok: true } | { ok: false; error: string }
     persistLocal: () => void
-    loadLocal: () => boolean
+    loadLocal: () => Promise<boolean>
     exportSave: () => string
     importSave: (json: string) => { ok: true } | { ok: false; error: string }
     importState: (state: GameState) => { ok: true } | { ok: false; error: string }
@@ -586,7 +586,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const size =
       bytes > 1_000_000 ? `${(bytes / 1_000_000).toFixed(1)} MB` : `${Math.max(1, Math.round(bytes / 1000))} KB`
     set({
-      saveToast: ok ? `Guardado · ${size}` : `Guardado en disco local · ${size}`,
+      saveToast: ok
+        ? `Guardado · ${size}`
+        : `Guardado local (IndexedDB) · ${size}`,
     })
     window.setTimeout(() => {
       if (useGameStore.getState().saveToast?.startsWith('Guardado')) {
@@ -595,18 +597,28 @@ export const useGameStore = create<GameStore>((set, get) => ({
     }, 3200)
   },
 
-  loadLocal: () => {
-    const raw =
-      localStorage.getItem(STORAGE_KEY) ??
-      localStorage.getItem('orbis-hotels-group-save-v6') ??
-      localStorage.getItem('orbis-hotels-group-save-v5') ??
-      localStorage.getItem('orbis-hotels-group-save-v4') ??
-      localStorage.getItem('orbis-hotels-group-save-v3') ??
-      localStorage.getItem('orbis-hotels-group-save-v2') ??
-      localStorage.getItem('orbis-hotels-group-save-v1')
-    if (!raw) return false
+  loadLocal: async () => {
+    const fromLs = readLocalStorageSave([
+      STORAGE_KEY,
+      'orbis-hotels-group-save-v6',
+      'orbis-hotels-group-save-v5',
+      'orbis-hotels-group-save-v4',
+      'orbis-hotels-group-save-v3',
+      'orbis-hotels-group-save-v2',
+      'orbis-hotels-group-save-v1',
+    ])
+    if (fromLs) {
+      try {
+        get().hydrate(migrate(fromLs))
+        return true
+      } catch {
+        /* fall through to IDB */
+      }
+    }
+    const fromIdb = await idbLoad()
+    if (!fromIdb) return false
     try {
-      get().hydrate(migrate(JSON.parse(raw) as GameState))
+      get().hydrate(migrate(fromIdb))
       return true
     } catch {
       return false

@@ -40,7 +40,7 @@ export function PlanPanel() {
       setHotels(list)
       setLoading(false)
       if (!list.length) {
-        setErr('Detalle aún no cargado aquí. Usa los PDF en plan-construccion/pdfs/.')
+        setErr('No hay fichas de esta zona en el juego todavía.')
       }
     })
   }, [show, region?.order])
