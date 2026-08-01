@@ -1,5 +1,5 @@
-import { SERVICE_CATALOG, STAFF_OPTIONS } from './catalog'
 import type { WorldEvent } from '../types'
+import { SERVICE_CATALOG, STAFF_OPTIONS } from './catalog'
 
 export const EVENT_POOL: Omit<WorldEvent, 'daysRemaining' | 'startedAtDay'>[] = [
   {
@@ -81,6 +81,103 @@ export const EVENT_POOL: Omit<WorldEvent, 'daysRemaining' | 'startedAtDay'>[] = 
     demandMultiplier: 1.12,
     costMultiplier: 1.02,
     scope: 'coastal',
+  },
+  // Regional
+  {
+    id: 'med-yacht',
+    title: 'Regata mediterránea',
+    description: 'Puertos y resorts del Mediterráneo reciben flotas y acompañantes.',
+    demandMultiplier: 1.16,
+    costMultiplier: 1.04,
+    scope: 'med',
+  },
+  {
+    id: 'med-heat',
+    title: 'Ola de calor mediterránea',
+    description: 'Más demanda de playa y spa; sube el coste energético.',
+    demandMultiplier: 1.1,
+    costMultiplier: 1.09,
+    scope: 'med',
+  },
+  {
+    id: 'caribbean-carnival',
+    title: 'Carnaval caribeño',
+    description: 'Picos de ocupación en islas y costas del Caribe.',
+    demandMultiplier: 1.22,
+    costMultiplier: 1.06,
+    scope: 'caribbean',
+  },
+  {
+    id: 'caribbean-storm',
+    title: 'Alerta ciclónica caribeña',
+    description: 'Cancelaciones y refuerzo de instalaciones en la región.',
+    demandMultiplier: 0.78,
+    costMultiplier: 1.2,
+    scope: 'caribbean',
+  },
+  {
+    id: 'seasia-monsoon',
+    title: 'Monzón anticipado',
+    description: 'El sudeste asiático ve menor ocupación outdoor y más costes.',
+    demandMultiplier: 0.86,
+    costMultiplier: 1.11,
+    scope: 'seasia',
+  },
+  {
+    id: 'seasia-digital',
+    title: 'Nómadas digitales en Asia',
+    description: 'Estancias largas impulsan boutique y select service.',
+    demandMultiplier: 1.14,
+    costMultiplier: 1.02,
+    scope: 'seasia',
+  },
+  {
+    id: 'mideast-expo',
+    title: 'Gran feria en Oriente Medio',
+    description: 'Congresos y lujo urbano disparan la demanda regional.',
+    demandMultiplier: 1.2,
+    costMultiplier: 1.07,
+    scope: 'mideast',
+  },
+  {
+    id: 'europe-citybreak',
+    title: 'City breaks europeos',
+    description: 'Puentes festivos llenan capitales y hubs de negocios.',
+    demandMultiplier: 1.13,
+    costMultiplier: 1.03,
+    scope: 'europe',
+  },
+  {
+    id: 'americas-longweekend',
+    title: 'Puente continental',
+    description: 'Movilidad doméstica fuerte en las Américas.',
+    demandMultiplier: 1.11,
+    costMultiplier: 1.04,
+    scope: 'americas',
+  },
+  {
+    id: 'africa-safari',
+    title: 'Temporada safari',
+    description: 'Picos en destinos de naturaleza y costa africana.',
+    demandMultiplier: 1.15,
+    costMultiplier: 1.05,
+    scope: 'africa',
+  },
+  {
+    id: 'oceania-reef',
+    title: 'Campaña arrecife',
+    description: 'Turismo de buceo y costa en Oceanía.',
+    demandMultiplier: 1.17,
+    costMultiplier: 1.03,
+    scope: 'oceania',
+  },
+  {
+    id: 'eastasia-cherry',
+    title: 'Temporada floral asia oriental',
+    description: 'Oleada cultural y urbana en Japón, Corea y entorno.',
+    demandMultiplier: 1.19,
+    costMultiplier: 1.06,
+    scope: 'eastasia',
   },
 ]
 

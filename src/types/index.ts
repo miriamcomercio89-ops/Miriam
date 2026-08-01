@@ -1,25 +1,26 @@
 export type StaffLevel = 'basico' | 'estandar' | 'premium' | 'lujo'
 export type GuestTarget = 'lujo' | 'negocios' | 'familiar' | 'parejas' | 'aventura' | 'wellness' | 'playa'
 export type SpeedOption = 0 | 1 | 2 | 5
+export type MapLayer = 'streets' | 'satellite' | 'hybrid'
+export type ProfitFilter = 'all' | 'profit' | 'loss' | 'new'
+export type SeasonName = 'alta' | 'media' | 'baja'
 
 export interface Subsidiary {
   id: string
   name: string
   specialty: string
   tagline: string
+  lore: string
   color: string
   accent: string
   letter: string
-  /** Affinity 0-1 for beach / coastal locations */
   beachAffinity: number
-  /** Multiplier on construction cost */
   costMultiplier: number
-  /** Bonus to occupancy demand */
   demandBonus: number
-  /** Preferred guest targets */
   targets: GuestTarget[]
   minStars: number
   maxStars: number
+  imageStyle: 'coast' | 'urban' | 'nature' | 'luxury' | 'family' | 'adventure'
 }
 
 export type HotelService =
@@ -58,7 +59,9 @@ export interface LocationInsight {
   costIndex: number
   taxRate: number
   climateLabel: string
+  geoRegion: string
   notes: string[]
+  confidence: number
 }
 
 export interface Hotel {
@@ -69,6 +72,7 @@ export interface Hotel {
   lng: number
   stars: number
   rooms: number
+  /** Managed daily by Orbis Pricing AI */
   pricePerNight: number
   services: HotelService[]
   staffLevel: StaffLevel
@@ -82,33 +86,49 @@ export interface Hotel {
   beachScore: number
   costIndex: number
   taxRate: number
+  geoRegion: string
   builtAtGameDay: number
   constructionCost: number
-  /** Running stats */
   lastDayRevenue: number
   lastDayCosts: number
   lastDayOccupancy: number
   lifetimeRevenue: number
   lifetimeCosts: number
   lifetimeGuests: number
+  satisfaction: number
 }
 
 export interface WorldEvent {
   id: string
   title: string
   description: string
-  /** Multiplier on global demand */
   demandMultiplier: number
-  /** Multiplier on operating costs */
   costMultiplier: number
-  /** Optional region filter (country code or 'global') */
   scope: string
-  /** Game days remaining */
   daysRemaining: number
   startedAtDay: number
 }
 
+export interface DayLedger {
+  day: number
+  revenue: number
+  costs: number
+  net: number
+  cash: number
+  loanPayment: number
+  season: SeasonName
+}
+
+export interface LoanState {
+  balance: number
+  /** Max outstanding credit */
+  limit: number
+  /** Daily interest rate on balance */
+  dailyRate: number
+}
+
 export interface GameState {
+  version: number
   cash: number
   gameMinutes: number
   speed: SpeedOption
@@ -117,6 +137,11 @@ export interface GameState {
   lastEventRollDay: number
   cloudSlotId: string | null
   started: boolean
+  /** Reputation 0-100 by country code */
+  reputation: Record<string, number>
+  loan: LoanState
+  ledger: DayLedger[]
+  soundEnabled: boolean
 }
 
 export interface BuildDraft {
@@ -124,9 +149,14 @@ export interface BuildDraft {
   subsidiaryId: string
   stars: number
   rooms: number
-  pricePerNight: number
   services: HotelService[]
   staffLevel: StaffLevel
   target: GuestTarget
   imageDataUrl: string
+}
+
+export interface MapFilters {
+  subsidiaryId: string | 'all'
+  minStars: number
+  profit: ProfitFilter
 }

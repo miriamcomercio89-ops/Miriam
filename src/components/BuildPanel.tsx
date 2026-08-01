@@ -2,9 +2,21 @@ import { useEffect, useMemo, useState } from 'react'
 import { useGameStore } from '../store/gameStore'
 import { SUBSIDIARIES, getSubsidiary, hotelPlaceholderImage, subsidiaryLogoSvg } from '../data/subsidiaries'
 import { SERVICE_CATALOG, STAFF_OPTIONS, TARGET_OPTIONS } from '../data/catalog'
-import { calcConstructionCost, estimateDaily } from '../lib/economy'
+import { calcConstructionCost, estimateDaily, fairPrice, getSeason, seasonLabel } from '../lib/economy'
 import { formatEUR, formatPct } from '../lib/format'
+import { galleryImages } from '../lib/gallery'
+import { geoRegionLabel } from '../lib/geo'
 import type { BuildDraft, HotelService, StaffLevel, GuestTarget } from '../types'
+
+type Step = 'filial' | 'concepto' | 'servicios' | 'imagen' | 'confirmacion'
+
+const STEPS: { id: Step; label: string }[] = [
+  { id: 'filial', label: '1. Filial' },
+  { id: 'concepto', label: '2. Concepto' },
+  { id: 'servicios', label: '3. Servicios' },
+  { id: 'imagen', label: '4. Imagen' },
+  { id: 'confirmacion', label: '5. Confirmar' },
+]
 
 export function BuildPanel() {
   const loc = useGameStore((s) => s.buildLocation)
@@ -12,17 +24,21 @@ export function BuildPanel() {
   const buildHotel = useGameStore((s) => s.buildHotel)
   const cash = useGameStore((s) => s.cash)
   const events = useGameStore((s) => s.activeEvents)
+  const gameMinutes = useGameStore((s) => s.gameMinutes)
+  const reputation = useGameStore((s) => s.reputation)
 
-  const [step, setStep] = useState<'filial' | 'params'>('filial')
+  const [step, setStep] = useState<Step>('filial')
   const [filter, setFilter] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [draft, setDraft] = useState<BuildDraft | null>(null)
+  const [gallery, setGallery] = useState<string[]>([])
 
   useEffect(() => {
     setStep('filial')
     setFilter('')
     setError(null)
     setDraft(null)
+    setGallery([])
   }, [loc?.lat, loc?.lng])
 
   const filtered = useMemo(() => {
@@ -32,27 +48,32 @@ export function BuildPanel() {
       (s) =>
         s.name.toLowerCase().includes(q) ||
         s.specialty.toLowerCase().includes(q) ||
-        s.tagline.toLowerCase().includes(q),
+        s.tagline.toLowerCase().includes(q) ||
+        s.lore.toLowerCase().includes(q),
     )
   }, [filter])
 
   if (!loc) return null
 
+  const rep = reputation[loc.countryCode] ?? 55
+  const season = getSeason(loc.lat, gameMinutes)
+
   function pickSubsidiary(id: string) {
     const sub = getSubsidiary(id)!
-    const name = `${sub.name.split(' ').slice(-1)[0]} ${loc!.city}`
-    setDraft({
+    const name = `${sub.name.replace('Orbis ', '')} ${loc!.city}`
+    const next: BuildDraft = {
       name,
       subsidiaryId: id,
       stars: Math.min(Math.max(3, sub.minStars), sub.maxStars),
       rooms: 120,
-      pricePerNight: 140 + sub.minStars * 30,
       services: ['wifi_premium', 'restaurante'],
       staffLevel: 'estandar',
       target: sub.targets[0],
       imageDataUrl: hotelPlaceholderImage(sub, name),
-    })
-    setStep('params')
+    }
+    setDraft(next)
+    setGallery(galleryImages(sub, name))
+    setStep('concepto')
     setError(null)
   }
 
@@ -69,22 +90,30 @@ export function BuildPanel() {
   function onImageFile(file: File | null) {
     if (!file || !draft) return
     const reader = new FileReader()
-    reader.onload = () => {
-      setDraft({ ...draft, imageDataUrl: String(reader.result) })
-    }
+    reader.onload = () => setDraft({ ...draft, imageDataUrl: String(reader.result) })
     reader.readAsDataURL(file)
   }
 
-  function regenerateImage() {
-    if (!draft) return
-    const sub = getSubsidiary(draft.subsidiaryId)
-    if (!sub) return
-    setDraft({ ...draft, imageDataUrl: hotelPlaceholderImage(sub, draft.name) })
-  }
-
   const cost = draft ? calcConstructionCost(draft, loc) : 0
-  const estimate = draft ? estimateDaily(draft, loc, events) : null
+  const estimate = draft ? estimateDaily(draft, loc, events, gameMinutes, rep) : null
   const sub = draft ? getSubsidiary(draft.subsidiaryId) : null
+  const aiPrice =
+    draft && sub
+      ? fairPrice(
+          {
+            stars: draft.stars,
+            tourismIndex: loc.tourismIndex,
+            beachScore: loc.beachScore,
+            target: draft.target,
+            services: draft.services,
+            subsidiaryId: draft.subsidiaryId,
+            staffLevel: draft.staffLevel,
+          },
+          season,
+        )
+      : 0
+
+  const stepIdx = STEPS.findIndex((s) => s.id === step)
 
   return (
     <aside className="panel panel--build">
@@ -94,7 +123,7 @@ export function BuildPanel() {
           <h2>{loc.city}</h2>
           <p className="panel__meta">
             {loc.region ? `${loc.region} · ` : ''}
-            {loc.country}
+            {loc.country} · {geoRegionLabel(loc.geoRegion)}
           </p>
         </div>
         <button type="button" className="icon-btn" onClick={closeBuild} aria-label="Cerrar">
@@ -102,13 +131,29 @@ export function BuildPanel() {
         </button>
       </div>
 
+      <div className="stepper">
+        {STEPS.map((s, i) => (
+          <button
+            key={s.id}
+            type="button"
+            className={`stepper__item ${s.id === step ? 'is-active' : ''} ${i < stepIdx ? 'is-done' : ''}`}
+            disabled={!draft && s.id !== 'filial'}
+            onClick={() => {
+              if (s.id === 'filial' || draft) setStep(s.id)
+            }}
+          >
+            {s.label}
+          </button>
+        ))}
+      </div>
+
       <div className="insight-grid">
         <div><span>Turismo</span><strong>{loc.tourismIndex}/100</strong></div>
         <div><span>Costa</span><strong>{loc.beachScore}/100</strong></div>
         <div><span>Coste local</span><strong>×{loc.costIndex}</strong></div>
-        <div><span>Impuestos</span><strong>{Math.round(loc.taxRate * 100)}%</strong></div>
-        <div><span>Clima</span><strong>{loc.climateLabel}</strong></div>
-        <div><span>Coords</span><strong>{loc.lat.toFixed(3)}, {loc.lng.toFixed(3)}</strong></div>
+        <div><span>Reputación</span><strong>{Math.round(rep)}/100</strong></div>
+        <div><span>Temporada</span><strong>{seasonLabel(season)}</strong></div>
+        <div><span>Confianza geo</span><strong>{Math.round(loc.confidence * 100)}%</strong></div>
       </div>
       {loc.notes.length > 0 && (
         <ul className="notes">
@@ -125,17 +170,12 @@ export function BuildPanel() {
             <input
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
-              placeholder="Buscar por nombre o especialidad…"
+              placeholder="Buscar por nombre, especialidad o lore…"
             />
           </label>
           <div className="filial-list">
             {filtered.map((s) => (
-              <button
-                key={s.id}
-                type="button"
-                className="filial-card"
-                onClick={() => pickSubsidiary(s.id)}
-              >
+              <button key={s.id} type="button" className="filial-card" onClick={() => pickSubsidiary(s.id)}>
                 <img src={subsidiaryLogoSvg(s, 48)} alt="" width={40} height={40} />
                 <div>
                   <strong>{s.name}</strong>
@@ -148,28 +188,20 @@ export function BuildPanel() {
         </div>
       )}
 
-      {step === 'params' && draft && sub && (
+      {step === 'concepto' && draft && sub && (
         <div className="panel__body">
-          <button type="button" className="linkish" onClick={() => setStep('filial')}>
-            ← Cambiar filial
-          </button>
           <div className="filial-selected">
             <img src={subsidiaryLogoSvg(sub, 48)} alt="" width={40} height={40} />
             <div>
               <strong>{sub.name}</strong>
               <span>{sub.specialty}</span>
+              <em className="lore">{sub.lore}</em>
             </div>
           </div>
-
           <label className="field">
             <span>Nombre del hotel</span>
-            <input
-              value={draft.name}
-              onChange={(e) => setDraft({ ...draft, name: e.target.value })}
-              maxLength={80}
-            />
+            <input value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} maxLength={80} />
           </label>
-
           <div className="field-row">
             <label className="field">
               <span>Estrellas ({sub.minStars}–{sub.maxStars})</span>
@@ -193,20 +225,7 @@ export function BuildPanel() {
               />
             </label>
           </div>
-
           <div className="field-row">
-            <label className="field">
-              <span>Precio / noche (€)</span>
-              <input
-                type="number"
-                min={30}
-                max={5000}
-                value={draft.pricePerNight}
-                onChange={(e) =>
-                  setDraft({ ...draft, pricePerNight: Math.max(30, Number(e.target.value) || 30) })
-                }
-              />
-            </label>
             <label className="field">
               <span>Personal</span>
               <select
@@ -218,22 +237,32 @@ export function BuildPanel() {
                 ))}
               </select>
             </label>
+            <label className="field">
+              <span>Público objetivo</span>
+              <select
+                value={draft.target}
+                onChange={(e) => setDraft({ ...draft, target: e.target.value as GuestTarget })}
+              >
+                {TARGET_OPTIONS.map((o) => (
+                  <option key={o.id} value={o.id}>{o.label}</option>
+                ))}
+              </select>
+            </label>
           </div>
+          <p className="ai-price-note">
+            Precio / noche: gestiona la <strong>IA Orbis Pricing</strong> (estimado inicial {formatEUR(aiPrice)}).
+          </p>
+          <div className="nav-row">
+            <button type="button" className="btn btn--ghost" onClick={() => setStep('filial')}>Atrás</button>
+            <button type="button" className="btn btn--primary" onClick={() => setStep('servicios')}>Continuar</button>
+          </div>
+        </div>
+      )}
 
-          <label className="field">
-            <span>Público objetivo</span>
-            <select
-              value={draft.target}
-              onChange={(e) => setDraft({ ...draft, target: e.target.value as GuestTarget })}
-            >
-              {TARGET_OPTIONS.map((o) => (
-                <option key={o.id} value={o.id}>{o.label}</option>
-              ))}
-            </select>
-          </label>
-
+      {step === 'servicios' && draft && (
+        <div className="panel__body">
           <fieldset className="services">
-            <legend>Servicios</legend>
+            <legend>Servicios del hotel</legend>
             <div className="services__grid">
               {SERVICE_CATALOG.map((s) => (
                 <label key={s.id} className="check">
@@ -247,60 +276,87 @@ export function BuildPanel() {
               ))}
             </div>
           </fieldset>
+          <div className="nav-row">
+            <button type="button" className="btn btn--ghost" onClick={() => setStep('concepto')}>Atrás</button>
+            <button type="button" className="btn btn--primary" onClick={() => setStep('imagen')}>Continuar</button>
+          </div>
+        </div>
+      )}
 
-          <div className="image-block">
-            <img src={draft.imageDataUrl} alt="Vista del hotel" className="hotel-preview" />
-            <div className="image-actions">
-              <button type="button" className="btn btn--ghost" onClick={regenerateImage}>
-                Generar imagen Orbis
+      {step === 'imagen' && draft && sub && (
+        <div className="panel__body">
+          <img src={draft.imageDataUrl} alt="Vista del hotel" className="hotel-preview" />
+          <p className="panel__meta">Galería Orbis · {sub.imageStyle}</p>
+          <div className="gallery-grid">
+            {(gallery.length ? gallery : galleryImages(sub, draft.name)).map((src) => (
+              <button
+                key={src.slice(0, 80)}
+                type="button"
+                className={`gallery-thumb ${draft.imageDataUrl === src ? 'is-selected' : ''}`}
+                onClick={() => setDraft({ ...draft, imageDataUrl: src })}
+              >
+                <img src={src} alt="" />
               </button>
-              <label className="btn btn--ghost file-btn">
-                Subir imagen
-                <input
-                  type="file"
-                  accept="image/*"
-                  hidden
-                  onChange={(e) => onImageFile(e.target.files?.[0] ?? null)}
-                />
-              </label>
+            ))}
+          </div>
+          <div className="image-actions">
+            <button
+              type="button"
+              className="btn btn--ghost"
+              onClick={() => {
+                const imgs = galleryImages(sub, draft.name)
+                setGallery(imgs)
+                setDraft({ ...draft, imageDataUrl: imgs[0] })
+              }}
+            >
+              Regenerar galería
+            </button>
+            <label className="btn btn--ghost file-btn">
+              Subir imagen
+              <input type="file" accept="image/*" hidden onChange={(e) => onImageFile(e.target.files?.[0] ?? null)} />
+            </label>
+          </div>
+          <div className="nav-row">
+            <button type="button" className="btn btn--ghost" onClick={() => setStep('servicios')}>Atrás</button>
+            <button type="button" className="btn btn--primary" onClick={() => setStep('confirmacion')}>Revisar</button>
+          </div>
+        </div>
+      )}
+
+      {step === 'confirmacion' && draft && sub && estimate && (
+        <div className="panel__body">
+          <div className="confirm-card">
+            <img src={subsidiaryLogoSvg(sub, 48)} alt="" width={44} height={44} />
+            <div>
+              <strong>{draft.name}</strong>
+              <span>{sub.name} · {'★'.repeat(draft.stars)} · {draft.rooms} hab.</span>
             </div>
           </div>
-
           <div className="cost-box">
-            <div>
-              <span>Inversión</span>
-              <strong>{formatEUR(cost)}</strong>
-            </div>
-            <div>
-              <span>Disponible</span>
-              <strong>{formatEUR(cash, true)}</strong>
-            </div>
-            {estimate && (
-              <>
-                <div>
-                  <span>Ocupación est.</span>
-                  <strong>{formatPct(estimate.occupancy)}</strong>
-                </div>
-                <div>
-                  <span>Neto / día est.</span>
-                  <strong className={estimate.net >= 0 ? 'pos' : 'neg'}>{formatEUR(estimate.net)}</strong>
-                </div>
-              </>
-            )}
+            <div><span>Inversión</span><strong>{formatEUR(cost)}</strong></div>
+            <div><span>Caja disponible</span><strong>{formatEUR(cash, true)}</strong></div>
+            <div><span>Precio IA</span><strong>{formatEUR(aiPrice)}/noche</strong></div>
+            <div><span>Ocupación est.</span><strong>{formatPct(estimate.occupancy)}</strong></div>
+            <div><span>Ingresos / día</span><strong>{formatEUR(estimate.revenue)}</strong></div>
+            <div><span>Neto / día est.</span><strong className={estimate.net >= 0 ? 'pos' : 'neg'}>{formatEUR(estimate.net)}</strong></div>
           </div>
-
+          <p className="confirm-note">
+            La construcción es instantánea e irreversible. El precio lo ajustará cada día la IA Orbis Pricing.
+          </p>
           {error && <p className="error">{error}</p>}
-
-          <button
-            type="button"
-            className="btn btn--primary btn--block"
-            onClick={() => {
-              const res = buildHotel(draft, loc)
-              if (!res.ok) setError(res.error)
-            }}
-          >
-            Construir ahora
-          </button>
+          <div className="nav-row">
+            <button type="button" className="btn btn--ghost" onClick={() => setStep('imagen')}>Atrás</button>
+            <button
+              type="button"
+              className="btn btn--primary"
+              onClick={() => {
+                const res = buildHotel(draft, loc)
+                if (!res.ok) setError(res.error)
+              }}
+            >
+              Confirmar y construir
+            </button>
+          </div>
         </div>
       )}
     </aside>

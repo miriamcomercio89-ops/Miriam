@@ -1,17 +1,15 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { MapContainer, TileLayer, Marker, useMapEvents, CircleMarker } from 'react-leaflet'
+import { useEffect, useMemo, useState } from 'react'
+import { MapContainer, TileLayer, useMap, useMapEvents, CircleMarker } from 'react-leaflet'
 import L from 'leaflet'
+import 'leaflet.markercluster'
+import 'leaflet.markercluster/dist/MarkerCluster.css'
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
 import { useGameStore } from '../store/gameStore'
 import { resolveLocation } from '../lib/geo'
 import { getSubsidiary, subsidiaryLogoSvg } from '../data/subsidiaries'
+import type { Hotel } from '../types'
 
-function MapClickHandler({
-  onPick,
-  busy,
-}: {
-  onPick: (lat: number, lng: number) => void
-  busy: boolean
-}) {
+function MapClickHandler({ onPick, busy }: { onPick: (lat: number, lng: number) => void; busy: boolean }) {
   useMapEvents({
     click(e) {
       if (busy) return
@@ -21,44 +19,135 @@ function MapClickHandler({
   return null
 }
 
-function logoIcon(subsidiaryId: string) {
+function ZoomWatcher({ onZoom }: { onZoom: (z: number) => void }) {
+  const map = useMap()
+  useEffect(() => {
+    const sync = () => onZoom(map.getZoom())
+    sync()
+    map.on('zoomend', sync)
+    return () => {
+      map.off('zoomend', sync)
+    }
+  }, [map, onZoom])
+  return null
+}
+
+function logoIcon(subsidiaryId: string, selected: boolean) {
   const sub = getSubsidiary(subsidiaryId)
   if (!sub) return undefined
-  const url = subsidiaryLogoSvg(sub, 44)
+  const url = subsidiaryLogoSvg(sub, selected ? 52 : 44)
+  const size = selected ? 44 : 36
   return L.divIcon({
-    className: 'hotel-pin',
-    html: `<img src="${url}" alt="${sub.name}" width="36" height="36" />`,
-    iconSize: [36, 36],
-    iconAnchor: [18, 18],
+    className: `hotel-pin ${selected ? 'hotel-pin--selected' : ''}`,
+    html: `<img src="${url}" alt="${sub.name}" width="${size}" height="${size}" />`,
+    iconSize: [size, size],
+    iconAnchor: [size / 2, size / 2],
   })
+}
+
+function HotelClusterLayer({
+  hotels,
+  selectedId,
+  onSelect,
+}: {
+  hotels: Hotel[]
+  selectedId: string | null
+  onSelect: (id: string) => void
+}) {
+  const map = useMap()
+
+  useEffect(() => {
+    const cluster = L.markerClusterGroup({
+      showCoverageOnHover: false,
+      maxClusterRadius: 50,
+      spiderfyOnMaxZoom: true,
+      disableClusteringAtZoom: 7,
+      iconCreateFunction(c) {
+        const n = c.getChildCount()
+        const size = n > 50 ? 48 : n > 15 ? 42 : 36
+        return L.divIcon({
+          html: `<div class="orbis-cluster"><span>${n}</span></div>`,
+          className: 'orbis-cluster-wrap',
+          iconSize: L.point(size, size),
+        })
+      },
+    })
+
+    for (const h of hotels) {
+      const icon = logoIcon(h.subsidiaryId, selectedId === h.id)
+      if (!icon) continue
+      const marker = L.marker([h.lat, h.lng], { icon })
+      marker.on('click', (e) => {
+        L.DomEvent.stopPropagation(e)
+        onSelect(h.id)
+      })
+      cluster.addLayer(marker)
+    }
+
+    map.addLayer(cluster)
+    return () => {
+      map.removeLayer(cluster)
+      cluster.clearLayers()
+    }
+  }, [map, hotels, selectedId, onSelect])
+
+  return null
+}
+
+function TileLayers() {
+  const layer = useGameStore((s) => s.mapLayer)
+  if (layer === 'satellite') {
+    return (
+      <TileLayer
+        attribution="Tiles &copy; Esri"
+        url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+      />
+    )
+  }
+  if (layer === 'hybrid') {
+    return (
+      <>
+        <TileLayer
+          attribution="Tiles &copy; Esri"
+          url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+        />
+        <TileLayer
+          attribution="&copy; OpenStreetMap"
+          url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png"
+          opacity={0.9}
+        />
+      </>
+    )
+  }
+  return (
+    <TileLayer
+      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+    />
+  )
 }
 
 export function WorldMap() {
   const hotels = useGameStore((s) => s.hotels)
+  const filters = useGameStore((s) => s.mapFilters)
   const selectHotel = useGameStore((s) => s.selectHotel)
   const openBuildAt = useGameStore((s) => s.openBuildAt)
   const selectedHotelId = useGameStore((s) => s.selectedHotelId)
   const [busy, setBusy] = useState(false)
   const [hint, setHint] = useState<string | null>(null)
   const [pending, setPending] = useState<{ lat: number; lng: number } | null>(null)
-  const hintTimer = useRef<number | null>(null)
+  const [zoom, setZoom] = useState(3)
 
-  const icons = useMemo(() => {
-    const map = new Map<string, L.DivIcon>()
-    for (const h of hotels) {
-      if (!map.has(h.subsidiaryId)) {
-        const icon = logoIcon(h.subsidiaryId)
-        if (icon) map.set(h.subsidiaryId, icon)
-      }
-    }
-    return map
-  }, [hotels])
-
-  useEffect(() => {
-    return () => {
-      if (hintTimer.current) window.clearTimeout(hintTimer.current)
-    }
-  }, [])
+  const filtered = useMemo(() => {
+    return hotels.filter((h) => {
+      if (filters.subsidiaryId !== 'all' && h.subsidiaryId !== filters.subsidiaryId) return false
+      if (h.stars < filters.minStars) return false
+      if (filters.profit === 'profit' && h.lastDayRevenue - h.lastDayCosts <= 0 && h.lifetimeGuests > 0) return false
+      if (filters.profit === 'loss' && (h.lastDayRevenue - h.lastDayCosts >= 0 || h.lifetimeGuests === 0)) return false
+      if (filters.profit === 'new' && h.lifetimeGuests > 0) return false
+      return true
+    })
+  }, [hotels, filters])
 
   async function handlePick(lat: number, lng: number) {
     setBusy(true)
@@ -68,70 +157,56 @@ export function WorldMap() {
       const loc = await resolveLocation(lat, lng)
       if (!loc.isLand) {
         setHint('Solo se puede construir en tierra firme.')
-        if (hintTimer.current) window.clearTimeout(hintTimer.current)
-        hintTimer.current = window.setTimeout(() => setHint(null), 2800)
+        window.setTimeout(() => setHint(null), 2800)
         return
       }
       openBuildAt(loc)
       setHint(null)
     } catch {
-      setHint('No se pudo resolver la ubicación. Inténtalo de nuevo.')
-      if (hintTimer.current) window.clearTimeout(hintTimer.current)
-      hintTimer.current = window.setTimeout(() => setHint(null), 2800)
+      setHint('No se pudo resolver la ubicación.')
+      window.setTimeout(() => setHint(null), 2800)
     } finally {
       setBusy(false)
       setPending(null)
     }
   }
 
-  // When many hotels, use lightweight circles at low zoom via CSS; markers always for selection accuracy
-  const useCircles = hotels.length > 400
+  const useSoftCircles = filtered.length > 800 && zoom < 5
 
   return (
     <div className="map-shell">
-      <MapContainer
-        center={[20, 0]}
-        zoom={3}
-        minZoom={2}
-        maxZoom={18}
-        className="world-map"
-        worldCopyJump
-      >
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
+      <MapContainer center={[20, 0]} zoom={3} minZoom={2} maxZoom={18} className="world-map" worldCopyJump>
+        <TileLayers />
         <MapClickHandler onPick={handlePick} busy={busy} />
+        <ZoomWatcher onZoom={setZoom} />
 
-        {useCircles
-          ? hotels.map((h) => (
+        {useSoftCircles
+          ? filtered.map((h) => (
               <CircleMarker
                 key={h.id}
                 center={[h.lat, h.lng]}
-                radius={selectedHotelId === h.id ? 8 : 5}
+                radius={selectedHotelId === h.id ? 7 : 4}
                 pathOptions={{
                   color: getSubsidiary(h.subsidiaryId)?.accent ?? '#C4A35A',
                   fillColor: getSubsidiary(h.subsidiaryId)?.color ?? '#0B1F33',
                   fillOpacity: 0.9,
-                  weight: 1.5,
+                  weight: 1,
                 }}
-                eventHandlers={{ click: (e) => { L.DomEvent.stopPropagation(e); selectHotel(h.id) } }}
-              />
-            ))
-          : hotels.map((h) => (
-              <Marker
-                key={h.id}
-                position={[h.lat, h.lng]}
-                icon={icons.get(h.subsidiaryId)}
                 eventHandlers={{
                   click: (e) => {
                     L.DomEvent.stopPropagation(e)
                     selectHotel(h.id)
                   },
                 }}
-                opacity={selectedHotelId && selectedHotelId !== h.id ? 0.75 : 1}
               />
-            ))}
+            ))
+          : (
+            <HotelClusterLayer
+              hotels={filtered}
+              selectedId={selectedHotelId}
+              onSelect={selectHotel}
+            />
+          )}
 
         {pending && (
           <CircleMarker
@@ -143,7 +218,7 @@ export function WorldMap() {
       </MapContainer>
 
       <p className="map-hint">
-        {hint ?? 'Haz clic en tierra firme para inspeccionar el lugar y construir.'}
+        {hint ?? 'Clic en tierra firme para construir · logos de filial en cada hotel · clustering suave al alejar'}
       </p>
     </div>
   )

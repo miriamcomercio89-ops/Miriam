@@ -1,8 +1,6 @@
 import type { LocationInsight } from '../types'
 
 const NOMINATIM = 'https://nominatim.openstreetmap.org/reverse'
-
-/** Lightweight cache to respect Nominatim rate limits */
 const cache = new Map<string, LocationInsight>()
 
 function cacheKey(lat: number, lng: number) {
@@ -10,19 +8,8 @@ function cacheKey(lat: number, lng: number) {
 }
 
 const WATER_TYPES = new Set([
-  'ocean',
-  'sea',
-  'bay',
-  'strait',
-  'fjord',
-  'reef',
-  'water',
-  'river',
-  'lake',
-  'reservoir',
-  'canal',
-  'wetland',
-  'lagoon',
+  'ocean', 'sea', 'bay', 'strait', 'fjord', 'reef', 'water', 'river', 'lake',
+  'reservoir', 'canal', 'wetland', 'lagoon', 'pond', 'tidal_channel', 'shoal',
 ])
 
 const HIGH_TOURISM: Record<string, number> = {
@@ -48,25 +35,119 @@ const TAX: Record<string, number> = {
   SG: 0.08, CH: 0.09, JP: 0.1, MX: 0.12, TH: 0.08, PT: 0.11, GR: 0.13,
 }
 
+const REGION_COUNTRIES: Record<string, string[]> = {
+  med: ['ES', 'FR', 'IT', 'GR', 'PT', 'HR', 'MT', 'CY', 'TR', 'TN', 'MA', 'EG', 'AL', 'ME', 'SI'],
+  caribbean: ['CU', 'DO', 'JM', 'HT', 'BS', 'BB', 'TT', 'PR', 'MQ', 'GP', 'AW', 'CW', 'KY', 'TC'],
+  seasia: ['TH', 'ID', 'VN', 'PH', 'MY', 'SG', 'KH', 'LA', 'MM', 'BN'],
+  mideast: ['AE', 'SA', 'QA', 'BH', 'KW', 'OM', 'JO', 'IL', 'LB', 'IQ', 'IR'],
+  europe: ['DE', 'GB', 'NL', 'BE', 'CH', 'AT', 'PL', 'CZ', 'HU', 'DK', 'SE', 'NO', 'FI', 'IE', 'LU'],
+  americas: ['US', 'CA', 'MX', 'BR', 'AR', 'CL', 'PE', 'CO', 'EC', 'UY', 'CR', 'PA'],
+  africa: ['ZA', 'KE', 'TZ', 'MA', 'EG', 'TN', 'SN', 'NG', 'GH', 'MU', 'SC', 'MV'],
+  oceania: ['AU', 'NZ', 'FJ', 'PG', 'NC', 'PF'],
+  eastasia: ['JP', 'KR', 'CN', 'HK', 'TW', 'MN'],
+}
+
+export function detectGeoRegion(lat: number, lng: number, countryCode: string): string {
+  const cc = countryCode.toUpperCase()
+  for (const [region, codes] of Object.entries(REGION_COUNTRIES)) {
+    if (codes.includes(cc)) return region
+  }
+  // Fallback by coordinates
+  if (lat > 30 && lat < 46 && lng > -10 && lng < 40) return 'med'
+  if (lat > 10 && lat < 27 && lng > -90 && lng < -58) return 'caribbean'
+  if (lat > -12 && lat < 22 && lng > 92 && lng < 140) return 'seasia'
+  if (lat > 12 && lat < 36 && lng > 32 && lng < 60) return 'mideast'
+  if (lat > 36 && lat < 72 && lng > -12 && lng < 40) return 'europe'
+  if (lng < -30 && lng > -170 && lat < 72) return 'americas'
+  if (lat < 0 && lng > 100) return 'oceania'
+  if (lat > -35 && lat < 38 && lng > -20 && lng < 55) return 'africa'
+  return 'global'
+}
+
+async function nominatim(lat: number, lng: number, zoom: number) {
+  const url = `${NOMINATIM}?lat=${lat}&lon=${lng}&format=json&zoom=${zoom}&addressdetails=1&extratags=1&namedetails=1`
+  const res = await fetch(url, { headers: { Accept: 'application/json' } })
+  if (!res.ok) return null
+  return res.json()
+}
+
+function isWaterPayload(data: unknown): boolean {
+  if (!data || typeof data !== 'object') return true
+  const d = data as Record<string, unknown>
+  const address = (d.address ?? {}) as Record<string, string>
+  const cls = String(d.class ?? '')
+  const typ = String(d.type ?? '').toLowerCase()
+  const category = String(d.category ?? '')
+  const name = String(d.name ?? d.display_name ?? '')
+  const addresstype = String(d.addresstype ?? '').toLowerCase()
+
+  if (WATER_TYPES.has(typ) || WATER_TYPES.has(addresstype)) return true
+  if (cls === 'natural' && WATER_TYPES.has(typ)) return true
+  if (category === 'water' || cls === 'waterway') return true
+  if (/^(ocean|sea|pacific|atlantic|indian ocean)$/i.test(typ)) return true
+
+  const hasLand =
+    !!(address.country || address.state || address.city || address.town || address.village ||
+      address.municipality || address.county || address.suburb || address.hamlet ||
+      address.road || address.pedestrian || address.island || address.archipelago)
+
+  if (!hasLand) {
+    if (/ocean|sea|pacific|atlantic|índico|indico|océano|oceano|mar\b/i.test(name)) return true
+    // Open water often returns only named seas without country
+    if (!address.country_code) return true
+  }
+
+  // Small islands still have country — treat as land
+  return false
+}
+
 export async function resolveLocation(lat: number, lng: number): Promise<LocationInsight> {
   const key = cacheKey(lat, lng)
   const hit = cache.get(key)
   if (hit) return hit
 
-  const fallback = buildInsight(lat, lng, null)
+  const fallback = buildInsight(lat, lng, null, 0.35)
   try {
-    const url = `${NOMINATIM}?lat=${lat}&lon=${lng}&format=json&zoom=10&addressdetails=1&extratags=1`
-    const res = await fetch(url, {
-      headers: {
-        Accept: 'application/json',
-      },
-    })
-    if (!res.ok) {
-      cache.set(key, fallback)
-      return fallback
+    // Dual-zoom probe improves coast / offshore accuracy
+    const [coarse, fine] = await Promise.all([
+      nominatim(lat, lng, 8),
+      nominatim(lat, lng, 14),
+    ])
+
+    const fineWater = isWaterPayload(fine)
+    const coarseWater = isWaterPayload(coarse)
+    const data = fine && !fineWater ? fine : coarse && !coarseWater ? coarse : fine ?? coarse
+
+    // If either zoom clearly shows land with country, prefer land
+    let isLand = true
+    let confidence = 0.7
+    if (fine && !fineWater) {
+      isLand = true
+      confidence = 0.92
+    } else if (coarse && !coarseWater) {
+      isLand = true
+      confidence = 0.8
+    } else if (fineWater && coarseWater) {
+      isLand = false
+      confidence = 0.9
+    } else if (fineWater || coarseWater) {
+      // Ambiguous coastline: offset sample inland-ish by tiny delta toward equator/pole heuristic
+      const probeLat = lat + (lat >= 0 ? -0.02 : 0.02)
+      const probe = await nominatim(probeLat, lng, 12)
+      if (probe && !isWaterPayload(probe)) {
+        isLand = true
+        confidence = 0.65
+      } else {
+        isLand = false
+        confidence = 0.75
+      }
     }
-    const data = await res.json()
-    const insight = buildInsight(lat, lng, data)
+
+    const insight = buildInsight(lat, lng, data, confidence)
+    insight.isLand = isLand && insight.isLand
+    if (!isLand) {
+      insight.notes = ['Coordenada clasificada como agua / alta mar', ...insight.notes]
+    }
     cache.set(key, insight)
     return insight
   } catch {
@@ -76,25 +157,12 @@ export async function resolveLocation(lat: number, lng: number): Promise<Locatio
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function buildInsight(lat: number, lng: number, data: any): LocationInsight {
+function buildInsight(lat: number, lng: number, data: any, confidence: number): LocationInsight {
   const address = data?.address ?? {}
-  const cls = String(data?.class ?? '')
   const typ = String(data?.type ?? '').toLowerCase()
-  const category = String(data?.category ?? '')
-  const name = String(data?.name ?? data?.display_name ?? '')
+  const water = data ? isWaterPayload(data) : true
 
-  const isWater =
-    cls === 'natural' && WATER_TYPES.has(typ) ||
-    cls === 'highway' && typ === 'ferry' ||
-    category === 'water' ||
-    WATER_TYPES.has(typ) ||
-    /ocean|sea|pacific|atlantic|indian ocean|mar\b|océano|oceano/i.test(name) && !address.country
-
-  // If Nominatim returns almost nothing far from shore, treat open ocean as water
-  const noLandSignals = !address.country && !address.state && !address.city && !address.town && !address.village
-  const likelyOcean = noLandSignals && (isWater || !data)
-
-  const country = address.country ?? (likelyOcean ? 'Aguas internacionales' : 'Territorio desconocido')
+  const country = address.country ?? (water ? 'Aguas internacionales' : 'Territorio desconocido')
   const countryCode = String(address.country_code ?? '').toUpperCase() || 'XX'
   const city =
     address.city ||
@@ -102,14 +170,16 @@ function buildInsight(lat: number, lng: number, data: any): LocationInsight {
     address.village ||
     address.municipality ||
     address.county ||
+    address.island ||
     address.state ||
-    (likelyOcean ? 'Alta mar' : 'Zona rural')
+    (water ? 'Alta mar' : 'Zona rural')
   const region = address.state || address.region || address.county || ''
+  const geoRegion = detectGeoRegion(lat, lng, countryCode)
 
-  const beachScore = calcBeachScore(lat, lng, address, typ)
+  const beachScore = calcBeachScore(lat, lng, address, typ, geoRegion)
   const baseTourism = HIGH_TOURISM[countryCode] ?? 55
   const tourismIndex = clamp(
-    baseTourism + beachScore * 0.15 + coastalLatitudeBonus(lat) * 8 - (likelyOcean ? 40 : 0),
+    baseTourism + beachScore * 0.15 + coastalLatitudeBonus(lat) * 8 - (water ? 40 : 0),
     5,
     98,
   )
@@ -123,11 +193,12 @@ function buildInsight(lat: number, lng: number, data: any): LocationInsight {
   if (costIndex >= 1.25) notes.push('Mercado de construcción caro')
   if (costIndex <= 0.75) notes.push('Costes de obra relativamente bajos')
   if (taxRate >= 0.13) notes.push('Fiscalidad hotelera elevada')
+  if (geoRegion !== 'global') notes.push(`Región Orbis: ${geoRegionLabel(geoRegion)}`)
 
   return {
     lat,
     lng,
-    isLand: !likelyOcean && !isWater,
+    isLand: !water,
     displayName: data?.display_name ?? `${lat.toFixed(4)}, ${lng.toFixed(4)}`,
     country,
     countryCode,
@@ -138,20 +209,40 @@ function buildInsight(lat: number, lng: number, data: any): LocationInsight {
     costIndex: Math.round(costIndex * 100) / 100,
     taxRate,
     climateLabel,
+    geoRegion,
     notes,
+    confidence,
   }
 }
 
+export function geoRegionLabel(id: string): string {
+  const map: Record<string, string> = {
+    med: 'Mediterráneo',
+    caribbean: 'Caribe',
+    seasia: 'Sudeste asiático',
+    mideast: 'Oriente Medio',
+    europe: 'Europa',
+    americas: 'Américas',
+    africa: 'África',
+    oceania: 'Oceanía',
+    eastasia: 'Asia oriental',
+    global: 'Global',
+    coastal: 'Costera',
+    business: 'Negocios',
+    wellness: 'Wellness',
+    'tourism-high': 'Alto turismo',
+  }
+  return map[id] ?? id
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function calcBeachScore(lat: number, lng: number, address: any, typ: string): number {
+function calcBeachScore(lat: number, _lng: number, address: any, typ: string, geoRegion: string): number {
   let score = 35 + coastalLatitudeBonus(lat) * 25
-  const place = `${address.city ?? ''} ${address.town ?? ''} ${address.suburb ?? ''} ${address.county ?? ''} ${typ}`.toLowerCase()
-  if (/beach|playa|costa|coast|bay|marina|harbour|harbor|island|isla|cape|peninsula/.test(place)) score += 25
+  const place = `${address.city ?? ''} ${address.town ?? ''} ${address.suburb ?? ''} ${address.county ?? ''} ${address.island ?? ''} ${typ}`.toLowerCase()
+  if (/beach|playa|costa|coast|bay|marina|harbour|harbor|island|isla|cape|peninsula|cove|shore/.test(place)) score += 28
   if (/resort|tourist|turismo/.test(place)) score += 10
-  // Mediterranean / Caribbean / SE Asia rough bands
-  if (lat > 30 && lat < 46 && lng > -10 && lng < 37) score += 12 // Med
-  if (lat > 10 && lat < 27 && lng > -90 && lng < -60) score += 14 // Caribbean
-  if (lat > -12 && lat < 20 && lng > 95 && lng < 130) score += 12 // SE Asia
+  if (geoRegion === 'med' || geoRegion === 'caribbean' || geoRegion === 'seasia') score += 12
+  if (geoRegion === 'oceania') score += 8
   if (Math.abs(lat) > 55) score -= 15
   return clamp(score, 5, 98)
 }
