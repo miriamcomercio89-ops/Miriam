@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useGameStore, STORAGE_KEY } from '../store/gameStore'
 import { idbHasSave, readCompressedFile } from '../lib/saveio'
+import { GAME_START_LABEL } from '../lib/format'
 
 const SAVE_KEYS = [
   STORAGE_KEY,
@@ -82,6 +83,7 @@ export function Landing() {
         <p className="landing__lead">
           Construye hoteles en todo el mundo. 50 marcas. Muchos países.
           La IA pone precios y contratos. Tú decides dónde crecer.
+          La partida empieza el {GAME_START_LABEL}.
         </p>
         <div className="landing__actions">
           <button type="button" className="btn btn--primary" onClick={() => newGame()}>

@@ -10,6 +10,7 @@ import {
 } from './economy'
 import { activeHolidays } from './holidays'
 import { loyaltyFromPoints, makeWeeklyReport } from './loyalty'
+import { formatGameDay } from './format'
 import type { BankDeposit, DayLedger, GameState, Hotel, NewsItem, WeeklyReport, WorldEvent } from '../types'
 
 export type DaySimState = Pick<
@@ -193,7 +194,7 @@ export function applyDays(state: DaySimState, days: number): DaySimResult {
       dayNews.unshift({
         id: report.id,
         day: currentDay,
-        title: `Informe semanal · día ${currentDay}`,
+        title: `Informe semanal · ${formatGameDay(currentDay)}`,
         body: `${report.summary} Mejor país ${report.bestCountry} (${Math.round(report.bestCountryNet)} €). Peor: ${report.worstHotel}. Impuestos ${Math.round(report.dayTax)} €. Banco ${Math.round(report.bankBalance)} €. Ocupación media ${(report.avgOccupancy * 100).toFixed(0)}%.`,
         tone: 'neutral',
       })

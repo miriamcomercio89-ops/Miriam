@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useGameStore } from '../store/gameStore'
-import { formatEUR, formatGameStamp } from '../lib/format'
+import { formatEUR, formatGameStamp, GAME_START_LABEL } from '../lib/format'
 import { getSeason, seasonLabel } from '../lib/economy'
 import type { SpeedOption } from '../types'
 import { SaveMenu } from './SaveMenu'
@@ -82,7 +82,9 @@ export function TopBar() {
       </div>
 
       <div className="topbar__time">
-        <span className="topbar__stamp">{formatGameStamp(gameMinutes)}</span>
+        <span className="topbar__stamp" title={`Inicio de partida: ${GAME_START_LABEL}`}>
+          {formatGameStamp(gameMinutes)}
+        </span>
         <div className="speed-group" role="group" aria-label="Velocidad">
           {SPEEDS.map((s) => (
             <button

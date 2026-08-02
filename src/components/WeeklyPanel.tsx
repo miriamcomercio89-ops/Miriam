@@ -1,5 +1,5 @@
 import { useGameStore } from '../store/gameStore'
-import { formatEUR, formatPct } from '../lib/format'
+import { formatEUR, formatPct, formatGameDay } from '../lib/format'
 
 export function WeeklyPanel() {
   const open = useGameStore((s) => s.showWeekly)
@@ -26,7 +26,7 @@ export function WeeklyPanel() {
         ) : (
           reports.map((r) => (
             <article key={r.id} className="news-card news-card--neutral" style={{ marginBottom: '0.65rem' }}>
-              <span>Día {r.day}</span>
+              <span>{formatGameDay(r.day)}</span>
               <strong>Informe semanal</strong>
               <p>{r.summary}</p>
               <div className="cost-box" style={{ marginTop: '0.5rem' }}>

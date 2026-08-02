@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useGameStore } from '../store/gameStore'
-import { formatEUR } from '../lib/format'
+import { formatEUR, formatGameDay } from '../lib/format'
 import { seasonLabel } from '../lib/economy'
 
 export function FinancePanel() {
@@ -44,7 +44,7 @@ export function FinancePanel() {
         ) : (
           <div className="chart">
             {slice.map((d) => (
-              <div key={d.day} className="chart__col" title={`Día ${d.day}`}>
+              <div key={d.day} className="chart__col" title={formatGameDay(d.day)}>
                 <div className="chart__bars">
                   <div className="chart__bar chart__bar--rev" style={{ height: `${(d.revenue / maxAbs) * 100}%` }} />
                   <div className="chart__bar chart__bar--cost" style={{ height: `${(d.costs / maxAbs) * 100}%` }} />
@@ -69,7 +69,7 @@ export function FinancePanel() {
           {slice.slice(-3).reverse().map((d) => (
             <div key={d.day}>
               <span>
-                Día {d.day} · {seasonLabel(d.season)}
+                {formatGameDay(d.day)} · {seasonLabel(d.season)}
                 {d.tax > 0 ? ` · impuestos ${formatEUR(d.tax)}` : ''}
               </span>
               <strong className={d.net >= 0 ? 'pos' : 'neg'}>{formatEUR(d.net)}</strong>

@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { useGameStore } from '../store/gameStore'
 import { buildGlobalStats, boardLabel, loyaltyInfo, nextLoyaltyTier } from '../lib/loyalty'
-import { formatEUR, formatPct } from '../lib/format'
+import { formatEUR, formatPct, formatGameDay } from '../lib/format'
 import { BOARD_REGIMES, LOYALTY_TIERS } from '../data/catalog'
 
 export function StatsPanel() {
@@ -77,7 +77,7 @@ export function StatsPanel() {
         ) : (
           <div className="chart">
             {ledger.slice(-14).map((d) => (
-              <div key={d.day} className="chart__col" title={`Día ${d.day}`}>
+              <div key={d.day} className="chart__col" title={formatGameDay(d.day)}>
                 <div className="chart__bars">
                   <div
                     className={`chart__bar ${d.net >= 0 ? 'chart__bar--net' : 'chart__bar--neg'}`}

@@ -15,7 +15,7 @@ import {
   BAR_OPTIONS,
   RESTAURANT_CONCEPTS,
 } from '../data/catalog'
-import { formatEUR, formatPct } from '../lib/format'
+import { formatEUR, formatPct, formatGameDay } from '../lib/format'
 import { contractKindLabel, getSeason, seasonLabel } from '../lib/economy'
 import { boardLabel } from '../lib/loyalty'
 import { geoRegionLabel } from '../lib/geo'
@@ -260,7 +260,7 @@ export function HotelDetail() {
             <div><span>Bus centro</span><strong>{hotel.shuttleCity ? 'Sí' : 'No'}</strong></div>
             <div><span>Fidelidad hotel</span><strong>{hotel.loyaltyProgram ? 'Sí' : 'No'}</strong></div>
             <div><span>Club grupo</span><strong>Nivel {loyaltyLevel}</strong></div>
-            <div><span>Última reforma</span><strong>{hotel.lastRenovationDay ? `día ${hotel.lastRenovationDay}` : '—'}</strong></div>
+            <div><span>Última reforma</span><strong>{hotel.lastRenovationDay ? formatGameDay(hotel.lastRenovationDay) : '—'}</strong></div>
           </div>
           <div className="tag-row" style={{ marginTop: '0.5rem' }}>
             {hotel.services.map((s) => (

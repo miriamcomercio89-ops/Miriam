@@ -1,4 +1,5 @@
 import { useGameStore } from '../store/gameStore'
+import { formatGameDay } from '../lib/format'
 
 export function NewsPanel() {
   const open = useGameStore((s) => s.showNews)
@@ -24,7 +25,7 @@ export function NewsPanel() {
           <div className="news-list">
             {news.map((n) => (
               <article key={n.id} className={`news-card news-card--${n.tone}`}>
-                <span>Día {n.day}</span>
+                <span>{formatGameDay(n.day)}</span>
                 <strong>{n.title}</strong>
                 <p>{n.body}</p>
               </article>

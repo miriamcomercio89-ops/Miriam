@@ -15,7 +15,7 @@ import {
   TARGET_OPTIONS,
   TECH_OPTIONS,
 } from '../data/catalog'
-import { formatEUR } from './format'
+import { formatEUR, formatGameDay } from './format'
 import { getCountryRules } from './countryRules'
 import { calcConstructionBreakdown } from './economy'
 
@@ -350,7 +350,7 @@ export async function downloadHotelPdf(args: {
   line('Cerrado', hotel.closed ? 'Sí' : 'No')
   line('Servicios', serviceLabels(hotel.services) || '—')
   line('Precio noche', formatEUR(hotel.pricePerNight))
-  line('Apertura', `Día ${hotel.builtAtGameDay}`)
+  line('Apertura', formatGameDay(hotel.builtAtGameDay))
 
   section('Inversión')
   const totalCost = cost ?? hotel.constructionCost

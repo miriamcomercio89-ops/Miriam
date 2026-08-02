@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useGameStore } from '../store/gameStore'
 import { BANK_TERMS } from '../lib/economy'
-import { formatEUR } from '../lib/format'
+import { formatEUR, formatGameDay } from '../lib/format'
 
 export function BankPanel() {
   const open = useGameStore((s) => s.showBank)
@@ -81,7 +81,7 @@ export function BankPanel() {
             {deposits.map((d) => (
               <div key={d.id}>
                 <span>
-                  Desde día {d.createdDay} · quedan {d.daysLeft} días
+                  Desde {formatGameDay(d.createdDay)} · quedan {d.daysLeft} días
                 </span>
                 <strong>{formatEUR(d.amount, true)}</strong>
               </div>
