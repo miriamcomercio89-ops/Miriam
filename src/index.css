@@ -2231,6 +2231,195 @@ button {
   line-height: 1.35;
 }
 
+/* —— Minijuegos Cliente —— */
+.minigame {
+  position: fixed;
+  inset: 0;
+  z-index: 800;
+  display: grid;
+  place-items: center;
+  background: rgba(7, 24, 36, 0.72);
+  animation: panel-in 0.22s ease both;
+  padding: 1rem;
+}
+
+.minigame__panel {
+  width: min(440px, 100%);
+  background: linear-gradient(165deg, #10293a 0%, #1a3d4d 55%, #243f3a 100%);
+  border: 1px solid rgba(201, 164, 92, 0.4);
+  border-radius: 14px;
+  color: #f7f3ea;
+  padding: 1rem 1.1rem 1.2rem;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+}
+
+.minigame__head {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+}
+
+.minigame__head h3 {
+  margin: 0.15rem 0 0;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+}
+
+.minigame__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.mg-casino__wheel {
+  width: 96px;
+  height: 96px;
+  margin: 0.25rem auto 0.5rem;
+  border-radius: 50%;
+  border: 4px solid var(--gold);
+  background:
+    conic-gradient(
+      #8b1e1e 0 20deg,
+      #111 20deg 40deg,
+      #8b1e1e 40deg 60deg,
+      #111 60deg 80deg,
+      #8b1e1e 80deg 100deg,
+      #111 100deg 120deg,
+      #8b1e1e 120deg 140deg,
+      #111 140deg 160deg,
+      #8b1e1e 160deg 180deg,
+      #111 180deg 200deg,
+      #8b1e1e 200deg 220deg,
+      #111 220deg 240deg,
+      #8b1e1e 240deg 260deg,
+      #111 260deg 280deg,
+      #8b1e1e 280deg 300deg,
+      #111 300deg 320deg,
+      #8b1e1e 320deg 340deg,
+      #1f6b3a 340deg 360deg
+    );
+  display: grid;
+  place-items: center;
+  transition: transform 1.5s cubic-bezier(0.15, 0.75, 0.2, 1);
+}
+
+.mg-casino__wheel span {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #f7f3ea;
+  color: #0b1f33;
+  display: grid;
+  place-items: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.mg-golf__track {
+  position: relative;
+  height: 28px;
+  border-radius: 999px;
+  background: rgba(247, 243, 234, 0.12);
+  border: 1px solid rgba(247, 243, 234, 0.2);
+  overflow: hidden;
+  margin: 0.5rem 0 0.75rem;
+}
+
+.mg-golf__sweet {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 62%;
+  width: 16%;
+  background: linear-gradient(90deg, rgba(201, 164, 92, 0.35), rgba(201, 164, 92, 0.8), rgba(201, 164, 92, 0.35));
+}
+
+.mg-golf__needle {
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  width: 4px;
+  margin-left: -2px;
+  border-radius: 2px;
+  background: #f7f3ea;
+  box-shadow: 0 0 10px rgba(247, 243, 234, 0.45);
+}
+
+.mg-dive__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.4rem;
+}
+
+.mg-dive__cell {
+  aspect-ratio: 1;
+  border-radius: 10px;
+  border: 1px solid rgba(127, 219, 218, 0.35);
+  background: rgba(18, 70, 90, 0.55);
+  color: rgba(247, 243, 234, 0.55);
+  font-size: 1.2rem;
+  animation: mg-wave 2.4s ease-in-out infinite;
+}
+
+.mg-dive__cell:nth-child(odd) {
+  animation-delay: 0.35s;
+}
+
+.mg-dive__cell.is-found {
+  background: rgba(201, 164, 92, 0.35);
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+@keyframes mg-wave {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+.mg-padel__court {
+  height: 110px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(247, 243, 234, 0.2);
+  background: linear-gradient(180deg, rgba(56, 102, 65, 0.45), rgba(20, 50, 40, 0.8));
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.mg-padel__court.is-hot {
+  background: linear-gradient(180deg, rgba(201, 164, 92, 0.55), rgba(56, 102, 65, 0.7));
+  transform: scale(1.02);
+}
+
+.mg-trivia__q {
+  margin: 0 0 0.5rem;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.minigame .field span {
+  color: rgba(247, 243, 234, 0.7);
+}
+
+.minigame .field input {
+  background: rgba(7, 24, 36, 0.5);
+  border-color: rgba(247, 243, 234, 0.2);
+  color: #f7f3ea;
+}
+
+.minigame .muted {
+  color: rgba(247, 243, 234, 0.65);
+}
+
 .client-toast {
   position: fixed;
   bottom: 1rem;

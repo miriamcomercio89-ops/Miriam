@@ -14,7 +14,16 @@ import {
   CLIENT_CEO_CUT,
 } from '../lib/clientMode'
 import { buildServiceScreen, FREE_NIGHT_POINTS } from '../lib/clientServices'
+import { minigameForAction, type MinigameId } from '../lib/clientMinigames'
+import { ClientMinigame } from './ClientMinigame'
 import type { BoardRegime, ClientRoomKind, GuestTarget, HotelService } from '../types'
+
+type ActiveMini = {
+  id: MinigameId
+  service: HotelService
+  actionId: string
+  entryCost: number
+}
 
 export function ClientPanel() {
   const playMode = useGameStore((s) => s.playMode)
@@ -29,6 +38,8 @@ export function ClientPanel() {
   const clientCheckIn = useGameStore((s) => s.clientCheckIn)
   const clientCheckOut = useGameStore((s) => s.clientCheckOut)
   const clientUseService = useGameStore((s) => s.clientUseService)
+  const clientBeginMinigame = useGameStore((s) => s.clientBeginMinigame)
+  const clientFinishMinigame = useGameStore((s) => s.clientFinishMinigame)
   const clientClaimMission = useGameStore((s) => s.clientClaimMission)
   const clientRedeemFreeNight = useGameStore((s) => s.clientRedeemFreeNight)
   const clientClearNotes = useGameStore((s) => s.clientClearNotes)
@@ -38,6 +49,7 @@ export function ClientPanel() {
   const [board, setBoard] = useState<BoardRegime>('solo')
   const [tip, setTip] = useState(0)
   const [serviceFocus, setServiceFocus] = useState<HotelService | null>(null)
+  const [mini, setMini] = useState<ActiveMini | null>(null)
 
   const hotel = useMemo(() => {
     const id = client.stay?.hotelId ?? client.bookingHotelId
@@ -81,6 +93,18 @@ export function ClientPanel() {
 
   function doAction(actionId: string) {
     if (!serviceFocus) return
+    const mg = minigameForAction(serviceFocus, actionId)
+    const action = serviceScreen?.actions.find((a) => a.id === actionId)
+    if (mg && action?.minigame) {
+      const res = clientBeginMinigame(serviceFocus, tip, actionId)
+      if (!res.ok) {
+        setMsg(res.error)
+        return
+      }
+      setMsg(null)
+      setMini({ id: mg, service: serviceFocus, actionId, entryCost: res.entryCost })
+      return
+    }
     const res = clientUseService(serviceFocus, tip, actionId)
     setMsg(res.ok ? null : res.error)
   }
@@ -144,10 +168,24 @@ export function ClientPanel() {
       </div>
     ) : null
 
-  // Pantalla de estancia a pantalla completa (sin mapa de fondo)
+  const miniOverlay = mini ? (
+    <ClientMinigame
+      id={mini.id}
+      entryCost={mini.entryCost}
+      wallet={client.wallet}
+      onCancel={() => setMini(null)}
+      onDone={(outcome) => {
+        const res = clientFinishMinigame(outcome)
+        setMsg(res.ok ? null : res.error)
+        setMini(null)
+      }}
+    />
+  ) : null
+
   if (inStay && hotel) {
     return (
       <div className="client-stay">
+        {miniOverlay}
         <header className="client-stay__head">
           <div>
             <p className="panel__eyebrow">Club Huésped Orbis · {level.name}</p>
@@ -235,7 +273,10 @@ export function ClientPanel() {
                 <div className="client-action-list">
                   {serviceScreen.actions.map((a) => (
                     <button key={a.id} type="button" className="client-action" onClick={() => doAction(a.id)}>
-                      <strong>{a.label}</strong>
+                      <strong>
+                        {a.label}
+                        {a.minigame ? ' · minijuego' : ''}
+                      </strong>
                       <span>{a.detail}</span>
                       <em>
                         {formatEUR(a.cost)}
@@ -254,6 +295,7 @@ export function ClientPanel() {
                     const meta = SERVICE_CATALOG.find((s) => s.id === id)
                     const preview = buildServiceScreen(id, hotel)
                     const from = preview.actions[0]?.cost ?? 0
+                    const hasMini = preview.actions.some((a) => a.minigame)
                     return (
                       <button
                         key={id}
@@ -267,6 +309,7 @@ export function ClientPanel() {
                         <strong>{meta?.label ?? id}</strong>
                         <span>
                           {meta?.group} · desde {formatEUR(from)} · {preview.actions.length} opciones
+                          {hasMini ? ' · minijuego' : ''}
                         </span>
                       </button>
                     )
@@ -302,7 +345,6 @@ export function ClientPanel() {
     )
   }
 
-  // Panel lateral: perfil + reserva
   return (
     <aside className="panel panel--client">
       <div className="panel__head">

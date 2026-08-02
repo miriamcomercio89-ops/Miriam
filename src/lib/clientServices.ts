@@ -10,6 +10,8 @@ export type ServiceAction = {
   minutes: number
   needs: Partial<Record<ClientNeedId, number>>
   points: number
+  /** Si existe, al elegir la acción se abre el minijuego. */
+  minigame?: boolean
 }
 
 export type ServiceScreen = {
@@ -135,8 +137,17 @@ export function buildServiceScreen(service: HotelService, hotel: Hotel): Service
       intro: 'Centro de buceo del hotel.',
       hours: 'Salidas 9:30 y 14:30',
       actions: [
-        { id: 'bautismo', label: 'Bautismo de buceo', detail: 'Con instructor.', cost: c(2), minutes: 120, needs: { energia: -22, social: 14, humor: 18, hambre: -12 }, points: 20 },
-        { id: 'snorkel', label: 'Snorkel guiado', detail: 'Ruta costera.', cost: c(1.1), minutes: 70, needs: { energia: -14, social: 10, humor: 12 }, points: 12 },
+        {
+          id: 'bautismo',
+          label: 'Bautismo + tesoro',
+          detail: 'Minijuego: busca 3 tesoros bajo el agua.',
+          cost: c(2),
+          minutes: 120,
+          needs: { energia: -22, social: 14, humor: 18, hambre: -12 },
+          points: 20,
+          minigame: true,
+        },
+        { id: 'snorkel', label: 'Snorkel guiado', detail: 'Ruta costera (sin minijuego).', cost: c(1.1), minutes: 70, needs: { energia: -14, social: 10, humor: 12 }, points: 12 },
       ],
     },
     golf: {
@@ -144,7 +155,16 @@ export function buildServiceScreen(service: HotelService, hotel: Hotel): Service
       intro: 'Campo o green del resort.',
       hours: 'Tee times 8:00–17:00',
       actions: [
-        { id: '9hoyos', label: '9 hoyos', detail: 'Incluye buggy básico.', cost: c(2.2), minutes: 150, needs: { energia: -20, social: 12, relax: 10, hambre: -10 }, points: 16 },
+        {
+          id: '9hoyos',
+          label: '9 hoyos + swing',
+          detail: 'Minijuego: para el medidor en la zona dorada.',
+          cost: c(2.2),
+          minutes: 150,
+          needs: { energia: -20, social: 12, relax: 10, hambre: -10 },
+          points: 16,
+          minigame: true,
+        },
       ],
     },
     casino: {
@@ -152,7 +172,16 @@ export function buildServiceScreen(service: HotelService, hotel: Hotel): Service
       intro: 'Salón de juegos del hotel.',
       hours: '18:00–04:00',
       actions: [
-        { id: 'mesa', label: 'Mesa de juego', detail: 'Fichas de entrada (oleada 3: minijuego).', cost: c(1.5), minutes: 45, needs: { social: 18, humor: 14, energia: -8, sed: -6 }, points: 12 },
+        {
+          id: 'mesa',
+          label: 'Ruleta',
+          detail: 'Minijuego: apuesta a rojo, negro o verde.',
+          cost: c(1.5),
+          minutes: 45,
+          needs: { social: 18, humor: 14, energia: -8, sed: -6 },
+          points: 12,
+          minigame: true,
+        },
       ],
     },
     helipuerto: {
@@ -236,7 +265,16 @@ export function buildServiceScreen(service: HotelService, hotel: Hotel): Service
       intro: 'Sala de cine del hotel.',
       hours: 'Pases 17:00, 20:00 y 22:30',
       actions: [
-        { id: 'pase', label: 'Ver una película', detail: 'Entrada doble.', cost: c(0.9), minutes: 110, needs: { social: 12, relax: 16, humor: 14 }, points: 10 },
+        {
+          id: 'pase',
+          label: 'Película + trivia',
+          detail: 'Minijuego: 3 preguntas entre pase.',
+          cost: c(0.9),
+          minutes: 110,
+          needs: { social: 12, relax: 16, humor: 14 },
+          points: 10,
+          minigame: true,
+        },
       ],
     },
     jardines: {
@@ -260,7 +298,16 @@ export function buildServiceScreen(service: HotelService, hotel: Hotel): Service
       intro: 'Pista de pádel.',
       hours: '8:00–22:00 · Alquiler de material',
       actions: [
-        { id: 'partido', label: 'Partido 1 h', detail: 'Pista + alquiler raquetas.', cost: c(1.3), minutes: 70, needs: { energia: -18, social: 16, humor: 12, hambre: -8 }, points: 11 },
+        {
+          id: 'partido',
+          label: 'Partido + rally',
+          detail: 'Minijuego: acierta 5 golpes a tiempo.',
+          cost: c(1.3),
+          minutes: 70,
+          needs: { energia: -18, social: 16, humor: 12, hambre: -8 },
+          points: 11,
+          minigame: true,
+        },
       ],
     },
     wifi_premium: {
@@ -381,7 +428,26 @@ export function makeMissionsForDay(day: number): ClientMission[] {
       done: false,
       claimed: false,
     },
+    {
+      id: `d-play-${day}`,
+      kind: 'daily',
+      title: 'Jugar un rato',
+      description: 'Completa 1 minijuego (casino, golf, buceo, pádel o cine).',
+      progress: 0,
+      target: 1,
+      rewardPoints: 70,
+      rewardWallet: 250,
+      done: false,
+      claimed: false,
+    },
   ]
+
+  // keep only 3 dailies rotating: night + svc + (spa OR play)
+  const rotated =
+    seed % 2 === 0
+      ? [dailyPool[0], dailyPool[1], dailyPool[3]]
+      : [dailyPool[0], dailyPool[1], dailyPool[2]]
+  const dailyChosen = rotated
 
   const weekly: ClientMission[] = []
   if (day % 7 === 1 || day === 1) {
@@ -413,7 +479,7 @@ export function makeMissionsForDay(day: number): ClientMission[] {
     })
   }
 
-  return [...dailyPool.map((m) => ({ ...m, createdDay: day })), ...weekly]
+  return [...dailyChosen.map((m) => ({ ...m, createdDay: day })), ...weekly]
 }
 
 export function ensureMissions(missions: ClientMission[], missionsDay: number, day: number): {

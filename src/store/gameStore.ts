@@ -23,6 +23,7 @@ import {
   clientLevelFromPoints,
   stampPassport,
   CLIENT_NIGHT_POINTS,
+  applyNeedDelta,
 } from '../lib/clientMode'
 import { SLOT_KEYS, idbSave, tryLocalStorageSave, readLocalStorageSave, idbLoad, idbLoadHotelImages, mergeHotelImages } from '../lib/saveio'
 import { applyDays } from '../lib/daySim'
@@ -56,6 +57,8 @@ import {
   FREE_NIGHT_POINTS,
   type ServiceAction,
 } from '../lib/clientServices'
+import type { MinigameOutcome } from '../lib/clientMinigames'
+import { minigameForAction } from '../lib/clientMinigames'
 
 export const STORAGE_KEY = 'orbis-hotels-group-save-v10'
 export const SAVE_VERSION = 10
@@ -168,6 +171,14 @@ type GameStore = GameState &
       service: HotelService,
       tip?: number,
       actionId?: string,
+    ) => { ok: true } | { ok: false; error: string }
+    clientBeginMinigame: (
+      service: HotelService,
+      tip: number,
+      actionId: string,
+    ) => { ok: true; entryCost: number } | { ok: false; error: string }
+    clientFinishMinigame: (
+      outcome: import('../lib/clientMinigames').MinigameOutcome,
     ) => { ok: true } | { ok: false; error: string }
     clientClaimMission: (id: string) => { ok: true } | { ok: false; error: string }
     clientRedeemFreeNight: () => { ok: true } | { ok: false; error: string }
@@ -1193,6 +1204,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
     let action: ServiceAction | undefined = screen.actions.find((a) => a.id === actionId)
     if (!action) action = screen.actions[0]
     if (!action) return { ok: false, error: 'Sin acciones disponibles.' }
+    if (action.minigame || minigameForAction(service, action.id)) {
+      return { ok: false, error: 'Esa acción abre un minijuego.' }
+    }
 
     const cost = action.cost + Math.max(0, tip)
     if (state.client.wallet < cost) return { ok: false, error: 'No te llega el monedero.' }
@@ -1239,6 +1253,82 @@ export const useGameStore = create<GameStore>((set, get) => ({
         missions,
         appointments,
         notifications: pushNote(state.client.notifications, tip ? `${note} Propina ${tip} €.` : note),
+      },
+    })
+    return { ok: true }
+  },
+
+  clientBeginMinigame: (service, tip = 0, actionId) => {
+    const state = get()
+    const stay = state.client.stay
+    if (!stay || stay.status !== 'checked_in') return { ok: false, error: 'Haz check-in primero.' }
+    const hotel = state.hotels.find((h) => h.id === stay.hotelId)
+    if (!hotel) return { ok: false, error: 'Hotel no encontrado.' }
+    if (!hotel.services.includes(service)) return { ok: false, error: 'Este hotel no ofrece ese servicio.' }
+    const screen = buildServiceScreen(service, hotel)
+    const action = screen.actions.find((a) => a.id === actionId)
+    if (!action) return { ok: false, error: 'Acción no encontrada.' }
+    if (!action.minigame && !minigameForAction(service, action.id)) {
+      return { ok: false, error: 'No hay minijuego para esta acción.' }
+    }
+    const cost = action.cost + Math.max(0, tip)
+    if (state.client.wallet < cost) return { ok: false, error: 'No te llega el monedero.' }
+
+    const needs = applyServiceAction(state.client.needs, action)
+    const used = state.client.stayServicesUsed.includes(service)
+      ? state.client.stayServicesUsed
+      : [...state.client.stayServicesUsed, service]
+    const pts = action.points + Math.round(tip / 20)
+    let missions = state.client.missions
+    if (used.length > state.client.stayServicesUsed.length) {
+      missions = bumpMissions(missions, (m) => m.id.includes('d-svc-') || m.description.includes('3 servicios'))
+    }
+
+    set({
+      cash: state.cash + cost,
+      client: {
+        ...state.client,
+        wallet: state.client.wallet - cost,
+        needs,
+        points: state.client.points + pts,
+        level: clientLevelFromPoints(state.client.points + pts),
+        stay: { ...stay, tipTotal: stay.tipTotal + Math.max(0, tip) },
+        stayServicesUsed: used,
+        missions,
+        notifications: pushNote(
+          state.client.notifications,
+          `Minijuego: ${action.label} en ${screen.title}. Entrada ${cost.toLocaleString('es-ES')} €.`,
+        ),
+      },
+    })
+    return { ok: true, entryCost: cost }
+  },
+
+  clientFinishMinigame: (outcome: MinigameOutcome) => {
+    const state = get()
+    if (!state.client.stay || state.client.stay.status !== 'checked_in') {
+      return { ok: false, error: 'No hay estancia activa.' }
+    }
+    if (outcome.walletDelta < 0 && state.client.wallet + outcome.walletDelta < 0) {
+      return { ok: false, error: 'No te llega el monedero para esa apuesta.' }
+    }
+    const needs = applyNeedDelta(state.client.needs, outcome.needsBonus)
+    const points = state.client.points + Math.max(0, outcome.pointsDelta)
+    const missions = bumpMissions(
+      state.client.missions,
+      (m) => m.id.includes('d-play-') || m.description.toLowerCase().includes('minijuego'),
+    )
+    const hotelRev = Math.max(0, -Math.min(0, outcome.walletDelta))
+    set({
+      cash: state.cash + hotelRev,
+      client: {
+        ...state.client,
+        wallet: state.client.wallet + outcome.walletDelta,
+        needs,
+        points,
+        level: clientLevelFromPoints(points),
+        missions,
+        notifications: pushNote(state.client.notifications, outcome.message),
       },
     })
     return { ok: true }
