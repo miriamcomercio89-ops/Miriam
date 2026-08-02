@@ -225,6 +225,60 @@ export interface BankDeposit {
   createdDay: number
 }
 
+/** Modo de juego activo */
+export type PlayMode = 'gerente' | 'cliente'
+
+export type ClientNeedId =
+  | 'hambre'
+  | 'sed'
+  | 'energia'
+  | 'sueno'
+  | 'relax'
+  | 'social'
+  | 'higiene'
+  | 'humor'
+  | 'confort'
+  | 'seguridad'
+
+export type ClientNeeds = Record<ClientNeedId, number>
+
+export type ClientRoomKind = 'estandar' | 'familiar' | 'suite' | 'vista_mar'
+
+export type ClientStayStatus = 'waitlist' | 'reserved' | 'checked_in' | 'checked_out'
+
+export interface ClientStay {
+  hotelId: string
+  roomKind: ClientRoomKind
+  boardRegime: BoardRegime
+  status: ClientStayStatus
+  reservedDay: number
+  checkInMinutes?: number
+  partner: boolean
+  pricePaid: number
+  tipTotal: number
+}
+
+export interface ClientPassportStamp {
+  countryCode: string
+  subsidiaryId: string
+  day: number
+}
+
+export interface ClientModeState {
+  name: string
+  prefs: GuestTarget[]
+  wallet: number
+  points: number
+  level: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10
+  needs: ClientNeeds
+  stay: ClientStay | null
+  passport: ClientPassportStamp[]
+  notifications: string[]
+  totalNights: number
+  /** Hotel seleccionado para reservar en UI cliente */
+  bookingHotelId: string | null
+}
+
 export interface GameState {
   version: number
   cash: number
@@ -252,6 +306,9 @@ export interface GameState {
   planDoneOrders: number[]
   /** Siguiente hotel del plan a construir */
   planCursor: number
+  /** Gerente o Cliente */
+  playMode: PlayMode
+  client: ClientModeState
 }
 
 export interface WeeklyReport {

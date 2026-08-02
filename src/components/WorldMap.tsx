@@ -22,6 +22,7 @@ function MapClickHandler({
   selectedId: string | null
 }) {
   const mode = useGameStore((s) => s.mapMode)
+  const playMode = useGameStore((s) => s.playMode)
   useMapEvents({
     click(e) {
       if (busy) return
@@ -31,6 +32,7 @@ function MapClickHandler({
         onSelectHotel(nearest.id)
         return
       }
+      if (playMode === 'cliente') return
       if (mode === 'build') onBuild(e.latlng.lat, e.latlng.lng)
     },
     mousemove(e) {
@@ -157,6 +159,10 @@ export function WorldMap() {
   const openBuildAt = useGameStore((s) => s.openBuildAt)
   const selectedHotelId = useGameStore((s) => s.selectedHotelId)
   const mapMode = useGameStore((s) => s.mapMode)
+  const playMode = useGameStore((s) => s.playMode)
+  const setClientBookingHotel = useGameStore((s) => s.setClientBookingHotel)
+  const clientStay = useGameStore((s) => s.client.stay)
+  const bookingHotelId = useGameStore((s) => s.client.bookingHotelId)
   const [busy, setBusy] = useState(false)
   const [hint, setHint] = useState<string | null>(null)
   const [pending, setPending] = useState<{ lat: number; lng: number } | null>(null)
@@ -190,8 +196,16 @@ export function WorldMap() {
 
   const tip = hover ? hotelTooltipMeta(hover.hotel) : null
 
+  function onSelectHotel(id: string) {
+    if (playMode === 'cliente') {
+      setClientBookingHotel(id)
+      return
+    }
+    selectHotel(id)
+  }
+
   return (
-    <div className={`map-shell map-shell--${mapMode}`}>
+    <div className={`map-shell map-shell--${mapMode}${playMode === 'cliente' ? ' map-shell--client' : ''}${clientStay?.status === 'checked_in' ? ' is-hidden-by-stay' : ''}`}>
       <MapContainer
         center={[20, 0]}
         zoom={3}
@@ -205,9 +219,9 @@ export function WorldMap() {
         <MapClickHandler
           busy={busy}
           onBuild={handleBuild}
-          onSelectHotel={selectHotel}
+          onSelectHotel={onSelectHotel}
           hotels={filtered}
-          selectedId={selectedHotelId}
+          selectedId={playMode === 'cliente' ? bookingHotelId : selectedHotelId}
         />
         <MapFocusController />
         <HotelsCanvas hotels={filtered} selectedId={selectedHotelId} onHover={onHover} />
@@ -233,9 +247,11 @@ export function WorldMap() {
 
       <p className="map-hint">
         {hint ??
-          (mapMode === 'build'
-            ? 'Modo construir: clic en tierra para un hotel nuevo · clic en un hotel para verlo'
-            : 'Modo ver: clic en un hotel para abrir su ficha · cambia a Construir para expandir')}
+          (playMode === 'cliente'
+            ? 'Modo Cliente: clic en un hotel tuyo para reservar esta noche'
+            : mapMode === 'build'
+              ? 'Modo construir: clic en tierra para un hotel nuevo · clic en un hotel para verlo'
+              : 'Modo ver: clic en un hotel para abrir su ficha · cambia a Construir para expandir')}
       </p>
     </div>
   )

@@ -12,6 +12,20 @@ import {
 import { generateDemoHotels } from '../lib/demoHotels'
 import { defaultImageKey } from '../lib/images'
 import { gameDay } from '../lib/format'
+import {
+  boardOptionsForHotel,
+  createStayDraft,
+  defaultClientState,
+  migrateClientState,
+  pushNote,
+  roomKindsForHotel,
+  settleClientNight,
+  useServiceEffect,
+  serviceExtraCost,
+  clientLevelFromPoints,
+  stampPassport,
+  CLIENT_NIGHT_POINTS,
+} from '../lib/clientMode'
 import { SLOT_KEYS, idbSave, tryLocalStorageSave, readLocalStorageSave, idbLoad, idbLoadHotelImages, mergeHotelImages } from '../lib/saveio'
 import { applyDays } from '../lib/daySim'
 import { playBuildSound, playDaySound, playSellSound } from '../lib/sound'
@@ -31,10 +45,14 @@ import type {
   MapMode,
   RankMetric,
   SpeedOption,
+  PlayMode,
+  ClientRoomKind,
+  GuestTarget,
+  HotelService,
 } from '../types'
 
-export const STORAGE_KEY = 'orbis-hotels-group-save-v9'
-export const SAVE_VERSION = 9
+export const STORAGE_KEY = 'orbis-hotels-group-save-v10'
+export const SAVE_VERSION = 10
 export const IDB_SLOT_KEYS = ['slot-1', 'slot-2', 'slot-3'] as const
 
 type UiState = {
@@ -128,6 +146,24 @@ type GameStore = GameState &
     setHotelClosed: (id: string, closed: boolean) => void
     sellHotel: (id: string) => { ok: true; proceeds: number } | { ok: false; error: string }
     renovateHotel: (id: string) => { ok: true; cost: number } | { ok: false; error: string }
+    setPlayMode: (mode: PlayMode) => void
+    setClientName: (name: string) => void
+    setClientPrefs: (prefs: GuestTarget[]) => void
+    setClientBookingHotel: (id: string | null) => void
+    clientReserve: (
+      hotelId: string,
+      roomKind: ClientRoomKind,
+      board: BoardRegime,
+    ) => { ok: true } | { ok: false; error: string }
+    clientCancelReservation: () => void
+    clientCheckIn: () => { ok: true } | { ok: false; error: string }
+    clientCheckOut: () => { ok: true } | { ok: false; error: string }
+    clientUseService: (
+      service: HotelService,
+      tip?: number,
+    ) => { ok: true } | { ok: false; error: string }
+    clientClearNotes: () => void
+    clientDismissStay: () => void
   }
 
 function defaultLoan(): LoanState {
@@ -159,6 +195,8 @@ function initialState(): GameState {
     weeklyReports: [],
     planDoneOrders: [],
     planCursor: 1,
+    playMode: 'gerente',
+    client: defaultClientState(),
   }
 }
 
@@ -266,6 +304,8 @@ function migrate(raw: Partial<GameState> & { cash?: number }): GameState {
     weeklyReports: raw.weeklyReports ?? [],
     planDoneOrders: Array.isArray(raw.planDoneOrders) ? raw.planDoneOrders : [],
     planCursor: typeof raw.planCursor === 'number' && raw.planCursor > 0 ? raw.planCursor : 1,
+    playMode: raw.playMode === 'cliente' ? 'cliente' : 'gerente',
+    client: migrateClientState(raw.client),
   }
 }
 
@@ -654,6 +694,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
       weeklyReports: s.weeklyReports,
       planDoneOrders: s.planDoneOrders,
       planCursor: s.planCursor,
+      playMode: s.playMode,
+      client: s.client,
     }
   },
 
@@ -702,6 +744,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
     }
     const fromLs = readLocalStorageSave([
       STORAGE_KEY,
+      'orbis-hotels-group-save-v9',
       'orbis-hotels-group-save-v8',
       'orbis-hotels-group-save-v7',
       'orbis-hotels-group-save-v6',
@@ -973,6 +1016,188 @@ export const useGameStore = create<GameStore>((set, get) => ({
   },
 
   setPlanCursor: (order) => set({ planCursor: Math.max(1, order) }),
+
+  setPlayMode: (mode) => {
+    const state = get()
+    if (mode === 'cliente' && state.hotels.length === 0) {
+      set({
+        saveToast: 'Modo Cliente: construye al menos un hotel primero.',
+      })
+      window.setTimeout(() => {
+        if (useGameStore.getState().saveToast?.startsWith('Modo Cliente')) {
+          useGameStore.setState({ saveToast: null })
+        }
+      }, 3200)
+      return
+    }
+    set({
+      playMode: mode,
+      ...closePanelsExcept({}),
+      selectedHotelId: mode === 'gerente' ? state.selectedHotelId : null,
+      buildLocation: mode === 'cliente' ? null : state.buildLocation,
+      client: {
+        ...state.client,
+        bookingHotelId: mode === 'cliente' ? state.client.bookingHotelId : null,
+      },
+      mapMode: mode === 'cliente' ? 'inspect' : state.mapMode,
+    })
+  },
+
+  setClientName: (name) => set({ client: { ...get().client, name: name.slice(0, 40) || 'Viajero Orbis' } }),
+
+  setClientPrefs: (prefs) => set({ client: { ...get().client, prefs } }),
+
+  setClientBookingHotel: (id) => set({ client: { ...get().client, bookingHotelId: id } }),
+
+  clientReserve: (hotelId, roomKind, board) => {
+    const state = get()
+    if (state.playMode !== 'cliente') return { ok: false, error: 'Activa el modo Cliente.' }
+    if (state.client.stay && state.client.stay.status !== 'checked_out') {
+      return { ok: false, error: 'Ya tienes una reserva o estancia activa.' }
+    }
+    const hotel = state.hotels.find((h) => h.id === hotelId)
+    if (!hotel) return { ok: false, error: 'Hotel no encontrado.' }
+    const rooms = roomKindsForHotel(hotel)
+    if (!rooms.some((r) => r.id === roomKind)) return { ok: false, error: 'Tipo de habitación no disponible.' }
+    const boards = boardOptionsForHotel(hotel)
+    if (!boards.includes(board)) return { ok: false, error: 'Régimen no disponible en este hotel.' }
+    const day = gameDay(state.gameMinutes)
+    const stay = createStayDraft(hotel, roomKind, board, day, state.client.level)
+    const price = stay.pricePaid
+    if (state.client.wallet < price && stay.status === 'reserved') {
+      return { ok: false, error: `Necesitas ${price.toLocaleString('es-ES')} € en tu monedero.` }
+    }
+    const note =
+      stay.status === 'waitlist'
+        ? `${hotel.name} está completo o cerrado. Entraste en lista de espera.`
+        : `Reserva esta noche en ${hotel.name} · ${price.toLocaleString('es-ES')} € (pareja).`
+    set({
+      client: {
+        ...state.client,
+        stay,
+        bookingHotelId: hotelId,
+        notifications: pushNote(state.client.notifications, note),
+      },
+      mapFocus: { lat: hotel.lat, lng: hotel.lng, zoom: 11 },
+    })
+    return { ok: true }
+  },
+
+  clientCancelReservation: () => {
+    const state = get()
+    const stay = state.client.stay
+    if (!stay || stay.status === 'checked_in') return
+    set({
+      client: {
+        ...state.client,
+        stay: null,
+        notifications: pushNote(state.client.notifications, 'Reserva cancelada (gratis).'),
+      },
+    })
+  },
+
+  clientCheckIn: () => {
+    const state = get()
+    const stay = state.client.stay
+    if (!stay) return { ok: false, error: 'No hay reserva.' }
+    if (stay.status === 'waitlist') return { ok: false, error: 'Sigues en lista de espera.' }
+    if (stay.status === 'checked_in') return { ok: false, error: 'Ya estás dentro.' }
+    if (stay.status === 'checked_out') return { ok: false, error: 'La estancia ya terminó.' }
+    const hotel = state.hotels.find((h) => h.id === stay.hotelId)
+    if (!hotel) return { ok: false, error: 'Hotel no encontrado.' }
+    if (hotel.closed) return { ok: false, error: 'El hotel está cerrado.' }
+    const price = stay.pricePaid
+    if (state.client.wallet < price) {
+      return { ok: false, error: `Faltan ${(price - state.client.wallet).toLocaleString('es-ES')} €.` }
+    }
+    // Pago al grupo + ocupación simbólica
+    set({
+      cash: state.cash + price,
+      client: {
+        ...state.client,
+        wallet: state.client.wallet - price,
+        stay: { ...stay, status: 'checked_in', checkInMinutes: state.gameMinutes },
+        notifications: pushNote(
+          state.client.notifications,
+          `Check-in en ${hotel.name}. Habitación ${stay.roomKind.replace('_', ' ')}. Tu pareja te acompaña.`,
+        ),
+      },
+      hotels: state.hotels.map((h) =>
+        h.id === hotel.id
+          ? {
+              ...h,
+              lastDayRevenue: h.lastDayRevenue + price,
+              lifetimeRevenue: h.lifetimeRevenue + price,
+              lifetimeGuests: h.lifetimeGuests + 2,
+            }
+          : h,
+      ),
+    })
+    return { ok: true }
+  },
+
+  clientCheckOut: () => {
+    const state = get()
+    const stay = state.client.stay
+    if (!stay || stay.status !== 'checked_in') return { ok: false, error: 'No estás alojado.' }
+    const hotel = state.hotels.find((h) => h.id === stay.hotelId)
+    const day = gameDay(state.gameMinutes)
+    let client = {
+      ...state.client,
+      stay: { ...stay, status: 'checked_out' as const },
+      notifications: pushNote(
+        state.client.notifications,
+        hotel ? `Check-out de ${hotel.name}. Gracias por tu estancia.` : 'Check-out hecho.',
+      ),
+    }
+    if (hotel) {
+      client = {
+        ...client,
+        passport: stampPassport(client.passport, hotel, day),
+        points: client.points + Math.round(CLIENT_NIGHT_POINTS * 0.25),
+        level: clientLevelFromPoints(client.points + Math.round(CLIENT_NIGHT_POINTS * 0.25)),
+      }
+    }
+    set({ client })
+    return { ok: true }
+  },
+
+  clientUseService: (service, tip = 0) => {
+    const state = get()
+    const stay = state.client.stay
+    if (!stay || stay.status !== 'checked_in') return { ok: false, error: 'Haz check-in primero.' }
+    const hotel = state.hotels.find((h) => h.id === stay.hotelId)
+    if (!hotel) return { ok: false, error: 'Hotel no encontrado.' }
+    if (!hotel.services.includes(service)) return { ok: false, error: 'Este hotel no ofrece ese servicio.' }
+    const cost = serviceExtraCost(service, hotel) + Math.max(0, tip)
+    if (state.client.wallet < cost) return { ok: false, error: 'No te llega el monedero.' }
+    const needs = useServiceEffect(service, state.client.needs)
+    const label = service
+    set({
+      cash: state.cash + cost,
+      client: {
+        ...state.client,
+        wallet: state.client.wallet - cost,
+        needs,
+        points: state.client.points + 8 + Math.round(tip / 20),
+        level: clientLevelFromPoints(state.client.points + 8),
+        stay: { ...stay, tipTotal: stay.tipTotal + Math.max(0, tip) },
+        notifications: pushNote(
+          state.client.notifications,
+          `Usaste ${label.replace(/_/g, ' ')}${tip ? ` (propina ${tip} €)` : ''}.`,
+        ),
+      },
+    })
+    return { ok: true }
+  },
+
+  clientClearNotes: () => set({ client: { ...get().client, notifications: [] } }),
+
+  clientDismissStay: () => {
+    const stay = get().client.stay
+    if (!stay || stay.status === 'checked_in') return
+    set({ client: { ...get().client, stay: null } })
+  },
 }))
 
 async function runSkipDays(days: number, gameMinutes: number) {
@@ -987,10 +1212,21 @@ async function runSkipDays(days: number, gameMinutes: number) {
   })
   try {
     const result = await runDaysInWorker(state, days)
+    let hotels = result.hotels
+    let cash = result.cash
+    let client = state.client
+    const startDay = gameDay(state.gameMinutes)
+    for (let d = 0; d < days; d++) {
+      const settled = settleClientNight(client, hotels, startDay + d)
+      client = settled.client
+      hotels = settled.hotels
+      cash += settled.hotelRevenue
+    }
     useGameStore.setState({
       gameMinutes,
-      cash: result.cash,
-      hotels: result.hotels,
+      cash,
+      hotels,
+      client,
       activeEvents: result.activeEvents,
       lastEventRollDay: result.lastEventRollDay,
       reputation: result.reputation,

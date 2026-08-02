@@ -115,14 +115,14 @@ fs.writeFileSync(path.join(OUT, 'index.html'), html)
 
 fs.writeFileSync(
   path.join(OUT, 'LEEME.txt'),
-  `Orbis Hotels Group — v1.4 (foto A4 solo en el menú del hotel)
+  `  Orbis Hotels Group — v1.5 (modo Cliente · oleada 1)
 
 1. Borra la carpeta antigua si la tenías abierta
 2. Descomprime este ZIP de nuevo
 3. Entra en la carpeta y abre index.html
 
-La foto del hotel ya NO cubre el mapa: sale en el panel derecho
-en formato A4 vertical (210×297).
+Novedad: botón Cliente en la barra superior.
+Construye hoteles → Cliente → clic en un hotel → reserva esta noche → check-in.
 
 Necesitas internet para el mapa (teselas) y las fuentes.
 No uses la carpeta dist/: esa sí necesita servidor.
