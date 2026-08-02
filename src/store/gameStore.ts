@@ -33,8 +33,8 @@ import type {
   SpeedOption,
 } from '../types'
 
-export const STORAGE_KEY = 'orbis-hotels-group-save-v8'
-export const SAVE_VERSION = 8
+export const STORAGE_KEY = 'orbis-hotels-group-save-v9'
+export const SAVE_VERSION = 9
 export const IDB_SLOT_KEYS = ['slot-1', 'slot-2', 'slot-3'] as const
 
 type UiState = {
@@ -163,7 +163,12 @@ function initialState(): GameState {
 }
 
 function migrateHotel(h: Hotel): Hotel {
-  const anyH = h as Hotel
+  const anyH = h as Hotel & {
+    buffet?: boolean
+    buffetType?: string
+    barType?: string
+    restaurantConcept?: string
+  }
   return {
     ...anyH,
     satisfaction: anyH.satisfaction ?? 70,
@@ -202,9 +207,15 @@ function migrateHotel(h: Hotel): Hotel {
     lastRenovationDay: anyH.lastRenovationDay ?? 0,
     imageDataUrl: anyH.imageDataUrl?.startsWith('data:image/svg') ? undefined : anyH.imageDataUrl,
     designFocus: anyH.designFocus ?? 'vistas',
-    buffetType: anyH.buffetType ?? ((anyH as { buffet?: boolean }).buffet ? 'continental' : 'ninguno'),
-    barType: anyH.barType ?? 'ninguno',
-    restaurantConcept: anyH.restaurantConcept ?? (anyH.restaurantLevel > 0 ? 'a_la_carta' : 'ninguno'),
+    buffetTypes: normalizeFbList(
+      anyH.buffetTypes,
+      anyH.buffetType ?? (anyH.buffet ? 'continental' : undefined),
+    ),
+    barTypes: normalizeFbList(anyH.barTypes, anyH.barType),
+    restaurantConcepts: normalizeFbList(
+      anyH.restaurantConcepts,
+      anyH.restaurantConcept ?? (anyH.restaurantLevel > 0 ? 'a_la_carta' : undefined),
+    ),
     lateCheckout: anyH.lateCheckout ?? false,
     airportDesk: anyH.airportDesk ?? false,
     quietHours: anyH.quietHours ?? false,
@@ -213,6 +224,14 @@ function migrateHotel(h: Hotel): Hotel {
     priceManual: anyH.priceManual ?? false,
     closed: anyH.closed ?? false,
   }
+}
+
+function normalizeFbList<T extends string>(arr: T[] | undefined, legacy?: T | string): T[] {
+  if (Array.isArray(arr) && arr.length) {
+    return [...new Set(arr.filter((id) => id && id !== 'ninguno'))] as T[]
+  }
+  if (legacy && legacy !== 'ninguno') return [legacy as T]
+  return []
 }
 
 function migrate(raw: Partial<GameState> & { cash?: number }): GameState {
@@ -582,9 +601,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
       condition: 100,
       lastRenovationDay: 0,
       designFocus: draft.designFocus,
-      buffetType: draft.buffetType,
-      barType: draft.barType,
-      restaurantConcept: draft.restaurantConcept,
+      buffetTypes: [...draft.buffetTypes],
+      barTypes: [...draft.barTypes],
+      restaurantConcepts: [...draft.restaurantConcepts],
       lateCheckout: draft.lateCheckout,
       airportDesk: draft.airportDesk,
       quietHours: draft.quietHours,

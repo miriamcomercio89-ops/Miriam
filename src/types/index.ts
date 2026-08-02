@@ -151,9 +151,12 @@ export interface Hotel {
   lastRenovationDay: number
   /** Extras operativos */
   designFocus: DesignFocus
-  buffetType: BuffetType
-  barType: BarType
-  restaurantConcept: RestaurantConcept
+  /** Buffets activos (varios a la vez) */
+  buffetTypes: BuffetType[]
+  /** Bares activos (varios a la vez) */
+  barTypes: BarType[]
+  /** Conceptos de restaurante activos */
+  restaurantConcepts: RestaurantConcept[]
   lateCheckout: boolean
   airportDesk: boolean
   quietHours: boolean
@@ -285,9 +288,9 @@ export interface BuildDraft {
   restaurantLevel: number
   openingPromoDays: number
   designFocus: DesignFocus
-  buffetType: BuffetType
-  barType: BarType
-  restaurantConcept: RestaurantConcept
+  buffetTypes: BuffetType[]
+  barTypes: BarType[]
+  restaurantConcepts: RestaurantConcept[]
   lateCheckout: boolean
   airportDesk: boolean
   securityLevel: SecurityLevel

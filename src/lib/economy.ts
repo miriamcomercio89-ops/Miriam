@@ -23,6 +23,7 @@ import {
   BUFFET_OPTIONS,
   BAR_OPTIONS,
   RESTAURANT_CONCEPTS,
+  sumOptionStats,
 } from '../data/catalog'
 import { getSubsidiary } from '../data/subsidiaries'
 import { getSeason, seasonDemandMult, clamp, pseudoNoise, reputationKey, dayOfYear } from './economyCore'
@@ -207,13 +208,13 @@ export function calcConstructionBreakdown(draft: BuildDraft, loc: LocationInsigh
   const restaurantCost = draft.restaurantLevel * 120_000
   const seaViewCost = draft.rooms * (draft.seaViewShare / 100) * 12_000
   const boardSetup = draft.rooms * board.dailyPerRoom * 40
-  const buffet = BUFFET_OPTIONS.find((b) => b.id === draft.buffetType)
-  const bar = BAR_OPTIONS.find((b) => b.id === draft.barType)
-  const restaurant = RESTAURANT_CONCEPTS.find((r) => r.id === draft.restaurantConcept)
+  const buffet = sumOptionStats(BUFFET_OPTIONS, draft.buffetTypes)
+  const bar = sumOptionStats(BAR_OPTIONS, draft.barTypes)
+  const restaurant = sumOptionStats(RESTAURANT_CONCEPTS, draft.restaurantConcepts)
   const extras =
-    (buffet?.cost ?? 0) +
-    (bar?.cost ?? 0) +
-    (restaurant?.cost ?? 0) +
+    buffet.cost +
+    bar.cost +
+    restaurant.cost +
     (draft.lateCheckout ? 25_000 : 0) +
     (draft.airportDesk ? 60_000 : 0) +
     (draft.breakfastIncluded || draft.boardRegime !== 'solo' ? 55_000 : 0) +
@@ -353,9 +354,9 @@ export function draftToTempHotel(
     condition: 100,
     lastRenovationDay: 0,
     designFocus: draft.designFocus,
-    buffetType: draft.buffetType,
-    barType: draft.barType,
-    restaurantConcept: draft.restaurantConcept,
+    buffetTypes: [...draft.buffetTypes],
+    barTypes: [...draft.barTypes],
+    restaurantConcepts: [...draft.restaurantConcepts],
     lateCheckout: draft.lateCheckout,
     airportDesk: draft.airportDesk,
     quietHours: draft.quietHours,
@@ -454,9 +455,9 @@ export function simulateHotelDay(
   const holidayCost = holidayCostMult(gameMinutes, hotel.geoRegion, hotel.countryCode)
   const conditionMod = 0.82 + ((hotel.condition ?? 100) / 100) * 0.2
   const design = DESIGN_FOCUS.find((d) => d.id === (hotel.designFocus ?? 'vistas'))
-  const buffet = BUFFET_OPTIONS.find((b) => b.id === (hotel.buffetType ?? 'ninguno'))
-  const bar = BAR_OPTIONS.find((b) => b.id === (hotel.barType ?? 'ninguno'))
-  const restaurant = RESTAURANT_CONCEPTS.find((r) => r.id === (hotel.restaurantConcept ?? 'ninguno'))
+  const buffet = sumOptionStats(BUFFET_OPTIONS, hotel.buffetTypes)
+  const bar = sumOptionStats(BAR_OPTIONS, hotel.barTypes)
+  const restaurant = sumOptionStats(RESTAURANT_CONCEPTS, hotel.restaurantConcepts)
 
   let occupancyOpen = calcOccupancy(
     { ...hotel, pricePerNight: price, rooms: openRooms },
@@ -471,9 +472,9 @@ export function simulateHotelDay(
       conditionMod *
       (1 + (board?.demandBonus ?? 0)) *
       (1 + (design?.demandBonus ?? 0)) *
-      (1 + (buffet?.demandBonus ?? 0)) *
-      (1 + (bar?.demandBonus ?? 0)) *
-      (1 + (restaurant?.demandBonus ?? 0)) *
+      (1 + buffet.demandBonus) *
+      (1 + bar.demandBonus) *
+      (1 + restaurant.demandBonus) *
       (hotel.loyaltyProgram ? 1 + loyalty.demandBonus : 1) *
       (hotel.lateCheckout ? 1.01 : 1) *
       (hotel.airportDesk ? 1.012 : 1) *
@@ -665,17 +666,17 @@ function calcDailyCosts(
   const boardDaily = hotel.rooms * (board?.dailyPerRoom ?? 0)
   const conditionMaint = hotel.rooms * (2.5 + (100 - (hotel.condition ?? 100)) * 0.08)
   const design = DESIGN_FOCUS.find((d) => d.id === (hotel.designFocus ?? 'vistas'))
-  const buffet = BUFFET_OPTIONS.find((b) => b.id === (hotel.buffetType ?? 'ninguno'))
-  const bar = BAR_OPTIONS.find((b) => b.id === (hotel.barType ?? 'ninguno'))
-  const restaurant = RESTAURANT_CONCEPTS.find((r) => r.id === (hotel.restaurantConcept ?? 'ninguno'))
+  const buffet = sumOptionStats(BUFFET_OPTIONS, hotel.buffetTypes)
+  const bar = sumOptionStats(BAR_OPTIONS, hotel.barTypes)
+  const restaurant = sumOptionStats(RESTAURANT_CONCEPTS, hotel.restaurantConcepts)
   const extrasDaily =
     (hotel.breakfastIncluded && (hotel.boardRegime ?? 'solo') === 'solo' ? hotel.rooms * 2.5 : 0) +
     (hotel.loyaltyProgram ? 120 : 0) +
     hotel.rooms * (hotel.seaViewShare / 100) * 0.8 +
     (design?.daily ?? 0) +
-    hotel.rooms * (buffet?.daily ?? 0) +
-    (bar?.daily ?? 0) +
-    hotel.rooms * (restaurant?.daily ?? 0) +
+    hotel.rooms * buffet.daily +
+    bar.daily +
+    hotel.rooms * restaurant.daily +
     (hotel.lateCheckout ? 45 : 0) +
     (hotel.airportDesk ? 180 : 0) +
     (hotel.quietHours ? 35 : 0) +

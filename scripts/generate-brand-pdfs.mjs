@@ -8,6 +8,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import PDFDocument from 'pdfkit'
 import { Resvg } from '@resvg/resvg-js'
+import { buildSubsidiaryLogoSvg } from './brand-logo-svg.mjs'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const ROOT = path.resolve(__dirname, '..')
@@ -54,43 +55,8 @@ function parseSubsidiaries() {
   })
 }
 
-function logoMotif(imageStyle, accent) {
-  switch (imageStyle) {
-    case 'coast':
-      return `<path d="M18 78c14-18 28-26 46-26s32 8 46 26" fill="none" stroke="${accent}" stroke-width="5" stroke-linecap="round"/><path d="M28 68c10-12 20-17 36-17s26 5 36 17" fill="none" stroke="${accent}" stroke-width="3" opacity="0.55" stroke-linecap="round"/><circle cx="96" cy="36" r="10" fill="${accent}" opacity="0.35"/>`
-    case 'urban':
-      return `<rect x="28" y="40" width="18" height="48" rx="2" fill="${accent}" opacity="0.9"/><rect x="52" y="28" width="22" height="60" rx="2" fill="${accent}" opacity="0.7"/><rect x="80" y="48" width="16" height="40" rx="2" fill="${accent}" opacity="0.55"/>`
-    case 'nature':
-      return `<path d="M64 92 L40 52 L64 24 L88 52 Z" fill="${accent}" opacity="0.8"/><rect x="60" y="88" width="8" height="14" fill="${accent}" opacity="0.65"/>`
-    case 'luxury':
-      return `<polygon points="64,22 72,48 64,44 56,48" fill="${accent}"/><circle cx="64" cy="68" r="20" fill="none" stroke="${accent}" stroke-width="4"/><circle cx="64" cy="68" r="10" fill="${accent}" opacity="0.35"/>`
-    case 'family':
-      return `<circle cx="44" cy="52" r="14" fill="${accent}"/><circle cx="84" cy="52" r="14" fill="${accent}" opacity="0.72"/><circle cx="64" cy="78" r="16" fill="${accent}" opacity="0.88"/>`
-    default:
-      return `<path d="M28 86 L64 30 L100 86 Z" fill="none" stroke="${accent}" stroke-width="5" stroke-linejoin="round"/>`
-  }
-}
-
 function logoSvg(sub, size = 512) {
-  const fontSize = sub.letter.length > 1 ? 28 : 42
-  return `<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 128 128">
-  <defs>
-    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="${sub.color}"/>
-      <stop offset="100%" stop-color="${sub.accent}" stop-opacity="0.55"/>
-    </linearGradient>
-    <linearGradient id="shine" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.22"/>
-      <stop offset="55%" stop-color="#ffffff" stop-opacity="0"/>
-    </linearGradient>
-  </defs>
-  <rect width="128" height="128" rx="28" fill="url(#g)"/>
-  <rect width="128" height="128" rx="28" fill="url(#shine)"/>
-  <rect x="7" y="7" width="114" height="114" rx="22" fill="none" stroke="${sub.accent}" stroke-width="3.5" opacity="0.9"/>
-  ${logoMotif(sub.imageStyle, sub.accent)}
-  <text x="64" y="112" text-anchor="middle" font-family="Georgia, serif" font-size="${fontSize}" font-weight="700" fill="#F7F3EA">${sub.letter}</text>
-</svg>`
+  return buildSubsidiaryLogoSvg(sub, size)
 }
 
 function logoPng(sub, size = 512) {

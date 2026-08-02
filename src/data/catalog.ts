@@ -110,14 +110,19 @@ export const BUFFET_OPTIONS = [
   { id: 'gourmet' as const, label: 'Buffet gourmet', cost: 220_000, demandBonus: 0.035, daily: 6.5 },
 ]
 
+/** Tipos seleccionables en el constructor (sin “ninguno”) */
+export const BUFFET_SELECTABLE = BUFFET_OPTIONS.filter((o) => o.id !== 'ninguno')
+
 export const BAR_OPTIONS = [
   { id: 'ninguno' as const, label: 'Sin bar', cost: 0, demandBonus: 0, daily: 0 },
   { id: 'lobby' as const, label: 'Bar de lobby', cost: 90_000, demandBonus: 0.01, daily: 180 },
   { id: 'azotea' as const, label: 'Bar en azotea', cost: 280_000, demandBonus: 0.022, daily: 420 },
   { id: 'cocteleria' as const, label: 'Coctelería', cost: 190_000, demandBonus: 0.018, daily: 320 },
   { id: 'beach_bar' as const, label: 'Beach bar', cost: 210_000, demandBonus: 0.02, daily: 350 },
-  { id: 'varios' as const, label: 'Varios bares', cost: 420_000, demandBonus: 0.03, daily: 700 },
+  { id: 'varios' as const, label: 'Varios bares (pack)', cost: 420_000, demandBonus: 0.03, daily: 700 },
 ]
+
+export const BAR_SELECTABLE = BAR_OPTIONS.filter((o) => o.id !== 'ninguno')
 
 export const RESTAURANT_CONCEPTS = [
   { id: 'ninguno' as const, label: 'Sin restaurante propio', cost: 0, demandBonus: 0, daily: 0 },
@@ -127,6 +132,27 @@ export const RESTAURANT_CONCEPTS = [
   { id: 'tematico' as const, label: 'Temático', cost: 280_000, demandBonus: 0.024, daily: 2.2 },
   { id: 'mixto' as const, label: 'Mixto (varios conceptos)', cost: 520_000, demandBonus: 0.035, daily: 3.8 },
 ]
+
+export const RESTAURANT_SELECTABLE = RESTAURANT_CONCEPTS.filter((o) => o.id !== 'ninguno')
+
+export function sumOptionStats<T extends { id: string; cost: number; demandBonus: number; daily: number }>(
+  catalog: T[],
+  ids: string[] | undefined,
+): { cost: number; demandBonus: number; daily: number; labels: string[] } {
+  const set = new Set((ids ?? []).filter((id) => id && id !== 'ninguno'))
+  let cost = 0
+  let demandBonus = 0
+  let daily = 0
+  const labels: string[] = []
+  for (const o of catalog) {
+    if (!set.has(o.id)) continue
+    cost += o.cost
+    demandBonus += o.demandBonus
+    daily += o.daily
+    labels.push((o as T & { label?: string }).label ?? o.id)
+  }
+  return { cost, demandBonus, daily, labels }
+}
 
 export const SECURITY_OPTIONS = [
   { id: 'bajo' as const, label: 'Seguridad baja', costMult: 0.97, demandBonus: -0.01, daily: 0.4 },

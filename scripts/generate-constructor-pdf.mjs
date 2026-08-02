@@ -36,7 +36,7 @@ const STEPS = [
   },
   {
     id: 'Extras',
-    body: 'Enfoque de diseño, buffet, bar, concepto de restaurante, regímenes de pensión y extras booleanos (late checkout, shuttle…).',
+    body: 'Enfoque de diseño; buffets, bares y restaurantes (puedes marcar varios a la vez); regímenes de pensión y extras (late checkout, shuttle…).',
   },
   {
     id: 'Foto',
@@ -295,12 +295,15 @@ function writePdf() {
   h1('Diseño, comida y pensión')
   h2('Enfoque de diseño (DESIGN_FOCUS)')
   bullets(DESIGN_FOCUS)
-  h2('Buffet (BUFFET)')
+  h2('Buffets (marca varios)')
   bullets(BUFFET)
-  h2('Bar (BAR)')
+  para('En el constructor puedes activar varios buffets a la vez; cada uno suma coste, demanda y gasto diario.')
+  h2('Bares (marca varios)')
   bullets(BAR)
-  h2('Concepto de restaurante (RESTAURANT)')
+  para('Combina lobby, azotea, coctelería, beach bar u otros según el hotel.')
+  h2('Restaurantes (varios conceptos)')
   bullets(RESTAURANT)
+  para('Activa uno o varios conceptos (buffet, a la carta, gourmet…). El nivel de restaurante del edificio es independiente.')
   h2('Regímenes de pensión (BOARD_REGIMES)')
   bullets(BOARD)
   para('Puedes ofrecer varios regímenes a la vez; el principal define el precio base y el coste diario de F&B.')
@@ -314,7 +317,7 @@ function writePdf() {
   bullets(EXTRAS)
   h2('Nota financiera')
   para(
-    'El desglose de obra suma solar, edificio, servicios, buffet/bar/restaurante y multiplicadores de calidad, personal, verde, seguridad y tech. Si no hay caja suficiente, el constructor permite financiar una parte (préstamo del grupo). Tras abrir, los ingresos diarios dependen de ocupación, precio (IA o manual), régimen, impuestos del país y tasa turística.',
+    'El desglose de obra suma solar, edificio, servicios, cada buffet/bar/restaurante marcado y multiplicadores de calidad, personal, verde, seguridad y tech. Si no hay caja suficiente, el constructor permite financiar una parte (préstamo del grupo). Tras abrir, los ingresos diarios dependen de ocupación, precio (IA o manual), régimen, impuestos del país y tasa turística.',
   )
   para(
     'Consejos: alinea marca y clientela; no sobrecargues servicios de lujo en marcas low-cost; usa el plan del grupo y la guía de marcas (PDF) para priorizar destinos.',

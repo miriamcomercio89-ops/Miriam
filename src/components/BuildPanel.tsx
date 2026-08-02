@@ -10,9 +10,9 @@ import {
   QUALITY_OPTIONS,
   GREEN_OPTIONS,
   DESIGN_FOCUS,
-  BUFFET_OPTIONS,
-  BAR_OPTIONS,
-  RESTAURANT_CONCEPTS,
+  BUFFET_SELECTABLE,
+  BAR_SELECTABLE,
+  RESTAURANT_SELECTABLE,
   SECURITY_OPTIONS,
   TECH_OPTIONS,
   BOARD_REGIMES,
@@ -72,9 +72,9 @@ function emptyDraft(subId: string, city: string): BuildDraft {
     restaurantLevel: 1,
     openingPromoDays: 7,
     designFocus: 'vistas',
-    buffetType: 'continental',
-    barType: 'lobby',
-    restaurantConcept: 'a_la_carta',
+    buffetTypes: ['continental'],
+    barTypes: ['lobby'],
+    restaurantConcepts: ['a_la_carta'],
     lateCheckout: true,
     airportDesk: false,
     securityLevel: 'medio',
@@ -694,30 +694,72 @@ export function BuildPanel() {
             <span>Días de oferta de apertura ({draft.openingPromoDays})</span>
             <input type="range" min={0} max={30} value={draft.openingPromoDays} onChange={(e) => setDraft({ ...draft, openingPromoDays: Number(e.target.value) })} />
           </label>
-          <label className="field">
-            <span>Tipo de buffet</span>
-            <select value={draft.buffetType} onChange={(e) => setDraft({ ...draft, buffetType: e.target.value as BuildDraft['buffetType'] })}>
-              {BUFFET_OPTIONS.map((o) => (
-                <option key={o.id} value={o.id}>{o.label}</option>
+          <fieldset className="services">
+            <legend>Buffets (marca todos los que quieras)</legend>
+            <div className="services__grid">
+              {BUFFET_SELECTABLE.map((o) => (
+                <label key={o.id} className="check">
+                  <input
+                    type="checkbox"
+                    checked={draft.buffetTypes.includes(o.id)}
+                    onChange={() =>
+                      setDraft({
+                        ...draft,
+                        buffetTypes: draft.buffetTypes.includes(o.id)
+                          ? draft.buffetTypes.filter((id) => id !== o.id)
+                          : [...draft.buffetTypes, o.id],
+                      })
+                    }
+                  />
+                  <span>{o.label}</span>
+                </label>
               ))}
-            </select>
-          </label>
-          <label className="field">
-            <span>Bares</span>
-            <select value={draft.barType} onChange={(e) => setDraft({ ...draft, barType: e.target.value as BuildDraft['barType'] })}>
-              {BAR_OPTIONS.map((o) => (
-                <option key={o.id} value={o.id}>{o.label}</option>
+            </div>
+          </fieldset>
+          <fieldset className="services">
+            <legend>Bares (marca todos los que quieras)</legend>
+            <div className="services__grid">
+              {BAR_SELECTABLE.map((o) => (
+                <label key={o.id} className="check">
+                  <input
+                    type="checkbox"
+                    checked={draft.barTypes.includes(o.id)}
+                    onChange={() =>
+                      setDraft({
+                        ...draft,
+                        barTypes: draft.barTypes.includes(o.id)
+                          ? draft.barTypes.filter((id) => id !== o.id)
+                          : [...draft.barTypes, o.id],
+                      })
+                    }
+                  />
+                  <span>{o.label}</span>
+                </label>
               ))}
-            </select>
-          </label>
-          <label className="field">
-            <span>Concepto de restaurante</span>
-            <select value={draft.restaurantConcept} onChange={(e) => setDraft({ ...draft, restaurantConcept: e.target.value as BuildDraft['restaurantConcept'] })}>
-              {RESTAURANT_CONCEPTS.map((o) => (
-                <option key={o.id} value={o.id}>{o.label}</option>
+            </div>
+          </fieldset>
+          <fieldset className="services">
+            <legend>Restaurantes (marca todos los conceptos)</legend>
+            <div className="services__grid">
+              {RESTAURANT_SELECTABLE.map((o) => (
+                <label key={o.id} className="check">
+                  <input
+                    type="checkbox"
+                    checked={draft.restaurantConcepts.includes(o.id)}
+                    onChange={() =>
+                      setDraft({
+                        ...draft,
+                        restaurantConcepts: draft.restaurantConcepts.includes(o.id)
+                          ? draft.restaurantConcepts.filter((id) => id !== o.id)
+                          : [...draft.restaurantConcepts, o.id],
+                      })
+                    }
+                  />
+                  <span>{o.label}</span>
+                </label>
               ))}
-            </select>
-          </label>
+            </div>
+          </fieldset>
           {([
             ['breakfastIncluded', 'Desayuno incluido'],
             ['lateCheckout', 'Salida tarde flexible'],
@@ -736,7 +778,7 @@ export function BuildPanel() {
               <span>{label}</span>
             </label>
           ))}
-          <p className="confirm-note">Buffet, bares y restaurante suben coste y demanda. El seguro lo gestiona la IA al abrir.</p>
+          <p className="confirm-note">Cada buffet, bar o restaurante suma coste y demanda. Puedes combinar varios.</p>
           <div className="nav-row">
             <button type="button" className="btn btn--ghost" onClick={goBack}>Atrás</button>
             <button type="button" className="btn btn--primary" onClick={goNext}>Seguir</button>

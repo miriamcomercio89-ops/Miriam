@@ -239,9 +239,9 @@ export function HotelDetail() {
           <div className="cost-box">
             <div><span>Marca</span><strong>{sub?.name ?? '—'}</strong></div>
             <div><span>Enfoque</span><strong>{DESIGN_FOCUS.find((d) => d.id === hotel.designFocus)?.label ?? '—'}</strong></div>
-            <div><span>Buffet</span><strong>{BUFFET_OPTIONS.find((b) => b.id === hotel.buffetType)?.label ?? '—'}</strong></div>
-            <div><span>Bares</span><strong>{BAR_OPTIONS.find((b) => b.id === hotel.barType)?.label ?? '—'}</strong></div>
-            <div><span>Restaurante</span><strong>{RESTAURANT_CONCEPTS.find((r) => r.id === hotel.restaurantConcept)?.label ?? '—'}</strong></div>
+            <div><span>Buffets</span><strong>{hotel.buffetTypes?.length ? hotel.buffetTypes.map((id) => BUFFET_OPTIONS.find((b) => b.id === id)?.label ?? id).join(', ') : 'Ninguno'}</strong></div>
+            <div><span>Bares</span><strong>{hotel.barTypes?.length ? hotel.barTypes.map((id) => BAR_OPTIONS.find((b) => b.id === id)?.label ?? id).join(', ') : 'Ninguno'}</strong></div>
+            <div><span>Restaurantes</span><strong>{hotel.restaurantConcepts?.length ? hotel.restaurantConcepts.map((id) => RESTAURANT_CONCEPTS.find((r) => r.id === id)?.label ?? id).join(', ') : 'Ninguno'}</strong></div>
             <div><span>Habitaciones tipo</span><strong>{ROOM_MIX_OPTIONS.find((m) => m.id === hotel.roomMix)?.label}</strong></div>
             <div><span>Calidad</span><strong>{QUALITY_OPTIONS.find((q) => q.id === hotel.buildQuality)?.label}</strong></div>
             <div><span>Plantas</span><strong>{hotel.floors}</strong></div>
