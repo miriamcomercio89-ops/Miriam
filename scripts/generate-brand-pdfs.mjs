@@ -16,17 +16,10 @@ const OUT = path.join(ROOT, 'public/marcas')
 
 function parseSubsidiaries() {
   const src = fs.readFileSync(path.join(ROOT, 'src/data/subsidiaries.ts'), 'utf8')
-  const paletteMatch = src.match(/const palette = \[([\s\S]*?)\]/)
-  const palette = []
-  if (paletteMatch) {
-    const re = /\['(#[0-9A-Fa-f]+)',\s*'(#[0-9A-Fa-f]+)'\]/g
-    let m
-    while ((m = re.exec(paletteMatch[1]))) palette.push([m[1], m[2]])
-  }
-
   const specs = []
+  // Cada filial declara color + accent propios en el objeto.
   const blockRe =
-    /\{\s*id:\s*'([^']+)',\s*name:\s*'([^']+)',\s*specialty:\s*'([^']+)',\s*tagline:\s*'([^']+)',\s*letter:\s*'([^']+)',\s*beachAffinity:\s*([0-9.]+),\s*costMultiplier:\s*([0-9.]+),\s*demandBonus:\s*([0-9.]+),\s*targets:\s*\[([^\]]*)\],\s*minStars:\s*(\d+),\s*maxStars:\s*(\d+),\s*lore:\s*'([^']+)',\s*imageStyle:\s*'([^']+)'\s*\}/g
+    /\{\s*id:\s*'([^']+)',\s*name:\s*'([^']+)',\s*specialty:\s*'([^']+)',\s*tagline:\s*'([^']+)',\s*letter:\s*'([^']+)',\s*beachAffinity:\s*([0-9.]+),\s*costMultiplier:\s*([0-9.]+),\s*demandBonus:\s*([0-9.]+),\s*targets:\s*\[([^\]]*)\],\s*minStars:\s*(\d+),\s*maxStars:\s*(\d+),\s*lore:\s*'([^']+)',\s*imageStyle:\s*'([^']+)',\s*color:\s*'(#[0-9A-Fa-f]+)',\s*accent:\s*'(#[0-9A-Fa-f]+)'\s*\}/g
   let m
   while ((m = blockRe.exec(src))) {
     const targets = m[9]
@@ -47,12 +40,11 @@ function parseSubsidiaries() {
       maxStars: Number(m[11]),
       lore: m[12],
       imageStyle: m[13],
+      color: m[14],
+      accent: m[15],
     })
   }
-  return specs.map((s, i) => {
-    const [color, accent] = palette[i % palette.length] ?? ['#0E6D7F', '#C4A35A']
-    return { ...s, color, accent }
-  })
+  return specs
 }
 
 function logoSvg(sub, size = 512) {
