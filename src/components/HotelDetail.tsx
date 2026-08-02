@@ -64,12 +64,7 @@ export function HotelDetail() {
       : ([hotel.boardRegime ?? 'solo'] as BoardRegime[])
 
   return (
-    <>
-      <div className="hotel-photo-fs" aria-hidden={!image}>
-        <img src={image} alt="" />
-        <div className="hotel-photo-fs__veil" />
-      </div>
-      <aside className="panel panel--detail">
+    <aside className="panel panel--detail">
       <div className="panel__head">
         <div className="detail-title">
           {sub && <img className="filial-logo filial-logo--xl" src={subsidiaryLogoSvg(sub, 256)} alt="" width={96} height={96} />}
@@ -131,6 +126,10 @@ export function HotelDetail() {
         <span className="muted" style={{ fontSize: '0.75rem' }}>
           {idx + 1}/{hotels.length}
         </span>
+      </div>
+
+      <div className="hotel-photo-a4">
+        <img src={image} alt={hotel.name} className="hotel-hero-img" />
       </div>
 
       {hotel.vipTonight && (
@@ -346,6 +345,5 @@ export function HotelDetail() {
         </div>
       )}
     </aside>
-    </>
   )
 }
