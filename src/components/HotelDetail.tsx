@@ -21,7 +21,7 @@ import { boardLabel } from '../lib/loyalty'
 import { geoRegionLabel } from '../lib/geo'
 import { resolveHotelImage } from '../lib/images'
 import { getWeather } from '../lib/weather'
-import { downloadHotelPdf, svgDataUrlToPng } from '../lib/hotelPdf'
+import { downloadHotelPdf, anyImageToPng } from '../lib/hotelPdf'
 import type { BoardRegime } from '../types'
 
 export function HotelDetail() {
@@ -104,7 +104,8 @@ export function HotelDetail() {
           onClick={() => {
             if (!sub) return
             void (async () => {
-              const logoPng = await svgDataUrlToPng(subsidiaryLogoSvg(sub, 256), 256)
+              const logoSrc = subsidiaryLogoSvg(sub, 512)
+              const logoPng = (await anyImageToPng(logoSrc, 512)) || logoSrc
               await downloadHotelPdf({
                 hotel,
                 sub,

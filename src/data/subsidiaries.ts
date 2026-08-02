@@ -1,5 +1,6 @@
 import type { Subsidiary } from '../types'
 import { subsidiaryLogoDataUrl } from '../lib/brandLogos'
+import { brandLogoPublicPath } from '../lib/brandLogoAssets'
 
 const palette = [
   ['#6E2020', '#DD6363'],
@@ -126,9 +127,21 @@ export function getSubsidiary(id: string): Subsidiary | undefined {
   return SUBSIDIARIES.find((s) => s.id === id)
 }
 
-/** Logo de marca elaborativo (SVG data-URL). Por defecto 128px — usar tamaño grande en UI. */
-export function subsidiaryLogoSvg(sub: Subsidiary, size = 128): string {
+const LOGO_PNG_MISSING = new Set<string>()
+
+export function markBrandLogoMissing(id: string) {
+  LOGO_PNG_MISSING.add(id)
+}
+
+/** URL del logo: PNG generado por IA en /marcas/logos; fallback SVG. */
+export function subsidiaryLogoUrl(sub: Subsidiary, size = 128): string {
+  if (!LOGO_PNG_MISSING.has(sub.id)) return brandLogoPublicPath(sub.id)
   return subsidiaryLogoDataUrl(sub, size)
+}
+
+/** Compat: mismos callers; ahora prioriza PNG IA. */
+export function subsidiaryLogoSvg(sub: Subsidiary, size = 128): string {
+  return subsidiaryLogoUrl(sub, size)
 }
 
 export function hotelPlaceholderImage(sub: Subsidiary, name: string): string {

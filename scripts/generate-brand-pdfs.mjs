@@ -60,6 +60,10 @@ function logoSvg(sub, size = 512) {
 }
 
 function logoPng(sub, size = 512) {
+  const jpgPath = path.join(ROOT, 'public/marcas/logos', `${sub.id}.jpg`)
+  if (fs.existsSync(jpgPath)) {
+    return fs.readFileSync(jpgPath)
+  }
   const resvg = new Resvg(logoSvg(sub, size), {
     fitTo: { mode: 'width', value: size },
   })

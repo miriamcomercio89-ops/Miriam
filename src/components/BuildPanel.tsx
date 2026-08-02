@@ -19,10 +19,10 @@ import {
 } from '../data/catalog'
 import { calcConstructionCost, calcConstructionBreakdown, estimateDaily, fairPrice, getSeason, seasonLabel } from '../lib/economy'
 import { formatEUR, formatPct } from '../lib/format'
-import { galleryImages } from '../lib/gallery'
 import { geoRegionLabel } from '../lib/geo'
 import { evaluateSiteFit } from '../lib/siteFit'
-import { downloadHotelPdf, svgDataUrlToPng } from '../lib/hotelPdf'
+import { downloadHotelPdf, anyImageToPng } from '../lib/hotelPdf'
+import { compressHotelPhoto } from '../lib/saveio'
 import type {
   BuildDraft,
   HotelService,
@@ -52,7 +52,6 @@ const STEPS: { id: Step; label: string }[] = [
 function emptyDraft(subId: string, city: string): BuildDraft {
   const sub = getSubsidiary(subId)!
   const name = `${sub.name.replace('Orbis ', '')} ${city}`
-  const imgs = galleryImages(sub, name)
   return {
     name,
     subsidiaryId: subId,
@@ -61,8 +60,8 @@ function emptyDraft(subId: string, city: string): BuildDraft {
     services: ['wifi_premium', 'restaurante', 'parking'],
     staffLevel: 'estandar',
     target: sub.targets[0],
-    imageDataUrl: imgs[0],
-    imageKey: `${sub.imageStyle}:day`,
+    imageDataUrl: '',
+    imageKey: 'upload',
     roomMix: 'estandar',
     buildQuality: 'bueno',
     floors: 4,
@@ -110,7 +109,6 @@ export function BuildPanel() {
   const [filter, setFilter] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [draft, setDraft] = useState<BuildDraft | null>(null)
-  const [gallery, setGallery] = useState<string[]>([])
   const [previewBrand, setPreviewBrand] = useState<Subsidiary | null>(null)
   const [useFinance, setUseFinance] = useState(false)
   const [downloadPdf, setDownloadPdf] = useState(true)
@@ -122,7 +120,6 @@ export function BuildPanel() {
     setFilter('')
     setError(null)
     setDraft(null)
-    setGallery([])
     setPreviewBrand(null)
     setUseFinance(false)
     setDownloadPdf(true)
@@ -210,14 +207,28 @@ export function BuildPanel() {
   function onImageFile(file: File | null) {
     if (!file || !draft) return
     const reader = new FileReader()
-    reader.onload = () => setDraft({ ...draft, imageDataUrl: String(reader.result) })
+    reader.onload = () => {
+      void (async () => {
+        const raw = String(reader.result)
+        const compressed = await compressHotelPhoto(raw)
+        setDraft({ ...draft, imageDataUrl: compressed, imageKey: 'upload' })
+        setError(null)
+      })()
+    }
     reader.readAsDataURL(file)
   }
 
   function goNext() {
     const order = STEPS.map((s) => s.id)
     const i = order.indexOf(step)
-    if (i < order.length - 1) setStep(order[i + 1])
+    if (step === 'foto' && (!draft?.imageDataUrl || draft.imageDataUrl.length < 40)) {
+      setError('Sube una foto del hotel para continuar.')
+      return
+    }
+    if (i < order.length - 1) {
+      setError(null)
+      setStep(order[i + 1])
+    }
   }
 
   function goBack() {
@@ -229,7 +240,6 @@ export function BuildPanel() {
   function pickBrand(s: Subsidiary) {
     const d = emptyDraft(s.id, site.city)
     setDraft(d)
-    setGallery(galleryImages(s, d.name, site.climateLabel || site.geoRegion || s.imageStyle))
     setPreviewBrand(null)
     setStep('basico')
     setError(null)
@@ -237,6 +247,11 @@ export function BuildPanel() {
 
   async function onCreate() {
     if (!draft) return
+    if (!draft.imageDataUrl || draft.imageDataUrl.length < 40) {
+      setError('Falta la foto del hotel. Vuelve al paso Foto y súbela.')
+      setStep('foto')
+      return
+    }
     setBusy(true)
     setError(null)
     const res = buildHotel(draft, site, { finance: useFinance && shortfall > 0 })
@@ -249,7 +264,8 @@ export function BuildPanel() {
       try {
         const brand = getSubsidiary(res.hotel.subsidiaryId)
         if (brand) {
-          const logoPng = await svgDataUrlToPng(subsidiaryLogoSvg(brand, 256), 256)
+          const logoSrc = subsidiaryLogoSvg(brand, 512)
+          const logoPng = (await anyImageToPng(logoSrc, 512)) || logoSrc
           await downloadHotelPdf({
             hotel: res.hotel,
             sub: brand,
@@ -788,44 +804,41 @@ export function BuildPanel() {
 
       {step === 'foto' && draft && sub && (
         <div className="panel__body">
-          <img src={draft.imageDataUrl} alt="Foto del hotel" className="hotel-preview" />
-          <p className="panel__meta">Galería Orbis o sube la tuya</p>
-          <div className="gallery-grid">
-            {(gallery.length ? gallery : galleryImages(sub, draft.name, loc.climateLabel || loc.geoRegion)).map((src, idx) => {
-              const moods = ['day', 'dusk', 'night', 'aerial', 'sunny', 'storm', 'spring', 'winter'] as const
-              const key = `${sub.imageStyle}:${moods[idx] ?? 'day'}`
-              return (
-                <button
-                  key={key}
-                  type="button"
-                  className={`gallery-thumb ${draft.imageKey === key ? 'is-selected' : ''}`}
-                  onClick={() => setDraft({ ...draft, imageDataUrl: src, imageKey: key })}
-                >
-                  <img src={src} alt="" />
-                </button>
-              )
-            })}
-          </div>
+          {draft.imageDataUrl ? (
+            <img src={draft.imageDataUrl} alt="Foto del hotel" className="hotel-preview" />
+          ) : (
+            <div className="hotel-preview hotel-preview--empty">
+              <p>Sin foto todavía</p>
+              <p className="muted">Sube una imagen tuya del hotel. No hay galería por defecto.</p>
+            </div>
+          )}
+          <p className="panel__meta">Obligatorio: sube tu propia foto (se guarda con la partida).</p>
           <div className="image-actions">
-            <button
-              type="button"
-              className="btn btn--ghost"
-              onClick={() => {
-                const imgs = galleryImages(sub, draft.name, loc.climateLabel || loc.geoRegion)
-                setGallery(imgs)
-                setDraft({ ...draft, imageDataUrl: imgs[0], imageKey: `${sub.imageStyle}:day` })
-              }}
-            >
-              Nuevas fotos
-            </button>
-            <label className="btn btn--ghost file-btn">
-              Subir foto
+            <label className="btn btn--primary file-btn">
+              {draft.imageDataUrl ? 'Cambiar foto' : 'Subir foto'}
               <input type="file" accept="image/*" hidden onChange={(e) => onImageFile(e.target.files?.[0] ?? null)} />
             </label>
+            {draft.imageDataUrl && (
+              <button
+                type="button"
+                className="btn btn--ghost"
+                onClick={() => setDraft({ ...draft, imageDataUrl: '', imageKey: 'upload' })}
+              >
+                Quitar foto
+              </button>
+            )}
           </div>
+          {error && <p className="error-msg">{error}</p>}
           <div className="nav-row">
             <button type="button" className="btn btn--ghost" onClick={goBack}>Atrás</button>
-            <button type="button" className="btn btn--primary" onClick={goNext}>Revisar</button>
+            <button
+              type="button"
+              className="btn btn--primary"
+              disabled={!draft.imageDataUrl}
+              onClick={goNext}
+            >
+              Revisar
+            </button>
           </div>
         </div>
       )}

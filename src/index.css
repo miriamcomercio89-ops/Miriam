@@ -631,6 +631,15 @@ button {
   display: block;
 }
 
+.hotel-preview--empty {
+  display: grid;
+  place-content: center;
+  text-align: center;
+  background: linear-gradient(160deg, color-mix(in oklab, var(--panel) 80%, #1a3a4a), var(--panel));
+  min-height: 180px;
+  padding: 1.25rem;
+}
+
 .hotel-hero-img {
   margin: 0 1rem 0.75rem;
   width: calc(100% - 2rem);

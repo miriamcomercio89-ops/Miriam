@@ -12,7 +12,7 @@ import {
 import { generateDemoHotels } from '../lib/demoHotels'
 import { defaultImageKey } from '../lib/images'
 import { gameDay } from '../lib/format'
-import { SLOT_KEYS, idbSave, tryLocalStorageSave, readLocalStorageSave, idbLoad } from '../lib/saveio'
+import { SLOT_KEYS, idbSave, tryLocalStorageSave, readLocalStorageSave, idbLoad, idbLoadHotelImages, mergeHotelImages } from '../lib/saveio'
 import { applyDays } from '../lib/daySim'
 import { playBuildSound, playDaySound, playSellSound } from '../lib/sound'
 import type { WorkerDayRequest, WorkerDayResponse } from '../workers/dayWorker'
@@ -498,6 +498,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const sub = getSubsidiary(draft.subsidiaryId)
     if (!sub) return { ok: false, error: 'Marca no válida.' }
     if (!draft.name.trim()) return { ok: false, error: 'Pon un nombre al hotel.' }
+    if (!draft.imageDataUrl || draft.imageDataUrl.length < 40 || draft.imageDataUrl.includes('image/svg+xml')) {
+      return { ok: false, error: 'Sube una foto propia del hotel antes de construir.' }
+    }
     if (draft.stars < sub.minStars || draft.stars > sub.maxStars) {
       return { ok: false, error: `Esta marca admite de ${sub.minStars} a ${sub.maxStars} estrellas.` }
     }
@@ -687,6 +690,16 @@ export const useGameStore = create<GameStore>((set, get) => ({
   },
 
   loadLocal: async () => {
+    // Prefer IndexedDB: incluye fotos de hoteles
+    const fromIdb = await idbLoad()
+    if (fromIdb) {
+      try {
+        get().hydrate(migrate(fromIdb))
+        return true
+      } catch {
+        /* fall through */
+      }
+    }
     const fromLs = readLocalStorageSave([
       STORAGE_KEY,
       'orbis-hotels-group-save-v8',
@@ -698,21 +711,18 @@ export const useGameStore = create<GameStore>((set, get) => ({
       'orbis-hotels-group-save-v2',
       'orbis-hotels-group-save-v1',
     ])
-    if (fromLs) {
+    if (!fromLs) return false
+    try {
+      const images = await idbLoadHotelImages()
+      get().hydrate(migrate(mergeHotelImages(fromLs, images)))
+      return true
+    } catch {
       try {
         get().hydrate(migrate(fromLs))
         return true
       } catch {
-        /* fall through to IDB */
+        return false
       }
-    }
-    const fromIdb = await idbLoad()
-    if (!fromIdb) return false
-    try {
-      get().hydrate(migrate(fromIdb))
-      return true
-    } catch {
-      return false
     }
   },
 
@@ -799,19 +809,21 @@ export const useGameStore = create<GameStore>((set, get) => ({
   loadFromSlot: async (slot) => {
     const key = SLOT_KEYS[slot - 1]
     const idbKey = IDB_SLOT_KEYS[slot - 1]
-    const raw = localStorage.getItem(key)
-    if (raw) {
+    const fromIdb = await idbLoad(idbKey)
+    if (fromIdb) {
       try {
-        get().hydrate({ ...migrate(JSON.parse(raw) as GameState), started: true })
+        get().hydrate({ ...migrate(fromIdb), started: true })
         return true
       } catch {
         /* fall through */
       }
     }
-    const fromIdb = await idbLoad(idbKey)
-    if (!fromIdb) return false
+    const raw = localStorage.getItem(key)
+    if (!raw) return false
     try {
-      get().hydrate({ ...migrate(fromIdb), started: true })
+      const parsed = JSON.parse(raw) as GameState
+      const images = await idbLoadHotelImages(idbKey)
+      get().hydrate({ ...migrate(mergeHotelImages(parsed, images)), started: true })
       return true
     } catch {
       return false

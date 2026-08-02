@@ -99,6 +99,9 @@ export function SaveMenu() {
           </button>
 
           <p className="mini-title">Ranuras locales (navegador)</p>
+          <p className="muted" style={{ fontSize: '0.75rem', margin: '0 0 0.5rem' }}>
+            Las fotos de los hoteles se guardan en IndexedDB con la partida (también en el .orbis.gz).
+          </p>
           {[1, 2, 3].map((slot) => {
             const has = slotOccupied[slot - 1]
             return (

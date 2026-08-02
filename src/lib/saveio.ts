@@ -2,10 +2,12 @@ import { gunzipSync, gzipSync, strFromU8, strToU8 } from 'fflate'
 import type { GameState, Hotel } from '../types'
 
 const IDB_NAME = 'orbis-hotels-db'
+const IDB_VERSION = 2
 const IDB_STORE = 'saves'
+const IDB_IMAGES = 'hotel-images'
 export const IDB_MAIN_KEY = 'main'
 
-/** Quita fotos pesadas para partidas enormes (se regeneran por imageKey). */
+/** Quita fotos del JSON liviano (localStorage). Las fotos viven en IndexedDB. */
 export function compactState(state: GameState): GameState {
   const hotels = state.hotels.map((h) => {
     if (!h.imageDataUrl || h.imageDataUrl.length < 800) return h
@@ -15,8 +17,14 @@ export function compactState(state: GameState): GameState {
   return { ...state, hotels }
 }
 
-export function compressSave(state: GameState): Uint8Array {
-  const json = JSON.stringify(compactState(state))
+/** Estado completo con fotos (para export / IDB meta+images). */
+export function fullState(state: GameState): GameState {
+  return state
+}
+
+export function compressSave(state: GameState, keepImages = true): Uint8Array {
+  const payload = keepImages ? state : compactState(state)
+  const json = JSON.stringify(payload)
   return gzipSync(strToU8(json), { level: 6 })
 }
 
@@ -26,7 +34,8 @@ export function decompressSave(bytes: Uint8Array): GameState {
 }
 
 export function downloadCompressedSave(state: GameState, filename: string) {
-  const bytes = compressSave(state)
+  // Export incluye fotos de hoteles
+  const bytes = compressSave(state, true)
   const blob = new Blob([bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer], {
     type: 'application/gzip',
   })
@@ -54,22 +63,88 @@ export function slotLabel(i: number): string {
 
 function openDb(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
-    const req = indexedDB.open(IDB_NAME, 1)
+    const req = indexedDB.open(IDB_NAME, IDB_VERSION)
     req.onupgradeneeded = () => {
       const db = req.result
       if (!db.objectStoreNames.contains(IDB_STORE)) db.createObjectStore(IDB_STORE)
+      if (!db.objectStoreNames.contains(IDB_IMAGES)) db.createObjectStore(IDB_IMAGES)
     }
     req.onsuccess = () => resolve(req.result)
     req.onerror = () => reject(req.error)
   })
 }
 
-/** Guardado grande en IndexedDB (mejor para miles de hoteles). */
+function imagesKey(saveKey: string) {
+  return `${saveKey}::images`
+}
+
+/** Guarda mapa hotelId → dataURL de foto. */
+export async function idbSaveHotelImages(
+  hotels: Hotel[],
+  saveKey = IDB_MAIN_KEY,
+): Promise<number> {
+  const db = await openDb()
+  const map: Record<string, string> = {}
+  let n = 0
+  for (const h of hotels) {
+    if (h.imageDataUrl && h.imageDataUrl.length > 32 && !h.imageDataUrl.includes('image/svg+xml')) {
+      map[h.id] = h.imageDataUrl
+      n++
+    }
+  }
+  await new Promise<void>((resolve, reject) => {
+    const tx = db.transaction(IDB_IMAGES, 'readwrite')
+    tx.objectStore(IDB_IMAGES).put(map, imagesKey(saveKey))
+    tx.oncomplete = () => resolve()
+    tx.onerror = () => reject(tx.error)
+  })
+  db.close()
+  return n
+}
+
+export async function idbLoadHotelImages(saveKey = IDB_MAIN_KEY): Promise<Record<string, string>> {
+  try {
+    const db = await openDb()
+    const result = await new Promise<Record<string, string> | null>((resolve, reject) => {
+      const tx = db.transaction(IDB_IMAGES, 'readonly')
+      const req = tx.objectStore(IDB_IMAGES).get(imagesKey(saveKey))
+      req.onsuccess = () => resolve((req.result as Record<string, string>) ?? null)
+      req.onerror = () => reject(req.error)
+    })
+    db.close()
+    return result ?? {}
+  } catch {
+    return {}
+  }
+}
+
+export function mergeHotelImages(state: GameState, images: Record<string, string>): GameState {
+  if (!images || !Object.keys(images).length) return state
+  return {
+    ...state,
+    hotels: state.hotels.map((h) => {
+      const img = images[h.id]
+      if (!img) return h
+      return { ...h, imageDataUrl: img }
+    }),
+  }
+}
+
+/** Guardado grande en IndexedDB: meta + fotos de hoteles. */
 export async function idbSave(state: GameState, key = IDB_MAIN_KEY): Promise<void> {
   const db = await openDb()
+  // Meta sin fotos en el blob principal (más estable); fotos en store aparte
+  const meta = compactState(state)
   await new Promise<void>((resolve, reject) => {
-    const tx = db.transaction(IDB_STORE, 'readwrite')
-    tx.objectStore(IDB_STORE).put(compactState(state), key)
+    const tx = db.transaction([IDB_STORE, IDB_IMAGES], 'readwrite')
+    tx.objectStore(IDB_STORE).put(meta, key)
+    const map: Record<string, string> = {}
+    for (const h of state.hotels) {
+      if (h.imageDataUrl && h.imageDataUrl.length > 32 && !h.imageDataUrl.includes('image/svg+xml')) {
+        map[h.id] = h.imageDataUrl
+      }
+    }
+    tx.objectStore(IDB_IMAGES).put(map, imagesKey(key))
     tx.oncomplete = () => resolve()
     tx.onerror = () => reject(tx.error)
   })
@@ -79,14 +154,24 @@ export async function idbSave(state: GameState, key = IDB_MAIN_KEY): Promise<voi
 export async function idbLoad(key = IDB_MAIN_KEY): Promise<GameState | null> {
   try {
     const db = await openDb()
-    const result = await new Promise<GameState | null>((resolve, reject) => {
+    const meta = await new Promise<GameState | null>((resolve, reject) => {
       const tx = db.transaction(IDB_STORE, 'readonly')
       const req = tx.objectStore(IDB_STORE).get(key)
       req.onsuccess = () => resolve((req.result as GameState) ?? null)
       req.onerror = () => reject(req.error)
     })
+    if (!meta) {
+      db.close()
+      return null
+    }
+    const images = await new Promise<Record<string, string>>((resolve, reject) => {
+      const tx = db.transaction(IDB_IMAGES, 'readonly')
+      const req = tx.objectStore(IDB_IMAGES).get(imagesKey(key))
+      req.onsuccess = () => resolve((req.result as Record<string, string>) ?? {})
+      req.onerror = () => reject(req.error)
+    })
     db.close()
-    return result
+    return mergeHotelImages(meta, images)
   } catch {
     return null
   }
@@ -98,6 +183,7 @@ export async function idbHasSave(key = IDB_MAIN_KEY): Promise<boolean> {
 }
 
 export function tryLocalStorageSave(key: string, state: GameState): boolean {
+  // localStorage siempre sin fotos (cuota); IndexedDB lleva las fotos
   const compact = compactState(state)
   try {
     localStorage.setItem(key, JSON.stringify(compact))
@@ -128,4 +214,29 @@ export function readLocalStorageSave(keys: string[]): GameState | null {
     }
   }
   return null
+}
+
+/** Comprime foto de hotel a JPEG razonable para miles de partidas. */
+export async function compressHotelPhoto(dataUrl: string, maxSide = 1280, quality = 0.82): Promise<string> {
+  if (!dataUrl || dataUrl.includes('image/svg')) return dataUrl
+  return new Promise((resolve) => {
+    const img = new Image()
+    img.onload = () => {
+      const scale = Math.min(1, maxSide / Math.max(img.width, img.height))
+      const w = Math.max(1, Math.round(img.width * scale))
+      const h = Math.max(1, Math.round(img.height * scale))
+      const canvas = document.createElement('canvas')
+      canvas.width = w
+      canvas.height = h
+      const ctx = canvas.getContext('2d')
+      if (!ctx) {
+        resolve(dataUrl)
+        return
+      }
+      ctx.drawImage(img, 0, 0, w, h)
+      resolve(canvas.toDataURL('image/jpeg', quality))
+    }
+    img.onerror = () => resolve(dataUrl)
+    img.src = dataUrl
+  })
 }
