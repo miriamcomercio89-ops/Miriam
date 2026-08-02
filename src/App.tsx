@@ -42,7 +42,7 @@ export default function App() {
 
   useEffect(() => {
     if (!started) return
-    const id = window.setInterval(() => persistLocal(), 20000)
+    const id = window.setInterval(() => persistLocal(), 15 * 60 * 1000)
     return () => window.clearInterval(id)
   }, [started, persistLocal])
 
