@@ -81,11 +81,14 @@ const appCss = fs.existsSync(path.join(OUT, 'app.css'))
   ? '<link rel="stylesheet" href="./app.css" />'
   : ''
 
+const BUILD_ID = `a4-${Date.now().toString(36)}`
+
 const html = `<!doctype html>
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="orbis-build" content="${BUILD_ID}" />
     <title>Orbis Hotels Group</title>
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -95,7 +98,7 @@ const html = `<!doctype html>
       rel="stylesheet"
     />
     <link rel="stylesheet" href="./leaflet.css" />
-    ${appCss}
+    ${appCss ? appCss.replace('href="./app.css"', `href="./app.css?v=${BUILD_ID}"`) : ''}
     <style>
       html, body, #root { margin: 0; height: 100%; background: #0b1f33; }
     </style>
@@ -103,7 +106,7 @@ const html = `<!doctype html>
   <body>
     <div id="root"></div>
     <noscript>Activa JavaScript para jugar.</noscript>
-    <script src="./app.js"></script>
+    <script src="./app.js?v=${BUILD_ID}"></script>
   </body>
 </html>
 `
@@ -112,11 +115,14 @@ fs.writeFileSync(path.join(OUT, 'index.html'), html)
 
 fs.writeFileSync(
   path.join(OUT, 'LEEME.txt'),
-  `Orbis Hotels Group — versión para abrir sin servidor
+  `Orbis Hotels Group — v1.4 (foto A4 solo en el menú del hotel)
 
-1. Descomprime el ZIP
-2. Entra en la carpeta
-3. Haz doble clic en index.html
+1. Borra la carpeta antigua si la tenías abierta
+2. Descomprime este ZIP de nuevo
+3. Entra en la carpeta y abre index.html
+
+La foto del hotel ya NO cubre el mapa: sale en el panel derecho
+en formato A4 vertical (210×297).
 
 Necesitas internet para el mapa (teselas) y las fuentes.
 No uses la carpeta dist/: esa sí necesita servidor.

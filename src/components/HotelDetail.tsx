@@ -128,7 +128,7 @@ export function HotelDetail() {
         </span>
       </div>
 
-      <div className="hotel-photo-a4">
+      <div className="hotel-photo-a4" title="Foto A4 vertical">
         <img src={image} alt={hotel.name} className="hotel-hero-img" />
       </div>
 
