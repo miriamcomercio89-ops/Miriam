@@ -219,7 +219,7 @@ export function WorldMap() {
 
       {tip && hover && (
         <div className="map-mini" style={{ left: hover.x + 14, top: hover.y + 14 }}>
-          {tip.logo && <img className="filial-logo filial-logo--sm" src={tip.logo} alt="" width={44} height={44} />}
+          {tip.logo && <img className="filial-logo filial-logo--md" src={tip.logo} alt="" width={56} height={56} />}
           <div>
             <strong>{tip.title}</strong>
             <span>{tip.sub}</span>

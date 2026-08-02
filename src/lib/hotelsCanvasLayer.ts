@@ -73,9 +73,9 @@ export function createHotelsCanvasLayer() {
         return
       }
 
-      const useLogos = zoom >= 10 && list.length < 4000
+      const useLogos = zoom >= 8 && list.length < 6000
       let logos = 0
-      const maxLogos = list.length > 5000 ? 60 : list.length > 3000 ? 100 : 220
+      const maxLogos = list.length > 5000 ? 120 : list.length > 2500 ? 220 : 420
 
       // Sampling when extremely dense at mid zoom
       const step =
@@ -90,14 +90,14 @@ export function createHotelsCanvasLayer() {
         const accent = SUBSIDIARY_ACCENT[h.subsidiaryId] ?? '#F2E6C8'
 
         if (useLogos && logos < maxLogos) {
-          this._drawLogo(ctx, h.subsidiaryId, p.x, p.y, selected)
+          this._drawLogo(ctx, h.subsidiaryId, p.x, p.y, selected, zoom)
           logos++
         } else {
-          const r = selected ? 5.5 : zoom >= 6 ? 3.2 : 2.2
+          const r = selected ? 6.5 : zoom >= 6 ? 4 : 2.8
           ctx.beginPath()
           ctx.fillStyle = color
-          ctx.strokeStyle = selected ? accent : 'rgba(255,255,255,0.35)'
-          ctx.lineWidth = selected ? 2 : 1
+          ctx.strokeStyle = selected ? accent : 'rgba(255,255,255,0.55)'
+          ctx.lineWidth = selected ? 2.4 : 1.2
           ctx.arc(p.x, p.y, r, 0, Math.PI * 2)
           ctx.fill()
           ctx.stroke()
@@ -154,26 +154,51 @@ export function createHotelsCanvasLayer() {
       }
     },
 
-    _drawLogo(ctx: CanvasRenderingContext2D, subsidiaryId: string, x: number, y: number, selected: boolean) {
+    _drawLogo(
+      ctx: CanvasRenderingContext2D,
+      subsidiaryId: string,
+      x: number,
+      y: number,
+      selected: boolean,
+      zoom: number,
+    ) {
       const cache: Map<string, HTMLImageElement> = this._logoCache
       let img = cache.get(subsidiaryId)
       if (!img) {
         const sub = getSubsidiary(subsidiaryId)
         if (!sub) return
         img = new Image()
-        img.src = subsidiaryLogoSvg(sub, 128)
+        img.src = subsidiaryLogoSvg(sub, 256)
         cache.set(subsidiaryId, img)
         img.onload = () => this._redraw()
       }
       if (!img.complete) {
         ctx.beginPath()
         ctx.fillStyle = SUBSIDIARY_COLOR[subsidiaryId] ?? '#C4A35A'
-        ctx.arc(x, y, selected ? 6 : 4, 0, Math.PI * 2)
+        ctx.arc(x, y, selected ? 8 : 5, 0, Math.PI * 2)
         ctx.fill()
         return
       }
-      const s = selected ? 48 : 36
+      const base = zoom >= 12 ? 52 : zoom >= 10 ? 44 : zoom >= 9 ? 38 : 32
+      const s = selected ? base + 14 : base
+      // Halo claro para leer el logo sobre el mapa
+      ctx.beginPath()
+      ctx.fillStyle = 'rgba(247, 243, 234, 0.92)'
+      ctx.arc(x, y, s / 2 + 4, 0, Math.PI * 2)
+      ctx.fill()
+      ctx.beginPath()
+      ctx.strokeStyle = selected
+        ? SUBSIDIARY_ACCENT[subsidiaryId] ?? '#C4A35A'
+        : 'rgba(11, 31, 51, 0.35)'
+      ctx.lineWidth = selected ? 2.5 : 1.4
+      ctx.arc(x, y, s / 2 + 3.5, 0, Math.PI * 2)
+      ctx.stroke()
+      ctx.save()
+      ctx.beginPath()
+      ctx.arc(x, y, s / 2, 0, Math.PI * 2)
+      ctx.clip()
       ctx.drawImage(img, x - s / 2, y - s / 2, s, s)
+      ctx.restore()
     },
   })
 
@@ -186,7 +211,7 @@ export function findNearestHotel(
   containerPoint: L.Point,
   zoom: number,
 ): Hotel | null {
-  const maxDist = zoom >= 8 ? 22 : zoom >= 5 ? 14 : 11
+  const maxDist = zoom >= 8 ? 34 : zoom >= 5 ? 18 : 12
   let best: Hotel | null = null
   let bestD = maxDist * maxDist
   const bounds = map.getBounds().pad(0.05)
@@ -215,6 +240,6 @@ export function hotelTooltipMeta(h: Hotel) {
     title: h.name,
     sub: `${sub?.name ?? 'Orbis'} · ${h.city}`,
     net: hotelNet(h),
-    logo: sub ? subsidiaryLogoSvg(sub, 96) : '',
+    logo: sub ? subsidiaryLogoSvg(sub, 128) : '',
   }
 }

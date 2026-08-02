@@ -14,7 +14,7 @@ import {
   TECH_OPTIONS,
   BOARD_REGIMES,
 } from '../data/catalog'
-import { calcConstructionCost, estimateDaily, fairPrice, getSeason, seasonLabel } from '../lib/economy'
+import { calcConstructionCost, calcConstructionBreakdown, estimateDaily, fairPrice, getSeason, seasonLabel } from '../lib/economy'
 import { formatEUR, formatPct } from '../lib/format'
 import { galleryImages } from '../lib/gallery'
 import { geoRegionLabel } from '../lib/geo'
@@ -110,6 +110,7 @@ export function BuildPanel() {
   const [useFinance, setUseFinance] = useState(false)
   const [downloadPdf, setDownloadPdf] = useState(true)
   const [busy, setBusy] = useState(false)
+  const [showCostDetail, setShowCostDetail] = useState(false)
 
   useEffect(() => {
     setStep('marca')
@@ -120,6 +121,7 @@ export function BuildPanel() {
     setPreviewBrand(null)
     setUseFinance(false)
     setDownloadPdf(true)
+    setShowCostDetail(false)
   }, [loc?.lat, loc?.lng])
 
   const filtered = useMemo(() => {
@@ -162,6 +164,7 @@ export function BuildPanel() {
   const season = getSeason(site.lat, gameMinutes)
   const eco = countryEconomy[site.countryCode]
   const cost = draft ? calcConstructionCost(draft, site) : 0
+  const breakdown = draft ? calcConstructionBreakdown(draft, site) : null
   const estimate = draft ? estimateDaily(draft, site, events, gameMinutes, rep, eco, loyaltyLevel) : null
   const sub = draft ? getSubsidiary(draft.subsidiaryId) : null
   const shortfall = Math.max(0, cost - cash)
@@ -250,6 +253,7 @@ export function BuildPanel() {
             logoPng,
             cost: res.hotel.constructionCost,
             financed: res.financed,
+            photoDataUrl: draft.imageDataUrl,
           })
         }
       } catch {
@@ -301,7 +305,45 @@ export function BuildPanel() {
             <strong className={estimate.net >= 0 ? 'pos' : 'neg'}>{formatEUR(estimate.net, true)}</strong>
           </div>
         )}
+        {breakdown && (
+          <button
+            type="button"
+            className="build-costbar__toggle"
+            onClick={() => setShowCostDetail((v) => !v)}
+          >
+            {showCostDetail ? 'Ocultar desglose' : 'Ver desglose'}
+          </button>
+        )}
       </div>
+
+      {showCostDetail && breakdown && (
+        <div className="build-breakdown">
+          <ul>
+            {breakdown.lines.map((l) => (
+              <li key={l.id}>
+                <span>{l.label}</span>
+                <strong>{formatEUR(l.amount, true)}</strong>
+              </li>
+            ))}
+          </ul>
+          <p className="build-breakdown__sub">
+            Subtotal {formatEUR(breakdown.subtotal, true)}
+          </p>
+          {breakdown.multipliers.length > 0 && (
+            <ul className="build-breakdown__mult">
+              {breakdown.multipliers.map((m) => (
+                <li key={m.id}>
+                  <span>{m.label}</span>
+                  <strong>×{m.factor.toFixed(2)}</strong>
+                </li>
+              ))}
+            </ul>
+          )}
+          <p className="build-breakdown__total">
+            Total <strong>{formatEUR(breakdown.total, true)}</strong>
+          </p>
+        </div>
+      )}
 
       <div className="stepper">
         {STEPS.map((s, i) => (

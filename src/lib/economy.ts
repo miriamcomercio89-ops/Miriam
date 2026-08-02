@@ -172,7 +172,16 @@ export function rollVipTonight(hotel: Hotel, day: number): boolean {
   return roll < 0.0015
 }
 
-export function calcConstructionCost(draft: BuildDraft, loc: LocationInsight): number {
+export type CostBreakdownLine = { id: string; label: string; amount: number }
+
+export type ConstructionBreakdown = {
+  lines: CostBreakdownLine[]
+  subtotal: number
+  multipliers: { id: string; label: string; factor: number }[]
+  total: number
+}
+
+export function calcConstructionBreakdown(draft: BuildDraft, loc: LocationInsight): ConstructionBreakdown {
   const sub = getSubsidiary(draft.subsidiaryId)
   const staff = STAFF_OPTIONS.find((s) => s.id === draft.staffLevel)!
   const mix = ROOM_MIX_OPTIONS.find((m) => m.id === draft.roomMix)!
@@ -210,29 +219,66 @@ export function calcConstructionCost(draft: BuildDraft, loc: LocationInsight): n
   const subMult = sub?.costMultiplier ?? 1
   const starMult = 1 + (draft.stars - 3) * 0.12
 
-  return Math.round(
-    (roomsCost +
-      servicesCost +
-      floorsCost +
-      meetingCost +
-      parkingCost +
-      restaurantCost +
-      seaViewCost +
-      boardSetup +
-      extras +
-      landPremium +
-      tourismLand) *
-      subMult *
-      staff.costMultiplier *
-      mix.costMult *
-      quality.costMult *
-      green.costMult *
-      security.costMult *
-      tech.costMult *
-      board.costMult *
-      starMult *
-      loc.costIndex,
-  )
+  const lines: CostBreakdownLine[] = [
+    { id: 'rooms', label: `Habitaciones (${draft.rooms} × ${formatRough(basePerRoom)})`, amount: roomsCost },
+    { id: 'services', label: 'Servicios', amount: servicesCost },
+    { id: 'floors', label: 'Plantas extra', amount: floorsCost },
+    { id: 'meetings', label: 'Salas de reuniones', amount: meetingCost },
+    { id: 'parking', label: 'Parking', amount: parkingCost },
+    { id: 'restaurant', label: 'Restaurante', amount: restaurantCost },
+    { id: 'seaview', label: 'Vistas al mar', amount: seaViewCost },
+    { id: 'board', label: 'Montaje régimen', amount: boardSetup },
+    { id: 'extras', label: 'Extras y promo', amount: extras },
+    { id: 'land', label: 'Terreno / solar', amount: landPremium },
+    { id: 'tourism', label: 'Prima turística del sitio', amount: tourismLand },
+  ].filter((l) => l.amount > 0)
+
+  const subtotal = lines.reduce((s, l) => s + l.amount, 0)
+  const multipliers = [
+    { id: 'brand', label: `Marca ${sub?.name ?? ''}`, factor: subMult },
+    { id: 'staff', label: `Personal (${staff.label})`, factor: staff.costMultiplier },
+    { id: 'mix', label: `Mix hab. (${mix.label})`, factor: mix.costMult },
+    { id: 'quality', label: `Calidad (${quality.label})`, factor: quality.costMult },
+    { id: 'green', label: `Verde (${green.label})`, factor: green.costMult },
+    { id: 'security', label: `Seguridad (${security.label})`, factor: security.costMult },
+    { id: 'tech', label: `Tech (${tech.label})`, factor: tech.costMult },
+    { id: 'board', label: `Régimen (${board.label})`, factor: board.costMult },
+    { id: 'stars', label: 'Estrellas', factor: starMult },
+    { id: 'site', label: `Índice del sitio (×${loc.costIndex})`, factor: loc.costIndex },
+  ].filter((m) => Math.abs(m.factor - 1) > 0.001)
+
+  let total = subtotal
+  for (const m of [
+    subMult,
+    staff.costMultiplier,
+    mix.costMult,
+    quality.costMult,
+    green.costMult,
+    security.costMult,
+    tech.costMult,
+    board.costMult,
+    starMult,
+    loc.costIndex,
+  ]) {
+    total *= m
+  }
+
+  return {
+    lines,
+    subtotal: Math.round(subtotal),
+    multipliers,
+    total: Math.round(total),
+  }
+}
+
+function formatRough(n: number): string {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)} M€`
+  if (n >= 1_000) return `${Math.round(n / 1000)} mil €`
+  return `${Math.round(n)} €`
+}
+
+export function calcConstructionCost(draft: BuildDraft, loc: LocationInsight): number {
+  return calcConstructionBreakdown(draft, loc).total
 }
 
 export function draftToTempHotel(

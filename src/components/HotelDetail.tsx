@@ -93,6 +93,7 @@ export function HotelDetail() {
                 sub,
                 logoPng,
                 cost: hotel.constructionCost,
+                photoDataUrl: image,
               })
             })()
           }}
