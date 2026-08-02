@@ -19,6 +19,10 @@ import {
   TECH_OPTIONS,
   BOARD_REGIMES,
   LOYALTY_TIERS,
+  DESIGN_FOCUS,
+  BUFFET_OPTIONS,
+  BAR_OPTIONS,
+  RESTAURANT_CONCEPTS,
 } from '../data/catalog'
 import { getSubsidiary } from '../data/subsidiaries'
 import { getSeason, seasonDemandMult, clamp, pseudoNoise, reputationKey, dayOfYear } from './economyCore'
@@ -203,8 +207,13 @@ export function calcConstructionBreakdown(draft: BuildDraft, loc: LocationInsigh
   const restaurantCost = draft.restaurantLevel * 120_000
   const seaViewCost = draft.rooms * (draft.seaViewShare / 100) * 12_000
   const boardSetup = draft.rooms * board.dailyPerRoom * 40
+  const buffet = BUFFET_OPTIONS.find((b) => b.id === draft.buffetType)
+  const bar = BAR_OPTIONS.find((b) => b.id === draft.barType)
+  const restaurant = RESTAURANT_CONCEPTS.find((r) => r.id === draft.restaurantConcept)
   const extras =
-    (draft.buffet ? 80_000 : 0) +
+    (buffet?.cost ?? 0) +
+    (bar?.cost ?? 0) +
+    (restaurant?.cost ?? 0) +
     (draft.lateCheckout ? 25_000 : 0) +
     (draft.airportDesk ? 60_000 : 0) +
     (draft.breakfastIncluded || draft.boardRegime !== 'solo' ? 55_000 : 0) +
@@ -343,6 +352,17 @@ export function draftToTempHotel(
     availableRegimes: [...draft.availableRegimes],
     condition: 100,
     lastRenovationDay: 0,
+    designFocus: draft.designFocus,
+    buffetType: draft.buffetType,
+    barType: draft.barType,
+    restaurantConcept: draft.restaurantConcept,
+    lateCheckout: draft.lateCheckout,
+    airportDesk: draft.airportDesk,
+    quietHours: draft.quietHours,
+    bikeRental: draft.bikeRental,
+    shuttleCity: draft.shuttleCity,
+    priceManual: false,
+    closed: false,
   }
   temp.pricePerNight = fairPrice(temp, season)
   return temp
@@ -394,15 +414,37 @@ export function simulateHotelDay(
 ): DayResult {
   const season = getSeason(hotel.lat, gameMinutes)
   const weather = getWeather(hotel.lat, gameMinutes, hotel.id)
+  const board = BOARD_REGIMES.find((b) => b.id === (hotel.boardRegime ?? 'solo'))
+  const loyalty = LOYALTY_TIERS.find((t) => t.level === loyaltyLevel) ?? LOYALTY_TIERS[0]
+  const fx = economy?.fx ?? 1
+  const inflation = economy?.inflation ?? 0
+  const taxDrift = economy?.taxDrift ?? 1
+  const touristDrift = economy?.touristDrift ?? 1
+
+  if (hotel.closed) {
+    const shutterCost = Math.round(hotel.rooms * (4 + hotel.stars) * hotel.costIndex * (1 + inflation) * fx)
+    return {
+      occupancy: 0,
+      revenue: 0,
+      costs: shutterCost,
+      tax: 0,
+      net: -shutterCost,
+      guests: 0,
+      price: hotel.pricePerNight,
+      satisfaction: clamp(hotel.satisfaction - 0.4, 20, 99),
+      season,
+      contract: null,
+      insurance: hotel.insurance,
+      vipTonight: false,
+    }
+  }
+
   const contract = hotel.id === 'temp' ? hotel.contract : aiManageContract(hotel, season)
   const insurance = hotel.id === 'temp' ? hotel.insurance : aiManageInsurance(hotel, season)
   const vipTonight = hotel.id === 'temp' ? false : rollVipTonight(hotel, gameDayNow)
-  const board = BOARD_REGIMES.find((b) => b.id === (hotel.boardRegime ?? 'solo'))
-  const loyalty = LOYALTY_TIERS.find((t) => t.level === loyaltyLevel) ?? LOYALTY_TIERS[0]
-  let price = hotel.id === 'temp' ? hotel.pricePerNight : aiAdjustPrice(hotel, season)
+  let price =
+    hotel.id === 'temp' || hotel.priceManual ? hotel.pricePerNight : aiAdjustPrice(hotel, season)
 
-  const fx = economy?.fx ?? 1
-  const inflation = economy?.inflation ?? 0
   price = Math.round(price * fx * (board?.priceMult ?? 1) ** 0.15)
   if (vipTonight) price = Math.round(price * 1.35)
 
@@ -411,6 +453,10 @@ export function simulateHotelDay(
   const holidayDemand = holidayDemandMult(gameMinutes, hotel.geoRegion, hotel.countryCode)
   const holidayCost = holidayCostMult(gameMinutes, hotel.geoRegion, hotel.countryCode)
   const conditionMod = 0.82 + ((hotel.condition ?? 100) / 100) * 0.2
+  const design = DESIGN_FOCUS.find((d) => d.id === (hotel.designFocus ?? 'vistas'))
+  const buffet = BUFFET_OPTIONS.find((b) => b.id === (hotel.buffetType ?? 'ninguno'))
+  const bar = BAR_OPTIONS.find((b) => b.id === (hotel.barType ?? 'ninguno'))
+  const restaurant = RESTAURANT_CONCEPTS.find((r) => r.id === (hotel.restaurantConcept ?? 'ninguno'))
 
   let occupancyOpen = calcOccupancy(
     { ...hotel, pricePerNight: price, rooms: openRooms },
@@ -424,7 +470,16 @@ export function simulateHotelDay(
       holidayDemand *
       conditionMod *
       (1 + (board?.demandBonus ?? 0)) *
-      (hotel.loyaltyProgram ? 1 + loyalty.demandBonus : 1),
+      (1 + (design?.demandBonus ?? 0)) *
+      (1 + (buffet?.demandBonus ?? 0)) *
+      (1 + (bar?.demandBonus ?? 0)) *
+      (1 + (restaurant?.demandBonus ?? 0)) *
+      (hotel.loyaltyProgram ? 1 + loyalty.demandBonus : 1) *
+      (hotel.lateCheckout ? 1.01 : 1) *
+      (hotel.airportDesk ? 1.012 : 1) *
+      (hotel.quietHours ? 1.008 : 1) *
+      (hotel.bikeRental ? 1.006 : 1) *
+      (hotel.shuttleCity ? 1.014 : 1),
     0.08,
     0.98,
   )
@@ -443,8 +498,9 @@ export function simulateHotelDay(
   const occupancy = (blocked + openRooms * occupancyOpen) / hotel.rooms
   const guests = Math.round(blocked + openRooms * occupancyOpen)
   const rules = getCountryRules(hotel.countryCode)
-  const corporateTax = Math.round(revenue * (hotel.taxRate || rules.taxRate))
-  const touristTax = Math.round(guests * rules.touristTaxPerNight)
+  const effectiveTax = (hotel.taxRate || rules.taxRate) * taxDrift
+  const corporateTax = Math.round(revenue * effectiveTax)
+  const touristTax = Math.round(guests * rules.touristTaxPerNight * touristDrift)
   const tax = corporateTax + touristTax
   let costs = calcDailyCosts(hotel, events, revenue, blocked, inflation, insurance, touristTax)
   costs = Math.round(costs * weather.costMult * holidayCost * fx)
@@ -608,10 +664,23 @@ function calcDailyCosts(
   const board = BOARD_REGIMES.find((b) => b.id === (hotel.boardRegime ?? 'solo'))
   const boardDaily = hotel.rooms * (board?.dailyPerRoom ?? 0)
   const conditionMaint = hotel.rooms * (2.5 + (100 - (hotel.condition ?? 100)) * 0.08)
+  const design = DESIGN_FOCUS.find((d) => d.id === (hotel.designFocus ?? 'vistas'))
+  const buffet = BUFFET_OPTIONS.find((b) => b.id === (hotel.buffetType ?? 'ninguno'))
+  const bar = BAR_OPTIONS.find((b) => b.id === (hotel.barType ?? 'ninguno'))
+  const restaurant = RESTAURANT_CONCEPTS.find((r) => r.id === (hotel.restaurantConcept ?? 'ninguno'))
   const extrasDaily =
     (hotel.breakfastIncluded && (hotel.boardRegime ?? 'solo') === 'solo' ? hotel.rooms * 2.5 : 0) +
     (hotel.loyaltyProgram ? 120 : 0) +
-    hotel.rooms * (hotel.seaViewShare / 100) * 0.8
+    hotel.rooms * (hotel.seaViewShare / 100) * 0.8 +
+    (design?.daily ?? 0) +
+    hotel.rooms * (buffet?.daily ?? 0) +
+    (bar?.daily ?? 0) +
+    hotel.rooms * (restaurant?.daily ?? 0) +
+    (hotel.lateCheckout ? 45 : 0) +
+    (hotel.airportDesk ? 180 : 0) +
+    (hotel.quietHours ? 35 : 0) +
+    (hotel.bikeRental ? 55 : 0) +
+    (hotel.shuttleCity ? 220 : 0)
   const contractAdmin = blockedRooms * 4
   const insuranceCost = insurance?.active ? insurance.dailyCost : 0
   const tax = revenue * hotel.taxRate
@@ -706,7 +775,7 @@ export function filterHotels(hotels: Hotel[], filters: MapFilters, gameDay = 1):
 }
 
 export function defaultCountryEconomy(): CountryEconomy {
-  return { inflation: 0.0004, fx: 1 }
+  return { inflation: 0.0004, fx: 1, taxDrift: 1, touristDrift: 1 }
 }
 
 export function tickCountryEconomies(
@@ -722,9 +791,13 @@ export function tickCountryEconomies(
     const cur = next[cc] ?? defaultCountryEconomy()
     const drift = (pseudoNoise(cc, h.builtAtGameDay) - 0.5) * 0.00015
     const fxDrift = (pseudoNoise(cc + 'fx', Math.round(h.pricePerNight)) - 0.5) * 0.004
+    const taxNudge = (pseudoNoise(cc + 'tax', Math.round(h.rooms + h.stars * 10)) - 0.5) * 0.012
+    const touristNudge = (pseudoNoise(cc + 'tour', Math.round(h.tourismIndex)) - 0.5) * 0.018
     next[cc] = {
       inflation: clamp(cur.inflation + drift, 0.00005, 0.002),
       fx: clamp(cur.fx + fxDrift, 0.7, 1.45),
+      taxDrift: clamp((cur.taxDrift ?? 1) + taxNudge, 0.82, 1.35),
+      touristDrift: clamp((cur.touristDrift ?? 1) + touristNudge, 0.75, 1.55),
     }
   }
   return next

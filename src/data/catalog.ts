@@ -95,11 +95,37 @@ export const GREEN_OPTIONS: { id: GreenLevel; label: string; costMult: number; d
 ]
 
 export const DESIGN_FOCUS = [
-  { id: 'vistas' as const, label: 'Buenas vistas' },
-  { id: 'silencio' as const, label: 'Mucho silencio' },
-  { id: 'fiesta' as const, label: 'Ambiente de fiesta' },
-  { id: 'trabajo' as const, label: 'Pensado para trabajar' },
-  { id: 'familia' as const, label: 'Pensado para familias' },
+  { id: 'vistas' as const, label: 'Buenas vistas', demandBonus: 0.015, daily: 0 },
+  { id: 'silencio' as const, label: 'Mucho silencio', demandBonus: 0.012, daily: 40 },
+  { id: 'fiesta' as const, label: 'Ambiente de fiesta', demandBonus: 0.02, daily: 120 },
+  { id: 'trabajo' as const, label: 'Pensado para trabajar', demandBonus: 0.014, daily: 60 },
+  { id: 'familia' as const, label: 'Pensado para familias', demandBonus: 0.016, daily: 80 },
+]
+
+export const BUFFET_OPTIONS = [
+  { id: 'ninguno' as const, label: 'Sin buffet', cost: 0, demandBonus: 0, daily: 0 },
+  { id: 'continental' as const, label: 'Buffet continental', cost: 60_000, demandBonus: 0.012, daily: 2.2 },
+  { id: 'americano' as const, label: 'Buffet americano', cost: 95_000, demandBonus: 0.018, daily: 3.4 },
+  { id: 'tematico' as const, label: 'Buffet temático', cost: 140_000, demandBonus: 0.025, daily: 4.2 },
+  { id: 'gourmet' as const, label: 'Buffet gourmet', cost: 220_000, demandBonus: 0.035, daily: 6.5 },
+]
+
+export const BAR_OPTIONS = [
+  { id: 'ninguno' as const, label: 'Sin bar', cost: 0, demandBonus: 0, daily: 0 },
+  { id: 'lobby' as const, label: 'Bar de lobby', cost: 90_000, demandBonus: 0.01, daily: 180 },
+  { id: 'azotea' as const, label: 'Bar en azotea', cost: 280_000, demandBonus: 0.022, daily: 420 },
+  { id: 'cocteleria' as const, label: 'Coctelería', cost: 190_000, demandBonus: 0.018, daily: 320 },
+  { id: 'beach_bar' as const, label: 'Beach bar', cost: 210_000, demandBonus: 0.02, daily: 350 },
+  { id: 'varios' as const, label: 'Varios bares', cost: 420_000, demandBonus: 0.03, daily: 700 },
+]
+
+export const RESTAURANT_CONCEPTS = [
+  { id: 'ninguno' as const, label: 'Sin restaurante propio', cost: 0, demandBonus: 0, daily: 0 },
+  { id: 'buffet' as const, label: 'Restaurante buffet', cost: 180_000, demandBonus: 0.02, daily: 1.8 },
+  { id: 'a_la_carta' as const, label: 'A la carta', cost: 320_000, demandBonus: 0.028, daily: 2.6 },
+  { id: 'gourmet' as const, label: 'Gourmet / firma', cost: 650_000, demandBonus: 0.04, daily: 4.5 },
+  { id: 'tematico' as const, label: 'Temático', cost: 280_000, demandBonus: 0.024, daily: 2.2 },
+  { id: 'mixto' as const, label: 'Mixto (varios conceptos)', cost: 520_000, demandBonus: 0.035, daily: 3.8 },
 ]
 
 export const SECURITY_OPTIONS = [

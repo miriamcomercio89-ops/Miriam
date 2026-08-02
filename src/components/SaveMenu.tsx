@@ -1,58 +1,36 @@
-import { useRef, useState } from 'react'
-import { useGameStore } from '../store/gameStore'
-import { cloudCreate, cloudLoad, cloudSave } from '../lib/cloud'
-import { downloadCompressedSave, readCompressedFile, SLOT_KEYS, slotLabel } from '../lib/saveio'
+import { useEffect, useRef, useState } from 'react'
+import { useGameStore, IDB_SLOT_KEYS } from '../store/gameStore'
+import { downloadCompressedSave, idbHasSave, readCompressedFile, SLOT_KEYS, slotLabel } from '../lib/saveio'
 
 export function SaveMenu() {
   const [open, setOpen] = useState(false)
   const [msg, setMsg] = useState<string | null>(null)
-  const [slotInput, setSlotInput] = useState('')
+  const [slotOccupied, setSlotOccupied] = useState<[boolean, boolean, boolean]>([false, false, false])
   const fileRef = useRef<HTMLInputElement>(null)
   const persistLocal = useGameStore((s) => s.persistLocal)
   const exportSave = useGameStore((s) => s.exportSave)
   const importSave = useGameStore((s) => s.importSave)
   const importState = useGameStore((s) => s.importState)
   const getSnapshot = useGameStore((s) => s.getSnapshot)
-  const hydrate = useGameStore((s) => s.hydrate)
-  const cloudSlotId = useGameStore((s) => s.cloudSlotId)
-  const setCloudSlot = useGameStore((s) => s.setCloudSlot)
   const gameName = useGameStore((s) => s.gameName)
   const setGameName = useGameStore((s) => s.setGameName)
   const saveToSlot = useGameStore((s) => s.saveToSlot)
   const loadFromSlot = useGameStore((s) => s.loadFromSlot)
 
-  async function saveCloud() {
-    try {
-      const snap = getSnapshot()
-      if (cloudSlotId) {
-        await cloudSave(cloudSlotId, snap)
-        setMsg(`Guardado en la nube · código ${cloudSlotId}`)
-      } else {
-        const id = await cloudCreate(snap)
-        setCloudSlot(id)
-        persistLocal()
-        setMsg(`Nueva partida en nube · código ${id}`)
-      }
-    } catch {
-      setMsg('No se pudo guardar en la nube')
-    }
+  async function refreshSlots() {
+    const flags = await Promise.all(
+      ([1, 2, 3] as const).map(async (slot) => {
+        const key = SLOT_KEYS[slot - 1]
+        if (typeof localStorage !== 'undefined' && localStorage.getItem(key)) return true
+        return idbHasSave(IDB_SLOT_KEYS[slot - 1])
+      }),
+    )
+    setSlotOccupied([flags[0], flags[1], flags[2]])
   }
 
-  async function loadCloud() {
-    const id = (slotInput || cloudSlotId || '').trim()
-    if (!id) {
-      setMsg('Escribe un código')
-      return
-    }
-    try {
-      const state = await cloudLoad(id)
-      hydrate({ ...state, cloudSlotId: id, started: true })
-      setCloudSlot(id)
-      setMsg(`Partida ${id} cargada`)
-    } catch {
-      setMsg('Código no encontrado')
-    }
-  }
+  useEffect(() => {
+    if (open) void refreshSlots()
+  }, [open])
 
   function downloadJson() {
     const blob = new Blob([exportSave()], { type: 'application/json' })
@@ -87,6 +65,17 @@ export function SaveMenu() {
     }
   }
 
+  async function onSaveSlot(slot: 1 | 2 | 3) {
+    await saveToSlot(slot)
+    setMsg(`Guardado en ${slotLabel(slot)}`)
+    void refreshSlots()
+  }
+
+  async function onLoadSlot(slot: 1 | 2 | 3) {
+    const ok = await loadFromSlot(slot)
+    setMsg(ok ? `Cargada ${slotLabel(slot)}` : 'Hueco vacío')
+  }
+
   return (
     <div className="save-menu">
       <button type="button" className="chip" onClick={() => setOpen((v) => !v)} title="Guardar y cargar">
@@ -109,21 +98,23 @@ export function SaveMenu() {
             Guardar rápido
           </button>
 
-          <p className="mini-title">Huecos 1 / 2 / 3</p>
+          <p className="mini-title">Ranuras locales (navegador)</p>
           {[1, 2, 3].map((slot) => {
-            const key = SLOT_KEYS[slot - 1]
-            const has = typeof localStorage !== 'undefined' && !!localStorage.getItem(key)
+            const has = slotOccupied[slot - 1]
             return (
               <div key={slot} className="slot-row">
-                <span>{slotLabel(slot)}{has ? ' · ocupado' : ' · vacío'}</span>
-                <button type="button" className="chip" onClick={() => { saveToSlot(slot as 1 | 2 | 3); setMsg(`Guardado en ${slotLabel(slot)}`) }}>
+                <span>
+                  {slotLabel(slot)}
+                  {has ? ' · ocupado' : ' · vacío'}
+                </span>
+                <button type="button" className="chip" onClick={() => void onSaveSlot(slot as 1 | 2 | 3)}>
                   Guardar
                 </button>
                 <button
                   type="button"
                   className="chip"
                   disabled={!has}
-                  onClick={() => setMsg(loadFromSlot(slot as 1 | 2 | 3) ? `Cargada ${slotLabel(slot)}` : 'Hueco vacío')}
+                  onClick={() => void onLoadSlot(slot as 1 | 2 | 3)}
                 >
                   Cargar
                 </button>
@@ -148,14 +139,6 @@ export function SaveMenu() {
             hidden
             onChange={(e) => void onImportFile(e.target.files?.[0] ?? null)}
           />
-          <hr />
-          <button type="button" className="btn btn--ghost btn--block" onClick={() => void saveCloud()}>
-            Nube {cloudSlotId ? `(${cloudSlotId})` : ''}
-          </button>
-          <div className="cloud-row">
-            <input value={slotInput} onChange={(e) => setSlotInput(e.target.value)} placeholder="Código nube" />
-            <button type="button" className="chip" onClick={() => void loadCloud()}>Cargar</button>
-          </div>
           {msg && <p className="save-msg">{msg}</p>}
         </div>
       )}

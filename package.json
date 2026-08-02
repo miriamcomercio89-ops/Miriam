@@ -1,7 +1,7 @@
 {
   "name": "orbis-hotels-group",
   "private": true,
-  "version": "0.9.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "concurrently -n web,api -c cyan,magenta \"vite\" \"node server/index.js\"",
@@ -14,6 +14,7 @@
     "plan:regions": "node scripts/generate-plan/build-regions.mjs",
     "plan:pdfs": "node scripts/generate-plan/generate.mjs",
     "marcas:pdfs": "node scripts/generate-brand-pdfs.mjs",
+    "constructor:pdf": "node scripts/generate-constructor-pdf.mjs",
     "build:offline": "node scripts/build-offline.mjs",
     "pack:juego": "npm run build:offline && rm -f orbis-hotels-group-juego.zip && (cd offline && zip -r -9 ../orbis-hotels-group-juego.zip .)",
     "release:juego": "npm run pack:juego"

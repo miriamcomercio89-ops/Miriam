@@ -299,6 +299,26 @@ const RULES: Record<string, CountryRules> = {
     touristTaxPerNight: 2.5,
     rules: ['TVA', 'Taxe de séjour', 'Negocios compacto'],
   },
+  MY: {
+    taxRate: 0.08,
+    touristTaxPerNight: 1.4,
+    rules: ['SST turismo', 'Tourism tax local', 'Hub SE Asia · resorts'],
+  },
+  RO: {
+    taxRate: 0.1,
+    touristTaxPerNight: 1.3,
+    rules: ['TVA', 'Taxă hotelieră locală', 'Crecimiento urbano y costa'],
+  },
+  SK: {
+    taxRate: 0.11,
+    touristTaxPerNight: 1.5,
+    rules: ['DPH', 'Local stay fee', 'Termas y montaña'],
+  },
+  BG: {
+    taxRate: 0.1,
+    touristTaxPerNight: 1.2,
+    rules: ['ДДС', 'Tourist tax municipal', 'Costa del Mar Negro'],
+  },
 }
 
 export function getCountryRules(countryCode: string): CountryRules {

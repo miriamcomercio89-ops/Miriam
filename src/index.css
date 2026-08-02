@@ -726,6 +726,44 @@ button {
   overflow-x: auto;
   padding: 0.55rem 1rem;
   border-bottom: 1px solid rgba(247, 243, 234, 0.08);
+  align-items: stretch;
+}
+
+.events-banner__holidays {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+  padding-right: 0.5rem;
+  border-right: 1px solid rgba(247, 243, 234, 0.12);
+}
+
+.events-banner__label {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--gold);
+  opacity: 0.9;
+  white-space: nowrap;
+}
+
+.holiday-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.28rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(196, 163, 90, 0.18);
+  border: 1px solid rgba(196, 163, 90, 0.45);
+  color: #f7f3ea;
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+.holiday-chip em {
+  font-style: normal;
+  opacity: 0.7;
+  font-size: 0.65rem;
 }
 
 .event-card {
@@ -737,6 +775,11 @@ button {
   border-radius: 12px;
   padding: 0.55rem 0.7rem;
   animation: rise 0.45s ease both;
+}
+
+.event-card--holiday {
+  background: rgba(196, 163, 90, 0.14);
+  border-color: rgba(196, 163, 90, 0.5);
 }
 
 .event-card strong {
@@ -1774,4 +1817,44 @@ button {
   background: transparent;
   padding: 0.45rem 0.2rem;
   font-size: 0.75rem;
+}
+
+.pause-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(6, 18, 28, 0.72);
+  backdrop-filter: blur(4px);
+  animation: rise 0.25s ease both;
+}
+
+.pause-menu {
+  width: min(360px, calc(100vw - 2rem));
+  padding: 1.25rem 1.35rem 1.1rem;
+  background: var(--panel-solid);
+  color: var(--ink);
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+}
+
+.pause-menu h2 {
+  margin: 0.15rem 0 0.35rem;
+}
+
+.pause-menu__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-top: 1rem;
+}
+
+.pause-menu__hint {
+  margin: 0.85rem 0 0;
+  font-size: 0.72rem;
+  opacity: 0.65;
+  text-align: center;
 }

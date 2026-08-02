@@ -13,18 +13,20 @@ function MapClickHandler({
   onBuild,
   onSelectHotel,
   hotels,
+  selectedId,
 }: {
   busy: boolean
   onBuild: (lat: number, lng: number) => void
   onSelectHotel: (id: string) => void
   hotels: Hotel[]
+  selectedId: string | null
 }) {
   const mode = useGameStore((s) => s.mapMode)
   useMapEvents({
     click(e) {
       if (busy) return
       const map = e.target as L.Map
-      const nearest = findNearestHotel(map, hotels, e.containerPoint, map.getZoom())
+      const nearest = findNearestHotel(map, hotels, e.containerPoint, map.getZoom(), selectedId)
       if (nearest) {
         onSelectHotel(nearest.id)
         return
@@ -84,7 +86,7 @@ function HotelsCanvas({
     const onMove = (e: L.LeafletMouseEvent) => {
       if (raf) cancelAnimationFrame(raf)
       raf = requestAnimationFrame(() => {
-        const nearest = findNearestHotel(map, hotels, e.containerPoint, map.getZoom())
+        const nearest = findNearestHotel(map, hotels, e.containerPoint, map.getZoom(), selectedId)
         const id = nearest?.id ?? null
         if (id === lastId && nearest) {
           onHover({ hotel: nearest, x: e.containerPoint.x, y: e.containerPoint.y })
@@ -109,7 +111,7 @@ function HotelsCanvas({
       map.off('mousemove', onMove)
       map.off('mouseout', clear)
     }
-  }, [map, hotels, onHover])
+  }, [map, hotels, onHover, selectedId])
 
   return null
 }
@@ -205,6 +207,7 @@ export function WorldMap() {
           onBuild={handleBuild}
           onSelectHotel={selectHotel}
           hotels={filtered}
+          selectedId={selectedHotelId}
         />
         <MapFocusController />
         <HotelsCanvas hotels={filtered} selectedId={selectedHotelId} onHover={onHover} />

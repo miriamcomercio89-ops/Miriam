@@ -10,6 +10,9 @@ import {
   QUALITY_OPTIONS,
   GREEN_OPTIONS,
   DESIGN_FOCUS,
+  BUFFET_OPTIONS,
+  BAR_OPTIONS,
+  RESTAURANT_CONCEPTS,
   SECURITY_OPTIONS,
   TECH_OPTIONS,
   BOARD_REGIMES,
@@ -69,7 +72,9 @@ function emptyDraft(subId: string, city: string): BuildDraft {
     restaurantLevel: 1,
     openingPromoDays: 7,
     designFocus: 'vistas',
-    buffet: false,
+    buffetType: 'continental',
+    barType: 'lobby',
+    restaurantConcept: 'a_la_carta',
     lateCheckout: true,
     airportDesk: false,
     securityLevel: 'medio',
@@ -270,7 +275,10 @@ export function BuildPanel() {
           <p className="panel__eyebrow">Constructor</p>
           <h2>{loc.city}</h2>
           <p className="panel__meta">
-            {loc.country} · {geoRegionLabel(loc.geoRegion)}
+            {loc.country} · {geoRegionLabel(loc.geoRegion)} ·{' '}
+            <a href="./constructor-guia.pdf" target="_blank" rel="noreferrer">
+              Guía PDF
+            </a>
           </p>
         </div>
         <button type="button" className="icon-btn" onClick={closeBuild} aria-label="Cerrar" title="Cerrar">
@@ -686,9 +694,32 @@ export function BuildPanel() {
             <span>Días de oferta de apertura ({draft.openingPromoDays})</span>
             <input type="range" min={0} max={30} value={draft.openingPromoDays} onChange={(e) => setDraft({ ...draft, openingPromoDays: Number(e.target.value) })} />
           </label>
+          <label className="field">
+            <span>Tipo de buffet</span>
+            <select value={draft.buffetType} onChange={(e) => setDraft({ ...draft, buffetType: e.target.value as BuildDraft['buffetType'] })}>
+              {BUFFET_OPTIONS.map((o) => (
+                <option key={o.id} value={o.id}>{o.label}</option>
+              ))}
+            </select>
+          </label>
+          <label className="field">
+            <span>Bares</span>
+            <select value={draft.barType} onChange={(e) => setDraft({ ...draft, barType: e.target.value as BuildDraft['barType'] })}>
+              {BAR_OPTIONS.map((o) => (
+                <option key={o.id} value={o.id}>{o.label}</option>
+              ))}
+            </select>
+          </label>
+          <label className="field">
+            <span>Concepto de restaurante</span>
+            <select value={draft.restaurantConcept} onChange={(e) => setDraft({ ...draft, restaurantConcept: e.target.value as BuildDraft['restaurantConcept'] })}>
+              {RESTAURANT_CONCEPTS.map((o) => (
+                <option key={o.id} value={o.id}>{o.label}</option>
+              ))}
+            </select>
+          </label>
           {([
             ['breakfastIncluded', 'Desayuno incluido'],
-            ['buffet', 'Buffet incluido'],
             ['lateCheckout', 'Salida tarde flexible'],
             ['airportDesk', 'Mostrador en aeropuerto'],
             ['loyaltyProgram', 'Programa de fidelidad'],
@@ -705,7 +736,7 @@ export function BuildPanel() {
               <span>{label}</span>
             </label>
           ))}
-          <p className="confirm-note">Estos extras suben el coste. El seguro lo gestiona la IA al abrir.</p>
+          <p className="confirm-note">Buffet, bares y restaurante suben coste y demanda. El seguro lo gestiona la IA al abrir.</p>
           <div className="nav-row">
             <button type="button" className="btn btn--ghost" onClick={goBack}>Atrás</button>
             <button type="button" className="btn btn--primary" onClick={goNext}>Seguir</button>

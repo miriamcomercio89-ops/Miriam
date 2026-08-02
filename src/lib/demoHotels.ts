@@ -95,6 +95,17 @@ export function generateDemoHotels(count: number, gameDayNow: number): Hotel[] {
             : ['solo', 'desayuno'],
       condition: 70 + (i % 30),
       lastRenovationDay: 0,
+      designFocus: (['vistas', 'silencio', 'fiesta', 'trabajo', 'familia'] as const)[i % 5],
+      buffetType: (['ninguno', 'continental', 'americano', 'tematico', 'gourmet'] as const)[i % 5],
+      barType: (['ninguno', 'lobby', 'azotea', 'cocteleria', 'beach_bar', 'varios'] as const)[i % 6],
+      restaurantConcept: (['ninguno', 'buffet', 'a_la_carta', 'gourmet', 'tematico', 'mixto'] as const)[i % 6],
+      lateCheckout: i % 3 === 0,
+      airportDesk: i % 7 === 0,
+      quietHours: i % 4 === 0,
+      bikeRental: i % 5 === 0,
+      shuttleCity: i % 6 === 0,
+      priceManual: false,
+      closed: false,
     }
     out.push(hotel)
   }

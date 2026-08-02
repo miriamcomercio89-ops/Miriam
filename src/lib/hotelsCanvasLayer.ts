@@ -74,33 +74,52 @@ export function createHotelsCanvasLayer() {
       }
 
       const useLogos = zoom >= 8 && list.length < 6000
-      let logos = 0
       const maxLogos = list.length > 5000 ? 120 : list.length > 2500 ? 220 : 420
+      const center = map.getCenter()
+      const anchorLat = selectedId
+        ? (list.find((h) => h.id === selectedId)?.lat ?? center.lat)
+        : center.lat
+      const anchorLng = selectedId
+        ? (list.find((h) => h.id === selectedId)?.lng ?? center.lng)
+        : center.lng
 
-      // Sampling when extremely dense at mid zoom
-      const step =
-        zoom < 8 && list.length > 8000 ? 4 : zoom < 7 && list.length > 4000 ? 3 : zoom < 7 && list.length > 2000 ? 2 : 1
+      const visible: Hotel[] = []
+      for (const h of list) {
+        if (bounds.contains([h.lat, h.lng])) visible.push(h)
+      }
 
-      for (let i = 0; i < list.length; i += step) {
-        const h = list[i]
-        if (!bounds.contains([h.lat, h.lng])) continue
+      // Selected always first for logo priority; then nearest to map center / selection
+      visible.sort((a, b) => {
+        if (a.id === selectedId) return -1
+        if (b.id === selectedId) return 1
+        const da = (a.lat - anchorLat) ** 2 + (a.lng - anchorLng) ** 2
+        const db = (b.lat - anchorLat) ** 2 + (b.lng - anchorLng) ** 2
+        return da - db
+      })
+
+      let logos = 0
+      for (const h of visible) {
         const p = map.latLngToContainerPoint([h.lat, h.lng])
         const selected = h.id === selectedId
         const color = SUBSIDIARY_COLOR[h.subsidiaryId] ?? '#C4A35A'
         const accent = SUBSIDIARY_ACCENT[h.subsidiaryId] ?? '#F2E6C8'
+        const muted = !!h.closed
 
         if (useLogos && logos < maxLogos) {
-          this._drawLogo(ctx, h.subsidiaryId, p.x, p.y, selected, zoom)
+          this._drawLogo(ctx, h.subsidiaryId, p.x, p.y, selected, zoom, muted)
           logos++
         } else {
           const r = selected ? 6.5 : zoom >= 6 ? 4 : 2.8
+          ctx.save()
+          if (muted) ctx.globalAlpha = 0.45
           ctx.beginPath()
-          ctx.fillStyle = color
+          ctx.fillStyle = muted ? '#8a8f96' : color
           ctx.strokeStyle = selected ? accent : 'rgba(255,255,255,0.55)'
           ctx.lineWidth = selected ? 2.4 : 1.2
           ctx.arc(p.x, p.y, r, 0, Math.PI * 2)
           ctx.fill()
           ctx.stroke()
+          ctx.restore()
         }
       }
     },
@@ -161,6 +180,7 @@ export function createHotelsCanvasLayer() {
       y: number,
       selected: boolean,
       zoom: number,
+      muted = false,
     ) {
       const cache: Map<string, HTMLImageElement> = this._logoCache
       let img = cache.get(subsidiaryId)
@@ -172,28 +192,31 @@ export function createHotelsCanvasLayer() {
         cache.set(subsidiaryId, img)
         img.onload = () => this._redraw()
       }
+      ctx.save()
+      if (muted) ctx.globalAlpha = 0.45
       if (!img.complete) {
         ctx.beginPath()
-        ctx.fillStyle = SUBSIDIARY_COLOR[subsidiaryId] ?? '#C4A35A'
+        ctx.fillStyle = muted ? '#8a8f96' : SUBSIDIARY_COLOR[subsidiaryId] ?? '#C4A35A'
         ctx.arc(x, y, selected ? 8 : 5, 0, Math.PI * 2)
         ctx.fill()
+        ctx.restore()
         return
       }
       const base = zoom >= 12 ? 52 : zoom >= 10 ? 44 : zoom >= 9 ? 38 : 32
       const s = selected ? base + 14 : base
-      // Halo claro para leer el logo sobre el mapa
       ctx.beginPath()
-      ctx.fillStyle = 'rgba(247, 243, 234, 0.92)'
+      ctx.fillStyle = muted ? 'rgba(180, 184, 190, 0.9)' : 'rgba(247, 243, 234, 0.92)'
       ctx.arc(x, y, s / 2 + 4, 0, Math.PI * 2)
       ctx.fill()
       ctx.beginPath()
       ctx.strokeStyle = selected
         ? SUBSIDIARY_ACCENT[subsidiaryId] ?? '#C4A35A'
-        : 'rgba(11, 31, 51, 0.35)'
+        : muted
+          ? 'rgba(80, 84, 90, 0.45)'
+          : 'rgba(11, 31, 51, 0.35)'
       ctx.lineWidth = selected ? 2.5 : 1.4
       ctx.arc(x, y, s / 2 + 3.5, 0, Math.PI * 2)
       ctx.stroke()
-      ctx.save()
       ctx.beginPath()
       ctx.arc(x, y, s / 2, 0, Math.PI * 2)
       ctx.clip()
@@ -210,14 +233,16 @@ export function findNearestHotel(
   hotels: Hotel[],
   containerPoint: L.Point,
   zoom: number,
+  selectedId?: string | null,
 ): Hotel | null {
-  const maxDist = zoom >= 8 ? 34 : zoom >= 5 ? 18 : 12
+  const maxDist = zoom >= 10 ? 42 : zoom >= 8 ? 34 : zoom >= 5 ? 18 : 12
+  const maxDistSq = maxDist * maxDist
   let best: Hotel | null = null
-  let bestD = maxDist * maxDist
+  let bestD = maxDistSq
   const bounds = map.getBounds().pad(0.05)
 
-  // Fast path: skip hotels outside padded bounds; subsample at low zoom
-  const step = zoom < 5 && hotels.length > 4000 ? 3 : zoom < 7 && hotels.length > 8000 ? 2 : 1
+  // Prefer exact nearest without aggressive step when zoom >= 8
+  const step = zoom >= 8 ? 1 : zoom < 5 && hotels.length > 4000 ? 3 : zoom < 7 && hotels.length > 8000 ? 2 : 1
 
   for (let i = 0; i < hotels.length; i += step) {
     const h = hotels[i]
@@ -231,6 +256,22 @@ export function findNearestHotel(
       best = h
     }
   }
+
+  // Prefer selected when within 1.4× pick radius and distances are close
+  if (selectedId && best && best.id !== selectedId) {
+    const sel = hotels.find((h) => h.id === selectedId)
+    if (sel && bounds.contains([sel.lat, sel.lng])) {
+      const p = map.latLngToContainerPoint([sel.lat, sel.lng])
+      const dx = p.x - containerPoint.x
+      const dy = p.y - containerPoint.y
+      const dSel = dx * dx + dy * dy
+      const preferR = maxDist * 1.4
+      if (dSel <= preferR * preferR && dSel <= bestD * 1.35) {
+        return sel
+      }
+    }
+  }
+
   return best
 }
 

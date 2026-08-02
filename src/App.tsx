@@ -17,9 +17,10 @@ import { RankingPanel } from './components/RankingPanel'
 import { CountriesPanel } from './components/CountriesPanel'
 import { NewsPanel } from './components/NewsPanel'
 import { PlanPanel } from './components/PlanPanel'
+import { PauseMenu } from './components/PauseMenu'
 import { useGameStore } from './store/gameStore'
 import { REAL_MS_PER_GAME_MINUTE } from './data/catalog'
-import { playClickSound } from './lib/sound'
+import { playAmbienceTick, playClickSound } from './lib/sound'
 import './index.css'
 
 export default function App() {
@@ -58,6 +59,12 @@ export default function App() {
   }, [persistLocal])
 
   useEffect(() => {
+    if (!started || !soundEnabled || speed === 0) return
+    const id = window.setInterval(() => playAmbienceTick(true), 12000)
+    return () => window.clearInterval(id)
+  }, [started, soundEnabled, speed])
+
+  useEffect(() => {
     if (!started) return
     const onKey = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement)?.tagName
@@ -71,8 +78,17 @@ export default function App() {
       } else if (e.key === '1') setSpeed(1)
       else if (e.key === '2') setSpeed(2)
       else if (e.key === '5') setSpeed(5)
-      else if (e.key === 'Escape') closeAllPanels()
-      else if (e.key === 'h' || e.key === 'H') st.setShowHotels(true)
+      else if (e.key === 'Escape') {
+        if (st.showPauseMenu) {
+          st.setShowPauseMenu(false)
+          setSpeed(1)
+        } else {
+          closeAllPanels()
+        }
+      } else if (e.key === 'm' || e.key === 'M') {
+        st.setSpeed(0)
+        st.setShowPauseMenu(true)
+      } else if (e.key === 'h' || e.key === 'H') st.setShowHotels(true)
       else if (e.key === 'p' || e.key === 'P') st.setShowPlan(true)
       else if (e.key === 'b' || e.key === 'B') st.setShowBank(true)
     }
@@ -102,6 +118,7 @@ export default function App() {
         <CountriesPanel />
         <NewsPanel />
         <PlanPanel />
+        <PauseMenu />
       </main>
     </div>
   )

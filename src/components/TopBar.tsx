@@ -34,6 +34,7 @@ export function TopBar() {
   const setShowStats = useGameStore((s) => s.setShowStats)
   const setShowWeekly = useGameStore((s) => s.setShowWeekly)
   const setShowPlan = useGameStore((s) => s.setShowPlan)
+  const setShowPauseMenu = useGameStore((s) => s.setShowPauseMenu)
   const generateDemo = useGameStore((s) => s.generateDemo)
   const newGame = useGameStore((s) => s.newGame)
   const gameName = useGameStore((s) => s.gameName)
@@ -44,12 +45,22 @@ export function TopBar() {
   const loyaltyLevel = useGameStore((s) => s.loyaltyLevel)
   const season = seasonLabel(getSeason(20, gameMinutes))
   const bankLocked = bankDeposits.reduce((s, d) => s + d.amount, 0)
-  const [moreOpen, setMoreOpen] = useState(false)
+  const [hub, setHub] = useState<'finanzas' | 'red' | 'plan' | null>(null)
   const [debugOpen, setDebugOpen] = useState(false)
 
   function openPanel(fn: (v: boolean) => void) {
     fn(true)
-    setMoreOpen(false)
+    setHub(null)
+  }
+
+  function openPause() {
+    setSpeed(0)
+    setShowPauseMenu(true)
+    setHub(null)
+  }
+
+  function toggleHub(id: 'finanzas' | 'red' | 'plan') {
+    setHub((v) => (v === id ? null : id))
   }
 
   return (
@@ -92,32 +103,83 @@ export function TopBar() {
       </div>
 
       <nav className="topbar__nav" aria-label="Paneles">
-        <button type="button" className="chip chip--key" title="Hoteles (H)" onClick={() => setShowHotels(true)}>
-          Hoteles <kbd>H</kbd>
-        </button>
-        <button type="button" className="chip chip--key" title="Plan (P)" onClick={() => setShowPlan(true)}>
-          Plan <kbd>P</kbd>
-        </button>
-        <button type="button" className="chip chip--key" title="Banco (B)" onClick={() => setShowBank(true)}>
-          Banco <kbd>B</kbd>
-        </button>
-        <button type="button" className="chip" title="Dinero y fama" onClick={() => setShowFinance(true)}>
-          Dinero
-        </button>
-
-        <div className={`topbar__dropdown ${moreOpen ? 'is-open' : ''}`}>
-          <button type="button" className="chip" aria-expanded={moreOpen} onClick={() => setMoreOpen((v) => !v)}>
-            Más
+        <div className={`topbar__dropdown ${hub === 'finanzas' ? 'is-open' : ''}`}>
+          <button
+            type="button"
+            className="chip chip--key"
+            title="Finanzas"
+            aria-expanded={hub === 'finanzas'}
+            onClick={() => toggleHub('finanzas')}
+          >
+            Finanzas
           </button>
-          {moreOpen && (
+          {hub === 'finanzas' && (
             <div className="topbar__menu" role="menu">
-              <button type="button" role="menuitem" onClick={() => openPanel(setShowCountries)}>Países</button>
-              <button type="button" role="menuitem" onClick={() => openPanel(setShowNews)}>Noticias</button>
-              <button type="button" role="menuitem" onClick={() => openPanel(setShowRanking)}>Ranking</button>
-              <button type="button" role="menuitem" onClick={() => openPanel(setShowCompare)}>Comparar</button>
-              <button type="button" role="menuitem" onClick={() => openPanel(setShowStats)}>Stats</button>
-              <button type="button" role="menuitem" onClick={() => openPanel(setShowWeekly)}>Semanal</button>
-              <button type="button" role="menuitem" onClick={() => openPanel(setShowLoan)}>Préstamos</button>
+              <button type="button" role="menuitem" onClick={() => openPanel(setShowFinance)}>
+                Dinero
+              </button>
+              <button type="button" role="menuitem" onClick={() => openPanel(setShowBank)}>
+                Banco <kbd>B</kbd>
+              </button>
+              <button type="button" role="menuitem" onClick={() => openPanel(setShowLoan)}>
+                Préstamos
+              </button>
+            </div>
+          )}
+        </div>
+
+        <div className={`topbar__dropdown ${hub === 'red' ? 'is-open' : ''}`}>
+          <button
+            type="button"
+            className="chip chip--key"
+            title="Red"
+            aria-expanded={hub === 'red'}
+            onClick={() => toggleHub('red')}
+          >
+            Red
+          </button>
+          {hub === 'red' && (
+            <div className="topbar__menu" role="menu">
+              <button type="button" role="menuitem" onClick={() => openPanel(setShowHotels)}>
+                Hoteles <kbd>H</kbd>
+              </button>
+              <button type="button" role="menuitem" onClick={() => openPanel(setShowCountries)}>
+                Países
+              </button>
+              <button type="button" role="menuitem" onClick={() => openPanel(setShowRanking)}>
+                Ranking
+              </button>
+              <button type="button" role="menuitem" onClick={() => openPanel(setShowCompare)}>
+                Comparar
+              </button>
+            </div>
+          )}
+        </div>
+
+        <div className={`topbar__dropdown ${hub === 'plan' ? 'is-open' : ''}`}>
+          <button
+            type="button"
+            className="chip chip--key"
+            title="Plan"
+            aria-expanded={hub === 'plan'}
+            onClick={() => toggleHub('plan')}
+          >
+            Plan
+          </button>
+          {hub === 'plan' && (
+            <div className="topbar__menu" role="menu">
+              <button type="button" role="menuitem" onClick={() => openPanel(setShowPlan)}>
+                Plan <kbd>P</kbd>
+              </button>
+              <button type="button" role="menuitem" onClick={() => openPanel(setShowWeekly)}>
+                Semanal
+              </button>
+              <button type="button" role="menuitem" onClick={() => openPanel(setShowStats)}>
+                Stats
+              </button>
+              <button type="button" role="menuitem" onClick={() => openPanel(setShowNews)}>
+                Noticias
+              </button>
               <div className="topbar__menu-sep" />
               <button type="button" role="menuitem" onClick={() => setDebugOpen((v) => !v)}>
                 Debug {debugOpen ? '▾' : '▸'}
@@ -132,7 +194,7 @@ export function TopBar() {
                       if (!window.confirm('¿Añadir ~1000 hoteles de prueba?')) return
                       const res = generateDemo(1000)
                       if (!res.ok) window.alert(res.error)
-                      setMoreOpen(false)
+                      setHub(null)
                     }}
                   >
                     Demo 1k
@@ -145,7 +207,7 @@ export function TopBar() {
                       if (!window.confirm('¿Añadir ~5000 hoteles de prueba? Puede ir más lento.')) return
                       const res = generateDemo(5000)
                       if (!res.ok) window.alert(res.error)
-                      setMoreOpen(false)
+                      setHub(null)
                     }}
                   >
                     Demo 5k
@@ -156,6 +218,9 @@ export function TopBar() {
           )}
         </div>
 
+        <button type="button" className="chip" title="Menú de pausa (M)" onClick={openPause}>
+          Menú
+        </button>
         <button type="button" className="chip" title="Sonido sí/no" onClick={toggleSound}>
           {soundEnabled ? 'Sonido' : 'Mudo'}
         </button>

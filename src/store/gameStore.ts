@@ -12,12 +12,13 @@ import {
 import { generateDemoHotels } from '../lib/demoHotels'
 import { defaultImageKey } from '../lib/images'
 import { gameDay } from '../lib/format'
-import { playBuildSound, playDaySound } from '../lib/sound'
 import { SLOT_KEYS, idbSave, tryLocalStorageSave, readLocalStorageSave, idbLoad } from '../lib/saveio'
 import { applyDays } from '../lib/daySim'
+import { playBuildSound, playDaySound, playSellSound } from '../lib/sound'
 import type { WorkerDayRequest, WorkerDayResponse } from '../workers/dayWorker'
 import type {
   BankDeposit,
+  BoardRegime,
   BuildDraft,
   ContractKind,
   GameState,
@@ -32,8 +33,9 @@ import type {
   SpeedOption,
 } from '../types'
 
-export const STORAGE_KEY = 'orbis-hotels-group-save-v7'
-export const SAVE_VERSION = 7
+export const STORAGE_KEY = 'orbis-hotels-group-save-v8'
+export const SAVE_VERSION = 8
+export const IDB_SLOT_KEYS = ['slot-1', 'slot-2', 'slot-3'] as const
 
 type UiState = {
   selectedHotelId: string | null
@@ -52,6 +54,7 @@ type UiState = {
   showWeekly: boolean
   showHotelSpecs: boolean
   showPlan: boolean
+  showPauseMenu: boolean
   mapLayer: MapLayer
   mapMode: MapMode
   mapFilters: MapFilters
@@ -96,6 +99,7 @@ type GameStore = GameState &
     setShowWeekly: (v: boolean) => void
     setShowHotelSpecs: (v: boolean) => void
     setShowPlan: (v: boolean) => void
+    setShowPauseMenu: (v: boolean) => void
     setCompareSlot: (slot: 0 | 1, hotelId: string | null) => void
     clearSaveToast: () => void
     setMapLayer: (l: MapLayer) => void
@@ -115,9 +119,15 @@ type GameStore = GameState &
     setPlanCursor: (order: number) => void
     closeAllPanels: () => void
     setGameName: (name: string) => void
-    saveToSlot: (slot: 1 | 2 | 3) => void
-    loadFromSlot: (slot: 1 | 2 | 3) => boolean
+    saveToSlot: (slot: 1 | 2 | 3) => Promise<void>
+    loadFromSlot: (slot: 1 | 2 | 3) => Promise<boolean>
     setCloudSlot: (id: string | null) => void
+    setHotelPrice: (id: string, price: number) => void
+    setHotelPriceManual: (id: string, manual: boolean) => void
+    setHotelBoard: (id: string, regime: BoardRegime) => void
+    setHotelClosed: (id: string, closed: boolean) => void
+    sellHotel: (id: string) => { ok: true; proceeds: number } | { ok: false; error: string }
+    renovateHotel: (id: string) => { ok: true; cost: number } | { ok: false; error: string }
   }
 
 function defaultLoan(): LoanState {
@@ -191,6 +201,17 @@ function migrateHotel(h: Hotel): Hotel {
     condition: anyH.condition ?? 100,
     lastRenovationDay: anyH.lastRenovationDay ?? 0,
     imageDataUrl: anyH.imageDataUrl?.startsWith('data:image/svg') ? undefined : anyH.imageDataUrl,
+    designFocus: anyH.designFocus ?? 'vistas',
+    buffetType: anyH.buffetType ?? ((anyH as { buffet?: boolean }).buffet ? 'continental' : 'ninguno'),
+    barType: anyH.barType ?? 'ninguno',
+    restaurantConcept: anyH.restaurantConcept ?? (anyH.restaurantLevel > 0 ? 'a_la_carta' : 'ninguno'),
+    lateCheckout: anyH.lateCheckout ?? false,
+    airportDesk: anyH.airportDesk ?? false,
+    quietHours: anyH.quietHours ?? false,
+    bikeRental: anyH.bikeRental ?? false,
+    shuttleCity: anyH.shuttleCity ?? false,
+    priceManual: anyH.priceManual ?? false,
+    closed: anyH.closed ?? false,
   }
 }
 
@@ -208,7 +229,17 @@ function migrate(raw: Partial<GameState> & { cash?: number }): GameState {
     soundEnabled: raw.soundEnabled ?? true,
     gameName: raw.gameName ?? 'Mi partida Orbis',
     news: raw.news ?? [],
-    countryEconomy: raw.countryEconomy ?? {},
+    countryEconomy: Object.fromEntries(
+      Object.entries(raw.countryEconomy ?? {}).map(([k, v]) => [
+        k,
+        {
+          inflation: v.inflation ?? 0.0004,
+          fx: v.fx ?? 1,
+          taxDrift: v.taxDrift ?? 1,
+          touristDrift: v.touristDrift ?? 1,
+        },
+      ]),
+    ),
     bankDeposits: raw.bankDeposits ?? [],
     loyaltyLevel: raw.loyaltyLevel ?? 1,
     loyaltyPoints: raw.loyaltyPoints ?? hotels.reduce((s, h) => s + h.lifetimeGuests, 0),
@@ -343,6 +374,7 @@ function closePanelsExcept(keep: Partial<UiState>): Partial<UiState> {
     showWeekly: false,
     showHotelSpecs: false,
     showPlan: false,
+    showPauseMenu: false,
     ...keep,
   }
 }
@@ -363,24 +395,25 @@ export const useGameStore = create<GameStore>((set, get) => ({
   showCompare: false,
   showStats: false,
   showWeekly: false,
-  showHotelSpecs: false,
-  showPlan: false,
-  mapLayer: 'streets',
-  mapMode: 'inspect',
-  mapFilters: {
-    subsidiaryId: 'all',
-    minStars: 1,
-    profit: 'all',
-    countryCode: 'all',
-    insured: 'all',
-    vipRecent: false,
-    lowCondition: false,
-  },
-  mapFocus: null,
-  rankMetric: 'net',
-  simulating: false,
-  simProgress: '',
-  saveToast: null,
+    showHotelSpecs: false,
+    showPlan: false,
+    showPauseMenu: false,
+    mapLayer: 'streets',
+    mapMode: 'inspect',
+    mapFilters: {
+      subsidiaryId: 'all',
+      minStars: 1,
+      profit: 'all',
+      countryCode: 'all',
+      insured: 'all',
+      vipRecent: false,
+      lowCondition: false,
+    },
+    mapFocus: null,
+    rankMetric: 'net',
+    simulating: false,
+    simProgress: '',
+    saveToast: null,
 
   tick: (deltaGameMinutes) => {
     const state = get()
@@ -548,6 +581,17 @@ export const useGameStore = create<GameStore>((set, get) => ({
       availableRegimes: [...draft.availableRegimes],
       condition: 100,
       lastRenovationDay: 0,
+      designFocus: draft.designFocus,
+      buffetType: draft.buffetType,
+      barType: draft.barType,
+      restaurantConcept: draft.restaurantConcept,
+      lateCheckout: draft.lateCheckout,
+      airportDesk: draft.airportDesk,
+      quietHours: draft.quietHours,
+      bikeRental: draft.bikeRental,
+      shuttleCity: draft.shuttleCity,
+      priceManual: false,
+      closed: false,
     }
 
     set({
@@ -683,6 +727,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   setShowWeekly: (v) => set(closePanelsExcept({ showWeekly: v })),
   setShowHotelSpecs: (v) => set({ showHotelSpecs: v }),
   setShowPlan: (v) => set(closePanelsExcept({ showPlan: v })),
+  setShowPauseMenu: (v) => set({ showPauseMenu: v }),
   setCompareSlot: (slot, hotelId) => {
     const ids = [...get().compareIds] as [string | null, string | null]
     ids[slot] = hotelId
@@ -716,26 +761,127 @@ export const useGameStore = create<GameStore>((set, get) => ({
     set({
       buildLocation: null,
       selectedHotelId: null,
+      showPauseMenu: false,
       ...closePanelsExcept({}),
     }),
   setGameName: (gameName) => set({ gameName }),
 
-  saveToSlot: (slot) => {
+  saveToSlot: async (slot) => {
     const key = SLOT_KEYS[slot - 1]
-    tryLocalStorageSave(key, get().getSnapshot())
+    const idbKey = IDB_SLOT_KEYS[slot - 1]
+    const snap = get().getSnapshot()
+    tryLocalStorageSave(key, snap)
+    await idbSave(snap, idbKey).catch(() => {})
     get().persistLocal()
   },
 
-  loadFromSlot: (slot) => {
+  loadFromSlot: async (slot) => {
     const key = SLOT_KEYS[slot - 1]
+    const idbKey = IDB_SLOT_KEYS[slot - 1]
     const raw = localStorage.getItem(key)
-    if (!raw) return false
+    if (raw) {
+      try {
+        get().hydrate({ ...migrate(JSON.parse(raw) as GameState), started: true })
+        return true
+      } catch {
+        /* fall through */
+      }
+    }
+    const fromIdb = await idbLoad(idbKey)
+    if (!fromIdb) return false
     try {
-      get().hydrate({ ...migrate(JSON.parse(raw) as GameState), started: true })
+      get().hydrate({ ...migrate(fromIdb), started: true })
       return true
     } catch {
       return false
     }
+  },
+
+  setHotelPrice: (id, price) => {
+    const p = Math.round(Math.min(2500, Math.max(35, price)))
+    set({
+      hotels: get().hotels.map((h) =>
+        h.id === id ? { ...h, pricePerNight: p, priceManual: true } : h,
+      ),
+    })
+  },
+
+  setHotelPriceManual: (id, manual) => {
+    set({
+      hotels: get().hotels.map((h) => (h.id === id ? { ...h, priceManual: manual } : h)),
+    })
+  },
+
+  setHotelBoard: (id, regime) => {
+    set({
+      hotels: get().hotels.map((h) => {
+        if (h.id !== id) return h
+        const available = h.availableRegimes.includes(regime)
+          ? h.availableRegimes
+          : [...h.availableRegimes, regime]
+        return {
+          ...h,
+          boardRegime: regime,
+          availableRegimes: available,
+          breakfastIncluded: regime !== 'solo' ? true : h.breakfastIncluded,
+        }
+      }),
+    })
+  },
+
+  setHotelClosed: (id, closed) => {
+    set({
+      hotels: get().hotels.map((h) =>
+        h.id === id ? { ...h, closed, contract: closed ? null : h.contract } : h,
+      ),
+    })
+  },
+
+  sellHotel: (id) => {
+    const state = get()
+    const hotel = state.hotels.find((h) => h.id === id)
+    if (!hotel) return { ok: false, error: 'Hotel no encontrado.' }
+    const netLifetime = hotel.lifetimeRevenue - hotel.lifetimeCosts
+    const conditionFactor = 0.55 + ((hotel.condition ?? 100) / 100) * 0.35
+    const proceeds = Math.max(
+      50_000,
+      Math.round(hotel.constructionCost * 0.62 * conditionFactor + Math.max(0, netLifetime) * 0.08),
+    )
+    playSellSound(state.soundEnabled)
+    set({
+      cash: state.cash + proceeds,
+      hotels: state.hotels.filter((h) => h.id !== id),
+      selectedHotelId: state.selectedHotelId === id ? null : state.selectedHotelId,
+      compareIds: state.compareIds.map((c) => (c === id ? null : c)) as [string | null, string | null],
+    })
+    return { ok: true, proceeds }
+  },
+
+  renovateHotel: (id) => {
+    const state = get()
+    const hotel = state.hotels.find((h) => h.id === id)
+    if (!hotel) return { ok: false, error: 'Hotel no encontrado.' }
+    const wear = Math.max(0, 100 - (hotel.condition ?? 100))
+    const cost = Math.round(hotel.rooms * (180 + hotel.stars * 90) * hotel.costIndex * (0.4 + wear / 100))
+    if (cost > state.cash) {
+      return { ok: false, error: `Faltan ${Math.round(cost - state.cash).toLocaleString('es-ES')} €.` }
+    }
+    const day = gameDay(state.gameMinutes)
+    set({
+      cash: state.cash - cost,
+      hotels: state.hotels.map((h) =>
+        h.id === id
+          ? {
+              ...h,
+              condition: 100,
+              lastRenovationDay: day,
+              satisfaction: Math.min(99, h.satisfaction + 4),
+            }
+          : h,
+      ),
+    })
+    playBuildSound(state.soundEnabled)
+    return { ok: true, cost }
   },
 
   takeLoan: (amount) => {

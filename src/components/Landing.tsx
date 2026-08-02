@@ -77,7 +77,7 @@ export function Landing() {
     <div className="landing">
       <div className="landing__veil" />
       <div className="landing__content">
-        <p className="landing__eyebrow">Juego de hoteles · v0.9</p>
+        <p className="landing__eyebrow">Juego de hoteles · v1.0</p>
         <h1 className="landing__brand">Orbis Hotels Group</h1>
         <p className="landing__lead">
           Construye hoteles en todo el mundo. 50 marcas. Muchos países.
@@ -109,7 +109,14 @@ export function Landing() {
           />
         </div>
         {msg && <p className="landing__lead landing__msg">{msg}</p>}
-        <p className="landing__keys">Atajos en partida: H hoteles · P plan · B banco · Espacio pausa · Esc cerrar</p>
+        <p className="landing__keys">
+          Atajos en partida: H hoteles · P plan · B banco · M menú · Espacio pausa · Esc cerrar
+        </p>
+        <p className="landing__keys">
+          <a href="./constructor-guia.pdf" target="_blank" rel="noreferrer">
+            Guía del constructor (PDF)
+          </a>
+        </p>
       </div>
     </div>
   )

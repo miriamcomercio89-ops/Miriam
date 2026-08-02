@@ -2,8 +2,12 @@ import { jsPDF } from 'jspdf'
 import type { BuildDraft, Hotel, LocationInsight, Subsidiary } from '../types'
 import {
   BOARD_REGIMES,
+  BUFFET_OPTIONS,
+  BAR_OPTIONS,
+  DESIGN_FOCUS,
   GREEN_OPTIONS,
   QUALITY_OPTIONS,
+  RESTAURANT_CONCEPTS,
   ROOM_MIX_OPTIONS,
   SECURITY_OPTIONS,
   SERVICE_CATALOG,
@@ -248,6 +252,10 @@ export async function downloadHotelPdf(args: {
       .map((id) => labelOf(BOARD_REGIMES, id))
       .join(', '),
   )
+  line('Enfoque diseño', labelOf(DESIGN_FOCUS, hotel.designFocus))
+  line('Buffet', labelOf(BUFFET_OPTIONS, hotel.buffetType))
+  line('Bar', labelOf(BAR_OPTIONS, hotel.barType))
+  line('Restaurante', labelOf(RESTAURANT_CONCEPTS, hotel.restaurantConcept))
   line('Verde', labelOf(GREEN_OPTIONS, hotel.greenLevel))
   line('Seguridad', labelOf(SECURITY_OPTIONS, hotel.securityLevel))
   line('Tecnología', labelOf(TECH_OPTIONS, hotel.techLevel))
@@ -255,6 +263,13 @@ export async function downloadHotelPdf(args: {
   line('Parking', String(hotel.parkingSpots))
   line('Restaurante Nv.', String(hotel.restaurantLevel))
   line('Vistas mar', `${hotel.seaViewShare}%`)
+  line('Late checkout', hotel.lateCheckout ? 'Sí' : 'No')
+  line('Mostrador aeropuerto', hotel.airportDesk ? 'Sí' : 'No')
+  line('Horas de silencio', hotel.quietHours ? 'Sí' : 'No')
+  line('Alquiler bicis', hotel.bikeRental ? 'Sí' : 'No')
+  line('Shuttle ciudad', hotel.shuttleCity ? 'Sí' : 'No')
+  line('Precio manual', hotel.priceManual ? 'Sí (IA no toca)' : 'No (IA)')
+  line('Cerrado', hotel.closed ? 'Sí' : 'No')
   line('Servicios', serviceLabels(hotel.services) || '—')
   line('Precio noche (IA)', formatEUR(hotel.pricePerNight))
   line('Apertura', `Día ${hotel.builtAtGameDay}`)

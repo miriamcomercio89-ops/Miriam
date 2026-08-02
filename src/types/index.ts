@@ -25,6 +25,10 @@ export type BoardRegime =
   | 'ti_imperial'
 /** Nivel 1–10 del club de fidelidad Orbis */
 export type LoyaltyLevel = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10
+export type DesignFocus = 'vistas' | 'silencio' | 'fiesta' | 'trabajo' | 'familia'
+export type BuffetType = 'ninguno' | 'continental' | 'americano' | 'tematico' | 'gourmet'
+export type BarType = 'ninguno' | 'lobby' | 'azotea' | 'cocteleria' | 'beach_bar' | 'varios'
+export type RestaurantConcept = 'ninguno' | 'buffet' | 'a_la_carta' | 'gourmet' | 'tematico' | 'mixto'
 
 export interface Subsidiary {
   id: string
@@ -145,6 +149,20 @@ export interface Hotel {
   /** 0–100 estado del edificio (desgaste) */
   condition: number
   lastRenovationDay: number
+  /** Extras operativos */
+  designFocus: DesignFocus
+  buffetType: BuffetType
+  barType: BarType
+  restaurantConcept: RestaurantConcept
+  lateCheckout: boolean
+  airportDesk: boolean
+  quietHours: boolean
+  bikeRental: boolean
+  shuttleCity: boolean
+  /** Si true, la IA no toca el precio */
+  priceManual: boolean
+  /** Hotel temporalmente cerrado */
+  closed: boolean
 }
 
 export interface WorldEvent {
@@ -190,6 +208,10 @@ export interface LoanState {
 export interface CountryEconomy {
   inflation: number
   fx: number
+  /** Multiplicador sobre impuesto base del país (políticas) */
+  taxDrift: number
+  /** Multiplicador sobre tasa turística */
+  touristDrift: number
 }
 
 export interface BankDeposit {
@@ -262,8 +284,10 @@ export interface BuildDraft {
   parkingSpots: number
   restaurantLevel: number
   openingPromoDays: number
-  designFocus: 'vistas' | 'silencio' | 'fiesta' | 'trabajo' | 'familia'
-  buffet: boolean
+  designFocus: DesignFocus
+  buffetType: BuffetType
+  barType: BarType
+  restaurantConcept: RestaurantConcept
   lateCheckout: boolean
   airportDesk: boolean
   securityLevel: SecurityLevel
