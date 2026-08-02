@@ -689,6 +689,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
   loadLocal: async () => {
     const fromLs = readLocalStorageSave([
       STORAGE_KEY,
+      'orbis-hotels-group-save-v8',
+      'orbis-hotels-group-save-v7',
       'orbis-hotels-group-save-v6',
       'orbis-hotels-group-save-v5',
       'orbis-hotels-group-save-v4',
