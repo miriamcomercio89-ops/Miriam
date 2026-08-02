@@ -12,7 +12,20 @@ import {
   roomKindsForHotel,
   visibleClientServices,
   CLIENT_CEO_CUT,
+  calcStayTotalPrice,
+  earlyCheckinFee,
+  lateCheckoutFee,
+  calcGuestNightPrice,
+  formatAppointmentClock,
 } from '../lib/clientMode'
+import {
+  CLIENT_LEVEL_PERKS,
+  POINT_REDEEMS,
+  redeemPointsCost,
+  SPECIALIZE_LABEL,
+  clientPerkInfo,
+  type PointRedeemId,
+} from '../lib/clientClub'
 import { buildServiceScreen, FREE_NIGHT_POINTS } from '../lib/clientServices'
 import { minigameForAction, type MinigameId } from '../lib/clientMinigames'
 import { ClientMinigame } from './ClientMinigame'
@@ -41,13 +54,16 @@ export function ClientPanel() {
   const clientBeginMinigame = useGameStore((s) => s.clientBeginMinigame)
   const clientFinishMinigame = useGameStore((s) => s.clientFinishMinigame)
   const clientClaimMission = useGameStore((s) => s.clientClaimMission)
-  const clientRedeemFreeNight = useGameStore((s) => s.clientRedeemFreeNight)
+  const clientRedeemPoints = useGameStore((s) => s.clientRedeemPoints)
   const clientClearNotes = useGameStore((s) => s.clientClearNotes)
   const clientDismissStay = useGameStore((s) => s.clientDismissStay)
+
   const [msg, setMsg] = useState<string | null>(null)
   const [roomKind, setRoomKind] = useState<ClientRoomKind>('estandar')
   const [board, setBoard] = useState<BoardRegime>('solo')
   const [tip, setTip] = useState(0)
+  const [nights, setNights] = useState(1)
+  const [showLevels, setShowLevels] = useState(false)
   const [serviceFocus, setServiceFocus] = useState<HotelService | null>(null)
   const [mini, setMini] = useState<ActiveMini | null>(null)
 
@@ -64,6 +80,7 @@ export function ClientPanel() {
   if (playMode !== 'cliente') return null
 
   const level = clientLevelInfo(client.level)
+  const currentPerk = clientPerkInfo(client.level)
   const stay = client.stay
   const inStay = stay?.status === 'checked_in'
   const rooms = hotel ? roomKindsForHotel(hotel) : []
@@ -71,6 +88,18 @@ export function ClientPanel() {
   const services = hotel ? visibleClientServices(hotel) : []
   const sub = hotel ? getSubsidiary(hotel.subsidiaryId) : null
   const image = hotel ? resolveHotelImage(hotel) : ''
+
+  // Pricing for reserve form
+  const nightPrice = hotel ? calcGuestNightPrice(hotel, roomKind, board, client.level, client.specialize) : 0
+  const totalPrice = hotel ? calcStayTotalPrice(hotel, roomKind, board, client.level, nights, client.specialize) : 0
+  const earlyFee = hotel ? earlyCheckinFee(nightPrice, client.level) : 0
+
+  // Pricing for active stay
+  const stayNightPrice =
+    hotel && stay
+      ? calcGuestNightPrice(hotel, stay.roomKind, stay.boardRegime, client.level, client.specialize)
+      : 0
+  const lateFee = hotel && stay ? lateCheckoutFee(hotel, stayNightPrice, client.level) : 0
 
   function togglePref(id: GuestTarget) {
     const has = client.prefs.includes(id)
@@ -82,13 +111,19 @@ export function ClientPanel() {
       setMsg('Elige un hotel en el mapa.')
       return
     }
-    const res = clientReserve(hotel.id, roomKind, board)
+    const res = clientReserve(hotel.id, roomKind, board, nights)
     setMsg(res.ok ? null : res.error)
   }
 
-  function doCheckIn() {
-    const res = clientCheckIn()
+  function doCheckIn(early = false) {
+    const res = clientCheckIn(early ? { early: true } : undefined)
     setMsg(res.ok ? null : res.error)
+  }
+
+  function doCheckOut(late = false) {
+    const res = clientCheckOut(late ? { late: true } : undefined)
+    setMsg(res.ok ? null : res.error)
+    setServiceFocus(null)
   }
 
   function doAction(actionId: string) {
@@ -114,10 +149,12 @@ export function ClientPanel() {
     setMsg(res.ok ? null : res.error)
   }
 
-  function doRedeem() {
-    const res = clientRedeemFreeNight()
+  function doRedeem(id: PointRedeemId) {
+    const res = clientRedeemPoints(id)
     setMsg(res.ok ? null : res.error)
   }
+
+  // ── Shared blocks ────────────────────────────────────────────────────────────
 
   const missionsBlock = (
     <div className="client-missions">
@@ -182,16 +219,148 @@ export function ClientPanel() {
     />
   ) : null
 
+  /** Compact needs block for the NPC partner. */
+  const partnerNeedsBlock = (
+    <div className="client-partner-needs" style={{ marginTop: '0.75rem' }}>
+      <p className="mini-title" style={{ marginBottom: '0.25rem' }}>
+        Pareja (NPC)&ensp;
+        <span className="muted" style={{ fontSize: '0.75em', fontWeight: 400 }}>
+          Solo controlas tu personaje
+        </span>
+      </p>
+      {CLIENT_NEED_IDS.slice(0, 5).map((id) => (
+        <div key={id} className="client-needs__row" style={{ fontSize: '0.8em' }}>
+          <span>{CLIENT_NEED_LABEL[id]}</span>
+          <div className="client-needs__bar">
+            <i style={{ width: `${client.partnerNeeds[id]}%`, opacity: 0.65 }} />
+          </div>
+          <em>{Math.round(client.partnerNeeds[id])}</em>
+        </div>
+      ))}
+    </div>
+  )
+
+  /** Expandable table of all club levels with discount and perk text. */
+  const levelsTable = (
+    <div className="client-levels" style={{ marginTop: '0.75rem' }}>
+      <button type="button" className="linkish" onClick={() => setShowLevels((v) => !v)}>
+        {showLevels ? '▲ Ocultar niveles Club' : '▼ Ver niveles Club Huésped'}
+      </button>
+      {showLevels && (
+        <table
+          style={{ width: '100%', fontSize: '0.77em', marginTop: '0.4rem', borderCollapse: 'collapse' }}
+        >
+          <thead>
+            <tr>
+              <th style={{ textAlign: 'left' }}>Nivel</th>
+              <th style={{ textAlign: 'right' }}>Desc.</th>
+              <th style={{ textAlign: 'left', paddingLeft: '0.5rem' }}>Beneficio</th>
+            </tr>
+          </thead>
+          <tbody>
+            {CLIENT_LEVEL_PERKS.map((p) => {
+              const isCurrent = p.level === client.level
+              return (
+                <tr
+                  key={p.level}
+                  style={{
+                    background: isCurrent ? 'rgba(255,200,50,0.15)' : undefined,
+                    fontWeight: isCurrent ? 700 : undefined,
+                  }}
+                >
+                  <td>{p.name}</td>
+                  <td style={{ textAlign: 'right' }}>{Math.round(p.discount * 100)}%</td>
+                  <td style={{ paddingLeft: '0.5rem', color: 'var(--muted, #888)' }}>{p.perk}</td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      )}
+    </div>
+  )
+
+  /** Specialization summary. */
+  const specBlock = (
+    <div className="client-specialize" style={{ marginTop: '0.75rem' }}>
+      <p className="mini-title" style={{ marginBottom: '0.15rem' }}>Especialización</p>
+      <p style={{ fontSize: '0.85em' }}>
+        <strong>{SPECIALIZE_LABEL[client.specialize]}</strong>
+        {client.specialize !== 'none' && (
+          <span className="muted">
+            {' '}· {client.specializeNights[client.specialize] ?? 0} noches
+          </span>
+        )}
+      </p>
+      {Object.keys(client.specializeNights).length > 0 && (
+        <div
+          style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap', fontSize: '0.75em', marginTop: '0.2rem' }}
+        >
+          {(Object.entries(client.specializeNights) as [string, number | undefined][])
+            .filter(([, v]) => (v ?? 0) > 0)
+            .map(([k, v]) => (
+              <span key={k} className="tag">
+                {(SPECIALIZE_LABEL as Record<string, string>)[k] ?? k}: {v}n
+              </span>
+            ))}
+        </div>
+      )}
+    </div>
+  )
+
+  /** All point-redeem options with per-level cost and redeem button. */
+  const redeemsBlock = (
+    <div className="client-redeems" style={{ marginTop: '0.75rem' }}>
+      <p className="mini-title" style={{ marginBottom: '0.25rem' }}>Canjear puntos</p>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+        {POINT_REDEEMS.map((r) => {
+          const cost = redeemPointsCost(r.id, client.level)
+          const already = client.pointRedeems.includes(r.id)
+          const canAfford = client.points >= cost
+          return (
+            <div
+              key={r.id}
+              style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', fontSize: '0.82em' }}
+            >
+              <div style={{ flex: 1 }}>
+                <strong>{r.label}</strong>
+                <span className="muted"> · {cost} pts</span>
+                <span className="muted" style={{ display: 'block', fontSize: '0.9em' }}>
+                  {r.detail}
+                </span>
+              </div>
+              <button
+                type="button"
+                className={already ? 'chip' : 'chip chip--active'}
+                disabled={already || !canAfford}
+                onClick={() => doRedeem(r.id)}
+                style={{ flexShrink: 0 }}
+              >
+                {already ? 'Canjeado' : 'Canjear'}
+              </button>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+
+  // ── Stay fullscreen view ─────────────────────────────────────────────────────
+
   if (inStay && hotel) {
     return (
       <div className="client-stay">
         {miniOverlay}
         <header className="client-stay__head">
           <div>
-            <p className="panel__eyebrow">Club Huésped Orbis · {level.name}</p>
+            <p className="panel__eyebrow">
+              Club Huésped Orbis · {level.name} · {currentPerk.perk}
+            </p>
             <h2>{hotel.name}</h2>
             <p className="panel__meta">
               {hotel.city} · {sub?.name} · Habitación {stay.roomKind.replace('_', ' ')} · pareja
+              {' · '}
+              {stay.nights} noches · {stay.nightsRemaining} restantes
             </p>
           </div>
           <button type="button" className="chip" onClick={() => setPlayMode('gerente')}>
@@ -217,6 +386,9 @@ export function ClientPanel() {
                 </div>
               ))}
             </div>
+
+            {partnerNeedsBlock}
+
             <div className="cost-box" style={{ marginTop: '0.75rem' }}>
               <div>
                 <span>Monedero</span>
@@ -237,16 +409,26 @@ export function ClientPanel() {
                 <strong>{(CLIENT_CEO_CUT * 100).toFixed(1)}% ingresos del hotel / noche</strong>
               </div>
             </div>
+
+            {specBlock}
+
             {client.appointments.length > 0 && (
               <div className="client-appointments">
                 <h3>Citas</h3>
                 <ul>
                   {client.appointments.map((a) => (
-                    <li key={a}>{a}</li>
+                    <li key={a.id} className={a.done ? 'muted' : ''}>
+                      <strong>{formatAppointmentClock(a.atMinutes)}</strong>
+                      {' · '}
+                      {a.label}
+                      {a.done ? ' ✓' : ''}
+                    </li>
                   ))}
                 </ul>
               </div>
             )}
+
+            {redeemsBlock}
             {missionsBlock}
           </div>
 
@@ -320,17 +502,18 @@ export function ClientPanel() {
 
             {msg && <p className="error">{msg}</p>}
             {notesBlock}
+
             <div className="speed-group" style={{ marginTop: '0.75rem' }}>
+              <button type="button" className="btn btn--primary" onClick={() => doCheckOut(false)}>
+                Check-out
+              </button>
               <button
                 type="button"
-                className="btn btn--primary"
-                onClick={() => {
-                  const res = clientCheckOut()
-                  setMsg(res.ok ? null : res.error)
-                  setServiceFocus(null)
-                }}
+                className="btn btn--ghost"
+                onClick={() => doCheckOut(true)}
+                title={`Cargo: ${formatEUR(lateFee)}`}
               >
-                Check-out
+                Salida tardía (+{formatEUR(lateFee)})
               </button>
             </div>
           </div>
@@ -345,6 +528,8 @@ export function ClientPanel() {
     )
   }
 
+  // ── Side panel (pre-stay) ────────────────────────────────────────────────────
+
   return (
     <aside className="panel panel--client">
       <div className="panel__head">
@@ -352,7 +537,8 @@ export function ClientPanel() {
           <p className="panel__eyebrow">Club Huésped Orbis</p>
           <h2>Cliente</h2>
           <p className="panel__meta">
-            Nv.{client.level} {level.name} · {client.points.toLocaleString('es-ES')} pts · {formatEUR(client.wallet)}
+            Nv.{client.level} {level.name} · {client.points.toLocaleString('es-ES')} pts ·{' '}
+            {formatEUR(client.wallet)}
           </p>
         </div>
         <button
@@ -404,6 +590,10 @@ export function ClientPanel() {
                 <span>Descuento nivel</span>
                 <strong>{Math.round(level.discount * 100)}%</strong>
               </div>
+              <div>
+                <span>Beneficio</span>
+                <strong>{currentPerk.perk}</strong>
+              </div>
             </div>
 
             {CLIENT_NEED_IDS.slice(0, 5).map((id) => (
@@ -415,9 +605,17 @@ export function ClientPanel() {
               </div>
             ))}
 
+            {partnerNeedsBlock}
+
+            {specBlock}
+
+            {levelsTable}
+
             {missionsBlock}
 
-            <p className="mini-title">Reservar esta noche</p>
+            {redeemsBlock}
+
+            <p className="mini-title">Reservar</p>
             <p className="muted">Clic en un hotel del mapa para elegirlo.</p>
 
             {hotel && sub && (
@@ -454,36 +652,69 @@ export function ClientPanel() {
                     ))}
                   </select>
                 </label>
+                <label className="field">
+                  <span>Noches (1–14)</span>
+                  <input
+                    type="number"
+                    min={1}
+                    max={14}
+                    value={nights}
+                    onChange={(e) =>
+                      setNights(Math.max(1, Math.min(14, Number(e.target.value) || 1)))
+                    }
+                  />
+                </label>
+                <p className="muted" style={{ fontSize: '0.82em' }}>
+                  Estimación:{' '}
+                  <strong>{formatEUR(totalPrice)}</strong>
+                  {' '}({nights} noches · {formatEUR(nightPrice)}/noche pareja)
+                </p>
               </>
             )}
 
             {stay && stay.status !== 'checked_out' ? (
               <div className="detail-block" style={{ padding: 0 }}>
                 <p>
-                  Estado: <strong>{stay.status === 'waitlist' ? 'lista de espera' : stay.status}</strong>
+                  Estado:{' '}
+                  <strong>{stay.status === 'waitlist' ? 'lista de espera' : stay.status}</strong>
                   {stay.status === 'waitlist' ? ' (automática)' : ''}
                 </p>
                 <p className="muted">
                   Precio pareja: {stay.pricePaid === 0 ? 'Canjeada (0 €)' : formatEUR(stay.pricePaid)}
+                  {' · '}{stay.nights} noches
                 </p>
                 <div className="speed-group">
                   {stay.status === 'reserved' && (
                     <>
-                      <button type="button" className="btn btn--primary" onClick={doCheckIn}>
+                      <button type="button" className="btn btn--primary" onClick={() => doCheckIn(false)}>
                         Check-in
                       </button>
+                      <button
+                        type="button"
+                        className="btn btn--ghost"
+                        onClick={() => doCheckIn(true)}
+                        title={`Early check-in: +${formatEUR(earlyFee)}`}
+                      >
+                        Entrada anticipada (+{formatEUR(earlyFee)})
+                      </button>
                       {stay.pricePaid > 0 && client.points >= FREE_NIGHT_POINTS && (
-                        <button type="button" className="chip" onClick={doRedeem}>
+                        <button type="button" className="chip" onClick={() => doRedeem('noche')}>
                           Canjear noche ({FREE_NIGHT_POINTS} pts)
                         </button>
                       )}
                     </>
                   )}
                   {stay.status === 'waitlist' && (
-                    <p className="muted">Si se libera una habitación al pasar el día, pasarás a reserved.</p>
+                    <p className="muted">
+                      Si se libera una habitación al pasar el día, pasarás a reserved.
+                    </p>
                   )}
                   {stay.status !== 'checked_in' && (
-                    <button type="button" className="btn btn--ghost" onClick={() => clientCancelReservation()}>
+                    <button
+                      type="button"
+                      className="btn btn--ghost"
+                      onClick={() => clientCancelReservation()}
+                    >
                       Cancelar
                     </button>
                   )}
@@ -492,7 +723,7 @@ export function ClientPanel() {
             ) : (
               <div className="speed-group">
                 <button type="button" className="btn btn--primary" disabled={!hotel} onClick={doReserve}>
-                  Reservar esta noche
+                  Reservar
                 </button>
                 {hotel && (
                   <button type="button" className="chip" onClick={() => setClientBookingHotel(null)}>
@@ -503,7 +734,12 @@ export function ClientPanel() {
             )}
 
             {stay?.status === 'checked_out' && (
-              <button type="button" className="chip" style={{ marginTop: '0.5rem' }} onClick={() => clientDismissStay()}>
+              <button
+                type="button"
+                className="chip"
+                style={{ marginTop: '0.5rem' }}
+                onClick={() => clientDismissStay()}
+              >
                 Cerrar estancia anterior
               </button>
             )}
@@ -518,7 +754,20 @@ export function ClientPanel() {
                   {client.passport.slice(0, 12).map((p) => {
                     const brand = getSubsidiary(p.subsidiaryId)
                     return (
-                      <span key={`${p.countryCode}-${p.subsidiaryId}`} className="tag">
+                      <span
+                        key={`${p.countryCode}-${p.subsidiaryId}`}
+                        className="tag"
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}
+                      >
+                        {p.selfie && (
+                          <img
+                            src={p.selfie}
+                            alt=""
+                            width={40}
+                            height={40}
+                            style={{ borderRadius: 4, verticalAlign: 'middle' }}
+                          />
+                        )}
                         {p.countryCode} · {brand?.letter ?? '?'}
                       </span>
                     )
