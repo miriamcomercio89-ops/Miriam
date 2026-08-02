@@ -21,6 +21,7 @@ import { boardLabel } from '../lib/loyalty'
 import { geoRegionLabel } from '../lib/geo'
 import { resolveHotelImage } from '../lib/images'
 import { getWeather } from '../lib/weather'
+import { getCountryRules } from '../lib/countryRules'
 import { downloadHotelPdf, anyImageToPng } from '../lib/hotelPdf'
 import type { BoardRegime } from '../types'
 
@@ -282,6 +283,11 @@ export function HotelDetail() {
           {eco
             ? ` · cambio ×${eco.fx.toFixed(2)} · inflación ${(eco.inflation * 100).toFixed(2)}%/día · impuestos ×${(eco.taxDrift ?? 1).toFixed(2)} · tasa turística ×${(eco.touristDrift ?? 1).toFixed(2)}`
             : ''}
+        </p>
+        <p className="muted">
+          Aeropuerto {hotel.airportScore ?? 0}/100 · estación {hotel.stationScore ?? 0}/100 · tasa turística{' '}
+          {getCountryRules(hotel.countryCode).touristTaxPerNight} € · verde{' '}
+          {getCountryRules(hotel.countryCode).greenTaxPerNight ?? 0} €/hab.
         </p>
       </div>
 

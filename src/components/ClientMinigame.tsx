@@ -6,7 +6,11 @@ import {
   resolveCasinoSpin,
   resolveDive,
   resolveGolfSwing,
+  resolveHeli,
+  resolveKids,
   resolvePadel,
+  resolveSlots,
+  resolveTeatro,
   resolveTrivia,
   type MinigameId,
   type MinigameOutcome,
@@ -36,10 +40,14 @@ export function ClientMinigame({ id, entryCost, wallet, onDone, onCancel }: Prop
         </header>
         <div className="minigame__body">
           {id === 'casino_ruleta' && <CasinoGame wallet={wallet} onDone={onDone} />}
+          {id === 'casino_tragaperras' && <SlotsGame wallet={wallet} onDone={onDone} />}
           {id === 'golf_swing' && <GolfGame onDone={onDone} />}
           {id === 'buceo_tesoro' && <DiveGame onDone={onDone} />}
           {id === 'padel_rally' && <PadelGame onDone={onDone} />}
           {id === 'cine_trivia' && <TriviaGame onDone={onDone} />}
+          {id === 'heli_vuelo' && <HeliGame onDone={onDone} />}
+          {id === 'teatro_aplauso' && <TeatroGame onDone={onDone} />}
+          {id === 'kids_busca' && <KidsGame onDone={onDone} />}
         </div>
       </div>
     </div>
@@ -323,6 +331,205 @@ function TriviaGame({ onDone }: { onDone: (o: MinigameOutcome) => void }) {
           </button>
         ))}
       </div>
+    </div>
+  )
+}
+
+const SLOT_SYM = ['◆', '●', '▲', '★', '◇']
+
+function SlotsGame({ wallet, onDone }: { wallet: number; onDone: (o: MinigameOutcome) => void }) {
+  const [reels, setReels] = useState([0, 1, 2])
+  const [spinning, setSpinning] = useState(false)
+
+  function spin() {
+    if (spinning) return
+    if (wallet < 15) {
+      onDone(resolveSlots(0))
+      return
+    }
+    setSpinning(true)
+    const next = [0, 1, 2].map(() => Math.floor(Math.random() * SLOT_SYM.length))
+    setReels(next)
+    window.setTimeout(() => {
+      const [a, b, c] = next
+      const matches = a === b && b === c ? 3 : a === b || b === c || a === c ? 2 : 0
+      onDone(resolveSlots(matches))
+    }, 900)
+  }
+
+  return (
+    <div className="mg-slots">
+      <div className="mg-slots__reels">
+        {reels.map((r, i) => (
+          <span key={i}>{SLOT_SYM[r]}</span>
+        ))}
+      </div>
+      <p className="muted">Fichas 15 € si no hay premio parcial.</p>
+      <button type="button" className="btn btn--primary" disabled={spinning} onClick={spin}>
+        {spinning ? 'Girando…' : 'Tirar'}
+      </button>
+    </div>
+  )
+}
+
+function HeliGame({ onDone }: { onDone: (o: MinigameOutcome) => void }) {
+  const [inZone, setInZone] = useState(false)
+  const [held, setHeld] = useState(0)
+  const heldRef = useRef(0)
+  const done = useRef(false)
+  const holding = useRef(false)
+
+  useEffect(() => {
+    let t = 0
+    const id = window.setInterval(() => {
+      t += 1
+      const ok = t % 5 < 3
+      setInZone(ok)
+      if (holding.current && ok) {
+        heldRef.current += 1
+        setHeld(heldRef.current)
+      }
+      if (t >= 20 && !done.current) {
+        done.current = true
+        onDone(resolveHeli(heldRef.current / 12))
+      }
+    }, 500)
+    return () => window.clearInterval(id)
+  }, [onDone])
+
+  return (
+    <div className="mg-heli">
+      <p>Mantén pulsado cuando el horizonte esté estable ({held}/12).</p>
+      <div className={`mg-heli__horizon ${inZone ? 'is-ok' : ''}`}>{inZone ? 'Estable' : 'Turbulencia'}</div>
+      <button
+        type="button"
+        className="btn btn--primary"
+        onMouseDown={() => {
+          holding.current = true
+        }}
+        onMouseUp={() => {
+          holding.current = false
+        }}
+        onMouseLeave={() => {
+          holding.current = false
+        }}
+        onTouchStart={() => {
+          holding.current = true
+        }}
+        onTouchEnd={() => {
+          holding.current = false
+        }}
+      >
+        Mantener rumbo
+      </button>
+    </div>
+  )
+}
+
+function TeatroGame({ onDone }: { onDone: (o: MinigameOutcome) => void }) {
+  const [hits, setHits] = useState(0)
+  const [round, setRound] = useState(0)
+  const [hot, setHot] = useState(false)
+  const hotRef = useRef(false)
+  const hitsRef = useRef(0)
+  const finished = useRef(false)
+
+  useEffect(() => {
+    if (finished.current || round >= 6) return
+    hotRef.current = false
+    setHot(false)
+    const start = window.setTimeout(() => {
+      hotRef.current = true
+      setHot(true)
+      const end = window.setTimeout(() => {
+        hotRef.current = false
+        setHot(false)
+        setRound((r) => {
+          const n = r + 1
+          if (n >= 6 && !finished.current) {
+            finished.current = true
+            onDone(resolveTeatro(hitsRef.current))
+          }
+          return n
+        })
+      }, 700)
+      return () => window.clearTimeout(end)
+    }, 350 + Math.random() * 600)
+    return () => window.clearTimeout(start)
+  }, [round, onDone])
+
+  function clap() {
+    if (finished.current) return
+    if (hotRef.current) {
+      hitsRef.current += 1
+      setHits(hitsRef.current)
+      hotRef.current = false
+      setHot(false)
+    }
+  }
+
+  return (
+    <div className="mg-teatro">
+      <p>
+        Aplausos {hits}/6 · ronda {Math.min(round + 1, 6)}/6
+      </p>
+      <div className={`mg-padel__court ${hot ? 'is-hot' : ''}`}>
+        <span>{hot ? '¡APLAUDE!' : '…'}</span>
+      </div>
+      <button type="button" className="btn btn--primary" onClick={clap}>
+        Aplaudir
+      </button>
+    </div>
+  )
+}
+
+function KidsGame({ onDone }: { onDone: (o: MinigameOutcome) => void }) {
+  const [toys] = useState(() => {
+    const s = new Set<number>()
+    while (s.size < 4) s.add(Math.floor(Math.random() * 12))
+    return s
+  })
+  const [found, setFound] = useState<number[]>([])
+  const done = useRef(false)
+
+  function tap(i: number) {
+    if (done.current || found.includes(i)) return
+    if (!toys.has(i)) return
+    const next = [...found, i]
+    setFound(next)
+    if (next.length >= 4) {
+      done.current = true
+      onDone(resolveKids(4))
+    }
+  }
+
+  return (
+    <div className="mg-kids">
+      <p>Encuentra 4 juguetes ({found.length}/4).</p>
+      <div className="mg-dive__grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
+        {Array.from({ length: 12 }, (_, i) => (
+          <button
+            key={i}
+            type="button"
+            className={`mg-dive__cell ${found.includes(i) ? 'is-found' : ''}`}
+            onClick={() => tap(i)}
+          >
+            {found.includes(i) ? '★' : '?'}
+          </button>
+        ))}
+      </div>
+      <button
+        type="button"
+        className="chip"
+        onClick={() => {
+          if (!done.current) {
+            done.current = true
+            onDone(resolveKids(found.length))
+          }
+        }}
+      >
+        Terminar
+      </button>
     </div>
   )
 }

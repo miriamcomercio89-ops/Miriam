@@ -465,11 +465,18 @@ export function simulateHotelDay(
     season,
     reputation,
   )
+  const airportScore = hotel.airportScore ?? 0
+  const stationScore = hotel.stationScore ?? 0
+  const transitBoost =
+    1 +
+    (airportScore / 100) * (hotel.target === 'negocios' ? 0.06 : 0.025) +
+    (stationScore / 100) * (hotel.target === 'negocios' ? 0.035 : 0.015)
   occupancyOpen = clamp(
     occupancyOpen *
       weather.demandMult *
       holidayDemand *
       conditionMod *
+      transitBoost *
       (1 + (board?.demandBonus ?? 0)) *
       (1 + (design?.demandBonus ?? 0)) *
       (1 + buffet.demandBonus) *
@@ -502,8 +509,9 @@ export function simulateHotelDay(
   const effectiveTax = (hotel.taxRate || rules.taxRate) * taxDrift
   const corporateTax = Math.round(revenue * effectiveTax)
   const touristTax = Math.round(guests * rules.touristTaxPerNight * touristDrift)
-  const tax = corporateTax + touristTax
-  let costs = calcDailyCosts(hotel, events, revenue, blocked, inflation, insurance, touristTax)
+  const greenTax = Math.round(guests * (rules.greenTaxPerNight ?? 0.5) * Math.min(1.2, touristDrift))
+  const tax = corporateTax + touristTax + greenTax
+  let costs = calcDailyCosts(hotel, events, revenue, blocked, inflation, insurance, touristTax + greenTax)
   costs = Math.round(costs * weather.costMult * holidayCost * fx)
   const security = SECURITY_OPTIONS.find((s) => s.id === (hotel.securityLevel ?? 'medio'))
   const tech = TECH_OPTIONS.find((t) => t.id === (hotel.techLevel ?? 'basico'))
@@ -756,8 +764,14 @@ export function hotelRoi(h: Hotel): number {
   return (h.lifetimeRevenue - h.lifetimeCosts) / h.constructionCost
 }
 
-export function filterHotels(hotels: Hotel[], filters: MapFilters, gameDay = 1): Hotel[] {
+export function filterHotels(
+  hotels: Hotel[],
+  filters: MapFilters,
+  gameDay = 1,
+  opts?: { passport?: { countryCode: string; subsidiaryId: string }[]; playMode?: 'gerente' | 'cliente' },
+): Hotel[] {
   const out: Hotel[] = []
+  const sleptSubs = new Set((opts?.passport ?? []).map((p) => p.subsidiaryId))
   for (let i = 0; i < hotels.length; i++) {
     const h = hotels[i]
     if (filters.subsidiaryId !== 'all' && h.subsidiaryId !== filters.subsidiaryId) continue
@@ -770,6 +784,13 @@ export function filterHotels(hotels: Hotel[], filters: MapFilters, gameDay = 1):
     if (filters.profit === 'profit' && hotelNet(h) <= 0 && h.lifetimeGuests > 0) continue
     if (filters.profit === 'loss' && (hotelNet(h) >= 0 || h.lifetimeGuests === 0)) continue
     if (filters.profit === 'new' && h.lifetimeGuests > 0) continue
+    const stayFilter = filters.clientStayFilter ?? 'all'
+    if (opts?.playMode === 'cliente' && stayFilter === 'slept') {
+      if (!sleptSubs.has(h.subsidiaryId)) continue
+    }
+    if (opts?.playMode === 'cliente' && stayFilter === 'pending_brands') {
+      if (sleptSubs.has(h.subsidiaryId)) continue
+    }
     out.push(h)
   }
   return out

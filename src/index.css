@@ -2420,6 +2420,74 @@ button {
   color: rgba(247, 243, 234, 0.65);
 }
 
+.mg-slots__reels {
+  display: flex;
+  justify-content: center;
+  gap: 0.55rem;
+  margin: 0.5rem 0 0.75rem;
+  font-size: 1.8rem;
+}
+
+.mg-slots__reels span {
+  width: 3rem;
+  height: 3rem;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  border: 1px solid rgba(201, 164, 92, 0.45);
+  background: rgba(7, 24, 36, 0.55);
+  animation: mg-wave 1.2s ease-in-out infinite;
+}
+
+.mg-heli__horizon {
+  height: 88px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  margin: 0.5rem 0 0.75rem;
+  border: 1px solid rgba(247, 243, 234, 0.2);
+  background: linear-gradient(180deg, #4a6d8c 0%, #1a3a4a 55%, #0b1f33 100%);
+  font-family: var(--font-display);
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.mg-heli__horizon.is-ok {
+  background: linear-gradient(180deg, #7fdbda 0%, #2a8a9c 45%, #1a3a4a 100%);
+  transform: scale(1.02);
+}
+
+.tag.tag--passport {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.tag.tag--passport img {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  object-fit: cover;
+  border: 1px solid rgba(201, 164, 92, 0.35);
+}
+
+.client-levels-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.72rem;
+  margin-top: 0.35rem;
+}
+
+.client-levels-table th,
+.client-levels-table td {
+  text-align: left;
+  padding: 0.28rem 0.35rem;
+  border-bottom: 1px solid rgba(247, 243, 234, 0.12);
+}
+
+.client-levels-table tr.is-current {
+  background: rgba(201, 164, 92, 0.18);
+}
+
 .client-toast {
   position: fixed;
   bottom: 1rem;

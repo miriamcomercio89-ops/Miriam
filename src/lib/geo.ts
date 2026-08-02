@@ -195,6 +195,23 @@ function buildInsight(lat: number, lng: number, data: any, confidence: number): 
   } else if (countryRules.touristTaxPerNight > 0) {
     notes.push(`Tasa turística: ${countryRules.touristTaxPerNight} €/hab. noche`)
   }
+  const place = `${address.city ?? ''} ${address.town ?? ''} ${address.suburb ?? ''} ${address.county ?? ''} ${address.island ?? ''} ${typ} ${data?.display_name ?? ''}`.toLowerCase()
+  let airportScore = 12
+  if (/airport|aeropuerto|aeroport|flughafen|aéroport|terminal|airfield/.test(place)) airportScore += 55
+  if (/airport|aeropuerto/.test(city.toLowerCase())) airportScore += 20
+  if (geoRegion === 'business' || /business|distrito financiero|downtown|centre-ville/.test(place)) airportScore += 8
+  airportScore = clamp(airportScore + (tourismIndex > 70 ? 6 : 0), 0, 98)
+
+  let stationScore = 10
+  if (/station|estación|estacao|bahnhof|gare|metro|train|ferrocarril|rail/.test(place)) stationScore += 50
+  if (/central|hauptbahnhof|union station/.test(place)) stationScore += 15
+  stationScore = clamp(stationScore, 0, 98)
+
+  const greenTax = countryRules.greenTaxPerNight ?? 0.5
+  if (airportScore >= 50) notes.push(`Zona con buena conexión aérea (índice ${airportScore})`)
+  if (stationScore >= 50) notes.push(`Buena conexión ferroviaria/metro (índice ${stationScore})`)
+  if (greenTax >= 1) notes.push(`Tasa verde: ${greenTax} €/hab. noche`)
+
   if (geoRegion !== 'global') notes.push(`Región Orbis: ${geoRegionLabel(geoRegion)}`)
 
   return {
@@ -214,6 +231,10 @@ function buildInsight(lat: number, lng: number, data: any, confidence: number): 
     geoRegion,
     notes,
     confidence,
+    airportScore: Math.round(airportScore),
+    stationScore: Math.round(stationScore),
+    touristTaxPerNight: countryRules.touristTaxPerNight,
+    greenTaxPerNight: greenTax,
   }
 }
 

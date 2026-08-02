@@ -12,13 +12,15 @@ export function HotelListPanel() {
   const hotels = useGameStore((s) => s.hotels)
   const filters = useGameStore((s) => s.mapFilters)
   const gameMinutes = useGameStore((s) => s.gameMinutes)
+  const playMode = useGameStore((s) => s.playMode)
+  const passport = useGameStore((s) => s.client.passport)
   const focusHotel = useGameStore((s) => s.focusHotel)
   const [q, setQ] = useState('')
   const [sort, setSort] = useState<HotelSort>('net')
   const parentRef = useRef<HTMLDivElement>(null)
 
   const rows = useMemo(() => {
-    const base = filterHotels(hotels, filters, gameDay(gameMinutes))
+    const base = filterHotels(hotels, filters, gameDay(gameMinutes), { passport, playMode })
     const qq = q.trim().toLowerCase()
     const filtered = qq
       ? base.filter(
@@ -38,7 +40,7 @@ export function HotelListPanel() {
       return hotelNet(b) - hotelNet(a)
     })
     return filtered
-  }, [hotels, filters, q, sort, gameMinutes])
+  }, [hotels, filters, q, sort, gameMinutes, passport, playMode])
 
   const virtualizer = useVirtualizer({
     count: rows.length,

@@ -73,6 +73,12 @@ export interface LocationInsight {
   geoRegion: string
   notes: string[]
   confidence: number
+  /** Proximidad a aeropuerto (0–100). Compat: puede faltar en datos viejos. */
+  airportScore?: number
+  /** Proximidad a estación tren/metro (0–100). */
+  stationScore?: number
+  touristTaxPerNight?: number
+  greenTaxPerNight?: number
 }
 
 export interface CorporateContract {
@@ -113,6 +119,10 @@ export interface Hotel {
   costIndex: number
   taxRate: number
   geoRegion: string
+  /** Afinidad aeropuerto 0–100 (compat: default inferido). */
+  airportScore?: number
+  /** Afinidad estación 0–100. */
+  stationScore?: number
   builtAtGameDay: number
   constructionCost: number
   lastDayRevenue: number
@@ -254,14 +264,24 @@ export interface ClientStay {
   reservedDay: number
   checkInMinutes?: number
   partner: boolean
+  /** Precio total pareja por todas las noches (o 0 si canje). */
   pricePaid: number
   tipTotal: number
+  /** Noches reservadas (compat: default 1). */
+  nights: number
+  /** Noches que quedan por liquidar estando checked_in. */
+  nightsRemaining: number
+  lateCheckout: boolean
+  earlyCheckin: boolean
+  upgraded: boolean
 }
 
 export interface ClientPassportStamp {
   countryCode: string
   subsidiaryId: string
   day: number
+  /** SVG data-URL generado (compat: puede faltar). */
+  selfie?: string
 }
 
 export type ClientMissionKind = 'daily' | 'weekly'
@@ -280,6 +300,17 @@ export interface ClientMission {
   createdDay: number
 }
 
+export type ClientSpecialize = 'none' | 'spa' | 'playa' | 'negocios' | 'aventura' | 'gastronomia'
+
+export interface ClientAppointment {
+  id: string
+  service: string
+  label: string
+  /** Minuto de juego absoluto de la cita. */
+  atMinutes: number
+  done: boolean
+}
+
 export interface ClientModeState {
   name: string
   prefs: GuestTarget[]
@@ -287,6 +318,8 @@ export interface ClientModeState {
   points: number
   level: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10
   needs: ClientNeeds
+  /** Necesidades de la pareja (NPC). */
+  partnerNeeds: ClientNeeds
   stay: ClientStay | null
   passport: ClientPassportStamp[]
   notifications: string[]
@@ -295,7 +328,12 @@ export interface ClientModeState {
   stayServicesUsed: HotelService[]
   missions: ClientMission[]
   missionsDay: number
-  appointments: string[]
+  appointments: ClientAppointment[]
+  specialize: ClientSpecialize
+  /** Noches acumuladas por especialización. */
+  specializeNights: Partial<Record<Exclude<ClientSpecialize, 'none'>, number>>
+  /** Canjes de puntos usados (ids) esta estancia / hoy. */
+  pointRedeems: string[]
 }
 
 export interface GameState {
@@ -389,6 +427,8 @@ export interface MapFilters {
   insured: 'all' | 'yes' | 'no'
   vipRecent: boolean
   lowCondition: boolean
+  /** Solo modo Cliente: dormidos / marcas pendientes. */
+  clientStayFilter: 'all' | 'slept' | 'pending_brands'
 }
 
 export interface MapFocus {

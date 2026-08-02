@@ -24,6 +24,13 @@ import {
   stampPassport,
   CLIENT_NIGHT_POINTS,
   applyNeedDelta,
+  partnerShareDelta,
+  earlyCheckinFee,
+  lateCheckoutFee,
+  calcGuestNightPrice,
+  bestUpgradeRoom,
+  applyWeatherToClient,
+  formatAppointmentClock,
 } from '../lib/clientMode'
 import { SLOT_KEYS, idbSave, tryLocalStorageSave, readLocalStorageSave, idbLoad, idbLoadHotelImages, mergeHotelImages } from '../lib/saveio'
 import { applyDays } from '../lib/daySim'
@@ -54,14 +61,18 @@ import {
   buildServiceScreen,
   bumpMissions,
   ensureMissions,
-  FREE_NIGHT_POINTS,
   type ServiceAction,
 } from '../lib/clientServices'
 import type { MinigameOutcome } from '../lib/clientMinigames'
 import { minigameForAction } from '../lib/clientMinigames'
+import {
+  POINT_REDEEMS,
+  redeemPointsCost,
+  type PointRedeemId,
+} from '../lib/clientClub'
 
-export const STORAGE_KEY = 'orbis-hotels-group-save-v10'
-export const SAVE_VERSION = 10
+export const STORAGE_KEY = 'orbis-hotels-group-save-v11'
+export const SAVE_VERSION = 11
 export const IDB_SLOT_KEYS = ['slot-1', 'slot-2', 'slot-3'] as const
 
 type UiState = {
@@ -163,10 +174,15 @@ type GameStore = GameState &
       hotelId: string,
       roomKind: ClientRoomKind,
       board: BoardRegime,
+      nights?: number,
     ) => { ok: true } | { ok: false; error: string }
     clientCancelReservation: () => void
-    clientCheckIn: () => { ok: true } | { ok: false; error: string }
-    clientCheckOut: () => { ok: true } | { ok: false; error: string }
+    clientCheckIn: (opts?: {
+      early?: boolean
+    }) => { ok: true } | { ok: false; error: string }
+    clientCheckOut: (opts?: {
+      late?: boolean
+    }) => { ok: true } | { ok: false; error: string }
     clientUseService: (
       service: HotelService,
       tip?: number,
@@ -181,6 +197,8 @@ type GameStore = GameState &
       outcome: import('../lib/clientMinigames').MinigameOutcome,
     ) => { ok: true } | { ok: false; error: string }
     clientClaimMission: (id: string) => { ok: true } | { ok: false; error: string }
+    clientRedeemPoints: (id: PointRedeemId) => { ok: true } | { ok: false; error: string }
+    /** @deprecated usa clientRedeemPoints('noche') */
     clientRedeemFreeNight: () => { ok: true } | { ok: false; error: string }
     clientRefreshMissions: () => void
     clientClearNotes: () => void
@@ -282,6 +300,8 @@ function migrateHotel(h: Hotel): Hotel {
     shuttleCity: anyH.shuttleCity ?? false,
     priceManual: anyH.priceManual ?? false,
     closed: anyH.closed ?? false,
+    airportScore: anyH.airportScore,
+    stationScore: anyH.stationScore,
   }
 }
 
@@ -488,6 +508,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       insured: 'all',
       vipRecent: false,
       lowCondition: false,
+      clientStayFilter: 'all',
     },
     mapFocus: null,
     rankMetric: 'net',
@@ -632,6 +653,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
       costIndex: loc.costIndex,
       taxRate: loc.taxRate,
       geoRegion: loc.geoRegion,
+      airportScore: loc.airportScore ?? 0,
+      stationScore: loc.stationScore ?? 0,
       builtAtGameDay: gameDay(state.gameMinutes),
       constructionCost: cost,
       lastDayRevenue: 0,
@@ -1075,7 +1098,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
   setClientBookingHotel: (id) => set({ client: { ...get().client, bookingHotelId: id } }),
 
-  clientReserve: (hotelId, roomKind, board) => {
+  clientReserve: (hotelId, roomKind, board, nights = 1) => {
     const state = get()
     if (state.playMode !== 'cliente') return { ok: false, error: 'Activa el modo Cliente.' }
     if (state.client.stay && state.client.stay.status !== 'checked_out') {
@@ -1088,7 +1111,16 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const boards = boardOptionsForHotel(hotel)
     if (!boards.includes(board)) return { ok: false, error: 'Régimen no disponible en este hotel.' }
     const day = gameDay(state.gameMinutes)
-    const stay = createStayDraft(hotel, roomKind, board, day, state.client.level)
+    const n = Math.max(1, Math.min(14, Math.round(nights)))
+    const stay = createStayDraft(
+      hotel,
+      roomKind,
+      board,
+      day,
+      state.client.level,
+      n,
+      state.client.specialize,
+    )
     const price = stay.pricePaid
     if (state.client.wallet < price && stay.status === 'reserved') {
       return { ok: false, error: `Necesitas ${price.toLocaleString('es-ES')} € en tu monedero.` }
@@ -1096,7 +1128,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const note =
       stay.status === 'waitlist'
         ? `${hotel.name} está completo o cerrado. Entraste en lista de espera.`
-        : `Reserva esta noche en ${hotel.name} · ${price.toLocaleString('es-ES')} € (pareja).`
+        : `Reserva ${n} noche${n > 1 ? 's' : ''} en ${hotel.name} · ${price.toLocaleString('es-ES')} € (pareja).`
     set({
       client: {
         ...state.client,
@@ -1122,7 +1154,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
     })
   },
 
-  clientCheckIn: () => {
+  clientCheckIn: (opts) => {
     const state = get()
     const stay = state.client.stay
     if (!stay) return { ok: false, error: 'No hay reserva.' }
@@ -1132,23 +1164,43 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const hotel = state.hotels.find((h) => h.id === stay.hotelId)
     if (!hotel) return { ok: false, error: 'Hotel no encontrado.' }
     if (hotel.closed) return { ok: false, error: 'El hotel está cerrado.' }
-    const price = stay.pricePaid
+    const early = Boolean(opts?.early)
+    const nightPrice = calcGuestNightPrice(
+      hotel,
+      stay.roomKind,
+      stay.boardRegime,
+      state.client.level,
+      state.client.specialize,
+    )
+    const earlyFee = early ? earlyCheckinFee(nightPrice, state.client.level) : 0
+    const price = stay.pricePaid + earlyFee
     if (price > 0 && state.client.wallet < price) {
       return { ok: false, error: `Faltan ${(price - state.client.wallet).toLocaleString('es-ES')} €.` }
     }
-    // Pago al grupo + ocupación simbólica
-    set({
-      cash: state.cash + price,
-      client: {
+    let client = applyWeatherToClient(
+      {
         ...state.client,
         wallet: state.client.wallet - price,
-        stay: { ...stay, status: 'checked_in', checkInMinutes: state.gameMinutes },
+        stay: {
+          ...stay,
+          status: 'checked_in' as const,
+          checkInMinutes: state.gameMinutes,
+          nightsRemaining: stay.nightsRemaining || stay.nights || 1,
+          earlyCheckin: early || stay.earlyCheckin,
+        },
         stayServicesUsed: [],
+        pointRedeems: [],
         notifications: pushNote(
           state.client.notifications,
-          `Check-in en ${hotel.name}. Habitación ${stay.roomKind.replace('_', ' ')}. Tu pareja te acompaña.`,
+          `Check-in en ${hotel.name}${early ? ` (early +${earlyFee} €)` : ''}. ${stay.nights} noche${stay.nights > 1 ? 's' : ''}. Tu pareja te acompaña.`,
         ),
       },
+      hotel,
+      state.gameMinutes,
+    )
+    set({
+      cash: state.cash + price,
+      client,
       hotels: state.hotels.map((h) =>
         h.id === hotel.id
           ? {
@@ -1163,20 +1215,38 @@ export const useGameStore = create<GameStore>((set, get) => ({
     return { ok: true }
   },
 
-  clientCheckOut: () => {
+  clientCheckOut: (opts) => {
     const state = get()
     const stay = state.client.stay
     if (!stay || stay.status !== 'checked_in') return { ok: false, error: 'No estás alojado.' }
     const hotel = state.hotels.find((h) => h.id === stay.hotelId)
     const day = gameDay(state.gameMinutes)
+    const late = Boolean(opts?.late)
+    let lateFee = 0
+    if (hotel && late) {
+      const nightPrice = calcGuestNightPrice(
+        hotel,
+        stay.roomKind,
+        stay.boardRegime,
+        state.client.level,
+        state.client.specialize,
+      )
+      lateFee = lateCheckoutFee(hotel, nightPrice, state.client.level)
+      if (lateFee > 0 && state.client.wallet < lateFee) {
+        return { ok: false, error: `Late checkout cuesta ${lateFee.toLocaleString('es-ES')} €.` }
+      }
+    }
     let client = {
       ...state.client,
-      stay: { ...stay, status: 'checked_out' as const },
+      wallet: state.client.wallet - lateFee,
+      stay: { ...stay, status: 'checked_out' as const, lateCheckout: late || stay.lateCheckout },
       stayServicesUsed: [],
       appointments: [],
       notifications: pushNote(
         state.client.notifications,
-        hotel ? `Check-out de ${hotel.name}. Gracias por tu estancia.` : 'Check-out hecho.',
+        hotel
+          ? `Check-out de ${hotel.name}${late ? (lateFee ? ` (late +${lateFee} €)` : ' (late incluido)') : ''}. Gracias por tu estancia.`
+          : 'Check-out hecho.',
       ),
     }
     if (hotel) {
@@ -1188,7 +1258,10 @@ export const useGameStore = create<GameStore>((set, get) => ({
         level: clientLevelFromPoints(client.points + add),
       }
     }
-    set({ client })
+    set({
+      cash: state.cash + lateFee,
+      client,
+    })
     return { ok: true }
   },
 
@@ -1212,6 +1285,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
     if (state.client.wallet < cost) return { ok: false, error: 'No te llega el monedero.' }
 
     const needs = applyServiceAction(state.client.needs, action)
+    const partnerNeeds = applyNeedDelta(state.client.partnerNeeds, partnerShareDelta(action.needs))
     const used = state.client.stayServicesUsed.includes(service)
       ? state.client.stayServicesUsed
       : [...state.client.stayServicesUsed, service]
@@ -1230,10 +1304,20 @@ export const useGameStore = create<GameStore>((set, get) => ({
       )
     }
 
-    const appointments =
-      service === 'spa' && (action.id === 'masaje' || action.id === 'facial')
-        ? [`${action.label} · ${hotel.name}`, ...state.client.appointments].slice(0, 6)
-        : state.client.appointments
+    let appointments = state.client.appointments
+    if (service === 'spa' && (action.id === 'masaje' || action.id === 'facial' || action.id === 'circuito')) {
+      const atMinutes = state.gameMinutes + Math.max(30, action.minutes)
+      appointments = [
+        {
+          id: uuid(),
+          service,
+          label: `${action.label} · ${hotel.name}`,
+          atMinutes,
+          done: false,
+        },
+        ...appointments,
+      ].slice(0, 8)
+    }
 
     const note =
       service === 'concierge'
@@ -1246,13 +1330,21 @@ export const useGameStore = create<GameStore>((set, get) => ({
         ...state.client,
         wallet: state.client.wallet - cost,
         needs,
+        partnerNeeds,
         points: state.client.points + pts,
         level: clientLevelFromPoints(state.client.points + pts),
         stay: { ...stay, tipTotal: stay.tipTotal + Math.max(0, tip) },
         stayServicesUsed: used,
         missions,
         appointments,
-        notifications: pushNote(state.client.notifications, tip ? `${note} Propina ${tip} €.` : note),
+        notifications: pushNote(
+          state.client.notifications,
+          tip
+            ? `${note} Propina ${tip} €.`
+            : appointments[0] && appointments[0].atMinutes > state.gameMinutes && service === 'spa'
+              ? `${note} Cita a las ${formatAppointmentClock(appointments[0].atMinutes)}.`
+              : note,
+        ),
       },
     })
     return { ok: true }
@@ -1275,6 +1367,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
     if (state.client.wallet < cost) return { ok: false, error: 'No te llega el monedero.' }
 
     const needs = applyServiceAction(state.client.needs, action)
+    const partnerNeeds = applyNeedDelta(state.client.partnerNeeds, partnerShareDelta(action.needs))
     const used = state.client.stayServicesUsed.includes(service)
       ? state.client.stayServicesUsed
       : [...state.client.stayServicesUsed, service]
@@ -1290,6 +1383,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
         ...state.client,
         wallet: state.client.wallet - cost,
         needs,
+        partnerNeeds,
         points: state.client.points + pts,
         level: clientLevelFromPoints(state.client.points + pts),
         stay: { ...stay, tipTotal: stay.tipTotal + Math.max(0, tip) },
@@ -1357,30 +1451,76 @@ export const useGameStore = create<GameStore>((set, get) => ({
     return { ok: true }
   },
 
-  clientRedeemFreeNight: () => {
+  clientRedeemPoints: (id) => {
     const state = get()
-    if (state.client.points < FREE_NIGHT_POINTS) {
-      return { ok: false, error: `Necesitas ${FREE_NIGHT_POINTS} puntos.` }
+    const def = POINT_REDEEMS.find((r) => r.id === id)
+    if (!def) return { ok: false, error: 'Canje no válido.' }
+    const cost = redeemPointsCost(id, state.client.level)
+    if (state.client.points < cost) return { ok: false, error: `Necesitas ${cost} puntos.` }
+    const stay = state.client.stay
+    if (def.needsStay === 'reserved' && (!stay || stay.status !== 'reserved')) {
+      return { ok: false, error: 'Haz una reserva y canjea antes del check-in.' }
     }
-    if (!state.client.stay || state.client.stay.status !== 'reserved') {
-      return { ok: false, error: 'Haz una reserva esta noche y canjea antes del check-in.' }
+    if (def.needsStay === 'checked_in' && (!stay || stay.status !== 'checked_in')) {
+      return { ok: false, error: 'Haz check-in primero.' }
     }
-    const stay = { ...state.client.stay, pricePaid: 0 }
-    const points = state.client.points - FREE_NIGHT_POINTS
-    set({
-      client: {
-        ...state.client,
-        points,
-        level: clientLevelFromPoints(points),
-        stay,
+    if (def.needsStay === 'any' && (!stay || (stay.status !== 'reserved' && stay.status !== 'checked_in'))) {
+      return { ok: false, error: 'Necesitas una reserva o estancia activa.' }
+    }
+    const hotel = stay ? state.hotels.find((h) => h.id === stay.hotelId) : null
+    if (def.needsService && hotel && !hotel.services.includes(def.needsService)) {
+      return { ok: false, error: 'Este hotel no tiene ese servicio.' }
+    }
+    if (state.client.pointRedeems.includes(id) && id !== 'noche') {
+      return { ok: false, error: 'Ya usaste ese canje en esta estancia.' }
+    }
+
+    let client = {
+      ...state.client,
+      points: state.client.points - cost,
+      level: clientLevelFromPoints(state.client.points - cost),
+      pointRedeems: [...state.client.pointRedeems, id],
+    }
+
+    if (id === 'noche' && stay) {
+      client = {
+        ...client,
+        stay: { ...stay, pricePaid: 0 },
+        notifications: pushNote(client.notifications, `Noche canjeada con ${cost} pts. Check-in gratis.`),
+      }
+    } else if (id === 'desayuno') {
+      client = {
+        ...client,
+        needs: applyNeedDelta(client.needs, { hambre: 28, sed: 14, humor: 6 }),
+        partnerNeeds: applyNeedDelta(client.partnerNeeds, { hambre: 20, sed: 10, humor: 4 }),
+        notifications: pushNote(client.notifications, `Desayuno de cortesía (−${cost} pts).`),
+      }
+    } else if (id === 'spa') {
+      client = {
+        ...client,
+        needs: applyNeedDelta(client.needs, { relax: 30, higiene: 12, energia: 6 }),
+        partnerNeeds: applyNeedDelta(client.partnerNeeds, { relax: 16, higiene: 6 }),
+        notifications: pushNote(client.notifications, `Bono spa canjeado (−${cost} pts).`),
+      }
+    } else if (id === 'upgrade' && stay && hotel) {
+      const nextRoom = bestUpgradeRoom(hotel, stay.roomKind)
+      if (!nextRoom) return { ok: false, error: 'No hay upgrade disponible.' }
+      client = {
+        ...client,
+        stay: { ...stay, roomKind: nextRoom, upgraded: true },
+        needs: applyNeedDelta(client.needs, { confort: 18, humor: 10 }),
         notifications: pushNote(
-          state.client.notifications,
-          `Noche canjeada con ${FREE_NIGHT_POINTS} puntos. Check-in gratis.`,
+          client.notifications,
+          `Upgrade a ${nextRoom.replace('_', ' ')} (−${cost} pts).`,
         ),
-      },
-    })
+      }
+    }
+
+    set({ client })
     return { ok: true }
   },
+
+  clientRedeemFreeNight: () => get().clientRedeemPoints('noche'),
 
   clientRefreshMissions: () => {
     const state = get()
@@ -1418,7 +1558,7 @@ async function runSkipDays(days: number, gameMinutes: number) {
       const day = startDay + d
       const stampsBefore = client.passport.length
       const nightsBefore = client.totalNights
-      const settled = settleClientNight(client, hotels, day)
+      const settled = settleClientNight(client, hotels, day, state.gameMinutes + d * 24 * 60)
       client = settled.client
       hotels = settled.hotels
       cash += settled.hotelRevenue

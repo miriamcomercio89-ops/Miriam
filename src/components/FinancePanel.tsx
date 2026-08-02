@@ -10,10 +10,24 @@ export function FinancePanel() {
   const cash = useGameStore((s) => s.cash)
   const hotels = useGameStore((s) => s.hotels)
   const reputation = useGameStore((s) => s.reputation)
+  const countryEconomy = useGameStore((s) => s.countryEconomy)
   const [range, setRange] = useState<7 | 30>(7)
 
   const slice = useMemo(() => ledger.slice(-range), [ledger, range])
   const maxAbs = Math.max(1, ...slice.map((d) => Math.max(Math.abs(d.revenue), Math.abs(d.costs), Math.abs(d.net))))
+
+  const ecoSummary = useMemo(() => {
+    const codes = [...new Set(hotels.map((h) => h.countryCode.toUpperCase()))]
+    if (!codes.length) return null
+    let inf = 0
+    let fx = 0
+    for (const cc of codes) {
+      const e = countryEconomy[cc] ?? { inflation: 0.0004, fx: 1, taxDrift: 1, touristDrift: 1 }
+      inf += e.inflation
+      fx += e.fx
+    }
+    return { inf: inf / codes.length, fx: fx / codes.length, n: codes.length }
+  }, [hotels, countryEconomy])
 
   const avgRep =
     Object.values(reputation).length === 0
@@ -86,6 +100,18 @@ export function FinancePanel() {
             <span>Impuestos de por vida (hoteles)</span>
             <strong>{formatEUR(hotels.reduce((s, h) => s + (h.lifetimeTax ?? 0), 0), true)}</strong>
           </div>
+          {ecoSummary && (
+            <>
+              <div>
+                <span>Inflación media ({ecoSummary.n} países)</span>
+                <strong>{(ecoSummary.inf * 100).toFixed(3)}%/día</strong>
+              </div>
+              <div>
+                <span>Tipo de cambio medio (×)</span>
+                <strong>{ecoSummary.fx.toFixed(3)}</strong>
+              </div>
+            </>
+          )}
         </div>
 
         <h3 className="mini-title">Reputación por país</h3>

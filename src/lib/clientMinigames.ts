@@ -1,6 +1,15 @@
 import type { ClientNeedId, HotelService } from '../types'
 
-export type MinigameId = 'casino_ruleta' | 'golf_swing' | 'buceo_tesoro' | 'padel_rally' | 'cine_trivia'
+export type MinigameId =
+  | 'casino_ruleta'
+  | 'casino_tragaperras'
+  | 'golf_swing'
+  | 'buceo_tesoro'
+  | 'padel_rally'
+  | 'cine_trivia'
+  | 'heli_vuelo'
+  | 'teatro_aplauso'
+  | 'kids_busca'
 
 export type MinigameOutcome = {
   score: number
@@ -12,19 +21,27 @@ export type MinigameOutcome = {
 
 export const MINIGAME_LABEL: Record<MinigameId, string> = {
   casino_ruleta: 'Ruleta',
+  casino_tragaperras: 'Tragaperras',
   golf_swing: 'Swing de golf',
   buceo_tesoro: 'Tesoro submarino',
   padel_rally: 'Rally de pádel',
   cine_trivia: 'Trivia de cine',
+  heli_vuelo: 'Vuelo panorámico',
+  teatro_aplauso: 'Ritmo del aplauso',
+  kids_busca: 'Club infantil',
 }
 
 /** Qué minijuego abre cada acción de servicio. */
 export function minigameForAction(service: HotelService, actionId: string): MinigameId | null {
   if (service === 'casino' && (actionId === 'mesa' || actionId === 'ruleta')) return 'casino_ruleta'
+  if (service === 'casino' && (actionId === 'tragaperras' || actionId === 'slots')) return 'casino_tragaperras'
   if (service === 'golf' && (actionId === '9hoyos' || actionId === 'swing')) return 'golf_swing'
   if (service === 'buceo' && (actionId === 'bautismo' || actionId === 'tesoro')) return 'buceo_tesoro'
   if (service === 'pista_padel' && (actionId === 'partido' || actionId === 'rally')) return 'padel_rally'
   if (service === 'cine' && (actionId === 'pase' || actionId === 'trivia')) return 'cine_trivia'
+  if (service === 'helipuerto' && (actionId === 'vuelo' || actionId === 'panoramico')) return 'heli_vuelo'
+  if (service === 'teatro' && (actionId === 'entrada' || actionId === 'aplauso')) return 'teatro_aplauso'
+  if (service === 'kids_club' && (actionId === 'taller' || actionId === 'busca')) return 'kids_busca'
   return null
 }
 
@@ -221,5 +238,87 @@ export function resolveTrivia(correctCount: number): MinigameOutcome {
     pointsDelta: 6,
     needsBonus: { humor: 8, relax: 12, social: 6 },
     message: `${n}/3. La película igual te gustó.`,
+  }
+}
+
+export function resolveSlots(matches: number): MinigameOutcome {
+  const m = Math.max(0, Math.min(3, matches))
+  if (m === 3) {
+    return {
+      score: 100,
+      walletDelta: 120,
+      pointsDelta: 30,
+      needsBonus: { humor: 20, social: 12 },
+      message: '¡Jackpot! Tres iguales.',
+    }
+  }
+  if (m === 2) {
+    return {
+      score: 60,
+      walletDelta: 25,
+      pointsDelta: 12,
+      needsBonus: { humor: 10, social: 8 },
+      message: 'Dos iguales. Premio menor.',
+    }
+  }
+  return {
+    score: 20,
+    walletDelta: -15,
+    pointsDelta: 4,
+    needsBonus: { humor: 4, social: 6, energia: -4 },
+    message: 'Sin premio en tragaperras (−15 € de fichas).',
+  }
+}
+
+export function resolveHeli(holdRatio: number): MinigameOutcome {
+  const a = Math.max(0, Math.min(1, holdRatio))
+  const score = Math.round(a * 100)
+  if (a >= 0.75) {
+    return {
+      score,
+      walletDelta: 40,
+      pointsDelta: 28,
+      needsBonus: { humor: 22, confort: 16, energia: -6 },
+      message: 'Rumbo estable. Vistas de postal.',
+    }
+  }
+  if (a >= 0.4) {
+    return {
+      score,
+      walletDelta: 0,
+      pointsDelta: 14,
+      needsBonus: { humor: 12, confort: 10, energia: -8 },
+      message: 'Turbulencias leves, pero llegaste.',
+    }
+  }
+  return {
+    score,
+    walletDelta: 0,
+    pointsDelta: 6,
+    needsBonus: { humor: 4, confort: 4, energia: -10, seguridad: -6 },
+    message: 'El piloto toma el control. Mejor no mirar abajo.',
+  }
+}
+
+export function resolveTeatro(hits: number): MinigameOutcome {
+  const h = Math.max(0, Math.min(6, hits))
+  const score = Math.round((h / 6) * 100)
+  return {
+    score,
+    walletDelta: h >= 5 ? 20 : 0,
+    pointsDelta: 6 + h * 2,
+    needsBonus: { humor: 8 + h * 2, social: 10 + h, relax: 6 },
+    message: h >= 5 ? 'Ovación. El teatro vibra.' : `Aplaudiste a tiempo ${h}/6.`,
+  }
+}
+
+export function resolveKids(found: number): MinigameOutcome {
+  const f = Math.max(0, Math.min(4, found))
+  return {
+    score: Math.round((f / 4) * 100),
+    walletDelta: f >= 4 ? 15 : 0,
+    pointsDelta: 5 + f * 3,
+    needsBonus: { humor: 8 + f * 2, social: 10 + f, energia: -4 },
+    message: f >= 4 ? 'Todos los juguetes. El kids club aplaude.' : `Encontraste ${f}/4 juguetes.`,
   }
 }

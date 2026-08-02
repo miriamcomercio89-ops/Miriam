@@ -163,13 +163,17 @@ export function WorldMap() {
   const setClientBookingHotel = useGameStore((s) => s.setClientBookingHotel)
   const clientStay = useGameStore((s) => s.client.stay)
   const bookingHotelId = useGameStore((s) => s.client.bookingHotelId)
+  const passport = useGameStore((s) => s.client.passport)
   const [busy, setBusy] = useState(false)
   const [hint, setHint] = useState<string | null>(null)
   const [pending, setPending] = useState<{ lat: number; lng: number } | null>(null)
   const [hover, setHover] = useState<{ hotel: Hotel; x: number; y: number } | null>(null)
 
   const day = gameDay(gameMinutes)
-  const filtered = useMemo(() => filterHotels(hotels, filters, day), [hotels, filters, day])
+  const filtered = useMemo(
+    () => filterHotels(hotels, filters, day, { passport, playMode }),
+    [hotels, filters, day, passport, playMode],
+  )
   const onHover = useCallback((p: { hotel: Hotel; x: number; y: number } | null) => setHover(p), [])
 
   async function handleBuild(lat: number, lng: number) {

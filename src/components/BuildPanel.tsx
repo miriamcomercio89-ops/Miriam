@@ -393,6 +393,9 @@ export function BuildPanel() {
         <div><span>Temporada</span><strong>{seasonLabel(season)}</strong></div>
         <div><span>Impuestos</span><strong>{Math.round(loc.taxRate * 100)}%</strong></div>
         <div><span>Tasa turística</span><strong>{getCountryRules(loc.countryCode).touristTaxPerNight} €/hab.</strong></div>
+        <div><span>Tasa verde</span><strong>{getCountryRules(loc.countryCode).greenTaxPerNight ?? 0} €/hab.</strong></div>
+        <div><span>Aeropuerto</span><strong>{loc.airportScore ?? 0}/100</strong></div>
+        <div><span>Estación</span><strong>{loc.stationScore ?? 0}/100</strong></div>
         <div><span>Cambio</span><strong>×{(eco?.fx ?? 1).toFixed(2)}</strong></div>
       </div>
 

@@ -112,7 +112,16 @@ export function buildServiceScreen(service: HotelService, hotel: Hotel): Service
       intro: 'Actividades infantiles supervisadas (tu pareja puede acompañar).',
       hours: '10:00–18:00',
       actions: [
-        { id: 'taller', label: 'Taller familiar', detail: 'Manualidades y juegos.', cost: c(0.7), minutes: 60, needs: { social: 16, humor: 12, energia: -6 }, points: 8 },
+        {
+          id: 'taller',
+          label: 'Taller + busca',
+          detail: 'Minijuego: encuentra 4 juguetes.',
+          cost: c(0.7),
+          minutes: 60,
+          needs: { social: 16, humor: 12, energia: -6 },
+          points: 8,
+          minigame: true,
+        },
       ],
     },
     guarderia_noche: {
@@ -182,6 +191,16 @@ export function buildServiceScreen(service: HotelService, hotel: Hotel): Service
           points: 12,
           minigame: true,
         },
+        {
+          id: 'tragaperras',
+          label: 'Tragaperras',
+          detail: 'Minijuego: tres rodillos.',
+          cost: c(1.1),
+          minutes: 25,
+          needs: { social: 10, humor: 12, energia: -6 },
+          points: 9,
+          minigame: true,
+        },
       ],
     },
     helipuerto: {
@@ -189,7 +208,16 @@ export function buildServiceScreen(service: HotelService, hotel: Hotel): Service
       intro: 'Traslado o vuelo panorámico (si hay plaza).',
       hours: 'Bajo demanda · 10:00–18:00',
       actions: [
-        { id: 'vuelo', label: 'Vuelo panorámico', detail: '20 min sobre la costa/ciudad.', cost: c(4), minutes: 40, needs: { confort: 22, humor: 20, energia: -5 }, points: 25 },
+        {
+          id: 'vuelo',
+          label: 'Vuelo panorámico',
+          detail: 'Minijuego: mantén el rumbo 20 s.',
+          cost: c(4),
+          minutes: 40,
+          needs: { confort: 22, humor: 20, energia: -5 },
+          points: 25,
+          minigame: true,
+        },
       ],
     },
     coworking: {
@@ -355,7 +383,16 @@ export function buildServiceScreen(service: HotelService, hotel: Hotel): Service
       intro: 'Sala de espectáculos.',
       hours: 'Función 21:00 · Puertas 20:15',
       actions: [
-        { id: 'entrada', label: 'Entrada al show', detail: 'Dos butacas.', cost: c(1.4), minutes: 100, needs: { social: 16, humor: 18, relax: 8 }, points: 14 },
+        {
+          id: 'entrada',
+          label: 'Entrada + aplauso',
+          detail: 'Minijuego: sigue el ritmo del público.',
+          cost: c(1.4),
+          minutes: 100,
+          needs: { social: 16, humor: 18, relax: 8 },
+          points: 14,
+          minigame: true,
+        },
       ],
     },
   }

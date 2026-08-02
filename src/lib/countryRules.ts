@@ -1,16 +1,19 @@
-/** Reglas locales por país: impuestos, tasa turística y notas visibles. */
+/** Reglas locales por país: impuestos, tasa turística, tasa verde y notas. */
 
 export type CountryRules = {
   taxRate: number
   /** € por habitación ocupada / noche (city tax / tasa turística) */
   touristTaxPerNight: number
+  /** Tasa verde / eco-turística €/hab. noche (compat: se deriva si falta). */
+  greenTaxPerNight?: number
   rules: string[]
 }
 
 const DEFAULT: CountryRules = {
   taxRate: 0.1,
   touristTaxPerNight: 1.5,
-  rules: ['Impuesto hotelero estándar', 'Tasa turística moderada'],
+  greenTaxPerNight: 0.5,
+  rules: ['Impuesto hotelero estándar', 'Tasa turística moderada', 'Tasa verde básica'],
 }
 
 const RULES: Record<string, CountryRules> = {
@@ -323,7 +326,10 @@ const RULES: Record<string, CountryRules> = {
 
 export function getCountryRules(countryCode: string): CountryRules {
   const cc = (countryCode || 'XX').toUpperCase()
-  return RULES[cc] ?? DEFAULT
+  const raw = RULES[cc] ?? DEFAULT
+  const green =
+    raw.greenTaxPerNight ?? Math.round(Math.max(0.3, raw.touristTaxPerNight * 0.35) * 10) / 10
+  return { ...raw, greenTaxPerNight: green }
 }
 
 export function countryTaxRate(countryCode: string): number {
@@ -332,5 +338,10 @@ export function countryTaxRate(countryCode: string): number {
 
 export function formatTouristTax(countryCode: string): string {
   const n = getCountryRules(countryCode).touristTaxPerNight
+  return `${n.toLocaleString('es-ES', { minimumFractionDigits: n % 1 ? 1 : 0, maximumFractionDigits: 1 })} €/hab.`
+}
+
+export function formatGreenTax(countryCode: string): string {
+  const n = getCountryRules(countryCode).greenTaxPerNight ?? 0
   return `${n.toLocaleString('es-ES', { minimumFractionDigits: n % 1 ? 1 : 0, maximumFractionDigits: 1 })} €/hab.`
 }
