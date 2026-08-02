@@ -334,6 +334,38 @@ export interface ClientModeState {
   specializeNights: Partial<Record<Exclude<ClientSpecialize, 'none'>, number>>
   /** Canjes de puntos usados (ids) esta estancia / hoy. */
   pointRedeems: string[]
+  /** Último diario de viaje (check-out). Compat: puede faltar. */
+  lastDiary: TravelDiaryEntry | null
+  /** Historial corto de diarios. */
+  diaries: TravelDiaryEntry[]
+  /** Noches recientes por marca (tour 7 días). */
+  brandTourLog: BrandTourStamp[]
+  /** Día en que ya se cobró el bonus de tour. */
+  brandTourBonusDay: number
+}
+
+/** Entrada del diario de viaje (A4). */
+export interface TravelDiaryEntry {
+  id: string
+  hotelName: string
+  city: string
+  countryCode: string
+  subsidiaryId: string
+  nights: number
+  services: string[]
+  weatherLabel: string
+  weatherDetail: string
+  selfie?: string
+  day: number
+  tipTotal: number
+  pointsNote: string
+  roomKind: string
+  boardRegime: string
+}
+
+export interface BrandTourStamp {
+  day: number
+  subsidiaryId: string
 }
 
 export interface GameState {

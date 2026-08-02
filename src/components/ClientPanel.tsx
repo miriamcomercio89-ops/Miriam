@@ -17,6 +17,7 @@ import {
   lateCheckoutFee,
   calcGuestNightPrice,
   formatAppointmentClock,
+  BRAND_TOUR_BONUS,
 } from '../lib/clientMode'
 import {
   CLIENT_LEVEL_PERKS,
@@ -28,6 +29,8 @@ import {
 } from '../lib/clientClub'
 import { buildServiceScreen, FREE_NIGHT_POINTS } from '../lib/clientServices'
 import { minigameForAction, type MinigameId } from '../lib/clientMinigames'
+import { serviceHoursStatus, clockFromGameMinutes } from '../lib/clientHours'
+import { downloadTravelDiaryPdf } from '../lib/travelDiary'
 import { ClientMinigame } from './ClientMinigame'
 import type { BoardRegime, ClientRoomKind, GuestTarget, HotelService } from '../types'
 
@@ -57,6 +60,8 @@ export function ClientPanel() {
   const clientRedeemPoints = useGameStore((s) => s.clientRedeemPoints)
   const clientClearNotes = useGameStore((s) => s.clientClearNotes)
   const clientDismissStay = useGameStore((s) => s.clientDismissStay)
+  const clientOrderRoomServiceCart = useGameStore((s) => s.clientOrderRoomServiceCart)
+  const gameMinutes = useGameStore((s) => s.gameMinutes)
 
   const [msg, setMsg] = useState<string | null>(null)
   const [roomKind, setRoomKind] = useState<ClientRoomKind>('estandar')
@@ -66,6 +71,8 @@ export function ClientPanel() {
   const [showLevels, setShowLevels] = useState(false)
   const [serviceFocus, setServiceFocus] = useState<HotelService | null>(null)
   const [mini, setMini] = useState<ActiveMini | null>(null)
+  const [cart, setCart] = useState<Record<string, number>>({})
+  const [diaryBusy, setDiaryBusy] = useState(false)
 
   const hotel = useMemo(() => {
     const id = client.stay?.hotelId ?? client.bookingHotelId
@@ -128,6 +135,11 @@ export function ClientPanel() {
 
   function doAction(actionId: string) {
     if (!serviceFocus) return
+    if (serviceFocus === 'room_service_24h') {
+      setCart((c) => ({ ...c, [actionId]: (c[actionId] ?? 0) + 1 }))
+      setMsg(null)
+      return
+    }
     const mg = minigameForAction(serviceFocus, actionId)
     const action = serviceScreen?.actions.find((a) => a.id === actionId)
     if (mg && action?.minigame) {
@@ -142,6 +154,31 @@ export function ClientPanel() {
     }
     const res = clientUseService(serviceFocus, tip, actionId)
     setMsg(res.ok ? null : res.error)
+  }
+
+  function doOrderCart() {
+    const items = Object.entries(cart)
+      .filter(([, q]) => q > 0)
+      .map(([actionId, qty]) => ({ actionId, qty }))
+    const res = clientOrderRoomServiceCart(items, tip)
+    if (res.ok) {
+      setCart({})
+      setMsg(null)
+    } else {
+      setMsg(res.error)
+    }
+  }
+
+  async function doDownloadDiary() {
+    if (!client.lastDiary) return
+    setDiaryBusy(true)
+    try {
+      await downloadTravelDiaryPdf(client.lastDiary)
+    } catch {
+      setMsg('No se pudo generar el PDF del diario.')
+    } finally {
+      setDiaryBusy(false)
+    }
   }
 
   function doClaim(id: string) {
@@ -308,6 +345,30 @@ export function ClientPanel() {
     </div>
   )
 
+  const tourBrands = new Set((client.brandTourLog ?? []).map((x) => x.subsidiaryId)).size
+  const tourBlock = (
+    <div className="client-tour" style={{ marginTop: '0.65rem' }}>
+      <p className="mini-title">Tour de marca (7 días)</p>
+      <p className="muted" style={{ fontSize: '0.8rem', margin: 0 }}>
+        {tourBrands} marca{tourBrands === 1 ? '' : 's'} distinta{tourBrands === 1 ? '' : 's'} · bonus +{BRAND_TOUR_BONUS}{' '}
+        pts al dormir en 2+
+      </p>
+    </div>
+  )
+
+  const diaryBlock = client.lastDiary ? (
+    <div className="client-diary" style={{ marginTop: '0.75rem' }}>
+      <p className="mini-title">Diario de viaje</p>
+      <p className="muted" style={{ fontSize: '0.8rem' }}>
+        {client.lastDiary.hotelName} · {client.lastDiary.nights} noche
+        {client.lastDiary.nights > 1 ? 's' : ''} · {client.lastDiary.weatherLabel}
+      </p>
+      <button type="button" className="btn btn--ghost" disabled={diaryBusy} onClick={() => void doDownloadDiary()}>
+        {diaryBusy ? 'Generando…' : 'Descargar PDF A4'}
+      </button>
+    </div>
+  ) : null
+
   /** All point-redeem options with per-level cost and redeem button. */
   const redeemsBlock = (
     <div className="client-redeems" style={{ marginTop: '0.75rem' }}>
@@ -411,6 +472,7 @@ export function ClientPanel() {
             </div>
 
             {specBlock}
+            {tourBlock}
 
             {client.appointments.length > 0 && (
               <div className="client-appointments">
@@ -430,6 +492,7 @@ export function ClientPanel() {
 
             {redeemsBlock}
             {missionsBlock}
+            {diaryBlock}
           </div>
 
           <div className="client-stay__services">
@@ -447,26 +510,88 @@ export function ClientPanel() {
 
             {serviceScreen ? (
               <div className="client-service-screen">
-                <button type="button" className="linkish" onClick={() => setServiceFocus(null)}>
+                <button
+                  type="button"
+                  className="linkish"
+                  onClick={() => {
+                    setServiceFocus(null)
+                    setCart({})
+                  }}
+                >
                   ← Todos los servicios
                 </button>
                 <p className="client-service-screen__intro">{serviceScreen.intro}</p>
-                <p className="client-service-screen__hours">{serviceScreen.hours}</p>
+                <p className="client-service-screen__hours">
+                  {serviceScreen.hours} · ahora {clockFromGameMinutes(gameMinutes)}
+                </p>
+                {(() => {
+                  const hs = serviceHoursStatus(serviceFocus!, gameMinutes)
+                  return (
+                    <p className={hs.open ? 'muted' : 'error'} style={{ margin: '0 0 0.5rem' }}>
+                      {hs.open ? hs.note : `${hs.note} · abre ${hs.opensAt}`}
+                    </p>
+                  )
+                })()}
                 <div className="client-action-list">
                   {serviceScreen.actions.map((a) => (
                     <button key={a.id} type="button" className="client-action" onClick={() => doAction(a.id)}>
                       <strong>
                         {a.label}
                         {a.minigame ? ' · minijuego' : ''}
+                        {serviceFocus === 'room_service_24h' ? ' · +carrito' : ''}
                       </strong>
                       <span>{a.detail}</span>
                       <em>
                         {formatEUR(a.cost)}
-                        {tip > 0 ? ` + ${formatEUR(tip)} propina` : ''} · {a.minutes} min · +{a.points} pts
+                        {tip > 0 && serviceFocus !== 'room_service_24h' ? ` + ${formatEUR(tip)} propina` : ''} ·{' '}
+                        {a.minutes} min · +{a.points} pts
+                        {cart[a.id] ? ` · x${cart[a.id]}` : ''}
                       </em>
                     </button>
                   ))}
                 </div>
+                {serviceFocus === 'room_service_24h' && (
+                  <div className="client-cart" style={{ marginTop: '0.75rem' }}>
+                    <p className="mini-title">Carrito room service</p>
+                    {Object.keys(cart).length === 0 ? (
+                      <p className="muted">Añade platos con +carrito.</p>
+                    ) : (
+                      <>
+                        <ul style={{ margin: '0 0 0.5rem', paddingLeft: '1.1rem', fontSize: '0.8rem' }}>
+                          {Object.entries(cart).map(([id, qty]) => {
+                            const a = serviceScreen.actions.find((x) => x.id === id)
+                            return (
+                              <li key={id}>
+                                {a?.label ?? id} ×{qty}{' '}
+                                <button
+                                  type="button"
+                                  className="linkish"
+                                  onClick={() =>
+                                    setCart((c) => {
+                                      const n = { ...c }
+                                      delete n[id]
+                                      return n
+                                    })
+                                  }
+                                >
+                                  quitar
+                                </button>
+                              </li>
+                            )
+                          })}
+                        </ul>
+                        <div className="speed-group">
+                          <button type="button" className="btn btn--primary" onClick={doOrderCart}>
+                            Pedir carrito
+                          </button>
+                          <button type="button" className="chip" onClick={() => setCart({})}>
+                            Vaciar
+                          </button>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                )}
               </div>
             ) : (
               <div className="client-service-list">
@@ -609,11 +734,15 @@ export function ClientPanel() {
 
             {specBlock}
 
+            {tourBlock}
+
             {levelsTable}
 
             {missionsBlock}
 
             {redeemsBlock}
+
+            {diaryBlock}
 
             <p className="mini-title">Reservar</p>
             <p className="muted">Clic en un hotel del mapa para elegirlo.</p>

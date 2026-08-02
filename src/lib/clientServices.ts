@@ -230,11 +230,16 @@ export function buildServiceScreen(service: HotelService, hotel: Hotel): Service
     },
     room_service_24h: {
       title,
-      intro: 'Comida a la habitación a cualquier hora.',
-      hours: '24 horas',
+      intro: 'Carta a la habitación. Puedes llenar un carrito y pedir todo junto.',
+      hours: '24 horas · recargo 00:00–06:00',
       actions: [
         { id: 'cena_hab', label: 'Cena en habitación', detail: 'Para dos.', cost: c(1.3), minutes: 40, needs: { hambre: 30, sed: 14, confort: 14, energia: 4 }, points: 11 },
         { id: 'desayuno_hab', label: 'Desayuno en cama', detail: 'Bandeja para pareja.', cost: c(1), minutes: 25, needs: { hambre: 24, sed: 12, confort: 16, humor: 8 }, points: 9 },
+        { id: 'burger', label: 'Burger club', detail: 'Con patatas.', cost: c(0.85), minutes: 30, needs: { hambre: 26, sed: 8, humor: 6 }, points: 7 },
+        { id: 'ensalada', label: 'Ensalada gourmet', detail: 'Ligera.', cost: c(0.7), minutes: 25, needs: { hambre: 18, higiene: 4, energia: 4 }, points: 6 },
+        { id: 'vino', label: 'Botella de vino', detail: 'Para dos copas.', cost: c(1.1), minutes: 10, needs: { sed: 16, social: 12, humor: 10, energia: -4 }, points: 8 },
+        { id: 'postre', label: 'Postre de la casa', detail: 'Dulce del chef.', cost: c(0.55), minutes: 15, needs: { hambre: 12, humor: 10 }, points: 5 },
+        { id: 'cafe', label: 'Café / té', detail: 'Servicio rápido.', cost: c(0.35), minutes: 10, needs: { sed: 10, energia: 8 }, points: 3 },
       ],
     },
     concierge: {

@@ -13,16 +13,19 @@ import type {
   GuestTarget,
   Hotel,
   HotelService,
+  TravelDiaryEntry,
   WeatherInfo,
 } from '../types'
 import { clientPerkInfo, hotelSpecializeKind, specializeStayBonus } from './clientClub'
 import { getWeather } from './weather'
 import { getSeason } from './economyCore'
+import { serviceLabelsForDiary } from './travelDiary'
 
 /** % de los ingresos del día del hotel donde te alojas → monedero cliente. */
 export const CLIENT_CEO_CUT = 0.005
 export const CLIENT_NIGHT_POINTS = 120
 export const CLIENT_START_WALLET = 25_000
+export const BRAND_TOUR_BONUS = 80
 
 export const CLIENT_NEED_IDS: ClientNeedId[] = [
   'hambre',
@@ -115,6 +118,10 @@ export function defaultClientState(): ClientModeState {
     specialize: 'none',
     specializeNights: {},
     pointRedeems: [],
+    lastDiary: null,
+    diaries: [],
+    brandTourLog: [],
+    brandTourBonusDay: 0,
   }
 }
 
@@ -468,6 +475,10 @@ export function migrateClientState(raw: Partial<ClientModeState> | undefined): C
     specialize: (raw.specialize as ClientSpecialize) ?? 'none',
     specializeNights,
     pointRedeems: Array.isArray(raw.pointRedeems) ? raw.pointRedeems : [],
+    lastDiary: raw.lastDiary ?? null,
+    diaries: Array.isArray(raw.diaries) ? raw.diaries : [],
+    brandTourLog: Array.isArray(raw.brandTourLog) ? raw.brandTourLog : [],
+    brandTourBonusDay: typeof raw.brandTourBonusDay === 'number' ? raw.brandTourBonusDay : 0,
   }
 }
 
@@ -545,26 +556,30 @@ export function settleClientNight(
   next.needs = applyNeedDelta(overnightNeeds(next.needs), wDelta)
   next.partnerNeeds = applyNeedDelta(overnightPartnerNeeds(next.partnerNeeds), wDelta)
   next.passport = stampPassport(next.passport, hotel, day)
+  next = applyBrandTour(next, hotel, day)
   const spec = bumpSpecialize(next.specializeNights, next.specialize, hotel)
   next.specializeNights = spec.specializeNights
   next.specialize = spec.specialize
-  next.stayServicesUsed = []
-  next.pointRedeems = next.pointRedeems.filter((id) => id === 'noche')
-  // citas pasadas → done
-  next.appointments = next.appointments.map((a) =>
-    a.atMinutes <= gameMinutes ? { ...a, done: true } : a,
-  )
 
   const remaining = Math.max(0, (stay.nightsRemaining ?? 1) - 1)
   if (remaining > 0) {
+    next.stayServicesUsed = []
+    next.pointRedeems = next.pointRedeems.filter((id) => id === 'noche')
+    next.appointments = next.appointments.map((a) =>
+      a.atMinutes <= gameMinutes ? { ...a, done: true } : a,
+    )
     next.stay = { ...stay, nightsRemaining: remaining }
     next.notifications = pushNote(
       next.notifications,
       `Noche ${stay.nights - remaining}/${stay.nights} en ${hotel.name}: +${nightPts} pts · CEO ${ceo.toLocaleString('es-ES')} € · ${weather.label}. Quedan ${remaining}.`,
     )
   } else {
-    next.stay = { ...stay, nightsRemaining: 0, status: 'checked_out' }
+    const diary = buildTravelDiaryEntry(next, hotel, day, gameMinutes, stay.nights || 1)
+    next = attachDiary(next, diary)
+    next.stayServicesUsed = []
+    next.pointRedeems = next.pointRedeems.filter((id) => id === 'noche')
     next.appointments = []
+    next.stay = { ...stay, nightsRemaining: 0, status: 'checked_out' }
     next.notifications = pushNote(
       next.notifications,
       `Última noche en ${hotel.name}: +${nightPts} pts · CEO ${ceo.toLocaleString('es-ES')} €. Check-out automático.`,
@@ -572,6 +587,74 @@ export function settleClientNight(
   }
 
   return { client: next, hotels: nextHotels, hotelRevenue: 0 }
+}
+
+export function applyBrandTour(
+  client: ClientModeState,
+  hotel: Hotel,
+  day: number,
+): ClientModeState {
+  const log = [...(client.brandTourLog ?? []), { day, subsidiaryId: hotel.subsidiaryId }]
+    .filter((x) => x.day >= day - 6)
+    .slice(-24)
+  let next: ClientModeState = { ...client, brandTourLog: log }
+  const brands = new Set(log.map((x) => x.subsidiaryId))
+  if (brands.size >= 2 && client.brandTourBonusDay !== day) {
+    const points = next.points + BRAND_TOUR_BONUS
+    next = {
+      ...next,
+      points,
+      level: clientLevelFromPoints(points),
+      brandTourBonusDay: day,
+      notifications: pushNote(
+        next.notifications,
+        `Tour de marca: ${brands.size} marcas distintas en 7 días · +${BRAND_TOUR_BONUS} pts.`,
+      ),
+    }
+  }
+  return next
+}
+
+export function buildTravelDiaryEntry(
+  client: ClientModeState,
+  hotel: Hotel,
+  day: number,
+  gameMinutes: number,
+  nights: number,
+): TravelDiaryEntry {
+  const weather = getWeather(hotel.lat, gameMinutes, hotel.id)
+  const stamp = client.passport.find(
+    (p) => p.countryCode === hotel.countryCode && p.subsidiaryId === hotel.subsidiaryId,
+  )
+  return {
+    id: `diary-${hotel.id}-${day}`,
+    hotelName: hotel.name,
+    city: hotel.city,
+    countryCode: hotel.countryCode,
+    subsidiaryId: hotel.subsidiaryId,
+    nights: Math.max(1, nights),
+    services: serviceLabelsForDiary(client.stayServicesUsed),
+    weatherLabel: weather.label,
+    weatherDetail: weather.detail,
+    selfie: stamp?.selfie,
+    day,
+    tipTotal: client.stay?.tipTotal ?? 0,
+    pointsNote: `Estancia · Club nv.${client.level}`,
+    roomKind: client.stay?.roomKind ?? 'estandar',
+    boardRegime: client.stay?.boardRegime ?? 'solo',
+  }
+}
+
+export function attachDiary(client: ClientModeState, entry: TravelDiaryEntry): ClientModeState {
+  return {
+    ...client,
+    lastDiary: entry,
+    diaries: [entry, ...(client.diaries ?? [])].slice(0, 12),
+    notifications: pushNote(
+      client.notifications,
+      `Diario de viaje listo: ${entry.hotelName}. Puedes descargarlo en PDF.`,
+    ),
+  }
 }
 
 export function prefsMatchHotel(prefs: GuestTarget[], hotel: Hotel): number {
