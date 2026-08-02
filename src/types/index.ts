@@ -264,6 +264,22 @@ export interface ClientPassportStamp {
   day: number
 }
 
+export type ClientMissionKind = 'daily' | 'weekly'
+
+export interface ClientMission {
+  id: string
+  kind: ClientMissionKind
+  title: string
+  description: string
+  progress: number
+  target: number
+  rewardPoints: number
+  rewardWallet: number
+  done: boolean
+  claimed: boolean
+  createdDay: number
+}
+
 export interface ClientModeState {
   name: string
   prefs: GuestTarget[]
@@ -275,8 +291,11 @@ export interface ClientModeState {
   passport: ClientPassportStamp[]
   notifications: string[]
   totalNights: number
-  /** Hotel seleccionado para reservar en UI cliente */
   bookingHotelId: string | null
+  stayServicesUsed: HotelService[]
+  missions: ClientMission[]
+  missionsDay: number
+  appointments: string[]
 }
 
 export interface GameState {

@@ -84,6 +84,10 @@ export function defaultClientState(): ClientModeState {
     notifications: [],
     totalNights: 0,
     bookingHotelId: null,
+    stayServicesUsed: [],
+    missions: [],
+    missionsDay: 0,
+    appointments: [],
   }
 }
 
@@ -246,6 +250,10 @@ export function migrateClientState(raw: Partial<ClientModeState> | undefined): C
     notifications: Array.isArray(raw.notifications) ? raw.notifications : [],
     stay: raw.stay ?? null,
     level: clientLevelFromPoints(raw.points ?? 0),
+    stayServicesUsed: Array.isArray(raw.stayServicesUsed) ? raw.stayServicesUsed : [],
+    missions: Array.isArray(raw.missions) ? raw.missions : [],
+    missionsDay: typeof raw.missionsDay === 'number' ? raw.missionsDay : 0,
+    appointments: Array.isArray(raw.appointments) ? raw.appointments : [],
   }
 }
 
@@ -295,6 +303,8 @@ export function settleClientNight(
   next.totalNights += 1
   next.needs = overnightNeeds(next.needs)
   next.passport = stampPassport(next.passport, hotel, day)
+  next.stayServicesUsed = []
+  next.appointments = []
   next.notifications = pushNote(
     next.notifications,
     `Noche en ${hotel.name}: +${CLIENT_NIGHT_POINTS} pts · salario CEO ${ceo.toLocaleString('es-ES')} € (${(CLIENT_CEO_CUT * 100).toFixed(1)}% ingresos del hotel).`,

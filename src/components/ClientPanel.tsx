@@ -11,9 +11,9 @@ import {
   clientLevelInfo,
   roomKindsForHotel,
   visibleClientServices,
-  serviceExtraCost,
   CLIENT_CEO_CUT,
 } from '../lib/clientMode'
+import { buildServiceScreen, FREE_NIGHT_POINTS } from '../lib/clientServices'
 import type { BoardRegime, ClientRoomKind, GuestTarget, HotelService } from '../types'
 
 export function ClientPanel() {
@@ -29,6 +29,8 @@ export function ClientPanel() {
   const clientCheckIn = useGameStore((s) => s.clientCheckIn)
   const clientCheckOut = useGameStore((s) => s.clientCheckOut)
   const clientUseService = useGameStore((s) => s.clientUseService)
+  const clientClaimMission = useGameStore((s) => s.clientClaimMission)
+  const clientRedeemFreeNight = useGameStore((s) => s.clientRedeemFreeNight)
   const clientClearNotes = useGameStore((s) => s.clientClearNotes)
   const clientDismissStay = useGameStore((s) => s.clientDismissStay)
   const [msg, setMsg] = useState<string | null>(null)
@@ -41,6 +43,11 @@ export function ClientPanel() {
     const id = client.stay?.hotelId ?? client.bookingHotelId
     return hotels.find((h) => h.id === id) ?? null
   }, [hotels, client.stay, client.bookingHotelId])
+
+  const serviceScreen = useMemo(() => {
+    if (!hotel || !serviceFocus) return null
+    return buildServiceScreen(serviceFocus, hotel)
+  }, [hotel, serviceFocus])
 
   if (playMode !== 'cliente') return null
 
@@ -72,11 +79,70 @@ export function ClientPanel() {
     setMsg(res.ok ? null : res.error)
   }
 
-  function doService(id: HotelService) {
-    const res = clientUseService(id, tip)
+  function doAction(actionId: string) {
+    if (!serviceFocus) return
+    const res = clientUseService(serviceFocus, tip, actionId)
     setMsg(res.ok ? null : res.error)
-    if (res.ok) setServiceFocus(id)
   }
+
+  function doClaim(id: string) {
+    const res = clientClaimMission(id)
+    setMsg(res.ok ? null : res.error)
+  }
+
+  function doRedeem() {
+    const res = clientRedeemFreeNight()
+    setMsg(res.ok ? null : res.error)
+  }
+
+  const missionsBlock = (
+    <div className="client-missions">
+      <h3>Misiones</h3>
+      {client.missions.length === 0 ? (
+        <p className="muted">Sin misiones activas. Entra al modo Cliente o avanza un día.</p>
+      ) : (
+        <ul className="client-missions__list">
+          {client.missions.map((m) => (
+            <li key={m.id} className={`client-mission ${m.done ? 'is-done' : ''} ${m.claimed ? 'is-claimed' : ''}`}>
+              <div>
+                <strong>
+                  {m.kind === 'weekly' ? 'Semanal' : 'Diaria'} · {m.title}
+                </strong>
+                <span>{m.description}</span>
+                <em>
+                  {m.progress}/{m.target} · +{m.rewardPoints} pts · {formatEUR(m.rewardWallet)}
+                </em>
+              </div>
+              {m.done && !m.claimed ? (
+                <button type="button" className="chip chip--active" onClick={() => doClaim(m.id)}>
+                  Cobrar
+                </button>
+              ) : m.claimed ? (
+                <span className="client-mission__tag">Cobrada</span>
+              ) : null}
+            </li>
+          ))}
+        </ul>
+      )}
+      <p className="muted client-missions__hint">
+        Canje noche gratis: {FREE_NIGHT_POINTS} pts (reserva → canje → check-in).
+      </p>
+    </div>
+  )
+
+  const notesBlock =
+    client.notifications.length > 0 ? (
+      <div className="client-notes">
+        {client.notifications.slice(0, 5).map((n, i) => (
+          <article key={`${i}-${n.slice(0, 16)}`} className="client-notes__item">
+            <p>{n}</p>
+          </article>
+        ))}
+        <button type="button" className="linkish" onClick={() => clientClearNotes()}>
+          Limpiar avisos
+        </button>
+      </div>
+    ) : null
 
   // Pantalla de estancia a pantalla completa (sin mapa de fondo)
   if (inStay && hotel) {
@@ -133,66 +199,84 @@ export function ClientPanel() {
                 <strong>{(CLIENT_CEO_CUT * 100).toFixed(1)}% ingresos del hotel / noche</strong>
               </div>
             </div>
+            {client.appointments.length > 0 && (
+              <div className="client-appointments">
+                <h3>Citas</h3>
+                <ul>
+                  {client.appointments.map((a) => (
+                    <li key={a}>{a}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {missionsBlock}
           </div>
 
           <div className="client-stay__services">
-            <h3>Servicios del hotel</h3>
+            <h3>{serviceScreen ? serviceScreen.title : 'Servicios del hotel'}</h3>
             <label className="field">
               <span>Propina al usar servicio (€)</span>
-              <input type="number" min={0} max={500} value={tip} onChange={(e) => setTip(Number(e.target.value) || 0)} />
+              <input
+                type="number"
+                min={0}
+                max={500}
+                value={tip}
+                onChange={(e) => setTip(Number(e.target.value) || 0)}
+              />
             </label>
-            <div className="client-service-list">
-              {services.length === 0 ? (
-                <p className="muted">Este hotel no tiene servicios extra configurados.</p>
-              ) : (
-                services.map((id) => {
-                  const meta = SERVICE_CATALOG.find((s) => s.id === id)
-                  const cost = serviceExtraCost(id, hotel)
-                  return (
-                    <button
-                      key={id}
-                      type="button"
-                      className={`client-service ${serviceFocus === id ? 'is-active' : ''}`}
-                      onClick={() => doService(id)}
-                    >
-                      <strong>{meta?.label ?? id}</strong>
-                      <span>
-                        {meta?.group} · {formatEUR(cost)}
-                        {['spa', 'restaurante', 'concierge'].includes(id) ? ' · detalle' : ''}
-                      </span>
-                    </button>
-                  )
-                })
-              )}
-            </div>
 
-            {serviceFocus === 'spa' && hotel.services.includes('spa') && (
-              <div className="client-detail-card">
-                <h4>Spa</h4>
-                <p>Circuito de aguas, sauna si existe, y masaje de 40 min. Reserva en recepción del spa.</p>
-                <p className="muted">Efecto: relax, higiene y algo de energía.</p>
+            {serviceScreen ? (
+              <div className="client-service-screen">
+                <button type="button" className="linkish" onClick={() => setServiceFocus(null)}>
+                  ← Todos los servicios
+                </button>
+                <p className="client-service-screen__intro">{serviceScreen.intro}</p>
+                <p className="client-service-screen__hours">{serviceScreen.hours}</p>
+                <div className="client-action-list">
+                  {serviceScreen.actions.map((a) => (
+                    <button key={a.id} type="button" className="client-action" onClick={() => doAction(a.id)}>
+                      <strong>{a.label}</strong>
+                      <span>{a.detail}</span>
+                      <em>
+                        {formatEUR(a.cost)}
+                        {tip > 0 ? ` + ${formatEUR(tip)} propina` : ''} · {a.minutes} min · +{a.points} pts
+                      </em>
+                    </button>
+                  ))}
+                </div>
               </div>
-            )}
-            {(serviceFocus === 'restaurante' || serviceFocus === 'all_inclusive') && (
-              <div className="client-detail-card">
-                <h4>Gastronomía</h4>
-                <p>
-                  {hotel.restaurantConcepts?.length
-                    ? `Carta: ${hotel.restaurantConcepts.join(', ')}.`
-                    : 'Restaurante del hotel.'}{' '}
-                  {hotel.buffetTypes?.length ? `Buffets: ${hotel.buffetTypes.join(', ')}.` : ''}{' '}
-                  Horario orientativo: desayuno 7–11 · comida 13–16 · cena 19–23.
-                </p>
-              </div>
-            )}
-            {serviceFocus === 'concierge' && hotel.services.includes('concierge') && (
-              <div className="client-detail-card">
-                <h4>Conserjería</h4>
-                <p>Pide taxi, mesa, entradas o late checkout. El personal del hotel te atiende según su nivel de staffing.</p>
+            ) : (
+              <div className="client-service-list">
+                {services.length === 0 ? (
+                  <p className="muted">Este hotel no tiene servicios extra configurados.</p>
+                ) : (
+                  services.map((id) => {
+                    const meta = SERVICE_CATALOG.find((s) => s.id === id)
+                    const preview = buildServiceScreen(id, hotel)
+                    const from = preview.actions[0]?.cost ?? 0
+                    return (
+                      <button
+                        key={id}
+                        type="button"
+                        className="client-service"
+                        onClick={() => {
+                          setServiceFocus(id)
+                          setMsg(null)
+                        }}
+                      >
+                        <strong>{meta?.label ?? id}</strong>
+                        <span>
+                          {meta?.group} · desde {formatEUR(from)} · {preview.actions.length} opciones
+                        </span>
+                      </button>
+                    )
+                  })
+                )}
               </div>
             )}
 
             {msg && <p className="error">{msg}</p>}
+            {notesBlock}
             <div className="speed-group" style={{ marginTop: '0.75rem' }}>
               <button
                 type="button"
@@ -200,6 +284,7 @@ export function ClientPanel() {
                 onClick={() => {
                   const res = clientCheckOut()
                   setMsg(res.ok ? null : res.error)
+                  setServiceFocus(null)
                 }}
               >
                 Check-out
@@ -228,7 +313,13 @@ export function ClientPanel() {
             Nv.{client.level} {level.name} · {client.points.toLocaleString('es-ES')} pts · {formatEUR(client.wallet)}
           </p>
         </div>
-        <button type="button" className="icon-btn" onClick={() => setPlayMode('gerente')} aria-label="Volver a gerente" title="Gerente">
+        <button
+          type="button"
+          className="icon-btn"
+          onClick={() => setPlayMode('gerente')}
+          aria-label="Volver a gerente"
+          title="Gerente"
+        >
           ×
         </button>
       </div>
@@ -282,6 +373,8 @@ export function ClientPanel() {
               </div>
             ))}
 
+            {missionsBlock}
+
             <p className="mini-title">Reservar esta noche</p>
             <p className="muted">Clic en un hotel del mapa para elegirlo.</p>
 
@@ -301,10 +394,7 @@ export function ClientPanel() {
               <>
                 <label className="field">
                   <span>Habitación</span>
-                  <select
-                    value={roomKind}
-                    onChange={(e) => setRoomKind(e.target.value as ClientRoomKind)}
-                  >
+                  <select value={roomKind} onChange={(e) => setRoomKind(e.target.value as ClientRoomKind)}>
                     {rooms.map((r) => (
                       <option key={r.id} value={r.id}>
                         {r.label}
@@ -328,15 +418,27 @@ export function ClientPanel() {
             {stay && stay.status !== 'checked_out' ? (
               <div className="detail-block" style={{ padding: 0 }}>
                 <p>
-                  Estado: <strong>{stay.status}</strong>
+                  Estado: <strong>{stay.status === 'waitlist' ? 'lista de espera' : stay.status}</strong>
                   {stay.status === 'waitlist' ? ' (automática)' : ''}
                 </p>
-                <p className="muted">Precio pareja: {formatEUR(stay.pricePaid)}</p>
+                <p className="muted">
+                  Precio pareja: {stay.pricePaid === 0 ? 'Canjeada (0 €)' : formatEUR(stay.pricePaid)}
+                </p>
                 <div className="speed-group">
                   {stay.status === 'reserved' && (
-                    <button type="button" className="btn btn--primary" onClick={doCheckIn}>
-                      Check-in
-                    </button>
+                    <>
+                      <button type="button" className="btn btn--primary" onClick={doCheckIn}>
+                        Check-in
+                      </button>
+                      {stay.pricePaid > 0 && client.points >= FREE_NIGHT_POINTS && (
+                        <button type="button" className="chip" onClick={doRedeem}>
+                          Canjear noche ({FREE_NIGHT_POINTS} pts)
+                        </button>
+                      )}
+                    </>
+                  )}
+                  {stay.status === 'waitlist' && (
+                    <p className="muted">Si se libera una habitación al pasar el día, pasarás a reserved.</p>
                   )}
                   {stay.status !== 'checked_in' && (
                     <button type="button" className="btn btn--ghost" onClick={() => clientCancelReservation()}>
@@ -365,19 +467,7 @@ export function ClientPanel() {
             )}
 
             {msg && <p className="error">{msg}</p>}
-
-            {client.notifications.length > 0 && (
-              <div className="news-list" style={{ marginTop: '0.75rem', maxHeight: 160 }}>
-                {client.notifications.slice(0, 4).map((n, i) => (
-                  <article key={`${i}-${n.slice(0, 12)}`} className="news-card news-card--neutral">
-                    <p>{n}</p>
-                  </article>
-                ))}
-                <button type="button" className="linkish" onClick={() => clientClearNotes()}>
-                  Limpiar avisos
-                </button>
-              </div>
-            )}
+            {notesBlock}
 
             {client.passport.length > 0 && (
               <>
