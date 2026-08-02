@@ -34,10 +34,14 @@ import {
   applyBrandTour,
   buildTravelDiaryEntry,
   attachDiary,
+  buildNightRecap,
+  BRAND_TOUR_BONUS,
 } from '../lib/clientMode'
 import { serviceHoursStatus } from '../lib/clientHours'
+import { getWeather } from '../lib/weather'
 import { SLOT_KEYS, idbSave, tryLocalStorageSave, readLocalStorageSave, idbLoad, idbLoadHotelImages, mergeHotelImages } from '../lib/saveio'
 import { applyDays } from '../lib/daySim'
+import { defaultPersistedUi, migratePersistedUi } from '../lib/balance'
 import { playBuildSound, playDaySound, playSellSound } from '../lib/sound'
 import type { WorkerDayRequest, WorkerDayResponse } from '../workers/dayWorker'
 import type {
@@ -75,9 +79,25 @@ import {
   type PointRedeemId,
 } from '../lib/clientClub'
 
-export const STORAGE_KEY = 'orbis-hotels-group-save-v12'
-export const SAVE_VERSION = 12
+export const STORAGE_KEY = 'orbis-hotels-group-save-v13'
+export const SAVE_VERSION = 13
 export const IDB_SLOT_KEYS = ['slot-1', 'slot-2', 'slot-3'] as const
+
+/** Claves legacy de localStorage (compat. hacia atrás). */
+export const LEGACY_STORAGE_KEYS = [
+  'orbis-hotels-group-save-v12',
+  'orbis-hotels-group-save-v11',
+  'orbis-hotels-group-save-v10',
+  'orbis-hotels-group-save-v9',
+  'orbis-hotels-group-save-v8',
+  'orbis-hotels-group-save-v7',
+  'orbis-hotels-group-save-v6',
+  'orbis-hotels-group-save-v5',
+  'orbis-hotels-group-save-v4',
+  'orbis-hotels-group-save-v3',
+  'orbis-hotels-group-save-v2',
+  'orbis-hotels-group-save-v1',
+] as const
 
 type UiState = {
   selectedHotelId: string | null
@@ -211,6 +231,7 @@ type GameStore = GameState &
     clientRefreshMissions: () => void
     clientClearNotes: () => void
     clientDismissStay: () => void
+    clientDismissNightRecap: () => void
   }
 
 function defaultLoan(): LoanState {
@@ -244,6 +265,7 @@ function initialState(): GameState {
     planCursor: 1,
     playMode: 'gerente',
     client: defaultClientState(),
+    ui: defaultPersistedUi(),
   }
 }
 
@@ -355,6 +377,7 @@ function migrate(raw: Partial<GameState> & { cash?: number }): GameState {
     planCursor: typeof raw.planCursor === 'number' && raw.planCursor > 0 ? raw.planCursor : 1,
     playMode: raw.playMode === 'cliente' ? 'cliente' : 'gerente',
     client: migrateClientState(raw.client),
+    ui: migratePersistedUi(raw.ui),
   }
 }
 
@@ -748,20 +771,37 @@ export const useGameStore = create<GameStore>((set, get) => ({
       planCursor: s.planCursor,
       playMode: s.playMode,
       client: s.client,
+      ui: {
+        mapLayer: s.mapLayer,
+        mapMode: s.mapMode,
+        mapFilters: s.mapFilters,
+        mapFocus: s.mapFocus,
+        selectedHotelId: s.selectedHotelId,
+        rankMetric: s.rankMetric,
+        lastSimMs: s.ui?.lastSimMs ?? 0,
+        lastSimHotels: s.ui?.lastSimHotels ?? 0,
+      },
     }
   },
 
-  hydrate: (state) =>
+  hydrate: (state) => {
+    const m = migrate(state)
     set({
-      ...migrate(state),
+      ...m,
       showLanding: !state.started,
-      selectedHotelId: null,
+      selectedHotelId: m.ui.selectedHotelId,
       compareIds: [null, null],
       buildLocation: null,
       ...closePanelsExcept({}),
-      mapFocus: null,
+      mapLayer: m.ui.mapLayer,
+      mapMode: m.ui.mapMode,
+      mapFilters: m.ui.mapFilters,
+      mapFocus: m.ui.mapFocus,
+      rankMetric: m.ui.rankMetric,
       simulating: false,
-    }),
+      simProgress: '',
+    })
+  },
 
   persistLocal: () => {
     const snap = get().getSnapshot()
@@ -796,15 +836,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
     }
     const fromLs = readLocalStorageSave([
       STORAGE_KEY,
-      'orbis-hotels-group-save-v9',
-      'orbis-hotels-group-save-v8',
-      'orbis-hotels-group-save-v7',
-      'orbis-hotels-group-save-v6',
-      'orbis-hotels-group-save-v5',
-      'orbis-hotels-group-save-v4',
-      'orbis-hotels-group-save-v3',
-      'orbis-hotels-group-save-v2',
-      'orbis-hotels-group-save-v1',
+      ...LEGACY_STORAGE_KEYS,
     ])
     if (!fromLs) return false
     try {
@@ -1258,6 +1290,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
     }
     if (hotel) {
       const add = Math.round(CLIENT_NIGHT_POINTS * 0.25)
+      const weather = getWeather(hotel.lat, state.gameMinutes, hotel.id)
+      const tourBefore = client.brandTourBonusDay
       const diary = buildTravelDiaryEntry(client, hotel, day, state.gameMinutes, stay.nights || 1)
       client = {
         ...client,
@@ -1266,8 +1300,23 @@ export const useGameStore = create<GameStore>((set, get) => ({
         level: clientLevelFromPoints(client.points + add),
       }
       client = applyBrandTour(client, hotel, day)
+      const tourBonus = client.brandTourBonusDay === day && tourBefore !== day ? BRAND_TOUR_BONUS : 0
       client = attachDiary(client, diary)
-      client = { ...client, stayServicesUsed: [] }
+      client = {
+        ...client,
+        stayServicesUsed: [],
+        lastNightRecap: buildNightRecap({
+          hotel,
+          weather,
+          points: add,
+          ceo: 0,
+          tourBonus,
+          day,
+          nightsDone: stay.nights || 1,
+          nightsTotal: stay.nights || 1,
+          lastNight: true,
+        }),
+      }
     } else {
       client = { ...client, stayServicesUsed: [] }
     }
@@ -1629,6 +1678,12 @@ export const useGameStore = create<GameStore>((set, get) => ({
     if (!stay || stay.status === 'checked_in') return
     set({ client: { ...get().client, stay: null } })
   },
+
+  clientDismissNightRecap: () => {
+    const c = get().client
+    if (!c.lastNightRecap) return
+    set({ client: { ...c, lastNightRecap: null } })
+  },
 }))
 
 async function runSkipDays(days: number, gameMinutes: number) {
@@ -1637,9 +1692,11 @@ async function runSkipDays(days: number, gameMinutes: number) {
     useGameStore.setState({ gameMinutes })
     return
   }
+  const hotelCount = state.hotels.length
+  const t0 = performance.now()
   useGameStore.setState({
     simulating: true,
-    simProgress: `Calculando ${days > 1 ? 'días' : 'el día'}… (${state.hotels.length.toLocaleString('es-ES')} hoteles)`,
+    simProgress: `Calculando ${days > 1 ? `${days} días` : 'el día'}… (${hotelCount.toLocaleString('es-ES')} hoteles)`,
   })
   try {
     const result = await runDaysInWorker(state, days)
@@ -1670,11 +1727,18 @@ async function runSkipDays(days: number, gameMinutes: number) {
       const refreshed = ensureMissions(client.missions, client.missionsDay, day)
       client = { ...client, missions: refreshed.missions, missionsDay: refreshed.missionsDay }
     }
+    const elapsed = Math.max(1, Math.round(performance.now() - t0))
+    const ui = {
+      ...(state.ui ?? defaultPersistedUi()),
+      lastSimMs: elapsed,
+      lastSimHotels: hotelCount,
+    }
     useGameStore.setState({
       gameMinutes,
       cash,
       hotels,
       client,
+      ui,
       activeEvents: result.activeEvents,
       lastEventRollDay: result.lastEventRollDay,
       reputation: result.reputation,

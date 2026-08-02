@@ -17,21 +17,17 @@ import {
   lateCheckoutFee,
   calcGuestNightPrice,
   formatAppointmentClock,
-  BRAND_TOUR_BONUS,
 } from '../lib/clientMode'
 import {
-  CLIENT_LEVEL_PERKS,
-  POINT_REDEEMS,
-  redeemPointsCost,
-  SPECIALIZE_LABEL,
   clientPerkInfo,
   type PointRedeemId,
 } from '../lib/clientClub'
 import { buildServiceScreen, FREE_NIGHT_POINTS } from '../lib/clientServices'
 import { minigameForAction, type MinigameId } from '../lib/clientMinigames'
 import { serviceHoursStatus, clockFromGameMinutes } from '../lib/clientHours'
-import { downloadTravelDiaryPdf } from '../lib/travelDiary'
 import { ClientMinigame } from './ClientMinigame'
+import { ClientClubHub } from './ClientClubHub'
+import { ClientNightRecap } from './ClientNightRecap'
 import type { BoardRegime, ClientRoomKind, GuestTarget, HotelService } from '../types'
 
 type ActiveMini = {
@@ -68,11 +64,9 @@ export function ClientPanel() {
   const [board, setBoard] = useState<BoardRegime>('solo')
   const [tip, setTip] = useState(0)
   const [nights, setNights] = useState(1)
-  const [showLevels, setShowLevels] = useState(false)
   const [serviceFocus, setServiceFocus] = useState<HotelService | null>(null)
   const [mini, setMini] = useState<ActiveMini | null>(null)
   const [cart, setCart] = useState<Record<string, number>>({})
-  const [diaryBusy, setDiaryBusy] = useState(false)
 
   const hotel = useMemo(() => {
     const id = client.stay?.hotelId ?? client.bookingHotelId
@@ -169,18 +163,6 @@ export function ClientPanel() {
     }
   }
 
-  async function doDownloadDiary() {
-    if (!client.lastDiary) return
-    setDiaryBusy(true)
-    try {
-      await downloadTravelDiaryPdf(client.lastDiary)
-    } catch {
-      setMsg('No se pudo generar el PDF del diario.')
-    } finally {
-      setDiaryBusy(false)
-    }
-  }
-
   function doClaim(id: string) {
     const res = clientClaimMission(id)
     setMsg(res.ok ? null : res.error)
@@ -190,6 +172,8 @@ export function ClientPanel() {
     const res = clientRedeemPoints(id)
     setMsg(res.ok ? null : res.error)
   }
+
+  const clubHub = <ClientClubHub onRedeem={doRedeem} onMsg={setMsg} />
 
   // ── Shared blocks ────────────────────────────────────────────────────────────
 
@@ -277,140 +261,12 @@ export function ClientPanel() {
     </div>
   )
 
-  /** Expandable table of all club levels with discount and perk text. */
-  const levelsTable = (
-    <div className="client-levels" style={{ marginTop: '0.75rem' }}>
-      <button type="button" className="linkish" onClick={() => setShowLevels((v) => !v)}>
-        {showLevels ? '▲ Ocultar niveles Club' : '▼ Ver niveles Club Huésped'}
-      </button>
-      {showLevels && (
-        <table
-          style={{ width: '100%', fontSize: '0.77em', marginTop: '0.4rem', borderCollapse: 'collapse' }}
-        >
-          <thead>
-            <tr>
-              <th style={{ textAlign: 'left' }}>Nivel</th>
-              <th style={{ textAlign: 'right' }}>Desc.</th>
-              <th style={{ textAlign: 'left', paddingLeft: '0.5rem' }}>Beneficio</th>
-            </tr>
-          </thead>
-          <tbody>
-            {CLIENT_LEVEL_PERKS.map((p) => {
-              const isCurrent = p.level === client.level
-              return (
-                <tr
-                  key={p.level}
-                  style={{
-                    background: isCurrent ? 'rgba(255,200,50,0.15)' : undefined,
-                    fontWeight: isCurrent ? 700 : undefined,
-                  }}
-                >
-                  <td>{p.name}</td>
-                  <td style={{ textAlign: 'right' }}>{Math.round(p.discount * 100)}%</td>
-                  <td style={{ paddingLeft: '0.5rem', color: 'var(--muted, #888)' }}>{p.perk}</td>
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
-      )}
-    </div>
-  )
-
-  /** Specialization summary. */
-  const specBlock = (
-    <div className="client-specialize" style={{ marginTop: '0.75rem' }}>
-      <p className="mini-title" style={{ marginBottom: '0.15rem' }}>Especialización</p>
-      <p style={{ fontSize: '0.85em' }}>
-        <strong>{SPECIALIZE_LABEL[client.specialize]}</strong>
-        {client.specialize !== 'none' && (
-          <span className="muted">
-            {' '}· {client.specializeNights[client.specialize] ?? 0} noches
-          </span>
-        )}
-      </p>
-      {Object.keys(client.specializeNights).length > 0 && (
-        <div
-          style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap', fontSize: '0.75em', marginTop: '0.2rem' }}
-        >
-          {(Object.entries(client.specializeNights) as [string, number | undefined][])
-            .filter(([, v]) => (v ?? 0) > 0)
-            .map(([k, v]) => (
-              <span key={k} className="tag">
-                {(SPECIALIZE_LABEL as Record<string, string>)[k] ?? k}: {v}n
-              </span>
-            ))}
-        </div>
-      )}
-    </div>
-  )
-
-  const tourBrands = new Set((client.brandTourLog ?? []).map((x) => x.subsidiaryId)).size
-  const tourBlock = (
-    <div className="client-tour" style={{ marginTop: '0.65rem' }}>
-      <p className="mini-title">Tour de marca (7 días)</p>
-      <p className="muted" style={{ fontSize: '0.8rem', margin: 0 }}>
-        {tourBrands} marca{tourBrands === 1 ? '' : 's'} distinta{tourBrands === 1 ? '' : 's'} · bonus +{BRAND_TOUR_BONUS}{' '}
-        pts al dormir en 2+
-      </p>
-    </div>
-  )
-
-  const diaryBlock = client.lastDiary ? (
-    <div className="client-diary" style={{ marginTop: '0.75rem' }}>
-      <p className="mini-title">Diario de viaje</p>
-      <p className="muted" style={{ fontSize: '0.8rem' }}>
-        {client.lastDiary.hotelName} · {client.lastDiary.nights} noche
-        {client.lastDiary.nights > 1 ? 's' : ''} · {client.lastDiary.weatherLabel}
-      </p>
-      <button type="button" className="btn btn--ghost" disabled={diaryBusy} onClick={() => void doDownloadDiary()}>
-        {diaryBusy ? 'Generando…' : 'Descargar PDF A4'}
-      </button>
-    </div>
-  ) : null
-
-  /** All point-redeem options with per-level cost and redeem button. */
-  const redeemsBlock = (
-    <div className="client-redeems" style={{ marginTop: '0.75rem' }}>
-      <p className="mini-title" style={{ marginBottom: '0.25rem' }}>Canjear puntos</p>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-        {POINT_REDEEMS.map((r) => {
-          const cost = redeemPointsCost(r.id, client.level)
-          const already = client.pointRedeems.includes(r.id)
-          const canAfford = client.points >= cost
-          return (
-            <div
-              key={r.id}
-              style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', fontSize: '0.82em' }}
-            >
-              <div style={{ flex: 1 }}>
-                <strong>{r.label}</strong>
-                <span className="muted"> · {cost} pts</span>
-                <span className="muted" style={{ display: 'block', fontSize: '0.9em' }}>
-                  {r.detail}
-                </span>
-              </div>
-              <button
-                type="button"
-                className={already ? 'chip' : 'chip chip--active'}
-                disabled={already || !canAfford}
-                onClick={() => doRedeem(r.id)}
-                style={{ flexShrink: 0 }}
-              >
-                {already ? 'Canjeado' : 'Canjear'}
-              </button>
-            </div>
-          )
-        })}
-      </div>
-    </div>
-  )
-
   // ── Stay fullscreen view ─────────────────────────────────────────────────────
 
   if (inStay && hotel) {
     return (
       <div className="client-stay">
+        <ClientNightRecap />
         {miniOverlay}
         <header className="client-stay__head">
           <div>
@@ -471,8 +327,7 @@ export function ClientPanel() {
               </div>
             </div>
 
-            {specBlock}
-            {tourBlock}
+            {clubHub}
 
             {client.appointments.length > 0 && (
               <div className="client-appointments">
@@ -490,9 +345,7 @@ export function ClientPanel() {
               </div>
             )}
 
-            {redeemsBlock}
             {missionsBlock}
-            {diaryBlock}
           </div>
 
           <div className="client-stay__services">
@@ -657,6 +510,7 @@ export function ClientPanel() {
 
   return (
     <aside className="panel panel--client">
+      <ClientNightRecap />
       <div className="panel__head">
         <div>
           <p className="panel__eyebrow">Club Huésped Orbis</p>
@@ -732,17 +586,9 @@ export function ClientPanel() {
 
             {partnerNeedsBlock}
 
-            {specBlock}
-
-            {tourBlock}
-
-            {levelsTable}
+            {clubHub}
 
             {missionsBlock}
-
-            {redeemsBlock}
-
-            {diaryBlock}
 
             <p className="mini-title">Reservar</p>
             <p className="muted">Clic en un hotel del mapa para elegirlo.</p>
@@ -875,35 +721,6 @@ export function ClientPanel() {
 
             {msg && <p className="error">{msg}</p>}
             {notesBlock}
-
-            {client.passport.length > 0 && (
-              <>
-                <p className="mini-title">Pasaporte</p>
-                <div className="tag-row">
-                  {client.passport.slice(0, 12).map((p) => {
-                    const brand = getSubsidiary(p.subsidiaryId)
-                    return (
-                      <span
-                        key={`${p.countryCode}-${p.subsidiaryId}`}
-                        className="tag"
-                        style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}
-                      >
-                        {p.selfie && (
-                          <img
-                            src={p.selfie}
-                            alt=""
-                            width={40}
-                            height={40}
-                            style={{ borderRadius: 4, verticalAlign: 'middle' }}
-                          />
-                        )}
-                        {p.countryCode} · {brand?.letter ?? '?'}
-                      </span>
-                    )
-                  })}
-                </div>
-              </>
-            )}
           </>
         )}
       </div>

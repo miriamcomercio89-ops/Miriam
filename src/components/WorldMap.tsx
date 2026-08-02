@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { MapContainer, TileLayer, useMap, useMapEvents, CircleMarker } from 'react-leaflet'
+import { MapContainer, TileLayer, useMap, useMapEvents, CircleMarker, Polyline, Tooltip } from 'react-leaflet'
 import L from 'leaflet'
 import { useGameStore } from '../store/gameStore'
 import { resolveLocation } from '../lib/geo'
 import { filterHotels } from '../lib/economy'
 import { createHotelsCanvasLayer, findNearestHotel, hotelTooltipMeta } from '../lib/hotelsCanvasLayer'
 import { formatEUR, gameDay } from '../lib/format'
+import { geoRegionLabel } from '../lib/geo'
 import type { Hotel } from '../types'
 
 function MapClickHandler({
@@ -164,6 +165,7 @@ export function WorldMap() {
   const clientStay = useGameStore((s) => s.client.stay)
   const bookingHotelId = useGameStore((s) => s.client.bookingHotelId)
   const passport = useGameStore((s) => s.client.passport)
+  const brandTourLog = useGameStore((s) => s.client.brandTourLog)
   const [busy, setBusy] = useState(false)
   const [hint, setHint] = useState<string | null>(null)
   const [pending, setPending] = useState<{ lat: number; lng: number } | null>(null)
@@ -200,6 +202,21 @@ export function WorldMap() {
 
   const tip = hover ? hotelTooltipMeta(hover.hotel) : null
 
+  const tourPath = useMemo(() => {
+    if (playMode !== 'cliente') return null
+    const pts = (brandTourLog ?? [])
+      .filter((s) => typeof s.lat === 'number' && typeof s.lng === 'number')
+      .map((s) => [s.lat!, s.lng!] as [number, number])
+    if (pts.length < 2) return null
+    const regions: string[] = []
+    for (const s of brandTourLog ?? []) {
+      if (!s.geoRegion) continue
+      const label = geoRegionLabel(s.geoRegion)
+      if (regions[regions.length - 1] !== label) regions.push(label)
+    }
+    return { pts, chain: regions.join(' → ') }
+  }, [brandTourLog, playMode])
+
   function onSelectHotel(id: string) {
     if (playMode === 'cliente') {
       setClientBookingHotel(id)
@@ -229,6 +246,19 @@ export function WorldMap() {
         />
         <MapFocusController />
         <HotelsCanvas hotels={filtered} selectedId={selectedHotelId} onHover={onHover} />
+        {tourPath && (
+          <Polyline
+            positions={tourPath.pts}
+            pathOptions={{
+              color: '#C4A35A',
+              weight: 3,
+              opacity: 0.85,
+              dashArray: '8 6',
+            }}
+          >
+            {tourPath.chain && <Tooltip sticky>{tourPath.chain}</Tooltip>}
+          </Polyline>
+        )}
         {pending && (
           <CircleMarker
             center={[pending.lat, pending.lng]}
@@ -252,7 +282,9 @@ export function WorldMap() {
       <p className="map-hint">
         {hint ??
           (playMode === 'cliente'
-            ? 'Modo Cliente: clic en un hotel tuyo para reservar esta noche'
+            ? tourPath?.chain
+              ? `Tour: ${tourPath.chain} · clic en un hotel para reservar`
+              : 'Modo Cliente: clic en un hotel tuyo para reservar · el tour se dibuja al cambiar de región'
             : mapMode === 'build'
               ? 'Modo construir: clic en tierra para un hotel nuevo · clic en un hotel para verlo'
               : 'Modo ver: clic en un hotel para abrir su ficha · cambia a Construir para expandir')}

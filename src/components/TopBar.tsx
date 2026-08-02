@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useGameStore } from '../store/gameStore'
 import { formatEUR, formatGameStamp, GAME_START_LABEL } from '../lib/format'
 import { getSeason, seasonLabel } from '../lib/economy'
@@ -40,6 +40,8 @@ export function TopBar() {
   const gameName = useGameStore((s) => s.gameName)
   const simulating = useGameStore((s) => s.simulating)
   const simProgress = useGameStore((s) => s.simProgress)
+  const lastSimMs = useGameStore((s) => s.ui?.lastSimMs ?? 0)
+  const lastSimHotels = useGameStore((s) => s.ui?.lastSimHotels ?? 0)
   const saveToast = useGameStore((s) => s.saveToast)
   const clearSaveToast = useGameStore((s) => s.clearSaveToast)
   const loyaltyLevel = useGameStore((s) => s.loyaltyLevel)
@@ -49,6 +51,17 @@ export function TopBar() {
   const bankLocked = bankDeposits.reduce((s, d) => s + d.amount, 0)
   const [hub, setHub] = useState<'finanzas' | 'red' | 'plan' | null>(null)
   const [debugOpen, setDebugOpen] = useState(false)
+  const [showSlowSim, setShowSlowSim] = useState(false)
+
+  useEffect(() => {
+    if (simulating || lastSimMs < 400) {
+      setShowSlowSim(false)
+      return
+    }
+    setShowSlowSim(true)
+    const t = window.setTimeout(() => setShowSlowSim(false), 4500)
+    return () => window.clearTimeout(t)
+  }, [lastSimMs, simulating])
 
   function openPanel(fn: (v: boolean) => void) {
     fn(true)
@@ -73,6 +86,13 @@ export function TopBar() {
           <strong>Orbis Hotels Group</strong>
           <span className="topbar__sub">
             {hotels.length.toLocaleString('es-ES')} hoteles · {season} · Club Nv.{loyaltyLevel}
+            {lastSimMs > 0 && (
+              <>
+                {' '}
+                · sim {lastSimMs} ms
+                {lastSimHotels > 0 ? ` / ${lastSimHotels.toLocaleString('es-ES')} h` : ''}
+              </>
+            )}
           </span>
         </div>
       </div>
@@ -249,7 +269,19 @@ export function TopBar() {
         <SaveMenu />
       </nav>
 
-      {simulating && <div className="sim-banner" role="status">{simProgress || 'Calculando…'}</div>}
+      {simulating && (
+        <div className="sim-banner" role="status">
+          {simProgress || 'Calculando…'}
+          {hotels.length >= 200 && (
+            <span className="sim-banner__slow"> · simulación pesada</span>
+          )}
+        </div>
+      )}
+      {!simulating && showSlowSim && (
+        <div className="sim-banner sim-banner--perf" role="status">
+          Última simulación lenta: {lastSimMs} ms con {lastSimHotels.toLocaleString('es-ES')} hoteles
+        </div>
+      )}
       {saveToast && (
         <button type="button" className="save-toast" onClick={clearSaveToast} title="Cerrar aviso">
           {saveToast}

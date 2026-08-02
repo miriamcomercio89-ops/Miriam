@@ -1,17 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
-import { useGameStore, STORAGE_KEY } from '../store/gameStore'
+import { useGameStore, STORAGE_KEY, LEGACY_STORAGE_KEYS } from '../store/gameStore'
 import { idbHasSave, readCompressedFile } from '../lib/saveio'
 import { GAME_START_LABEL } from '../lib/format'
 
-const SAVE_KEYS = [
-  STORAGE_KEY,
-  'orbis-hotels-group-save-v6',
-  'orbis-hotels-group-save-v5',
-  'orbis-hotels-group-save-v4',
-  'orbis-hotels-group-save-v3',
-  'orbis-hotels-group-save-v2',
-  'orbis-hotels-group-save-v1',
-]
+const SAVE_KEYS = [STORAGE_KEY, ...LEGACY_STORAGE_KEYS]
 
 function hasLocalStorageSave() {
   if (typeof localStorage === 'undefined') return false
@@ -78,11 +70,11 @@ export function Landing() {
     <div className="landing">
       <div className="landing__veil" />
       <div className="landing__content">
-        <p className="landing__eyebrow">Juego de hoteles · v1.9</p>
+        <p className="landing__eyebrow">Juego de hoteles · v2.0</p>
         <h1 className="landing__brand">Orbis Hotels Group</h1>
         <p className="landing__lead">
           Construye hoteles en todo el mundo. 50 marcas. Muchos países.
-          La IA pone precios y contratos. Tú decides dónde crecer.
+          Equilibrio de cartera, club huésped unificado y guardado compatible.
           La partida empieza el {GAME_START_LABEL}.
         </p>
         <div className="landing__actions">

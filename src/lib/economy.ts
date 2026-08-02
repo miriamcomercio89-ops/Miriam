@@ -31,6 +31,7 @@ import { getWeather } from './weather'
 import { holidayCostMult, holidayDemandMult } from './holidays'
 import { tickWearAndRenovate } from './loyalty'
 import { getCountryRules } from './countryRules'
+import { portfolioCostPressure, portfolioOccupancyPressure } from './balance'
 import type { HotelInsurance, MapFilters } from '../types'
 
 export { getSeason, dayOfYear, reputationKey, clamp }
@@ -412,6 +413,7 @@ export function simulateHotelDay(
   economy?: CountryEconomy,
   gameDayNow = 1,
   loyaltyLevel = 1,
+  allHotels?: Hotel[],
 ): DayResult {
   const season = getSeason(hotel.lat, gameMinutes)
   const weather = getWeather(hotel.lat, gameMinutes, hotel.id)
@@ -471,12 +473,14 @@ export function simulateHotelDay(
     1 +
     (airportScore / 100) * (hotel.target === 'negocios' ? 0.06 : 0.025) +
     (stationScore / 100) * (hotel.target === 'negocios' ? 0.035 : 0.015)
+  const portfolioOcc = allHotels ? portfolioOccupancyPressure(allHotels, hotel) : 1
   occupancyOpen = clamp(
     occupancyOpen *
       weather.demandMult *
       holidayDemand *
       conditionMod *
       transitBoost *
+      portfolioOcc *
       (1 + (board?.demandBonus ?? 0)) *
       (1 + (design?.demandBonus ?? 0)) *
       (1 + buffet.demandBonus) *
@@ -512,7 +516,7 @@ export function simulateHotelDay(
   const greenTax = Math.round(guests * (rules.greenTaxPerNight ?? 0.5) * Math.min(1.2, touristDrift))
   const tax = corporateTax + touristTax + greenTax
   let costs = calcDailyCosts(hotel, events, revenue, blocked, inflation, insurance, touristTax + greenTax)
-  costs = Math.round(costs * weather.costMult * holidayCost * fx)
+  costs = Math.round(costs * weather.costMult * holidayCost * fx * (allHotels ? portfolioCostPressure(allHotels.length) : 1))
   const security = SECURITY_OPTIONS.find((s) => s.id === (hotel.securityLevel ?? 'medio'))
   const tech = TECH_OPTIONS.find((t) => t.id === (hotel.techLevel ?? 'basico'))
   const satisfactionDelta =
@@ -551,8 +555,18 @@ export function applyHotelDayInPlace(
   economy?: CountryEconomy,
   gameDayNow = 1,
   loyaltyLevel = 1,
+  allHotels?: Hotel[],
 ): { net: number; renovationCost: number } {
-  const result = simulateHotelDay(hotel, events, gameMinutes, reputation, economy, gameDayNow, loyaltyLevel)
+  const result = simulateHotelDay(
+    hotel,
+    events,
+    gameMinutes,
+    reputation,
+    economy,
+    gameDayNow,
+    loyaltyLevel,
+    allHotels,
+  )
   hotel.pricePerNight = result.price
   hotel.contract = result.contract
   hotel.insurance = result.insurance

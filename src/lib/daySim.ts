@@ -121,7 +121,16 @@ export function applyDays(state: DaySimState, days: number): DaySimResult {
       const key = reputationKey(h.countryCode)
       const rep = reputation[key] ?? 55
       const eco = countryEconomy[key]
-      const { net, renovationCost } = applyHotelDayInPlace(h, dayEvents, minutesAtDay, rep, eco, currentDay, loyaltyLevel)
+      const { net, renovationCost } = applyHotelDayInPlace(
+        h,
+        dayEvents,
+        minutesAtDay,
+        rep,
+        eco,
+        currentDay,
+        loyaltyLevel,
+        hotels,
+      )
       if (renovationCost > 0) renovations++
       dayRevenue += h.lastDayRevenue
       dayCosts += h.lastDayCosts

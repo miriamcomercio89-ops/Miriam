@@ -342,6 +342,8 @@ export interface ClientModeState {
   brandTourLog: BrandTourStamp[]
   /** Día en que ya se cobró el bonus de tour. */
   brandTourBonusDay: number
+  /** Último recap de noche (cinemática). Compat: puede faltar. */
+  lastNightRecap: NightRecap | null
 }
 
 /** Entrada del diario de viaje (A4). */
@@ -366,6 +368,39 @@ export interface TravelDiaryEntry {
 export interface BrandTourStamp {
   day: number
   subsidiaryId: string
+  hotelId?: string
+  hotelName?: string
+  lat?: number
+  lng?: number
+  geoRegion?: string
+}
+
+/** Resumen breve al liquidar una noche (cinemática 2–3 s). */
+export interface NightRecap {
+  hotelName: string
+  city: string
+  weatherLabel: string
+  weatherDetail: string
+  points: number
+  ceo: number
+  tourBonus: number
+  day: number
+  nightsDone: number
+  nightsTotal: number
+  lastNight: boolean
+}
+
+/** UI persistida en el save (compat: defaults si falta). */
+export interface PersistedUi {
+  mapLayer: MapLayer
+  mapMode: MapMode
+  mapFilters: MapFilters
+  mapFocus: MapFocus | null
+  selectedHotelId: string | null
+  rankMetric: RankMetric
+  /** Última simulación: ms y nº hoteles (rendimiento). */
+  lastSimMs: number
+  lastSimHotels: number
 }
 
 export interface GameState {
@@ -398,6 +433,8 @@ export interface GameState {
   /** Gerente o Cliente */
   playMode: PlayMode
   client: ClientModeState
+  /** Preferencias de mapa / selección (v2.0+). */
+  ui: PersistedUi
 }
 
 export interface WeeklyReport {

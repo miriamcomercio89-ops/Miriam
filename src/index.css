@@ -1686,6 +1686,16 @@ button {
   z-index: 900;
 }
 
+.sim-banner--perf {
+  background: rgba(140, 70, 40, 0.92);
+  color: #f7f3ea;
+  animation: night-recap-in 0.35s ease-out;
+}
+
+.sim-banner__slow {
+  font-weight: 700;
+}
+
 .topbar { position: relative; }
 
 .country-list,
@@ -2523,3 +2533,208 @@ button {
     margin-inline: auto;
   }
 }
+
+/* ── v2.0 Club hub + night recap ─────────────────────────────────────────── */
+
+.client-club-hub {
+  margin-top: 0.75rem;
+  border-top: 1px solid rgba(201, 164, 92, 0.25);
+  padding-top: 0.65rem;
+}
+
+.client-club-hub__tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-bottom: 0.55rem;
+}
+
+.client-club-hub__panel {
+  animation: night-recap-in 0.28s ease-out;
+}
+
+.client-club-hub__tags {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  font-size: 0.75em;
+  margin-top: 0.25rem;
+}
+
+.client-club-hub__redeems {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.client-club-hub__redeem {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.82em;
+}
+
+.client-diary-gallery,
+.client-tour-list {
+  list-style: none;
+  margin: 0.4rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  max-height: 220px;
+  overflow: auto;
+}
+
+.client-diary-gallery li,
+.client-tour-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.78rem;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid rgba(201, 164, 92, 0.15);
+}
+
+.client-tour-chain {
+  font-size: 0.82rem;
+  color: #c4a35a;
+  font-weight: 600;
+  margin: 0.35rem 0;
+  letter-spacing: 0.02em;
+}
+
+.client-passport-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  max-height: 240px;
+  overflow: auto;
+}
+
+.client-passport-stamp {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.78rem;
+}
+
+.client-passport-stamp img {
+  border-radius: 6px;
+  border: 1px solid rgba(201, 164, 92, 0.35);
+}
+
+.night-recap {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: grid;
+  place-items: center;
+  background: rgba(6, 18, 28, 0.72);
+  backdrop-filter: blur(4px);
+  animation: night-recap-veil 0.35s ease-out;
+}
+
+.night-recap__card {
+  width: min(420px, 92vw);
+  padding: 1.4rem 1.5rem 1.2rem;
+  border: 1px solid rgba(201, 164, 92, 0.45);
+  background:
+    linear-gradient(160deg, rgba(18, 42, 58, 0.98), rgba(8, 24, 36, 0.98)),
+    radial-gradient(ellipse at top, rgba(196, 163, 90, 0.18), transparent 60%);
+  color: #f7f3ea;
+  text-align: center;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.45);
+  animation: night-recap-in 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.night-recap__eyebrow {
+  margin: 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #c4a35a;
+}
+
+.night-recap__title {
+  margin: 0.35rem 0 0;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.55rem;
+  font-weight: 600;
+}
+
+.night-recap__city {
+  margin: 0.15rem 0 0.75rem;
+  opacity: 0.75;
+  font-size: 0.9rem;
+}
+
+.night-recap__weather {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  margin: 0 0 0.9rem;
+  font-size: 0.88rem;
+}
+
+.night-recap__weather span {
+  opacity: 0.7;
+  font-size: 0.8rem;
+}
+
+.night-recap__stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.45rem;
+  margin-bottom: 0.85rem;
+}
+
+.night-recap__stats div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding: 0.4rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(247, 243, 234, 0.08);
+}
+
+.night-recap__stats span {
+  font-size: 0.68rem;
+  opacity: 0.65;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.night-recap__stats strong {
+  font-size: 1rem;
+  color: #c4a35a;
+}
+
+.night-recap__ceo {
+  margin: 0 0 0.85rem;
+  font-size: 0.82rem;
+  opacity: 0.85;
+  font-style: italic;
+}
+
+@keyframes night-recap-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes night-recap-veil {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
