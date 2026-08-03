@@ -5,16 +5,19 @@ import { formatEUR } from '../lib/format'
 /** Cinemática breve al liquidar una noche (2–3 s). */
 export function ClientNightRecap() {
   const recap = useGameStore((s) => s.client.lastNightRecap)
+  const income = useGameStore((s) => s.client.lastIncome)
   const dismiss = useGameStore((s) => s.clientDismissNightRecap)
   const playMode = useGameStore((s) => s.playMode)
 
   useEffect(() => {
     if (!recap || playMode !== 'cliente') return
-    const t = window.setTimeout(() => dismiss(), 2800)
+    const t = window.setTimeout(() => dismiss(), 3200)
     return () => window.clearTimeout(t)
   }, [recap, playMode, dismiss])
 
   if (!recap || playMode !== 'cliente') return null
+
+  const pay = recap.income ?? recap.ceo
 
   return (
     <div className="night-recap" role="dialog" aria-label="Fin de noche" onClick={() => dismiss()}>
@@ -28,12 +31,12 @@ export function ClientNightRecap() {
         </p>
         <div className="night-recap__stats">
           <div>
-            <span>Puntos</span>
-            <strong>+{recap.points}</strong>
+            <span>Ingresos</span>
+            <strong>{formatEUR(pay)}</strong>
           </div>
           <div>
-            <span>CEO</span>
-            <strong>{formatEUR(recap.ceo)}</strong>
+            <span>Puntos</span>
+            <strong>+{recap.points}</strong>
           </div>
           {recap.tourBonus > 0 && (
             <div>
@@ -48,10 +51,21 @@ export function ClientNightRecap() {
             </strong>
           </div>
         </div>
+        {recap.incomeNote && <p className="night-recap__ceo">{recap.incomeNote}</p>}
+        {income && income.factors.length > 0 && (
+          <ul className="night-recap__factors">
+            {income.factors.slice(0, 5).map((f) => (
+              <li key={f.id}>
+                <span>{f.label}</span>
+                <strong>{formatEUR(f.amount)}</strong>
+              </li>
+            ))}
+          </ul>
+        )}
         <p className="night-recap__ceo">
           {recap.lastNight
             ? 'El CEO anota tu estancia en el pasaporte Orbis.'
-            : 'El club te espera mañana con una misión fresca.'}
+            : 'Tu corte de cadena y hotel ya está en el monedero.'}
         </p>
         <button type="button" className="chip chip--active" onClick={() => dismiss()}>
           Continuar

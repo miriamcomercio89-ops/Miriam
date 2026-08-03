@@ -73,18 +73,21 @@ import {
 } from '../lib/clientServices'
 import type { MinigameOutcome } from '../lib/clientMinigames'
 import { minigameForAction, MINIGAME_LABEL } from '../lib/clientMinigames'
+import { lobbyEventForDay } from '../lib/clientLobbyEvents'
+import { applyPartnerOrder, PARTNER_ORDERS_PER_NIGHT } from '../lib/clientPartner'
 import {
   POINT_REDEEMS,
   redeemPointsCost,
   type PointRedeemId,
 } from '../lib/clientClub'
 
-export const STORAGE_KEY = 'orbis-hotels-group-save-v13'
-export const SAVE_VERSION = 13
+export const STORAGE_KEY = 'orbis-hotels-group-save-v14'
+export const SAVE_VERSION = 14
 export const IDB_SLOT_KEYS = ['slot-1', 'slot-2', 'slot-3'] as const
 
 /** Claves legacy de localStorage (compat. hacia atrás). */
 export const LEGACY_STORAGE_KEYS = [
+  'orbis-hotels-group-save-v13',
   'orbis-hotels-group-save-v12',
   'orbis-hotels-group-save-v11',
   'orbis-hotels-group-save-v10',
@@ -236,6 +239,8 @@ type GameStore = GameState &
     clientClearNotes: () => void
     clientDismissStay: () => void
     clientDismissNightRecap: () => void
+    setPartnerMode: (mode: 'auto' | 'orders') => void
+    clientPartnerOrder: (id: import('../lib/clientPartner').PartnerOrderId) => { ok: true } | { ok: false; error: string }
   }
 
 function defaultLoan(): LoanState {
@@ -1246,9 +1251,13 @@ export const useGameStore = create<GameStore>((set, get) => ({
         },
         stayServicesUsed: [],
         pointRedeems: [],
+        partnerOrdersLeft: PARTNER_ORDERS_PER_NIGHT,
+        partnerOrdersUsedTonight: 0,
+        lobbyEventId: lobbyEventForDay(gameDay(state.gameMinutes)).id,
+        lobbyEventDay: gameDay(state.gameMinutes),
         notifications: pushNote(
           state.client.notifications,
-          `Check-in en ${hotel.name}${early ? ` (early +${earlyFee} €)` : ''}. ${stay.nights} noche${stay.nights > 1 ? 's' : ''}. Tu pareja te acompaña.`,
+          `Check-in en ${hotel.name}${early ? ` (early +${earlyFee} €)` : ''}. ${stay.nights} noche${stay.nights > 1 ? 's' : ''}. Evento: ${lobbyEventForDay(gameDay(state.gameMinutes)).title}.`,
         ),
       },
       hotel,
@@ -1489,7 +1498,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const state = get()
     const stay = state.client.stay
     if (!stay || stay.status !== 'checked_in') return { ok: false, error: 'Haz check-in primero.' }
-    const fee = Math.max(0, Math.round(cost))
+    const day = gameDay(state.gameMinutes)
+    const ev = lobbyEventForDay(day)
+    const fee = Math.max(0, Math.round(cost * ev.priceMult))
     if (state.client.wallet < fee) return { ok: false, error: 'No te llega el monedero.' }
     const activity = MINIGAME_LABEL[id] ?? id
     set({
@@ -1497,9 +1508,11 @@ export const useGameStore = create<GameStore>((set, get) => ({
       client: {
         ...state.client,
         wallet: state.client.wallet - fee,
+        lobbyEventId: ev.id,
+        lobbyEventDay: day,
         notifications: pushNote(
           state.client.notifications,
-          `Animación: ${activity}. Entrada ${fee.toLocaleString('es-ES')} €.`,
+          `Animación: ${activity} (${ev.title}). Entrada ${fee.toLocaleString('es-ES')} €.`,
         ),
       },
     })
@@ -1720,6 +1733,30 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const c = get().client
     if (!c.lastNightRecap) return
     set({ client: { ...c, lastNightRecap: null } })
+  },
+
+  setPartnerMode: (mode) => {
+    const c = get().client
+    set({
+      client: {
+        ...c,
+        partnerMode: mode,
+        partnerOrdersLeft: mode === 'orders' ? PARTNER_ORDERS_PER_NIGHT : c.partnerOrdersLeft,
+        notifications: pushNote(
+          c.notifications,
+          mode === 'orders'
+            ? `Pareja en modo órdenes (${PARTNER_ORDERS_PER_NIGHT}/noche).`
+            : 'Pareja en modo automático.',
+        ),
+      },
+    })
+  },
+
+  clientPartnerOrder: (id) => {
+    const res = applyPartnerOrder(get().client, id)
+    if (!res.ok) return res
+    set({ client: res.client })
+    return { ok: true }
   },
 }))
 

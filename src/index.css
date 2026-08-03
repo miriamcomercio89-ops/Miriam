@@ -1948,11 +1948,138 @@ button {
   color: #8a6a2f;
 }
 
-.client-hotel-pick {
+.client-stay__tabs,
+.client-side-tabs {
   display: flex;
-  align-items: center;
-  gap: 0.55rem;
-  margin: 0.45rem 0 0.65rem;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-bottom: 0.75rem;
+}
+
+.client-income {
+  margin: 0.65rem 0;
+  padding: 0.65rem 0.7rem;
+  border: 1px solid rgba(196, 163, 90, 0.35);
+  border-radius: 10px;
+  background: rgba(196, 163, 90, 0.08);
+}
+
+.panel--client .client-income {
+  background: rgba(196, 163, 90, 0.12);
+  border-color: rgba(138, 106, 47, 0.35);
+}
+
+.client-income__total {
+  margin: 0.15rem 0 0.45rem;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #c4a35a;
+}
+
+.panel--client .client-income__total {
+  color: #8a6a2f;
+}
+
+.client-income ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.client-income li {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+}
+
+.client-event {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  align-items: flex-start;
+  padding: 0.65rem 0.75rem;
+  border-radius: 10px;
+  margin-bottom: 0.75rem;
+  border: 1px solid rgba(196, 163, 90, 0.4);
+  background: rgba(196, 163, 90, 0.12);
+}
+
+.client-event__eyebrow {
+  margin: 0;
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.client-event strong {
+  display: block;
+  margin: 0.1rem 0;
+}
+
+.client-event span {
+  display: block;
+  font-size: 0.78rem;
+  opacity: 0.8;
+}
+
+.client-event em {
+  font-style: normal;
+  font-size: 0.72rem;
+  color: #c4a35a;
+  white-space: nowrap;
+}
+
+.client-event--warm { border-color: rgba(220, 140, 80, 0.5); background: rgba(220, 140, 80, 0.12); }
+.client-event--cool { border-color: rgba(90, 160, 200, 0.5); background: rgba(90, 160, 200, 0.12); }
+.client-event--storm { border-color: rgba(120, 130, 160, 0.55); background: rgba(80, 90, 120, 0.2); }
+.client-event--gold { border-color: rgba(196, 163, 90, 0.55); background: rgba(196, 163, 90, 0.16); }
+
+.client-lobby__card.is-featured {
+  border-color: #c4a35a;
+  box-shadow: 0 0 0 1px rgba(196, 163, 90, 0.35);
+}
+
+.client-lobby__card kbd {
+  display: inline-block;
+  min-width: 1.1rem;
+  padding: 0 0.2rem;
+  margin-right: 0.25rem;
+  border-radius: 4px;
+  border: 1px solid rgba(196, 163, 90, 0.45);
+  font-size: 0.68rem;
+  color: #c4a35a;
+}
+
+.client-partner-orders {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.4rem;
+  margin-top: 0.45rem;
+}
+
+.night-recap__factors {
+  list-style: none;
+  margin: 0 0 0.75rem;
+  padding: 0;
+  text-align: left;
+  font-size: 0.75rem;
+}
+
+.night-recap__factors li {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.2rem 0;
+  border-bottom: 1px solid rgba(247, 243, 234, 0.08);
+}
+
+.night-recap__factors strong {
+  color: #c4a35a;
 }
 
 .client-hotel-pick > div {

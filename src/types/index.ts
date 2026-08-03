@@ -320,6 +320,12 @@ export interface ClientModeState {
   needs: ClientNeeds
   /** Necesidades de la pareja (NPC). */
   partnerNeeds: ClientNeeds
+  /** auto = NPC sola · orders = 1–2 órdenes por noche. */
+  partnerMode: 'auto' | 'orders'
+  /** Órdenes restantes esta noche (modo orders). */
+  partnerOrdersLeft: number
+  /** Órdenes usadas esta noche (para bonus de ingresos). */
+  partnerOrdersUsedTonight: number
   stay: ClientStay | null
   passport: ClientPassportStamp[]
   notifications: string[]
@@ -344,6 +350,17 @@ export interface ClientModeState {
   brandTourBonusDay: number
   /** Último recap de noche (cinemática). Compat: puede faltar. */
   lastNightRecap: NightRecap | null
+  /** Evento de lobby del día (id). Compat: puede faltar. */
+  lobbyEventId: string | null
+  lobbyEventDay: number
+  /** Desglose del último ingreso nocturno. */
+  lastIncome: ClientIncomeBreakdown | null
+}
+
+export interface ClientIncomeBreakdown {
+  total: number
+  factors: { id: string; label: string; amount: number }[]
+  day: number
 }
 
 /** Entrada del diario de viaje (A4). */
@@ -388,6 +405,9 @@ export interface NightRecap {
   nightsDone: number
   nightsTotal: number
   lastNight: boolean
+  /** Ingreso total de la noche (€). Compat: puede faltar. */
+  income?: number
+  incomeNote?: string
 }
 
 /** UI persistida en el save (compat: defaults si falta). */

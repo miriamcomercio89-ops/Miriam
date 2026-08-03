@@ -22,9 +22,12 @@ import { clientPerkInfo, hotelSpecializeKind, specializeStayBonus } from './clie
 import { getWeather } from './weather'
 import { getSeason } from './economyCore'
 import { serviceLabelsForDiary } from './travelDiary'
+import { calcClientNightIncome, CLIENT_HOTEL_CUT } from './clientIncome'
+import { lobbyEventForDay } from './clientLobbyEvents'
+import { PARTNER_ORDERS_PER_NIGHT, autoPartnerNightNeeds } from './clientPartner'
 
-/** % de los ingresos del día del hotel donde te alojas → monedero cliente. */
-export const CLIENT_CEO_CUT = 0.005
+/** @deprecated usar CLIENT_HOTEL_CUT de clientIncome — se mantiene por UI antigua. */
+export const CLIENT_CEO_CUT = CLIENT_HOTEL_CUT
 export const CLIENT_NIGHT_POINTS = 120
 export const CLIENT_START_WALLET = 25_000
 export const BRAND_TOUR_BONUS = 80
@@ -108,6 +111,9 @@ export function defaultClientState(): ClientModeState {
     level: 1,
     needs: defaultClientNeeds(),
     partnerNeeds: defaultPartnerNeeds(),
+    partnerMode: 'auto',
+    partnerOrdersLeft: PARTNER_ORDERS_PER_NIGHT,
+    partnerOrdersUsedTonight: 0,
     stay: null,
     passport: [],
     notifications: [],
@@ -125,6 +131,9 @@ export function defaultClientState(): ClientModeState {
     brandTourLog: [],
     brandTourBonusDay: 0,
     lastNightRecap: null,
+    lobbyEventId: null,
+    lobbyEventDay: 0,
+    lastIncome: null,
   }
 }
 
@@ -483,6 +492,14 @@ export function migrateClientState(raw: Partial<ClientModeState> | undefined): C
     brandTourLog: migrateBrandTourLog(raw.brandTourLog),
     brandTourBonusDay: typeof raw.brandTourBonusDay === 'number' ? raw.brandTourBonusDay : 0,
     lastNightRecap: raw.lastNightRecap ?? null,
+    partnerMode: raw.partnerMode === 'orders' ? 'orders' : 'auto',
+    partnerOrdersLeft:
+      typeof raw.partnerOrdersLeft === 'number' ? raw.partnerOrdersLeft : PARTNER_ORDERS_PER_NIGHT,
+    partnerOrdersUsedTonight:
+      typeof raw.partnerOrdersUsedTonight === 'number' ? raw.partnerOrdersUsedTonight : 0,
+    lobbyEventId: raw.lobbyEventId ?? null,
+    lobbyEventDay: typeof raw.lobbyEventDay === 'number' ? raw.lobbyEventDay : 0,
+    lastIncome: raw.lastIncome ?? null,
   }
 }
 
@@ -573,14 +590,32 @@ export function settleClientNight(
   const season = getSeason(hotel.lat, gameMinutes)
   const wDelta = weatherSeasonNeedDelta(weather, season)
 
-  const ceo = Math.round(Math.max(0, hotel.lastDayRevenue) * CLIENT_CEO_CUT)
+  const lobbyFresh = lobbyEventForDay(day)
+  next.lobbyEventId = lobbyFresh.id
+  next.lobbyEventDay = day
+
+  const partnerUsed = next.partnerOrdersUsedTonight ?? 0
+  if (next.partnerMode === 'auto') {
+    next.partnerNeeds = applyNeedDelta(next.partnerNeeds, autoPartnerNightNeeds(next.partnerNeeds))
+  }
+
+  const income = calcClientNightIncome({
+    client: next,
+    hotel,
+    hotels,
+    weather,
+    lobbyEvent: lobbyFresh,
+    partnerOrdersUsed: partnerUsed,
+  })
+
   const specBonus = specializeStayBonus(next.specialize, hotel)
   const nightPts = Math.round(CLIENT_NIGHT_POINTS * specBonus.pointsMult)
   const tourBefore = next.brandTourBonusDay
-  next.wallet += ceo
+  next.wallet += income.total
   next.points += nightPts
   next.level = clientLevelFromPoints(next.points)
   next.totalNights += 1
+  next.lastIncome = { total: income.total, factors: income.factors, day }
   next.needs = applyNeedDelta(overnightNeeds(next.needs), wDelta)
   next.partnerNeeds = applyNeedDelta(overnightPartnerNeeds(next.partnerNeeds), wDelta)
   next.passport = stampPassport(next.passport, hotel, day)
@@ -589,20 +624,27 @@ export function settleClientNight(
   const spec = bumpSpecialize(next.specializeNights, next.specialize, hotel)
   next.specializeNights = spec.specializeNights
   next.specialize = spec.specialize
+  next.partnerOrdersLeft = PARTNER_ORDERS_PER_NIGHT
+  next.partnerOrdersUsedTonight = 0
 
   const remaining = Math.max(0, (stay.nightsRemaining ?? 1) - 1)
   const nightsDone = stay.nights - remaining
   const lastNight = remaining <= 0
+  const chainNote = income.factors.find((f) => f.id === 'chain')
   next.lastNightRecap = buildNightRecap({
     hotel,
     weather,
     points: nightPts,
-    ceo,
+    ceo: income.total,
     tourBonus,
     day,
     nightsDone,
     nightsTotal: stay.nights || 1,
     lastNight,
+    income: income.total,
+    incomeNote: chainNote
+      ? `Cadena +${chainNote.amount.toLocaleString('es-ES')} € · hotel +${income.hotelCut.toLocaleString('es-ES')} €`
+      : `Ingreso noche +${income.total.toLocaleString('es-ES')} €`,
   })
 
   if (remaining > 0) {
@@ -614,7 +656,7 @@ export function settleClientNight(
     next.stay = { ...stay, nightsRemaining: remaining }
     next.notifications = pushNote(
       next.notifications,
-      `Noche ${nightsDone}/${stay.nights} en ${hotel.name}: +${nightPts} pts · CEO ${ceo.toLocaleString('es-ES')} € · ${weather.label}. Quedan ${remaining}.`,
+      `Noche ${nightsDone}/${stay.nights} en ${hotel.name}: +${income.total.toLocaleString('es-ES')} € · +${nightPts} pts · ${lobbyFresh.title}. Quedan ${remaining}.`,
     )
   } else {
     const diary = buildTravelDiaryEntry(next, hotel, day, gameMinutes, stay.nights || 1)
@@ -625,7 +667,7 @@ export function settleClientNight(
     next.stay = { ...stay, nightsRemaining: 0, status: 'checked_out' }
     next.notifications = pushNote(
       next.notifications,
-      `Última noche en ${hotel.name}: +${nightPts} pts · CEO ${ceo.toLocaleString('es-ES')} €. Check-out automático.`,
+      `Última noche en ${hotel.name}: +${income.total.toLocaleString('es-ES')} € · +${nightPts} pts. Check-out automático.`,
     )
   }
 
@@ -642,6 +684,8 @@ export function buildNightRecap(args: {
   nightsDone: number
   nightsTotal: number
   lastNight: boolean
+  income?: number
+  incomeNote?: string
 }): NightRecap {
   return {
     hotelName: args.hotel.name,
@@ -655,6 +699,8 @@ export function buildNightRecap(args: {
     nightsDone: args.nightsDone,
     nightsTotal: args.nightsTotal,
     lastNight: args.lastNight,
+    income: args.income,
+    incomeNote: args.incomeNote,
   }
 }
 

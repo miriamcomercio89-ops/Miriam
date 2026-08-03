@@ -1,8 +1,8 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useGameStore } from '../store/gameStore'
 import { getSubsidiary, subsidiaryLogoSvg } from '../data/subsidiaries'
 import { SERVICE_CATALOG, TARGET_OPTIONS, BOARD_REGIMES } from '../data/catalog'
-import { formatEUR } from '../lib/format'
+import { formatEUR, gameDay } from '../lib/format'
 import { resolveHotelImage } from '../lib/images'
 import {
   CLIENT_NEED_IDS,
@@ -24,6 +24,8 @@ import {
 } from '../lib/clientClub'
 import { buildServiceScreen, FREE_NIGHT_POINTS } from '../lib/clientServices'
 import { minigameForAction, LOBBY_ACTIVITIES, type MinigameId } from '../lib/clientMinigames'
+import { lobbyEventForDay } from '../lib/clientLobbyEvents'
+import { PARTNER_ORDERS, PARTNER_ORDERS_PER_NIGHT } from '../lib/clientPartner'
 import { serviceHoursStatus, clockFromGameMinutes } from '../lib/clientHours'
 import { ClientMinigame } from './ClientMinigame'
 import { ClientClubHub } from './ClientClubHub'
@@ -58,6 +60,8 @@ export function ClientPanel() {
   const clientClearNotes = useGameStore((s) => s.clientClearNotes)
   const clientDismissStay = useGameStore((s) => s.clientDismissStay)
   const clientOrderRoomServiceCart = useGameStore((s) => s.clientOrderRoomServiceCart)
+  const setPartnerMode = useGameStore((s) => s.setPartnerMode)
+  const clientPartnerOrder = useGameStore((s) => s.clientPartnerOrder)
   const gameMinutes = useGameStore((s) => s.gameMinutes)
 
   const [msg, setMsg] = useState<string | null>(null)
@@ -68,6 +72,8 @@ export function ClientPanel() {
   const [serviceFocus, setServiceFocus] = useState<HotelService | null>(null)
   const [mini, setMini] = useState<ActiveMini | null>(null)
   const [cart, setCart] = useState<Record<string, number>>({})
+  const [sideTab, setSideTab] = useState<'viaje' | 'club'>('viaje')
+  const [stayTab, setStayTab] = useState<'actividad' | 'servicios' | 'pareja' | 'club'>('actividad')
 
   const hotel = useMemo(() => {
     const stay = client.stay
@@ -80,6 +86,50 @@ export function ClientPanel() {
     if (!hotel || !serviceFocus) return null
     return buildServiceScreen(serviceFocus, hotel)
   }, [hotel, serviceFocus])
+
+  const day = gameDay(gameMinutes)
+  const lobbyEvent = lobbyEventForDay(day)
+  const lobbyPriceMult = lobbyEvent.priceMult
+
+  const sortedLobby = useMemo(() => {
+    const featured = new Set(lobbyEvent.featured)
+    return [...LOBBY_ACTIVITIES].sort((a, b) => {
+      const af = featured.has(a.id) ? 0 : 1
+      const bf = featured.has(b.id) ? 0 : 1
+      return af - bf
+    })
+  }, [lobbyEvent])
+
+  // Atajos 1–9 en estancia (animación / servicios)
+  useEffect(() => {
+    if (playMode !== 'cliente') return
+    const onKey = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement)?.tagName
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return
+      const st = useGameStore.getState()
+      if (st.playMode !== 'cliente' || st.client.stay?.status !== 'checked_in') return
+      if (e.key === '9') {
+        setStayTab('pareja')
+        return
+      }
+      const n = Number(e.key)
+      if (n >= 1 && n <= 8) {
+        e.preventDefault()
+        setStayTab('actividad')
+        const act = sortedLobby[n - 1]
+        if (!act) return
+        const res = st.clientBeginLobbyActivity(act.id, act.cost)
+        if (!res.ok) {
+          setMsg(res.error)
+          return
+        }
+        setMsg(null)
+        setMini({ id: act.id, service: 'concierge', actionId: 'lobby', entryCost: res.entryCost })
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [playMode, sortedLobby])
 
   if (playMode !== 'cliente') return null
 
@@ -191,27 +241,142 @@ export function ClientPanel() {
     setMsg(null)
   }
 
+  function doPartnerOrder(id: (typeof PARTNER_ORDERS)[number]['id']) {
+    const res = clientPartnerOrder(id)
+    setMsg(res.ok ? null : res.error)
+  }
+
   const clubHub = <ClientClubHub onRedeem={doRedeem} onMsg={setMsg} />
+
+  const incomeBlock = client.lastIncome ? (
+    <div className="client-income">
+      <p className="mini-title">Último ingreso nocturno</p>
+      <p className="client-income__total">{formatEUR(client.lastIncome.total)}</p>
+      <ul>
+        {client.lastIncome.factors.map((f) => (
+          <li key={f.id}>
+            <span>{f.label}</span>
+            <strong>{formatEUR(f.amount)}</strong>
+          </li>
+        ))}
+      </ul>
+      <p className="muted" style={{ fontSize: '0.75rem' }}>
+        Ganas según hotel, cadena Orbis, ocupación, clima, nivel, pareja y evento del día.
+      </p>
+    </div>
+  ) : (
+    <div className="client-income client-income--empty">
+      <p className="mini-title">Ingresos del huésped</p>
+      <p className="muted">
+        Cada noche cobras dieta + corte del hotel + parte de lo que genera toda tu cadena.
+      </p>
+    </div>
+  )
+
+  const partnerNeedsBlock = (
+    <div className="client-partner-needs" style={{ marginTop: '0.75rem' }}>
+      <p className="mini-title" style={{ marginBottom: '0.25rem' }}>
+        Estado pareja&ensp;
+        <span className="muted" style={{ fontSize: '0.75em', fontWeight: 400 }}>
+          NPC
+        </span>
+      </p>
+      {CLIENT_NEED_IDS.slice(0, 5).map((id) => (
+        <div key={id} className="client-needs__row" style={{ fontSize: '0.8em' }}>
+          <span>{CLIENT_NEED_LABEL[id]}</span>
+          <div className="client-needs__bar">
+            <i style={{ width: `${client.partnerNeeds[id]}%`, opacity: 0.65 }} />
+          </div>
+          <em>{Math.round(client.partnerNeeds[id])}</em>
+        </div>
+      ))}
+    </div>
+  )
+
+  const partnerBlock = (
+    <div className="client-partner-panel">
+      <div className="client-partner-panel__mode">
+        <p className="mini-title">Pareja</p>
+        <div className="speed-group">
+          <button
+            type="button"
+            className={client.partnerMode === 'auto' ? 'chip chip--active' : 'chip'}
+            onClick={() => setPartnerMode('auto')}
+          >
+            Auto
+          </button>
+          <button
+            type="button"
+            className={client.partnerMode === 'orders' ? 'chip chip--active' : 'chip'}
+            onClick={() => setPartnerMode('orders')}
+          >
+            Órdenes ({client.partnerOrdersLeft}/{PARTNER_ORDERS_PER_NIGHT})
+          </button>
+        </div>
+      </div>
+      {client.partnerMode === 'orders' ? (
+        <div className="client-partner-orders">
+          {PARTNER_ORDERS.map((o) => (
+            <button
+              key={o.id}
+              type="button"
+              className="client-lobby__card"
+              disabled={client.partnerOrdersLeft <= 0}
+              onClick={() => doPartnerOrder(o.id)}
+            >
+              <strong>{o.label}</strong>
+              <span>{o.detail}</span>
+            </button>
+          ))}
+        </div>
+      ) : (
+        <p className="muted">La pareja actúa sola cada noche (bonus menor de ingresos).</p>
+      )}
+      {partnerNeedsBlock}
+    </div>
+  )
+
+  const eventBanner = (
+    <div className={`client-event client-event--${lobbyEvent.tone}`}>
+      <div>
+        <p className="client-event__eyebrow">Evento del día</p>
+        <strong>{lobbyEvent.title}</strong>
+        <span>{lobbyEvent.detail}</span>
+      </div>
+      <em>
+        ×{lobbyEvent.priceMult.toFixed(2)} precios
+        {lobbyEvent.incomeBonus > 0 ? ` · +${lobbyEvent.incomeBonus} €/noche` : ''}
+      </em>
+    </div>
+  )
 
   const lobbyBlock = (
     <div className="client-lobby">
+      {eventBanner}
       <h3>Animación del resort</h3>
-      <p className="muted">Actividades abiertas ahora · no hace falta servicio concreto</p>
+      <p className="muted">Teclas 1–8 · destacados del evento primero</p>
       <div className="client-lobby__grid">
-        {LOBBY_ACTIVITIES.map((a) => (
-          <button
-            key={a.id}
-            type="button"
-            className="client-lobby__card"
-            onClick={() => doLobby(a.id, a.cost)}
-          >
-            <strong>{a.label}</strong>
-            <span>{a.detail}</span>
-            <em>
-              {formatEUR(a.cost)} · +{a.points} pts base
-            </em>
-          </button>
-        ))}
+        {sortedLobby.map((a, i) => {
+          const featured = lobbyEvent.featured.includes(a.id)
+          const cost = Math.round(a.cost * lobbyPriceMult)
+          return (
+            <button
+              key={a.id}
+              type="button"
+              className={`client-lobby__card${featured ? ' is-featured' : ''}`}
+              onClick={() => doLobby(a.id, a.cost)}
+            >
+              <strong>
+                <kbd>{i + 1}</kbd> {a.label}
+              </strong>
+              <span>{a.detail}</span>
+              <em>
+                {formatEUR(cost)} · +{a.points} pts
+                {featured ? ' · destacado' : ''}
+              </em>
+            </button>
+          )
+        })}
       </div>
     </div>
   )
@@ -281,27 +446,6 @@ export function ClientPanel() {
     />
   ) : null
 
-  /** Compact needs block for the NPC partner. */
-  const partnerNeedsBlock = (
-    <div className="client-partner-needs" style={{ marginTop: '0.75rem' }}>
-      <p className="mini-title" style={{ marginBottom: '0.25rem' }}>
-        Pareja (NPC)&ensp;
-        <span className="muted" style={{ fontSize: '0.75em', fontWeight: 400 }}>
-          Solo controlas tu personaje
-        </span>
-      </p>
-      {CLIENT_NEED_IDS.slice(0, 5).map((id) => (
-        <div key={id} className="client-needs__row" style={{ fontSize: '0.8em' }}>
-          <span>{CLIENT_NEED_LABEL[id]}</span>
-          <div className="client-needs__bar">
-            <i style={{ width: `${client.partnerNeeds[id]}%`, opacity: 0.65 }} />
-          </div>
-          <em>{Math.round(client.partnerNeeds[id])}</em>
-        </div>
-      ))}
-    </div>
-  )
-
   // ── Stay fullscreen view ─────────────────────────────────────────────────────
 
   if (inStay && hotel) {
@@ -345,8 +489,6 @@ export function ClientPanel() {
               ))}
             </div>
 
-            {partnerNeedsBlock}
-
             <div className="cost-box" style={{ marginTop: '0.75rem' }}>
               <div>
                 <span>Monedero</span>
@@ -363,12 +505,12 @@ export function ClientPanel() {
                 </strong>
               </div>
               <div>
-                <span>Salario CEO</span>
-                <strong>{(CLIENT_CEO_CUT * 100).toFixed(1)}% ingresos del hotel / noche</strong>
+                <span>Corte hotel</span>
+                <strong>{(CLIENT_CEO_CUT * 100).toFixed(1)}% + cadena</strong>
               </div>
             </div>
 
-            {clubHub}
+            {incomeBlock}
 
             {client.appointments.length > 0 && (
               <div className="client-appointments">
@@ -390,7 +532,33 @@ export function ClientPanel() {
           </div>
 
           <div className="client-stay__services">
-            {lobbyBlock}
+            <div className="client-stay__tabs" role="tablist">
+              {(
+                [
+                  ['actividad', 'Actividad'],
+                  ['servicios', 'Servicios'],
+                  ['pareja', 'Pareja'],
+                  ['club', 'Club'],
+                ] as const
+              ).map(([id, label]) => (
+                <button
+                  key={id}
+                  type="button"
+                  role="tab"
+                  className={stayTab === id ? 'chip chip--active' : 'chip'}
+                  onClick={() => setStayTab(id)}
+                >
+                  {label}
+                  {id === 'actividad' ? ' · 1-8' : id === 'pareja' ? ' · 9' : ''}
+                </button>
+              ))}
+            </div>
+
+            {stayTab === 'actividad' && lobbyBlock}
+            {stayTab === 'pareja' && partnerBlock}
+            {stayTab === 'club' && clubHub}
+            {stayTab === 'servicios' && (
+              <>
             <h3>{serviceScreen ? serviceScreen.title : 'Servicios del hotel'}</h3>
             <label className="field">
               <span>Propina al usar servicio (€)</span>
@@ -519,6 +687,8 @@ export function ClientPanel() {
                 )}
               </div>
             )}
+              </>
+            )}
 
             {msg && <p className="error">{msg}</p>}
             {notesBlock}
@@ -578,6 +748,32 @@ export function ClientPanel() {
           <p className="error">Construye al menos un hotel en modo Gerente.</p>
         ) : (
           <>
+            <div className="client-side-tabs" role="tablist">
+              <button
+                type="button"
+                className={sideTab === 'viaje' ? 'chip chip--active' : 'chip'}
+                onClick={() => setSideTab('viaje')}
+              >
+                Viaje
+              </button>
+              <button
+                type="button"
+                className={sideTab === 'club' ? 'chip chip--active' : 'chip'}
+                onClick={() => setSideTab('club')}
+              >
+                Club / ingresos
+              </button>
+            </div>
+
+            {sideTab === 'club' ? (
+              <>
+                {incomeBlock}
+                {eventBanner}
+                {clubHub}
+                {missionsBlock}
+              </>
+            ) : (
+              <>
             <label className="field">
               <span>Tu nombre</span>
               <input value={client.name} onChange={(e) => setClientName(e.target.value)} />
@@ -596,7 +792,7 @@ export function ClientPanel() {
                 </button>
               ))}
             </div>
-            <p className="muted">Viajas en pareja (no la controlas).</p>
+            <p className="muted">Viajas en pareja · cambia a Órdenes tras el check-in.</p>
 
             <div className="cost-box">
               <div>
@@ -763,10 +959,8 @@ export function ClientPanel() {
 
             {msg && <p className="error">{msg}</p>}
             {notesBlock}
-
-            {missionsBlock}
-
-            {clubHub}
+              </>
+            )}
           </>
         )}
       </div>
