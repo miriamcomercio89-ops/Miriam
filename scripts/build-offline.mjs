@@ -115,16 +115,16 @@ fs.writeFileSync(path.join(OUT, 'index.html'), html)
 
 fs.writeFileSync(
   path.join(OUT, 'LEEME.txt'),
-  `  Orbis Hotels Group — v1.5 (modo Cliente · oleada 1)
+  `  Orbis Hotels Group — v2.2.2 (mapa en file://)
 
-1. Borra la carpeta antigua si la tenías abierta
+IMPORTANTE: borra la carpeta antigua del escritorio antes de descomprimir.
+Si reutilizas la carpeta vieja, el mapa puede seguir en negro.
+
+1. Borra la carpeta "Orbis Hotels" antigua
 2. Descomprime este ZIP de nuevo
-3. Entra en la carpeta y abre index.html
+3. Abre index.html (necesitas internet para el mapa)
 
-Novedad: botón Cliente en la barra superior.
-Construye hoteles → Cliente → clic en un hotel → reserva esta noche → check-in.
-
-Necesitas internet para el mapa (teselas) y las fuentes.
+El mapa usa teselas online (Carto/OSM). Sin internet verás el fondo oscuro.
 No uses la carpeta dist/: esa sí necesita servidor.
 `,
 )

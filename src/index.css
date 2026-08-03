@@ -342,8 +342,20 @@ button {
   background: #0a1622;
 }
 
+.world-map.leaflet-container,
+.leaflet-container.world-map {
+  width: 100%;
+  height: 100%;
+  background: #0a1622;
+}
+
 .world-map .leaflet-tile-pane {
   will-change: auto;
+}
+
+.world-map .leaflet-tile {
+  /* Evita tiles fantasmas/grises cuando el contenedor arranca a 0px */
+  max-width: none !important;
 }
 
 .map-hint {

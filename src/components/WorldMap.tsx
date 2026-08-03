@@ -8,13 +8,14 @@ import { createHotelsCanvasLayer, findNearestHotel, hotelTooltipMeta } from '../
 import { formatEUR, gameDay } from '../lib/format'
 import type { Hotel } from '../types'
 
-/** Carto Voyager: más estable que OSM directo (menos rate-limit). */
-const STREETS_URL = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png'
+/** Carto Voyager sin {r}: más fiable en file:// (offline). */
+const STREETS_URL = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png'
+const STREETS_FALLBACK = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
 const STREETS_ATTR =
   '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>'
 const SAT_URL =
   'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
-const LABELS_URL = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png'
+const LABELS_URL = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}.png'
 
 function MapClickHandler({
   busy,
@@ -58,43 +59,71 @@ function MapFocusController() {
   return null
 }
 
-/** Mantiene el mapa vivo: tamaño, tiles rotas y post-simulación. */
+/** Mantiene el mapa vivo: tamaño, tiles y arranque tras Continuar partida. */
 function MapHealth() {
   const map = useMap()
   const simulating = useGameStore((s) => s.simulating)
   const wasSimulating = useRef(false)
+  const tileFails = useRef(0)
 
   useEffect(() => {
     const fix = () => {
       try {
+        const el = map.getContainer()
+        if (!el || el.clientWidth < 2 || el.clientHeight < 2) return
         map.invalidateSize({ pan: false })
       } catch {
         /* mapa destruido */
       }
     }
+    // Tras salir del landing el contenedor a menudo mide 0px el primer frame
     fix()
+    const t1 = window.setTimeout(fix, 0)
+    const t2 = window.setTimeout(fix, 80)
+    const t3 = window.setTimeout(fix, 250)
+    const t4 = window.setTimeout(fix, 700)
+    const t5 = window.setTimeout(fix, 1500)
+
     const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(() => fix()) : null
     const el = map.getContainer()
-    ro?.observe(el.parentElement ?? el)
+    ro?.observe(el)
+    if (el.parentElement) ro?.observe(el.parentElement)
     window.addEventListener('resize', fix)
     document.addEventListener('visibilitychange', fix)
-    const onTileError = (e: L.LeafletEvent) => {
-      const te = e as L.TileEvent
-      const img = te.tile as HTMLImageElement
-      if (!img || img.dataset.retried === '1') return
-      img.dataset.retried = '1'
-      // Reintento suave: misma URL con cache-buster
-      const src = img.src
-      if (src && !src.includes('_retry=')) {
-        img.src = src + (src.includes('?') ? '&' : '?') + `_retry=${Date.now()}`
+
+    const onTileLoad = () => {
+      tileFails.current = 0
+    }
+    const onTileError = () => {
+      tileFails.current += 1
+      // Tras varios fallos, forzar redraw del mapa
+      if (tileFails.current === 4 || tileFails.current === 12) {
+        fix()
+        try {
+          map.eachLayer((layer) => {
+            const anyL = layer as L.TileLayer & { redraw?: () => void }
+            if (typeof anyL.redraw === 'function') anyL.redraw()
+          })
+        } catch {
+          /* ignore */
+        }
       }
     }
+    map.on('tileload', onTileLoad)
     map.on('tileerror', onTileError)
-    const pulse = window.setInterval(fix, 8000)
+    map.whenReady(fix)
+
+    const pulse = window.setInterval(fix, 10000)
     return () => {
+      window.clearTimeout(t1)
+      window.clearTimeout(t2)
+      window.clearTimeout(t3)
+      window.clearTimeout(t4)
+      window.clearTimeout(t5)
       ro?.disconnect()
       window.removeEventListener('resize', fix)
       document.removeEventListener('visibilitychange', fix)
+      map.off('tileload', onTileLoad)
       map.off('tileerror', onTileError)
       window.clearInterval(pulse)
     }
@@ -186,25 +215,42 @@ function HotelsCanvas({
 
 function TileLayers() {
   const layer = useGameStore((s) => s.mapLayer)
+  const [streetsUrl, setStreetsUrl] = useState(STREETS_URL)
+  const fails = useRef(0)
+
+  // Sin crossOrigin: en file:// (zip offline) CORS rompe todas las tiles.
   const common = {
     maxZoom: 18,
     keepBuffer: 2,
     updateWhenIdle: true,
     updateWhenZooming: false,
-    crossOrigin: true as const,
+    detectRetina: false,
   }
+
+  useMapEvents({
+    tileerror() {
+      if (layer !== 'streets') return
+      fails.current += 1
+      if (fails.current >= 6 && streetsUrl !== STREETS_FALLBACK) {
+        setStreetsUrl(STREETS_FALLBACK)
+      }
+    },
+  })
+
   if (layer === 'satellite') {
-    return <TileLayer attribution="Tiles &copy; Esri" url={SAT_URL} {...common} />
+    return <TileLayer key="sat" attribution="Tiles &copy; Esri" url={SAT_URL} {...common} />
   }
   if (layer === 'hybrid') {
     return (
       <>
-        <TileLayer attribution="Tiles &copy; Esri" url={SAT_URL} {...common} />
-        <TileLayer attribution={STREETS_ATTR} url={LABELS_URL} opacity={0.9} {...common} />
+        <TileLayer key="hy-sat" attribution="Tiles &copy; Esri" url={SAT_URL} {...common} />
+        <TileLayer key="hy-lab" attribution={STREETS_ATTR} url={LABELS_URL} opacity={0.9} {...common} />
       </>
     )
   }
-  return <TileLayer attribution={STREETS_ATTR} url={STREETS_URL} {...common} />
+  return (
+    <TileLayer key={`streets-${streetsUrl}`} attribution={STREETS_ATTR} url={streetsUrl} {...common} />
+  )
 }
 
 export function WorldMap() {
@@ -216,6 +262,7 @@ export function WorldMap() {
   const selectedHotelId = useGameStore((s) => s.selectedHotelId)
   const mapMode = useGameStore((s) => s.mapMode)
   const simulating = useGameStore((s) => s.simulating)
+  const mapEpoch = useGameStore((s) => s.mapEpoch)
   const [busy, setBusy] = useState(false)
   const [hint, setHint] = useState<string | null>(null)
   const [pending, setPending] = useState<{ lat: number; lng: number } | null>(null)
@@ -252,13 +299,14 @@ export function WorldMap() {
   return (
     <div className={`map-shell map-shell--${mapMode}${simulating ? ' map-shell--sim' : ''}`}>
       <MapContainer
+        key={`orbis-map-${mapEpoch}`}
         center={[20, 0]}
         zoom={3}
         minZoom={2}
         maxZoom={18}
         className="world-map"
         worldCopyJump
-        preferCanvas
+        preferCanvas={false}
         zoomControl
       >
         <TileLayers />

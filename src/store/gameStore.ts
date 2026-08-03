@@ -128,6 +128,8 @@ type UiState = {
   simulating: boolean
   simProgress: string
   saveToast: string | null
+  /** Fuerza remount de Leaflet tras hidratar / nueva partida / Continuar. */
+  mapEpoch: number
 }
 
 type GameStore = GameState &
@@ -555,6 +557,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
     simulating: false,
     simProgress: '',
     saveToast: null,
+    mapEpoch: 0,
 
   tick: (deltaGameMinutes) => {
     const state = get()
@@ -580,10 +583,11 @@ export const useGameStore = create<GameStore>((set, get) => ({
     await runSkipDays(1, state.gameMinutes + advance)
   },
 
-  startGame: () => set({ started: true, showLanding: false }),
+  startGame: () =>
+    set((s) => ({ started: true, showLanding: false, mapEpoch: s.mapEpoch + 1 })),
 
   newGame: () => {
-    set({
+    set((s) => ({
       ...initialState(),
       started: true,
       showLanding: false,
@@ -594,7 +598,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
       mapMode: 'inspect',
       mapFocus: null,
       simulating: false,
-    })
+      mapEpoch: s.mapEpoch + 1,
+    }))
     localStorage.removeItem(STORAGE_KEY)
   },
 
@@ -795,7 +800,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
   hydrate: (state) => {
     const m = migrate(state)
-    set({
+    set((s) => ({
       ...m,
       showLanding: !state.started,
       selectedHotelId: m.ui.selectedHotelId,
@@ -809,7 +814,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
       rankMetric: m.ui.rankMetric,
       simulating: false,
       simProgress: '',
-    })
+      mapEpoch: s.mapEpoch + 1,
+    }))
   },
 
   persistLocal: () => {
