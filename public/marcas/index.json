@@ -17,7 +17,7 @@
     },
     {
       "id": "palm-collection",
-      "name": "Orbis Palma",
+      "name": "Orbis Palm Collection",
       "file": "marcas/palm-collection.pdf",
       "color": "#1F6B3A",
       "accent": "#C9E87A"
@@ -31,14 +31,14 @@
     },
     {
       "id": "dune-resorts",
-      "name": "Orbis Dunas",
+      "name": "Orbis Dune Resorts",
       "file": "marcas/dune-resorts.pdf",
       "color": "#A67C52",
       "accent": "#F2D6A2"
     },
     {
       "id": "lagoon",
-      "name": "Orbis Laguna",
+      "name": "Orbis Lagoon",
       "file": "marcas/lagoon.pdf",
       "color": "#2A7A7B",
       "accent": "#A8E6E1"
@@ -52,91 +52,91 @@
     },
     {
       "id": "tide",
-      "name": "Orbis Marea",
+      "name": "Orbis Tide",
       "file": "marcas/tide.pdf",
       "color": "#3D5A80",
       "accent": "#E0E1DD"
     },
     {
       "id": "horizon-club",
-      "name": "Orbis Horizonte",
+      "name": "Orbis Horizon Club",
       "file": "marcas/horizon-club.pdf",
       "color": "#0D1B2A",
       "accent": "#C9A227"
     },
     {
       "id": "sail",
-      "name": "Orbis Velero",
+      "name": "Orbis Sail",
       "file": "marcas/sail.pdf",
       "color": "#133C55",
       "accent": "#84D2F6"
     },
     {
       "id": "breeze",
-      "name": "Orbis Brisa",
+      "name": "Orbis Breeze",
       "file": "marcas/breeze.pdf",
       "color": "#4CC9F0",
       "accent": "#F72585"
     },
     {
       "id": "cape",
-      "name": "Orbis Cabo",
+      "name": "Orbis Cape",
       "file": "marcas/cape.pdf",
       "color": "#4A4E69",
       "accent": "#F2A65A"
     },
     {
       "id": "reef-lodge",
-      "name": "Orbis Arrecife",
+      "name": "Orbis Reef Lodge",
       "file": "marcas/reef-lodge.pdf",
       "color": "#007F5F",
       "accent": "#80ED99"
     },
     {
       "id": "sunset-inn",
-      "name": "Orbis Atardecer",
+      "name": "Orbis Sunset Inn",
       "file": "marcas/sunset-inn.pdf",
       "color": "#D35400",
       "accent": "#F5C542"
     },
     {
       "id": "pearl",
-      "name": "Orbis Perla",
+      "name": "Orbis Pearl",
       "file": "marcas/pearl.pdf",
       "color": "#2C2A4A",
       "accent": "#E8D5B7"
     },
     {
       "id": "harbor",
-      "name": "Orbis Puerto",
+      "name": "Orbis Harbor",
       "file": "marcas/harbor.pdf",
       "color": "#1D3557",
       "accent": "#A8DADC"
     },
     {
       "id": "island-house",
-      "name": "Orbis Isla Privada",
+      "name": "Orbis Island House",
       "file": "marcas/island-house.pdf",
       "color": "#0B525B",
       "accent": "#F4A261"
     },
     {
       "id": "coastline",
-      "name": "Orbis Costa Global",
+      "name": "Orbis Coastline",
       "file": "marcas/coastline.pdf",
       "color": "#0077B6",
       "accent": "#90E0EF"
     },
     {
       "id": "bayfront",
-      "name": "Orbis Bahía Urbana",
+      "name": "Orbis Bayfront",
       "file": "marcas/bayfront.pdf",
       "color": "#264653",
       "accent": "#2A9D8F"
     },
     {
       "id": "atlantica",
-      "name": "Orbis Atlántica",
+      "name": "Orbis Atlantica",
       "file": "marcas/atlantica.pdf",
       "color": "#023E8A",
       "accent": "#48CAE4"
@@ -150,28 +150,28 @@
     },
     {
       "id": "pacific",
-      "name": "Orbis Pacífico",
+      "name": "Orbis Pacific Rim",
       "file": "marcas/pacific.pdf",
       "color": "#03045E",
       "accent": "#00B4D8"
     },
     {
       "id": "caribbean",
-      "name": "Orbis Caribe",
+      "name": "Orbis Caribbean Soft",
       "file": "marcas/caribbean.pdf",
       "color": "#E63946",
       "accent": "#F4A261"
     },
     {
       "id": "nordic-fjord",
-      "name": "Orbis Fiordo",
+      "name": "Orbis Nordic Fjord",
       "file": "marcas/nordic-fjord.pdf",
       "color": "#1B263B",
       "accent": "#778DA9"
     },
     {
       "id": "alpine-lake",
-      "name": "Orbis Lago Alpino",
+      "name": "Orbis Alpine Lake",
       "file": "marcas/alpine-lake.pdf",
       "color": "#245B6E",
       "accent": "#B8E0D2"
@@ -192,14 +192,14 @@
     },
     {
       "id": "airport-gate",
-      "name": "Orbis Gate",
+      "name": "Orbis Airport Gate",
       "file": "marcas/airport-gate.pdf",
       "color": "#495057",
       "accent": "#ADB5BD"
     },
     {
       "id": "spa-sanctum",
-      "name": "Orbis Sanctum",
+      "name": "Orbis Spa Sanctum",
       "file": "marcas/spa-sanctum.pdf",
       "color": "#5E548E",
       "accent": "#E0B1CB"
@@ -213,7 +213,7 @@
     },
     {
       "id": "boutique-noir",
-      "name": "Orbis Noir",
+      "name": "Orbis Boutique Noir",
       "file": "marcas/boutique-noir.pdf",
       "color": "#0D0D0D",
       "accent": "#C0C0C0"
@@ -227,7 +227,7 @@
     },
     {
       "id": "garden",
-      "name": "Orbis Jardín",
+      "name": "Orbis Garden Court",
       "file": "marcas/garden.pdf",
       "color": "#2D6A4F",
       "accent": "#95D5B2"
@@ -241,14 +241,14 @@
     },
     {
       "id": "retreat",
-      "name": "Orbis Retiro",
+      "name": "Orbis Retreat",
       "file": "marcas/retreat.pdf",
       "color": "#3A5A40",
       "accent": "#DAD7CD"
     },
     {
       "id": "adventure",
-      "name": "Orbis Trail",
+      "name": "Orbis Adventure Base",
       "file": "marcas/adventure.pdf",
       "color": "#BC4749",
       "accent": "#F2E8CF"
@@ -269,7 +269,7 @@
     },
     {
       "id": "allsuite",
-      "name": "Orbis All Suite",
+      "name": "Orbis AllSuite",
       "file": "marcas/allsuite.pdf",
       "color": "#3C096C",
       "accent": "#E0AAFF"
@@ -283,7 +283,7 @@
     },
     {
       "id": "residence",
-      "name": "Orbis Living",
+      "name": "Orbis Residence",
       "file": "marcas/residence.pdf",
       "color": "#5C677D",
       "accent": "#D9D9D9"
@@ -304,7 +304,7 @@
     },
     {
       "id": "vineyard",
-      "name": "Orbis Viñedo",
+      "name": "Orbis Vineyard",
       "file": "marcas/vineyard.pdf",
       "color": "#6A040F",
       "accent": "#E9C46A"
@@ -332,14 +332,14 @@
     },
     {
       "id": "jungle-canopy",
-      "name": "Orbis Canopy",
+      "name": "Orbis Jungle Canopy",
       "file": "marcas/jungle-canopy.pdf",
       "color": "#081C15",
       "accent": "#52B788"
     },
     {
       "id": "desert-mirage",
-      "name": "Orbis Mirage",
+      "name": "Orbis Desert Mirage",
       "file": "marcas/desert-mirage.pdf",
       "color": "#9C6644",
       "accent": "#EDE0D4"

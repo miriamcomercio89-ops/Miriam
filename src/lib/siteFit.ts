@@ -42,7 +42,7 @@ export function evaluateSiteFit(sub: Subsidiary, loc: LocationInsight): SiteFit 
     }
     if (/airport|aeropuerto/i.test(sub.id) || sub.id === 'airport-gate') {
       if (loc.tourismIndex > 85 && loc.beachScore > 70) {
-        warnings.push('Orbis Gate rinde mejor cerca de hubs, no en resort puro.')
+        warnings.push('Orbis Airport Gate rinde mejor cerca de hubs, no en resort puro.')
         score -= 12
       }
     }

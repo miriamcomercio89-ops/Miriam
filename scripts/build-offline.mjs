@@ -115,7 +115,7 @@ fs.writeFileSync(path.join(OUT, 'index.html'), html)
 
 fs.writeFileSync(
   path.join(OUT, 'LEEME.txt'),
-  `  Orbis Hotels Group — v2.2.5 (fix constructor bloqueado)
+  `  Orbis Hotels Group — v2.2.6 (nombres de filiales canónicos)
 
 IMPORTANTE: borra la carpeta antigua del escritorio antes de descomprimir.
 
@@ -123,8 +123,9 @@ IMPORTANTE: borra la carpeta antigua del escritorio antes de descomprimir.
 2. Descomprime este ZIP de nuevo
 3. Abre index.html
 
-v2.2.5: el paso "Creando…" ya no se queda pillado (el PDF ya no bloquea).
-v2.2.4: mapa al cargar partida sin eventos.
+v2.2.6: nombres de las 50 filiales alineados (ids sin cambiar → partida compatible).
+v2.2.5: constructor no se queda en Creando…
+v2.2.4: mapa al cargar partida.
 Necesitas internet para el mapa (teselas) y las fuentes.
 `,
 )
