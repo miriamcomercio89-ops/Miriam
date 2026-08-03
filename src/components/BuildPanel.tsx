@@ -93,6 +93,22 @@ function brandPdfHref(id: string) {
   return `./marcas/${id}.pdf`
 }
 
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const t = window.setTimeout(() => reject(new Error('timeout')), ms)
+    promise.then(
+      (v) => {
+        window.clearTimeout(t)
+        resolve(v)
+      },
+      (e) => {
+        window.clearTimeout(t)
+        reject(e)
+      },
+    )
+  })
+}
+
 export function BuildPanel() {
   const loc = useGameStore((s) => s.buildLocation)
   const closeBuild = useGameStore((s) => s.closeBuild)
@@ -124,6 +140,7 @@ export function BuildPanel() {
     setUseFinance(false)
     setDownloadPdf(true)
     setShowCostDetail(false)
+    setBusy(false)
   }, [loc?.lat, loc?.lng])
 
   const filtered = useMemo(() => {
@@ -209,12 +226,17 @@ export function BuildPanel() {
     const reader = new FileReader()
     reader.onload = () => {
       void (async () => {
-        const raw = String(reader.result)
-        const compressed = await compressHotelPhoto(raw)
-        setDraft({ ...draft, imageDataUrl: compressed, imageKey: 'upload' })
-        setError(null)
+        try {
+          const raw = String(reader.result)
+          const compressed = await withTimeout(compressHotelPhoto(raw), 12000).catch(() => raw)
+          setDraft((d) => (d ? { ...d, imageDataUrl: compressed, imageKey: 'upload' } : d))
+          setError(null)
+        } catch {
+          setError('No se pudo leer la foto. Prueba con otra imagen (JPG/PNG).')
+        }
       })()
     }
+    reader.onerror = () => setError('No se pudo leer la foto. Prueba con otra imagen.')
     reader.readAsDataURL(file)
   }
 
@@ -246,7 +268,7 @@ export function BuildPanel() {
   }
 
   async function onCreate() {
-    if (!draft) return
+    if (!draft || busy) return
     if (!draft.imageDataUrl || draft.imageDataUrl.length < 40) {
       setError('Falta la foto del hotel. Vuelve al paso Foto y súbela.')
       setStep('foto')
@@ -254,34 +276,47 @@ export function BuildPanel() {
     }
     setBusy(true)
     setError(null)
-    const res = buildHotel(draft, site, { finance: useFinance && shortfall > 0 })
-    if (!res.ok) {
-      setError(res.error)
-      setBusy(false)
-      return
-    }
-    if (downloadPdf) {
-      try {
-        const brand = getSubsidiary(res.hotel.subsidiaryId)
-        if (brand) {
-          const logoSrc = subsidiaryLogoSvg(brand, 512)
-          const logoPng = (await anyImageToPng(logoSrc, 512)) || logoSrc
-          await downloadHotelPdf({
-            hotel: res.hotel,
-            sub: brand,
-            loc: site,
-            draft,
-            logoPng,
-            cost: res.hotel.constructionCost,
-            financed: res.financed,
-            photoDataUrl: draft.imageDataUrl,
-          })
-        }
-      } catch {
-        /* PDF opcional */
+    try {
+      const res = buildHotel(draft, site, { finance: useFinance && shortfall > 0 })
+      if (!res.ok) {
+        setError(res.error)
+        return
       }
+      // El hotel ya está creado (el panel se cierra). El PDF no debe bloquear el constructor.
+      if (downloadPdf) {
+        const hotel = res.hotel
+        const draftSnap = draft
+        const siteSnap = site
+        const financed = res.financed
+        void (async () => {
+          try {
+            const brand = getSubsidiary(hotel.subsidiaryId)
+            if (!brand) return
+            const logoSrc = subsidiaryLogoSvg(brand, 512)
+            const logoPng = (await withTimeout(anyImageToPng(logoSrc, 512), 8000)) || logoSrc
+            await withTimeout(
+              downloadHotelPdf({
+                hotel,
+                sub: brand,
+                loc: siteSnap,
+                draft: draftSnap,
+                logoPng,
+                cost: hotel.constructionCost,
+                financed,
+                photoDataUrl: draftSnap.imageDataUrl,
+              }),
+              20000,
+            )
+          } catch {
+            /* PDF opcional: nunca bloquea la construcción */
+          }
+        })()
+      }
+    } catch {
+      setError('No se pudo crear el hotel. Inténtalo de nuevo.')
+    } finally {
+      setBusy(false)
     }
-    setBusy(false)
   }
 
   return (

@@ -115,16 +115,16 @@ fs.writeFileSync(path.join(OUT, 'index.html'), html)
 
 fs.writeFileSync(
   path.join(OUT, 'LEEME.txt'),
-  `  Orbis Hotels Group — v2.2.4 (fix altura mapa al cargar)
+  `  Orbis Hotels Group — v2.2.5 (fix constructor bloqueado)
 
 IMPORTANTE: borra la carpeta antigua del escritorio antes de descomprimir.
 
 1. Borra la carpeta "Orbis Hotels" antigua
 2. Descomprime este ZIP de nuevo
-3. Abre index.html (necesitas internet para el mapa)
-4. Continuar / Importar partida — el mapa ya no queda en negro
+3. Abre index.html
 
-Causa del fallo: sin eventos activos el layout dejaba el mapa a altura 0.
+v2.2.5: el paso "Creando…" ya no se queda pillado (el PDF ya no bloquea).
+v2.2.4: mapa al cargar partida sin eventos.
 Necesitas internet para el mapa (teselas) y las fuentes.
 `,
 )

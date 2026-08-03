@@ -55,19 +55,24 @@ async function embedImage(doc: jsPDF, dataUrl: string, x: number, y: number, w: 
 export async function svgDataUrlToPng(svgDataUrl: string, size = 256): Promise<string> {
   return new Promise((resolve) => {
     const img = new Image()
+    const done = (v: string) => {
+      window.clearTimeout(timer)
+      resolve(v)
+    }
+    const timer = window.setTimeout(() => done(svgDataUrl), 8000)
     img.onload = () => {
       const canvas = document.createElement('canvas')
       canvas.width = size
       canvas.height = size
       const ctx = canvas.getContext('2d')
       if (!ctx) {
-        resolve(svgDataUrl)
+        done(svgDataUrl)
         return
       }
       ctx.drawImage(img, 0, 0, size, size)
-      resolve(canvas.toDataURL('image/png'))
+      done(canvas.toDataURL('image/png'))
     }
-    img.onerror = () => resolve(svgDataUrl)
+    img.onerror = () => done(svgDataUrl)
     img.src = svgDataUrl
   })
 }
@@ -77,22 +82,31 @@ export async function anyImageToPng(dataUrl: string, maxW = 1200): Promise<strin
   if (dataUrl.includes('image/svg')) return svgDataUrlToPng(dataUrl, maxW > 800 ? 800 : maxW)
   return new Promise((resolve) => {
     const img = new Image()
-    img.onload = () => {
-      const scale = Math.min(1, maxW / img.width)
-      const w = Math.max(1, Math.round(img.width * scale))
-      const h = Math.max(1, Math.round(img.height * scale))
-      const canvas = document.createElement('canvas')
-      canvas.width = w
-      canvas.height = h
-      const ctx = canvas.getContext('2d')
-      if (!ctx) {
-        resolve(dataUrl)
-        return
-      }
-      ctx.drawImage(img, 0, 0, w, h)
-      resolve(canvas.toDataURL('image/jpeg', 0.9))
+    const done = (v: string | null) => {
+      window.clearTimeout(timer)
+      resolve(v)
     }
-    img.onerror = () => resolve(null)
+    const timer = window.setTimeout(() => done(null), 8000)
+    img.onload = () => {
+      try {
+        const scale = Math.min(1, maxW / img.width)
+        const w = Math.max(1, Math.round(img.width * scale))
+        const h = Math.max(1, Math.round(img.height * scale))
+        const canvas = document.createElement('canvas')
+        canvas.width = w
+        canvas.height = h
+        const ctx = canvas.getContext('2d')
+        if (!ctx) {
+          done(dataUrl)
+          return
+        }
+        ctx.drawImage(img, 0, 0, w, h)
+        done(canvas.toDataURL('image/jpeg', 0.9))
+      } catch {
+        done(null)
+      }
+    }
+    img.onerror = () => done(null)
     img.src = dataUrl
   })
 }

@@ -221,22 +221,31 @@ export async function compressHotelPhoto(dataUrl: string, maxSide = 1280, qualit
   if (!dataUrl || dataUrl.includes('image/svg')) return dataUrl
   return new Promise((resolve) => {
     const img = new Image()
-    img.onload = () => {
-      const scale = Math.min(1, maxSide / Math.max(img.width, img.height))
-      const w = Math.max(1, Math.round(img.width * scale))
-      const h = Math.max(1, Math.round(img.height * scale))
-      const canvas = document.createElement('canvas')
-      canvas.width = w
-      canvas.height = h
-      const ctx = canvas.getContext('2d')
-      if (!ctx) {
-        resolve(dataUrl)
-        return
-      }
-      ctx.drawImage(img, 0, 0, w, h)
-      resolve(canvas.toDataURL('image/jpeg', quality))
+    const done = (v: string) => {
+      window.clearTimeout(timer)
+      resolve(v)
     }
-    img.onerror = () => resolve(dataUrl)
+    const timer = window.setTimeout(() => done(dataUrl), 10000)
+    img.onload = () => {
+      try {
+        const scale = Math.min(1, maxSide / Math.max(img.width, img.height))
+        const w = Math.max(1, Math.round(img.width * scale))
+        const h = Math.max(1, Math.round(img.height * scale))
+        const canvas = document.createElement('canvas')
+        canvas.width = w
+        canvas.height = h
+        const ctx = canvas.getContext('2d')
+        if (!ctx) {
+          done(dataUrl)
+          return
+        }
+        ctx.drawImage(img, 0, 0, w, h)
+        done(canvas.toDataURL('image/jpeg', quality))
+      } catch {
+        done(dataUrl)
+      }
+    }
+    img.onerror = () => done(dataUrl)
     img.src = dataUrl
   })
 }
