@@ -26,6 +26,7 @@ import { downloadHotelPdf, anyImageToPng } from '../lib/hotelPdf'
 import type { BoardRegime } from '../types'
 
 export function HotelDetail() {
+  const playMode = useGameStore((s) => s.playMode)
   const id = useGameStore((s) => s.selectedHotelId)
   const hotel = useGameStore((s) => s.hotels.find((h) => h.id === id))
   const hotels = useGameStore((s) => s.hotels)
@@ -48,6 +49,7 @@ export function HotelDetail() {
   const renovateHotel = useGameStore((s) => s.renovateHotel)
   const [msg, setMsg] = useState<string | null>(null)
 
+  if (playMode === 'cliente') return null
   if (!hotel) return null
   const sub = getSubsidiary(hotel.subsidiaryId)
   const targetLabel = TARGET_OPTIONS.find((t) => t.id === hotel.target)?.label ?? hotel.target

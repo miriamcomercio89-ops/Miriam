@@ -13,12 +13,14 @@ function MapClickHandler({
   busy,
   onBuild,
   onSelectHotel,
+  onClearHotel,
   hotels,
   selectedId,
 }: {
   busy: boolean
   onBuild: (lat: number, lng: number) => void
   onSelectHotel: (id: string) => void
+  onClearHotel: () => void
   hotels: Hotel[]
   selectedId: string | null
 }) {
@@ -30,14 +32,20 @@ function MapClickHandler({
       const map = e.target as L.Map
       const nearest = findNearestHotel(map, hotels, e.containerPoint, map.getZoom(), selectedId)
       if (nearest) {
+        if (playMode === 'cliente' && selectedId === nearest.id) {
+          onClearHotel()
+          return
+        }
         onSelectHotel(nearest.id)
         return
       }
-      if (playMode === 'cliente') return
+      if (playMode === 'cliente') {
+        onClearHotel()
+        return
+      }
       if (mode === 'build') onBuild(e.latlng.lat, e.latlng.lng)
     },
     mousemove(e) {
-      // hover handled in HotelsLayer via map events too
       void e
     },
   })
@@ -225,6 +233,12 @@ export function WorldMap() {
     selectHotel(id)
   }
 
+  function onClearHotel() {
+    if (playMode === 'cliente') setClientBookingHotel(null)
+  }
+
+  const canvasSelectedId = playMode === 'cliente' ? bookingHotelId : selectedHotelId
+
   return (
     <div className={`map-shell map-shell--${mapMode}${playMode === 'cliente' ? ' map-shell--client' : ''}${clientStay?.status === 'checked_in' ? ' is-hidden-by-stay' : ''}`}>
       <MapContainer
@@ -241,11 +255,12 @@ export function WorldMap() {
           busy={busy}
           onBuild={handleBuild}
           onSelectHotel={onSelectHotel}
+          onClearHotel={onClearHotel}
           hotels={filtered}
-          selectedId={playMode === 'cliente' ? bookingHotelId : selectedHotelId}
+          selectedId={canvasSelectedId}
         />
         <MapFocusController />
-        <HotelsCanvas hotels={filtered} selectedId={selectedHotelId} onHover={onHover} />
+        <HotelsCanvas hotels={filtered} selectedId={canvasSelectedId} onHover={onHover} />
         {tourPath && (
           <Polyline
             positions={tourPath.pts}
@@ -283,8 +298,8 @@ export function WorldMap() {
         {hint ??
           (playMode === 'cliente'
             ? tourPath?.chain
-              ? `Tour: ${tourPath.chain} · clic en un hotel para reservar`
-              : 'Modo Cliente: clic en un hotel tuyo para reservar · el tour se dibuja al cambiar de región'
+              ? `Tour: ${tourPath.chain} · clic hotel para elegir · otro clic o vacío para quitar`
+              : 'Modo Cliente: clic en un hotel para reservar · clic de nuevo o en vacío para quitar'
             : mapMode === 'build'
               ? 'Modo construir: clic en tierra para un hotel nuevo · clic en un hotel para verlo'
               : 'Modo ver: clic en un hotel para abrir su ficha · cambia a Construir para expandir')}

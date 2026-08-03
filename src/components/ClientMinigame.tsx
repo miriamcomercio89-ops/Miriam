@@ -4,14 +4,23 @@ import {
   CINE_TRIVIA,
   MINIGAME_LABEL,
   resolveCasinoSpin,
+  resolveChefOrder,
+  resolveCocktail,
+  resolveDance,
   resolveDive,
   resolveGolfSwing,
+  resolveGymReps,
   resolveHeli,
   resolveKids,
+  resolveMiradorShot,
   resolvePadel,
+  resolveShopDeal,
   resolveSlots,
+  resolveSpaBreath,
+  resolveSwimStroke,
   resolveTeatro,
   resolveTrivia,
+  resolveYoga,
   type MinigameId,
   type MinigameOutcome,
 } from '../lib/clientMinigames'
@@ -48,6 +57,16 @@ export function ClientMinigame({ id, entryCost, wallet, onDone, onCancel }: Prop
           {id === 'heli_vuelo' && <HeliGame onDone={onDone} />}
           {id === 'teatro_aplauso' && <TeatroGame onDone={onDone} />}
           {id === 'kids_busca' && <KidsGame onDone={onDone} />}
+          {id === 'spa_respirar' && <HoldGame label="Mantén la respiración en la zona calmada" resolve={resolveSpaBreath} onDone={onDone} />}
+          {id === 'piscina_brazada' && <MeterGame label="Para la brazada en la zona dorada" resolve={resolveSwimStroke} onDone={onDone} />}
+          {id === 'bar_coctel' && <SequenceGame items={COCKTAIL_STEPS} resolve={resolveCocktail} onDone={onDone} />}
+          {id === 'yoga_postura' && <HoldGame label="Mantén la postura mientras el círculo esté verde" resolve={resolveYoga} onDone={onDone} />}
+          {id === 'gym_reps' && <RepsGame onDone={onDone} />}
+          {id === 'playa_voley' && <PadelGame onDone={onDone} />}
+          {id === 'mirador_foto' && <MeterGame label="Dispara en el pico de luz dorada" resolve={resolveMiradorShot} onDone={onDone} />}
+          {id === 'chef_pedido' && <SequenceGame items={CHEF_DISHES} resolve={resolveChefOrder} onDone={onDone} />}
+          {id === 'tienda_ganga' && <FlashDealGame onDone={onDone} />}
+          {id === 'baile_ritmo' && <DanceGame onDone={onDone} />}
         </div>
       </div>
     </div>
@@ -529,6 +548,342 @@ function KidsGame({ onDone }: { onDone: (o: MinigameOutcome) => void }) {
         }}
       >
         Terminar
+      </button>
+    </div>
+  )
+}
+
+const COCKTAIL_STEPS = ['Hielo', 'Ron', 'Lima', 'Hierbabuena']
+const CHEF_DISHES = ['Entrante', 'Principal', 'Postre']
+
+function MeterGame({
+  label,
+  resolve,
+  onDone,
+}: {
+  label: string
+  resolve: (accuracy: number) => MinigameOutcome
+  onDone: (o: MinigameOutcome) => void
+}) {
+  const [pos, setPos] = useState(0)
+  const [locked, setLocked] = useState(false)
+  const dir = useRef(1)
+
+  useEffect(() => {
+    if (locked) return
+    const id = window.setInterval(() => {
+      setPos((p) => {
+        let next = p + dir.current * 2.4
+        if (next >= 100) {
+          dir.current = -1
+          next = 100
+        } else if (next <= 0) {
+          dir.current = 1
+          next = 0
+        }
+        return next
+      })
+    }, 16)
+    return () => window.clearInterval(id)
+  }, [locked])
+
+  function hit() {
+    if (locked) return
+    setLocked(true)
+    const sweet = 70
+    const accuracy = 1 - Math.min(1, Math.abs(pos - sweet) / 70)
+    window.setTimeout(() => onDone(resolve(accuracy)), 400)
+  }
+
+  return (
+    <div className="mg-golf">
+      <p>{label}</p>
+      <div className="mg-golf__track">
+        <i className="mg-golf__sweet" />
+        <b className="mg-golf__needle" style={{ left: `${pos}%` }} />
+      </div>
+      <button type="button" className="btn btn--primary" disabled={locked} onClick={hit}>
+        {locked ? '…' : 'Ahora'}
+      </button>
+    </div>
+  )
+}
+
+function HoldGame({
+  label,
+  resolve,
+  onDone,
+}: {
+  label: string
+  resolve: (ratio: number) => MinigameOutcome
+  onDone: (o: MinigameOutcome) => void
+}) {
+  const [inZone, setInZone] = useState(false)
+  const [held, setHeld] = useState(0)
+  const heldRef = useRef(0)
+  const done = useRef(false)
+  const holding = useRef(false)
+
+  useEffect(() => {
+    let t = 0
+    const id = window.setInterval(() => {
+      t += 1
+      const ok = t % 4 < 2
+      setInZone(ok)
+      if (holding.current && ok) {
+        heldRef.current += 1
+        setHeld(heldRef.current)
+      }
+      if (t >= 16 && !done.current) {
+        done.current = true
+        onDone(resolve(heldRef.current / 8))
+      }
+    }, 450)
+    return () => window.clearInterval(id)
+  }, [onDone, resolve])
+
+  return (
+    <div className="mg-heli">
+      <p>
+        {label} ({held}/8)
+      </p>
+      <div className={`mg-heli__horizon ${inZone ? 'is-ok' : ''}`}>{inZone ? 'Ahora' : 'Espera'}</div>
+      <button
+        type="button"
+        className="btn btn--primary"
+        onMouseDown={() => {
+          holding.current = true
+        }}
+        onMouseUp={() => {
+          holding.current = false
+        }}
+        onMouseLeave={() => {
+          holding.current = false
+        }}
+        onTouchStart={() => {
+          holding.current = true
+        }}
+        onTouchEnd={() => {
+          holding.current = false
+        }}
+      >
+        Mantener
+      </button>
+    </div>
+  )
+}
+
+function SequenceGame({
+  items,
+  resolve,
+  onDone,
+}: {
+  items: string[]
+  resolve: (correct: number) => MinigameOutcome
+  onDone: (o: MinigameOutcome) => void
+}) {
+  const [phase, setPhase] = useState<'show' | 'play'>('show')
+  const [step, setStep] = useState(0)
+  const [correct, setCorrect] = useState(0)
+  const order = useRef([...items].sort(() => Math.random() - 0.5))
+
+  useEffect(() => {
+    const t = window.setTimeout(() => setPhase('play'), 1600 + items.length * 200)
+    return () => window.clearTimeout(t)
+  }, [items.length])
+
+  function pick(label: string) {
+    if (phase !== 'play') return
+    const expected = items[step]
+    const ok = label === expected
+    const nextCorrect = correct + (ok ? 1 : 0)
+    if (step + 1 >= items.length) {
+      onDone(resolve(nextCorrect))
+      return
+    }
+    setCorrect(nextCorrect)
+    setStep(step + 1)
+  }
+
+  return (
+    <div className="mg-sequence">
+      {phase === 'show' ? (
+        <p>
+          Memoriza el orden: <strong>{items.join(' → ')}</strong>
+        </p>
+      ) : (
+        <>
+          <p>
+            Paso {step + 1}/{items.length} · aciertos {correct}
+          </p>
+          <div className="speed-group">
+            {order.current.map((label) => (
+              <button key={label} type="button" className="chip chip--active" onClick={() => pick(label)}>
+                {label}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
+
+function RepsGame({ onDone }: { onDone: (o: MinigameOutcome) => void }) {
+  const [reps, setReps] = useState(0)
+  const [left, setLeft] = useState(8)
+  const repsRef = useRef(0)
+  const done = useRef(false)
+
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      setLeft((t) => {
+        if (t <= 1) {
+          window.clearInterval(id)
+          if (!done.current) {
+            done.current = true
+            onDone(resolveGymReps(repsRef.current))
+          }
+          return 0
+        }
+        return t - 1
+      })
+    }, 1000)
+    return () => window.clearInterval(id)
+  }, [onDone])
+
+  return (
+    <div className="mg-reps">
+      <p>
+        ¡Pulsa rápido! {reps} reps · {left}s
+      </p>
+      <button
+        type="button"
+        className="btn btn--primary"
+        disabled={left <= 0}
+        onClick={() => {
+          repsRef.current += 1
+          setReps(repsRef.current)
+        }}
+      >
+        Rep
+      </button>
+    </div>
+  )
+}
+
+function FlashDealGame({ onDone }: { onDone: (o: MinigameOutcome) => void }) {
+  const [hot, setHot] = useState(false)
+  const hotRef = useRef(false)
+  const done = useRef(false)
+
+  useEffect(() => {
+    const start = window.setTimeout(() => {
+      hotRef.current = true
+      setHot(true)
+      const end = window.setTimeout(() => {
+        hotRef.current = false
+        setHot(false)
+        if (!done.current) {
+          done.current = true
+          onDone(resolveShopDeal(false))
+        }
+      }, 700)
+      return () => window.clearTimeout(end)
+    }, 600 + Math.random() * 900)
+    return () => window.clearTimeout(start)
+  }, [onDone])
+
+  return (
+    <div className="mg-deal">
+      <p>Cuando aparezca la oferta, atrápala.</p>
+      <div className={`mg-padel__court ${hot ? 'is-hot' : ''}`}>
+        <span>{hot ? '¡GANGA −30%!' : 'Esperando oferta…'}</span>
+      </div>
+      <button
+        type="button"
+        className="btn btn--primary"
+        onClick={() => {
+          if (done.current) return
+          done.current = true
+          onDone(resolveShopDeal(hotRef.current))
+        }}
+      >
+        Atrapar
+      </button>
+    </div>
+  )
+}
+
+function DanceGame({ onDone }: { onDone: (o: MinigameOutcome) => void }) {
+  const total = 8
+  const [round, setRound] = useState(0)
+  const [hits, setHits] = useState(0)
+  const hitsRef = useRef(0)
+  const [zone, setZone] = useState(false)
+  const inZone = useRef(false)
+  const finished = useRef(false)
+  const roundRef = useRef(0)
+
+  useEffect(() => {
+    if (finished.current || round >= total) return
+    inZone.current = false
+    setZone(false)
+    let endTimer = 0
+    const start = window.setTimeout(() => {
+      inZone.current = true
+      setZone(true)
+      endTimer = window.setTimeout(() => {
+        inZone.current = false
+        setZone(false)
+        window.setTimeout(() => advance(false), 200)
+      }, 520)
+    }, 280 + Math.random() * 500)
+    return () => {
+      window.clearTimeout(start)
+      window.clearTimeout(endTimer)
+    }
+  }, [round])
+
+  function advance(hit: boolean) {
+    if (finished.current) return
+    const nextHits = hitsRef.current + (hit ? 1 : 0)
+    hitsRef.current = nextHits
+    setHits(nextHits)
+    const nextRound = roundRef.current + 1
+    roundRef.current = nextRound
+    if (nextRound >= total) {
+      finished.current = true
+      onDone(resolveDance(nextHits))
+      return
+    }
+    setRound(nextRound)
+  }
+
+  return (
+    <div className="mg-dance">
+      <p>
+        Beat {Math.min(round + 1, total)}/{total} · aciertos {hits}
+      </p>
+      <div className={`mg-padel__court ${zone ? 'is-hot' : ''}`}>
+        <span>{zone ? '¡BAILA!' : '…'}</span>
+      </div>
+      <button
+        type="button"
+        className="btn btn--primary"
+        disabled={finished.current}
+        onClick={() => {
+          if (finished.current) return
+          if (inZone.current) {
+            inZone.current = false
+            setZone(false)
+            window.setTimeout(() => advance(true), 180)
+          } else {
+            window.setTimeout(() => advance(false), 180)
+          }
+        }}
+      >
+        Paso
       </button>
     </div>
   )

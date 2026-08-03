@@ -44,6 +44,16 @@ export function buildServiceScreen(service: HotelService, hotel: Hotel): Service
         { id: 'menu_dia', label: 'Menú del día', detail: 'Entrante, principal y postre.', cost: c(0.9), minutes: 55, needs: { hambre: 32, sed: 10, social: 6 }, points: 10 },
         { id: 'carta', label: 'A la carta', detail: 'Elige platos premium del chef.', cost: c(1.4), minutes: 75, needs: { hambre: 38, sed: 12, humor: 8, social: 8 }, points: 14 },
         { id: 'cena_pareja', label: 'Cena en pareja', detail: 'Mesa para dos con maridaje ligero.', cost: c(1.8), minutes: 90, needs: { hambre: 40, sed: 18, social: 20, humor: 12 }, points: 18 },
+        {
+          id: 'chef',
+          label: 'Reto del chef',
+          detail: 'Minijuego: memoriza el pedido de 3 platos.',
+          cost: c(1.2),
+          minutes: 40,
+          needs: { hambre: 20, social: 14, humor: 12 },
+          points: 12,
+          minigame: true,
+        },
       ],
     },
     all_inclusive: {
@@ -62,6 +72,16 @@ export function buildServiceScreen(service: HotelService, hotel: Hotel): Service
       actions: [
         { id: 'copa', label: 'Copa / cóctel', detail: 'Carta de autor.', cost: c(1.1), minutes: 30, needs: { sed: 22, social: 16, humor: 10, energia: -4 }, points: 9 },
         { id: 'atardecer', label: 'Atardecer en la azotea', detail: 'Mesa reservada al sol.', cost: c(1.5), minutes: 50, needs: { relax: 18, social: 14, humor: 14 }, points: 12 },
+        {
+          id: 'coctel',
+          label: 'Taller de coctelería',
+          detail: 'Minijuego: mezcla 4 ingredientes en orden.',
+          cost: c(1.3),
+          minutes: 35,
+          needs: { social: 18, humor: 14, sed: -8 },
+          points: 12,
+          minigame: true,
+        },
       ],
     },
     spa: {
@@ -72,6 +92,16 @@ export function buildServiceScreen(service: HotelService, hotel: Hotel): Service
         { id: 'circuito', label: 'Circuito de aguas', detail: 'Piscina termal, vapor y duchas.', cost: c(1), minutes: 60, needs: { relax: 28, higiene: 12, energia: 6 }, points: 12 },
         { id: 'masaje', label: 'Masaje 40 min', detail: 'Cita con terapeuta.', cost: c(1.8), minutes: 50, needs: { relax: 40, sueno: 10, energia: 8 }, points: 18 },
         { id: 'facial', label: 'Facial', detail: 'Tratamiento facial relajante.', cost: c(1.5), minutes: 45, needs: { relax: 22, higiene: 18, humor: 8 }, points: 14 },
+        {
+          id: 'respirar',
+          label: 'Sesión de respiración',
+          detail: 'Minijuego: mantén el ritmo de respiración.',
+          cost: c(0.7),
+          minutes: 25,
+          needs: { relax: 20, energia: 6 },
+          points: 10,
+          minigame: true,
+        },
       ],
     },
     sauna: {
@@ -89,6 +119,16 @@ export function buildServiceScreen(service: HotelService, hotel: Hotel): Service
       actions: [
         { id: 'bano', label: 'Baño y tumbona', detail: 'Hamaca reservada.', cost: c(0.6), minutes: 60, needs: { relax: 20, social: 8, energia: -8, higiene: -6 }, points: 6 },
         { id: 'clase', label: 'Aqua gym', detail: 'Clase grupal 30 min.', cost: c(0.9), minutes: 35, needs: { energia: -12, social: 12, humor: 10 }, points: 9 },
+        {
+          id: 'brazada',
+          label: 'Carril de brazada',
+          detail: 'Minijuego: para el ritmo en la zona dorada.',
+          cost: c(0.5),
+          minutes: 25,
+          needs: { energia: -14, humor: 10 },
+          points: 8,
+          minigame: true,
+        },
       ],
     },
     gimnasio: {
@@ -97,6 +137,16 @@ export function buildServiceScreen(service: HotelService, hotel: Hotel): Service
       hours: '6:00–23:00',
       actions: [
         { id: 'entreno', label: 'Entrenamiento', detail: '45 min de rutina.', cost: c(0.5), minutes: 45, needs: { energia: -18, hambre: -12, humor: 12 }, points: 8 },
+        {
+          id: 'serie',
+          label: 'Reto de reps',
+          detail: 'Minijuego: haz tantas repeticiones como puedas.',
+          cost: c(0.4),
+          minutes: 15,
+          needs: { energia: -16, humor: 10, hambre: -8 },
+          points: 9,
+          minigame: true,
+        },
       ],
     },
     yoga: {
@@ -105,6 +155,16 @@ export function buildServiceScreen(service: HotelService, hotel: Hotel): Service
       hours: '7:00–9:00 y 18:00–20:00',
       actions: [
         { id: 'clase', label: 'Clase de yoga', detail: 'Sesión guiada.', cost: c(0.9), minutes: 50, needs: { relax: 26, energia: 8, humor: 10 }, points: 10 },
+        {
+          id: 'equilibrio',
+          label: 'Postura de equilibrio',
+          detail: 'Minijuego: mantén la postura el máximo tiempo.',
+          cost: c(0.6),
+          minutes: 20,
+          needs: { relax: 18, energia: 6, humor: 8 },
+          points: 9,
+          minigame: true,
+        },
       ],
     },
     kids_club: {
@@ -139,6 +199,16 @@ export function buildServiceScreen(service: HotelService, hotel: Hotel): Service
       actions: [
         { id: 'hamaca', label: 'Hamaca y sombrilla', detail: 'Set completo en primera línea.', cost: c(1), minutes: 90, needs: { relax: 28, social: 10, energia: -10, higiene: -8 }, points: 11 },
         { id: 'paseo', label: 'Paseo al atardecer', detail: 'Orilla y fotos.', cost: c(0.4), minutes: 40, needs: { relax: 16, humor: 12, social: 8 }, points: 7 },
+        {
+          id: 'voley',
+          label: 'Vóley playa',
+          detail: 'Minijuego: acierta 5 remates a tiempo.',
+          cost: c(0.8),
+          minutes: 45,
+          needs: { energia: -16, social: 16, humor: 14, hambre: -6 },
+          points: 11,
+          minigame: true,
+        },
       ],
     },
     buceo: {
@@ -251,6 +321,16 @@ export function buildServiceScreen(service: HotelService, hotel: Hotel): Service
         { id: 'mesa', label: 'Reservar mesa', detail: 'Restaurante del hotel o externo.', cost: c(0.4), minutes: 10, needs: { confort: 12, humor: 6 }, points: 6 },
         { id: 'late', label: 'Late checkout', detail: 'Hasta las 14:00 si hay disponibilidad.', cost: c(1.2), minutes: 10, needs: { confort: 18, sueno: 8 }, points: 10 },
         { id: 'tickets', label: 'Entradas / tours', detail: 'Gestión de tickets locales.', cost: c(1), minutes: 20, needs: { social: 8, humor: 10, confort: 8 }, points: 8 },
+        {
+          id: 'baile',
+          label: 'Animación del lobby',
+          detail: 'Minijuego: sigue el ritmo de la pista.',
+          cost: c(0.6),
+          minutes: 30,
+          needs: { social: 16, humor: 16, energia: -10 },
+          points: 10,
+          minigame: true,
+        },
       ],
     },
     lavanderia: {
@@ -275,6 +355,16 @@ export function buildServiceScreen(service: HotelService, hotel: Hotel): Service
       hours: '10:00–21:00',
       actions: [
         { id: 'souvenir', label: 'Souvenir', detail: 'Detalle de la marca.', cost: c(1.2), minutes: 15, needs: { humor: 10, confort: 6 }, points: 5 },
+        {
+          id: 'ganga',
+          label: 'Oferta flash',
+          detail: 'Minijuego: atrapa la ganga a tiempo.',
+          cost: c(0.9),
+          minutes: 10,
+          needs: { humor: 12, social: 6 },
+          points: 8,
+          minigame: true,
+        },
       ],
     },
     biblioteca: {
@@ -316,6 +406,16 @@ export function buildServiceScreen(service: HotelService, hotel: Hotel): Service
       hours: 'Amanecer–anochecer',
       actions: [
         { id: 'paseo', label: 'Paseo por el jardín', detail: 'Ruta botánica corta.', cost: c(0.2), minutes: 35, needs: { relax: 16, humor: 8 }, points: 4 },
+        {
+          id: 'baile',
+          label: 'Música en el jardín',
+          detail: 'Minijuego: baile al aire libre.',
+          cost: c(0.5),
+          minutes: 40,
+          needs: { social: 14, humor: 14, energia: -8 },
+          points: 9,
+          minigame: true,
+        },
       ],
     },
     mirador: {
@@ -324,6 +424,16 @@ export function buildServiceScreen(service: HotelService, hotel: Hotel): Service
       hours: 'Abierto · mejor al atardecer',
       actions: [
         { id: 'vistas', label: 'Rato en el mirador', detail: 'Fotos y silencio.', cost: c(0.3), minutes: 30, needs: { relax: 18, social: 6, humor: 10 }, points: 6 },
+        {
+          id: 'foto',
+          label: 'Foto de oro',
+          detail: 'Minijuego: captura la luz perfecta.',
+          cost: c(0.4),
+          minutes: 20,
+          needs: { humor: 14, relax: 10, social: 6 },
+          points: 9,
+          minigame: true,
+        },
       ],
     },
     pista_padel: {

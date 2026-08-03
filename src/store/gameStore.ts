@@ -72,7 +72,7 @@ import {
   type ServiceAction,
 } from '../lib/clientServices'
 import type { MinigameOutcome } from '../lib/clientMinigames'
-import { minigameForAction } from '../lib/clientMinigames'
+import { minigameForAction, MINIGAME_LABEL } from '../lib/clientMinigames'
 import {
   POINT_REDEEMS,
   redeemPointsCost,
@@ -216,6 +216,10 @@ type GameStore = GameState &
       service: HotelService,
       tip: number,
       actionId: string,
+    ) => { ok: true; entryCost: number } | { ok: false; error: string }
+    clientBeginLobbyActivity: (
+      id: import('../lib/clientMinigames').MinigameId,
+      cost: number,
     ) => { ok: true; entryCost: number } | { ok: false; error: string }
     clientFinishMinigame: (
       outcome: import('../lib/clientMinigames').MinigameOutcome,
@@ -1136,7 +1140,19 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
   setClientPrefs: (prefs) => set({ client: { ...get().client, prefs } }),
 
-  setClientBookingHotel: (id) => set({ client: { ...get().client, bookingHotelId: id } }),
+  setClientBookingHotel: (id) => {
+    const state = get()
+    const stay = state.client.stay
+    const clearStay = stay?.status === 'checked_out'
+    set({
+      selectedHotelId: null,
+      client: {
+        ...state.client,
+        bookingHotelId: id,
+        stay: clearStay ? null : stay,
+      },
+    })
+  },
 
   clientReserve: (hotelId, roomKind, board, nights = 1) => {
     const state = get()
@@ -1467,6 +1483,27 @@ export const useGameStore = create<GameStore>((set, get) => ({
       },
     })
     return { ok: true, entryCost: cost }
+  },
+
+  clientBeginLobbyActivity: (id, cost) => {
+    const state = get()
+    const stay = state.client.stay
+    if (!stay || stay.status !== 'checked_in') return { ok: false, error: 'Haz check-in primero.' }
+    const fee = Math.max(0, Math.round(cost))
+    if (state.client.wallet < fee) return { ok: false, error: 'No te llega el monedero.' }
+    const activity = MINIGAME_LABEL[id] ?? id
+    set({
+      cash: state.cash + fee,
+      client: {
+        ...state.client,
+        wallet: state.client.wallet - fee,
+        notifications: pushNote(
+          state.client.notifications,
+          `Animación: ${activity}. Entrada ${fee.toLocaleString('es-ES')} €.`,
+        ),
+      },
+    })
+    return { ok: true, entryCost: fee }
   },
 
   clientFinishMinigame: (outcome: MinigameOutcome) => {

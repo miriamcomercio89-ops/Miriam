@@ -1908,7 +1908,148 @@ button {
 
 /* —— Modo Cliente —— */
 .panel--client {
-  width: min(420px, calc(100% - 1.5rem));
+  width: min(440px, calc(100% - 1.5rem));
+  color: #132536;
+}
+
+.panel--client .panel__eyebrow {
+  color: #8a6a2f;
+}
+
+.panel--client .panel__meta,
+.panel--client .muted {
+  color: rgba(19, 37, 54, 0.72);
+}
+
+.panel--client .mini-title {
+  color: #0f2a3d;
+  font-weight: 700;
+}
+
+.panel--client .error {
+  color: #a33b3b;
+}
+
+.panel--client .client-levels-table th,
+.panel--client .client-levels-table td {
+  border-bottom-color: rgba(19, 37, 54, 0.12);
+  color: #132536;
+}
+
+.panel--client .client-levels-table tr.is-current {
+  background: rgba(196, 163, 90, 0.22);
+}
+
+.panel--client .client-club-hub {
+  border-top-color: rgba(19, 37, 54, 0.12);
+}
+
+.panel--client .client-tour-chain {
+  color: #8a6a2f;
+}
+
+.client-hotel-pick {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0.45rem 0 0.65rem;
+}
+
+.client-hotel-pick > div {
+  flex: 1;
+  min-width: 0;
+}
+
+.client-lobby {
+  margin-bottom: 1rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid rgba(247, 243, 234, 0.14);
+}
+
+.client-lobby h3 {
+  margin: 0 0 0.25rem;
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(247, 243, 234, 0.7);
+}
+
+.client-lobby > .muted {
+  margin: 0 0 0.55rem;
+  color: rgba(247, 243, 234, 0.62) !important;
+}
+
+.client-lobby__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.45rem;
+}
+
+.client-lobby__card {
+  text-align: left;
+  border: 1px solid rgba(196, 163, 90, 0.35);
+  background: rgba(7, 24, 36, 0.45);
+  color: #f7f3ea;
+  border-radius: 10px;
+  padding: 0.55rem 0.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  cursor: pointer;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.client-lobby__card:hover {
+  border-color: #c4a35a;
+  transform: translateY(-1px);
+}
+
+.client-lobby__card strong {
+  font-size: 0.82rem;
+  color: #f3e6c8;
+}
+
+.client-lobby__card span {
+  font-size: 0.72rem;
+  color: rgba(247, 243, 234, 0.7);
+  line-height: 1.25;
+}
+
+.client-lobby__card em {
+  font-style: normal;
+  font-size: 0.72rem;
+  color: #c4a35a;
+  margin-top: 0.15rem;
+}
+
+.client-stay .muted {
+  color: rgba(247, 243, 234, 0.68);
+}
+
+.client-stay .client-action strong {
+  color: #f7f3ea;
+}
+
+.client-stay .client-action span,
+.client-stay .client-action em {
+  color: rgba(247, 243, 234, 0.72);
+}
+
+.client-stay .client-missions h3,
+.client-stay .client-appointments h3 {
+  color: rgba(247, 243, 234, 0.7);
+}
+
+.client-stay .client-club-hub,
+.client-stay .client-club-hub .muted,
+.client-stay .client-club-hub .mini-title {
+  color: #f7f3ea;
+}
+
+.client-stay .client-levels-table th,
+.client-stay .client-levels-table td {
+  color: rgba(247, 243, 234, 0.9);
+  border-bottom-color: rgba(247, 243, 234, 0.12);
 }
 
 .map-shell.is-hidden-by-stay {

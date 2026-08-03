@@ -23,7 +23,7 @@ import {
   type PointRedeemId,
 } from '../lib/clientClub'
 import { buildServiceScreen, FREE_NIGHT_POINTS } from '../lib/clientServices'
-import { minigameForAction, type MinigameId } from '../lib/clientMinigames'
+import { minigameForAction, LOBBY_ACTIVITIES, type MinigameId } from '../lib/clientMinigames'
 import { serviceHoursStatus, clockFromGameMinutes } from '../lib/clientHours'
 import { ClientMinigame } from './ClientMinigame'
 import { ClientClubHub } from './ClientClubHub'
@@ -51,6 +51,7 @@ export function ClientPanel() {
   const clientCheckOut = useGameStore((s) => s.clientCheckOut)
   const clientUseService = useGameStore((s) => s.clientUseService)
   const clientBeginMinigame = useGameStore((s) => s.clientBeginMinigame)
+  const clientBeginLobbyActivity = useGameStore((s) => s.clientBeginLobbyActivity)
   const clientFinishMinigame = useGameStore((s) => s.clientFinishMinigame)
   const clientClaimMission = useGameStore((s) => s.clientClaimMission)
   const clientRedeemPoints = useGameStore((s) => s.clientRedeemPoints)
@@ -69,8 +70,10 @@ export function ClientPanel() {
   const [cart, setCart] = useState<Record<string, number>>({})
 
   const hotel = useMemo(() => {
-    const id = client.stay?.hotelId ?? client.bookingHotelId
-    return hotels.find((h) => h.id === id) ?? null
+    const stay = client.stay
+    const activeStay = stay && stay.status !== 'checked_out'
+    const id = activeStay ? stay.hotelId : client.bookingHotelId
+    return id ? hotels.find((h) => h.id === id) ?? null : null
   }, [hotels, client.stay, client.bookingHotelId])
 
   const serviceScreen = useMemo(() => {
@@ -173,7 +176,45 @@ export function ClientPanel() {
     setMsg(res.ok ? null : res.error)
   }
 
+  function doLobby(id: MinigameId, cost: number) {
+    const res = clientBeginLobbyActivity(id, cost)
+    if (!res.ok) {
+      setMsg(res.error)
+      return
+    }
+    setMsg(null)
+    setMini({ id, service: 'concierge', actionId: 'lobby', entryCost: res.entryCost })
+  }
+
+  function clearHotelSelection() {
+    setClientBookingHotel(null)
+    setMsg(null)
+  }
+
   const clubHub = <ClientClubHub onRedeem={doRedeem} onMsg={setMsg} />
+
+  const lobbyBlock = (
+    <div className="client-lobby">
+      <h3>Animación del resort</h3>
+      <p className="muted">Actividades abiertas ahora · no hace falta servicio concreto</p>
+      <div className="client-lobby__grid">
+        {LOBBY_ACTIVITIES.map((a) => (
+          <button
+            key={a.id}
+            type="button"
+            className="client-lobby__card"
+            onClick={() => doLobby(a.id, a.cost)}
+          >
+            <strong>{a.label}</strong>
+            <span>{a.detail}</span>
+            <em>
+              {formatEUR(a.cost)} · +{a.points} pts base
+            </em>
+          </button>
+        ))}
+      </div>
+    </div>
+  )
 
   // ── Shared blocks ────────────────────────────────────────────────────────────
 
@@ -349,6 +390,7 @@ export function ClientPanel() {
           </div>
 
           <div className="client-stay__services">
+            {lobbyBlock}
             <h3>{serviceScreen ? serviceScreen.title : 'Servicios del hotel'}</h3>
             <label className="field">
               <span>Propina al usar servicio (€)</span>
@@ -586,15 +628,11 @@ export function ClientPanel() {
 
             {partnerNeedsBlock}
 
-            {clubHub}
-
-            {missionsBlock}
-
-            <p className="mini-title">Reservar</p>
-            <p className="muted">Clic en un hotel del mapa para elegirlo.</p>
+            <p className="mini-title">Reservar hotel</p>
+            <p className="muted">Clic en el mapa para elegir · clic de nuevo o vacío para quitar</p>
 
             {hotel && sub && (
-              <div className="filial-selected" style={{ marginTop: '0.5rem' }}>
+              <div className="filial-selected client-hotel-pick">
                 <img className="filial-logo filial-logo--md" src={subsidiaryLogoSvg(sub, 128)} alt="" />
                 <div>
                   <strong>{hotel.name}</strong>
@@ -602,10 +640,15 @@ export function ClientPanel() {
                     {sub.name} · {hotel.city} · {'★'.repeat(hotel.stars)}
                   </span>
                 </div>
+                {!stay || stay.status === 'checked_out' ? (
+                  <button type="button" className="chip" onClick={clearHotelSelection}>
+                    Quitar
+                  </button>
+                ) : null}
               </div>
             )}
 
-            {hotel && (
+            {hotel && (!stay || stay.status === 'checked_out') && (
               <>
                 <label className="field">
                   <span>Habitación</span>
@@ -640,8 +683,7 @@ export function ClientPanel() {
                   />
                 </label>
                 <p className="muted" style={{ fontSize: '0.82em' }}>
-                  Estimación:{' '}
-                  <strong>{formatEUR(totalPrice)}</strong>
+                  Estimación: <strong>{formatEUR(totalPrice)}</strong>
                   {' '}({nights} noches · {formatEUR(nightPrice)}/noche pareja)
                 </p>
               </>
@@ -701,7 +743,7 @@ export function ClientPanel() {
                   Reservar
                 </button>
                 {hotel && (
-                  <button type="button" className="chip" onClick={() => setClientBookingHotel(null)}>
+                  <button type="button" className="chip" onClick={clearHotelSelection}>
                     Quitar hotel
                   </button>
                 )}
@@ -721,6 +763,10 @@ export function ClientPanel() {
 
             {msg && <p className="error">{msg}</p>}
             {notesBlock}
+
+            {missionsBlock}
+
+            {clubHub}
           </>
         )}
       </div>
