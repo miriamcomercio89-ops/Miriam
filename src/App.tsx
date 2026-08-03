@@ -101,25 +101,27 @@ export default function App() {
   return (
     <div className="app">
       <TopBar />
-      <EventsBanner />
-      <main className="stage">
-        <WorldMap />
-        <MapToolbar />
-        <BuildPanel />
-        <HotelDetail />
-        <FinancePanel />
-        <LoanPanel />
-        <BankPanel />
-        <ComparePanel />
-        <StatsPanel />
-        <WeeklyPanel />
-        <HotelListPanel />
-        <RankingPanel />
-        <CountriesPanel />
-        <NewsPanel />
-        <PlanPanel />
-        <PauseMenu />
-      </main>
+      <div className="app-body">
+        <EventsBanner />
+        <main className="stage">
+          <WorldMap />
+          <MapToolbar />
+          <BuildPanel />
+          <HotelDetail />
+          <FinancePanel />
+          <LoanPanel />
+          <BankPanel />
+          <ComparePanel />
+          <StatsPanel />
+          <WeeklyPanel />
+          <HotelListPanel />
+          <RankingPanel />
+          <CountriesPanel />
+          <NewsPanel />
+          <PlanPanel />
+          <PauseMenu />
+        </main>
+      </div>
     </div>
   )
 }

@@ -48,11 +48,18 @@ button {
 .app {
   height: 100%;
   display: grid;
-  grid-template-rows: auto auto 1fr;
+  grid-template-rows: auto 1fr;
   background:
     radial-gradient(1200px 500px at 10% -10%, rgba(196, 163, 90, 0.18), transparent 60%),
     radial-gradient(900px 400px at 90% 0%, rgba(47, 127, 148, 0.2), transparent 55%),
     var(--ink);
+}
+
+.app-body {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  position: relative;
 }
 
 /* Landing */
@@ -324,6 +331,7 @@ button {
 
 .stage {
   position: relative;
+  flex: 1 1 auto;
   min-height: 0;
 }
 

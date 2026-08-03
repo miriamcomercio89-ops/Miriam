@@ -115,17 +115,17 @@ fs.writeFileSync(path.join(OUT, 'index.html'), html)
 
 fs.writeFileSync(
   path.join(OUT, 'LEEME.txt'),
-  `  Orbis Hotels Group — v2.2.3 (fix Continuar partida)
+  `  Orbis Hotels Group — v2.2.4 (fix altura mapa al cargar)
 
 IMPORTANTE: borra la carpeta antigua del escritorio antes de descomprimir.
 
 1. Borra la carpeta "Orbis Hotels" antigua
 2. Descomprime este ZIP de nuevo
 3. Abre index.html (necesitas internet para el mapa)
-4. Continuar partida — el mapa debe cargar igual que en Nueva partida
+4. Continuar / Importar partida — el mapa ya no queda en negro
 
+Causa del fallo: sin eventos activos el layout dejaba el mapa a altura 0.
 Necesitas internet para el mapa (teselas) y las fuentes.
-No uses la carpeta dist/: esa sí necesita servidor.
 `,
 )
 
