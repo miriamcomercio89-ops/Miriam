@@ -2082,6 +2082,13 @@ button {
   color: #c4a35a;
 }
 
+.client-hotel-pick {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0.45rem 0 0.65rem;
+}
+
 .client-hotel-pick > div {
   flex: 1;
   min-width: 0;
