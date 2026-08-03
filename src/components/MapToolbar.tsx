@@ -12,7 +12,6 @@ export function MapToolbar() {
   const filters = useGameStore((s) => s.mapFilters)
   const setMapFilters = useGameStore((s) => s.setMapFilters)
   const hotels = useGameStore((s) => s.hotels)
-  const playMode = useGameStore((s) => s.playMode)
 
   const countries = useMemo(() => {
     const map = new Map<string, string>()
@@ -138,22 +137,6 @@ export function MapToolbar() {
         >
           Desgaste
         </button>
-        {playMode === 'cliente' && (
-          <select
-            value={filters.clientStayFilter ?? 'all'}
-            onChange={(e) =>
-              setMapFilters({
-                clientStayFilter: e.target.value as typeof filters.clientStayFilter,
-              })
-            }
-            aria-label="Filtro estancias cliente"
-            title="Hoteles donde dormiste / marcas pendientes"
-          >
-            <option value="all">Cliente: todos</option>
-            <option value="slept">Donde ya dormí (marca)</option>
-            <option value="pending_brands">Marcas pendientes</option>
-          </select>
-        )}
       </div>
     </div>
   )

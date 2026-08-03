@@ -45,8 +45,6 @@ export function TopBar() {
   const saveToast = useGameStore((s) => s.saveToast)
   const clearSaveToast = useGameStore((s) => s.clearSaveToast)
   const loyaltyLevel = useGameStore((s) => s.loyaltyLevel)
-  const playMode = useGameStore((s) => s.playMode)
-  const setPlayMode = useGameStore((s) => s.setPlayMode)
   const season = seasonLabel(getSeason(20, gameMinutes))
   const bankLocked = bankDeposits.reduce((s, d) => s + d.amount, 0)
   const [hub, setHub] = useState<'finanzas' | 'red' | 'plan' | null>(null)
@@ -127,14 +125,6 @@ export function TopBar() {
       </div>
 
       <nav className="topbar__nav" aria-label="Paneles">
-        <button
-          type="button"
-          className={playMode === 'cliente' ? 'chip chip--active' : 'chip chip--key'}
-          title="Modo Cliente"
-          onClick={() => setPlayMode(playMode === 'cliente' ? 'gerente' : 'cliente')}
-        >
-          Cliente
-        </button>
         <div className={`topbar__dropdown ${hub === 'finanzas' ? 'is-open' : ''}`}>
           <button
             type="button"

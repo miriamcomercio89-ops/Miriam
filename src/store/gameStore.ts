@@ -19,7 +19,6 @@ import {
   migrateClientState,
   pushNote,
   roomKindsForHotel,
-  settleClientNight,
   clientLevelFromPoints,
   stampPassport,
   CLIENT_NIGHT_POINTS,
@@ -81,12 +80,13 @@ import {
   type PointRedeemId,
 } from '../lib/clientClub'
 
-export const STORAGE_KEY = 'orbis-hotels-group-save-v14'
-export const SAVE_VERSION = 14
+export const STORAGE_KEY = 'orbis-hotels-group-save-v15'
+export const SAVE_VERSION = 15
 export const IDB_SLOT_KEYS = ['slot-1', 'slot-2', 'slot-3'] as const
 
 /** Claves legacy de localStorage (compat. hacia atrás). */
 export const LEGACY_STORAGE_KEYS = [
+  'orbis-hotels-group-save-v14',
   'orbis-hotels-group-save-v13',
   'orbis-hotels-group-save-v12',
   'orbis-hotels-group-save-v11',
@@ -384,7 +384,7 @@ function migrate(raw: Partial<GameState> & { cash?: number }): GameState {
     weeklyReports: raw.weeklyReports ?? [],
     planDoneOrders: Array.isArray(raw.planDoneOrders) ? raw.planDoneOrders : [],
     planCursor: typeof raw.planCursor === 'number' && raw.planCursor > 0 ? raw.planCursor : 1,
-    playMode: raw.playMode === 'cliente' ? 'cliente' : 'gerente',
+    playMode: 'gerente',
     client: migrateClientState(raw.client),
     ui: migratePersistedUi(raw.ui),
   }
@@ -1110,35 +1110,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
   setPlanCursor: (order) => set({ planCursor: Math.max(1, order) }),
 
-  setPlayMode: (mode) => {
-    const state = get()
-    if (mode === 'cliente' && state.hotels.length === 0) {
-      set({
-        saveToast: 'Modo Cliente: construye al menos un hotel primero.',
-      })
-      window.setTimeout(() => {
-        if (useGameStore.getState().saveToast?.startsWith('Modo Cliente')) {
-          useGameStore.setState({ saveToast: null })
-        }
-      }, 3200)
-      return
-    }
-    const day = gameDay(state.gameMinutes)
-    const missions = mode === 'cliente' ? ensureMissions(state.client.missions, state.client.missionsDay, day) : null
-    set({
-      playMode: mode,
-      ...closePanelsExcept({}),
-      selectedHotelId: mode === 'gerente' ? state.selectedHotelId : null,
-      buildLocation: mode === 'cliente' ? null : state.buildLocation,
-      client: {
-        ...state.client,
-        bookingHotelId: mode === 'cliente' ? state.client.bookingHotelId : null,
-        ...(missions
-          ? { missions: missions.missions, missionsDay: missions.missionsDay }
-          : {}),
-      },
-      mapMode: mode === 'cliente' ? 'inspect' : state.mapMode,
-    })
+  setPlayMode: (_mode) => {
+    // Modo Cliente retirado de la UI: siempre gerente.
+    set({ playMode: 'gerente' })
   },
 
   setClientName: (name) => set({ client: { ...get().client, name: name.slice(0, 40) || 'Viajero Orbis' } }),
@@ -1774,33 +1748,8 @@ async function runSkipDays(days: number, gameMinutes: number) {
   })
   try {
     const result = await runDaysInWorker(state, days)
-    let hotels = result.hotels
-    let cash = result.cash
-    let client = state.client
-    const startDay = gameDay(state.gameMinutes)
-    for (let d = 0; d < days; d++) {
-      const day = startDay + d
-      const stampsBefore = client.passport.length
-      const nightsBefore = client.totalNights
-      const settled = settleClientNight(client, hotels, day, state.gameMinutes + d * 24 * 60)
-      client = settled.client
-      hotels = settled.hotels
-      cash += settled.hotelRevenue
-      if (client.totalNights > nightsBefore) {
-        client = {
-          ...client,
-          missions: bumpMissions(client.missions, (m) => m.id.includes('d-night-') || m.id.includes('w-nights-')),
-        }
-      }
-      if (client.passport.length > stampsBefore) {
-        client = {
-          ...client,
-          missions: bumpMissions(client.missions, (m) => m.id.includes('w-brands-') || m.description.includes('sellos')),
-        }
-      }
-      const refreshed = ensureMissions(client.missions, client.missionsDay, day)
-      client = { ...client, missions: refreshed.missions, missionsDay: refreshed.missionsDay }
-    }
+    const hotels = result.hotels
+    const cash = result.cash
     const elapsed = Math.max(1, Math.round(performance.now() - t0))
     const ui = {
       ...(state.ui ?? defaultPersistedUi()),
@@ -1811,7 +1760,6 @@ async function runSkipDays(days: number, gameMinutes: number) {
       gameMinutes,
       cash,
       hotels,
-      client,
       ui,
       activeEvents: result.activeEvents,
       lastEventRollDay: result.lastEventRollDay,

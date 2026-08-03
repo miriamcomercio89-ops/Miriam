@@ -1,46 +1,34 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { MapContainer, TileLayer, useMap, useMapEvents, CircleMarker, Polyline, Tooltip } from 'react-leaflet'
+import { MapContainer, TileLayer, useMap, useMapEvents, CircleMarker } from 'react-leaflet'
 import L from 'leaflet'
 import { useGameStore } from '../store/gameStore'
 import { resolveLocation } from '../lib/geo'
 import { filterHotels } from '../lib/economy'
 import { createHotelsCanvasLayer, findNearestHotel, hotelTooltipMeta } from '../lib/hotelsCanvasLayer'
 import { formatEUR, gameDay } from '../lib/format'
-import { geoRegionLabel } from '../lib/geo'
 import type { Hotel } from '../types'
 
 function MapClickHandler({
   busy,
   onBuild,
   onSelectHotel,
-  onClearHotel,
   hotels,
   selectedId,
 }: {
   busy: boolean
   onBuild: (lat: number, lng: number) => void
   onSelectHotel: (id: string) => void
-  onClearHotel: () => void
   hotels: Hotel[]
   selectedId: string | null
 }) {
   const mode = useGameStore((s) => s.mapMode)
-  const playMode = useGameStore((s) => s.playMode)
   useMapEvents({
     click(e) {
       if (busy) return
       const map = e.target as L.Map
       const nearest = findNearestHotel(map, hotels, e.containerPoint, map.getZoom(), selectedId)
       if (nearest) {
-        if (playMode === 'cliente' && selectedId === nearest.id) {
-          onClearHotel()
-          return
-        }
         onSelectHotel(nearest.id)
-        return
-      }
-      if (playMode === 'cliente') {
-        onClearHotel()
         return
       }
       if (mode === 'build') onBuild(e.latlng.lat, e.latlng.lng)
@@ -168,22 +156,13 @@ export function WorldMap() {
   const openBuildAt = useGameStore((s) => s.openBuildAt)
   const selectedHotelId = useGameStore((s) => s.selectedHotelId)
   const mapMode = useGameStore((s) => s.mapMode)
-  const playMode = useGameStore((s) => s.playMode)
-  const setClientBookingHotel = useGameStore((s) => s.setClientBookingHotel)
-  const clientStay = useGameStore((s) => s.client.stay)
-  const bookingHotelId = useGameStore((s) => s.client.bookingHotelId)
-  const passport = useGameStore((s) => s.client.passport)
-  const brandTourLog = useGameStore((s) => s.client.brandTourLog)
   const [busy, setBusy] = useState(false)
   const [hint, setHint] = useState<string | null>(null)
   const [pending, setPending] = useState<{ lat: number; lng: number } | null>(null)
   const [hover, setHover] = useState<{ hotel: Hotel; x: number; y: number } | null>(null)
 
   const day = gameDay(gameMinutes)
-  const filtered = useMemo(
-    () => filterHotels(hotels, filters, day, { passport, playMode }),
-    [hotels, filters, day, passport, playMode],
-  )
+  const filtered = useMemo(() => filterHotels(hotels, filters, day), [hotels, filters, day])
   const onHover = useCallback((p: { hotel: Hotel; x: number; y: number } | null) => setHover(p), [])
 
   async function handleBuild(lat: number, lng: number) {
@@ -210,37 +189,8 @@ export function WorldMap() {
 
   const tip = hover ? hotelTooltipMeta(hover.hotel) : null
 
-  const tourPath = useMemo(() => {
-    if (playMode !== 'cliente') return null
-    const pts = (brandTourLog ?? [])
-      .filter((s) => typeof s.lat === 'number' && typeof s.lng === 'number')
-      .map((s) => [s.lat!, s.lng!] as [number, number])
-    if (pts.length < 2) return null
-    const regions: string[] = []
-    for (const s of brandTourLog ?? []) {
-      if (!s.geoRegion) continue
-      const label = geoRegionLabel(s.geoRegion)
-      if (regions[regions.length - 1] !== label) regions.push(label)
-    }
-    return { pts, chain: regions.join(' → ') }
-  }, [brandTourLog, playMode])
-
-  function onSelectHotel(id: string) {
-    if (playMode === 'cliente') {
-      setClientBookingHotel(id)
-      return
-    }
-    selectHotel(id)
-  }
-
-  function onClearHotel() {
-    if (playMode === 'cliente') setClientBookingHotel(null)
-  }
-
-  const canvasSelectedId = playMode === 'cliente' ? bookingHotelId : selectedHotelId
-
   return (
-    <div className={`map-shell map-shell--${mapMode}${playMode === 'cliente' ? ' map-shell--client' : ''}${clientStay?.status === 'checked_in' ? ' is-hidden-by-stay' : ''}`}>
+    <div className={`map-shell map-shell--${mapMode}`}>
       <MapContainer
         center={[20, 0]}
         zoom={3}
@@ -254,26 +204,12 @@ export function WorldMap() {
         <MapClickHandler
           busy={busy}
           onBuild={handleBuild}
-          onSelectHotel={onSelectHotel}
-          onClearHotel={onClearHotel}
+          onSelectHotel={selectHotel}
           hotels={filtered}
-          selectedId={canvasSelectedId}
+          selectedId={selectedHotelId}
         />
         <MapFocusController />
-        <HotelsCanvas hotels={filtered} selectedId={canvasSelectedId} onHover={onHover} />
-        {tourPath && (
-          <Polyline
-            positions={tourPath.pts}
-            pathOptions={{
-              color: '#C4A35A',
-              weight: 3,
-              opacity: 0.85,
-              dashArray: '8 6',
-            }}
-          >
-            {tourPath.chain && <Tooltip sticky>{tourPath.chain}</Tooltip>}
-          </Polyline>
-        )}
+        <HotelsCanvas hotels={filtered} selectedId={selectedHotelId} onHover={onHover} />
         {pending && (
           <CircleMarker
             center={[pending.lat, pending.lng]}
@@ -296,13 +232,9 @@ export function WorldMap() {
 
       <p className="map-hint">
         {hint ??
-          (playMode === 'cliente'
-            ? tourPath?.chain
-              ? `Tour: ${tourPath.chain} · clic hotel para elegir · otro clic o vacío para quitar`
-              : 'Modo Cliente: clic en un hotel para reservar · clic de nuevo o en vacío para quitar'
-            : mapMode === 'build'
-              ? 'Modo construir: clic en tierra para un hotel nuevo · clic en un hotel para verlo'
-              : 'Modo ver: clic en un hotel para abrir su ficha · cambia a Construir para expandir')}
+          (mapMode === 'build'
+            ? 'Modo construir: clic en tierra para un hotel nuevo · clic en un hotel para verlo'
+            : 'Modo ver: clic en un hotel para abrir su ficha · cambia a Construir para expandir')}
       </p>
     </div>
   )

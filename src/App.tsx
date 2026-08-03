@@ -18,7 +18,6 @@ import { CountriesPanel } from './components/CountriesPanel'
 import { NewsPanel } from './components/NewsPanel'
 import { PlanPanel } from './components/PlanPanel'
 import { PauseMenu } from './components/PauseMenu'
-import { ClientPanel } from './components/ClientPanel'
 import { useGameStore } from './store/gameStore'
 import { REAL_MS_PER_GAME_MINUTE } from './data/catalog'
 import { playAmbienceTick, playClickSound } from './lib/sound'
@@ -120,7 +119,6 @@ export default function App() {
         <NewsPanel />
         <PlanPanel />
         <PauseMenu />
-        <ClientPanel />
       </main>
     </div>
   )
