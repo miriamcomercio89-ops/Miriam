@@ -22,7 +22,7 @@ export function MapToolbar() {
   }, [hotels])
 
   const layers: { id: MapLayer; label: string; title: string }[] = [
-    { id: 'streets', label: 'Calles', title: 'Mapa de calles OpenStreetMap' },
+    { id: 'streets', label: 'Calles', title: 'Mapa Carto / OpenStreetMap' },
     { id: 'satellite', label: 'Satélite', title: 'Imagen satélite' },
     { id: 'hybrid', label: 'Híbrido', title: 'Satélite con etiquetas' },
   ]

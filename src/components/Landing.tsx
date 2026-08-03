@@ -70,7 +70,7 @@ export function Landing() {
     <div className="landing">
       <div className="landing__veil" />
       <div className="landing__content">
-        <p className="landing__eyebrow">Juego de hoteles · v2.2 · modo gerente</p>
+        <p className="landing__eyebrow">Juego de hoteles · v2.2.1</p>
         <h1 className="landing__brand">Orbis Hotels Group</h1>
         <p className="landing__lead">
           Construye hoteles en todo el mundo. 50 marcas. Muchos países.

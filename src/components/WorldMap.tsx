@@ -8,6 +8,14 @@ import { createHotelsCanvasLayer, findNearestHotel, hotelTooltipMeta } from '../
 import { formatEUR, gameDay } from '../lib/format'
 import type { Hotel } from '../types'
 
+/** Carto Voyager: más estable que OSM directo (menos rate-limit). */
+const STREETS_URL = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png'
+const STREETS_ATTR =
+  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>'
+const SAT_URL =
+  'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
+const LABELS_URL = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png'
+
 function MapClickHandler({
   busy,
   onBuild,
@@ -33,9 +41,6 @@ function MapClickHandler({
       }
       if (mode === 'build') onBuild(e.latlng.lat, e.latlng.lng)
     },
-    mousemove(e) {
-      void e
-    },
   })
   return null
 }
@@ -53,6 +58,65 @@ function MapFocusController() {
   return null
 }
 
+/** Mantiene el mapa vivo: tamaño, tiles rotas y post-simulación. */
+function MapHealth() {
+  const map = useMap()
+  const simulating = useGameStore((s) => s.simulating)
+  const wasSimulating = useRef(false)
+
+  useEffect(() => {
+    const fix = () => {
+      try {
+        map.invalidateSize({ pan: false })
+      } catch {
+        /* mapa destruido */
+      }
+    }
+    fix()
+    const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(() => fix()) : null
+    const el = map.getContainer()
+    ro?.observe(el.parentElement ?? el)
+    window.addEventListener('resize', fix)
+    document.addEventListener('visibilitychange', fix)
+    const onTileError = (e: L.LeafletEvent) => {
+      const te = e as L.TileEvent
+      const img = te.tile as HTMLImageElement
+      if (!img || img.dataset.retried === '1') return
+      img.dataset.retried = '1'
+      // Reintento suave: misma URL con cache-buster
+      const src = img.src
+      if (src && !src.includes('_retry=')) {
+        img.src = src + (src.includes('?') ? '&' : '?') + `_retry=${Date.now()}`
+      }
+    }
+    map.on('tileerror', onTileError)
+    const pulse = window.setInterval(fix, 8000)
+    return () => {
+      ro?.disconnect()
+      window.removeEventListener('resize', fix)
+      document.removeEventListener('visibilitychange', fix)
+      map.off('tileerror', onTileError)
+      window.clearInterval(pulse)
+    }
+  }, [map])
+
+  useEffect(() => {
+    if (wasSimulating.current && !simulating) {
+      window.requestAnimationFrame(() => {
+        try {
+          map.invalidateSize({ pan: false })
+          map.fire('viewreset')
+        } catch {
+          /* ignore */
+        }
+      })
+    }
+    wasSimulating.current = simulating
+  }, [simulating, map])
+
+  return null
+}
+
 function HotelsCanvas({
   hotels,
   selectedId,
@@ -63,6 +127,7 @@ function HotelsCanvas({
   onHover: (payload: { hotel: Hotel; x: number; y: number } | null) => void
 }) {
   const map = useMap()
+  const simulating = useGameStore((s) => s.simulating)
   const layerRef = useRef<L.Layer & { setData: (h: Hotel[], s: string | null) => void } | null>(null)
 
   useEffect(() => {
@@ -80,6 +145,10 @@ function HotelsCanvas({
   }, [hotels, selectedId])
 
   useEffect(() => {
+    if (simulating) {
+      onHover(null)
+      return
+    }
     let raf = 0
     let lastId: string | null = null
     const onMove = (e: L.LeafletMouseEvent) => {
@@ -110,42 +179,32 @@ function HotelsCanvas({
       map.off('mousemove', onMove)
       map.off('mouseout', clear)
     }
-  }, [map, hotels, onHover, selectedId])
+  }, [map, hotels, onHover, selectedId, simulating])
 
   return null
 }
 
 function TileLayers() {
   const layer = useGameStore((s) => s.mapLayer)
+  const common = {
+    maxZoom: 18,
+    keepBuffer: 2,
+    updateWhenIdle: true,
+    updateWhenZooming: false,
+    crossOrigin: true as const,
+  }
   if (layer === 'satellite') {
-    return (
-      <TileLayer
-        attribution="Tiles &copy; Esri"
-        url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-      />
-    )
+    return <TileLayer attribution="Tiles &copy; Esri" url={SAT_URL} {...common} />
   }
   if (layer === 'hybrid') {
     return (
       <>
-        <TileLayer
-          attribution="Tiles &copy; Esri"
-          url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-        />
-        <TileLayer
-          attribution="&copy; OpenStreetMap"
-          url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png"
-          opacity={0.9}
-        />
+        <TileLayer attribution="Tiles &copy; Esri" url={SAT_URL} {...common} />
+        <TileLayer attribution={STREETS_ATTR} url={LABELS_URL} opacity={0.9} {...common} />
       </>
     )
   }
-  return (
-    <TileLayer
-      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-    />
-  )
+  return <TileLayer attribution={STREETS_ATTR} url={STREETS_URL} {...common} />
 }
 
 export function WorldMap() {
@@ -156,6 +215,7 @@ export function WorldMap() {
   const openBuildAt = useGameStore((s) => s.openBuildAt)
   const selectedHotelId = useGameStore((s) => s.selectedHotelId)
   const mapMode = useGameStore((s) => s.mapMode)
+  const simulating = useGameStore((s) => s.simulating)
   const [busy, setBusy] = useState(false)
   const [hint, setHint] = useState<string | null>(null)
   const [pending, setPending] = useState<{ lat: number; lng: number } | null>(null)
@@ -187,10 +247,10 @@ export function WorldMap() {
     }
   }
 
-  const tip = hover ? hotelTooltipMeta(hover.hotel) : null
+  const tip = !simulating && hover ? hotelTooltipMeta(hover.hotel) : null
 
   return (
-    <div className={`map-shell map-shell--${mapMode}`}>
+    <div className={`map-shell map-shell--${mapMode}${simulating ? ' map-shell--sim' : ''}`}>
       <MapContainer
         center={[20, 0]}
         zoom={3}
@@ -199,10 +259,12 @@ export function WorldMap() {
         className="world-map"
         worldCopyJump
         preferCanvas
+        zoomControl
       >
         <TileLayers />
+        <MapHealth />
         <MapClickHandler
-          busy={busy}
+          busy={busy || simulating}
           onBuild={handleBuild}
           onSelectHotel={selectHotel}
           hotels={filtered}
@@ -232,9 +294,11 @@ export function WorldMap() {
 
       <p className="map-hint">
         {hint ??
-          (mapMode === 'build'
-            ? 'Modo construir: clic en tierra para un hotel nuevo · clic en un hotel para verlo'
-            : 'Modo ver: clic en un hotel para abrir su ficha · cambia a Construir para expandir')}
+          (simulating
+            ? 'Calculando el día… el mapa se actualiza al terminar'
+            : mapMode === 'build'
+              ? 'Modo construir: clic en tierra para un hotel nuevo · clic en un hotel para verlo'
+              : 'Modo ver: clic en un hotel para abrir su ficha · cambia a Construir para expandir')}
       </p>
     </div>
   )

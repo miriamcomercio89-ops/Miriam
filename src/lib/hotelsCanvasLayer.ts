@@ -19,39 +19,64 @@ export function createHotelsCanvasLayer() {
         pointerEvents: 'none',
         zIndex: '450',
       })
-      map.getContainer().appendChild(this._canvas)
-      this._ctx = this._canvas.getContext('2d')
+      map.getPanes().overlayPane.appendChild(this._canvas)
+      this._ctx = this._canvas.getContext('2d', { alpha: true })
       this._hotels = [] as Hotel[]
       this._selectedId = null as string | null
       this._logoCache = new Map<string, HTMLImageElement>()
-      this._onMove = () => this._redraw()
+      this._raf = 0
+      this._dirty = true
+      this._onMove = () => this._scheduleRedraw()
       map.on('move zoom moveend zoomend resize viewreset', this._onMove, this)
-      this._redraw()
+      this._scheduleRedraw()
     },
 
     onRemove(map: L.Map) {
       map.off('move zoom moveend zoomend resize viewreset', this._onMove, this)
+      if (this._raf) cancelAnimationFrame(this._raf)
+      this._raf = 0
       L.DomUtil.remove(this._canvas)
+      this._logoCache?.clear()
     },
 
     setData(next: Hotel[], selected: string | null) {
       this._hotels = next
       this._selectedId = selected
-      this._redraw()
+      this._scheduleRedraw()
+    },
+
+    _scheduleRedraw() {
+      this._dirty = true
+      if (this._raf) return
+      this._raf = requestAnimationFrame(() => {
+        this._raf = 0
+        if (this._dirty) this._redraw()
+      })
     },
 
     _redraw() {
+      this._dirty = false
       const map: L.Map = this._map
       const canvas: HTMLCanvasElement = this._canvas
       const ctx: CanvasRenderingContext2D = this._ctx
       if (!map || !canvas || !ctx) return
 
       const size = map.getSize()
+      if (size.x < 2 || size.y < 2) return
+
+      // Posicionar canvas en el overlay pane (coordenadas del mapa)
+      const topLeft = map.containerPointToLayerPoint([0, 0])
+      L.DomUtil.setPosition(canvas, topLeft)
+
       const dpr = Math.min(window.devicePixelRatio || 1, 2)
-      canvas.width = Math.floor(size.x * dpr)
-      canvas.height = Math.floor(size.y * dpr)
-      canvas.style.width = `${size.x}px`
-      canvas.style.height = `${size.y}px`
+      const w = Math.floor(size.x * dpr)
+      const h = Math.floor(size.y * dpr)
+      if (canvas.width !== w || canvas.height !== h) {
+        canvas.width = w
+        canvas.height = h
+        canvas.style.width = `${size.x}px`
+        canvas.style.height = `${size.y}px`
+      }
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
       ctx.clearRect(0, 0, size.x, size.y)
 
@@ -74,7 +99,7 @@ export function createHotelsCanvasLayer() {
       }
 
       const useLogos = zoom >= 8 && list.length < 6000
-      const maxLogos = list.length > 5000 ? 120 : list.length > 2500 ? 220 : 420
+      const maxLogos = list.length > 5000 ? 80 : list.length > 2500 ? 160 : 320
       const center = map.getCenter()
       const anchorLat = selectedId
         ? (list.find((h) => h.id === selectedId)?.lat ?? center.lat)
@@ -88,7 +113,6 @@ export function createHotelsCanvasLayer() {
         if (bounds.contains([h.lat, h.lng])) visible.push(h)
       }
 
-      // Selected always first for logo priority; then nearest to map center / selection
       visible.sort((a, b) => {
         if (a.id === selectedId) return -1
         if (b.id === selectedId) return 1
@@ -188,9 +212,10 @@ export function createHotelsCanvasLayer() {
         const sub = getSubsidiary(subsidiaryId)
         if (!sub) return
         img = new Image()
+        img.decoding = 'async'
         img.src = subsidiaryLogoSvg(sub, 256)
         cache.set(subsidiaryId, img)
-        img.onload = () => this._redraw()
+        img.onload = () => this._scheduleRedraw()
       }
       ctx.save()
       if (muted) ctx.globalAlpha = 0.45
