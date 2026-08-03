@@ -39,6 +39,10 @@ export function Landing() {
         setHasSave(false)
         return
       }
+      // Dar un frame tras hidratar (aún en landing) antes de montar el mapa
+      await new Promise<void>((resolve) => {
+        window.requestAnimationFrame(() => resolve())
+      })
       startGame()
     } catch {
       setMsg('No se pudo cargar la partida.')
@@ -70,7 +74,7 @@ export function Landing() {
     <div className="landing">
       <div className="landing__veil" />
       <div className="landing__content">
-        <p className="landing__eyebrow">Juego de hoteles · v2.2.2</p>
+        <p className="landing__eyebrow">Juego de hoteles · v2.2.3</p>
         <h1 className="landing__brand">Orbis Hotels Group</h1>
         <p className="landing__lead">
           Construye hoteles en todo el mundo. 50 marcas. Muchos países.

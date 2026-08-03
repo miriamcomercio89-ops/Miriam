@@ -584,7 +584,16 @@ export const useGameStore = create<GameStore>((set, get) => ({
   },
 
   startGame: () =>
-    set((s) => ({ started: true, showLanding: false, mapEpoch: s.mapEpoch + 1 })),
+    set((s) => ({
+      started: true,
+      showLanding: false,
+      mapFocus: null,
+      selectedHotelId: null,
+      mapMode: 'inspect',
+      mapLayer: 'streets',
+      simulating: false,
+      mapEpoch: s.mapEpoch + 1,
+    })),
 
   newGame: () => {
     set((s) => ({
@@ -789,8 +798,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
         mapLayer: s.mapLayer,
         mapMode: s.mapMode,
         mapFilters: s.mapFilters,
-        mapFocus: s.mapFocus,
-        selectedHotelId: s.selectedHotelId,
+        // No persistir mapFocus: al cargar provocaba flyTo antes de que el mapa tuviera tamaño
+        mapFocus: null,
+        selectedHotelId: null,
         rankMetric: s.rankMetric,
         lastSimMs: s.ui?.lastSimMs ?? 0,
         lastSimHotels: s.ui?.lastSimHotels ?? 0,
@@ -800,22 +810,29 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
   hydrate: (state) => {
     const m = migrate(state)
-    set((s) => ({
-      ...m,
-      showLanding: !state.started,
-      selectedHotelId: m.ui.selectedHotelId,
-      compareIds: [null, null],
-      buildLocation: null,
-      ...closePanelsExcept({}),
-      mapLayer: m.ui.mapLayer,
-      mapMode: m.ui.mapMode,
-      mapFilters: m.ui.mapFilters,
-      mapFocus: m.ui.mapFocus,
-      rankMetric: m.ui.rankMetric,
-      simulating: false,
-      simProgress: '',
-      mapEpoch: s.mapEpoch + 1,
-    }))
+    set((s) => {
+      // Si seguimos en el landing, NO montar el mapa aquí: startGame() lo hace
+      // en un único paint (igual que Nueva partida). Montar durante hydrate
+      // con la partida pesada deja Leaflet en negro.
+      const onLanding = s.showLanding
+      return {
+        ...m,
+        started: onLanding ? false : true,
+        showLanding: onLanding,
+        selectedHotelId: null,
+        compareIds: [null, null],
+        buildLocation: null,
+        ...closePanelsExcept({}),
+        mapLayer: 'streets',
+        mapMode: 'inspect',
+        mapFilters: m.ui.mapFilters,
+        mapFocus: null,
+        rankMetric: m.ui.rankMetric,
+        simulating: false,
+        simProgress: '',
+        mapEpoch: onLanding ? s.mapEpoch : s.mapEpoch + 1,
+      }
+    })
   },
 
   persistLocal: () => {

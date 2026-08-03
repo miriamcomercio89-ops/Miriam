@@ -267,6 +267,20 @@ export function WorldMap() {
   const [hint, setHint] = useState<string | null>(null)
   const [pending, setPending] = useState<{ lat: number; lng: number } | null>(null)
   const [hover, setHover] = useState<{ hotel: Hotel; x: number; y: number } | null>(null)
+  // Esperar 2 frames de layout tras Continuar partida (grid .stage ya con tamaño)
+  const [layoutReady, setLayoutReady] = useState(false)
+
+  useEffect(() => {
+    setLayoutReady(false)
+    let raf2 = 0
+    const raf1 = window.requestAnimationFrame(() => {
+      raf2 = window.requestAnimationFrame(() => setLayoutReady(true))
+    })
+    return () => {
+      window.cancelAnimationFrame(raf1)
+      if (raf2) window.cancelAnimationFrame(raf2)
+    }
+  }, [mapEpoch])
 
   const day = gameDay(gameMinutes)
   const filtered = useMemo(() => filterHotels(hotels, filters, day), [hotels, filters, day])
@@ -298,36 +312,40 @@ export function WorldMap() {
 
   return (
     <div className={`map-shell map-shell--${mapMode}${simulating ? ' map-shell--sim' : ''}`}>
-      <MapContainer
-        key={`orbis-map-${mapEpoch}`}
-        center={[20, 0]}
-        zoom={3}
-        minZoom={2}
-        maxZoom={18}
-        className="world-map"
-        worldCopyJump
-        preferCanvas={false}
-        zoomControl
-      >
-        <TileLayers />
-        <MapHealth />
-        <MapClickHandler
-          busy={busy || simulating}
-          onBuild={handleBuild}
-          onSelectHotel={selectHotel}
-          hotels={filtered}
-          selectedId={selectedHotelId}
-        />
-        <MapFocusController />
-        <HotelsCanvas hotels={filtered} selectedId={selectedHotelId} onHover={onHover} />
-        {pending && (
-          <CircleMarker
-            center={[pending.lat, pending.lng]}
-            radius={7}
-            pathOptions={{ color: '#C4A35A', fillColor: '#C4A35A', fillOpacity: 0.4 }}
+      {layoutReady ? (
+        <MapContainer
+          key={`orbis-map-${mapEpoch}`}
+          center={[20, 0]}
+          zoom={3}
+          minZoom={2}
+          maxZoom={18}
+          className="world-map"
+          worldCopyJump
+          preferCanvas={false}
+          zoomControl
+        >
+          <TileLayers />
+          <MapHealth />
+          <MapClickHandler
+            busy={busy || simulating}
+            onBuild={handleBuild}
+            onSelectHotel={selectHotel}
+            hotels={filtered}
+            selectedId={selectedHotelId}
           />
-        )}
-      </MapContainer>
+          <MapFocusController />
+          <HotelsCanvas hotels={filtered} selectedId={selectedHotelId} onHover={onHover} />
+          {pending && (
+            <CircleMarker
+              center={[pending.lat, pending.lng]}
+              radius={7}
+              pathOptions={{ color: '#C4A35A', fillColor: '#C4A35A', fillOpacity: 0.4 }}
+            />
+          )}
+        </MapContainer>
+      ) : (
+        <div className="world-map world-map--booting" aria-hidden />
+      )}
 
       {tip && hover && (
         <div className="map-mini" style={{ left: hover.x + 14, top: hover.y + 14 }}>
@@ -344,9 +362,11 @@ export function WorldMap() {
         {hint ??
           (simulating
             ? 'Calculando el día… el mapa se actualiza al terminar'
-            : mapMode === 'build'
-              ? 'Modo construir: clic en tierra para un hotel nuevo · clic en un hotel para verlo'
-              : 'Modo ver: clic en un hotel para abrir su ficha · cambia a Construir para expandir')}
+            : !layoutReady
+              ? 'Preparando mapa…'
+              : mapMode === 'build'
+                ? 'Modo construir: clic en tierra para un hotel nuevo · clic en un hotel para verlo'
+                : 'Modo ver: clic en un hotel para abrir su ficha · cambia a Construir para expandir')}
       </p>
     </div>
   )

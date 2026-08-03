@@ -115,16 +115,16 @@ fs.writeFileSync(path.join(OUT, 'index.html'), html)
 
 fs.writeFileSync(
   path.join(OUT, 'LEEME.txt'),
-  `  Orbis Hotels Group — v2.2.2 (mapa en file://)
+  `  Orbis Hotels Group — v2.2.3 (fix Continuar partida)
 
 IMPORTANTE: borra la carpeta antigua del escritorio antes de descomprimir.
-Si reutilizas la carpeta vieja, el mapa puede seguir en negro.
 
 1. Borra la carpeta "Orbis Hotels" antigua
 2. Descomprime este ZIP de nuevo
 3. Abre index.html (necesitas internet para el mapa)
+4. Continuar partida — el mapa debe cargar igual que en Nueva partida
 
-El mapa usa teselas online (Carto/OSM). Sin internet verás el fondo oscuro.
+Necesitas internet para el mapa (teselas) y las fuentes.
 No uses la carpeta dist/: esa sí necesita servidor.
 `,
 )
