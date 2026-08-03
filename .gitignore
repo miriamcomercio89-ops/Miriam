@@ -1,0 +1,10 @@
+node_modules
+dist
+offline
+server/data
+*.local
+.DS_Store
+
+# OSM / PDF generator caches (regenerable)
+scripts/generate-plan/cache/
+

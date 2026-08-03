@@ -1,21 +1,44 @@
-# Miriam — Administración de Loterías (proyecto)
+# Orbis Hotels Group
 
-Proyecto: videojuego/simulador de gestión de una administración de loterías ubicado en Álora.
+Juego de construcción de hoteles en el mapa del mundo (**v0.5**).
 
-Este repositorio contiene el scaffold inicial del proyecto: una aplicación en HTML/CSS/JS que corre totalmente en el navegador (sin servidor), usa localStorage para persistencia y permite exportar/importar el estado en JSON.
+## Plan de construcción (50.000 hoteles)
 
-Características del scaffold inicial:
-- Reloj de juego con escala temporal: el tiempo del juego va 4× más lento que el real (gameTime = start + elapsed * 0.25).
-- Lógica de apertura de oficina: 09:00–14:00 y 17:00–22:00 (hora del juego). Cerrado sábados y domingos. Festivos habilitables manualmente.
-- Funciones básicas de exportar/importar JSON del estado del juego.
-- Estructura básica para añadir los juegos, ventas, contabilidad, clientes, etc.
+Carpeta [`plan-construccion/`](./plan-construccion): **177 PDF** (uno por provincia), orden global empezando por **Málaga**.
 
-Cómo usar:
-1. Clona el repo o descarga los archivos.
-2. Abre `index.html` en un navegador moderno.
-3. Usa los botones "Exportar" / "Importar" para guardar o restaurar el estado.
+```bash
+npm run plan:pdfs   # regenerar PDFs
+```
 
-Siguiente paso:
-- Crear la rama `feature/lottery-full` desde la rama por defecto y continuar con la implementación completa de juegos, contabilidad y UI.
+Índice: [`plan-construccion/README.md`](./plan-construccion/README.md)
 
-Commit inicial: scaffold con reloj escalado y export/import JSON.
+## Novedades v0.5
+
+- Desgaste del edificio y **reformas gestionadas por la IA**
+- **Informe semanal** (mejor país, peor hotel, impuestos, banco)
+- Filtros: país, seguro, VIP reciente, desgaste
+- Ver **opciones de construcción** de un hotel (solo lectura)
+- Más fotos / estilos (8 por hotel, según clima/marca)
+- Panel de **estadísticas globales**
+- Mejor rendimiento con miles de hoteles
+- Aviso claro de **autosave** (tamaño de la partida)
+- **Regímenes**: solo alojamiento → todo incluido imperial (**varios a la vez**)
+- **Club de fidelidad Orbis** con 10 niveles
+
+## Cómo jugar
+
+```bash
+npm install
+npm run dev
+```
+
+- Web: http://localhost:5173
+- API guardado: http://localhost:8787
+
+## Atajos
+
+| Tecla | Acción |
+|-------|--------|
+| Espacio | Pausa / seguir |
+| 1 / 2 / 5 | Velocidad |
+| Esc | Cerrar paneles |

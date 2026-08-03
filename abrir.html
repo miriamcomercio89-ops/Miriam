@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Orbis Hotels Group — Cómo abrir</title>
+    <style>
+      :root {
+        --bg: #0b3d4a;
+        --gold: #c4a35a;
+        --paper: #f2e6c8;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: Georgia, 'Times New Roman', serif;
+        background: linear-gradient(160deg, #062a33 0%, #0b3d4a 45%, #163028 100%);
+        color: var(--paper);
+        display: grid;
+        place-items: center;
+        padding: 2rem;
+      }
+      main {
+        max-width: 38rem;
+        background: rgba(0, 0, 0, 0.25);
+        border: 1px solid rgba(196, 163, 90, 0.45);
+        padding: 2rem 2.2rem;
+      }
+      h1 {
+        font-size: 1.85rem;
+        margin: 0 0 0.4rem;
+        letter-spacing: 0.04em;
+        color: var(--gold);
+      }
+      h2 {
+        font-size: 1.1rem;
+        margin: 1.4rem 0 0.4rem;
+        color: var(--gold);
+      }
+      p { line-height: 1.55; margin: 0.75rem 0; }
+      code {
+        font-family: ui-monospace, monospace;
+        font-size: 0.9em;
+        color: var(--gold);
+      }
+      ol { margin: 0.5rem 0 1rem 1.2rem; padding: 0; line-height: 1.6; }
+      a.btn {
+        display: inline-block;
+        margin-top: 0.75rem;
+        margin-right: 0.5rem;
+        padding: 0.65rem 1.1rem;
+        background: var(--gold);
+        color: var(--bg);
+        text-decoration: none;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+      }
+      a.btn.ghost {
+        background: transparent;
+        color: var(--paper);
+        border: 1px solid rgba(242, 230, 200, 0.45);
+      }
+      .note { font-size: 0.92rem; opacity: 0.85; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Orbis Hotels Group</h1>
+      <p>
+        El ZIP del juego (<code>orbis-hotels-group-juego.zip</code>) se abre
+        a doble clic: descomprime y abre <code>index.html</code>.
+      </p>
+
+      <h2>Opción rápida — ZIP offline</h2>
+      <ol>
+        <li>Descarga <code>orbis-hotels-group-juego.zip</code></li>
+        <li>Descomprímelo</li>
+        <li>Doble clic en <code>index.html</code></li>
+      </ol>
+      <p class="note">
+        Ese ZIP usa JavaScript clásico (sin <code>type=&quot;module&quot;</code>).
+        Generar de nuevo: <code>npm run pack:juego</code>.
+      </p>
+
+      <h2>Opción desarrollo</h2>
+      <ol>
+        <li><code>npm install</code></li>
+        <li><code>npm run dev</code></li>
+        <li>Abre la URL (suele ser <code>http://localhost:5173</code>)</li>
+      </ol>
+
+      <h2>Generar el ZIP offline</h2>
+      <ol>
+        <li><code>npm run build:offline</code></li>
+        <li>La carpeta <code>offline/</code> ya se puede abrir a doble clic</li>
+      </ol>
+
+      <p>
+        <a class="btn" href="./offline/index.html">Abrir offline/</a>
+        <a class="btn ghost" href="./orbis-hotels-group-juego.zip">Descargar ZIP</a>
+      </p>
+    </main>
+  </body>
+</html>
