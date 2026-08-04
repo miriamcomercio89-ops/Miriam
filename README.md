@@ -19,3 +19,7 @@ Siguiente paso:
 - Crear la rama `feature/lottery-full` desde la rama por defecto y continuar con la implementación completa de juegos, contabilidad y UI.
 
 Commit inicial: scaffold con reloj escalado y export/import JSON.
+
+## Guías generadas
+
+- `guias/tf2_iberica/` — **Red Ibérica 1850–2050** (Transport Fever 2): PDFs mes a mes por década + ZIP en `guias/tf2_iberica/output/`.
