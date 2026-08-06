@@ -58,6 +58,8 @@ export interface DistrictLabel {
 
 export type UserRole = 'pasajero' | 'operador';
 
+export type { DayPeriod } from './time';
+
 export const MODE_LABELS: Record<TransportMode, string> = {
   metro: 'Metro',
   cercanias: 'Cercanías',

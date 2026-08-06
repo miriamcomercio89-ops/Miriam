@@ -21,9 +21,19 @@ export interface RoutePlan {
   totalStops: number;
   transfers: number;
   estimatedMinutes: number;
+  walkMinutes: number;
   stationIds: string[];
   label: string;
   steps: RouteStep[];
+}
+
+/** Tiempo a pie en un trasbordo (misma estación / hub). */
+export function transferWalkMinutes(stationId: string): number {
+  const st = getStation(stationId);
+  if (!st) return 3;
+  if (st.majorHub) return 5;
+  if (st.interchange) return 3;
+  return 2;
 }
 
 type GraphEdge = { to: string; lineId: string };
@@ -108,11 +118,17 @@ function legsFromPath(stationPath: string[], arrivalLines: (string | null)[]): R
 
   const totalStops = legs.reduce((a, l) => a + l.stopCount, 0);
   const transfers = Math.max(0, legs.length - 1);
+
+  let walkMinutes = 0;
+  for (let i = 1; i < legs.length; i++) {
+    walkMinutes += transferWalkMinutes(legs[i].fromId);
+  }
+
   const estimatedMinutes = Math.round(
     legs.reduce((acc, leg) => {
       const wait = Math.min(8, leg.line.frequencyMin * 0.4);
       return acc + leg.stopCount * modeWeight(leg.line.mode) + wait;
-    }, 0) + transfers * 4,
+    }, 0) + walkMinutes,
   );
 
   const plan: RoutePlan = {
@@ -120,6 +136,7 @@ function legsFromPath(stationPath: string[], arrivalLines: (string | null)[]): R
     totalStops,
     transfers,
     estimatedMinutes,
+    walkMinutes,
     stationIds: stationPath,
     label: '',
     steps: [],
@@ -141,9 +158,10 @@ export function buildSteps(plan: RoutePlan): RouteStep[] {
         stationId: leg.fromId,
       });
     } else {
+      const walk = transferWalkMinutes(leg.fromId);
       steps.push({
         kind: 'transfer',
-        text: `Baja en ${fromName} y cambia a la ${leg.line.code} (${leg.line.name})`,
+        text: `Baja en ${fromName} y camina ~${walk} min hasta el andén de la ${leg.line.code} (${leg.line.name})`,
         line: leg.line,
         stationId: leg.fromId,
       });

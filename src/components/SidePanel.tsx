@@ -1,9 +1,16 @@
 import { CITY, getUniqueStations, lines } from '../data/network';
 import {
+  effectiveFrequency,
+  formatCountdown,
+  minutesUntilNext,
+} from '../data/schedules';
+import { occupancyForPeriod, PERIOD_LABELS } from '../data/time';
+import {
   BUS_FAMILY_LABELS,
   MODE_LABELS,
   MODE_ORDER,
   STATUS_LABELS,
+  type DayPeriod,
   type TransportMode,
   type TransitLine,
   type UserRole,
@@ -23,6 +30,8 @@ interface Props {
   onSelectStation: (id: string) => void;
   onClearSelection: () => void;
   onRoute: (plan: RoutePlan | null) => void;
+  simMinutes: number;
+  period: DayPeriod;
 }
 
 function LineRow({
@@ -30,12 +39,19 @@ function LineRow({
   selected,
   role,
   onSelect,
+  simMinutes,
+  period,
 }: {
   line: TransitLine;
   selected: boolean;
   role: UserRole;
   onSelect: () => void;
+  simMinutes: number;
+  period: DayPeriod;
 }) {
+  const freq = effectiveFrequency(line, simMinutes);
+  const eta = minutesUntilNext(line, simMinutes);
+  const occ = occupancyForPeriod(line.occupancy, period);
   return (
     <button
       type="button"
@@ -50,9 +66,9 @@ function LineRow({
           {line.busFamily
             ? `Bus ${BUS_FAMILY_LABELS[line.busFamily]}`
             : MODE_LABELS[line.mode]}{' '}
-          · cada {line.frequencyMin} min
+          · cada {freq} min · próximo {formatCountdown(eta)}
           {role === 'operador' && (
-            <> · {STATUS_LABELS[line.status]} · {line.occupancy}%</>
+            <> · {STATUS_LABELS[line.status]} · {occ}%</>
           )}
         </span>
       </span>
@@ -72,6 +88,8 @@ export function SidePanel({
   onSelectStation,
   onClearSelection,
   onRoute,
+  simMinutes,
+  period,
 }: Props) {
   const q = search.trim().toLowerCase();
   const filteredLines = lines.filter((l) => {
@@ -102,7 +120,7 @@ export function SidePanel({
   return (
     <aside className="side-panel">
       <header className="side-brand">
-        <p className="brand-kicker">Costa Sur · v0.2</p>
+        <p className="brand-kicker">Costa Sur · v0.3 · {PERIOD_LABELS[period]}</p>
         <h1 className="brand-name">{CITY.name}</h1>
         <p className="brand-tag">{CITY.tagline}</p>
         <div className="brand-stats">
@@ -196,6 +214,8 @@ export function SidePanel({
                 selected={selectedLineId === line.id}
                 role={role}
                 onSelect={() => onSelectLine(line.id)}
+                simMinutes={simMinutes}
+                period={period}
               />
             ))}
           </section>

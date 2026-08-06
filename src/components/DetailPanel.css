@@ -91,6 +91,38 @@
   color: rgba(26, 35, 50, 0.6);
 }
 
+.next-banner {
+  display: flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  margin-top: 0.85rem;
+  padding: 0.55rem 0.7rem;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(196, 92, 38, 0.12), rgba(26, 35, 50, 0.06));
+}
+
+.next-banner span {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: rgba(26, 35, 50, 0.55);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.next-banner strong {
+  font-family: 'Sora', sans-serif;
+  font-size: 1.25rem;
+  color: #c45c26;
+}
+
+.next-banner em {
+  margin-left: auto;
+  font-style: normal;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: rgba(26, 35, 50, 0.45);
+}
+
 .detail-pills {
   display: flex;
   flex-wrap: wrap;

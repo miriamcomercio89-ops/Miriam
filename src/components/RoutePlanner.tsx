@@ -129,7 +129,9 @@ export function RoutePlanner({ onRoute, onPickStation }: Props) {
           <p className="route-summary">
             <strong>{plan.estimatedMinutes} min</strong>
             <span>
-              {plan.totalStops} paradas · {plan.transfers} trasbordo{plan.transfers === 1 ? '' : 's'}
+              {plan.totalStops} paradas · {plan.transfers} trasbordo
+              {plan.transfers === 1 ? '' : 's'}
+              {plan.walkMinutes > 0 ? ` · ${plan.walkMinutes} min a pie` : ''}
             </span>
           </p>
 

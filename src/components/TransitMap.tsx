@@ -7,6 +7,7 @@ import {
   lines,
   stations,
 } from '../data/network';
+import { smoothPathD } from '../data/pathSmooth';
 import type { TransitLine } from '../data/types';
 import './TransitMap.css';
 
@@ -22,25 +23,10 @@ interface Props {
   onSelectStation: (id: string) => void;
 }
 
-function pathD(points: { x: number; y: number }[]): string {
-  if (points.length === 0) return '';
-  let d = `M ${points[0].x} ${points[0].y}`;
-  for (let i = 1; i < points.length; i++) {
-    const prev = points[i - 1];
-    const curr = points[i];
-    const dx = curr.x - prev.x;
-    const dy = curr.y - prev.y;
-    if (Math.abs(dx) > 10 && Math.abs(dy) > 10) {
-      if (Math.abs(dx) >= Math.abs(dy)) {
-        d += ` L ${curr.x} ${prev.y} L ${curr.x} ${curr.y}`;
-      } else {
-        d += ` L ${prev.x} ${curr.y} L ${curr.x} ${curr.y}`;
-      }
-    } else {
-      d += ` L ${curr.x} ${curr.y}`;
-    }
-  }
-  return d;
+function pathD(points: { x: number; y: number }[], mode: string): string {
+  // Buses más orgánicos; metro un poco más tenso (sigue siendo curvo)
+  const tension = mode === 'bus' ? 0.5 : mode === 'tranvia' ? 0.4 : mode === 'metro' ? 0.28 : 0.35;
+  return smoothPathD(points, tension);
 }
 
 function strokeWidth(mode: string): number {
@@ -127,11 +113,16 @@ export function TransitMap({
 
       <rect width={CITY.mapWidth} height={CITY.mapHeight} fill="url(#grid)" />
 
-      {/* Franja marítima al sur */}
-      <rect className="sea-band" x="0" y="2100" width={CITY.mapWidth} height="700" fill="url(#sea)" />
+      {/* Franja marítima al sur + sugerencia de sierra al norte */}
+      <rect className="sea-band" x="0" y="2300" width={CITY.mapWidth} height="900" fill="url(#sea)" />
       <path
         className="coastline"
-        d="M 0 2140 C 400 2180, 800 2080, 1200 2120 S 1800 2200, 2200 2160 S 3000 2080, 3600 2140 S 4000 2200, 4200 2150"
+        d="M 0 2360 C 500 2420, 900 2280, 1400 2340 S 2100 2460, 2600 2380 S 3400 2280, 4000 2360 S 4400 2440, 4600 2370"
+        fill="none"
+      />
+      <path
+        className="sierra-hint"
+        d="M 800 380 C 1200 280, 1600 320, 2000 240 S 2600 180, 3000 260 S 3600 300, 4000 220"
         fill="none"
       />
 
@@ -147,7 +138,7 @@ export function TransitMap({
 
       {sorted.map((line) => {
         const pts = getLinePath(line);
-        const d = pathD(pts);
+        const d = pathD(pts, line.mode);
         const selected = selectedLineId === line.id || routeLines.has(line.id);
         return (
           <g key={line.id} opacity={lineOpacity(line)} className="line-group">

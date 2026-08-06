@@ -1,17 +1,36 @@
-import { simulatedClock } from '../data/schedules';
-import type { UserRole } from '../data/types';
+import type { DayPeriod, UserRole } from '../data/types';
+import { PERIOD_LABELS } from '../data/time';
 import './TopBar.css';
 
 interface Props {
   role: UserRole;
   onRoleChange: (r: UserRole) => void;
   clock: string;
+  period: DayPeriod;
+  paused: boolean;
+  onTogglePause: () => void;
+  onSetTime: (hhmm: string) => void;
+  onJump: (deltaMin: number) => void;
+  onSyncNow: () => void;
   onZoomIn: () => void;
   onZoomOut: () => void;
   onReset: () => void;
 }
 
-export function TopBar({ role, onRoleChange, clock, onZoomIn, onZoomOut, onReset }: Props) {
+export function TopBar({
+  role,
+  onRoleChange,
+  clock,
+  period,
+  paused,
+  onTogglePause,
+  onSetTime,
+  onJump,
+  onSyncNow,
+  onZoomIn,
+  onZoomOut,
+  onReset,
+}: Props) {
   return (
     <div className="top-bar">
       <div className="role-switch" role="group" aria-label="Modo de usuario">
@@ -31,10 +50,32 @@ export function TopBar({ role, onRoleChange, clock, onZoomIn, onZoomOut, onReset
         </button>
       </div>
 
-      <div className="top-center">
-        <span className="live-dot" />
-        <span>Simulación en vivo</span>
-        <time>{clock || simulatedClock()}</time>
+      <div className="clock-panel">
+        <span className={`live-dot ${paused ? 'paused' : ''}`} />
+        <label className="clock-input-wrap">
+          <span className="sr-only">Hora simulada</span>
+          <input
+            type="time"
+            value={clock}
+            onChange={(e) => onSetTime(e.target.value)}
+            title="Modificar hora de la simulación"
+          />
+        </label>
+        <span className={`period-pill period-${period}`}>{PERIOD_LABELS[period]}</span>
+        <div className="clock-actions">
+          <button type="button" onClick={() => onJump(-30)} title="-30 min">
+            −30
+          </button>
+          <button type="button" onClick={onTogglePause} title={paused ? 'Reanudar' : 'Pausar'}>
+            {paused ? '▶' : '❚❚'}
+          </button>
+          <button type="button" onClick={() => onJump(30)} title="+30 min">
+            +30
+          </button>
+          <button type="button" onClick={onSyncNow} title="Hora real">
+            Ahora
+          </button>
+        </div>
       </div>
 
       <div className="zoom-controls">

@@ -12752,23 +12752,147 @@
   });
 
   // src/main.tsx
-  var import_react5 = __toESM(require_react(), 1);
+  var import_react6 = __toESM(require_react(), 1);
   var import_client = __toESM(require_client(), 1);
 
   // src/App.tsx
-  var import_react4 = __toESM(require_react(), 1);
+  var import_react5 = __toESM(require_react(), 1);
 
   // src/components/DetailPanel.tsx
   var import_react = __toESM(require_react(), 1);
 
+  // src/data/densify.ts
+  function hashStr(s) {
+    let h = 0;
+    for (let i = 0; i < s.length; i++) h = h * 31 + s.charCodeAt(i) | 0;
+    return Math.abs(h);
+  }
+  var STREET_PREFIX = ["Av.", "C/", "Paseo", "Camino", "Ronda", "Callej\xF3n", "Traves\xEDa"];
+  var STREET_NAME = [
+    "del Mar",
+    "de la Caleta",
+    "de los Naranjos",
+    "del Olivar",
+    "de la Sierra",
+    "de San Juan",
+    "de la Paz",
+    "del Sol",
+    "de la Luna",
+    "de las Flores",
+    "Alameda",
+    "Victoria",
+    "Comercio",
+    "Puerta Nueva",
+    "Miramar",
+    "Los \xC1lamos",
+    "El Carmen",
+    "La Esperanza",
+    "San Miguel",
+    "Las Palmeras",
+    "Doctor Galvez",
+    "H\xE9roes de Sostoa",
+    "Jacinto Benavente",
+    "Salvador Allende",
+    "Pac\xEDfico",
+    "Mediterr\xE1neo",
+    "Andaluc\xEDa",
+    "M\xE1laga",
+    "C\xE1diz"
+  ];
+  function intermediateName(lineCode, seg, k) {
+    const h = hashStr(`${lineCode}-${seg}-${k}`);
+    const prefix = STREET_PREFIX[h % STREET_PREFIX.length];
+    const name = STREET_NAME[(h >> 3) % STREET_NAME.length];
+    return `${prefix} ${name}`;
+  }
+  function spacingForMode(mode) {
+    switch (mode) {
+      case "bus":
+        return 62;
+      case "tranvia":
+        return 78;
+      case "metro":
+        return 95;
+      case "cercanias":
+        return 150;
+      case "hyperloop":
+        return 400;
+      default:
+        return 90;
+    }
+  }
+  function amplitudeForMode(mode) {
+    switch (mode) {
+      case "bus":
+        return 36;
+      case "tranvia":
+        return 22;
+      case "metro":
+        return 14;
+      case "cercanias":
+        return 18;
+      default:
+        return 10;
+    }
+  }
+  function densifyNetwork(baseStations2, baseLines) {
+    const stations2 = { ...baseStations2 };
+    const lines2 = baseLines.map((line2) => {
+      var _a, _b;
+      const ids = line2.stationIds;
+      if (ids.length < 2) return line2;
+      const densified2 = [];
+      const spacing = spacingForMode(line2.mode);
+      const ampBase = amplitudeForMode(line2.mode);
+      const lineHash = hashStr(line2.id);
+      for (let i = 0; i < ids.length; i++) {
+        densified2.push(ids[i]);
+        if (i >= ids.length - 1) break;
+        const a = (_a = baseStations2[ids[i]]) != null ? _a : stations2[ids[i]];
+        const b = (_b = baseStations2[ids[i + 1]]) != null ? _b : stations2[ids[i + 1]];
+        if (!a || !b) continue;
+        if (a.id === b.id || a.x === b.x && a.y === b.y) continue;
+        const dx = b.x - a.x;
+        const dy = b.y - a.y;
+        const dist = Math.hypot(dx, dy);
+        if (dist < spacing * 1.2) continue;
+        const n = Math.min(5, Math.max(1, Math.floor(dist / spacing) - 1));
+        const len = dist || 1;
+        const px = -dy / len;
+        const py = dx / len;
+        for (let k = 1; k <= n; k++) {
+          const t = k / (n + 1);
+          const wave = Math.sin(t * Math.PI) * (1 + (lineHash + i) % 5 * 0.08);
+          const side = (lineHash + i) % 2 === 0 ? 1 : -1;
+          const amp = ampBase * wave * side;
+          const amp2 = line2.mode === "bus" ? Math.sin(t * Math.PI * 2) * ampBase * 0.25 : 0;
+          const id = `${line2.id}_s${i}_${k}`;
+          if (!stations2[id]) {
+            stations2[id] = {
+              id,
+              name: intermediateName(line2.code, i, k),
+              x: a.x + dx * t + px * (amp + amp2),
+              y: a.y + dy * t + py * (amp + amp2),
+              district: t < 0.5 ? a.district : b.district,
+              interchange: false
+            };
+          }
+          densified2.push(id);
+        }
+      }
+      return { ...line2, stationIds: densified2 };
+    });
+    return { stations: stations2, lines: lines2 };
+  }
+
   // src/data/network.ts
   var CITY = {
     name: "Heliora",
-    tagline: "Costa, casco antiguo y la red m\xE1s grande del Mediterr\xE1neo",
-    population: "61,4 millones",
-    dailyTrips: "34,2 millones",
-    mapWidth: 4200,
-    mapHeight: 2800,
+    tagline: "Costa, sierra y la red m\xE1s grande del Mediterr\xE1neo",
+    population: "64,8 millones",
+    dailyTrips: "37,5 millones",
+    mapWidth: 4600,
+    mapHeight: 3200,
     inspiration: "Ciudad costera tur\xEDstica del sur de Espa\xF1a"
   };
   var DISTRICT_SEEDS = [
@@ -13219,6 +13343,143 @@
         { key: "churriana", name: "Churriana", interchange: true },
         { key: "jardin_churriana", name: "Jard\xEDn Churriana", dx: 45, dy: -35 }
       ]
+    },
+    // ——— Costa ampliada (paseos, puertos deportivos, apeaderos de playa) ———
+    {
+      id: "paseo_levante",
+      name: "Paseo de Levante",
+      x: 2900,
+      y: 2080,
+      stations: [
+        { key: "paseo_levante", name: "Paseo de Levante", interchange: true },
+        { key: "balneario", name: "Balneario Heliora", dx: 50, dy: 40 },
+        { key: "espigon", name: "Espig\xF3n Este", dx: -40, dy: 55 }
+      ]
+    },
+    {
+      id: "puerto_marina",
+      name: "Puerto Marina",
+      x: 1850,
+      y: 2100,
+      stations: [
+        { key: "puerto_marina", name: "Puerto Marina", interchange: true },
+        { key: "darsena_yates", name: "D\xE1rsena de Yates", dx: 55, dy: 35 },
+        { key: "paseo_marina", name: "Paseo Marina", dx: -45, dy: -25 }
+      ]
+    },
+    {
+      id: "la_cala",
+      name: "La Cala del Sol",
+      x: 3800,
+      y: 2180,
+      stations: [
+        { key: "cala_sol", name: "La Cala del Sol", interchange: true },
+        { key: "playa_cala", name: "Playa La Cala", dx: 40, dy: 50 },
+        { key: "mirador_cala", name: "Mirador La Cala", dx: -50, dy: -30 }
+      ]
+    },
+    {
+      id: "sacaba",
+      name: "Sacaba Beach",
+      x: 2500,
+      y: 2050,
+      stations: [
+        { key: "sacaba", name: "Sacaba Beach", interchange: true },
+        { key: "chiringuito_sur", name: "Chiringuito Sur", dx: 60, dy: 40 }
+      ]
+    },
+    // ——— Sierra / pueblos blancos / interior ———
+    {
+      id: "mijas_hel",
+      name: "Mijas de Heliora",
+      x: 2400,
+      y: 480,
+      stations: [
+        { key: "mijas", name: "Mijas de Heliora", interchange: true, majorHub: true },
+        { key: "mirador_mijas", name: "Mirador de Mijas", dx: 50, dy: -45 },
+        { key: "casitas_blancas", name: "Casitas Blancas", dx: -55, dy: 40 }
+      ]
+    },
+    {
+      id: "alhaurin",
+      name: "Alhaur\xEDn del Monte",
+      x: 1800,
+      y: 520,
+      stations: [
+        { key: "alhaurin", name: "Alhaur\xEDn del Monte", interchange: true },
+        { key: "huerta_alhaurin", name: "Huerta Alhaur\xEDn", dx: 45, dy: 40 },
+        { key: "ermita", name: "Ermita del Monte", dx: -40, dy: -35 }
+      ]
+    },
+    {
+      id: "coin",
+      name: "Co\xEDn Valle",
+      x: 1400,
+      y: 420,
+      stations: [
+        { key: "coin", name: "Co\xEDn Valle", interchange: true },
+        { key: "plaza_coin", name: "Plaza de Co\xEDn", dx: 40, dy: 35 }
+      ]
+    },
+    {
+      id: "cartama",
+      name: "C\xE1rtama Sierra",
+      x: 1100,
+      y: 600,
+      stations: [
+        { key: "cartama", name: "C\xE1rtama Sierra", interchange: true },
+        { key: "estacion_cartama", name: "Estaci\xF3n C\xE1rtama", dx: 50, dy: 40 }
+      ]
+    },
+    {
+      id: "torremolinos_n",
+      name: "Urbanizaci\xF3n El Pinillo",
+      x: 1600,
+      y: 700,
+      stations: [
+        { key: "pinillo", name: "El Pinillo", interchange: true },
+        { key: "los_manantiales", name: "Los Manantiales", dx: 45, dy: -30 }
+      ]
+    },
+    {
+      id: "benalmadena_p",
+      name: "Arroyo de la Miel",
+      x: 2e3,
+      y: 600,
+      stations: [
+        { key: "arroyo_miel", name: "Arroyo de la Miel", interchange: true },
+        { key: "teleferico_base", name: "Base Sierra", dx: 40, dy: -50 }
+      ]
+    },
+    {
+      id: "oj\xE9n",
+      name: "Oj\xE9n Blanco",
+      x: 3e3,
+      y: 550,
+      stations: [
+        { key: "ojen", name: "Oj\xE9n Blanco", interchange: true },
+        { key: "plaza_ojen", name: "Plaza Oj\xE9n", dx: -40, dy: 35 }
+      ]
+    },
+    {
+      id: "istefan",
+      name: "Ist\xE1n Lago",
+      x: 3400,
+      y: 650,
+      stations: [
+        { key: "istan", name: "Ist\xE1n Lago", interchange: true },
+        { key: "embalse_istan", name: "Embalse Ist\xE1n", dx: 45, dy: -40 }
+      ]
+    },
+    {
+      id: "fuengirola_int",
+      name: "Los Boliches Interior",
+      x: 1200,
+      y: 750,
+      stations: [
+        { key: "boliches", name: "Los Boliches", interchange: true },
+        { key: "torreblanca", name: "Torreblanca", dx: 50, dy: 40 }
+      ]
     }
   ];
   function buildStations() {
@@ -13239,11 +13500,10 @@
     }
     return map;
   }
-  var stations = buildStations();
+  var baseStations = buildStations();
   var districtLabels = DISTRICT_SEEDS.map((d) => ({
     id: d.id,
     name: d.name,
-    // Empujar etiquetas hacia arriba para no tapar estaciones
     x: d.x,
     y: d.y - 110
   }));
@@ -13287,7 +13547,7 @@
   };
   function line(code, name, mode, color, stationIds, opts = {}) {
     var _a, _b, _c, _d, _e;
-    const valid = stationIds.filter((id) => stations[id]);
+    const valid = stationIds.filter((id) => baseStations[id]);
     return {
       id: code.toLowerCase(),
       code,
@@ -13862,13 +14122,128 @@
       "nueva_hel"
     ], { frequencyMin: 15, firstDeparture: "07:00", lastDeparture: "23:00" })
   ];
-  var lines = ensureMeta([
+  var coastalSierraExtra = [
+    line("L21", "Sierra \u2013 Casco", "metro", "#795548", [
+      "coin",
+      "alhaurin",
+      "arroyo_miel",
+      "mijas",
+      "monte_hel",
+      "ciudad_jardin",
+      "capuchinos",
+      "plaza_mayor"
+    ], { frequencyMin: 6, firstDeparture: "06:20", lastDeparture: "23:10" }),
+    line("L22", "Costa Levante Extendida", "metro", "#00838F", [
+      "paseo_maritimo",
+      "sacaba",
+      "paseo_levante",
+      "cala_serena",
+      "arenales",
+      "rincon_mar",
+      "cala_sol"
+    ], { frequencyMin: 5, firstDeparture: "06:30", lastDeparture: "00:20" }),
+    line("L23", "Marina \u2013 Puerto", "metro", "#5C6BC0", [
+      "puerto_marina",
+      "paseo_marina",
+      "torres_mar",
+      "bajadilla",
+      "puerto_hel"
+    ], { frequencyMin: 6, firstDeparture: "06:40", lastDeparture: "23:40" }),
+    line("C11", "Cercan\xEDas Sierra", "cercanias", "#4E342E", [
+      "coin",
+      "cartama",
+      "boliches",
+      "universidad",
+      "maria_zambrano",
+      "plaza_mayor"
+    ], { frequencyMin: 20, firstDeparture: "05:50", lastDeparture: "22:30" }),
+    line("C12", "Cercan\xEDas Pueblos Blancos", "cercanias", "#BF360C", [
+      "ojen",
+      "istan",
+      "mijas",
+      "altos_med",
+      "nueva_hel",
+      "vinuela"
+    ], { frequencyMin: 25, firstDeparture: "06:10", lastDeparture: "21:50" }),
+    line("T13", "Tranv\xEDa Paseo Levante", "tranvia", "#0097A7", [
+      "sacaba",
+      "chiringuito_sur",
+      "paseo_levante",
+      "balneario",
+      "espigon",
+      "cala_serena",
+      "chiringuitos"
+    ], { frequencyMin: 9, firstDeparture: "07:20", lastDeparture: "00:15" }),
+    line("T14", "Tranv\xEDa Puerto Marina", "tranvia", "#7B1FA2", [
+      "darsena_yates",
+      "puerto_marina",
+      "paseo_marina",
+      "torres_mar",
+      "paseo_maritimo",
+      "muelle_uno"
+    ], { frequencyMin: 9, firstDeparture: "07:15", lastDeparture: "23:50" }),
+    bus("P5", "Playa Sacaba \u2013 La Cala", "P", [
+      "sacaba",
+      "paseo_levante",
+      "arenales",
+      "rincon_mar",
+      "cala_sol",
+      "playa_cala"
+    ], 12, "07:00", "00:45"),
+    bus("P6", "Puerto Marina Shuttle", "P", [
+      "puerto_marina",
+      "darsena_yates",
+      "torres_mar",
+      "paseo_maritimo",
+      "playa_faro"
+    ], 15, "08:00", "01:00"),
+    bus("R5", "Sierra Residencial", "R", [
+      "mijas",
+      "casitas_blancas",
+      "arroyo_miel",
+      "pinillo",
+      "universidad"
+    ], 15, "06:45", "22:15"),
+    bus("R6", "Valle Co\xEDn \u2013 Campus", "R", [
+      "coin",
+      "plaza_coin",
+      "alhaurin",
+      "cartama",
+      "ciudad_olivo",
+      "universidad"
+    ], 18, "06:30", "21:45"),
+    bus("TU4", "Ruta Pueblos Blancos", "TU", [
+      "plaza_mayor",
+      "mijas",
+      "mirador_mijas",
+      "ojen",
+      "istan",
+      "embalse_istan"
+    ], 45, "09:30", "18:30"),
+    bus("B7", "El Pinillo \u2013 Manantiales", "B", [
+      "pinillo",
+      "los_manantiales",
+      "arroyo_miel",
+      "alhaurin"
+    ], 14, "07:00", "22:00"),
+    bus("X6", "Express Sierra \u2013 Aeropuerto", "X", [
+      "mijas",
+      "universidad",
+      "campanillas",
+      "aeropuerto"
+    ], 20, "05:40", "23:00")
+  ];
+  var rawLines = ensureMeta([
     ...metroLines,
     ...cercaniasLines,
     ...tramLines,
     ...busLines,
-    ...hyperLines
+    ...hyperLines,
+    ...coastalSierraExtra
   ]);
+  var densified = densifyNetwork(baseStations, rawLines);
+  var stations = densified.stations;
+  var lines = densified.lines;
   function getUniqueStations() {
     const seen = /* @__PURE__ */ new Set();
     const result = [];
@@ -13913,23 +14288,81 @@
     return { minX, minY, maxX, maxY };
   }
 
+  // src/data/time.ts
+  var PERIOD_LABELS = {
+    punta: "Hora punta",
+    valle: "Hora valle",
+    noche: "Nocturno"
+  };
+  function periodFromMinutes(mins) {
+    const m = (mins % (24 * 60) + 24 * 60) % (24 * 60);
+    const h = m / 60;
+    if (h >= 7 && h < 9.5 || h >= 13.5 && h < 15.5 || h >= 18 && h < 20.5) {
+      return "punta";
+    }
+    if (h >= 23 || h < 5.5) return "noche";
+    return "valle";
+  }
+  function frequencyMultiplier(period, mode) {
+    if (period === "punta") {
+      if (mode === "metro" || mode === "tranvia") return 0.65;
+      if (mode === "bus") return 0.75;
+      if (mode === "cercanias") return 0.85;
+      return 0.8;
+    }
+    if (period === "noche") {
+      if (mode === "metro") return 1.8;
+      if (mode === "bus") return 2.2;
+      if (mode === "tranvia") return 2;
+      if (mode === "cercanias") return 2.5;
+      return 2;
+    }
+    return 1;
+  }
+  function occupancyForPeriod(base, period) {
+    const factor = period === "punta" ? 1.35 : period === "noche" ? 0.45 : 0.85;
+    return Math.max(5, Math.min(98, Math.round(base * factor)));
+  }
+  function formatClock(mins) {
+    const m = (mins % (24 * 60) + 24 * 60) % (24 * 60);
+    const h = Math.floor(m / 60);
+    const min = Math.floor(m % 60);
+    return `${String(h).padStart(2, "0")}:${String(min).padStart(2, "0")}`;
+  }
+  function parseClock(hhmm) {
+    const [h, m] = hhmm.split(":").map(Number);
+    return (h || 0) * 60 + (m || 0);
+  }
+  function nowMinutes() {
+    const d = /* @__PURE__ */ new Date();
+    return d.getHours() * 60 + d.getMinutes() + d.getSeconds() / 60;
+  }
+
   // src/data/schedules.ts
   function parseTime(hhmm) {
     const [h, m] = hhmm.split(":").map(Number);
     return h * 60 + m;
   }
   function formatTime(mins) {
-    const m = (mins % (24 * 60) + 24 * 60) % (24 * 60);
+    const m = (Math.floor(mins) % (24 * 60) + 24 * 60) % (24 * 60);
     const h = Math.floor(m / 60);
     const min = m % 60;
     return `${String(h).padStart(2, "0")}:${String(min).padStart(2, "0")}`;
   }
-  function generateSchedule(line2, count = 12) {
+  function effectiveFrequency(line2, simMinutes) {
+    const period = periodFromMinutes(simMinutes);
+    const mult = frequencyMultiplier(period, line2.mode);
+    if (line2.busFamily === "N" && period !== "noche") {
+      return Math.max(line2.frequencyMin, 45);
+    }
+    return Math.max(2, Math.round(line2.frequencyMin * mult));
+  }
+  function generateSchedule(line2, simMinutes, count = 12) {
+    if (line2.status === "suspendida") return [];
     const start = parseTime(line2.firstDeparture);
     const end = parseTime(line2.lastDeparture);
-    const freq = Math.max(1, line2.frequencyMin);
-    const now = /* @__PURE__ */ new Date();
-    const nowMins = now.getHours() * 60 + now.getMinutes();
+    const freq = effectiveFrequency(line2, simMinutes);
+    const nowMins = Math.floor(simMinutes);
     const crossesMidnight = end <= start;
     const dayTimes = [];
     if (crossesMidnight) {
@@ -13938,18 +14371,26 @@
     } else {
       for (let t = start; t <= end; t += freq) dayTimes.push(t);
     }
-    const todayUpcoming = dayTimes.filter((t) => t >= nowMins);
-    const result = [...todayUpcoming];
+    const slip = line2.status === "retrasos" ? 5 : line2.status === "obras" ? 10 : 0;
+    const adjusted = dayTimes.map((t) => (t + slip) % (24 * 60));
+    const upcoming = adjusted.filter((t) => t >= nowMins);
+    const result = [...upcoming];
     if (result.length < count) {
-      for (const t of dayTimes) {
+      for (const t of adjusted) {
         result.push(t);
         if (result.length >= count) break;
       }
     }
     return result.slice(0, count).map(formatTime);
   }
-  function nextDepartures(line2, n = 3) {
-    return generateSchedule(line2, n);
+  function minutesUntilNext(line2, simMinutes) {
+    const next = generateSchedule(line2, simMinutes, 1)[0];
+    if (!next) return null;
+    const nextMins = parseTime(next);
+    const now = Math.floor(simMinutes);
+    let diff = nextMins - now;
+    if (diff < 0) diff += 24 * 60;
+    return diff;
   }
   function delayLabel(line2) {
     if (line2.status === "normal") return null;
@@ -13957,9 +14398,11 @@
     if (line2.status === "obras") return "+8\u201312 min";
     return "+4\u20137 min";
   }
-  function simulatedClock() {
-    const d = /* @__PURE__ */ new Date();
-    return formatTime(d.getHours() * 60 + d.getMinutes());
+  function formatCountdown(mins) {
+    if (mins == null) return "\u2014";
+    if (mins <= 0) return "En and\xE9n";
+    if (mins === 1) return "1 min";
+    return `${mins} min`;
   }
 
   // src/data/types.ts
@@ -14008,7 +14451,7 @@
   // src/components/DetailPanel.css
   (() => {
     const style = document.createElement("style");
-    style.textContent = ".detail-panel {\n  position: absolute;\n  top: 4.5rem;\n  right: 1rem;\n  width: min(340px, calc(100% - 2rem));\n  max-height: calc(100% - 5.5rem);\n  overflow-y: auto;\n  background: rgba(255, 255, 255, 0.94);\n  backdrop-filter: blur(12px);\n  border: 1px solid rgba(26, 35, 50, 0.1);\n  border-radius: 14px;\n  box-shadow: 0 16px 40px rgba(18, 26, 38, 0.18);\n  padding: 1.1rem 1.15rem 1.35rem;\n  z-index: 20;\n  animation: slideIn 0.28s ease;\n}\n\n@keyframes slideIn {\n  from {\n    opacity: 0;\n    transform: translateX(12px);\n  }\n  to {\n    opacity: 1;\n    transform: translateX(0);\n  }\n}\n\n.detail-close {\n  position: absolute;\n  top: 0.65rem;\n  right: 0.7rem;\n  width: 2rem;\n  height: 2rem;\n  border: none;\n  border-radius: 8px;\n  background: rgba(26, 35, 50, 0.06);\n  font-size: 1.35rem;\n  line-height: 1;\n  cursor: pointer;\n  color: #1a2332;\n}\n\n.detail-close:hover {\n  background: rgba(26, 35, 50, 0.12);\n}\n\n.detail-header {\n  display: flex;\n  gap: 0.75rem;\n  align-items: flex-start;\n  padding-right: 1.5rem;\n}\n\n.detail-badge {\n  flex-shrink: 0;\n  background: var(--accent, #c45c26);\n  color: #fff;\n  font-family: 'Sora', sans-serif;\n  font-weight: 700;\n  font-size: 0.95rem;\n  padding: 0.45rem 0.55rem;\n  border-radius: 8px;\n  min-width: 2.8rem;\n  text-align: center;\n}\n\n.detail-kicker {\n  margin: 0;\n  font-family: 'Sora', sans-serif;\n  font-size: 0.65rem;\n  letter-spacing: 0.14em;\n  text-transform: uppercase;\n  color: #c45c26;\n  font-weight: 600;\n}\n\n.detail-panel h2 {\n  margin: 0.15rem 0 0;\n  font-family: 'Sora', sans-serif;\n  font-size: 1.15rem;\n  font-weight: 700;\n  letter-spacing: -0.02em;\n  color: #1a2332;\n  line-height: 1.2;\n}\n\n.detail-desc {\n  margin: 0.35rem 0 0;\n  font-size: 0.85rem;\n  color: rgba(26, 35, 50, 0.6);\n}\n\n.detail-pills {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 0.35rem;\n  margin-top: 0.85rem;\n}\n\n.share-btn {\n  margin-top: 0.75rem;\n  width: 100%;\n  border: 1px solid rgba(26, 35, 50, 0.12);\n  background: rgba(26, 35, 50, 0.04);\n  color: #1a2332;\n  font-family: 'Manrope', sans-serif;\n  font-size: 0.8rem;\n  font-weight: 600;\n  padding: 0.5rem 0.65rem;\n  border-radius: 8px;\n  cursor: pointer;\n}\n\n.share-btn:hover {\n  border-color: rgba(196, 92, 38, 0.45);\n  background: rgba(196, 92, 38, 0.08);\n}\n\n.pill {\n  font-size: 0.7rem;\n  padding: 0.25rem 0.5rem;\n  border-radius: 999px;\n  background: rgba(26, 35, 50, 0.06);\n  color: #1a2332;\n  font-weight: 600;\n}\n\n.pill.status-retrasos,\n.pill.warn {\n  background: rgba(245, 166, 35, 0.2);\n  color: #8a5a00;\n}\n\n.pill.status-obras {\n  background: rgba(66, 165, 245, 0.2);\n  color: #0d47a1;\n}\n\n.pill.status-suspendida {\n  background: rgba(229, 57, 53, 0.18);\n  color: #b71c1c;\n}\n\n.pill.status-normal {\n  background: rgba(67, 160, 71, 0.15);\n  color: #1b5e20;\n}\n\n.operator-box {\n  margin-top: 0.9rem;\n  padding: 0.75rem;\n  border-radius: 10px;\n  background: linear-gradient(135deg, #15202e, #1e2d42);\n  color: #e8edf3;\n}\n\n.occ-row {\n  display: flex;\n  justify-content: space-between;\n  font-size: 0.8rem;\n  margin-bottom: 0.4rem;\n}\n\n.occ-bar {\n  height: 6px;\n  border-radius: 4px;\n  background: rgba(255, 255, 255, 0.12);\n  overflow: hidden;\n}\n\n.occ-fill {\n  height: 100%;\n  border-radius: 4px;\n  transition: width 0.4s ease;\n}\n\n.op-note {\n  margin: 0.65rem 0 0;\n  font-size: 0.78rem;\n  line-height: 1.4;\n  color: rgba(232, 237, 243, 0.85);\n}\n\n.op-meta {\n  margin: 0.45rem 0 0;\n  font-size: 0.65rem;\n  color: rgba(232, 237, 243, 0.45);\n}\n\n.detail-section {\n  margin-top: 1.1rem;\n}\n\n.detail-section h3 {\n  margin: 0 0 0.55rem;\n  font-family: 'Sora', sans-serif;\n  font-size: 0.7rem;\n  letter-spacing: 0.1em;\n  text-transform: uppercase;\n  color: rgba(26, 35, 50, 0.5);\n}\n\n.schedule-grid {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 0.35rem;\n}\n\n.time-chip {\n  font-family: 'Sora', sans-serif;\n  font-variant-numeric: tabular-nums;\n  font-size: 0.82rem;\n  font-weight: 600;\n  padding: 0.35rem 0.5rem;\n  border-radius: 6px;\n  background: rgba(26, 35, 50, 0.05);\n  color: #1a2332;\n  border-left: 3px solid var(--accent, #c45c26);\n}\n\n.stop-list {\n  list-style: none;\n  margin: 0;\n  padding: 0;\n  position: relative;\n}\n\n.stop-list::before {\n  content: '';\n  position: absolute;\n  left: 5px;\n  top: 8px;\n  bottom: 8px;\n  width: 2px;\n  background: var(--accent, #c45c26);\n  opacity: 0.35;\n}\n\n.stop-list li {\n  display: flex;\n  gap: 0.65rem;\n  align-items: flex-start;\n  padding: 0.35rem 0;\n  font-size: 0.86rem;\n  color: #1a2332;\n}\n\n.stop-dot {\n  width: 12px;\n  height: 12px;\n  border-radius: 50%;\n  border: 2.5px solid var(--accent, #c45c26);\n  background: #fff;\n  flex-shrink: 0;\n  margin-top: 0.15rem;\n  z-index: 1;\n}\n\n.stop-list small {\n  display: block;\n  font-size: 0.7rem;\n  color: rgba(26, 35, 50, 0.45);\n}\n\n.station-lines {\n  list-style: none;\n  margin: 0.85rem 0 0;\n  padding: 0;\n}\n\n.station-lines li button {\n  width: 100%;\n  display: flex;\n  gap: 0.65rem;\n  align-items: center;\n  padding: 0.55rem;\n  margin-bottom: 0.3rem;\n  border: 1px solid rgba(26, 35, 50, 0.08);\n  border-radius: 8px;\n  background: #fff;\n  cursor: pointer;\n  text-align: left;\n  font-family: 'Manrope', sans-serif;\n}\n\n.station-lines li button:hover {\n  border-color: rgba(196, 92, 38, 0.4);\n}\n\n.station-lines span {\n  display: flex;\n  flex-direction: column;\n  gap: 0.1rem;\n  font-size: 0.85rem;\n  font-weight: 600;\n  color: #1a2332;\n}\n\n.station-lines small {\n  font-weight: 500;\n  font-size: 0.7rem;\n  color: rgba(26, 35, 50, 0.5);\n}\n\n.mini-badge {\n  color: #fff;\n  font-family: 'Sora', sans-serif;\n  font-size: 0.7rem;\n  font-weight: 700;\n  padding: 0.3rem 0.4rem;\n  border-radius: 5px;\n  min-width: 2.2rem;\n  text-align: center;\n}\n";
+    style.textContent = ".detail-panel {\n  position: absolute;\n  top: 4.5rem;\n  right: 1rem;\n  width: min(340px, calc(100% - 2rem));\n  max-height: calc(100% - 5.5rem);\n  overflow-y: auto;\n  background: rgba(255, 255, 255, 0.94);\n  backdrop-filter: blur(12px);\n  border: 1px solid rgba(26, 35, 50, 0.1);\n  border-radius: 14px;\n  box-shadow: 0 16px 40px rgba(18, 26, 38, 0.18);\n  padding: 1.1rem 1.15rem 1.35rem;\n  z-index: 20;\n  animation: slideIn 0.28s ease;\n}\n\n@keyframes slideIn {\n  from {\n    opacity: 0;\n    transform: translateX(12px);\n  }\n  to {\n    opacity: 1;\n    transform: translateX(0);\n  }\n}\n\n.detail-close {\n  position: absolute;\n  top: 0.65rem;\n  right: 0.7rem;\n  width: 2rem;\n  height: 2rem;\n  border: none;\n  border-radius: 8px;\n  background: rgba(26, 35, 50, 0.06);\n  font-size: 1.35rem;\n  line-height: 1;\n  cursor: pointer;\n  color: #1a2332;\n}\n\n.detail-close:hover {\n  background: rgba(26, 35, 50, 0.12);\n}\n\n.detail-header {\n  display: flex;\n  gap: 0.75rem;\n  align-items: flex-start;\n  padding-right: 1.5rem;\n}\n\n.detail-badge {\n  flex-shrink: 0;\n  background: var(--accent, #c45c26);\n  color: #fff;\n  font-family: 'Sora', sans-serif;\n  font-weight: 700;\n  font-size: 0.95rem;\n  padding: 0.45rem 0.55rem;\n  border-radius: 8px;\n  min-width: 2.8rem;\n  text-align: center;\n}\n\n.detail-kicker {\n  margin: 0;\n  font-family: 'Sora', sans-serif;\n  font-size: 0.65rem;\n  letter-spacing: 0.14em;\n  text-transform: uppercase;\n  color: #c45c26;\n  font-weight: 600;\n}\n\n.detail-panel h2 {\n  margin: 0.15rem 0 0;\n  font-family: 'Sora', sans-serif;\n  font-size: 1.15rem;\n  font-weight: 700;\n  letter-spacing: -0.02em;\n  color: #1a2332;\n  line-height: 1.2;\n}\n\n.detail-desc {\n  margin: 0.35rem 0 0;\n  font-size: 0.85rem;\n  color: rgba(26, 35, 50, 0.6);\n}\n\n.next-banner {\n  display: flex;\n  align-items: baseline;\n  gap: 0.55rem;\n  margin-top: 0.85rem;\n  padding: 0.55rem 0.7rem;\n  border-radius: 10px;\n  background: linear-gradient(135deg, rgba(196, 92, 38, 0.12), rgba(26, 35, 50, 0.06));\n}\n\n.next-banner span {\n  font-size: 0.72rem;\n  font-weight: 600;\n  color: rgba(26, 35, 50, 0.55);\n  text-transform: uppercase;\n  letter-spacing: 0.06em;\n}\n\n.next-banner strong {\n  font-family: 'Sora', sans-serif;\n  font-size: 1.25rem;\n  color: #c45c26;\n}\n\n.next-banner em {\n  margin-left: auto;\n  font-style: normal;\n  font-size: 0.7rem;\n  font-weight: 700;\n  color: rgba(26, 35, 50, 0.45);\n}\n\n.detail-pills {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 0.35rem;\n  margin-top: 0.85rem;\n}\n\n.share-btn {\n  margin-top: 0.75rem;\n  width: 100%;\n  border: 1px solid rgba(26, 35, 50, 0.12);\n  background: rgba(26, 35, 50, 0.04);\n  color: #1a2332;\n  font-family: 'Manrope', sans-serif;\n  font-size: 0.8rem;\n  font-weight: 600;\n  padding: 0.5rem 0.65rem;\n  border-radius: 8px;\n  cursor: pointer;\n}\n\n.share-btn:hover {\n  border-color: rgba(196, 92, 38, 0.45);\n  background: rgba(196, 92, 38, 0.08);\n}\n\n.pill {\n  font-size: 0.7rem;\n  padding: 0.25rem 0.5rem;\n  border-radius: 999px;\n  background: rgba(26, 35, 50, 0.06);\n  color: #1a2332;\n  font-weight: 600;\n}\n\n.pill.status-retrasos,\n.pill.warn {\n  background: rgba(245, 166, 35, 0.2);\n  color: #8a5a00;\n}\n\n.pill.status-obras {\n  background: rgba(66, 165, 245, 0.2);\n  color: #0d47a1;\n}\n\n.pill.status-suspendida {\n  background: rgba(229, 57, 53, 0.18);\n  color: #b71c1c;\n}\n\n.pill.status-normal {\n  background: rgba(67, 160, 71, 0.15);\n  color: #1b5e20;\n}\n\n.operator-box {\n  margin-top: 0.9rem;\n  padding: 0.75rem;\n  border-radius: 10px;\n  background: linear-gradient(135deg, #15202e, #1e2d42);\n  color: #e8edf3;\n}\n\n.occ-row {\n  display: flex;\n  justify-content: space-between;\n  font-size: 0.8rem;\n  margin-bottom: 0.4rem;\n}\n\n.occ-bar {\n  height: 6px;\n  border-radius: 4px;\n  background: rgba(255, 255, 255, 0.12);\n  overflow: hidden;\n}\n\n.occ-fill {\n  height: 100%;\n  border-radius: 4px;\n  transition: width 0.4s ease;\n}\n\n.op-note {\n  margin: 0.65rem 0 0;\n  font-size: 0.78rem;\n  line-height: 1.4;\n  color: rgba(232, 237, 243, 0.85);\n}\n\n.op-meta {\n  margin: 0.45rem 0 0;\n  font-size: 0.65rem;\n  color: rgba(232, 237, 243, 0.45);\n}\n\n.detail-section {\n  margin-top: 1.1rem;\n}\n\n.detail-section h3 {\n  margin: 0 0 0.55rem;\n  font-family: 'Sora', sans-serif;\n  font-size: 0.7rem;\n  letter-spacing: 0.1em;\n  text-transform: uppercase;\n  color: rgba(26, 35, 50, 0.5);\n}\n\n.schedule-grid {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 0.35rem;\n}\n\n.time-chip {\n  font-family: 'Sora', sans-serif;\n  font-variant-numeric: tabular-nums;\n  font-size: 0.82rem;\n  font-weight: 600;\n  padding: 0.35rem 0.5rem;\n  border-radius: 6px;\n  background: rgba(26, 35, 50, 0.05);\n  color: #1a2332;\n  border-left: 3px solid var(--accent, #c45c26);\n}\n\n.stop-list {\n  list-style: none;\n  margin: 0;\n  padding: 0;\n  position: relative;\n}\n\n.stop-list::before {\n  content: '';\n  position: absolute;\n  left: 5px;\n  top: 8px;\n  bottom: 8px;\n  width: 2px;\n  background: var(--accent, #c45c26);\n  opacity: 0.35;\n}\n\n.stop-list li {\n  display: flex;\n  gap: 0.65rem;\n  align-items: flex-start;\n  padding: 0.35rem 0;\n  font-size: 0.86rem;\n  color: #1a2332;\n}\n\n.stop-dot {\n  width: 12px;\n  height: 12px;\n  border-radius: 50%;\n  border: 2.5px solid var(--accent, #c45c26);\n  background: #fff;\n  flex-shrink: 0;\n  margin-top: 0.15rem;\n  z-index: 1;\n}\n\n.stop-list small {\n  display: block;\n  font-size: 0.7rem;\n  color: rgba(26, 35, 50, 0.45);\n}\n\n.station-lines {\n  list-style: none;\n  margin: 0.85rem 0 0;\n  padding: 0;\n}\n\n.station-lines li button {\n  width: 100%;\n  display: flex;\n  gap: 0.65rem;\n  align-items: center;\n  padding: 0.55rem;\n  margin-bottom: 0.3rem;\n  border: 1px solid rgba(26, 35, 50, 0.08);\n  border-radius: 8px;\n  background: #fff;\n  cursor: pointer;\n  text-align: left;\n  font-family: 'Manrope', sans-serif;\n}\n\n.station-lines li button:hover {\n  border-color: rgba(196, 92, 38, 0.4);\n}\n\n.station-lines span {\n  display: flex;\n  flex-direction: column;\n  gap: 0.1rem;\n  font-size: 0.85rem;\n  font-weight: 600;\n  color: #1a2332;\n}\n\n.station-lines small {\n  font-weight: 500;\n  font-size: 0.7rem;\n  color: rgba(26, 35, 50, 0.5);\n}\n\n.mini-badge {\n  color: #fff;\n  font-family: 'Sora', sans-serif;\n  font-size: 0.7rem;\n  font-weight: 700;\n  padding: 0.3rem 0.4rem;\n  border-radius: 5px;\n  min-width: 2.2rem;\n  text-align: center;\n}\n";
     document.head.appendChild(style);
   })();
 
@@ -14023,6 +14466,8 @@
     role,
     selectedLineId,
     selectedStationId,
+    simMinutes,
+    period,
     onSelectLine,
     onClose
   }) {
@@ -14052,15 +14497,15 @@
           " l\xEDneas"
         ] }),
         /* @__PURE__ */ (0, import_jsx_runtime.jsx)("ul", { className: "station-lines", children: connected.map((l) => {
-          var _a2;
+          const eta2 = minutesUntilNext(l, simMinutes);
           return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", { type: "button", onClick: () => onSelectLine(l.id), children: [
             /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "mini-badge", style: { background: l.color }, children: l.code }),
             /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: [
               l.name,
               /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("small", { children: [
                 MODE_LABELS[l.mode],
-                " \xB7 pr\xF3ximo ",
-                (_a2 = nextDepartures(l, 1)[0]) != null ? _a2 : "\u2014"
+                " \xB7 en ",
+                formatCountdown(eta2)
               ] })
             ] })
           ] }) }, l.id);
@@ -14068,7 +14513,10 @@
       ] });
     }
     if (!line2) return null;
-    const schedule = generateSchedule(line2, 10);
+    const schedule = generateSchedule(line2, simMinutes, 10);
+    const eta = minutesUntilNext(line2, simMinutes);
+    const freq = effectiveFrequency(line2, simMinutes);
+    const occ = occupancyForPeriod(line2.occupancy, period);
     const stops = line2.stationIds.map((id) => getStation(id)).filter(Boolean);
     const delay = delayLabel(line2);
     return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "detail-panel", style: { ["--accent"]: line2.color }, children: [
@@ -14080,12 +14528,17 @@
           /* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", { children: line2.name })
         ] })
       ] }),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "next-banner", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Pr\xF3ximo" }),
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: formatCountdown(eta) }),
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("em", { children: PERIOD_LABELS[period] })
+      ] }),
       /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "detail-pills", children: [
         /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: `pill status-${line2.status}`, children: STATUS_LABELS[line2.status] }),
         /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { className: "pill", children: [
           "Cada ",
-          line2.frequencyMin,
-          " min"
+          freq,
+          " min ahora"
         ] }),
         /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { className: "pill", children: [
           line2.firstDeparture,
@@ -14114,9 +14567,13 @@
       ),
       role === "operador" && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "operator-box", children: [
         /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "occ-row", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Ocupaci\xF3n simulada" }),
+          /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: [
+            "Ocupaci\xF3n (",
+            PERIOD_LABELS[period],
+            ")"
+          ] }),
           /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("strong", { children: [
-            line2.occupancy,
+            occ,
             "%"
           ] })
         ] }),
@@ -14125,17 +14582,26 @@
           {
             className: "occ-fill",
             style: {
-              width: `${line2.occupancy}%`,
-              background: line2.occupancy > 80 ? "#e53935" : line2.occupancy > 60 ? "#f5a623" : "#43a047"
+              width: `${occ}%`,
+              background: occ > 80 ? "#e53935" : occ > 60 ? "#f5a623" : "#43a047"
             }
           }
         ) }),
         line2.operatorNote && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: "op-note", children: line2.operatorNote }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: "op-meta", children: "Modo operador \xB7 datos simulados en tiempo real de la red Heliora" })
+        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", { className: "op-meta", children: [
+          "Frecuencia base ",
+          line2.frequencyMin,
+          " min \xB7 efectiva ",
+          freq,
+          " min"
+        ] })
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("section", { className: "detail-section", children: [
         /* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", { children: "Pr\xF3ximas salidas" }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "schedule-grid", children: schedule.map((t, i) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "time-chip", children: t }, `${t}-${i}`)) })
+        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "schedule-grid", children: [
+          schedule.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "time-chip", children: "Sin servicio" }),
+          schedule.map((t, i) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "time-chip", children: t }, `${t}-${i}`))
+        ] })
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("section", { className: "detail-section", children: [
         /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h3", { children: [
@@ -14241,6 +14707,13 @@
   var import_react2 = __toESM(require_react(), 1);
 
   // src/data/routing.ts
+  function transferWalkMinutes(stationId) {
+    const st = getStation(stationId);
+    if (!st) return 3;
+    if (st.majorHub) return 5;
+    if (st.interchange) return 3;
+    return 2;
+  }
   function buildGraph() {
     const graph2 = /* @__PURE__ */ new Map();
     const add = (from, edge) => {
@@ -14314,17 +14787,22 @@
     if (!legs.length) return null;
     const totalStops = legs.reduce((a, l) => a + l.stopCount, 0);
     const transfers = Math.max(0, legs.length - 1);
+    let walkMinutes = 0;
+    for (let i2 = 1; i2 < legs.length; i2++) {
+      walkMinutes += transferWalkMinutes(legs[i2].fromId);
+    }
     const estimatedMinutes = Math.round(
       legs.reduce((acc, leg) => {
         const wait = Math.min(8, leg.line.frequencyMin * 0.4);
         return acc + leg.stopCount * modeWeight(leg.line.mode) + wait;
-      }, 0) + transfers * 4
+      }, 0) + walkMinutes
     );
     const plan = {
       legs,
       totalStops,
       transfers,
       estimatedMinutes,
+      walkMinutes,
       stationIds: stationPath,
       label: "",
       steps: []
@@ -14345,9 +14823,10 @@
           stationId: leg.fromId
         });
       } else {
+        const walk = transferWalkMinutes(leg.fromId);
         steps.push({
           kind: "transfer",
-          text: `Baja en ${fromName} y cambia a la ${leg.line.code} (${leg.line.name})`,
+          text: `Baja en ${fromName} y camina ~${walk} min hasta el and\xE9n de la ${leg.line.code} (${leg.line.name})`,
           line: leg.line,
           stationId: leg.fromId
         });
@@ -14581,7 +15060,8 @@
             " paradas \xB7 ",
             plan.transfers,
             " trasbordo",
-            plan.transfers === 1 ? "" : "s"
+            plan.transfers === 1 ? "" : "s",
+            plan.walkMinutes > 0 ? ` \xB7 ${plan.walkMinutes} min a pie` : ""
           ] })
         ] }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h3", { className: "steps-title", children: "Indicaciones" }),
@@ -14626,8 +15106,13 @@
     line: line2,
     selected,
     role,
-    onSelect
+    onSelect,
+    simMinutes,
+    period
   }) {
+    const freq = effectiveFrequency(line2, simMinutes);
+    const eta = minutesUntilNext(line2, simMinutes);
+    const occ = occupancyForPeriod(line2.occupancy, period);
     return /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)(
       "button",
       {
@@ -14643,13 +15128,14 @@
               line2.busFamily ? `Bus ${BUS_FAMILY_LABELS[line2.busFamily]}` : MODE_LABELS[line2.mode],
               " ",
               "\xB7 cada ",
-              line2.frequencyMin,
-              " min",
+              freq,
+              " min \xB7 pr\xF3ximo ",
+              formatCountdown(eta),
               role === "operador" && /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)(import_jsx_runtime4.Fragment, { children: [
                 " \xB7 ",
                 STATUS_LABELS[line2.status],
                 " \xB7 ",
-                line2.occupancy,
+                occ,
                 "%"
               ] })
             ] })
@@ -14669,7 +15155,9 @@
     onSelectLine,
     onSelectStation,
     onClearSelection,
-    onRoute
+    onRoute,
+    simMinutes,
+    period
   }) {
     const q = search.trim().toLowerCase();
     const filteredLines = lines.filter((l) => {
@@ -14686,7 +15174,10 @@
     })).filter((g) => g.items.length > 0);
     return /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("aside", { className: "side-panel", children: [
       /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("header", { className: "side-brand", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("p", { className: "brand-kicker", children: "Costa Sur \xB7 v0.2" }),
+        /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("p", { className: "brand-kicker", children: [
+          "Costa Sur \xB7 v0.3 \xB7 ",
+          PERIOD_LABELS[period]
+        ] }),
         /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("h1", { className: "brand-name", children: CITY.name }),
         /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("p", { className: "brand-tag", children: CITY.tagline }),
         /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("div", { className: "brand-stats", children: [
@@ -14775,7 +15266,9 @@
               line: line2,
               selected: selectedLineId === line2.id,
               role,
-              onSelect: () => onSelectLine(line2.id)
+              onSelect: () => onSelectLine(line2.id),
+              simMinutes,
+              period
             },
             line2.id
           ))
@@ -14788,13 +15281,26 @@
   // src/components/TopBar.css
   (() => {
     const style = document.createElement("style");
-    style.textContent = ".top-bar {\n  position: absolute;\n  top: 0.85rem;\n  left: 50%;\n  transform: translateX(-50%);\n  display: flex;\n  align-items: center;\n  gap: 0.75rem;\n  z-index: 15;\n  padding: 0.4rem;\n  background: rgba(255, 255, 255, 0.92);\n  backdrop-filter: blur(10px);\n  border: 1px solid rgba(26, 35, 50, 0.1);\n  border-radius: 12px;\n  box-shadow: 0 8px 24px rgba(18, 26, 38, 0.12);\n}\n\n.role-switch {\n  display: flex;\n  background: rgba(26, 35, 50, 0.06);\n  border-radius: 8px;\n  padding: 0.15rem;\n}\n\n.role-switch button {\n  border: none;\n  background: transparent;\n  padding: 0.4rem 0.75rem;\n  border-radius: 6px;\n  font-family: 'Manrope', sans-serif;\n  font-size: 0.8rem;\n  font-weight: 600;\n  color: rgba(26, 35, 50, 0.55);\n  cursor: pointer;\n  transition: background 0.15s, color 0.15s;\n}\n\n.role-switch button.active {\n  background: #1a2332;\n  color: #fff;\n}\n\n.top-center {\n  display: flex;\n  align-items: center;\n  gap: 0.45rem;\n  font-size: 0.78rem;\n  color: rgba(26, 35, 50, 0.65);\n  font-weight: 500;\n  padding: 0 0.35rem;\n  white-space: nowrap;\n}\n\n.top-center time {\n  font-family: 'Sora', sans-serif;\n  font-variant-numeric: tabular-nums;\n  font-weight: 700;\n  color: #1a2332;\n}\n\n.live-dot {\n  width: 7px;\n  height: 7px;\n  border-radius: 50%;\n  background: #43a047;\n  box-shadow: 0 0 0 0 rgba(67, 160, 71, 0.5);\n  animation: pulse 1.8s ease infinite;\n}\n\n@keyframes pulse {\n  0% {\n    box-shadow: 0 0 0 0 rgba(67, 160, 71, 0.45);\n  }\n  70% {\n    box-shadow: 0 0 0 8px rgba(67, 160, 71, 0);\n  }\n  100% {\n    box-shadow: 0 0 0 0 rgba(67, 160, 71, 0);\n  }\n}\n\n.zoom-controls {\n  display: flex;\n  gap: 0.2rem;\n}\n\n.zoom-controls button {\n  width: 2rem;\n  height: 2rem;\n  border: 1px solid rgba(26, 35, 50, 0.12);\n  border-radius: 7px;\n  background: #fff;\n  font-size: 1rem;\n  font-weight: 600;\n  cursor: pointer;\n  color: #1a2332;\n  line-height: 1;\n}\n\n.zoom-controls button:hover {\n  background: rgba(26, 35, 50, 0.05);\n}\n\n@media (max-width: 720px) {\n  .top-bar {\n    left: 0.75rem;\n    right: 0.75rem;\n    transform: none;\n    width: auto;\n    justify-content: space-between;\n  }\n\n  .top-center span:nth-child(2) {\n    display: none;\n  }\n}\n";
+    style.textContent = ".top-bar {\n  position: absolute;\n  top: 0.85rem;\n  left: 50%;\n  transform: translateX(-50%);\n  display: flex;\n  align-items: center;\n  gap: 0.65rem;\n  z-index: 15;\n  padding: 0.4rem;\n  background: rgba(255, 255, 255, 0.94);\n  backdrop-filter: blur(10px);\n  border: 1px solid rgba(26, 35, 50, 0.1);\n  border-radius: 12px;\n  box-shadow: 0 8px 24px rgba(18, 26, 38, 0.12);\n  max-width: calc(100% - 1.5rem);\n  flex-wrap: wrap;\n  justify-content: center;\n}\n\n.role-switch {\n  display: flex;\n  background: rgba(26, 35, 50, 0.06);\n  border-radius: 8px;\n  padding: 0.15rem;\n}\n\n.role-switch button {\n  border: none;\n  background: transparent;\n  padding: 0.4rem 0.75rem;\n  border-radius: 6px;\n  font-family: 'Manrope', sans-serif;\n  font-size: 0.8rem;\n  font-weight: 600;\n  color: rgba(26, 35, 50, 0.55);\n  cursor: pointer;\n}\n\n.role-switch button.active {\n  background: #1a2332;\n  color: #fff;\n}\n\n.clock-panel {\n  display: flex;\n  align-items: center;\n  gap: 0.4rem;\n  flex-wrap: wrap;\n}\n\n.clock-input-wrap input[type='time'] {\n  border: 1px solid rgba(26, 35, 50, 0.15);\n  border-radius: 7px;\n  padding: 0.3rem 0.4rem;\n  font-family: 'Sora', sans-serif;\n  font-weight: 700;\n  font-size: 0.85rem;\n  color: #1a2332;\n  background: #fff;\n}\n\n.period-pill {\n  font-size: 0.68rem;\n  font-weight: 700;\n  padding: 0.25rem 0.5rem;\n  border-radius: 999px;\n  white-space: nowrap;\n}\n\n.period-punta {\n  background: rgba(229, 57, 53, 0.15);\n  color: #b71c1c;\n}\n\n.period-valle {\n  background: rgba(67, 160, 71, 0.15);\n  color: #1b5e20;\n}\n\n.period-noche {\n  background: rgba(26, 35, 50, 0.12);\n  color: #1a2332;\n}\n\n.clock-actions {\n  display: flex;\n  gap: 0.2rem;\n}\n\n.clock-actions button {\n  border: 1px solid rgba(26, 35, 50, 0.12);\n  background: #fff;\n  border-radius: 6px;\n  padding: 0.28rem 0.4rem;\n  font-size: 0.68rem;\n  font-weight: 600;\n  cursor: pointer;\n  color: #1a2332;\n  font-family: 'Manrope', sans-serif;\n}\n\n.clock-actions button:hover {\n  background: rgba(26, 35, 50, 0.05);\n}\n\n.live-dot {\n  width: 7px;\n  height: 7px;\n  border-radius: 50%;\n  background: #43a047;\n  animation: pulse 1.8s ease infinite;\n}\n\n.live-dot.paused {\n  background: #f5a623;\n  animation: none;\n}\n\n@keyframes pulse {\n  0% {\n    box-shadow: 0 0 0 0 rgba(67, 160, 71, 0.45);\n  }\n  70% {\n    box-shadow: 0 0 0 8px rgba(67, 160, 71, 0);\n  }\n  100% {\n    box-shadow: 0 0 0 0 rgba(67, 160, 71, 0);\n  }\n}\n\n.zoom-controls {\n  display: flex;\n  gap: 0.2rem;\n}\n\n.zoom-controls button {\n  width: 2rem;\n  height: 2rem;\n  border: 1px solid rgba(26, 35, 50, 0.12);\n  border-radius: 7px;\n  background: #fff;\n  font-size: 1rem;\n  font-weight: 600;\n  cursor: pointer;\n  color: #1a2332;\n  line-height: 1;\n}\n\n.sr-only {\n  position: absolute;\n  width: 1px;\n  height: 1px;\n  padding: 0;\n  margin: -1px;\n  overflow: hidden;\n  clip: rect(0, 0, 0, 0);\n  border: 0;\n}\n\n@media (max-width: 720px) {\n  .top-bar {\n    left: 0.5rem;\n    right: 0.5rem;\n    transform: none;\n    width: auto;\n  }\n\n  .clock-actions button:nth-child(1),\n  .clock-actions button:nth-child(3) {\n    display: none;\n  }\n}\n";
     document.head.appendChild(style);
   })();
 
   // src/components/TopBar.tsx
   var import_jsx_runtime5 = __toESM(require_jsx_runtime(), 1);
-  function TopBar({ role, onRoleChange, clock, onZoomIn, onZoomOut, onReset }) {
+  function TopBar({
+    role,
+    onRoleChange,
+    clock,
+    period,
+    paused,
+    onTogglePause,
+    onSetTime,
+    onJump,
+    onSyncNow,
+    onZoomIn,
+    onZoomOut,
+    onReset
+  }) {
     return /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "top-bar", children: [
       /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "role-switch", role: "group", "aria-label": "Modo de usuario", children: [
         /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
@@ -14816,10 +15322,27 @@
           }
         )
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "top-center", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "live-dot" }),
-        /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { children: "Simulaci\xF3n en vivo" }),
-        /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("time", { children: clock || simulatedClock() })
+      /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "clock-panel", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: `live-dot ${paused ? "paused" : ""}` }),
+        /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("label", { className: "clock-input-wrap", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "sr-only", children: "Hora simulada" }),
+          /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+            "input",
+            {
+              type: "time",
+              value: clock,
+              onChange: (e) => onSetTime(e.target.value),
+              title: "Modificar hora de la simulaci\xF3n"
+            }
+          )
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: `period-pill period-${period}`, children: PERIOD_LABELS[period] }),
+        /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "clock-actions", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("button", { type: "button", onClick: () => onJump(-30), title: "-30 min", children: "\u221230" }),
+          /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("button", { type: "button", onClick: onTogglePause, title: paused ? "Reanudar" : "Pausar", children: paused ? "\u25B6" : "\u275A\u275A" }),
+          /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("button", { type: "button", onClick: () => onJump(30), title: "+30 min", children: "+30" }),
+          /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("button", { type: "button", onClick: onSyncNow, title: "Hora real", children: "Ahora" })
+        ] })
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "zoom-controls", children: [
         /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("button", { type: "button", onClick: onZoomOut, "aria-label": "Alejar", children: "\u2212" }),
@@ -14829,34 +15352,41 @@
     ] });
   }
 
+  // src/data/pathSmooth.ts
+  function smoothPathD(points, tension = 0.35) {
+    var _a;
+    if (points.length === 0) return "";
+    if (points.length === 1) return `M ${points[0].x} ${points[0].y}`;
+    if (points.length === 2) {
+      return `M ${points[0].x} ${points[0].y} L ${points[1].x} ${points[1].y}`;
+    }
+    let d = `M ${points[0].x} ${points[0].y}`;
+    for (let i = 0; i < points.length - 1; i++) {
+      const p0 = points[i === 0 ? 0 : i - 1];
+      const p1 = points[i];
+      const p2 = points[i + 1];
+      const p3 = (_a = points[i + 2]) != null ? _a : p2;
+      const cp1x = p1.x + (p2.x - p0.x) * tension / 3;
+      const cp1y = p1.y + (p2.y - p0.y) * tension / 3;
+      const cp2x = p2.x - (p3.x - p1.x) * tension / 3;
+      const cp2y = p2.y - (p3.y - p1.y) * tension / 3;
+      d += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p2.x} ${p2.y}`;
+    }
+    return d;
+  }
+
   // src/components/TransitMap.css
   (() => {
     const style = document.createElement("style");
-    style.textContent = ".transit-map {\n  display: block;\n  user-select: none;\n}\n\n.district-labels text {\n  fill: rgba(40, 55, 75, 0.16);\n  font-family: 'Sora', system-ui, sans-serif;\n  font-size: 14px;\n  font-weight: 600;\n  letter-spacing: 0.08em;\n  text-transform: uppercase;\n}\n\n.coastline {\n  stroke: rgba(56, 120, 160, 0.35);\n  stroke-width: 3;\n  stroke-dasharray: 8 6;\n}\n\n.line-hit {\n  cursor: pointer;\n}\n\n.line-path {\n  transition: stroke-width 0.2s ease, opacity 0.25s ease;\n}\n\n.line-selected {\n  filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.25));\n}\n\n.station {\n  cursor: pointer;\n  transition: opacity 0.2s ease;\n}\n\n.station-dot {\n  fill: #1a2332;\n  stroke: #eef1f4;\n  stroke-width: 1.5;\n}\n\n.station-ring {\n  fill: #eef1f4;\n  stroke: #1a2332;\n  stroke-width: 2.5;\n}\n\n.station-core {\n  fill: #1a2332;\n}\n\n.hub-ring-outer {\n  fill: none;\n  stroke: rgba(196, 92, 38, 0.35);\n  stroke-width: 2;\n  stroke-dasharray: 3 3;\n}\n\n.station.active .station-ring {\n  stroke: #c45c26;\n  stroke-width: 3;\n}\n\n.station.active .station-core,\n.station.active .station-dot {\n  fill: #c45c26;\n}\n\n.station-label {\n  fill: #1a2332;\n  font-family: 'Manrope', system-ui, sans-serif;\n  font-weight: 600;\n  paint-order: stroke;\n  stroke: rgba(238, 241, 244, 0.92);\n  stroke-width: 3px;\n  pointer-events: none;\n}\n\n.hub-diagram-bg {\n  fill: rgba(255, 255, 255, 0.88);\n  stroke: rgba(26, 35, 50, 0.15);\n  stroke-width: 2;\n}\n\n.hub-diagram-title {\n  font-family: 'Sora', sans-serif;\n  font-size: 11px;\n  font-weight: 700;\n  fill: #1a2332;\n  letter-spacing: 0.04em;\n}\n\n.hub-spoke {\n  cursor: pointer;\n}\n\n.hub-spoke-code {\n  fill: #fff;\n  font-family: 'Sora', sans-serif;\n  font-size: 7px;\n  font-weight: 700;\n  pointer-events: none;\n}\n";
+    style.textContent = ".transit-map {\n  display: block;\n  user-select: none;\n}\n\n.district-labels text {\n  fill: rgba(40, 55, 75, 0.16);\n  font-family: 'Sora', system-ui, sans-serif;\n  font-size: 14px;\n  font-weight: 600;\n  letter-spacing: 0.08em;\n  text-transform: uppercase;\n}\n\n.coastline {\n  stroke: rgba(56, 120, 160, 0.35);\n  stroke-width: 3;\n  stroke-dasharray: 8 6;\n}\n\n.sierra-hint {\n  stroke: rgba(90, 70, 50, 0.12);\n  stroke-width: 18;\n  stroke-linecap: round;\n}\n\n.line-hit {\n  cursor: pointer;\n}\n\n.line-path {\n  transition: stroke-width 0.2s ease, opacity 0.25s ease;\n}\n\n.line-selected {\n  filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.25));\n}\n\n.station {\n  cursor: pointer;\n  transition: opacity 0.2s ease;\n}\n\n.station-dot {\n  fill: #1a2332;\n  stroke: #eef1f4;\n  stroke-width: 1.5;\n}\n\n.station-ring {\n  fill: #eef1f4;\n  stroke: #1a2332;\n  stroke-width: 2.5;\n}\n\n.station-core {\n  fill: #1a2332;\n}\n\n.hub-ring-outer {\n  fill: none;\n  stroke: rgba(196, 92, 38, 0.35);\n  stroke-width: 2;\n  stroke-dasharray: 3 3;\n}\n\n.station.active .station-ring {\n  stroke: #c45c26;\n  stroke-width: 3;\n}\n\n.station.active .station-core,\n.station.active .station-dot {\n  fill: #c45c26;\n}\n\n.station-label {\n  fill: #1a2332;\n  font-family: 'Manrope', system-ui, sans-serif;\n  font-weight: 600;\n  paint-order: stroke;\n  stroke: rgba(238, 241, 244, 0.92);\n  stroke-width: 3px;\n  pointer-events: none;\n}\n\n.hub-diagram-bg {\n  fill: rgba(255, 255, 255, 0.88);\n  stroke: rgba(26, 35, 50, 0.15);\n  stroke-width: 2;\n}\n\n.hub-diagram-title {\n  font-family: 'Sora', sans-serif;\n  font-size: 11px;\n  font-weight: 700;\n  fill: #1a2332;\n  letter-spacing: 0.04em;\n}\n\n.hub-spoke {\n  cursor: pointer;\n}\n\n.hub-spoke-code {\n  fill: #fff;\n  font-family: 'Sora', sans-serif;\n  font-size: 7px;\n  font-weight: 700;\n  pointer-events: none;\n}\n";
     document.head.appendChild(style);
   })();
 
   // src/components/TransitMap.tsx
   var import_jsx_runtime6 = __toESM(require_jsx_runtime(), 1);
-  function pathD(points) {
-    if (points.length === 0) return "";
-    let d = `M ${points[0].x} ${points[0].y}`;
-    for (let i = 1; i < points.length; i++) {
-      const prev = points[i - 1];
-      const curr = points[i];
-      const dx = curr.x - prev.x;
-      const dy = curr.y - prev.y;
-      if (Math.abs(dx) > 10 && Math.abs(dy) > 10) {
-        if (Math.abs(dx) >= Math.abs(dy)) {
-          d += ` L ${curr.x} ${prev.y} L ${curr.x} ${curr.y}`;
-        } else {
-          d += ` L ${prev.x} ${curr.y} L ${curr.x} ${curr.y}`;
-        }
-      } else {
-        d += ` L ${curr.x} ${curr.y}`;
-      }
-    }
-    return d;
+  function pathD(points, mode) {
+    const tension = mode === "bus" ? 0.5 : mode === "tranvia" ? 0.4 : mode === "metro" ? 0.28 : 0.35;
+    return smoothPathD(points, tension);
   }
   function strokeWidth(mode) {
     switch (mode) {
@@ -14927,19 +15457,27 @@
             ] })
           ] }),
           /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("rect", { width: CITY.mapWidth, height: CITY.mapHeight, fill: "url(#grid)" }),
-          /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("rect", { className: "sea-band", x: "0", y: "2100", width: CITY.mapWidth, height: "700", fill: "url(#sea)" }),
+          /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("rect", { className: "sea-band", x: "0", y: "2300", width: CITY.mapWidth, height: "900", fill: "url(#sea)" }),
           /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
             "path",
             {
               className: "coastline",
-              d: "M 0 2140 C 400 2180, 800 2080, 1200 2120 S 1800 2200, 2200 2160 S 3000 2080, 3600 2140 S 4000 2200, 4200 2150",
+              d: "M 0 2360 C 500 2420, 900 2280, 1400 2340 S 2100 2460, 2600 2380 S 3400 2280, 4000 2360 S 4400 2440, 4600 2370",
+              fill: "none"
+            }
+          ),
+          /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
+            "path",
+            {
+              className: "sierra-hint",
+              d: "M 800 380 C 1200 280, 1600 320, 2000 240 S 2600 180, 3000 260 S 3600 300, 4000 220",
               fill: "none"
             }
           ),
           showDistricts && /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("g", { className: "district-labels", pointerEvents: "none", children: districtLabels.map((d) => /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("text", { x: d.x, y: d.y, textAnchor: "middle", children: d.name }, d.id)) }),
           sorted.map((line2) => {
             const pts = getLinePath(line2);
-            const d = pathD(pts);
+            const d = pathD(pts, line2.mode);
             const selected = selectedLineId === line2.id || routeLines.has(line2.id);
             return /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("g", { opacity: lineOpacity(line2), className: "line-group", children: [
               /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
@@ -15207,6 +15745,68 @@
     };
   }
 
+  // src/hooks/useSimClock.ts
+  var import_react4 = __toESM(require_react(), 1);
+  function useSimClock() {
+    const [minutes, setMinutes] = (0, import_react4.useState)(() => nowMinutes());
+    const [paused, setPaused] = (0, import_react4.useState)(false);
+    const [tick, setTick] = (0, import_react4.useState)(0);
+    const lastWall = (0, import_react4.useRef)(Date.now());
+    const minutesRef = (0, import_react4.useRef)(minutes);
+    minutesRef.current = minutes;
+    (0, import_react4.useEffect)(() => {
+      const id = window.setInterval(() => {
+        const wall = Date.now();
+        const dtSec = (wall - lastWall.current) / 1e3;
+        lastWall.current = wall;
+        if (!paused) {
+          setMinutes((m) => {
+            const next = m + dtSec / 60;
+            return next >= 24 * 60 ? next - 24 * 60 : next;
+          });
+        }
+        setTick((t) => t + 1);
+      }, 1e3);
+      return () => window.clearInterval(id);
+    }, [paused]);
+    const setTime = (0, import_react4.useCallback)((hhmm) => {
+      setMinutes(parseClock(hhmm));
+      lastWall.current = Date.now();
+    }, []);
+    const setHoursMinutes = (0, import_react4.useCallback)((h, m) => {
+      setMinutes(((h * 60 + m) % (24 * 60) + 24 * 60) % (24 * 60));
+      lastWall.current = Date.now();
+    }, []);
+    const jumpMinutes = (0, import_react4.useCallback)((delta) => {
+      setMinutes((m) => {
+        let next = m + delta;
+        while (next < 0) next += 24 * 60;
+        while (next >= 24 * 60) next -= 24 * 60;
+        return next;
+      });
+      lastWall.current = Date.now();
+    }, []);
+    const syncNow = (0, import_react4.useCallback)(() => {
+      setMinutes(nowMinutes());
+      lastWall.current = Date.now();
+    }, []);
+    const togglePause = (0, import_react4.useCallback)(() => {
+      setPaused((p) => !p);
+    }, []);
+    return {
+      minutes,
+      clock: formatClock(minutes),
+      paused,
+      setPaused,
+      togglePause,
+      setTime,
+      setHoursMinutes,
+      jumpMinutes,
+      syncNow,
+      tick
+    };
+  }
+
   // src/App.css
   (() => {
     const style = document.createElement("style");
@@ -15236,14 +15836,15 @@
   }
   function App() {
     var _a, _b;
-    const [role, setRole] = (0, import_react4.useState)("pasajero");
-    const [selectedLineId, setSelectedLineId] = (0, import_react4.useState)(() => readLineFromUrl());
-    const [selectedStationId, setSelectedStationId] = (0, import_react4.useState)(null);
-    const [filterMode, setFilterMode] = (0, import_react4.useState)(null);
-    const [search, setSearch] = (0, import_react4.useState)("");
-    const [clock, setClock] = (0, import_react4.useState)(simulatedClock());
-    const [sidebarOpen, setSidebarOpen] = (0, import_react4.useState)(true);
-    const [routePlan, setRoutePlan] = (0, import_react4.useState)(null);
+    const [role, setRole] = (0, import_react5.useState)("pasajero");
+    const [selectedLineId, setSelectedLineId] = (0, import_react5.useState)(() => readLineFromUrl());
+    const [selectedStationId, setSelectedStationId] = (0, import_react5.useState)(null);
+    const [filterMode, setFilterMode] = (0, import_react5.useState)(null);
+    const [search, setSearch] = (0, import_react5.useState)("");
+    const [sidebarOpen, setSidebarOpen] = (0, import_react5.useState)(true);
+    const [routePlan, setRoutePlan] = (0, import_react5.useState)(null);
+    const sim = useSimClock();
+    const period = periodFromMinutes(sim.minutes);
     const {
       state,
       containerRef,
@@ -15254,22 +15855,16 @@
       reset,
       fitBounds,
       focusPoint
-    } = usePanZoom({ scale: 0.28, x: 20, y: 10 });
-    (0, import_react4.useEffect)(() => {
-      const id = window.setInterval(() => setClock(simulatedClock()), 15e3);
-      return () => window.clearInterval(id);
-    }, []);
-    (0, import_react4.useEffect)(() => {
+    } = usePanZoom({ scale: 0.24, x: 10, y: 0 });
+    (0, import_react5.useEffect)(() => {
       const id = readLineFromUrl();
       if (!id) return;
       const line2 = lines.find((l) => l.id === id);
       if (!line2) return;
       const bounds = getLineBounds(line2);
-      if (bounds) {
-        window.setTimeout(() => fitBounds(bounds, 100), 50);
-      }
+      if (bounds) window.setTimeout(() => fitBounds(bounds, 100), 50);
     }, [fitBounds]);
-    (0, import_react4.useEffect)(() => {
+    (0, import_react5.useEffect)(() => {
       const onKey = (e) => {
         var _a2;
         const tag = (_a2 = e.target) == null ? void 0 : _a2.tagName;
@@ -15306,7 +15901,7 @@
       setSelectedLineId(null);
       writeLineToUrl(null);
       const st = getStation(id);
-      if (st) focusPoint(st.x, st.y, 1.2);
+      if (st) focusPoint(st.x, st.y, 1.15);
     };
     const clearSelection = () => {
       setSelectedLineId(null);
@@ -15359,7 +15954,9 @@
           onSelectLine: selectLine,
           onSelectStation: selectStation,
           onClearSelection: clearSelection,
-          onRoute: handleRoute
+          onRoute: handleRoute,
+          simMinutes: sim.minutes,
+          period
         }
       ) }),
       /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)("main", { className: "map-stage", children: [
@@ -15401,7 +15998,13 @@
           {
             role,
             onRoleChange: setRole,
-            clock,
+            clock: sim.clock,
+            period,
+            paused: sim.paused,
+            onTogglePause: sim.togglePause,
+            onSetTime: sim.setTime,
+            onJump: sim.jumpMinutes,
+            onSyncNow: sim.syncNow,
             onZoomIn: () => zoomBy(1.2),
             onZoomOut: () => zoomBy(1 / 1.2),
             onReset: reset
@@ -15414,6 +16017,8 @@
             role,
             selectedLineId,
             selectedStationId,
+            simMinutes: sim.minutes,
+            period,
             onSelectLine: selectLine,
             onClose: () => {
               setSelectedLineId(null);
@@ -15422,7 +16027,7 @@
             }
           }
         ),
-        /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("p", { className: "map-hint", children: "Arrastra \xB7 rueda zoom \xB7 Esc cierra \xB7 +/- zoom \xB7 ?linea=L1" })
+        /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("p", { className: "map-hint", children: "Reloj en vivo \xB7 punta/valle/noche \xB7 Esc cierra \xB7 +/- zoom" })
       ] })
     ] });
   }
@@ -15437,7 +16042,7 @@
   // src/main.tsx
   var import_jsx_runtime8 = __toESM(require_jsx_runtime(), 1);
   (0, import_client.createRoot)(document.getElementById("root")).render(
-    /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(import_react5.StrictMode, { children: /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(App, {}) })
+    /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(import_react6.StrictMode, { children: /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(App, {}) })
   );
 })();
 /*! Bundled license information:

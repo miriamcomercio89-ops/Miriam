@@ -1,8 +1,8 @@
 /**
- * Heliora v0.2 — mega-metrópolis costera turística del sur de España.
- * Costa al sur (Mediterráneo), casco histórico al centro, aeropuerto al oeste,
- * campus al norte, playas y pueblos litorales al este.
+ * Heliora v0.3 — mega-metrópolis costera turística del sur de España.
+ * Costa al sur, sierra al norte, pueblos blancos e interior; trazados densos y orgánicos.
  */
+import { densifyNetwork } from './densify';
 import type {
   BusFamily,
   DistrictLabel,
@@ -14,11 +14,11 @@ import type {
 
 export const CITY = {
   name: 'Heliora',
-  tagline: 'Costa, casco antiguo y la red más grande del Mediterráneo',
-  population: '61,4 millones',
-  dailyTrips: '34,2 millones',
-  mapWidth: 4200,
-  mapHeight: 2800,
+  tagline: 'Costa, sierra y la red más grande del Mediterráneo',
+  population: '64,8 millones',
+  dailyTrips: '37,5 millones',
+  mapWidth: 4600,
+  mapHeight: 3200,
   inspiration: 'Ciudad costera turística del sur de España',
 };
 
@@ -499,6 +499,145 @@ const DISTRICT_SEEDS: DistrictSeed[] = [
       { key: 'jardin_churriana', name: 'Jardín Churriana', dx: 45, dy: -35 },
     ],
   },
+
+  // ——— Costa ampliada (paseos, puertos deportivos, apeaderos de playa) ———
+  {
+    id: 'paseo_levante',
+    name: 'Paseo de Levante',
+    x: 2900,
+    y: 2080,
+    stations: [
+      { key: 'paseo_levante', name: 'Paseo de Levante', interchange: true },
+      { key: 'balneario', name: 'Balneario Heliora', dx: 50, dy: 40 },
+      { key: 'espigon', name: 'Espigón Este', dx: -40, dy: 55 },
+    ],
+  },
+  {
+    id: 'puerto_marina',
+    name: 'Puerto Marina',
+    x: 1850,
+    y: 2100,
+    stations: [
+      { key: 'puerto_marina', name: 'Puerto Marina', interchange: true },
+      { key: 'darsena_yates', name: 'Dársena de Yates', dx: 55, dy: 35 },
+      { key: 'paseo_marina', name: 'Paseo Marina', dx: -45, dy: -25 },
+    ],
+  },
+  {
+    id: 'la_cala',
+    name: 'La Cala del Sol',
+    x: 3800,
+    y: 2180,
+    stations: [
+      { key: 'cala_sol', name: 'La Cala del Sol', interchange: true },
+      { key: 'playa_cala', name: 'Playa La Cala', dx: 40, dy: 50 },
+      { key: 'mirador_cala', name: 'Mirador La Cala', dx: -50, dy: -30 },
+    ],
+  },
+  {
+    id: 'sacaba',
+    name: 'Sacaba Beach',
+    x: 2500,
+    y: 2050,
+    stations: [
+      { key: 'sacaba', name: 'Sacaba Beach', interchange: true },
+      { key: 'chiringuito_sur', name: 'Chiringuito Sur', dx: 60, dy: 40 },
+    ],
+  },
+
+  // ——— Sierra / pueblos blancos / interior ———
+  {
+    id: 'mijas_hel',
+    name: 'Mijas de Heliora',
+    x: 2400,
+    y: 480,
+    stations: [
+      { key: 'mijas', name: 'Mijas de Heliora', interchange: true, majorHub: true },
+      { key: 'mirador_mijas', name: 'Mirador de Mijas', dx: 50, dy: -45 },
+      { key: 'casitas_blancas', name: 'Casitas Blancas', dx: -55, dy: 40 },
+    ],
+  },
+  {
+    id: 'alhaurin',
+    name: 'Alhaurín del Monte',
+    x: 1800,
+    y: 520,
+    stations: [
+      { key: 'alhaurin', name: 'Alhaurín del Monte', interchange: true },
+      { key: 'huerta_alhaurin', name: 'Huerta Alhaurín', dx: 45, dy: 40 },
+      { key: 'ermita', name: 'Ermita del Monte', dx: -40, dy: -35 },
+    ],
+  },
+  {
+    id: 'coin',
+    name: 'Coín Valle',
+    x: 1400,
+    y: 420,
+    stations: [
+      { key: 'coin', name: 'Coín Valle', interchange: true },
+      { key: 'plaza_coin', name: 'Plaza de Coín', dx: 40, dy: 35 },
+    ],
+  },
+  {
+    id: 'cartama',
+    name: 'Cártama Sierra',
+    x: 1100,
+    y: 600,
+    stations: [
+      { key: 'cartama', name: 'Cártama Sierra', interchange: true },
+      { key: 'estacion_cartama', name: 'Estación Cártama', dx: 50, dy: 40 },
+    ],
+  },
+  {
+    id: 'torremolinos_n',
+    name: 'Urbanización El Pinillo',
+    x: 1600,
+    y: 700,
+    stations: [
+      { key: 'pinillo', name: 'El Pinillo', interchange: true },
+      { key: 'los_manantiales', name: 'Los Manantiales', dx: 45, dy: -30 },
+    ],
+  },
+  {
+    id: 'benalmadena_p',
+    name: 'Arroyo de la Miel',
+    x: 2000,
+    y: 600,
+    stations: [
+      { key: 'arroyo_miel', name: 'Arroyo de la Miel', interchange: true },
+      { key: 'teleferico_base', name: 'Base Sierra', dx: 40, dy: -50 },
+    ],
+  },
+  {
+    id: 'ojén',
+    name: 'Ojén Blanco',
+    x: 3000,
+    y: 550,
+    stations: [
+      { key: 'ojen', name: 'Ojén Blanco', interchange: true },
+      { key: 'plaza_ojen', name: 'Plaza Ojén', dx: -40, dy: 35 },
+    ],
+  },
+  {
+    id: 'istefan',
+    name: 'Istán Lago',
+    x: 3400,
+    y: 650,
+    stations: [
+      { key: 'istan', name: 'Istán Lago', interchange: true },
+      { key: 'embalse_istan', name: 'Embalse Istán', dx: 45, dy: -40 },
+    ],
+  },
+  {
+    id: 'fuengirola_int',
+    name: 'Los Boliches Interior',
+    x: 1200,
+    y: 750,
+    stations: [
+      { key: 'boliches', name: 'Los Boliches', interchange: true },
+      { key: 'torreblanca', name: 'Torreblanca', dx: 50, dy: 40 },
+    ],
+  },
 ];
 
 function buildStations(): Record<string, Station> {
@@ -519,12 +658,11 @@ function buildStations(): Record<string, Station> {
   return map;
 }
 
-export const stations = buildStations();
+const baseStations = buildStations();
 
 export const districtLabels: DistrictLabel[] = DISTRICT_SEEDS.map((d) => ({
   id: d.id,
   name: d.name,
-  // Empujar etiquetas hacia arriba para no tapar estaciones
   x: d.x,
   y: d.y - 110,
 }));
@@ -561,7 +699,7 @@ function line(
   stationIds: string[],
   opts: Partial<Pick<TransitLine, 'frequencyMin' | 'firstDeparture' | 'lastDeparture' | 'status' | 'occupancy' | 'operatorNote' | 'busFamily'>> = {},
 ): TransitLine {
-  const valid = stationIds.filter((id) => stations[id]);
+  const valid = stationIds.filter((id) => baseStations[id]);
   return {
     id: code.toLowerCase(),
     code,
@@ -878,13 +1016,67 @@ const hyperLines: TransitLine[] = [
   ], { frequencyMin: 15, firstDeparture: '07:00', lastDeparture: '23:00' }),
 ];
 
-export const lines: TransitLine[] = ensureMeta([
+/** Ampliación costa + sierra (v0.3) */
+const coastalSierraExtra: TransitLine[] = [
+  line('L21', 'Sierra – Casco', 'metro', '#795548', [
+    'coin', 'alhaurin', 'arroyo_miel', 'mijas', 'monte_hel', 'ciudad_jardin',
+    'capuchinos', 'plaza_mayor',
+  ], { frequencyMin: 6, firstDeparture: '06:20', lastDeparture: '23:10' }),
+  line('L22', 'Costa Levante Extendida', 'metro', '#00838F', [
+    'paseo_maritimo', 'sacaba', 'paseo_levante', 'cala_serena', 'arenales',
+    'rincon_mar', 'cala_sol',
+  ], { frequencyMin: 5, firstDeparture: '06:30', lastDeparture: '00:20' }),
+  line('L23', 'Marina – Puerto', 'metro', '#5C6BC0', [
+    'puerto_marina', 'paseo_marina', 'torres_mar', 'bajadilla', 'puerto_hel',
+  ], { frequencyMin: 6, firstDeparture: '06:40', lastDeparture: '23:40' }),
+  line('C11', 'Cercanías Sierra', 'cercanias', '#4E342E', [
+    'coin', 'cartama', 'boliches', 'universidad', 'maria_zambrano', 'plaza_mayor',
+  ], { frequencyMin: 20, firstDeparture: '05:50', lastDeparture: '22:30' }),
+  line('C12', 'Cercanías Pueblos Blancos', 'cercanias', '#BF360C', [
+    'ojen', 'istan', 'mijas', 'altos_med', 'nueva_hel', 'vinuela',
+  ], { frequencyMin: 25, firstDeparture: '06:10', lastDeparture: '21:50' }),
+  line('T13', 'Tranvía Paseo Levante', 'tranvia', '#0097A7', [
+    'sacaba', 'chiringuito_sur', 'paseo_levante', 'balneario', 'espigon',
+    'cala_serena', 'chiringuitos',
+  ], { frequencyMin: 9, firstDeparture: '07:20', lastDeparture: '00:15' }),
+  line('T14', 'Tranvía Puerto Marina', 'tranvia', '#7B1FA2', [
+    'darsena_yates', 'puerto_marina', 'paseo_marina', 'torres_mar', 'paseo_maritimo', 'muelle_uno',
+  ], { frequencyMin: 9, firstDeparture: '07:15', lastDeparture: '23:50' }),
+  bus('P5', 'Playa Sacaba – La Cala', 'P', [
+    'sacaba', 'paseo_levante', 'arenales', 'rincon_mar', 'cala_sol', 'playa_cala',
+  ], 12, '07:00', '00:45'),
+  bus('P6', 'Puerto Marina Shuttle', 'P', [
+    'puerto_marina', 'darsena_yates', 'torres_mar', 'paseo_maritimo', 'playa_faro',
+  ], 15, '08:00', '01:00'),
+  bus('R5', 'Sierra Residencial', 'R', [
+    'mijas', 'casitas_blancas', 'arroyo_miel', 'pinillo', 'universidad',
+  ], 15, '06:45', '22:15'),
+  bus('R6', 'Valle Coín – Campus', 'R', [
+    'coin', 'plaza_coin', 'alhaurin', 'cartama', 'ciudad_olivo', 'universidad',
+  ], 18, '06:30', '21:45'),
+  bus('TU4', 'Ruta Pueblos Blancos', 'TU', [
+    'plaza_mayor', 'mijas', 'mirador_mijas', 'ojen', 'istan', 'embalse_istan',
+  ], 45, '09:30', '18:30'),
+  bus('B7', 'El Pinillo – Manantiales', 'B', [
+    'pinillo', 'los_manantiales', 'arroyo_miel', 'alhaurin',
+  ], 14, '07:00', '22:00'),
+  bus('X6', 'Express Sierra – Aeropuerto', 'X', [
+    'mijas', 'universidad', 'campanillas', 'aeropuerto',
+  ], 20, '05:40', '23:00'),
+];
+
+const rawLines = ensureMeta([
   ...metroLines,
   ...cercaniasLines,
   ...tramLines,
   ...busLines,
   ...hyperLines,
+  ...coastalSierraExtra,
 ]);
+
+const densified = densifyNetwork(baseStations, rawLines);
+export const stations: Record<string, Station> = densified.stations;
+export const lines: TransitLine[] = densified.lines;
 
 export function getUniqueStations(): Station[] {
   const seen = new Set<string>();

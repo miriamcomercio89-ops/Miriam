@@ -6,9 +6,10 @@ import { TopBar } from './components/TopBar';
 import { TransitMap } from './components/TransitMap';
 import { findLineByCode, getLineBounds, getStation, lines } from './data/network';
 import type { RoutePlan } from './data/routing';
-import { simulatedClock } from './data/schedules';
+import { periodFromMinutes } from './data/time';
 import type { TransportMode, UserRole } from './data/types';
 import { usePanZoom } from './hooks/usePanZoom';
+import { useSimClock } from './hooks/useSimClock';
 import './App.css';
 
 function readLineFromUrl(): string | null {
@@ -19,7 +20,6 @@ function readLineFromUrl(): string | null {
 }
 
 function writeLineToUrl(lineId: string | null) {
-  // En file:// el history API con query puede fallar en algunos navegadores
   if (window.location.protocol === 'file:') return;
   const url = new URL(window.location.href);
   if (lineId) {
@@ -37,9 +37,11 @@ export default function App() {
   const [selectedStationId, setSelectedStationId] = useState<string | null>(null);
   const [filterMode, setFilterMode] = useState<TransportMode | null>(null);
   const [search, setSearch] = useState('');
-  const [clock, setClock] = useState(simulatedClock());
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [routePlan, setRoutePlan] = useState<RoutePlan | null>(null);
+
+  const sim = useSimClock();
+  const period = periodFromMinutes(sim.minutes);
 
   const {
     state,
@@ -51,23 +53,15 @@ export default function App() {
     reset,
     fitBounds,
     focusPoint,
-  } = usePanZoom({ scale: 0.28, x: 20, y: 10 });
+  } = usePanZoom({ scale: 0.24, x: 10, y: 0 });
 
-  useEffect(() => {
-    const id = window.setInterval(() => setClock(simulatedClock()), 15_000);
-    return () => window.clearInterval(id);
-  }, []);
-
-  // Deep link inicial
   useEffect(() => {
     const id = readLineFromUrl();
     if (!id) return;
     const line = lines.find((l) => l.id === id);
     if (!line) return;
     const bounds = getLineBounds(line);
-    if (bounds) {
-      window.setTimeout(() => fitBounds(bounds, 100), 50);
-    }
+    if (bounds) window.setTimeout(() => fitBounds(bounds, 100), 50);
   }, [fitBounds]);
 
   useEffect(() => {
@@ -109,7 +103,7 @@ export default function App() {
     setSelectedLineId(null);
     writeLineToUrl(null);
     const st = getStation(id);
-    if (st) focusPoint(st.x, st.y, 1.2);
+    if (st) focusPoint(st.x, st.y, 1.15);
   };
 
   const clearSelection = () => {
@@ -165,6 +159,8 @@ export default function App() {
           onSelectStation={selectStation}
           onClearSelection={clearSelection}
           onRoute={handleRoute}
+          simMinutes={sim.minutes}
+          period={period}
         />
       </div>
 
@@ -199,7 +195,13 @@ export default function App() {
         <TopBar
           role={role}
           onRoleChange={setRole}
-          clock={clock}
+          clock={sim.clock}
+          period={period}
+          paused={sim.paused}
+          onTogglePause={sim.togglePause}
+          onSetTime={sim.setTime}
+          onJump={sim.jumpMinutes}
+          onSyncNow={sim.syncNow}
           onZoomIn={() => zoomBy(1.2)}
           onZoomOut={() => zoomBy(1 / 1.2)}
           onReset={reset}
@@ -211,6 +213,8 @@ export default function App() {
           role={role}
           selectedLineId={selectedLineId}
           selectedStationId={selectedStationId}
+          simMinutes={sim.minutes}
+          period={period}
           onSelectLine={selectLine}
           onClose={() => {
             setSelectedLineId(null);
@@ -220,7 +224,7 @@ export default function App() {
         />
 
         <p className="map-hint">
-          Arrastra · rueda zoom · Esc cierra · +/- zoom · ?linea=L1
+          Reloj en vivo · punta/valle/noche · Esc cierra · +/- zoom
         </p>
       </main>
     </div>

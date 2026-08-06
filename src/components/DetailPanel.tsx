@@ -1,10 +1,18 @@
 import { useState } from 'react';
 import { getLinesForStation, getStation, lines } from '../data/network';
-import { delayLabel, generateSchedule, nextDepartures } from '../data/schedules';
+import {
+  delayLabel,
+  effectiveFrequency,
+  formatCountdown,
+  generateSchedule,
+  minutesUntilNext,
+} from '../data/schedules';
+import { occupancyForPeriod, PERIOD_LABELS } from '../data/time';
 import {
   BUS_FAMILY_LABELS,
   MODE_LABELS,
   STATUS_LABELS,
+  type DayPeriod,
   type UserRole,
 } from '../data/types';
 import './DetailPanel.css';
@@ -13,6 +21,8 @@ interface Props {
   role: UserRole;
   selectedLineId: string | null;
   selectedStationId: string | null;
+  simMinutes: number;
+  period: DayPeriod;
   onSelectLine: (id: string) => void;
   onClose: () => void;
 }
@@ -27,6 +37,8 @@ export function DetailPanel({
   role,
   selectedLineId,
   selectedStationId,
+  simMinutes,
+  period,
   onSelectLine,
   onClose,
 }: Props) {
@@ -38,7 +50,6 @@ export function DetailPanel({
 
   if (station && !line) {
     const atStation = getLinesForStation(station.id);
-    // Also match by coordinates for interchange aliases
     const byCoord = lines.filter((l) =>
       l.stationIds.some((sid) => {
         const s = getStation(sid);
@@ -63,21 +74,24 @@ export function DetailPanel({
           · {connected.length} líneas
         </p>
         <ul className="station-lines">
-          {connected.map((l) => (
-            <li key={l.id}>
-              <button type="button" onClick={() => onSelectLine(l.id)}>
-                <span className="mini-badge" style={{ background: l.color }}>
-                  {l.code}
-                </span>
-                <span>
-                  {l.name}
-                  <small>
-                    {MODE_LABELS[l.mode]} · próximo {nextDepartures(l, 1)[0] ?? '—'}
-                  </small>
-                </span>
-              </button>
-            </li>
-          ))}
+          {connected.map((l) => {
+            const eta = minutesUntilNext(l, simMinutes);
+            return (
+              <li key={l.id}>
+                <button type="button" onClick={() => onSelectLine(l.id)}>
+                  <span className="mini-badge" style={{ background: l.color }}>
+                    {l.code}
+                  </span>
+                  <span>
+                    {l.name}
+                    <small>
+                      {MODE_LABELS[l.mode]} · en {formatCountdown(eta)}
+                    </small>
+                  </span>
+                </button>
+              </li>
+            );
+          })}
         </ul>
       </div>
     );
@@ -85,10 +99,11 @@ export function DetailPanel({
 
   if (!line) return null;
 
-  const schedule = generateSchedule(line, 10);
-  const stops = line.stationIds
-    .map((id) => getStation(id))
-    .filter(Boolean);
+  const schedule = generateSchedule(line, simMinutes, 10);
+  const eta = minutesUntilNext(line, simMinutes);
+  const freq = effectiveFrequency(line, simMinutes);
+  const occ = occupancyForPeriod(line.occupancy, period);
+  const stops = line.stationIds.map((id) => getStation(id)).filter(Boolean);
   const delay = delayLabel(line);
 
   return (
@@ -108,9 +123,15 @@ export function DetailPanel({
         </div>
       </div>
 
+      <div className="next-banner">
+        <span>Próximo</span>
+        <strong>{formatCountdown(eta)}</strong>
+        <em>{PERIOD_LABELS[period]}</em>
+      </div>
+
       <div className="detail-pills">
         <span className={`pill status-${line.status}`}>{STATUS_LABELS[line.status]}</span>
-        <span className="pill">Cada {line.frequencyMin} min</span>
+        <span className="pill">Cada {freq} min ahora</span>
         <span className="pill">
           {line.firstDeparture} – {line.lastDeparture}
         </span>
@@ -137,29 +158,27 @@ export function DetailPanel({
       {role === 'operador' && (
         <div className="operator-box">
           <div className="occ-row">
-            <span>Ocupación simulada</span>
-            <strong>{line.occupancy}%</strong>
+            <span>Ocupación ({PERIOD_LABELS[period]})</span>
+            <strong>{occ}%</strong>
           </div>
           <div className="occ-bar">
             <div
               className="occ-fill"
               style={{
-                width: `${line.occupancy}%`,
-                background:
-                  line.occupancy > 80 ? '#e53935' : line.occupancy > 60 ? '#f5a623' : '#43a047',
+                width: `${occ}%`,
+                background: occ > 80 ? '#e53935' : occ > 60 ? '#f5a623' : '#43a047',
               }}
             />
           </div>
           {line.operatorNote && <p className="op-note">{line.operatorNote}</p>}
-          <p className="op-meta">
-            Modo operador · datos simulados en tiempo real de la red Heliora
-          </p>
+          <p className="op-meta">Frecuencia base {line.frequencyMin} min · efectiva {freq} min</p>
         </div>
       )}
 
       <section className="detail-section">
         <h3>Próximas salidas</h3>
         <div className="schedule-grid">
+          {schedule.length === 0 && <span className="time-chip">Sin servicio</span>}
           {schedule.map((t, i) => (
             <span key={`${t}-${i}`} className="time-chip">
               {t}
