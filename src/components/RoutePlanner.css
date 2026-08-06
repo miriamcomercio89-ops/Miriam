@@ -1,0 +1,244 @@
+.route-planner {
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.route-planner h2 {
+  margin: 0 0 0.65rem;
+  font-family: 'Sora', sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(232, 237, 243, 0.5);
+  font-weight: 600;
+}
+
+.route-planner label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-bottom: 0.45rem;
+}
+
+.route-planner label span {
+  font-size: 0.7rem;
+  color: rgba(232, 237, 243, 0.5);
+}
+
+.route-planner select {
+  width: 100%;
+  padding: 0.55rem 0.65rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.25);
+  color: #e8edf3;
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.82rem;
+  outline: none;
+}
+
+.route-planner select:focus {
+  border-color: rgba(196, 92, 38, 0.55);
+}
+
+.route-swap-row {
+  display: flex;
+  justify-content: center;
+  margin: 0.15rem 0;
+}
+
+.swap-btn {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+  color: #e8edf3;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.route-actions {
+  display: flex;
+  gap: 0.45rem;
+  margin-top: 0.45rem;
+}
+
+.route-actions .primary {
+  flex: 1;
+  border: none;
+  background: #c45c26;
+  color: #fff;
+  font-weight: 700;
+  font-family: 'Sora', sans-serif;
+  font-size: 0.8rem;
+  padding: 0.55rem 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.route-actions .ghost {
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: transparent;
+  color: rgba(232, 237, 243, 0.7);
+  border-radius: 8px;
+  padding: 0.55rem 0.65rem;
+  cursor: pointer;
+  font-size: 0.78rem;
+}
+
+.route-error {
+  margin: 0.5rem 0 0;
+  font-size: 0.75rem;
+  color: #ff8a80;
+}
+
+.route-alts {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-top: 0.65rem;
+}
+
+.alt-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.1rem;
+  padding: 0.45rem 0.6rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.18);
+  color: #e8edf3;
+  cursor: pointer;
+  text-align: left;
+  font-family: 'Manrope', sans-serif;
+}
+
+.alt-chip strong {
+  font-family: 'Sora', sans-serif;
+  font-size: 0.78rem;
+}
+
+.alt-chip span {
+  font-size: 0.68rem;
+  color: rgba(232, 237, 243, 0.55);
+}
+
+.alt-chip.active {
+  border-color: rgba(196, 92, 38, 0.55);
+  background: rgba(196, 92, 38, 0.18);
+}
+
+.steps-title {
+  margin: 0.75rem 0 0.4rem;
+  font-family: 'Sora', sans-serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(232, 237, 243, 0.45);
+}
+
+.route-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.route-steps li {
+  display: flex;
+  gap: 0.45rem;
+  align-items: flex-start;
+  font-size: 0.75rem;
+  line-height: 1.35;
+  color: rgba(232, 237, 243, 0.88);
+}
+
+.inline-link {
+  border: none;
+  background: none;
+  color: #ffb74d;
+  padding: 0;
+  cursor: pointer;
+  font-size: inherit;
+  text-decoration: underline;
+}
+
+.route-result {
+  margin-top: 0.75rem;
+  padding: 0.65rem;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.22);
+}
+
+.route-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  margin: 0 0 0.55rem;
+}
+
+.route-summary strong {
+  font-family: 'Sora', sans-serif;
+  font-size: 1.05rem;
+}
+
+.route-summary span {
+  font-size: 0.72rem;
+  color: rgba(232, 237, 243, 0.55);
+}
+
+.route-legs {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.route-legs li {
+  display: flex;
+  gap: 0.55rem;
+  align-items: flex-start;
+}
+
+.leg-badge {
+  flex-shrink: 0;
+  min-width: 2.2rem;
+  text-align: center;
+  padding: 0.25rem 0.3rem;
+  border-radius: 5px;
+  color: #fff;
+  font-family: 'Sora', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.leg-text {
+  font-size: 0.78rem;
+  line-height: 1.35;
+  color: #e8edf3;
+}
+
+.leg-text button {
+  border: none;
+  background: none;
+  color: #fff;
+  font-weight: 600;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  font-family: inherit;
+  font-size: inherit;
+}
+
+.leg-text small {
+  display: block;
+  color: rgba(232, 237, 243, 0.45);
+  font-size: 0.68rem;
+  margin-top: 0.1rem;
+}

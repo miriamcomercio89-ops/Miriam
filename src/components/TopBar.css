@@ -1,0 +1,173 @@
+.top-bar {
+  position: absolute;
+  top: 0.85rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  z-index: 15;
+  padding: 0.4rem;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(26, 35, 50, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(18, 26, 38, 0.12);
+  max-width: calc(100% - 1.5rem);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.role-switch {
+  display: flex;
+  background: rgba(26, 35, 50, 0.06);
+  border-radius: 8px;
+  padding: 0.15rem;
+}
+
+.role-switch button {
+  border: none;
+  background: transparent;
+  padding: 0.4rem 0.75rem;
+  border-radius: 6px;
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: rgba(26, 35, 50, 0.55);
+  cursor: pointer;
+}
+
+.role-switch button.active {
+  background: #1a2332;
+  color: #fff;
+}
+
+.clock-panel {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.clock-input-wrap input[type='time'] {
+  border: 1px solid rgba(26, 35, 50, 0.15);
+  border-radius: 7px;
+  padding: 0.3rem 0.4rem;
+  font-family: 'Sora', sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #1a2332;
+  background: #fff;
+}
+
+.period-pill {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.period-punta {
+  background: rgba(229, 57, 53, 0.15);
+  color: #b71c1c;
+}
+
+.period-valle {
+  background: rgba(67, 160, 71, 0.15);
+  color: #1b5e20;
+}
+
+.period-noche {
+  background: rgba(26, 35, 50, 0.12);
+  color: #1a2332;
+}
+
+.clock-actions {
+  display: flex;
+  gap: 0.2rem;
+}
+
+.clock-actions button {
+  border: 1px solid rgba(26, 35, 50, 0.12);
+  background: #fff;
+  border-radius: 6px;
+  padding: 0.28rem 0.4rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: #1a2332;
+  font-family: 'Manrope', sans-serif;
+}
+
+.clock-actions button:hover {
+  background: rgba(26, 35, 50, 0.05);
+}
+
+.live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #43a047;
+  animation: pulse 1.8s ease infinite;
+}
+
+.live-dot.paused {
+  background: #f5a623;
+  animation: none;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(67, 160, 71, 0.45);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(67, 160, 71, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(67, 160, 71, 0);
+  }
+}
+
+.zoom-controls {
+  display: flex;
+  gap: 0.2rem;
+}
+
+.zoom-controls button {
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid rgba(26, 35, 50, 0.12);
+  border-radius: 7px;
+  background: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: #1a2332;
+  line-height: 1;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+@media (max-width: 720px) {
+  .top-bar {
+    left: 0.5rem;
+    right: 0.5rem;
+    transform: none;
+    width: auto;
+  }
+
+  .clock-actions button:nth-child(1),
+  .clock-actions button:nth-child(3) {
+    display: none;
+  }
+}

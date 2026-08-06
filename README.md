@@ -1,21 +1,27 @@
-# Miriam — Administración de Loterías (proyecto)
+# Heliora — Red de Transporte (v0.4)
 
-Proyecto: videojuego/simulador de gestión de una administración de loterías ubicado en Álora.
+Mega-metrópolis costera turística del sur de España.
 
-Este repositorio contiene el scaffold inicial del proyecto: una aplicación en HTML/CSS/JS que corre totalmente en el navegador (sin servidor), usa localStorage para persistencia y permite exportar/importar el estado en JSON.
+## v0.4
 
-Características del scaffold inicial:
-- Reloj de juego con escala temporal: el tiempo del juego va 4× más lento que el real (gameTime = start + elapsed * 0.25).
-- Lógica de apertura de oficina: 09:00–14:00 y 17:00–22:00 (hora del juego). Cerrado sábados y domingos. Festivos habilitables manualmente.
-- Funciones básicas de exportar/importar JSON del estado del juego.
-- Estructura básica para añadir los juegos, ventas, contabilidad, clientes, etc.
+- **Rendimiento**: LOD por zoom, paths cacheados, reloj sin re-renderizar el mapa cada segundo
+- **Barrios y municipios dibujados** en el mapa (área metropolitana)
+- **Casco histórico denso**, universidad, ciudad deportiva y más distritos
+- **Enlaces a pie** entre estaciones cercanas (visibles al hacer zoom)
+- Textos, líneas y paradas **escalan con el nivel de zoom**
 
-Cómo usar:
-1. Clona el repo o descarga los archivos.
-2. Abre `index.html` en un navegador moderno.
-3. Usa los botones "Exportar" / "Importar" para guardar o restaurar el estado.
+## Abrir sin instalar nada
 
-Siguiente paso:
-- Crear la rama `feature/lottery-full` desde la rama por defecto y continuar con la implementación completa de juegos, contabilidad y UI.
+Carpeta **`heliora-abrir-aqui/`** → doble clic en `index.html`.
 
-Commit inicial: scaffold con reloj escalado y export/import JSON.
+```bash
+npm install
+npm run build:standalone
+```
+
+## Desarrollo
+
+```bash
+npm install
+npm run dev
+```

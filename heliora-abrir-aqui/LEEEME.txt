@@ -1,0 +1,11 @@
+HELIORA v0.1 — Cómo abrir
+========================
+
+1. Haz doble clic en index.html
+2. Se abrirá en tu navegador (Chrome, Edge, Firefox…)
+
+No hace falta instalar nada ni usar la terminal.
+
+Si ves página en blanco al abrir el index.html de la carpeta del código fuente,
+es normal: ese archivo es solo para desarrollo con Node.
+Usa SIEMPRE esta carpeta "heliora-abrir-aqui".

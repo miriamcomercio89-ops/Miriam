@@ -1,0 +1,140 @@
+.transit-map {
+  display: block;
+  user-select: none;
+}
+
+.muni-fill {
+  stroke: rgba(26, 35, 50, 0.08);
+  stroke-width: 2;
+}
+
+.district-fill {
+  stroke: rgba(26, 35, 50, 0.06);
+  stroke-width: 1;
+}
+
+.muni-label {
+  fill: rgba(26, 35, 50, 0.28);
+  font-family: 'Sora', system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+.district-label {
+  fill: rgba(40, 55, 75, 0.22);
+  font-family: 'Sora', system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+.walk-label {
+  fill: #546e7a;
+  font-family: 'Manrope', sans-serif;
+  font-weight: 600;
+  paint-order: stroke;
+  stroke: rgba(238, 241, 244, 0.9);
+  stroke-width: 3px;
+  pointer-events: none;
+}
+
+.coastline {
+  stroke: rgba(56, 120, 160, 0.35);
+  stroke-width: 3;
+  stroke-dasharray: 8 6;
+}
+
+.sierra-hint {
+  stroke: rgba(90, 70, 50, 0.12);
+  stroke-width: 18;
+  stroke-linecap: round;
+}
+
+.line-hit {
+  cursor: pointer;
+}
+
+.line-path {
+  transition: stroke-width 0.2s ease, opacity 0.25s ease;
+}
+
+.line-selected {
+  filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.25));
+}
+
+.station {
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.station-dot {
+  fill: #1a2332;
+  stroke: #eef1f4;
+  stroke-width: 1.5;
+}
+
+.station-ring {
+  fill: #eef1f4;
+  stroke: #1a2332;
+  stroke-width: 2.5;
+}
+
+.station-core {
+  fill: #1a2332;
+}
+
+.hub-ring-outer {
+  fill: none;
+  stroke: rgba(196, 92, 38, 0.35);
+  stroke-width: 2;
+  stroke-dasharray: 3 3;
+}
+
+.station.active .station-ring {
+  stroke: #c45c26;
+  stroke-width: 3;
+}
+
+.station.active .station-core,
+.station.active .station-dot {
+  fill: #c45c26;
+}
+
+.station-label {
+  fill: #1a2332;
+  font-family: 'Manrope', system-ui, sans-serif;
+  font-weight: 600;
+  paint-order: stroke;
+  stroke: rgba(238, 241, 244, 0.92);
+  stroke-width: 3px;
+  pointer-events: none;
+}
+
+.hub-diagram-bg {
+  fill: rgba(255, 255, 255, 0.88);
+  stroke: rgba(26, 35, 50, 0.15);
+  stroke-width: 2;
+}
+
+.hub-diagram-title {
+  font-family: 'Sora', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  fill: #1a2332;
+  letter-spacing: 0.04em;
+}
+
+.hub-spoke {
+  cursor: pointer;
+}
+
+.hub-spoke-code {
+  fill: #fff;
+  font-family: 'Sora', sans-serif;
+  font-size: 7px;
+  font-weight: 700;
+  pointer-events: none;
+}
