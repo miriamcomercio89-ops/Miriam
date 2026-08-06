@@ -1,0 +1,46 @@
+OPERACIÓN LIMPIEZA TOTAL — KNOX COUNTRY
+Project Zomboid Build 42.20
+Serie PDF A4 vertical · Español
+
+CONFIGURACIÓN DE TU PARTIDA
+- Sandbox · población alta · sin respawn · migración SÍ
+- Solo · sin mods · spawn Riverside
+- Objetivo: explorar y despejar TODO el mapa, edificio por edificio
+
+CÓMO USAR
+1. Abre siempre 00_Indice_Maestro_y_Orden.pdf
+2. Completa 01 antes de limpiar
+3. Sigue los volúmenes EN ORDEN (02 → 20)
+4. Marca checkboxes + spray en puerta + nota en mapa del juego
+5. Usa map.projectzomboid.com (capa B42) como compañero visual
+
+ORDEN DE ARCHIVOS
+00 Índice maestro
+01 Protocolo, personaje y días 1-14
+02-05 Riverside completo
+06 Corredor oeste
+07 Brandenburg
+08 Fallas Lake + Doe Valley
+09 Echo Creek
+10 Ekron
+11 Irvington + Speedway
+12 Rosewood + Prisión
+13 March Ridge
+14 Muldraugh + Dixie
+15 West Point
+16 Valley Station + acceso Louisville
+17-19 Louisville (3 fases)
+20 Checklist maestro y cierre
+
+SISTEMA DE IDs
+Cada edificio tiene un código (ej. RV-SA-N-01, BR-T-07, LV-C-T03).
+Los sectores residenciales usan inventario secuencial de ruta para
+cubrir CADA casa del frente de limpieza. Los POIs nombrados incluyen
+coordenadas aproximadas del mundo B42.
+
+DISEÑO
+Paleta teal + coral sobre papel claro, tipografía Noto Serif Display
++ Public Sans + JetBrains Mono, badges de riesgo, fichas de edificio
+con checklist de habitaciones.
+
+¡Buena caza. No dejes ni un edificio sin L.
