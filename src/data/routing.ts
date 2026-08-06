@@ -1,5 +1,6 @@
 import { getStation, lines, stations } from './network';
 import type { TransitLine } from './types';
+import { WALK_EDGES } from './walk';
 
 export interface RouteLeg {
   line: TransitLine;
@@ -7,14 +8,30 @@ export interface RouteLeg {
   toId: string;
   stops: string[];
   stopCount: number;
+  walkOnly?: boolean;
+  walkMinutes?: number;
 }
 
 export interface RouteStep {
-  kind: 'board' | 'ride' | 'transfer' | 'alight';
+  kind: 'board' | 'ride' | 'transfer' | 'alight' | 'walk';
   text: string;
   line?: TransitLine;
   stationId?: string;
 }
+
+const WALK_LINE: TransitLine = {
+  id: '__walk__',
+  code: 'PIE',
+  name: 'A pie',
+  mode: 'bus',
+  color: '#78909C',
+  stationIds: [],
+  frequencyMin: 0,
+  firstDeparture: '00:00',
+  lastDeparture: '23:59',
+  status: 'normal',
+  occupancy: 0,
+};
 
 export interface RoutePlan {
   legs: RouteLeg[];
@@ -36,7 +53,7 @@ export function transferWalkMinutes(stationId: string): number {
   return 2;
 }
 
-type GraphEdge = { to: string; lineId: string };
+type GraphEdge = { to: string; lineId: string; walkMin?: number };
 
 function buildGraph(): Map<string, GraphEdge[]> {
   const graph = new Map<string, GraphEdge[]>();
@@ -56,6 +73,12 @@ function buildGraph(): Map<string, GraphEdge[]> {
       add(a, { to: b, lineId: line.id });
       add(b, { to: a, lineId: line.id });
     }
+  }
+
+  // Enlaces peatonales entre estaciones cercanas
+  for (const e of WALK_EDGES) {
+    add(e.from, { to: e.to, lineId: '__walk__', walkMin: e.minutes });
+    add(e.to, { to: e.from, lineId: '__walk__', walkMin: e.minutes });
   }
   return graph;
 }
@@ -95,7 +118,7 @@ function legsFromPath(stationPath: string[], arrivalLines: (string | null)[]): R
       i++;
       continue;
     }
-    const line = lines.find((l) => l.id === lineId);
+    const line = lineId === '__walk__' ? WALK_LINE : lines.find((l) => l.id === lineId);
     if (!line) {
       i++;
       continue;
@@ -105,31 +128,39 @@ function legsFromPath(stationPath: string[], arrivalLines: (string | null)[]): R
       stops.push(stationPath[i]);
       i++;
     }
+    const walkOnly = lineId === '__walk__';
     legs.push({
       line,
       fromId: stops[0],
       toId: stops[stops.length - 1],
       stops,
-      stopCount: stops.length - 1,
+      stopCount: Math.max(1, stops.length - 1),
+      walkOnly,
+      walkMinutes: walkOnly ? Math.max(1, stops.length) * 2 : undefined,
     });
   }
 
   if (!legs.length) return null;
 
-  const totalStops = legs.reduce((a, l) => a + l.stopCount, 0);
-  const transfers = Math.max(0, legs.length - 1);
+  const transitLegs = legs.filter((l) => !l.walkOnly);
+  const totalStops = transitLegs.reduce((a, l) => a + l.stopCount, 0);
+  const transfers = Math.max(0, transitLegs.length - 1);
 
   let walkMinutes = 0;
-  for (let i = 1; i < legs.length; i++) {
-    walkMinutes += transferWalkMinutes(legs[i].fromId);
+  for (let i = 0; i < legs.length; i++) {
+    if (legs[i].walkOnly) {
+      walkMinutes += legs[i].walkMinutes ?? 2;
+    } else if (i > 0 && !legs[i - 1].walkOnly) {
+      walkMinutes += transferWalkMinutes(legs[i].fromId);
+    }
   }
 
-  const estimatedMinutes = Math.round(
-    legs.reduce((acc, leg) => {
-      const wait = Math.min(8, leg.line.frequencyMin * 0.4);
-      return acc + leg.stopCount * modeWeight(leg.line.mode) + wait;
-    }, 0) + walkMinutes,
-  );
+  const rideMinutes = transitLegs.reduce((acc, leg) => {
+    const wait = Math.min(8, leg.line.frequencyMin * 0.4);
+    return acc + leg.stopCount * modeWeight(leg.line.mode) + wait;
+  }, 0);
+
+  const estimatedMinutes = Math.round(rideMinutes + walkMinutes);
 
   const plan: RoutePlan = {
     legs,
@@ -150,7 +181,15 @@ export function buildSteps(plan: RoutePlan): RouteStep[] {
   plan.legs.forEach((leg, idx) => {
     const fromName = stationLabel(leg.fromId);
     const toName = stationLabel(leg.toId);
-    if (idx === 0) {
+    if (leg.walkOnly) {
+      steps.push({
+        kind: 'walk',
+        text: `Camina ~${leg.walkMinutes ?? 2} min de ${fromName} a ${toName}`,
+        stationId: leg.toId,
+      });
+      return;
+    }
+    if (idx === 0 || plan.legs[idx - 1]?.walkOnly) {
       steps.push({
         kind: 'board',
         text: `En ${fromName}, toma la ${leg.line.code} (${leg.line.name}) sentido ${toName}`,
@@ -161,7 +200,7 @@ export function buildSteps(plan: RoutePlan): RouteStep[] {
       const walk = transferWalkMinutes(leg.fromId);
       steps.push({
         kind: 'transfer',
-        text: `Baja en ${fromName} y camina ~${walk} min hasta el andén de la ${leg.line.code} (${leg.line.name})`,
+        text: `Baja en ${fromName} y camina ~${walk} min hasta el andén de la ${leg.line.code}`,
         line: leg.line,
         stationId: leg.fromId,
       });
@@ -274,10 +313,18 @@ function searchOne(
 
     for (const e of graph.get(cur.stationId) ?? []) {
       if (avoidLineId && e.lineId === avoidLineId && !cur.lineId) continue;
-      const line = lines.find((l) => l.id === e.lineId);
-      if (!line) continue;
-      const transfer = cur.lineId && cur.lineId !== e.lineId ? transferPenalty : 0;
-      const nextCost = cur.cost + modeWeight(line.mode) + transfer + line.frequencyMin * 0.05;
+
+      let stepCost: number;
+      if (e.lineId === '__walk__') {
+        stepCost = (e.walkMin ?? 3) * 1.15;
+      } else {
+        const line = lines.find((l) => l.id === e.lineId);
+        if (!line) continue;
+        const transfer = cur.lineId && cur.lineId !== e.lineId && cur.lineId !== '__walk__' ? transferPenalty : 0;
+        stepCost = modeWeight(line.mode) + transfer + line.frequencyMin * 0.05;
+      }
+
+      const nextCost = cur.cost + stepCost;
       const nk = keyOf(e.to, e.lineId);
       if (nextCost < (dist.get(nk) ?? Infinity)) {
         dist.set(nk, nextCost);

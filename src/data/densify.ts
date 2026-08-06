@@ -24,19 +24,20 @@ function intermediateName(lineCode: string, seg: number, k: number): string {
 }
 
 function spacingForMode(mode: string): number {
+  // Un poco más espaciado = menos nodos SVG y mejor rendimiento
   switch (mode) {
     case 'bus':
-      return 62;
+      return 88;
     case 'tranvia':
-      return 78;
-    case 'metro':
       return 95;
+    case 'metro':
+      return 110;
     case 'cercanias':
-      return 150;
+      return 170;
     case 'hyperloop':
-      return 400;
+      return 420;
     default:
-      return 90;
+      return 100;
   }
 }
 
@@ -90,7 +91,7 @@ export function densifyNetwork(
       const dist = Math.hypot(dx, dy);
       if (dist < spacing * 1.2) continue;
 
-      const n = Math.min(5, Math.max(1, Math.floor(dist / spacing) - 1));
+      const n = Math.min(3, Math.max(1, Math.floor(dist / spacing) - 1));
       const len = dist || 1;
       const px = -dy / len;
       const py = dx / len;

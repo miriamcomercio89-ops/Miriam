@@ -69,10 +69,11 @@ export function MapLegend() {
           <span>Gran intercambiador</span>
         </li>
       </ul>
-      <p className="legend-codes">Metro L · Cercanías C · Tranvía T</p>
+      <p className="legend-codes">Metro L · Cercanías C · Tranvía T · PIE = a pie</p>
       <p className="legend-codes bus-codes">
         Bus: {BUS_KEYS.map((k) => `${k}=${BUS_FAMILY_LABELS[k].slice(0, 3)}`).join(' · ')}
       </p>
+      <p className="legend-codes">Zoom: municipios → barrios → paradas</p>
     </div>
   );
 }

@@ -3,13 +3,42 @@
   user-select: none;
 }
 
-.district-labels text {
-  fill: rgba(40, 55, 75, 0.16);
+.muni-fill {
+  stroke: rgba(26, 35, 50, 0.08);
+  stroke-width: 2;
+}
+
+.district-fill {
+  stroke: rgba(26, 35, 50, 0.06);
+  stroke-width: 1;
+}
+
+.muni-label {
+  fill: rgba(26, 35, 50, 0.28);
   font-family: 'Sora', system-ui, sans-serif;
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
+  font-weight: 700;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
+  pointer-events: none;
+}
+
+.district-label {
+  fill: rgba(40, 55, 75, 0.22);
+  font-family: 'Sora', system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+.walk-label {
+  fill: #546e7a;
+  font-family: 'Manrope', sans-serif;
+  font-weight: 600;
+  paint-order: stroke;
+  stroke: rgba(238, 241, 244, 0.9);
+  stroke-width: 3px;
+  pointer-events: none;
 }
 
 .coastline {

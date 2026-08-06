@@ -120,7 +120,7 @@ export function SidePanel({
   return (
     <aside className="side-panel">
       <header className="side-brand">
-        <p className="brand-kicker">Costa Sur · v0.3 · {PERIOD_LABELS[period]}</p>
+        <p className="brand-kicker">Costa Sur · v0.4 · {PERIOD_LABELS[period]}</p>
         <h1 className="brand-name">{CITY.name}</h1>
         <p className="brand-tag">{CITY.tagline}</p>
         <div className="brand-stats">

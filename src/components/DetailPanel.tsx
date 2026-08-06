@@ -190,16 +190,27 @@ export function DetailPanel({
       <section className="detail-section">
         <h3>Paradas ({stops.length})</h3>
         <ol className="stop-list">
-          {stops.map((s, i) => (
-            <li key={`${s!.id}-${i}`}>
-              <span className="stop-dot" />
-              <span>
-                {s!.name}
-                <small>{s!.district}</small>
-              </span>
-            </li>
-          ))}
+          {stops
+            .filter(
+              (s, i) =>
+                !s!.id.includes('_s') ||
+                i === 0 ||
+                i === stops.length - 1 ||
+                Boolean(s!.interchange),
+            )
+            .map((s, i) => (
+              <li key={`${s!.id}-${i}`}>
+                <span className="stop-dot" />
+                <span>
+                  {s!.name}
+                  <small>{s!.district}</small>
+                </span>
+              </li>
+            ))}
         </ol>
+        {stops.length > 12 && (
+          <p className="detail-desc">Mostrando paradas principales · {stops.length} en total</p>
+        )}
       </section>
     </div>
   );

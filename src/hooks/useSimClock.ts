@@ -4,53 +4,56 @@ import { formatClock, nowMinutes, parseClock } from '../data/time';
 /**
  * Reloj de simulación que avanza en tiempo real (1s real ≈ 1s sim)
  * y permite fijar la hora manualmente.
+ * Solo dispara re-render cuando cambia el minuto mostrado (o pause/set).
  */
 export function useSimClock() {
-  const [minutes, setMinutes] = useState(() => nowMinutes());
+  const [minutes, setMinutes] = useState(() => Math.floor(nowMinutes()));
   const [paused, setPaused] = useState(false);
-  const [tick, setTick] = useState(0); // fuerza re-render cada segundo
   const lastWall = useRef(Date.now());
-  const minutesRef = useRef(minutes);
-  minutesRef.current = minutes;
+  const accRef = useRef(nowMinutes()); // precisión sub-minuto
 
   useEffect(() => {
     const id = window.setInterval(() => {
       const wall = Date.now();
       const dtSec = (wall - lastWall.current) / 1000;
       lastWall.current = wall;
-      if (!paused) {
-        setMinutes((m) => {
-          const next = m + dtSec / 60;
-          return next >= 24 * 60 ? next - 24 * 60 : next;
-        });
-      }
-      setTick((t) => t + 1);
+      if (paused) return;
+
+      accRef.current += dtSec / 60;
+      if (accRef.current >= 24 * 60) accRef.current -= 24 * 60;
+      const floored = Math.floor(accRef.current);
+      setMinutes((m) => (m === floored ? m : floored));
     }, 1000);
     return () => window.clearInterval(id);
   }, [paused]);
 
   const setTime = useCallback((hhmm: string) => {
-    setMinutes(parseClock(hhmm));
+    const v = parseClock(hhmm);
+    accRef.current = v;
+    setMinutes(Math.floor(v));
     lastWall.current = Date.now();
   }, []);
 
   const setHoursMinutes = useCallback((h: number, m: number) => {
-    setMinutes(((h * 60 + m) % (24 * 60) + 24 * 60) % (24 * 60));
+    const v = ((h * 60 + m) % (24 * 60) + 24 * 60) % (24 * 60);
+    accRef.current = v;
+    setMinutes(v);
     lastWall.current = Date.now();
   }, []);
 
   const jumpMinutes = useCallback((delta: number) => {
-    setMinutes((m) => {
-      let next = m + delta;
-      while (next < 0) next += 24 * 60;
-      while (next >= 24 * 60) next -= 24 * 60;
-      return next;
-    });
+    let next = accRef.current + delta;
+    while (next < 0) next += 24 * 60;
+    while (next >= 24 * 60) next -= 24 * 60;
+    accRef.current = next;
+    setMinutes(Math.floor(next));
     lastWall.current = Date.now();
   }, []);
 
   const syncNow = useCallback(() => {
-    setMinutes(nowMinutes());
+    const n = nowMinutes();
+    accRef.current = n;
+    setMinutes(Math.floor(n));
     lastWall.current = Date.now();
   }, []);
 
@@ -68,6 +71,5 @@ export function useSimClock() {
     setHoursMinutes,
     jumpMinutes,
     syncNow,
-    tick,
   };
 }

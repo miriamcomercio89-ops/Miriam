@@ -52,6 +52,136 @@ const DISTRICT_SEEDS: DistrictSeed[] = [
       { key: 'alcazaba', name: 'Alcazaba', dx: 70, dy: -70 },
       { key: 'juderia', name: 'La Judería', dx: -100, dy: 40 },
       { key: 'ayuntamiento', name: 'Ayuntamiento', dx: 90, dy: 35 },
+      { key: 'plaza_constitucion', name: 'Plaza Constitución', dx: -35, dy: -25 },
+      { key: 'calle_larios', name: 'Calle Larios', dx: 25, dy: 15 },
+      { key: 'pasaje_chinitas', name: 'Pasaje Chinitas', dx: -55, dy: 20 },
+      { key: 'plaza_obispo', name: 'Plaza del Obispo', dx: -60, dy: -40 },
+    ],
+  },
+  {
+    id: 'centro_hist_este',
+    name: 'Centro Histórico Este',
+    x: 2180,
+    y: 1460,
+    stations: [
+      { key: 'teatro_romano', name: 'Teatro Romano', interchange: true },
+      { key: 'casa_consulado', name: 'Casa del Consulado', dx: 40, dy: -25 },
+      { key: 'calle_granada', name: 'Calle Granada', dx: -30, dy: 35 },
+    ],
+  },
+  {
+    id: 'juderia_barrio',
+    name: 'Barrio de la Judería',
+    x: 2020,
+    y: 1540,
+    stations: [
+      { key: 'sinagoga', name: 'Plaza Sinagoga', interchange: true },
+      { key: 'callejon_fresco', name: 'Callejón del Fresco', dx: -35, dy: 30 },
+      { key: 'arco_cristianos', name: 'Arco de los Cristianos', dx: 40, dy: -20 },
+    ],
+  },
+  {
+    id: 'ensanche_sur',
+    name: 'Ensanche Sur',
+    x: 2140,
+    y: 1640,
+    stations: [
+      { key: 'alameda_principal', name: 'Alameda Principal', interchange: true },
+      { key: 'plaza_marina', name: 'Plaza de la Marina', dx: 45, dy: 30 },
+      { key: 'corte_ingles', name: 'El Corte Heliora', dx: -40, dy: 25 },
+    ],
+  },
+  {
+    id: 'ciudad_deportiva_ext',
+    name: 'Ciudad Deportiva Heliora',
+    x: 2020,
+    y: 1220,
+    stations: [
+      { key: 'ciudad_deportiva_hel', name: 'Ciudad Deportiva Heliora', interchange: true, majorHub: true },
+      { key: 'pista_atletismo', name: 'Pista de Atletismo', dx: 55, dy: -35 },
+      { key: 'piscinas_olimpicas', name: 'Piscinas Olímpicas', dx: -45, dy: 40 },
+      { key: 'pabellon_central', name: 'Pabellón Central', dx: 40, dy: 45 },
+    ],
+  },
+  {
+    id: 'uni_norte',
+    name: 'Ciudad Universitaria Norte',
+    x: 1520,
+    y: 680,
+    stations: [
+      { key: 'facultad_derecho', name: 'Facultad de Derecho', interchange: true },
+      { key: 'facultad_ciencias', name: 'Facultad de Ciencias', dx: 55, dy: -30 },
+      { key: 'cafeteria_campus', name: 'Cafetería Campus', dx: -40, dy: 35 },
+    ],
+  },
+  {
+    id: 'residencial_campus',
+    name: 'Residencial Campus',
+    x: 1700,
+    y: 720,
+    stations: [
+      { key: 'colegio_mayor', name: 'Colegio Mayor', interchange: true },
+      { key: 'apartamentos_u', name: 'Apartamentos Universitarios', dx: 45, dy: 30 },
+    ],
+  },
+  {
+    id: 'pta_dist',
+    name: 'Parque Tecnológico',
+    x: 1170,
+    y: 1010,
+    stations: [
+      { key: 'pta_gate', name: 'PTA Acceso Norte', interchange: true },
+      { key: 'incubadora', name: 'Incubadora de Empresas', dx: 50, dy: 35 },
+    ],
+  },
+  {
+    id: 'sierra_blanca_este',
+    name: 'Sierra Blanca Este',
+    x: 2900,
+    y: 900,
+    stations: [
+      { key: 'sierra_blanca_e', name: 'Sierra Blanca Este', interchange: true },
+      { key: 'urbanizacion_gold', name: 'Urbanización Gold Mar', dx: 45, dy: -35 },
+    ],
+  },
+  {
+    id: 'pedregalejo_u',
+    name: 'Pedregalejo Urbano',
+    x: 2550,
+    y: 1780,
+    stations: [
+      { key: 'pedregalejo', name: 'Pedregalejo', interchange: true },
+      { key: 'escuela_nautica', name: 'Escuela Náutica', dx: 40, dy: 35 },
+    ],
+  },
+  {
+    id: 'huelin_u',
+    name: 'Huelin Urbano',
+    x: 1350,
+    y: 1680,
+    stations: [
+      { key: 'huelin_centro', name: 'Huelin Centro', interchange: true },
+      { key: 'mercado_huelin', name: 'Mercado de Huelin', dx: -40, dy: 30 },
+    ],
+  },
+  {
+    id: 'cruz_humilladero_d',
+    name: 'Cruz Humilladero',
+    x: 2050,
+    y: 1580,
+    stations: [
+      { key: 'humilladero_centro', name: 'Cruz Humilladero Centro', interchange: true },
+      { key: 'estacion_autobus', name: 'Estación de Autobuses', dx: -50, dy: 40, majorHub: true },
+    ],
+  },
+  {
+    id: 'palacio_deportes_d',
+    name: 'Palacio de Deportes',
+    x: 1880,
+    y: 1320,
+    stations: [
+      { key: 'palacio_deportes_est', name: 'Palacio de Deportes', interchange: true },
+      { key: 'parking_deportes', name: 'Parking Deportes', dx: 40, dy: 30 },
     ],
   },
   {
@@ -1063,6 +1193,28 @@ const coastalSierraExtra: TransitLine[] = [
   bus('X6', 'Express Sierra – Aeropuerto', 'X', [
     'mijas', 'universidad', 'campanillas', 'aeropuerto',
   ], 20, '05:40', '23:00'),
+  line('T15', 'Casco Histórico Denso', 'tranvia', '#A1887F', [
+    'sinagoga', 'callejon_fresco', 'juderia', 'plaza_constitucion', 'calle_larios',
+    'plaza_mayor', 'pasaje_chinitas', 'plaza_obispo', 'catedral', 'teatro_romano',
+    'calle_granada', 'alameda_principal', 'plaza_marina',
+  ], { frequencyMin: 7, firstDeparture: '07:00', lastDeparture: '00:30' }),
+  line('L24', 'Ciudad Deportiva – Universidad', 'metro', '#FF6F00', [
+    'piscinas_olimpicas', 'ciudad_deportiva_hel', 'pabellon_central', 'rosaleda',
+    'palacio_deportes_est', 'el_pastor', 'colegio_mayor', 'universidad',
+    'facultad_derecho', 'facultad_ciencias',
+  ], { frequencyMin: 5, firstDeparture: '06:10', lastDeparture: '00:40' }),
+  bus('U6', 'Facultades Shuttle', 'U', [
+    'facultad_ciencias', 'facultad_derecho', 'cafeteria_campus', 'universidad',
+    'biblioteca_campus', 'residencia_u', 'colegio_mayor',
+  ], 8, '07:00', '22:30'),
+  bus('B8', 'Casco a pie (lanzadera)', 'B', [
+    'estacion_autobus', 'humilladero_centro', 'alameda_principal', 'plaza_mayor',
+    'teatro_romano', 'alcazaba',
+  ], 10, '07:00', '23:00'),
+  bus('E4', 'Evento Deportivo', 'E', [
+    'maria_zambrano', 'ciudad_deportiva_hel', 'pista_atletismo', 'piscinas_olimpicas',
+    'palacio_deportes_est', 'rosaleda',
+  ], 8, '10:00', '01:00'),
 ];
 
 const rawLines = ensureMeta([

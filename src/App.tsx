@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { DetailPanel } from './components/DetailPanel';
 import { MapLegend } from './components/MapLegend';
 import { SidePanel } from './components/SidePanel';
@@ -11,6 +11,9 @@ import type { TransportMode, UserRole } from './data/types';
 import { usePanZoom } from './hooks/usePanZoom';
 import { useSimClock } from './hooks/useSimClock';
 import './App.css';
+// Precarga caches de mapa (paths, distritos) al iniciar
+import './data/mapCache';
+import './data/geography';
 
 function readLineFromUrl(): string | null {
   const params = new URLSearchParams(window.location.search);
@@ -41,7 +44,14 @@ export default function App() {
   const [routePlan, setRoutePlan] = useState<RoutePlan | null>(null);
 
   const sim = useSimClock();
-  const period = periodFromMinutes(sim.minutes);
+  // Minutos enteros: evita re-render del mapa cada segundo
+  const simMinutesInt = Math.floor(sim.minutes);
+  const period = useMemo(() => periodFromMinutes(simMinutesInt), [simMinutesInt]);
+  const routeStationIds = routePlan?.stationIds ?? null;
+  const routeLineIds = useMemo(
+    () => routePlan?.legs.filter((l) => !l.walkOnly).map((l) => l.line.id) ?? null,
+    [routePlan],
+  );
 
   const {
     state,
@@ -86,7 +96,7 @@ export default function App() {
     return () => window.removeEventListener('keydown', onKey);
   }, [zoomBy]);
 
-  const selectLine = (id: string) => {
+  const selectLine = useCallback((id: string) => {
     setSelectedLineId(id);
     setSelectedStationId(null);
     setRoutePlan(null);
@@ -96,26 +106,26 @@ export default function App() {
       const bounds = getLineBounds(line);
       if (bounds) fitBounds(bounds, 100);
     }
-  };
+  }, [fitBounds]);
 
-  const selectStation = (id: string) => {
+  const selectStation = useCallback((id: string) => {
     setSelectedStationId(id);
     setSelectedLineId(null);
     writeLineToUrl(null);
     const st = getStation(id);
     if (st) focusPoint(st.x, st.y, 1.15);
-  };
+  }, [focusPoint]);
 
-  const clearSelection = () => {
+  const clearSelection = useCallback(() => {
     setSelectedLineId(null);
     setSelectedStationId(null);
     setFilterMode(null);
     setSearch('');
     setRoutePlan(null);
     writeLineToUrl(null);
-  };
+  }, []);
 
-  const handleRoute = (plan: RoutePlan | null) => {
+  const handleRoute = useCallback((plan: RoutePlan | null) => {
     setRoutePlan(plan);
     setSelectedLineId(null);
     setSelectedStationId(null);
@@ -134,7 +144,7 @@ export default function App() {
         );
       }
     }
-  };
+  }, [fitBounds]);
 
   return (
     <div className={`app ${sidebarOpen ? '' : 'sidebar-collapsed'}`}>
@@ -159,7 +169,7 @@ export default function App() {
           onSelectStation={selectStation}
           onClearSelection={clearSelection}
           onRoute={handleRoute}
-          simMinutes={sim.minutes}
+          simMinutes={simMinutesInt}
           period={period}
         />
       </div>
@@ -182,8 +192,8 @@ export default function App() {
               selectedLineId={selectedLineId}
               selectedStationId={selectedStationId}
               highlightedMode={filterMode}
-              routeStationIds={routePlan?.stationIds ?? null}
-              routeLineIds={routePlan?.legs.map((l) => l.line.id) ?? null}
+              routeStationIds={routeStationIds}
+              routeLineIds={routeLineIds}
               mapScale={state.scale}
               dimOthers={Boolean(selectedLineId || filterMode || routePlan)}
               onSelectLine={selectLine}
@@ -213,7 +223,7 @@ export default function App() {
           role={role}
           selectedLineId={selectedLineId}
           selectedStationId={selectedStationId}
-          simMinutes={sim.minutes}
+          simMinutes={simMinutesInt}
           period={period}
           onSelectLine={selectLine}
           onClose={() => {

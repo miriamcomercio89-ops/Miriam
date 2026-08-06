@@ -12752,11 +12752,11 @@
   });
 
   // src/main.tsx
-  var import_react6 = __toESM(require_react(), 1);
+  var import_react7 = __toESM(require_react(), 1);
   var import_client = __toESM(require_client(), 1);
 
   // src/App.tsx
-  var import_react5 = __toESM(require_react(), 1);
+  var import_react6 = __toESM(require_react(), 1);
 
   // src/components/DetailPanel.tsx
   var import_react = __toESM(require_react(), 1);
@@ -12808,17 +12808,17 @@
   function spacingForMode(mode) {
     switch (mode) {
       case "bus":
-        return 62;
+        return 88;
       case "tranvia":
-        return 78;
-      case "metro":
         return 95;
+      case "metro":
+        return 110;
       case "cercanias":
-        return 150;
+        return 170;
       case "hyperloop":
-        return 400;
+        return 420;
       default:
-        return 90;
+        return 100;
     }
   }
   function amplitudeForMode(mode) {
@@ -12838,7 +12838,7 @@
   function densifyNetwork(baseStations2, baseLines) {
     const stations2 = { ...baseStations2 };
     const lines2 = baseLines.map((line2) => {
-      var _a, _b;
+      var _a2, _b2;
       const ids = line2.stationIds;
       if (ids.length < 2) return line2;
       const densified2 = [];
@@ -12848,16 +12848,16 @@
       for (let i = 0; i < ids.length; i++) {
         densified2.push(ids[i]);
         if (i >= ids.length - 1) break;
-        const a = (_a = baseStations2[ids[i]]) != null ? _a : stations2[ids[i]];
-        const b = (_b = baseStations2[ids[i + 1]]) != null ? _b : stations2[ids[i + 1]];
+        const a = (_a2 = baseStations2[ids[i]]) != null ? _a2 : stations2[ids[i]];
+        const b = (_b2 = baseStations2[ids[i + 1]]) != null ? _b2 : stations2[ids[i + 1]];
         if (!a || !b) continue;
         if (a.id === b.id || a.x === b.x && a.y === b.y) continue;
         const dx = b.x - a.x;
         const dy = b.y - a.y;
-        const dist = Math.hypot(dx, dy);
-        if (dist < spacing * 1.2) continue;
-        const n = Math.min(5, Math.max(1, Math.floor(dist / spacing) - 1));
-        const len = dist || 1;
+        const dist2 = Math.hypot(dx, dy);
+        if (dist2 < spacing * 1.2) continue;
+        const n = Math.min(3, Math.max(1, Math.floor(dist2 / spacing) - 1));
+        const len = dist2 || 1;
         const px = -dy / len;
         const py = dx / len;
         for (let k = 1; k <= n; k++) {
@@ -12907,7 +12907,137 @@
         { key: "catedral", name: "Catedral de Heliora", dx: -80, dy: -55, interchange: true },
         { key: "alcazaba", name: "Alcazaba", dx: 70, dy: -70 },
         { key: "juderia", name: "La Juder\xEDa", dx: -100, dy: 40 },
-        { key: "ayuntamiento", name: "Ayuntamiento", dx: 90, dy: 35 }
+        { key: "ayuntamiento", name: "Ayuntamiento", dx: 90, dy: 35 },
+        { key: "plaza_constitucion", name: "Plaza Constituci\xF3n", dx: -35, dy: -25 },
+        { key: "calle_larios", name: "Calle Larios", dx: 25, dy: 15 },
+        { key: "pasaje_chinitas", name: "Pasaje Chinitas", dx: -55, dy: 20 },
+        { key: "plaza_obispo", name: "Plaza del Obispo", dx: -60, dy: -40 }
+      ]
+    },
+    {
+      id: "centro_hist_este",
+      name: "Centro Hist\xF3rico Este",
+      x: 2180,
+      y: 1460,
+      stations: [
+        { key: "teatro_romano", name: "Teatro Romano", interchange: true },
+        { key: "casa_consulado", name: "Casa del Consulado", dx: 40, dy: -25 },
+        { key: "calle_granada", name: "Calle Granada", dx: -30, dy: 35 }
+      ]
+    },
+    {
+      id: "juderia_barrio",
+      name: "Barrio de la Juder\xEDa",
+      x: 2020,
+      y: 1540,
+      stations: [
+        { key: "sinagoga", name: "Plaza Sinagoga", interchange: true },
+        { key: "callejon_fresco", name: "Callej\xF3n del Fresco", dx: -35, dy: 30 },
+        { key: "arco_cristianos", name: "Arco de los Cristianos", dx: 40, dy: -20 }
+      ]
+    },
+    {
+      id: "ensanche_sur",
+      name: "Ensanche Sur",
+      x: 2140,
+      y: 1640,
+      stations: [
+        { key: "alameda_principal", name: "Alameda Principal", interchange: true },
+        { key: "plaza_marina", name: "Plaza de la Marina", dx: 45, dy: 30 },
+        { key: "corte_ingles", name: "El Corte Heliora", dx: -40, dy: 25 }
+      ]
+    },
+    {
+      id: "ciudad_deportiva_ext",
+      name: "Ciudad Deportiva Heliora",
+      x: 2020,
+      y: 1220,
+      stations: [
+        { key: "ciudad_deportiva_hel", name: "Ciudad Deportiva Heliora", interchange: true, majorHub: true },
+        { key: "pista_atletismo", name: "Pista de Atletismo", dx: 55, dy: -35 },
+        { key: "piscinas_olimpicas", name: "Piscinas Ol\xEDmpicas", dx: -45, dy: 40 },
+        { key: "pabellon_central", name: "Pabell\xF3n Central", dx: 40, dy: 45 }
+      ]
+    },
+    {
+      id: "uni_norte",
+      name: "Ciudad Universitaria Norte",
+      x: 1520,
+      y: 680,
+      stations: [
+        { key: "facultad_derecho", name: "Facultad de Derecho", interchange: true },
+        { key: "facultad_ciencias", name: "Facultad de Ciencias", dx: 55, dy: -30 },
+        { key: "cafeteria_campus", name: "Cafeter\xEDa Campus", dx: -40, dy: 35 }
+      ]
+    },
+    {
+      id: "residencial_campus",
+      name: "Residencial Campus",
+      x: 1700,
+      y: 720,
+      stations: [
+        { key: "colegio_mayor", name: "Colegio Mayor", interchange: true },
+        { key: "apartamentos_u", name: "Apartamentos Universitarios", dx: 45, dy: 30 }
+      ]
+    },
+    {
+      id: "pta_dist",
+      name: "Parque Tecnol\xF3gico",
+      x: 1170,
+      y: 1010,
+      stations: [
+        { key: "pta_gate", name: "PTA Acceso Norte", interchange: true },
+        { key: "incubadora", name: "Incubadora de Empresas", dx: 50, dy: 35 }
+      ]
+    },
+    {
+      id: "sierra_blanca_este",
+      name: "Sierra Blanca Este",
+      x: 2900,
+      y: 900,
+      stations: [
+        { key: "sierra_blanca_e", name: "Sierra Blanca Este", interchange: true },
+        { key: "urbanizacion_gold", name: "Urbanizaci\xF3n Gold Mar", dx: 45, dy: -35 }
+      ]
+    },
+    {
+      id: "pedregalejo_u",
+      name: "Pedregalejo Urbano",
+      x: 2550,
+      y: 1780,
+      stations: [
+        { key: "pedregalejo", name: "Pedregalejo", interchange: true },
+        { key: "escuela_nautica", name: "Escuela N\xE1utica", dx: 40, dy: 35 }
+      ]
+    },
+    {
+      id: "huelin_u",
+      name: "Huelin Urbano",
+      x: 1350,
+      y: 1680,
+      stations: [
+        { key: "huelin_centro", name: "Huelin Centro", interchange: true },
+        { key: "mercado_huelin", name: "Mercado de Huelin", dx: -40, dy: 30 }
+      ]
+    },
+    {
+      id: "cruz_humilladero_d",
+      name: "Cruz Humilladero",
+      x: 2050,
+      y: 1580,
+      stations: [
+        { key: "humilladero_centro", name: "Cruz Humilladero Centro", interchange: true },
+        { key: "estacion_autobus", name: "Estaci\xF3n de Autobuses", dx: -50, dy: 40, majorHub: true }
+      ]
+    },
+    {
+      id: "palacio_deportes_d",
+      name: "Palacio de Deportes",
+      x: 1880,
+      y: 1320,
+      stations: [
+        { key: "palacio_deportes_est", name: "Palacio de Deportes", interchange: true },
+        { key: "parking_deportes", name: "Parking Deportes", dx: 40, dy: 30 }
       ]
     },
     {
@@ -13483,15 +13613,15 @@
     }
   ];
   function buildStations() {
-    var _a, _b;
+    var _a2, _b2;
     const map = {};
     for (const d of DISTRICT_SEEDS) {
       for (const s of d.stations) {
         map[s.key] = {
           id: s.key,
           name: s.name,
-          x: d.x + ((_a = s.dx) != null ? _a : 0),
-          y: d.y + ((_b = s.dy) != null ? _b : 0),
+          x: d.x + ((_a2 = s.dx) != null ? _a2 : 0),
+          y: d.y + ((_b2 = s.dy) != null ? _b2 : 0),
           district: d.name,
           interchange: s.interchange,
           majorHub: s.majorHub
@@ -13546,7 +13676,7 @@
     E: "#D84315"
   };
   function line(code, name, mode, color, stationIds, opts = {}) {
-    var _a, _b, _c, _d, _e;
+    var _a2, _b2, _c, _d, _e;
     const valid = stationIds.filter((id) => baseStations[id]);
     return {
       id: code.toLowerCase(),
@@ -13555,8 +13685,8 @@
       mode,
       color,
       stationIds: valid,
-      frequencyMin: (_a = opts.frequencyMin) != null ? _a : 6,
-      firstDeparture: (_b = opts.firstDeparture) != null ? _b : "06:00",
+      frequencyMin: (_a2 = opts.frequencyMin) != null ? _a2 : 6,
+      firstDeparture: (_b2 = opts.firstDeparture) != null ? _b2 : "06:00",
       lastDeparture: (_c = opts.lastDeparture) != null ? _c : "23:30",
       status: (_d = opts.status) != null ? _d : "normal",
       occupancy: (_e = opts.occupancy) != null ? _e : 50,
@@ -14231,7 +14361,59 @@
       "universidad",
       "campanillas",
       "aeropuerto"
-    ], 20, "05:40", "23:00")
+    ], 20, "05:40", "23:00"),
+    line("T15", "Casco Hist\xF3rico Denso", "tranvia", "#A1887F", [
+      "sinagoga",
+      "callejon_fresco",
+      "juderia",
+      "plaza_constitucion",
+      "calle_larios",
+      "plaza_mayor",
+      "pasaje_chinitas",
+      "plaza_obispo",
+      "catedral",
+      "teatro_romano",
+      "calle_granada",
+      "alameda_principal",
+      "plaza_marina"
+    ], { frequencyMin: 7, firstDeparture: "07:00", lastDeparture: "00:30" }),
+    line("L24", "Ciudad Deportiva \u2013 Universidad", "metro", "#FF6F00", [
+      "piscinas_olimpicas",
+      "ciudad_deportiva_hel",
+      "pabellon_central",
+      "rosaleda",
+      "palacio_deportes_est",
+      "el_pastor",
+      "colegio_mayor",
+      "universidad",
+      "facultad_derecho",
+      "facultad_ciencias"
+    ], { frequencyMin: 5, firstDeparture: "06:10", lastDeparture: "00:40" }),
+    bus("U6", "Facultades Shuttle", "U", [
+      "facultad_ciencias",
+      "facultad_derecho",
+      "cafeteria_campus",
+      "universidad",
+      "biblioteca_campus",
+      "residencia_u",
+      "colegio_mayor"
+    ], 8, "07:00", "22:30"),
+    bus("B8", "Casco a pie (lanzadera)", "B", [
+      "estacion_autobus",
+      "humilladero_centro",
+      "alameda_principal",
+      "plaza_mayor",
+      "teatro_romano",
+      "alcazaba"
+    ], 10, "07:00", "23:00"),
+    bus("E4", "Evento Deportivo", "E", [
+      "maria_zambrano",
+      "ciudad_deportiva_hel",
+      "pista_atletismo",
+      "piscinas_olimpicas",
+      "palacio_deportes_est",
+      "rosaleda"
+    ], 8, "10:00", "01:00")
   ];
   var rawLines = ensureMeta([
     ...metroLines,
@@ -14471,9 +14653,9 @@
     onSelectLine,
     onClose
   }) {
-    var _a;
+    var _a2;
     const [copied, setCopied] = (0, import_react.useState)(false);
-    const line2 = (_a = lines.find((l) => l.id === selectedLineId)) != null ? _a : null;
+    const line2 = (_a2 = lines.find((l) => l.id === selectedLineId)) != null ? _a2 : null;
     const station = selectedStationId ? getStation(selectedStationId) : null;
     if (!line2 && !station) return null;
     if (station && !line2) {
@@ -14609,13 +14791,20 @@
           stops.length,
           ")"
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("ol", { className: "stop-list", children: stops.map((s, i) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("ol", { className: "stop-list", children: stops.filter(
+          (s, i) => !s.id.includes("_s") || i === 0 || i === stops.length - 1 || Boolean(s.interchange)
+        ).map((s, i) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [
           /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "stop-dot" }),
           /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: [
             s.name,
             /* @__PURE__ */ (0, import_jsx_runtime.jsx)("small", { children: s.district })
           ] })
-        ] }, `${s.id}-${i}`)) })
+        ] }, `${s.id}-${i}`)) }),
+        stops.length > 12 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", { className: "detail-desc", children: [
+          "Mostrando paradas principales \xB7 ",
+          stops.length,
+          " en total"
+        ] })
       ] })
     ] });
   }
@@ -14695,18 +14884,71 @@
           /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { children: "Gran intercambiador" })
         ] })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { className: "legend-codes", children: "Metro L \xB7 Cercan\xEDas C \xB7 Tranv\xEDa T" }),
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { className: "legend-codes", children: "Metro L \xB7 Cercan\xEDas C \xB7 Tranv\xEDa T \xB7 PIE = a pie" }),
       /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("p", { className: "legend-codes bus-codes", children: [
         "Bus: ",
         BUS_KEYS.map((k) => `${k}=${BUS_FAMILY_LABELS[k].slice(0, 3)}`).join(" \xB7 ")
-      ] })
+      ] }),
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { className: "legend-codes", children: "Zoom: municipios \u2192 barrios \u2192 paradas" })
     ] });
   }
 
   // src/components/RoutePlanner.tsx
   var import_react2 = __toESM(require_react(), 1);
 
+  // src/data/walk.ts
+  var WALK_SPEED_M_PER_MIN = 80;
+  var MAP_UNITS_TO_M = 4.5;
+  function dist(a, b) {
+    return Math.hypot(a.x - b.x, a.y - b.y);
+  }
+  function buildWalkGraph(maxMapUnits = 95) {
+    const hubs = getUniqueStations().filter((s) => !s.id.includes("_s") || s.interchange);
+    const edges = [];
+    const seen = /* @__PURE__ */ new Set();
+    for (let i = 0; i < hubs.length; i++) {
+      for (let j = i + 1; j < hubs.length; j++) {
+        const a = hubs[i];
+        const b = hubs[j];
+        const d = dist(a, b);
+        const cascoBonus = a.district.includes("Casco") || a.district.includes("Juder") || a.district.includes("Soho") || b.district.includes("Casco") || b.district.includes("Juder") || b.district.includes("Soho") ? 1.35 : 1;
+        if (d > maxMapUnits * cascoBonus) continue;
+        const key = a.id < b.id ? `${a.id}|${b.id}` : `${b.id}|${a.id}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        const meters = d * MAP_UNITS_TO_M;
+        const minutes = Math.max(1, Math.round(meters / WALK_SPEED_M_PER_MIN));
+        edges.push({ from: a.id, to: b.id, minutes, meters: Math.round(meters) });
+      }
+    }
+    return edges;
+  }
+  var WALK_EDGES = buildWalkGraph();
+  var walkAdj = /* @__PURE__ */ new Map();
+  var _a, _b;
+  for (const e of WALK_EDGES) {
+    const a = (_a = walkAdj.get(e.from)) != null ? _a : [];
+    a.push({ to: e.to, minutes: e.minutes });
+    walkAdj.set(e.from, a);
+    const b = (_b = walkAdj.get(e.to)) != null ? _b : [];
+    b.push({ to: e.from, minutes: e.minutes });
+    walkAdj.set(e.to, b);
+  }
+
   // src/data/routing.ts
+  var WALK_LINE = {
+    id: "__walk__",
+    code: "PIE",
+    name: "A pie",
+    mode: "bus",
+    color: "#78909C",
+    stationIds: [],
+    frequencyMin: 0,
+    firstDeparture: "00:00",
+    lastDeparture: "23:59",
+    status: "normal",
+    occupancy: 0
+  };
   function transferWalkMinutes(stationId) {
     const st = getStation(stationId);
     if (!st) return 3;
@@ -14717,8 +14959,8 @@
   function buildGraph() {
     const graph2 = /* @__PURE__ */ new Map();
     const add = (from, edge) => {
-      var _a;
-      const arr = (_a = graph2.get(from)) != null ? _a : [];
+      var _a2;
+      const arr = (_a2 = graph2.get(from)) != null ? _a2 : [];
       arr.push(edge);
       graph2.set(from, arr);
     };
@@ -14732,6 +14974,10 @@
         add(a, { to: b, lineId: line2.id });
         add(b, { to: a, lineId: line2.id });
       }
+    }
+    for (const e of WALK_EDGES) {
+      add(e.from, { to: e.to, lineId: "__walk__", walkMin: e.minutes });
+      add(e.to, { to: e.from, lineId: "__walk__", walkMin: e.minutes });
     }
     return graph2;
   }
@@ -14757,6 +15003,7 @@
     return plan.estimatedMinutes * 10 + plan.transfers * 40;
   }
   function legsFromPath(stationPath, arrivalLines) {
+    var _a2;
     if (stationPath.length < 2) return null;
     const legs = [];
     let i = 1;
@@ -14766,7 +15013,7 @@
         i++;
         continue;
       }
-      const line2 = lines.find((l) => l.id === lineId);
+      const line2 = lineId === "__walk__" ? WALK_LINE : lines.find((l) => l.id === lineId);
       if (!line2) {
         i++;
         continue;
@@ -14776,27 +15023,34 @@
         stops.push(stationPath[i]);
         i++;
       }
+      const walkOnly = lineId === "__walk__";
       legs.push({
         line: line2,
         fromId: stops[0],
         toId: stops[stops.length - 1],
         stops,
-        stopCount: stops.length - 1
+        stopCount: Math.max(1, stops.length - 1),
+        walkOnly,
+        walkMinutes: walkOnly ? Math.max(1, stops.length) * 2 : void 0
       });
     }
     if (!legs.length) return null;
-    const totalStops = legs.reduce((a, l) => a + l.stopCount, 0);
-    const transfers = Math.max(0, legs.length - 1);
+    const transitLegs = legs.filter((l) => !l.walkOnly);
+    const totalStops = transitLegs.reduce((a, l) => a + l.stopCount, 0);
+    const transfers = Math.max(0, transitLegs.length - 1);
     let walkMinutes = 0;
-    for (let i2 = 1; i2 < legs.length; i2++) {
-      walkMinutes += transferWalkMinutes(legs[i2].fromId);
+    for (let i2 = 0; i2 < legs.length; i2++) {
+      if (legs[i2].walkOnly) {
+        walkMinutes += (_a2 = legs[i2].walkMinutes) != null ? _a2 : 2;
+      } else if (i2 > 0 && !legs[i2 - 1].walkOnly) {
+        walkMinutes += transferWalkMinutes(legs[i2].fromId);
+      }
     }
-    const estimatedMinutes = Math.round(
-      legs.reduce((acc, leg) => {
-        const wait = Math.min(8, leg.line.frequencyMin * 0.4);
-        return acc + leg.stopCount * modeWeight(leg.line.mode) + wait;
-      }, 0) + walkMinutes
-    );
+    const rideMinutes = transitLegs.reduce((acc, leg) => {
+      const wait = Math.min(8, leg.line.frequencyMin * 0.4);
+      return acc + leg.stopCount * modeWeight(leg.line.mode) + wait;
+    }, 0);
+    const estimatedMinutes = Math.round(rideMinutes + walkMinutes);
     const plan = {
       legs,
       totalStops,
@@ -14813,9 +15067,18 @@
   function buildSteps(plan) {
     const steps = [];
     plan.legs.forEach((leg, idx) => {
+      var _a2, _b2;
       const fromName = stationLabel(leg.fromId);
       const toName = stationLabel(leg.toId);
-      if (idx === 0) {
+      if (leg.walkOnly) {
+        steps.push({
+          kind: "walk",
+          text: `Camina ~${(_a2 = leg.walkMinutes) != null ? _a2 : 2} min de ${fromName} a ${toName}`,
+          stationId: leg.toId
+        });
+        return;
+      }
+      if (idx === 0 || ((_b2 = plan.legs[idx - 1]) == null ? void 0 : _b2.walkOnly)) {
         steps.push({
           kind: "board",
           text: `En ${fromName}, toma la ${leg.line.code} (${leg.line.name}) sentido ${toName}`,
@@ -14826,7 +15089,7 @@
         const walk = transferWalkMinutes(leg.fromId);
         steps.push({
           kind: "transfer",
-          text: `Baja en ${fromName} y camina ~${walk} min hasta el and\xE9n de la ${leg.line.code} (${leg.line.name})`,
+          text: `Baja en ${fromName} y camina ~${walk} min hasta el and\xE9n de la ${leg.line.code}`,
           line: leg.line,
           stationId: leg.fromId
         });
@@ -14850,7 +15113,7 @@
     return plan.legs.map((l) => `${l.line.id}:${l.fromId}>${l.toId}`).join("|");
   }
   function findRoutes(fromId, toId, maxRoutes = 3) {
-    var _a, _b;
+    var _a2, _b2;
     if (!stations[fromId] || !stations[toId] || fromId === toId) return [];
     const candidates = [];
     const seen = /* @__PURE__ */ new Set();
@@ -14864,10 +15127,10 @@
     };
     trySearch(8);
     trySearch(2);
-    if ((_a = candidates[0]) == null ? void 0 : _a.legs[0]) {
+    if ((_a2 = candidates[0]) == null ? void 0 : _a2.legs[0]) {
       trySearch(3, candidates[0].legs[0].line.id);
     }
-    const hyperLeg = (_b = candidates[0]) == null ? void 0 : _b.legs.find((l) => l.line.mode === "hyperloop");
+    const hyperLeg = (_b2 = candidates[0]) == null ? void 0 : _b2.legs.find((l) => l.line.mode === "hyperloop");
     if (hyperLeg) trySearch(3, hyperLeg.line.id);
     const byFast = [...candidates].sort((a, b) => scorePlan(a, "fast") - scorePlan(b, "fast"));
     const byTrans = [...candidates].sort((a, b) => scorePlan(a, "transfers") - scorePlan(b, "transfers"));
@@ -14885,19 +15148,19 @@
     return result.slice(0, maxRoutes);
   }
   function searchOne(fromId, toId, transferPenalty, avoidLineId) {
-    var _a, _b, _c;
+    var _a2, _b2, _c, _d;
     const keyOf = (s, l) => `${s}|${l != null ? l : "_"}`;
-    const dist = /* @__PURE__ */ new Map();
+    const dist2 = /* @__PURE__ */ new Map();
     const prev = /* @__PURE__ */ new Map();
     const startKey = keyOf(fromId, null);
-    dist.set(startKey, 0);
+    dist2.set(startKey, 0);
     prev.set(startKey, { prevKey: null, viaLine: null });
     const heap = [{ stationId: fromId, lineId: null, cost: 0 }];
     while (heap.length) {
       heap.sort((a, b) => a.cost - b.cost);
       const cur = heap.shift();
       const curKey = keyOf(cur.stationId, cur.lineId);
-      if (cur.cost > ((_a = dist.get(curKey)) != null ? _a : Infinity)) continue;
+      if (cur.cost > ((_a2 = dist2.get(curKey)) != null ? _a2 : Infinity)) continue;
       if (cur.stationId === toId) {
         const stationPath = [];
         const arrivalLines = [];
@@ -14913,15 +15176,21 @@
         arrivalLines.reverse();
         return legsFromPath(stationPath, arrivalLines);
       }
-      for (const e of (_b = graph.get(cur.stationId)) != null ? _b : []) {
+      for (const e of (_b2 = graph.get(cur.stationId)) != null ? _b2 : []) {
         if (avoidLineId && e.lineId === avoidLineId && !cur.lineId) continue;
-        const line2 = lines.find((l) => l.id === e.lineId);
-        if (!line2) continue;
-        const transfer = cur.lineId && cur.lineId !== e.lineId ? transferPenalty : 0;
-        const nextCost = cur.cost + modeWeight(line2.mode) + transfer + line2.frequencyMin * 0.05;
+        let stepCost;
+        if (e.lineId === "__walk__") {
+          stepCost = ((_c = e.walkMin) != null ? _c : 3) * 1.15;
+        } else {
+          const line2 = lines.find((l) => l.id === e.lineId);
+          if (!line2) continue;
+          const transfer = cur.lineId && cur.lineId !== e.lineId && cur.lineId !== "__walk__" ? transferPenalty : 0;
+          stepCost = modeWeight(line2.mode) + transfer + line2.frequencyMin * 0.05;
+        }
+        const nextCost = cur.cost + stepCost;
         const nk = keyOf(e.to, e.lineId);
-        if (nextCost < ((_c = dist.get(nk)) != null ? _c : Infinity)) {
-          dist.set(nk, nextCost);
+        if (nextCost < ((_d = dist2.get(nk)) != null ? _d : Infinity)) {
+          dist2.set(nk, nextCost);
           prev.set(nk, { prevKey: curKey, viaLine: e.lineId });
           heap.push({ stationId: e.to, lineId: e.lineId, cost: nextCost });
         }
@@ -14930,8 +15199,8 @@
     return null;
   }
   function stationLabel(id) {
-    var _a, _b;
-    return (_b = (_a = getStation(id)) == null ? void 0 : _a.name) != null ? _b : id;
+    var _a2, _b2;
+    return (_b2 = (_a2 = getStation(id)) == null ? void 0 : _a2.name) != null ? _b2 : id;
   }
 
   // src/components/RoutePlanner.css
@@ -14944,7 +15213,7 @@
   // src/components/RoutePlanner.tsx
   var import_jsx_runtime3 = __toESM(require_jsx_runtime(), 1);
   function RoutePlanner({ onRoute, onPickStation }) {
-    var _a;
+    var _a2;
     const stations2 = (0, import_react2.useMemo)(
       () => getUniqueStations().sort((a, b) => a.name.localeCompare(b.name, "es")),
       []
@@ -14990,11 +15259,11 @@
       setError("");
     };
     const selectPlan = (idx) => {
-      var _a2;
+      var _a3;
       setSelectedIdx(idx);
-      onRoute((_a2 = plans[idx]) != null ? _a2 : null);
+      onRoute((_a3 = plans[idx]) != null ? _a3 : null);
     };
-    const plan = (_a = plans[selectedIdx]) != null ? _a : null;
+    const plan = (_a2 = plans[selectedIdx]) != null ? _a2 : null;
     return /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("section", { className: "route-planner", children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h2", { children: "Planificar viaje" }),
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("label", { children: [
@@ -15175,7 +15444,7 @@
     return /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("aside", { className: "side-panel", children: [
       /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("header", { className: "side-brand", children: [
         /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("p", { className: "brand-kicker", children: [
-          "Costa Sur \xB7 v0.3 \xB7 ",
+          "Costa Sur \xB7 v0.4 \xB7 ",
           PERIOD_LABELS[period]
         ] }),
         /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("h1", { className: "brand-name", children: CITY.name }),
@@ -15352,9 +15621,203 @@
     ] });
   }
 
+  // src/components/TransitMap.tsx
+  var import_react3 = __toESM(require_react(), 1);
+
+  // src/data/geography.ts
+  var MUNICIPALITIES = [
+    {
+      id: "heliora_capital",
+      name: "Heliora Capital",
+      x: 2100,
+      y: 1500,
+      districtNames: [
+        "Casco Antiguo",
+        "El Perchel",
+        "Soho Heliora",
+        "La Ensenada",
+        "La Victoria",
+        "Capuchinos",
+        "Cruz Humilladero",
+        "Ciudad de la Justicia",
+        "Distrito Hospitalario",
+        "La Rosaleda",
+        "El Limonar",
+        "Cerrado de Calder\xF3n",
+        "Ciudad Jard\xEDn",
+        "El Pastor",
+        "Avenida del Sol",
+        "Carretera de C\xE1diz",
+        "Estaci\xF3n Mar\xEDa Zambrano",
+        "Plaza de la Merced",
+        "La Alcazaba",
+        "Centro Hist\xF3rico Este",
+        "Barrio de la Juder\xEDa",
+        "Ensanche Sur",
+        "Pedregalejo Urbano",
+        "Huelin Urbano"
+      ],
+      color: "rgba(196, 92, 38, 0.10)"
+    },
+    {
+      id: "torres_costa",
+      name: "Torres del Mar",
+      x: 1680,
+      y: 2e3,
+      districtNames: ["Torres del Mar", "La Bajadilla", "Puerto Marina", "Sacaba Beach", "Playa del Faro"],
+      color: "rgba(2, 119, 189, 0.10)"
+    },
+    {
+      id: "arenales_mun",
+      name: "Los Arenales",
+      x: 3100,
+      y: 2e3,
+      districtNames: ["Los Arenales", "Cala Serena", "Paseo de Levante", "Rinc\xF3n del Mar", "La Cala del Sol"],
+      color: "rgba(0, 151, 167, 0.10)"
+    },
+    {
+      id: "guadalmar_mun",
+      name: "Guadalmar",
+      x: 780,
+      y: 1720,
+      districtNames: ["Guadalmar", "Churriana", "Aeropuerto Costa del Sol", "Puerto Heliora", "San Andr\xE9s"],
+      color: "rgba(94, 53, 177, 0.09)"
+    },
+    {
+      id: "campus_mun",
+      name: "Campus del Olivar",
+      x: 1600,
+      y: 780,
+      districtNames: [
+        "Campus del Olivar",
+        "Ciudad del Olivo",
+        "Plaza Mayor Comercial",
+        "Campanillas",
+        "Parque Tecnol\xF3gico",
+        "Ciudad Universitaria Norte",
+        "Residencial Campus"
+      ],
+      color: "rgba(46, 125, 50, 0.10)"
+    },
+    {
+      id: "mijas_mun",
+      name: "Mijas de Heliora",
+      x: 2400,
+      y: 480,
+      districtNames: ["Mijas de Heliora", "Arroyo de la Miel", "Urbanizaci\xF3n El Pinillo", "Monte Heliora", "Altos del Mediterr\xE1neo"],
+      color: "rgba(121, 85, 72, 0.10)"
+    },
+    {
+      id: "valle_mun",
+      name: "Valle del Guadalhorce",
+      x: 1200,
+      y: 500,
+      districtNames: ["Co\xEDn Valle", "Alhaur\xEDn del Monte", "C\xE1rtama Sierra", "Pol\xEDgono Guadalhorce", "Los Boliches Interior"],
+      color: "rgba(85, 139, 47, 0.10)"
+    },
+    {
+      id: "levante_mun",
+      name: "Nueva Heliora Levante",
+      x: 3300,
+      y: 1400,
+      districtNames: ["Nueva Heliora", "La Vi\xF1uela", "Oj\xE9n Blanco", "Ist\xE1n Lago", "Sierra Blanca Este"],
+      color: "rgba(233, 30, 99, 0.08)"
+    },
+    {
+      id: "deportivo_mun",
+      name: "Ciudad Deportiva",
+      x: 1950,
+      y: 1280,
+      districtNames: ["La Rosaleda", "Ciudad Deportiva Heliora", "Recinto Ferial", "Palacio de Deportes"],
+      color: "rgba(255, 152, 0, 0.10)"
+    }
+  ];
+  function ellipsePoints(cx, cy, rx, ry, n = 14, rot = 0) {
+    const pts = [];
+    for (let i = 0; i < n; i++) {
+      const a = i / n * Math.PI * 2 + rot;
+      const jitter = 1 + Math.sin(i * 1.7 + cx * 0.01) * 0.08;
+      const x = cx + Math.cos(a) * rx * jitter;
+      const y = cy + Math.sin(a) * ry * jitter;
+      pts.push(`${x.toFixed(1)},${y.toFixed(1)}`);
+    }
+    return pts.join(" ");
+  }
+  function buildDistrictShapes() {
+    var _a2;
+    const byDistrict = /* @__PURE__ */ new Map();
+    for (const s of Object.values(stations)) {
+      if (s.id.includes("_s")) continue;
+      const bucket = (_a2 = byDistrict.get(s.district)) != null ? _a2 : { xs: [], ys: [] };
+      bucket.xs.push(s.x);
+      bucket.ys.push(s.y);
+      byDistrict.set(s.district, bucket);
+    }
+    for (const d of districtLabels) {
+      if (!byDistrict.has(d.name)) {
+        byDistrict.set(d.name, { xs: [d.x], ys: [d.y + 110] });
+      }
+    }
+    const shapes = [];
+    let i = 0;
+    for (const [name, { xs, ys }] of byDistrict) {
+      const cx = xs.reduce((a, b) => a + b, 0) / xs.length;
+      const cy = ys.reduce((a, b) => a + b, 0) / ys.length;
+      const spreadX = Math.max(70, (Math.max(...xs) - Math.min(...xs)) / 2 + 55);
+      const spreadY = Math.max(55, (Math.max(...ys) - Math.min(...ys)) / 2 + 45);
+      const hue = i * 47 % 360;
+      shapes.push({
+        id: `dist-${i}`,
+        name,
+        cx,
+        cy,
+        points: ellipsePoints(cx, cy, spreadX, spreadY, 12, i * 0.2),
+        kind: "barrio",
+        fill: `hsla(${hue}, 35%, 55%, 0.11)`
+      });
+      i++;
+    }
+    return shapes;
+  }
+  function buildMunicipalityShapes() {
+    const districtShapes = buildDistrictShapes();
+    const byName = new Map(districtShapes.map((d) => [d.name, d]));
+    return MUNICIPALITIES.map((m, idx) => {
+      const members = m.districtNames.map((n) => byName.get(n)).filter(Boolean);
+      if (!members.length) {
+        return {
+          id: m.id,
+          name: m.name,
+          cx: m.x,
+          cy: m.y,
+          points: ellipsePoints(m.x, m.y, 220, 160, 16, idx),
+          kind: "municipio",
+          fill: m.color
+        };
+      }
+      const cx = members.reduce((a, d) => a + d.cx, 0) / members.length;
+      const cy = members.reduce((a, d) => a + d.cy, 0) / members.length;
+      const rx = Math.max(180, ...members.map((d) => Math.abs(d.cx - cx))) + 120;
+      const ry = Math.max(140, ...members.map((d) => Math.abs(d.cy - cy))) + 100;
+      return {
+        id: m.id,
+        name: m.name,
+        cx,
+        cy,
+        points: ellipsePoints(cx, cy, rx, ry, 18, idx * 0.3),
+        kind: "municipio",
+        fill: m.color
+      };
+    });
+  }
+  var DISTRICT_SHAPES = buildDistrictShapes();
+  var MUNICIPALITY_SHAPES = buildMunicipalityShapes();
+  var HUB_STATIONS = getUniqueStations().filter((s) => !s.id.includes("_s"));
+  var MAJOR_STATIONS = HUB_STATIONS.filter((s) => s.majorHub || s.interchange);
+
   // src/data/pathSmooth.ts
   function smoothPathD(points, tension = 0.35) {
-    var _a;
+    var _a2;
     if (points.length === 0) return "";
     if (points.length === 1) return `M ${points[0].x} ${points[0].y}`;
     if (points.length === 2) {
@@ -15365,7 +15828,7 @@
       const p0 = points[i === 0 ? 0 : i - 1];
       const p1 = points[i];
       const p2 = points[i + 1];
-      const p3 = (_a = points[i + 2]) != null ? _a : p2;
+      const p3 = (_a2 = points[i + 2]) != null ? _a2 : p2;
       const cp1x = p1.x + (p2.x - p0.x) * tension / 3;
       const cp1y = p1.y + (p2.y - p0.y) * tension / 3;
       const cp2x = p2.x - (p3.x - p1.x) * tension / 3;
@@ -15375,38 +15838,66 @@
     return d;
   }
 
+  // src/data/mapCache.ts
+  function simplifyPoints(pts, step) {
+    if (pts.length <= 3 || step <= 1) return pts;
+    const out = [pts[0]];
+    for (let i = step; i < pts.length - 1; i += step) out.push(pts[i]);
+    out.push(pts[pts.length - 1]);
+    return out;
+  }
+  function tensionFor(mode) {
+    if (mode === "bus") return 0.48;
+    if (mode === "tranvia") return 0.38;
+    if (mode === "metro") return 0.26;
+    return 0.32;
+  }
+  function computeBounds(pts) {
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    for (const p of pts) {
+      minX = Math.min(minX, p.x);
+      minY = Math.min(minY, p.y);
+      maxX = Math.max(maxX, p.x);
+      maxY = Math.max(maxY, p.y);
+    }
+    return { minX, minY, maxX, maxY };
+  }
+  var MODE_ORDER2 = ["bus", "tranvia", "cercanias", "metro", "hyperloop"];
+  var CACHED_LINE_PATHS = [...lines].sort((a, b) => MODE_ORDER2.indexOf(a.mode) - MODE_ORDER2.indexOf(b.mode)).map((line2) => {
+    const pts = getLinePath(line2);
+    const t = tensionFor(line2.mode);
+    const simplePts = simplifyPoints(pts, line2.mode === "bus" ? 3 : 2);
+    return {
+      line: line2,
+      full: smoothPathD(pts, t),
+      simple: smoothPathD(simplePts, t * 0.8),
+      bounds: pts.length ? computeBounds(pts) : { minX: 0, minY: 0, maxX: 0, maxY: 0 }
+    };
+  });
+  function strokeForMode(mode, mapScale) {
+    const base = mode === "hyperloop" ? 7 : mode === "metro" ? 6 : mode === "cercanias" ? 5.5 : mode === "tranvia" ? 4 : 3;
+    const inv = 1 / Math.max(0.22, mapScale);
+    return base * Math.min(2.4, Math.max(0.55, inv * 0.38));
+  }
+  function labelFontSize(base, mapScale) {
+    const inv = 1 / Math.max(0.22, mapScale);
+    return base * Math.min(2.1, Math.max(0.55, inv * 0.42));
+  }
+
   // src/components/TransitMap.css
   (() => {
     const style = document.createElement("style");
-    style.textContent = ".transit-map {\n  display: block;\n  user-select: none;\n}\n\n.district-labels text {\n  fill: rgba(40, 55, 75, 0.16);\n  font-family: 'Sora', system-ui, sans-serif;\n  font-size: 14px;\n  font-weight: 600;\n  letter-spacing: 0.08em;\n  text-transform: uppercase;\n}\n\n.coastline {\n  stroke: rgba(56, 120, 160, 0.35);\n  stroke-width: 3;\n  stroke-dasharray: 8 6;\n}\n\n.sierra-hint {\n  stroke: rgba(90, 70, 50, 0.12);\n  stroke-width: 18;\n  stroke-linecap: round;\n}\n\n.line-hit {\n  cursor: pointer;\n}\n\n.line-path {\n  transition: stroke-width 0.2s ease, opacity 0.25s ease;\n}\n\n.line-selected {\n  filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.25));\n}\n\n.station {\n  cursor: pointer;\n  transition: opacity 0.2s ease;\n}\n\n.station-dot {\n  fill: #1a2332;\n  stroke: #eef1f4;\n  stroke-width: 1.5;\n}\n\n.station-ring {\n  fill: #eef1f4;\n  stroke: #1a2332;\n  stroke-width: 2.5;\n}\n\n.station-core {\n  fill: #1a2332;\n}\n\n.hub-ring-outer {\n  fill: none;\n  stroke: rgba(196, 92, 38, 0.35);\n  stroke-width: 2;\n  stroke-dasharray: 3 3;\n}\n\n.station.active .station-ring {\n  stroke: #c45c26;\n  stroke-width: 3;\n}\n\n.station.active .station-core,\n.station.active .station-dot {\n  fill: #c45c26;\n}\n\n.station-label {\n  fill: #1a2332;\n  font-family: 'Manrope', system-ui, sans-serif;\n  font-weight: 600;\n  paint-order: stroke;\n  stroke: rgba(238, 241, 244, 0.92);\n  stroke-width: 3px;\n  pointer-events: none;\n}\n\n.hub-diagram-bg {\n  fill: rgba(255, 255, 255, 0.88);\n  stroke: rgba(26, 35, 50, 0.15);\n  stroke-width: 2;\n}\n\n.hub-diagram-title {\n  font-family: 'Sora', sans-serif;\n  font-size: 11px;\n  font-weight: 700;\n  fill: #1a2332;\n  letter-spacing: 0.04em;\n}\n\n.hub-spoke {\n  cursor: pointer;\n}\n\n.hub-spoke-code {\n  fill: #fff;\n  font-family: 'Sora', sans-serif;\n  font-size: 7px;\n  font-weight: 700;\n  pointer-events: none;\n}\n";
+    style.textContent = ".transit-map {\n  display: block;\n  user-select: none;\n}\n\n.muni-fill {\n  stroke: rgba(26, 35, 50, 0.08);\n  stroke-width: 2;\n}\n\n.district-fill {\n  stroke: rgba(26, 35, 50, 0.06);\n  stroke-width: 1;\n}\n\n.muni-label {\n  fill: rgba(26, 35, 50, 0.28);\n  font-family: 'Sora', system-ui, sans-serif;\n  font-weight: 700;\n  letter-spacing: 0.1em;\n  text-transform: uppercase;\n  pointer-events: none;\n}\n\n.district-label {\n  fill: rgba(40, 55, 75, 0.22);\n  font-family: 'Sora', system-ui, sans-serif;\n  font-weight: 600;\n  letter-spacing: 0.06em;\n  text-transform: uppercase;\n  pointer-events: none;\n}\n\n.walk-label {\n  fill: #546e7a;\n  font-family: 'Manrope', sans-serif;\n  font-weight: 600;\n  paint-order: stroke;\n  stroke: rgba(238, 241, 244, 0.9);\n  stroke-width: 3px;\n  pointer-events: none;\n}\n\n.coastline {\n  stroke: rgba(56, 120, 160, 0.35);\n  stroke-width: 3;\n  stroke-dasharray: 8 6;\n}\n\n.sierra-hint {\n  stroke: rgba(90, 70, 50, 0.12);\n  stroke-width: 18;\n  stroke-linecap: round;\n}\n\n.line-hit {\n  cursor: pointer;\n}\n\n.line-path {\n  transition: stroke-width 0.2s ease, opacity 0.25s ease;\n}\n\n.line-selected {\n  filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.25));\n}\n\n.station {\n  cursor: pointer;\n  transition: opacity 0.2s ease;\n}\n\n.station-dot {\n  fill: #1a2332;\n  stroke: #eef1f4;\n  stroke-width: 1.5;\n}\n\n.station-ring {\n  fill: #eef1f4;\n  stroke: #1a2332;\n  stroke-width: 2.5;\n}\n\n.station-core {\n  fill: #1a2332;\n}\n\n.hub-ring-outer {\n  fill: none;\n  stroke: rgba(196, 92, 38, 0.35);\n  stroke-width: 2;\n  stroke-dasharray: 3 3;\n}\n\n.station.active .station-ring {\n  stroke: #c45c26;\n  stroke-width: 3;\n}\n\n.station.active .station-core,\n.station.active .station-dot {\n  fill: #c45c26;\n}\n\n.station-label {\n  fill: #1a2332;\n  font-family: 'Manrope', system-ui, sans-serif;\n  font-weight: 600;\n  paint-order: stroke;\n  stroke: rgba(238, 241, 244, 0.92);\n  stroke-width: 3px;\n  pointer-events: none;\n}\n\n.hub-diagram-bg {\n  fill: rgba(255, 255, 255, 0.88);\n  stroke: rgba(26, 35, 50, 0.15);\n  stroke-width: 2;\n}\n\n.hub-diagram-title {\n  font-family: 'Sora', sans-serif;\n  font-size: 11px;\n  font-weight: 700;\n  fill: #1a2332;\n  letter-spacing: 0.04em;\n}\n\n.hub-spoke {\n  cursor: pointer;\n}\n\n.hub-spoke-code {\n  fill: #fff;\n  font-family: 'Sora', sans-serif;\n  font-size: 7px;\n  font-weight: 700;\n  pointer-events: none;\n}\n";
     document.head.appendChild(style);
   })();
 
   // src/components/TransitMap.tsx
   var import_jsx_runtime6 = __toESM(require_jsx_runtime(), 1);
-  function pathD(points, mode) {
-    const tension = mode === "bus" ? 0.5 : mode === "tranvia" ? 0.4 : mode === "metro" ? 0.28 : 0.35;
-    return smoothPathD(points, tension);
-  }
-  function strokeWidth(mode) {
-    switch (mode) {
-      case "hyperloop":
-        return 7;
-      case "metro":
-        return 6;
-      case "cercanias":
-        return 5.5;
-      case "tranvia":
-        return 4;
-      default:
-        return 3.2;
-    }
-  }
   function dashArray(mode) {
     if (mode === "bus") return "6 5";
     return void 0;
   }
-  function TransitMap({
+  function TransitMapInner({
     selectedLineId,
     selectedStationId,
     highlightedMode,
@@ -15417,13 +15908,48 @@
     onSelectLine,
     onSelectStation
   }) {
-    const uniqueStations = getUniqueStations();
-    const routeSet = new Set(routeStationIds != null ? routeStationIds : []);
-    const routeLines = new Set(routeLineIds != null ? routeLineIds : []);
-    const showDistricts = mapScale < 0.75;
-    const showInterchangeLabels = mapScale >= 0.55;
-    const showAllLabels = mapScale >= 1.05;
-    const showHubDiagram = mapScale >= 1.25;
+    const routeSet = (0, import_react3.useMemo)(() => new Set(routeStationIds != null ? routeStationIds : []), [routeStationIds]);
+    const routeLines = (0, import_react3.useMemo)(() => new Set(routeLineIds != null ? routeLineIds : []), [routeLineIds]);
+    const showMunicipalities = mapScale < 0.85;
+    const showDistrictFills = mapScale >= 0.28 && mapScale < 1.4;
+    const showMunicipalityLabels = mapScale < 0.55;
+    const showDistrictLabels = mapScale >= 0.4 && mapScale < 1.05;
+    const showBuses = mapScale >= 0.42 || Boolean(selectedLineId) || routeLines.size > 0;
+    const showLocalStops = mapScale >= 0.85;
+    const showInterchangeLabels = mapScale >= 0.5;
+    const showAllHubLabels = mapScale >= 0.95;
+    const showWalkLinks = mapScale >= 1.15;
+    const showHubDiagram = mapScale >= 1.3;
+    const useSimplePaths = mapScale < 0.5;
+    const visibleStations = (0, import_react3.useMemo)(() => {
+      var _a2;
+      if (showLocalStops) {
+        if (selectedLineId || routeSet.size) {
+          const ids = /* @__PURE__ */ new Set();
+          if (selectedLineId) {
+            const line2 = (_a2 = CACHED_LINE_PATHS.find((c) => c.line.id === selectedLineId)) == null ? void 0 : _a2.line;
+            line2 == null ? void 0 : line2.stationIds.forEach((id) => ids.add(id));
+          }
+          routeSet.forEach((id) => ids.add(id));
+          MAJOR_STATIONS.forEach((s) => ids.add(s.id));
+          return [...ids].map((id) => stations[id]).filter(Boolean);
+        }
+        return HUB_STATIONS;
+      }
+      return MAJOR_STATIONS;
+    }, [showLocalStops, selectedLineId, routeSet]);
+    const visiblePaths = (0, import_react3.useMemo)(() => {
+      return CACHED_LINE_PATHS.filter(({ line: line2 }) => {
+        if (!showBuses && line2.mode === "bus" && line2.id !== selectedLineId && !routeLines.has(line2.id)) {
+          return false;
+        }
+        return true;
+      });
+    }, [showBuses, selectedLineId, routeLines]);
+    const walkNearSelection = (0, import_react3.useMemo)(() => {
+      if (!showWalkLinks || !selectedStationId) return [];
+      return WALK_EDGES.filter((e) => e.from === selectedStationId || e.to === selectedStationId).slice(0, 12);
+    }, [showWalkLinks, selectedStationId]);
     const isLineActive = (line2) => {
       if (routeLines.size) return routeLines.has(line2.id);
       if (selectedLineId) return line2.id === selectedLineId;
@@ -15431,14 +15957,15 @@
       return true;
     };
     const lineOpacity = (line2) => {
-      if (routeLines.size) return routeLines.has(line2.id) ? 1 : 0.07;
+      if (routeLines.size) return routeLines.has(line2.id) ? 1 : 0.06;
       if (!dimOthers && !selectedLineId && !highlightedMode) return 1;
-      return isLineActive(line2) ? 1 : 0.09;
+      return isLineActive(line2) ? 1 : 0.08;
     };
-    const order = ["bus", "tranvia", "cercanias", "metro", "hyperloop"];
-    const sorted = [...lines].sort((a, b) => order.indexOf(a.mode) - order.indexOf(b.mode));
     const selectedStation = selectedStationId ? stations[selectedStationId] : null;
     const hubFocus = showHubDiagram && (selectedStation == null ? void 0 : selectedStation.majorHub) ? selectedStation : null;
+    const muniLabelSize = labelFontSize(22, mapScale);
+    const distLabelSize = labelFontSize(13, mapScale);
+    const stationLabelSize = labelFontSize(10, mapScale);
     return /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)(
       "svg",
       {
@@ -15450,10 +15977,10 @@
         "aria-label": "Plano de la red de transporte de Heliora",
         children: [
           /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("defs", { children: [
-            /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("pattern", { id: "grid", width: "60", height: "60", patternUnits: "userSpaceOnUse", children: /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("path", { d: "M 60 0 L 0 0 0 60", fill: "none", stroke: "rgba(30,40,55,0.03)", strokeWidth: "1" }) }),
+            /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("pattern", { id: "grid", width: "80", height: "80", patternUnits: "userSpaceOnUse", children: /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("path", { d: "M 80 0 L 0 0 0 80", fill: "none", stroke: "rgba(30,40,55,0.025)", strokeWidth: "1" }) }),
             /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("linearGradient", { id: "sea", x1: "0", y1: "0", x2: "0", y2: "1", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("stop", { offset: "0%", stopColor: "rgba(56,140,180,0.08)" }),
-              /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("stop", { offset: "100%", stopColor: "rgba(56,140,180,0.22)" })
+              /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("stop", { offset: "0%", stopColor: "rgba(56,140,180,0.07)" }),
+              /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("stop", { offset: "100%", stopColor: "rgba(56,140,180,0.2)" })
             ] })
           ] }),
           /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("rect", { width: CITY.mapWidth, height: CITY.mapHeight, fill: "url(#grid)" }),
@@ -15474,11 +16001,70 @@
               fill: "none"
             }
           ),
-          showDistricts && /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("g", { className: "district-labels", pointerEvents: "none", children: districtLabels.map((d) => /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("text", { x: d.x, y: d.y, textAnchor: "middle", children: d.name }, d.id)) }),
-          sorted.map((line2) => {
-            const pts = getLinePath(line2);
-            const d = pathD(pts, line2.mode);
+          showMunicipalities && MUNICIPALITY_SHAPES.map((m) => /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("polygon", { points: m.points, className: "muni-fill", style: { fill: m.fill } }, m.id)),
+          showDistrictFills && DISTRICT_SHAPES.map((d) => /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("polygon", { points: d.points, className: "district-fill", style: { fill: d.fill } }, d.id)),
+          showMunicipalityLabels && MUNICIPALITY_SHAPES.map((m) => /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
+            "text",
+            {
+              x: m.cx,
+              y: m.cy,
+              textAnchor: "middle",
+              className: "muni-label",
+              style: { fontSize: muniLabelSize },
+              children: m.name
+            },
+            `ml-${m.id}`
+          )),
+          showDistrictLabels && DISTRICT_SHAPES.map((d) => /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
+            "text",
+            {
+              x: d.cx,
+              y: d.cy - 8,
+              textAnchor: "middle",
+              className: "district-label",
+              style: { fontSize: distLabelSize },
+              children: d.name
+            },
+            `dl-${d.id}`
+          )),
+          walkNearSelection.map((e) => {
+            const a = stations[e.from];
+            const b = stations[e.to];
+            if (!a || !b) return null;
+            return /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("g", { className: "walk-link", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
+                "line",
+                {
+                  x1: a.x,
+                  y1: a.y,
+                  x2: b.x,
+                  y2: b.y,
+                  stroke: "#78909C",
+                  strokeWidth: strokeForMode("bus", mapScale) * 0.7,
+                  strokeDasharray: "4 6",
+                  strokeOpacity: 0.7
+                }
+              ),
+              /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)(
+                "text",
+                {
+                  x: (a.x + b.x) / 2,
+                  y: (a.y + b.y) / 2 - 6,
+                  textAnchor: "middle",
+                  className: "walk-label",
+                  style: { fontSize: labelFontSize(9, mapScale) },
+                  children: [
+                    e.minutes,
+                    " min a pie"
+                  ]
+                }
+              )
+            ] }, `w-${e.from}-${e.to}`);
+          }),
+          visiblePaths.map(({ line: line2, full, simple }) => {
+            const d = useSimplePaths ? simple : full;
             const selected = selectedLineId === line2.id || routeLines.has(line2.id);
+            const sw = strokeForMode(line2.mode, mapScale) * (selected ? 1.25 : 1);
             return /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("g", { opacity: lineOpacity(line2), className: "line-group", children: [
               /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
                 "path",
@@ -15486,7 +16072,7 @@
                   d,
                   fill: "none",
                   stroke: "transparent",
-                  strokeWidth: 18,
+                  strokeWidth: Math.max(14, sw * 2.5),
                   strokeLinejoin: "round",
                   strokeLinecap: "round",
                   "data-line-hit": true,
@@ -15503,8 +16089,8 @@
                   d,
                   fill: "none",
                   stroke: line2.color,
-                  strokeWidth: strokeWidth(line2.mode) + 4,
-                  strokeOpacity: 0.22,
+                  strokeWidth: sw + 4,
+                  strokeOpacity: 0.2,
                   strokeLinejoin: "round",
                   strokeLinecap: "round",
                   pointerEvents: "none"
@@ -15516,35 +16102,30 @@
                   d,
                   fill: "none",
                   stroke: line2.color,
-                  strokeWidth: selected ? strokeWidth(line2.mode) + 1.5 : strokeWidth(line2.mode),
+                  strokeWidth: sw,
                   strokeDasharray: dashArray(line2.mode),
                   strokeLinejoin: "round",
                   strokeLinecap: "round",
-                  className: selected ? "line-selected" : "line-path",
                   pointerEvents: "none"
                 }
               )
             ] }, line2.id);
           }),
-          uniqueStations.map((st) => {
-            var _a;
-            const onSelectedLine = selectedLineId && ((_a = lines.find((l) => l.id === selectedLineId)) == null ? void 0 : _a.stationIds.some((sid) => {
-              const s = stations[sid];
-              return s && s.x === st.x && s.y === st.y;
-            }));
-            const onRoute = routeSet.size > 0 && [...routeSet].some((id) => {
-              const s = stations[id];
-              return s && s.x === st.x && s.y === st.y;
-            });
+          visibleStations.map((st) => {
+            var _a2;
+            const onSelectedLine = selectedLineId && ((_a2 = CACHED_LINE_PATHS.find((c) => c.line.id === selectedLineId)) == null ? void 0 : _a2.line.stationIds.includes(st.id));
+            const onRoute = routeSet.has(st.id);
             const atSelected = selectedStationId === st.id || Boolean(onSelectedLine) || onRoute;
-            const showLabel = atSelected || showAllLabels || showInterchangeLabels && (st.interchange || st.majorHub);
-            const faded = selectedLineId && !onSelectedLine || routeSet.size > 0 && !onRoute;
+            const showLabel = atSelected || showAllHubLabels && (st.interchange || st.majorHub) || showInterchangeLabels && st.majorHub;
+            const faded = selectedLineId && !onSelectedLine && !st.majorHub || routeSet.size > 0 && !onRoute && !st.majorHub;
+            const r = st.majorHub ? 11 : st.interchange ? 7.5 : 4;
+            const scaledR = r * Math.min(1.8, Math.max(0.7, 0.55 / Math.max(0.25, mapScale)));
             return /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)(
               "g",
               {
                 "data-station": true,
                 className: `station ${st.interchange ? "interchange" : ""} ${st.majorHub ? "major-hub" : ""} ${atSelected ? "active" : ""}`,
-                opacity: faded ? 0.1 : 1,
+                opacity: faded ? 0.12 : 1,
                 transform: `translate(${st.x}, ${st.y})`,
                 onClick: (e) => {
                   e.stopPropagation();
@@ -15552,20 +16133,20 @@
                 },
                 children: [
                   st.majorHub ? /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)(import_jsx_runtime6.Fragment, { children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("circle", { r: "13", className: "hub-ring-outer" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("circle", { r: "8", className: "station-ring" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("circle", { r: "4", className: "station-core" })
+                    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("circle", { r: scaledR + 4, className: "hub-ring-outer" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("circle", { r: scaledR, className: "station-ring" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("circle", { r: scaledR * 0.45, className: "station-core" })
                   ] }) : st.interchange ? /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)(import_jsx_runtime6.Fragment, { children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("circle", { r: "9", className: "station-ring" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("circle", { r: "5", className: "station-core" })
-                  ] }) : /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("circle", { r: "4.5", className: "station-dot" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("circle", { r: scaledR, className: "station-ring" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("circle", { r: scaledR * 0.5, className: "station-core" })
+                  ] }) : /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("circle", { r: scaledR, className: "station-dot" }),
                   showLabel && /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
                     "text",
                     {
                       className: "station-label",
-                      x: st.majorHub ? 16 : 11,
+                      x: scaledR + 6,
                       y: 4,
-                      style: { fontSize: st.majorHub ? 12 : st.interchange ? 11 : 9 },
+                      style: { fontSize: stationLabelSize * (st.majorHub ? 1.15 : 1) },
                       children: st.name
                     }
                   )
@@ -15580,6 +16161,7 @@
               stationId: hubFocus.id,
               x: hubFocus.x,
               y: hubFocus.y,
+              mapScale,
               onSelectLine
             }
           )
@@ -15591,13 +16173,15 @@
     stationId,
     x,
     y,
+    mapScale,
     onSelectLine
   }) {
-    const connected = getLinesForStation(stationId).slice(0, 12);
-    const r = 52;
+    const connected = getLinesForStation(stationId).slice(0, 10);
+    const scale = Math.min(1.6, Math.max(0.7, 0.7 / Math.max(0.3, mapScale)));
+    const r = 48 * scale;
     return /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("g", { className: "hub-diagram", transform: `translate(${x}, ${y})`, children: [
-      /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("circle", { r: r + 18, className: "hub-diagram-bg" }),
-      /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("text", { className: "hub-diagram-title", y: -r - 24, textAnchor: "middle", children: "Esquema del intercambiador" }),
+      /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("circle", { r: r + 16, className: "hub-diagram-bg" }),
+      /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("text", { className: "hub-diagram-title", y: -r - 20, textAnchor: "middle", style: { fontSize: 11 * scale }, children: "Intercambiador" }),
       connected.map((line2, i) => {
         const angle = i / Math.max(connected.length, 1) * Math.PI * 2 - Math.PI / 2;
         const x2 = Math.cos(angle) * r;
@@ -15611,61 +16195,53 @@
               onSelectLine(line2.id);
             },
             children: [
-              /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("line", { x1: 0, y1: 0, x2, y2, stroke: line2.color, strokeWidth: 4 }),
-              /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("circle", { cx: x2, cy: y2, r: 10, fill: line2.color }),
-              /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
-                "text",
-                {
-                  x: x2,
-                  y: y2 + 3.5,
-                  textAnchor: "middle",
-                  className: "hub-spoke-code",
-                  children: line2.code
-                }
-              )
+              /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("line", { x1: 0, y1: 0, x2, y2, stroke: line2.color, strokeWidth: 3.5 * scale }),
+              /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("circle", { cx: x2, cy: y2, r: 9 * scale, fill: line2.color }),
+              /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("text", { x: x2, y: y2 + 3, textAnchor: "middle", className: "hub-spoke-code", style: { fontSize: 7 * scale }, children: line2.code })
             ]
           },
           line2.id
         );
       }),
-      /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("circle", { r: 10, fill: "#eef1f4", stroke: "#1a2332", strokeWidth: 2.5 })
+      /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("circle", { r: 9 * scale, fill: "#eef1f4", stroke: "#1a2332", strokeWidth: 2 })
     ] });
   }
+  var TransitMap = (0, import_react3.memo)(TransitMapInner);
 
   // src/hooks/usePanZoom.ts
-  var import_react3 = __toESM(require_react(), 1);
+  var import_react4 = __toESM(require_react(), 1);
   var MIN_SCALE = 0.18;
   var MAX_SCALE = 3.5;
   function usePanZoom(initial) {
-    var _a, _b, _c;
-    const [state, setState] = (0, import_react3.useState)({
-      x: (_a = initial == null ? void 0 : initial.x) != null ? _a : 0,
-      y: (_b = initial == null ? void 0 : initial.y) != null ? _b : 0,
+    var _a2, _b2, _c;
+    const [state, setState] = (0, import_react4.useState)({
+      x: (_a2 = initial == null ? void 0 : initial.x) != null ? _a2 : 0,
+      y: (_b2 = initial == null ? void 0 : initial.y) != null ? _b2 : 0,
       scale: (_c = initial == null ? void 0 : initial.scale) != null ? _c : 0.55
     });
-    const dragging = (0, import_react3.useRef)(false);
-    const last = (0, import_react3.useRef)({ x: 0, y: 0 });
-    const containerRef = (0, import_react3.useRef)(null);
-    const onPointerDown = (0, import_react3.useCallback)((e) => {
+    const dragging = (0, import_react4.useRef)(false);
+    const last = (0, import_react4.useRef)({ x: 0, y: 0 });
+    const containerRef = (0, import_react4.useRef)(null);
+    const onPointerDown = (0, import_react4.useCallback)((e) => {
       if (e.target.closest("[data-station], [data-line-hit], button, a, input, select")) return;
       dragging.current = true;
       last.current = { x: e.clientX, y: e.clientY };
       e.currentTarget.setPointerCapture(e.pointerId);
     }, []);
-    const onPointerMove = (0, import_react3.useCallback)((e) => {
+    const onPointerMove = (0, import_react4.useCallback)((e) => {
       if (!dragging.current) return;
       const dx = e.clientX - last.current.x;
       const dy = e.clientY - last.current.y;
       last.current = { x: e.clientX, y: e.clientY };
       setState((s) => ({ ...s, x: s.x + dx, y: s.y + dy }));
     }, []);
-    const onPointerUp = (0, import_react3.useCallback)(() => {
+    const onPointerUp = (0, import_react4.useCallback)(() => {
       dragging.current = false;
     }, []);
-    const onWheel = (0, import_react3.useCallback)((e) => {
-      var _a2;
+    const onWheel = (0, import_react4.useCallback)((e) => {
+      var _a3;
       e.preventDefault();
-      const rect = (_a2 = containerRef.current) == null ? void 0 : _a2.getBoundingClientRect();
+      const rect = (_a3 = containerRef.current) == null ? void 0 : _a3.getBoundingClientRect();
       if (!rect) return;
       const mx = e.clientX - rect.left;
       const my = e.clientY - rect.top;
@@ -15680,13 +16256,13 @@
         };
       });
     }, []);
-    (0, import_react3.useEffect)(() => {
+    (0, import_react4.useEffect)(() => {
       const el = containerRef.current;
       if (!el) return;
       el.addEventListener("wheel", onWheel, { passive: false });
       return () => el.removeEventListener("wheel", onWheel);
     }, [onWheel]);
-    const zoomBy = (0, import_react3.useCallback)((factor) => {
+    const zoomBy = (0, import_react4.useCallback)((factor) => {
       setState((s) => {
         const el = containerRef.current;
         const mx = el ? el.clientWidth / 2 : 0;
@@ -15700,10 +16276,10 @@
         };
       });
     }, []);
-    const reset = (0, import_react3.useCallback)(() => {
+    const reset = (0, import_react4.useCallback)(() => {
       setState({ x: 20, y: 10, scale: 0.28 });
     }, []);
-    const fitBounds = (0, import_react3.useCallback)((bounds, padding = 80) => {
+    const fitBounds = (0, import_react4.useCallback)((bounds, padding = 80) => {
       const el = containerRef.current;
       if (!el) return;
       const w = el.clientWidth;
@@ -15722,7 +16298,7 @@
         y: h / 2 - cy * scale
       });
     }, []);
-    const focusPoint = (0, import_react3.useCallback)((x, y, scale = 1.15) => {
+    const focusPoint = (0, import_react4.useCallback)((x, y, scale = 1.15) => {
       const el = containerRef.current;
       if (!el) return;
       const s = Math.min(MAX_SCALE, Math.max(MIN_SCALE, scale));
@@ -15746,51 +16322,52 @@
   }
 
   // src/hooks/useSimClock.ts
-  var import_react4 = __toESM(require_react(), 1);
+  var import_react5 = __toESM(require_react(), 1);
   function useSimClock() {
-    const [minutes, setMinutes] = (0, import_react4.useState)(() => nowMinutes());
-    const [paused, setPaused] = (0, import_react4.useState)(false);
-    const [tick, setTick] = (0, import_react4.useState)(0);
-    const lastWall = (0, import_react4.useRef)(Date.now());
-    const minutesRef = (0, import_react4.useRef)(minutes);
-    minutesRef.current = minutes;
-    (0, import_react4.useEffect)(() => {
+    const [minutes, setMinutes] = (0, import_react5.useState)(() => Math.floor(nowMinutes()));
+    const [paused, setPaused] = (0, import_react5.useState)(false);
+    const lastWall = (0, import_react5.useRef)(Date.now());
+    const accRef = (0, import_react5.useRef)(nowMinutes());
+    (0, import_react5.useEffect)(() => {
       const id = window.setInterval(() => {
         const wall = Date.now();
         const dtSec = (wall - lastWall.current) / 1e3;
         lastWall.current = wall;
-        if (!paused) {
-          setMinutes((m) => {
-            const next = m + dtSec / 60;
-            return next >= 24 * 60 ? next - 24 * 60 : next;
-          });
-        }
-        setTick((t) => t + 1);
+        if (paused) return;
+        accRef.current += dtSec / 60;
+        if (accRef.current >= 24 * 60) accRef.current -= 24 * 60;
+        const floored = Math.floor(accRef.current);
+        setMinutes((m) => m === floored ? m : floored);
       }, 1e3);
       return () => window.clearInterval(id);
     }, [paused]);
-    const setTime = (0, import_react4.useCallback)((hhmm) => {
-      setMinutes(parseClock(hhmm));
+    const setTime = (0, import_react5.useCallback)((hhmm) => {
+      const v = parseClock(hhmm);
+      accRef.current = v;
+      setMinutes(Math.floor(v));
       lastWall.current = Date.now();
     }, []);
-    const setHoursMinutes = (0, import_react4.useCallback)((h, m) => {
-      setMinutes(((h * 60 + m) % (24 * 60) + 24 * 60) % (24 * 60));
+    const setHoursMinutes = (0, import_react5.useCallback)((h, m) => {
+      const v = ((h * 60 + m) % (24 * 60) + 24 * 60) % (24 * 60);
+      accRef.current = v;
+      setMinutes(v);
       lastWall.current = Date.now();
     }, []);
-    const jumpMinutes = (0, import_react4.useCallback)((delta) => {
-      setMinutes((m) => {
-        let next = m + delta;
-        while (next < 0) next += 24 * 60;
-        while (next >= 24 * 60) next -= 24 * 60;
-        return next;
-      });
+    const jumpMinutes = (0, import_react5.useCallback)((delta) => {
+      let next = accRef.current + delta;
+      while (next < 0) next += 24 * 60;
+      while (next >= 24 * 60) next -= 24 * 60;
+      accRef.current = next;
+      setMinutes(Math.floor(next));
       lastWall.current = Date.now();
     }, []);
-    const syncNow = (0, import_react4.useCallback)(() => {
-      setMinutes(nowMinutes());
+    const syncNow = (0, import_react5.useCallback)(() => {
+      const n = nowMinutes();
+      accRef.current = n;
+      setMinutes(Math.floor(n));
       lastWall.current = Date.now();
     }, []);
-    const togglePause = (0, import_react4.useCallback)(() => {
+    const togglePause = (0, import_react5.useCallback)(() => {
       setPaused((p) => !p);
     }, []);
     return {
@@ -15802,8 +16379,7 @@
       setTime,
       setHoursMinutes,
       jumpMinutes,
-      syncNow,
-      tick
+      syncNow
     };
   }
 
@@ -15817,11 +16393,11 @@
   // src/App.tsx
   var import_jsx_runtime7 = __toESM(require_jsx_runtime(), 1);
   function readLineFromUrl() {
-    var _a, _b;
+    var _a2, _b2;
     const params = new URLSearchParams(window.location.search);
     const code = params.get("linea");
     if (!code) return null;
-    return (_b = (_a = findLineByCode(code)) == null ? void 0 : _a.id) != null ? _b : null;
+    return (_b2 = (_a2 = findLineByCode(code)) == null ? void 0 : _a2.id) != null ? _b2 : null;
   }
   function writeLineToUrl(lineId) {
     if (window.location.protocol === "file:") return;
@@ -15835,16 +16411,25 @@
     window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
   }
   function App() {
-    var _a, _b;
-    const [role, setRole] = (0, import_react5.useState)("pasajero");
-    const [selectedLineId, setSelectedLineId] = (0, import_react5.useState)(() => readLineFromUrl());
-    const [selectedStationId, setSelectedStationId] = (0, import_react5.useState)(null);
-    const [filterMode, setFilterMode] = (0, import_react5.useState)(null);
-    const [search, setSearch] = (0, import_react5.useState)("");
-    const [sidebarOpen, setSidebarOpen] = (0, import_react5.useState)(true);
-    const [routePlan, setRoutePlan] = (0, import_react5.useState)(null);
+    var _a2;
+    const [role, setRole] = (0, import_react6.useState)("pasajero");
+    const [selectedLineId, setSelectedLineId] = (0, import_react6.useState)(() => readLineFromUrl());
+    const [selectedStationId, setSelectedStationId] = (0, import_react6.useState)(null);
+    const [filterMode, setFilterMode] = (0, import_react6.useState)(null);
+    const [search, setSearch] = (0, import_react6.useState)("");
+    const [sidebarOpen, setSidebarOpen] = (0, import_react6.useState)(true);
+    const [routePlan, setRoutePlan] = (0, import_react6.useState)(null);
     const sim = useSimClock();
-    const period = periodFromMinutes(sim.minutes);
+    const simMinutesInt = Math.floor(sim.minutes);
+    const period = (0, import_react6.useMemo)(() => periodFromMinutes(simMinutesInt), [simMinutesInt]);
+    const routeStationIds = (_a2 = routePlan == null ? void 0 : routePlan.stationIds) != null ? _a2 : null;
+    const routeLineIds = (0, import_react6.useMemo)(
+      () => {
+        var _a3;
+        return (_a3 = routePlan == null ? void 0 : routePlan.legs.filter((l) => !l.walkOnly).map((l) => l.line.id)) != null ? _a3 : null;
+      },
+      [routePlan]
+    );
     const {
       state,
       containerRef,
@@ -15856,7 +16441,7 @@
       fitBounds,
       focusPoint
     } = usePanZoom({ scale: 0.24, x: 10, y: 0 });
-    (0, import_react5.useEffect)(() => {
+    (0, import_react6.useEffect)(() => {
       const id = readLineFromUrl();
       if (!id) return;
       const line2 = lines.find((l) => l.id === id);
@@ -15864,10 +16449,10 @@
       const bounds = getLineBounds(line2);
       if (bounds) window.setTimeout(() => fitBounds(bounds, 100), 50);
     }, [fitBounds]);
-    (0, import_react5.useEffect)(() => {
+    (0, import_react6.useEffect)(() => {
       const onKey = (e) => {
-        var _a2;
-        const tag = (_a2 = e.target) == null ? void 0 : _a2.tagName;
+        var _a3;
+        const tag = (_a3 = e.target) == null ? void 0 : _a3.tagName;
         if (tag === "INPUT" || tag === "SELECT" || tag === "TEXTAREA") return;
         if (e.key === "Escape") {
           setSelectedLineId(null);
@@ -15885,7 +16470,7 @@
       window.addEventListener("keydown", onKey);
       return () => window.removeEventListener("keydown", onKey);
     }, [zoomBy]);
-    const selectLine = (id) => {
+    const selectLine = (0, import_react6.useCallback)((id) => {
       setSelectedLineId(id);
       setSelectedStationId(null);
       setRoutePlan(null);
@@ -15895,23 +16480,23 @@
         const bounds = getLineBounds(line2);
         if (bounds) fitBounds(bounds, 100);
       }
-    };
-    const selectStation = (id) => {
+    }, [fitBounds]);
+    const selectStation = (0, import_react6.useCallback)((id) => {
       setSelectedStationId(id);
       setSelectedLineId(null);
       writeLineToUrl(null);
       const st = getStation(id);
       if (st) focusPoint(st.x, st.y, 1.15);
-    };
-    const clearSelection = () => {
+    }, [focusPoint]);
+    const clearSelection = (0, import_react6.useCallback)(() => {
       setSelectedLineId(null);
       setSelectedStationId(null);
       setFilterMode(null);
       setSearch("");
       setRoutePlan(null);
       writeLineToUrl(null);
-    };
-    const handleRoute = (plan) => {
+    }, []);
+    const handleRoute = (0, import_react6.useCallback)((plan) => {
       setRoutePlan(plan);
       setSelectedLineId(null);
       setSelectedStationId(null);
@@ -15930,7 +16515,7 @@
           );
         }
       }
-    };
+    }, [fitBounds]);
     return /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)("div", { className: `app ${sidebarOpen ? "" : "sidebar-collapsed"}`, children: [
       /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
         "button",
@@ -15955,7 +16540,7 @@
           onSelectStation: selectStation,
           onClearSelection: clearSelection,
           onRoute: handleRoute,
-          simMinutes: sim.minutes,
+          simMinutes: simMinutesInt,
           period
         }
       ) }),
@@ -15981,8 +16566,8 @@
                     selectedLineId,
                     selectedStationId,
                     highlightedMode: filterMode,
-                    routeStationIds: (_a = routePlan == null ? void 0 : routePlan.stationIds) != null ? _a : null,
-                    routeLineIds: (_b = routePlan == null ? void 0 : routePlan.legs.map((l) => l.line.id)) != null ? _b : null,
+                    routeStationIds,
+                    routeLineIds,
                     mapScale: state.scale,
                     dimOthers: Boolean(selectedLineId || filterMode || routePlan),
                     onSelectLine: selectLine,
@@ -16017,7 +16602,7 @@
             role,
             selectedLineId,
             selectedStationId,
-            simMinutes: sim.minutes,
+            simMinutes: simMinutesInt,
             period,
             onSelectLine: selectLine,
             onClose: () => {
@@ -16042,7 +16627,7 @@
   // src/main.tsx
   var import_jsx_runtime8 = __toESM(require_jsx_runtime(), 1);
   (0, import_client.createRoot)(document.getElementById("root")).render(
-    /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(import_react6.StrictMode, { children: /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(App, {}) })
+    /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(import_react7.StrictMode, { children: /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(App, {}) })
   );
 })();
 /*! Bundled license information:

@@ -1,15 +1,14 @@
-# Heliora — Red de Transporte (v0.3)
+# Heliora — Red de Transporte (v0.4)
 
-Mega-metrópolis costera turística del sur de España, con plano interactivo tipo metro.
+Mega-metrópolis costera turística del sur de España.
 
-## v0.3
+## v0.4
 
-- Reloj simulado en **tiempo real** (puedes pausar, saltar ±30 min o fijar la hora)
-- Periodos **punta / valle / noche** que cambian frecuencias y ocupación
-- **Próximo en X min** en listado y ficha de línea
-- Tiempo a pie en trasbordos del planificador
-- Trazados **orgánicos** (curvas) y red densificada (**~1100+ paradas**)
-- Más costa (paseos, marinas) y sierra / pueblos blancos
+- **Rendimiento**: LOD por zoom, paths cacheados, reloj sin re-renderizar el mapa cada segundo
+- **Barrios y municipios dibujados** en el mapa (área metropolitana)
+- **Casco histórico denso**, universidad, ciudad deportiva y más distritos
+- **Enlaces a pie** entre estaciones cercanas (visibles al hacer zoom)
+- Textos, líneas y paradas **escalan con el nivel de zoom**
 
 ## Abrir sin instalar nada
 
