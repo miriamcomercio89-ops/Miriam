@@ -1,21 +1,30 @@
-# Miriam — Administración de Loterías (proyecto)
+# Heliora — Red de Transporte Mundial
 
-Proyecto: videojuego/simulador de gestión de una administración de loterías ubicado en Álora.
+Plano interactivo de la red de transporte público de **Heliora**, una mega-metrópolis inventada con la red más grande del mundo.
 
-Este repositorio contiene el scaffold inicial del proyecto: una aplicación en HTML/CSS/JS que corre totalmente en el navegador (sin servidor), usa localStorage para persistencia y permite exportar/importar el estado en JSON.
+## Características
 
-Características del scaffold inicial:
-- Reloj de juego con escala temporal: el tiempo del juego va 4× más lento que el real (gameTime = start + elapsed * 0.25).
-- Lógica de apertura de oficina: 09:00–14:00 y 17:00–22:00 (hora del juego). Cerrado sábados y domingos. Festivos habilitables manualmente.
-- Funciones básicas de exportar/importar JSON del estado del juego.
-- Estructura básica para añadir los juegos, ventas, contabilidad, clientes, etc.
+- Mapa esquema tipo plano de metro (SVG) con pan y zoom
+- Menú lateral con todas las líneas agrupadas por modo
+- Modos: Metro, Tren, Tranvía, Bus, Hyperloop, Ferry y Teleférico
+- Horarios simulados y estado de servicio
+- Vista **Pasajero** y **Operador** (ocupación, incidencias, notas)
+- Interfaz en español
 
-Cómo usar:
-1. Clona el repo o descarga los archivos.
-2. Abre `index.html` en un navegador moderno.
-3. Usa los botones "Exportar" / "Importar" para guardar o restaurar el estado.
+## Cómo ejecutar
 
-Siguiente paso:
-- Crear la rama `feature/lottery-full` desde la rama por defecto y continuar con la implementación completa de juegos, contabilidad y UI.
+```bash
+npm install
+npm run dev
+```
 
-Commit inicial: scaffold con reloj escalado y export/import JSON.
+Abre la URL que muestre Vite (por defecto `http://localhost:5173`).
+
+```bash
+npm run build
+npm run preview
+```
+
+## Stack
+
+Vite + React + TypeScript. Todo el dato es simulado en el cliente; no hace falta backend.

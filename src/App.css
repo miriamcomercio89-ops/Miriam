@@ -1,0 +1,130 @@
+.app {
+  display: grid;
+  grid-template-columns: minmax(280px, 340px) 1fr;
+  height: 100dvh;
+  width: 100%;
+  overflow: hidden;
+  background: #eef1f4;
+  position: relative;
+}
+
+.app.sidebar-collapsed {
+  grid-template-columns: 0 1fr;
+}
+
+.sidebar-slot {
+  min-width: 0;
+  overflow: hidden;
+  z-index: 30;
+  transition: width 0.25s ease;
+}
+
+.sidebar-toggle {
+  position: absolute;
+  top: 50%;
+  left: 340px;
+  transform: translate(-50%, -50%);
+  z-index: 40;
+  width: 1.6rem;
+  height: 3rem;
+  border: 1px solid rgba(26, 35, 50, 0.12);
+  border-radius: 0 8px 8px 0;
+  background: #1a2332;
+  color: #fff;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+  box-shadow: 2px 0 12px rgba(0, 0, 0, 0.15);
+  transition: left 0.25s ease;
+}
+
+.app.sidebar-collapsed .sidebar-toggle {
+  left: 0;
+  border-radius: 0 8px 8px 0;
+}
+
+.map-stage {
+  position: relative;
+  min-width: 0;
+  background:
+    radial-gradient(ellipse at 70% 20%, rgba(56, 120, 160, 0.08), transparent 45%),
+    radial-gradient(ellipse at 20% 80%, rgba(196, 92, 38, 0.06), transparent 40%),
+    linear-gradient(160deg, #f4f6f8 0%, #e8ecf1 50%, #e3e8ee 100%);
+  overflow: hidden;
+}
+
+.map-viewport {
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  touch-action: none;
+  overflow: hidden;
+}
+
+.map-viewport:active {
+  cursor: grabbing;
+}
+
+.map-transform {
+  transform-origin: 0 0;
+  width: fit-content;
+  will-change: transform;
+}
+
+.map-hint {
+  position: absolute;
+  bottom: 0.85rem;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
+  background: rgba(26, 35, 50, 0.75);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 10;
+}
+
+@media (max-width: 860px) {
+  .app {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+
+  .app.sidebar-collapsed {
+    grid-template-columns: 1fr;
+    grid-template-rows: 0 1fr;
+  }
+
+  .sidebar-slot {
+    max-height: 42dvh;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .app.sidebar-collapsed .sidebar-slot {
+    max-height: 0;
+  }
+
+  .sidebar-toggle {
+    top: auto;
+    bottom: 5.5rem;
+    left: 0.75rem;
+    transform: none;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+  }
+
+  .app.sidebar-collapsed .sidebar-toggle {
+    left: 0.75rem;
+  }
+
+  .map-hint {
+    font-size: 0.65rem;
+    bottom: 0.55rem;
+  }
+}
