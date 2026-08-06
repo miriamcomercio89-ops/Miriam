@@ -5,17 +5,29 @@ from __future__ import annotations
 from pdf_engine import GuidePDF
 from buildings import house, poi, residential_block, numbered_units, SHOP_ROOMS, WAREHOUSE_ROOMS, HOUSE_ROOMS_GARAGE
 from theme import mm
+from map_data import LOOT_BY_VOLUME
 
 
 def vol_06_corredor(path: str):
     pdf = GuidePDF(path, "06", "Corredor oeste: farms, Scenic Grove y radio",
-                   "De Riverside hacia Brandenburg · Limpieza rural total")
+                   "Long Branch · Long Needle · Scenic Grove Rd · Wilson Rd · Olin/KY-163")
     pdf.cover("VOLUMEN 06 — CORREDOR OESTE",
-              ["Todas las granjas y casas rurales entre Riverside y Brandenburg.",
-               "Scenic Grove Mobile Home Park unidad por unidad.",
-               "Radio relay + abandoned town.",
-               "Ningún POI rural dejado atrás."],
+              ["Calles: Long Branch Rd #3, Long Needle Rd, Scenic Grove Rd, Wilson Rd #575.",
+               "Scenic Grove @ KY-163 & Long Needle · Radio relay 4843x6280.",
+               "Abandoned town / Tanglewood 4048x6154 · C.G.E. area.",
+               "Loot crítico de fase rural."],
               {"Desde": "Riverside", "Hacia": "Brandenburg", "Riesgo": "Bajo-Medio"})
+
+    pdf.sector_map_schematic(
+        "Corredor oeste — ruta",
+        [
+            ["RV OK", "→", "Long Branch", "→", "Wilson Rd", "→"],
+            ["↓", "Scenic Grove", "→", "Radio 4843", "→", "Abandoned"],
+            ["→", "Doe Valley POIs", "→", "Road to BRAND", "→", "BA-2"],
+        ],
+        "Scenic Grove en esquina KY-163 / Long Needle. U-Store/factory del este de Long Needle ya en Vol 05.",
+    )
+    pdf.loot_critical("06", LOOT_BY_VOLUME["06"])
 
     pdf.h1("Doctrina rural")
     pdf.p(
@@ -66,19 +78,22 @@ def vol_06_corredor(path: str):
 
 def vol_07_brandenburg(path: str):
     pdf = GuidePDF(path, "07", "Brandenburg (B42) — ciudad completa",
-                   "Noroeste del mapa · Tornado damage zone · BA-2")
+                   "Boyd Rd Fossoil · Pondview Shopping · Police ~2043x5978 · BA-2")
     pdf.cover("VOLUMEN 07 — BRANDENBURG",
-              ["Centro ~2314x6253", "Residencial + comercial + zona tornado",
-               "BA-2 en casa reforzada", "Sello total noroeste"],
+              ["Centro ~2314x6253", "Fossoil 582 Boyd Rd 2059x6425",
+               "Nails & Nuts Pondview ~1943x6361 · Police ~2043x5978",
+               "Zona tornado SE · BA-2"],
               {"Riesgo": "Medio", "Mapa item": "Brandenburg"})
 
     pdf.h1("Orden de sectores Brandenburg")
     pdf.sector_map_schematic("Brandenburg overview",
-        [["RIO OHIO", "RIO OHIO", "RIO OHIO"],
-         ["B-NW", "B-N COM", "B-NE"],
-         ["B-W", "B-CENTRO", "B-E"],
-         ["B-SW", "B-S TORNADO", "B-SE"]],
-        "Orden: B-N residencial → B-CENTRO → B-E → B-W → B-S (tornado) → riverfront.")
+        [["RÍO", "RÍO", "RÍO", "RÍO"],
+         ["B-NW", "→", "B-N COM", "→"],
+         ["↓", "PD/CENTRO", "→", "B-NE"],
+         ["B-W", "→", "PONDVIEW", "→"],
+         ["FOSSOIL", "→", "B-S TORNADO", "BA-2"]],
+        "Orden: residencial N → centro/PD → Pondview/Nails&Nuts → Fossoil Boyd Rd → tornado SE.")
+    pdf.loot_critical("07", LOOT_BY_VOLUME["07"])
 
     for sector, prefix, x, y, n, risk in [
         ("B-N Residencial norte", "BR-N", 2200, 6100, 16, "bajo"),
@@ -141,11 +156,17 @@ def vol_07_brandenburg(path: str):
 
 def vol_08_fallas(path: str):
     pdf = GuidePDF(path, "08", "Fallas Lake + Doe Valley (sur de Riverside)",
-                   "Puente operativo hacia Echo Creek / Rosewood")
+                   "Old Mill Rd corridor · Police FL ~7252x8378 · lago")
     pdf.cover("VOLUMEN 08 — FALLAS LAKE",
-              ["Centro ~7348x8371", "Pueblo lago + casas lacustres",
-               "Granjas Doe Valley restantes", "Sello del corredor central-oeste"],
+              ["Centro ~7348x8371", "Police Fallas Lake ~7252x8378",
+               "Acceso desde Muldraugh vía Old Mill Road", "Doe Valley farms"],
               {"Riesgo": "Bajo-Medio"})
+    pdf.sector_map_schematic("Fallas Lake ruta",
+        [["Old Mill", "→", "FL N res", "→", "PD FL"],
+         ["↓", "Centro/Gas", "→", "Lago", "→"],
+         ["Doe Valley", "→", "Cabañas", "→", "Sur OK"]],
+        "Limpia pueblo antes de cabañas del lago.")
+    pdf.loot_critical("08", LOOT_BY_VOLUME["08"])
 
     pdf.h1("Fallas Lake — residencial")
     for b in residential_block("FL-R", "Fallas Lake residencial", "pueblo", 1, 20, 7200, 8200, 12, 10, "bajo"):
@@ -176,11 +197,17 @@ def vol_08_fallas(path: str):
 
 def vol_09_echo(path: str):
     pdf = GuidePDF(path, "09", "Echo Creek (B42) — pueblo rural completo",
-                   "Centro ~4235x11069 · BA-3 · Granjas este")
+                   "Centro ~4235x11069 · BA-3 · Granjas este · KY-60 corridor")
     pdf.cover("VOLUMEN 09 — ECHO CREEK",
               ["Pueblo pequeño + granjas + chicken farm este",
-               "Casa por casa y granja por granja", "BA-3"],
+               "Acceso vía KY-60 desde eje Dixie", "BA-3"],
               {"Riesgo": "Bajo", "Spawn posible": "Sí (sandbox)"})
+    pdf.sector_map_schematic("Echo Creek",
+        [["KY-60", "→", "Pueblo EC", "→", "Farm supply"],
+         ["↓", "Chicken E", "→", "BA-3", "→"],
+         ["Granjas S", "→", "Campos", "→", "OK"]],
+        "Pueblo primero, chicken farm este, luego granjas.")
+    pdf.loot_critical("09", LOOT_BY_VOLUME["09"])
 
     pdf.h1("Pueblo Echo Creek")
     for b in residential_block("EC-R", "Echo Creek residencial", "pueblo", 1, 18, 4150, 11000, 14, 12, "bajo"):
@@ -211,16 +238,21 @@ def vol_09_echo(path: str):
 
 def vol_10_ekron(path: str):
     pdf = GuidePDF(path, "10", "Ekron (B42) — industrial / steelworks",
-                   "Centro ~1020x9838 · Tren bloqueado · Oeste extremo")
+                   "Haysville Rd Fossoil · Pharmahug plaza · tren bloqueado")
     pdf.cover("VOLUMEN 10 — EKRON",
-              ["Pueblo oeste con identidad industrial",
-               "Tren roto bloquea main street — usa conexión norte",
-               "Steelworks / factories + residencial"],
+              ["Centro ~1020x9838", "Fossoil 104 Haysville Rd ~649x9923",
+               "Pharmahug plaza este vías ~402x9870", "Steelworks + tren cortado"],
               {"Riesgo": "Medio-Alto", "Mapa": "Ekron"})
 
     pdf.callout("TREN BLOQUEADO",
                 "Un tren roto corta la main street. Solo hay conexión útil más al norte entre "
                 "oeste y este del pueblo. Planifica la ruta de van con eso en mente.")
+    pdf.sector_map_schematic("Ekron",
+        [["N bridge", "→", "Este res", "→", "Pharmahug"],
+         ["↓", "TREN X", "X", "Main St", "→"],
+         ["Oeste res", "→", "Steelworks", "→", "Fossoil S"]],
+        "Usa conexión norte. No intentes cruzar el tren.")
+    pdf.loot_critical("10", LOOT_BY_VOLUME["10"])
 
     pdf.h1("Residencial este / oeste")
     for b in residential_block("EK-E", "Ekron este residencial", "este", 1, 14, 1200, 9800, 12, 10, "medio"):
@@ -258,13 +290,21 @@ def vol_10_ekron(path: str):
 
 def vol_11_irvington(path: str):
     pdf = GuidePDF(path, "11", "Irvington + Speedway (B42 sur-oeste)",
-                   "Centro ~2729x13797 · KY 79 · BA opcional")
+                   "KY-79 · Fossoil · Pharmahug · Police ~2485x13940 · Speedway")
     pdf.cover("VOLUMEN 11 — IRVINGTON",
-              ["Residencial extenso de baja densidad",
-               "Plaza comercial / industrial norte",
-               "Irvington Speedway al norte",
+              ["Centro ~2729x13797 · eje Kentucky 79",
+               "Fossoil ~2525x14484 · Pharmahug ~2475x14478",
+               "Police ~2485x13940 · Speedway al norte",
                "Factory farms este"],
               {"Riesgo": "Medio", "Mapa": "Irvington"})
+
+    pdf.sector_map_schematic("Irvington",
+        [["Speedway", "←", "N ind", "←", "KY-79 N"],
+         ["↓", "PD", "→", "Res N", "→"],
+         ["Res W", "→", "Centro", "→", "Res E"],
+         ["Plaza SO", "→", "Fossoil", "→", "Farms E"]],
+        "Residencial primero; plaza SO y Speedway después.")
+    pdf.loot_critical("11", LOOT_BY_VOLUME["11"])
 
     pdf.h1("Orden Irvington")
     pdf.step(1, "Residencial este", "Manzanas bajas densidad, casa por casa.")

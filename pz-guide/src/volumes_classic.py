@@ -5,24 +5,34 @@ from __future__ import annotations
 from pdf_engine import GuidePDF
 from buildings import house, poi, residential_block, numbered_units, SHOP_ROOMS, WAREHOUSE_ROOMS, HOUSE_ROOMS_GARAGE
 from theme import mm
+from map_data import LOOT_BY_VOLUME
 
 
 def vol_12_rosewood(path: str):
     pdf = GuidePDF(path, "12", "Rosewood + Kentucky State Penitentiary",
-                   "Centro ~8446x11556 · BA-4 Fire Station · Sur clásico")
+                   "North Main St · Rosewood Rd #2838 · Flaherty · Fiddler's Trail · BA-4")
     pdf.cover("VOLUMEN 12 — ROSEWOOD",
-              ["Pueblo redesign 42.20 casa por casa",
-               "Fire Station = BA-4", "Police, school, town hall",
+              ["Calles: North Main St, Rosewood Rd, Flaherty Rd, Justice Rd, Angel Rd…",
+               "Fossoil 2838 Rosewood Rd ~8312x12218",
+               "Fire Station BA-4 · Police frente FD ~8063x11737",
                "Prisión completa ala por ala"],
               {"Riesgo": "Bajo pueblo / Extremo prisión"})
 
     pdf.h1("Orden Rosewood")
-    pdf.sector_map_schematic("Rosewood",
-        [["N RES", "N COM", "FIRE/PD"],
-         ["W RES", "CENTRO", "E RES"],
-         ["S RES", "SCHOOL", "THALL"],
-         ["ROAD", "PRISON ROAD", "PRISON"]],
-        "Pueblo completo ANTES de la prisión.")
+    pdf.sector_map_schematic("Rosewood — calles reales",
+        [["N Main N", "→", "FIRE", "PD", "→"],
+         ["↓", "Town Hall", "→", "School", "→"],
+         ["W res", "→", "Centro", "→", "E res"],
+         ["Rosewood Rd", "→", "Fossoil S", "→", "Fiddler"],
+         ["→", "PRISON ROAD", "→", "PENITENTIARY", "OK"]],
+        "Pueblo completo ANTES de la prisión. Fossoil sur en Rosewood Rd.")
+    pdf.h2("Calles documentadas (Street_names)")
+    pdf.checkbox_grid([
+        "North Main St.", "Rosewood Rd.", "Flaherty Rd.", "Fiddler's Trail (US-60 local)",
+        "Angel Rd.", "Buck St.", "Justice Rd.", "Doctors Ln.", "Cartwheel St.",
+        "Heartbreak Rd.", "Hamshank Rd.", "Mortimer St.", "Quiet Rd.", "Frederick Ln.",
+    ], cols=2)
+    pdf.loot_critical("12", LOOT_BY_VOLUME["12"])
 
     pdf.h1("Residencial")
     for name, pref, x, y, n in [
@@ -106,11 +116,17 @@ def vol_12_rosewood(path: str):
 
 def vol_13_march(path: str):
     pdf = GuidePDF(path, "13", "March Ridge — pueblo militar residencial",
-                   "Centro ~9921x12603 · Sur-este")
+                   "Centro ~9921x12603 · Fiddler's Trail access · Pharmahug")
     pdf.cover("VOLUMEN 13 — MARCH RIDGE",
-              ["Layout housing militar", "Business district compacto",
-               "Gated feel · Casa por casa"],
+              ["Layout housing militar", "Pharmahug ~10143x12752",
+               "Acceso vía Fiddler's Trail desde Dixie Hwy", "Business district compacto"],
               {"Riesgo": "Medio"})
+    pdf.sector_map_schematic("March Ridge",
+        [["Fiddler", "→", "Gate/N", "→", "Housing N"],
+         ["↓", "Food/Pharm", "→", "BD", "→"],
+         ["Housing S", "→", "Housing E", "→", "OK"]],
+        "Housing completo antes del business district denso.")
+    pdf.loot_critical("13", LOOT_BY_VOLUME["13"])
 
     pdf.h1("Residencial / military housing")
     for b in residential_block("MR-R1", "March Ridge housing 1", "norte", 1, 16, 9800, 12450, 12, 10, "medio"):
@@ -137,11 +153,12 @@ def vol_13_march(path: str):
 
 def vol_14_muldraugh(path: str):
     pdf = GuidePDF(path, "14", "Muldraugh + Dixie — eje central",
-                   "Centro ~11181x9725 · BA-5 · Redesign 42.20")
+                   "Dixie Hwy · Wilson St PD · Old Mill Rd · Garnettsville · BA-5")
     pdf.cover("VOLUMEN 14 — MULDRAUGH",
-              ["Town lineal Dixie Highway casa por casa",
-               "McCoy, warehouses, gun store, PD, Cortman",
-               "Dixie trailer park completo", "BA-5 warehouse norte"],
+              ["Eje Dixie Highway · Fossoil 119 Dixie Hwy ~10625x9762",
+               "PD 230 Wilson St ~10636x10408 · Old Mill Rd a McCoy/Fallas",
+               "Gun store / Sunstar · Cortman · warehouses norte BA-5",
+               "Dixie Mobile Park @ Riverside Rd / Tioga Rd"],
               {"Riesgo": "Medio-Alto"})
 
     pdf.h1("Doctrina Muldraugh")
@@ -149,13 +166,19 @@ def vol_14_muldraugh(path: str):
         "Pueblo largo norte-sur. Limpia en <b>bandas horizontales</b> (oeste→este) bajando o subiendo "
         "la highway. No limpies solo la carretera y dejes traseros llenos: la migración te castiga."
     )
-    pdf.sector_map_schematic("Muldraugh bands",
-        [["N IND", "N RES", "N HWY"],
-         ["MCCOY", "C RES", "C COM"],
-         ["W RES", "CENTRO", "E RES"],
-         ["S RES", "S COM", "S HWY"],
-         ["DIXIE", "DIXIE", "DIXIE"]],
-        "Orden: Sur→Centro→Norte, luego industrial, luego Dixie al sur.")
+    pdf.sector_map_schematic("Muldraugh — ejes reales",
+        [["McCoy W", "→", "Old Mill", "→", "N IND BA-5"],
+         ["↓", "N res", "→", "Dixie N", "→"],
+         ["W.Garnettsville", "→", "Centro", "→", "Wilson PD"],
+         ["↓", "S res", "→", "Fossoil 119", "→"],
+         ["KY-60 pileup", "→", "DIXIE PARK", "Riverside Rd", "OK"]],
+        "Sur→Centro→Norte. McCoy por Old Mill Rd. Dixie park al norte hacia WP.")
+    pdf.h2("Calles / ejes documentados")
+    pdf.checkbox_grid([
+        "Dixie Highway (31W)", "Wilson St.", "Old Mill Road", "W. Garnettsville Road",
+        "Riverside Road (a Dixie park)", "Tioga Road", "KY-60 interchange sur",
+    ], cols=2)
+    pdf.loot_critical("14", LOOT_BY_VOLUME["14"])
 
     # South to north residential bands
     for label, pref, x, y, n, risk in [
@@ -222,15 +245,31 @@ def vol_14_muldraugh(path: str):
 
 def vol_15_westpoint(path: str):
     pdf = GuidePDF(path, "15", "West Point — limpieza total",
-                   "Centro ~11581x6916 · BA-6 · Densidad alta · Redesign 42.20")
+                   "Main St · 2nd–10th St · Clarke Way · Fossoil 205 Second St · BA-6")
     pdf.cover("VOLUMEN 15 — WEST POINT",
-              ["Pueblo denso norte · GigaMart · gun store · school",
-               "AMZ steel / industrial", "Riverfront", "BA-6 periferia oeste"],
+              ["Calles: Main St, 2nd–10th St, Clarke Way, Church St…",
+               "Fossoil 205 Second St ~12078x7142 · Police ~11902x6945",
+               "GigaMart · gun store · Pharmahug · AMZ steel",
+               "BA-6 periferia oeste"],
               {"Riesgo": "Alto", "Estilo": "Máximo silencio"})
 
     pdf.callout("ALERTA MIGRACIÓN",
                 "West Point es donde más se castiga disparar. Si abres fuego, puedes recontaminar "
                 "manzanas enteras. Melee + kite. Opera desde BA-6 en la periferia, no desde el centro.")
+    pdf.sector_map_schematic("West Point — calles",
+        [["RÍO", "RÍO", "RÍO", "RÍO"],
+         ["BA-6 W", "→", "Main St", "→"],
+         ["↓", "3rd/PD", "→", "GIGA/GUN"],
+         ["2nd/Fossoil", "→", "Clarke Way", "→"],
+         ["AMZ E", "→", "School", "OK"]],
+        "BA-6 primero. Main St núcleo. 2nd St sur = Fossoil.")
+    pdf.h2("Calles documentadas")
+    pdf.checkbox_grid([
+        "Main St.", "2nd St.", "3rd St.", "4th St.", "5th St.", "6th St.",
+        "7th St.", "8th St.", "9th St.", "10th St.", "Clarke Way", "Church St.",
+        "Bulletin St.", "Cabin Rd.", "Dixie Highway",
+    ], cols=3)
+    pdf.loot_critical("15", LOOT_BY_VOLUME["15"])
 
     pdf.h1("BA-6 primero")
     pdf.building_card(house("WP-BA6", "BA-6 Casa periferia oeste West Point", "11200x6900", "medio", "2", True, True,
@@ -284,11 +323,19 @@ def vol_15_westpoint(path: str):
 
 def vol_16_valley(path: str):
     pdf = GuidePDF(path, "16", "Valley Station + acceso a Louisville",
-                   "Centro ~13056x6031 · BA-7 · Antesala del endgame")
+                   "Dixie Hwy · Caroline Staunton / Bearcamp / Salt River · Fossoil VS · BA-7")
     pdf.cover("VOLUMEN 16 — VALLEY STATION",
-              ["Dixie Highway norte", "POIs y residencial VS",
-               "Preparación muro/exclusion Louisville", "BA-7"],
+              ["Centro ~13056x6031", "Fossoil Valley Station ~12693x6534",
+               "Enlaces: Caroline Staunton Rd, Bearcamp Rd, Salt River Rd, Cub Rd→Mall",
+               "BA-7 + prep mapas Louisville 1-9"],
               {"Riesgo": "Alto", "Siguiente": "Louisville Vol 17"})
+    pdf.sector_map_schematic("Valley Station → LV",
+        [["WP OK", "→", "Dixie N", "→", "Fossoil VS"],
+         ["↓", "VS res", "→", "BA-7", "→"],
+         ["Salt River", "→", "Exclusion", "→", "LV gates"],
+         ["Cub Rd", "→", "Mall approach", "→", "Vol17"]],
+        "No entres a Louisville sin loot crítico 16.")
+    pdf.loot_critical("16", LOOT_BY_VOLUME["16"])
 
     pdf.h1("Valley Station limpieza")
     for b in residential_block("VS-R", "Valley Station residencial", "pueblo", 1, 20, 12900, 6000, 14, 12, "alto"):

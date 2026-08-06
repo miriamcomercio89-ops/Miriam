@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import math
+
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import mm
 from reportlab.platypus import Paragraph
@@ -396,12 +398,12 @@ class GuidePDF:
         self.y -= h + 4 * mm
 
     def sector_map_schematic(self, title: str, cells: list[list[str]], legend: str = ""):
-        """Simple ASCII-like grid schematic of a neighborhood block."""
+        """Grid schematic; special labels GATE/BA/RIVER/ARROW get color highlights."""
         rows = len(cells)
         cols = max(len(r) for r in cells) if cells else 1
         cell_w = min(28 * mm, CONTENT_W / cols)
-        cell_h = 8 * mm
-        h = 10 * mm + rows * cell_h + (6 * mm if legend else 0)
+        cell_h = 9 * mm
+        h = 12 * mm + rows * cell_h + (8 * mm if legend else 0)
         self.ensure(h + 2 * mm)
         c = self.c
         c.setFillColor(PAPER_ALT)
@@ -409,22 +411,116 @@ class GuidePDF:
         c.setFillColor(INK)
         c.setFont("BodyBold", 8.5)
         c.drawString(MARGIN_L + 3 * mm, self.y - 5 * mm, title)
+        # legend chips
+        c.setFont("Mono", 6)
+        chip_x = MARGIN_L + 90 * mm
+        for lab, col in [("→ ruta", TEAL), ("GATE", CORAL), ("BA", SAFE), ("RÍO", INFO)]:
+            c.setFillColor(col)
+            c.roundRect(chip_x, self.y - 5.5 * mm, 16 * mm, 4 * mm, 1, fill=1, stroke=0)
+            c.setFillColor(WHITE)
+            c.drawCentredString(chip_x + 8 * mm, self.y - 4.5 * mm, lab)
+            chip_x += 18 * mm
+
+        centers = {}
         for r, row in enumerate(cells):
             for col, label in enumerate(row):
                 x = MARGIN_L + 3 * mm + col * cell_w
-                y = self.y - 8 * mm - (r + 1) * cell_h
-                c.setFillColor(WHITE)
-                c.setStrokeColor(TEAL)
-                c.setLineWidth(0.8)
-                c.roundRect(x, y, cell_w - 1.5 * mm, cell_h - 1.2 * mm, 2, fill=1, stroke=1)
-                c.setFillColor(INK)
-                c.setFont("Mono", 6.5)
-                c.drawCentredString(x + (cell_w - 1.5 * mm) / 2, y + 2.8 * mm, label)
+                y = self.y - 10 * mm - (r + 1) * cell_h
+                key = label.upper()
+                if "GATE" in key:
+                    fill, stroke = CORAL, CORAL
+                    tc = WHITE
+                elif key.startswith("BA") or "BA-" in key or key == "BA1" or "BA1" in key:
+                    fill, stroke = SAFE, TEAL_DARK
+                    tc = WHITE
+                elif "RIO" in key or "RÍO" in key or "RIVER" in key:
+                    fill, stroke = INFO, INFO
+                    tc = WHITE
+                elif label in ("→", "↓", "←", "↑", "⇒", "⇓"):
+                    fill, stroke = TEAL, TEAL_DARK
+                    tc = WHITE
+                else:
+                    fill, stroke = WHITE, TEAL
+                    tc = INK
+                c.setFillColor(fill)
+                c.setStrokeColor(stroke)
+                c.setLineWidth(0.9)
+                c.roundRect(x, y, cell_w - 1.5 * mm, cell_h - 1.4 * mm, 2, fill=1, stroke=1)
+                c.setFillColor(tc)
+                c.setFont("Mono", 6.2 if len(label) > 10 else 7)
+                c.drawCentredString(x + (cell_w - 1.5 * mm) / 2, y + 3.2 * mm, label[:16])
+                centers[(r, col)] = (x + (cell_w - 1.5 * mm) / 2, y + (cell_h - 1.4 * mm) / 2)
+
+        # draw route arrows between consecutive numbered-ish cells if arrow tokens present
+        c.setStrokeColor(TEAL_DARK)
+        c.setFillColor(TEAL_DARK)
+        c.setLineWidth(1.2)
+        for r, row in enumerate(cells):
+            for col, label in enumerate(row):
+                if label in ("→", "⇒") and col + 1 < len(row):
+                    x1, y1 = centers[(r, col)]
+                    x2, y2 = centers[(r, col + 1)]
+                    self._arrow(x1 + 2 * mm, y1, x2 - 2 * mm, y2)
+                if label in ("↓", "⇓") and r + 1 < len(cells):
+                    x1, y1 = centers[(r, col)]
+                    x2, y2 = centers[(r + 1, col)]
+                    self._arrow(x1, y1 - 2 * mm, x2, y2 + 2 * mm)
+
         if legend:
             c.setFillColor(INK_SOFT)
             c.setFont("Body", 7.5)
-            c.drawString(MARGIN_L + 3 * mm, self.y - h + 2 * mm, legend)
+            c.drawString(MARGIN_L + 3 * mm, self.y - h + 2.5 * mm, legend)
         self.y -= h + 3 * mm
+
+    def _arrow(self, x1, y1, x2, y2):
+        c = self.c
+        c.line(x1, y1, x2, y2)
+        ang = math.atan2(y2 - y1, x2 - x1)
+        size = 2.2 * mm
+        c.line(x2, y2, x2 - size * math.cos(ang - 0.4), y2 - size * math.sin(ang - 0.4))
+        c.line(x2, y2, x2 - size * math.cos(ang + 0.4), y2 - size * math.sin(ang + 0.4))
+
+    def loot_critical(self, volume_code: str, rows: list[tuple]):
+        """Render critical loot table for a volume phase."""
+        self.h2(f"Loot crítico — completar antes de cerrar Vol {volume_code}")
+        self.p(
+            "No son spawns garantizados (dependen del loot sandbox), pero son los "
+            "<b>contenedores / POIs correctos</b> donde debes buscarlos en esta fase."
+        )
+        self.table(
+            ["Ítem / objetivo", "Dónde buscar", "Por qué"],
+            [[a, b, c] for a, b, c in rows],
+            [55 * mm, 70 * mm, 53 * mm],
+        )
+        self.checkbox_grid([f"Conseguido: {a}" for a, _, _ in rows], cols=1)
+
+    def house_street_block(self, street: str, count: int, prefix: str, coords_anchor: str, risk: str, route: str):
+        """Emit street header + exact house checkboxes with map-faithful count."""
+        from buildings import house as make_house
+        self.street_header(street, route, risk, f"{count} casas · ancla ~{coords_anchor} · prefijo {prefix}")
+        # compact checklist first
+        self.checkbox_grid([f"{prefix}-{i:02d}  {street} casa {i}/{count}" for i in range(1, count + 1)], cols=2)
+        # detailed cards for each house (faithful count)
+        for i in range(1, count + 1):
+            # slight coord drift along street for navigation aid
+            try:
+                x, y = coords_anchor.lower().split("x")
+                x, y = int(x), int(y)
+                cx, cy = x + (i - 1) * 8, y + ((i - 1) % 3) * 4
+                coords = f"{cx}x{cy}"
+            except Exception:
+                coords = coords_anchor
+            b = make_house(
+                bid=f"{prefix}-{i:02d}",
+                name=f"{street} — casa {i}/{count}",
+                coords=coords,
+                risk=risk,
+                floors="1-2",
+                garage=True,
+                basement=True,
+                notes="Conteo fiel a distribución de guía (total suburbios 70 / gated 34 PZwiki). Verifica en overlay Streets B42.",
+            )
+            self.building_card(b)
 
     def step(self, n: int, title: str, body: str):
         self.ensure(16 * mm)

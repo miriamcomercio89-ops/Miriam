@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from pdf_engine import GuidePDF
 from theme import CONTENT_W, mm
+from map_data import LOOT_BY_VOLUME, RIVERSIDE_HOUSE_COUNT_SUBURBS, RIVERSIDE_HOUSE_COUNT_GATED
 
 
 def vol_00_indice(path: str):
@@ -35,6 +36,22 @@ def vol_00_indice(path: str):
         "Esta no es una guía de “tips”. Es un <b>plan operativo de limpieza total</b> del mapa "
         "vanilla de Build 42.20. Cada volumen se completa en orden. Solo abres el siguiente "
         "cuando el checklist de cierre del volumen actual está al 100%."
+    )
+    pdf.callout(
+        "DATOS DE MAPA",
+        f"Riverside: {RIVERSIDE_HOUSE_COUNT_SUBURBS} casas suburbios + {RIVERSIDE_HOUSE_COUNT_GATED} gated (PZwiki). "
+        "Calles = Street_names B42. POIs con coords wiki. "
+        "Cada volumen tiene tabla de LOOT CRÍTICO. Compañero: map.projectzomboid.com (Streets ON).",
+    )
+    pdf.sector_map_schematic(
+        "Campaña completa — flecha de frentes",
+        [
+            ["BA-1 RV", "→", "BRAND", "→", "FALLAS", "→", "ECHO"],
+            ["↓", "EKRON", "→", "IRVING", "→", "ROSE+P", "→"],
+            ["MARCH", "→", "MULD", "→", "WP", "→", "VALLEY"],
+            ["→", "LV-SW", "→", "LV-C", "→", "LV-E/N", "OK"],
+        ],
+        "No saltes frentes. Louisville al final.",
     )
     pdf.p(
         "Tu configuración: <b>Sandbox</b>, población <b>alta</b>, <b>sin respawn</b>, "
@@ -284,6 +301,8 @@ def vol_01_protocolo(path: str):
         pdf.h3(d)
         pdf.p(t)
         pdf.checkbox(f"Completado: {d}")
+
+    pdf.loot_critical("01", LOOT_BY_VOLUME["01"])
 
     pdf.h1("Kit de limpieza estándar (lleva siempre)")
     pdf.checkbox_grid(

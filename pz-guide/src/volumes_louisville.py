@@ -5,6 +5,7 @@ from __future__ import annotations
 from pdf_engine import GuidePDF
 from buildings import house, poi, residential_block, numbered_units, SHOP_ROOMS, WAREHOUSE_ROOMS, HOUSE_ROOMS_GARAGE
 from theme import mm
+from map_data import LOOT_BY_VOLUME
 
 
 def _lv_rules(pdf: GuidePDF):
@@ -18,14 +19,29 @@ def _lv_rules(pdf: GuidePDF):
 
 def vol_17_lv_sw_west(path: str):
     pdf = GuidePDF(path, "17", "Louisville — Suroeste y Oeste",
-                   "Primera fase ciudad · Map items SW/West/NW")
+                   "Dixie→S 1st / KY-1394 · Farnly · Rockford Ln · Manslick · BA-8")
     pdf.cover("VOLUMEN 17 — LV SO/OESTE",
-              ["Entrada desde Valley Station / muro",
-               "Distritos Southwest + West + borde Northwest",
-               "Residencial, industrial ligero, river west",
-               "BA-8 en periferia oeste"],
-              {"Riesgo": "Extremo", "Centro LV ~": "12970x2230"})
+              ["Entrada Dixie Hwy → South 1st St / KY-1394 pileup",
+               "Farnly Rd / Lower Ridge Rd borde exclusion",
+               "Fossoil 4 Rockford Ln ~12442x3535 · industrial west",
+               "BA-8 west edge ~12030x2590"],
+              {"Riesgo": "Extremo", "Mapas": "LV SW / West / NW"})
     _lv_rules(pdf)
+    pdf.sector_map_schematic("Louisville fase 1 — acceso oeste",
+        [
+            ["VALLEY", "→", "Dixie N", "→", "Exclusion"],
+            ["↓", "Farnly Rd", "→", "GATE LV", "→"],
+            ["BA-8", "→", "West res", "→", "Rockford"],
+            ["↓", "SW res", "→", "Ind W", "→"],
+            ["KY-1394", "→", "S 1st St", "→", "Vol18"],
+        ],
+        "Map items: Louisville Southwest / West / Northwest. Un distrito por sesión.")
+    pdf.h2("Ejes documentados")
+    pdf.checkbox_grid([
+        "Dixie Highway (término N)", "South 1st Street", "KY-1394", "Farnly Road",
+        "Lower Ridge Road", "Rockford Ln.", "Bourbon Way (oeste)", "Industry Road (hacia PD)",
+    ], cols=2)
+    pdf.loot_critical("17", LOOT_BY_VOLUME["17"])
 
     pdf.h1("Acceso y sello de entrada")
     pdf.step(1, "Recon muro/gates", "Identifica punto de entrada. Limpia 50 tiles a cada lado.")
@@ -75,12 +91,24 @@ def vol_17_lv_sw_west(path: str):
 
 def vol_18_lv_central_south(path: str):
     pdf = GuidePDF(path, "18", "Louisville — Centro y Sur",
-                   "Fase 2 ciudad · Central / South / Southeast parcial")
+                   "Industry Rd PD · Manslick · Hospital · Mall · BA-9")
     pdf.cover("VOLUMEN 18 — LV CENTRO/SUR",
-              ["Downtown / Central", "South + South East",
-               "Hospital, PD, mall approach", "BA-9"],
+              ["Mapas: Central / South / Southeast",
+               "LVPD 635 Industry Rd ~12496x1615",
+               "Fossoil 3259 Manslick Rd ~12910x3028 · Hospital / Mall",
+               "BA-9 south-central"],
               {"Riesgo": "Extremo"})
     _lv_rules(pdf)
+    pdf.sector_map_schematic("Louisville fase 2 — centro/sur",
+        [
+            ["Vol17 OK", "→", "S suburbs", "→", "Manslick"],
+            ["↓", "Hospital", "→", "BA-9", "→"],
+            ["Industry Rd", "→", "LVPD", "→", "Downtown"],
+            ["↓", "Mall", "→", "SE res", "→"],
+            ["Funeral", "→", "Riding", "→", "Vol19"],
+        ],
+        "Hospital y PD = raids quirúrgicos. Mall = tienda por tienda.")
+    pdf.loot_critical("18", LOOT_BY_VOLUME["18"])
 
     pdf.building_card(house("LV-BA9", "BA-9 South-central safehouse", "12900x2800", "extremo", "2", True, True,
                             "Base intermedia. Nunca duermas deep downtown sin escape claro."))
@@ -137,12 +165,24 @@ def vol_18_lv_central_south(path: str):
 
 def vol_19_lv_east_north(path: str):
     pdf = GuidePDF(path, "19", "Louisville — Este y Norte",
-                   "Fase 3 final ciudad · East / NE / North / mansions")
+                   "East PD · mansions · Grand Ohio Mall coast · BA-10")
     pdf.cover("VOLUMEN 19 — LV ESTE/NORTE",
-              ["East + Far East", "North + Northeast",
-               "Fenced mansions", "Cierre total Louisville"],
+              ["Mapas: East / Northeast / North",
+               "East PD ~13783x2554 · Fenced mansions ~14150x2610",
+               "Pharmahug north coast / Grand Ohio Mall area",
+               "Cierre total Louisville"],
               {"Riesgo": "Extremo"})
     _lv_rules(pdf)
+    pdf.sector_map_schematic("Louisville fase 3 — este/norte",
+        [
+            ["Vol18 OK", "→", "East res", "→", "East PD"],
+            ["↓", "Mansions", "→", "Far East", "→"],
+            ["BA-10", "→", "NE res", "→", "N river"],
+            ["↓", "N com", "→", "Mall N", "→"],
+            ["Coast Pharm", "→", "Leafhill", "→", "LV TOTAL"],
+        ],
+        "Cierra este antes que norte denso. Mansions = gated protocol.")
+    pdf.loot_critical("19", LOOT_BY_VOLUME["19"])
 
     pdf.building_card(house("LV-BA10", "BA-10 East safehouse", "13800x2400", "extremo", "2", True, True,
                             "Para operaciones del este. No abandones BA-8/9 aún."))
@@ -207,6 +247,17 @@ def vol_20_master(path: str):
                "Protocolo de re-barrido anti-migración",
                "Certificado de mapa limpio"],
               {"Meta": "0 zombis / 0 edificios sin cubrir"})
+    pdf.loot_critical("20", LOOT_BY_VOLUME["20"])
+    pdf.sector_map_schematic("Re-barrido — orden inverso",
+        [
+            ["LV E/N", "←", "LV C/S", "←", "LV SW"],
+            ["↑", "Valley", "←", "WP", "←"],
+            ["Muld", "←", "March", "←", "Rose"],
+            ["↑", "Irving", "←", "Ekron", "←"],
+            ["Echo", "←", "Fallas", "←", "Brand"],
+            ["↑", "Corredor", "←", "Riverside", "HOME"],
+        ],
+        "Solo exterminio + verificar sprays L. Sin loot runs largos.")
 
     pdf.h1("Re-barrido anti-migración (obligatorio)")
     pdf.p(
