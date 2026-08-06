@@ -19,6 +19,8 @@ function readLineFromUrl(): string | null {
 }
 
 function writeLineToUrl(lineId: string | null) {
+  // En file:// el history API con query puede fallar en algunos navegadores
+  if (window.location.protocol === 'file:') return;
   const url = new URL(window.location.href);
   if (lineId) {
     const line = lines.find((l) => l.id === lineId);
@@ -26,7 +28,7 @@ function writeLineToUrl(lineId: string | null) {
   } else {
     url.searchParams.delete('linea');
   }
-  window.history.replaceState({}, '', url.toString());
+  window.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`);
 }
 
 export default function App() {

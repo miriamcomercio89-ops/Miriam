@@ -15,7 +15,20 @@ Plano interactivo de la red de transporte público de **Heliora**, una mega-metr
 - Modos Pasajero y Operador
 - Horarios simulados · UI en español
 
-## Cómo ejecutar
+## Abrir sin instalar nada
+
+Usa la carpeta **`heliora-abrir-aqui/`** y haz doble clic en `index.html`.
+
+> No abras el `index.html` de la raíz del proyecto: ese es solo para desarrollo y saldrá en blanco.
+
+Para regenerar esa carpeta:
+
+```bash
+npm install
+npm run build:standalone
+```
+
+## Desarrollo con Node
 
 ```bash
 npm install
