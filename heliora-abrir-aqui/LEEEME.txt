@@ -1,11 +1,22 @@
 HELIORA v0.1 — Cómo abrir
 ========================
 
-1. Haz doble clic en index.html
-2. Se abrirá en tu navegador (Chrome, Edge, Firefox…)
+1. Abre la carpeta heliora-abrir-aqui
+2. Haz doble clic en index.html
+3. Se abrirá en tu navegador (Chrome, Edge, Firefox…)
 
-No hace falta instalar nada ni usar la terminal.
+No hace falta instalar nada.
 
-Si ves página en blanco al abrir el index.html de la carpeta del código fuente,
-es normal: ese archivo es solo para desarrollo con Node.
-Usa SIEMPRE esta carpeta "heliora-abrir-aqui".
+IMPORTANTE — Antivirus
+----------------------
+Esto NO es un virus. Es una web hecha con HTML + JavaScript (React).
+
+Algunos antivirus marcan por error los archivos .js grandes o los .zip
+descargados de internet (falso positivo).
+
+Si Windows Defender te avisa:
+- Elige "Permitir en el dispositivo" / "Restaurar"
+- O descarga el código desde GitHub con el botón Code → Download ZIP
+  y abre: heliora-abrir-aqui/index.html
+
+No abras el index.html de la raíz del proyecto (ese sale en blanco).
