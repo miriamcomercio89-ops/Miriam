@@ -1,15 +1,19 @@
-# Heliora — Red de Transporte Mundial
+# Heliora — Red de Transporte Mundial (v0.1)
 
-Plano interactivo de la red de transporte público de **Heliora**, una mega-metrópolis inventada con la red más grande del mundo.
+Plano interactivo de la red de transporte público de **Heliora**, una mega-metrópolis inventada.
 
-## Características
+## Características v0.1
 
-- Mapa esquema tipo plano de metro (SVG) con pan y zoom
-- Menú lateral con todas las líneas agrupadas por modo
-- Modos: Metro, Tren, Tranvía, Bus, Hyperloop, Ferry y Teleférico
-- Horarios simulados y estado de servicio
-- Vista **Pasajero** y **Operador** (ocupación, incidencias, notas)
-- Interfaz en español
+- Mapa esquema tipo metro (SVG) con pan/zoom
+- Menú lateral con todas las líneas (L / C / T + bus, hyperloop, ferry, teleférico)
+- Planificador de viaje A→B con trasbordos
+- Búsqueda de líneas y estaciones
+- Leyenda de modos de transporte
+- Zoom automático al seleccionar línea/estación/ruta
+- Atajos: `Esc` cierra, `+` / `-` zoom
+- Enlace compartible `?linea=L1`
+- Modos Pasajero y Operador
+- Horarios simulados · UI en español
 
 ## Cómo ejecutar
 
@@ -18,8 +22,6 @@ npm install
 npm run dev
 ```
 
-Abre la URL que muestre Vite (por defecto `http://localhost:5173`).
-
 ```bash
 npm run build
 npm run preview
@@ -27,4 +29,4 @@ npm run preview
 
 ## Stack
 
-Vite + React + TypeScript. Todo el dato es simulado en el cliente; no hace falta backend.
+Vite + React + TypeScript. Datos simulados en el cliente.

@@ -1,6 +1,6 @@
 export type TransportMode =
   | 'metro'
-  | 'tren'
+  | 'cercanias'
   | 'tranvia'
   | 'bus'
   | 'hyperloop'
@@ -33,11 +33,18 @@ export interface TransitLine {
   operatorNote?: string;
 }
 
+export interface DistrictLabel {
+  id: string;
+  name: string;
+  x: number;
+  y: number;
+}
+
 export type UserRole = 'pasajero' | 'operador';
 
 export const MODE_LABELS: Record<TransportMode, string> = {
   metro: 'Metro',
-  tren: 'Tren',
+  cercanias: 'Cercanías',
   tranvia: 'Tranvía',
   bus: 'Bus',
   hyperloop: 'Hyperloop',
@@ -47,7 +54,7 @@ export const MODE_LABELS: Record<TransportMode, string> = {
 
 export const MODE_ORDER: TransportMode[] = [
   'metro',
-  'tren',
+  'cercanias',
   'tranvia',
   'bus',
   'hyperloop',
@@ -61,3 +68,14 @@ export const STATUS_LABELS: Record<LineStatus, string> = {
   obras: 'Obras',
   suspendida: 'Suspendida',
 };
+
+/** Estilos de trazo en leyenda */
+export const MODE_LEGEND: { mode: TransportMode; style: 'solid' | 'dashed' | 'dotted' | 'glow' }[] = [
+  { mode: 'metro', style: 'solid' },
+  { mode: 'cercanias', style: 'solid' },
+  { mode: 'tranvia', style: 'solid' },
+  { mode: 'bus', style: 'dashed' },
+  { mode: 'hyperloop', style: 'glow' },
+  { mode: 'ferry', style: 'dashed' },
+  { mode: 'cable', style: 'dotted' },
+];

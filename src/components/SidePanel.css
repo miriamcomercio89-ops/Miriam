@@ -253,6 +253,16 @@
   font-size: 0.9rem;
 }
 
+.station-badge {
+  background: rgba(255, 255, 255, 0.12) !important;
+  color: #e8edf3 !important;
+  text-shadow: none !important;
+}
+
+.station-row:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
 .sr-only {
   position: absolute;
   width: 1px;

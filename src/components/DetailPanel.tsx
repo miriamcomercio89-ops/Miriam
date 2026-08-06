@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { getLinesForStation, getStation, lines } from '../data/network';
 import { delayLabel, generateSchedule, nextDepartures } from '../data/schedules';
 import {
@@ -15,6 +16,12 @@ interface Props {
   onClose: () => void;
 }
 
+function shareLineUrl(code: string): string {
+  const url = new URL(window.location.href);
+  url.searchParams.set('linea', code);
+  return url.toString();
+}
+
 export function DetailPanel({
   role,
   selectedLineId,
@@ -22,6 +29,7 @@ export function DetailPanel({
   onSelectLine,
   onClose,
 }: Props) {
+  const [copied, setCopied] = useState(false);
   const line = lines.find((l) => l.id === selectedLineId) ?? null;
   const station = selectedStationId ? getStation(selectedStationId) : null;
 
@@ -99,6 +107,23 @@ export function DetailPanel({
         </span>
         {delay && <span className="pill warn">{delay}</span>}
       </div>
+
+      <button
+        type="button"
+        className="share-btn"
+        onClick={async () => {
+          const link = shareLineUrl(line.code);
+          try {
+            await navigator.clipboard.writeText(link);
+            setCopied(true);
+            window.setTimeout(() => setCopied(false), 1800);
+          } catch {
+            window.prompt('Copia el enlace:', link);
+          }
+        }}
+      >
+        {copied ? 'Enlace copiado' : `Compartir ${line.code}`}
+      </button>
 
       {role === 'operador' && (
         <div className="operator-box">

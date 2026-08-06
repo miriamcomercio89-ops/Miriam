@@ -1,4 +1,4 @@
-import { CITY, lines } from '../data/network';
+import { CITY, getUniqueStations, lines } from '../data/network';
 import {
   MODE_LABELS,
   MODE_ORDER,
@@ -7,6 +7,8 @@ import {
   type TransitLine,
   type UserRole,
 } from '../data/types';
+import { RoutePlanner } from './RoutePlanner';
+import type { RoutePlan } from '../data/routing';
 import './SidePanel.css';
 
 interface Props {
@@ -17,7 +19,9 @@ interface Props {
   onSearch: (q: string) => void;
   onFilterMode: (m: TransportMode | null) => void;
   onSelectLine: (id: string) => void;
+  onSelectStation: (id: string) => void;
   onClearSelection: () => void;
+  onRoute: (plan: RoutePlan | null) => void;
 }
 
 function LineRow({
@@ -61,10 +65,12 @@ export function SidePanel({
   onSearch,
   onFilterMode,
   onSelectLine,
+  onSelectStation,
   onClearSelection,
+  onRoute,
 }: Props) {
   const q = search.trim().toLowerCase();
-  const filtered = lines.filter((l) => {
+  const filteredLines = lines.filter((l) => {
     if (filterMode && l.mode !== filterMode) return false;
     if (!q) return true;
     return (
@@ -74,15 +80,25 @@ export function SidePanel({
     );
   });
 
+  const stationMatches = q
+    ? getUniqueStations()
+        .filter(
+          (s) =>
+            s.name.toLowerCase().includes(q) ||
+            s.district.toLowerCase().includes(q),
+        )
+        .slice(0, 12)
+    : [];
+
   const grouped = MODE_ORDER.map((mode) => ({
     mode,
-    items: filtered.filter((l) => l.mode === mode),
+    items: filteredLines.filter((l) => l.mode === mode),
   })).filter((g) => g.items.length > 0);
 
   return (
     <aside className="side-panel">
       <header className="side-brand">
-        <p className="brand-kicker">Red Mundial</p>
+        <p className="brand-kicker">Red Mundial · v0.1</p>
         <h1 className="brand-name">{CITY.name}</h1>
         <p className="brand-tag">{CITY.tagline}</p>
         <div className="brand-stats">
@@ -91,22 +107,24 @@ export function SidePanel({
             <span>líneas</span>
           </div>
           <div>
-            <strong>{CITY.population}</strong>
-            <span>hab.</span>
+            <strong>{getUniqueStations().length}</strong>
+            <span>estaciones</span>
           </div>
           <div>
-            <strong>{CITY.dailyTrips}</strong>
-            <span>viajes/día</span>
+            <strong>{CITY.population}</strong>
+            <span>hab.</span>
           </div>
         </div>
       </header>
 
+      <RoutePlanner onRoute={onRoute} onPickStation={onSelectStation} />
+
       <div className="side-controls">
         <label className="search-wrap">
-          <span className="sr-only">Buscar línea</span>
+          <span className="sr-only">Buscar línea o estación</span>
           <input
             type="search"
-            placeholder="Buscar línea o modo…"
+            placeholder="Buscar línea o estación…"
             value={search}
             onChange={(e) => onSearch(e.target.value)}
           />
@@ -138,6 +156,29 @@ export function SidePanel({
       </div>
 
       <div className="line-list">
+        {stationMatches.length > 0 && (
+          <section className="line-group-section">
+            <h2>
+              Estaciones
+              <span>{stationMatches.length}</span>
+            </h2>
+            {stationMatches.map((s) => (
+              <button
+                key={s.id}
+                type="button"
+                className="line-row station-row"
+                onClick={() => onSelectStation(s.id)}
+              >
+                <span className="line-badge station-badge">◉</span>
+                <span className="line-meta">
+                  <span className="line-name">{s.name}</span>
+                  <span className="line-sub">{s.district}</span>
+                </span>
+              </button>
+            ))}
+          </section>
+        )}
+
         {grouped.map(({ mode, items }) => (
           <section key={mode} className="line-group-section">
             <h2>
@@ -155,8 +196,8 @@ export function SidePanel({
             ))}
           </section>
         ))}
-        {filtered.length === 0 && (
-          <p className="empty-list">No hay líneas con ese criterio.</p>
+        {filteredLines.length === 0 && stationMatches.length === 0 && (
+          <p className="empty-list">No hay resultados con ese criterio.</p>
         )}
       </div>
     </aside>

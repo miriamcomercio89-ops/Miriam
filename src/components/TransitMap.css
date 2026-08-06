@@ -1,22 +1,15 @@
 .transit-map {
-  width: 1400px;
-  height: 1000px;
   display: block;
   user-select: none;
 }
 
 .district-labels text {
-  fill: rgba(40, 55, 75, 0.22);
+  fill: rgba(40, 55, 75, 0.18);
   font-family: 'Sora', system-ui, sans-serif;
-  font-size: 18px;
+  font-size: 15px;
   font-weight: 600;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-}
-
-.water {
-  stroke: rgba(56, 120, 160, 0.18);
-  stroke-width: 28;
 }
 
 .water-fill {

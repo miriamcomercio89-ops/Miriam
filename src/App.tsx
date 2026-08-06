@@ -1,38 +1,113 @@
 import { useEffect, useState } from 'react';
 import { DetailPanel } from './components/DetailPanel';
+import { MapLegend } from './components/MapLegend';
 import { SidePanel } from './components/SidePanel';
 import { TopBar } from './components/TopBar';
 import { TransitMap } from './components/TransitMap';
+import { findLineByCode, getLineBounds, getStation, lines } from './data/network';
+import type { RoutePlan } from './data/routing';
 import { simulatedClock } from './data/schedules';
 import type { TransportMode, UserRole } from './data/types';
 import { usePanZoom } from './hooks/usePanZoom';
 import './App.css';
 
+function readLineFromUrl(): string | null {
+  const params = new URLSearchParams(window.location.search);
+  const code = params.get('linea');
+  if (!code) return null;
+  return findLineByCode(code)?.id ?? null;
+}
+
+function writeLineToUrl(lineId: string | null) {
+  const url = new URL(window.location.href);
+  if (lineId) {
+    const line = lines.find((l) => l.id === lineId);
+    if (line) url.searchParams.set('linea', line.code);
+  } else {
+    url.searchParams.delete('linea');
+  }
+  window.history.replaceState({}, '', url.toString());
+}
+
 export default function App() {
   const [role, setRole] = useState<UserRole>('pasajero');
-  const [selectedLineId, setSelectedLineId] = useState<string | null>(null);
+  const [selectedLineId, setSelectedLineId] = useState<string | null>(() => readLineFromUrl());
   const [selectedStationId, setSelectedStationId] = useState<string | null>(null);
   const [filterMode, setFilterMode] = useState<TransportMode | null>(null);
   const [search, setSearch] = useState('');
   const [clock, setClock] = useState(simulatedClock());
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [routePlan, setRoutePlan] = useState<RoutePlan | null>(null);
 
-  const { state, containerRef, onPointerDown, onPointerMove, onPointerUp, zoomBy, reset } =
-    usePanZoom({ scale: 0.72, x: -40, y: -20 });
+  const {
+    state,
+    containerRef,
+    onPointerDown,
+    onPointerMove,
+    onPointerUp,
+    zoomBy,
+    reset,
+    fitBounds,
+    focusPoint,
+  } = usePanZoom({ scale: 0.42, x: 40, y: 20 });
 
   useEffect(() => {
     const id = window.setInterval(() => setClock(simulatedClock()), 15_000);
     return () => window.clearInterval(id);
   }, []);
 
+  // Deep link inicial
+  useEffect(() => {
+    const id = readLineFromUrl();
+    if (!id) return;
+    const line = lines.find((l) => l.id === id);
+    if (!line) return;
+    const bounds = getLineBounds(line);
+    if (bounds) {
+      window.setTimeout(() => fitBounds(bounds, 100), 50);
+    }
+  }, [fitBounds]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement)?.tagName;
+      if (tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA') return;
+
+      if (e.key === 'Escape') {
+        setSelectedLineId(null);
+        setSelectedStationId(null);
+        setRoutePlan(null);
+        writeLineToUrl(null);
+      } else if (e.key === '+' || e.key === '=') {
+        e.preventDefault();
+        zoomBy(1.2);
+      } else if (e.key === '-' || e.key === '_') {
+        e.preventDefault();
+        zoomBy(1 / 1.2);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [zoomBy]);
+
   const selectLine = (id: string) => {
     setSelectedLineId(id);
     setSelectedStationId(null);
+    setRoutePlan(null);
+    writeLineToUrl(id);
+    const line = lines.find((l) => l.id === id);
+    if (line) {
+      const bounds = getLineBounds(line);
+      if (bounds) fitBounds(bounds, 100);
+    }
   };
 
   const selectStation = (id: string) => {
     setSelectedStationId(id);
     setSelectedLineId(null);
+    writeLineToUrl(null);
+    const st = getStation(id);
+    if (st) focusPoint(st.x, st.y, 1.2);
   };
 
   const clearSelection = () => {
@@ -40,6 +115,29 @@ export default function App() {
     setSelectedStationId(null);
     setFilterMode(null);
     setSearch('');
+    setRoutePlan(null);
+    writeLineToUrl(null);
+  };
+
+  const handleRoute = (plan: RoutePlan | null) => {
+    setRoutePlan(plan);
+    setSelectedLineId(null);
+    setSelectedStationId(null);
+    writeLineToUrl(null);
+    if (plan && plan.stationIds.length) {
+      const xs = plan.stationIds.map((id) => getStation(id)!).filter(Boolean);
+      if (xs.length) {
+        fitBounds(
+          {
+            minX: Math.min(...xs.map((s) => s.x)),
+            minY: Math.min(...xs.map((s) => s.y)),
+            maxX: Math.max(...xs.map((s) => s.x)),
+            maxY: Math.max(...xs.map((s) => s.y)),
+          },
+          120,
+        );
+      }
+    }
   };
 
   return (
@@ -62,7 +160,9 @@ export default function App() {
           onSearch={setSearch}
           onFilterMode={setFilterMode}
           onSelectLine={selectLine}
+          onSelectStation={selectStation}
           onClearSelection={clearSelection}
+          onRoute={handleRoute}
         />
       </div>
 
@@ -84,7 +184,9 @@ export default function App() {
               selectedLineId={selectedLineId}
               selectedStationId={selectedStationId}
               highlightedMode={filterMode}
-              dimOthers={Boolean(selectedLineId || filterMode)}
+              routeStationIds={routePlan?.stationIds ?? null}
+              routeLineIds={routePlan?.legs.map((l) => l.line.id) ?? null}
+              dimOthers={Boolean(selectedLineId || filterMode || routePlan)}
               onSelectLine={selectLine}
               onSelectStation={selectStation}
             />
@@ -100,6 +202,8 @@ export default function App() {
           onReset={reset}
         />
 
+        <MapLegend />
+
         <DetailPanel
           role={role}
           selectedLineId={selectedLineId}
@@ -108,10 +212,13 @@ export default function App() {
           onClose={() => {
             setSelectedLineId(null);
             setSelectedStationId(null);
+            writeLineToUrl(null);
           }}
         />
 
-        <p className="map-hint">Arrastra el plano · rueda para zoom · clic en línea o estación</p>
+        <p className="map-hint">
+          Arrastra · rueda zoom · Esc cierra · +/- zoom · ?linea=L1
+        </p>
       </main>
     </div>
   );

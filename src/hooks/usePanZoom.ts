@@ -6,21 +6,28 @@ interface PanZoomState {
   scale: number;
 }
 
-const MIN_SCALE = 0.45;
-const MAX_SCALE = 2.8;
+export interface Bounds {
+  minX: number;
+  minY: number;
+  maxX: number;
+  maxY: number;
+}
+
+const MIN_SCALE = 0.28;
+const MAX_SCALE = 3.2;
 
 export function usePanZoom(initial?: Partial<PanZoomState>) {
   const [state, setState] = useState<PanZoomState>({
     x: initial?.x ?? 0,
     y: initial?.y ?? 0,
-    scale: initial?.scale ?? 0.85,
+    scale: initial?.scale ?? 0.55,
   });
   const dragging = useRef(false);
   const last = useRef({ x: 0, y: 0 });
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   const onPointerDown = useCallback((e: React.PointerEvent) => {
-    if ((e.target as HTMLElement).closest('[data-station], [data-line-hit], button, a')) return;
+    if ((e.target as HTMLElement).closest('[data-station], [data-line-hit], button, a, input, select')) return;
     dragging.current = true;
     last.current = { x: e.clientX, y: e.clientY };
     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
@@ -80,7 +87,38 @@ export function usePanZoom(initial?: Partial<PanZoomState>) {
   }, []);
 
   const reset = useCallback(() => {
-    setState({ x: 0, y: 0, scale: 0.85 });
+    setState({ x: 40, y: 20, scale: 0.42 });
+  }, []);
+
+  const fitBounds = useCallback((bounds: Bounds, padding = 80) => {
+    const el = containerRef.current;
+    if (!el) return;
+    const w = el.clientWidth;
+    const h = el.clientHeight;
+    const bw = Math.max(80, bounds.maxX - bounds.minX);
+    const bh = Math.max(80, bounds.maxY - bounds.minY);
+    const scale = Math.min(
+      MAX_SCALE,
+      Math.max(MIN_SCALE, Math.min((w - padding * 2) / bw, (h - padding * 2) / bh)),
+    );
+    const cx = (bounds.minX + bounds.maxX) / 2;
+    const cy = (bounds.minY + bounds.maxY) / 2;
+    setState({
+      scale,
+      x: w / 2 - cx * scale,
+      y: h / 2 - cy * scale,
+    });
+  }, []);
+
+  const focusPoint = useCallback((x: number, y: number, scale = 1.15) => {
+    const el = containerRef.current;
+    if (!el) return;
+    const s = Math.min(MAX_SCALE, Math.max(MIN_SCALE, scale));
+    setState({
+      scale: s,
+      x: el.clientWidth / 2 - x * s,
+      y: el.clientHeight / 2 - y * s,
+    });
   }, []);
 
   return {
@@ -91,5 +129,7 @@ export function usePanZoom(initial?: Partial<PanZoomState>) {
     onPointerUp,
     zoomBy,
     reset,
+    fitBounds,
+    focusPoint,
   };
 }
