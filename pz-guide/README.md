@@ -1,12 +1,20 @@
 # Guía Limpieza Total — Project Zomboid B42.20
 
-Serie de **21 PDFs A4** (≈712 páginas) para limpiar Knox Country completo desde Riverside.
+Serie de **21 PDFs A4** (~690 páginas) para limpiar Knox Country completo desde Riverside.
 
 ## Tu partida
 
 - Sandbox · población alta · sin respawn · migración sí
 - Solo · sin mods · spawn Riverside
 - Objetivo: mapa 100% explorado y despejado, edificio por edificio
+
+## Fidelidad al mapa (v2)
+
+- Calles reales B42 (`Street_names` / fliers): Rock Ridge, Rogers Ave, Kelly Dr, North Main, Dixie Hwy…
+- Riverside: **70** casas suburbios + **34** gated (PZwiki)
+- POIs con coords wiki (Nails & Nuts, Pharmahug, Lectromax, Fossoil…)
+- Esquemas con flechas de ruta + GATE / BA / RÍO
+- **Loot crítico** por volumen (contenedores correctos; spawns no garantizados)
 
 ## Generar PDFs
 
