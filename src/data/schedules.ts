@@ -12,49 +12,35 @@ function formatTime(mins: number): string {
   return `${String(h).padStart(2, '0')}:${String(min).padStart(2, '0')}`;
 }
 
-/** Genera horarios simulados para el día (hacia ida). */
+/** Genera próximas salidas simuladas a partir de la hora actual. */
 export function generateSchedule(line: TransitLine, count = 12): string[] {
   const start = parseTime(line.firstDeparture);
   const end = parseTime(line.lastDeparture);
-  const freq = line.frequencyMin;
+  const freq = Math.max(1, line.frequencyMin);
   const now = new Date();
   const nowMins = now.getHours() * 60 + now.getMinutes();
+  const crossesMidnight = end <= start;
 
-  const times: number[] = [];
-  let t = start;
+  const dayTimes: number[] = [];
+  if (crossesMidnight) {
+    for (let t = start; t < 24 * 60; t += freq) dayTimes.push(t);
+    for (let t = 0; t <= end; t += freq) dayTimes.push(t);
+  } else {
+    for (let t = start; t <= end; t += freq) dayTimes.push(t);
+  }
 
-  // Si last < first, cruza medianoche
-  const crossesMidnight = end < start;
+  const todayUpcoming = dayTimes.filter((t) => t >= nowMins);
+  const result = [...todayUpcoming];
 
-  while (times.length < 80) {
-    times.push(t);
-    t += freq;
-    if (!crossesMidnight && t > end) break;
-    if (crossesMidnight) {
-      const norm = t % (24 * 60);
-      if (t > start + 24 * 60) break;
-      if (norm > end && norm < start && t > start + freq) {
-        // still in service overnight until end
-      }
-      if (t % (24 * 60) === end || (t > 24 * 60 && (t % (24 * 60)) > end)) break;
+  if (result.length < count) {
+    // Continuar con el ciclo del día siguiente
+    for (const t of dayTimes) {
+      result.push(t);
+      if (result.length >= count) break;
     }
   }
 
-  // Próximas salidas desde "ahora"
-  const upcoming = times
-    .map((mins) => {
-      let abs = mins;
-      if (abs < nowMins - 60) abs += 24 * 60;
-      return abs;
-    })
-    .filter((mins) => mins >= nowMins - 2)
-    .slice(0, count)
-    .map(formatTime);
-
-  if (upcoming.length === 0) {
-    return times.slice(0, count).map(formatTime);
-  }
-  return upcoming;
+  return result.slice(0, count).map(formatTime);
 }
 
 export function nextDepartures(line: TransitLine, n = 3): string[] {
