@@ -51,7 +51,7 @@ export default function App() {
     reset,
     fitBounds,
     focusPoint,
-  } = usePanZoom({ scale: 0.42, x: 40, y: 20 });
+  } = usePanZoom({ scale: 0.28, x: 20, y: 10 });
 
   useEffect(() => {
     const id = window.setInterval(() => setClock(simulatedClock()), 15_000);
@@ -188,6 +188,7 @@ export default function App() {
               highlightedMode={filterMode}
               routeStationIds={routePlan?.stationIds ?? null}
               routeLineIds={routePlan?.legs.map((l) => l.line.id) ?? null}
+              mapScale={state.scale}
               dimOthers={Boolean(selectedLineId || filterMode || routePlan)}
               onSelectLine={selectLine}
               onSelectStation={selectStation}

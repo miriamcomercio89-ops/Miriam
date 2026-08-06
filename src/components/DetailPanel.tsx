@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { getLinesForStation, getStation, lines } from '../data/network';
 import { delayLabel, generateSchedule, nextDepartures } from '../data/schedules';
 import {
+  BUS_FAMILY_LABELS,
   MODE_LABELS,
   STATUS_LABELS,
   type UserRole,
@@ -54,8 +55,12 @@ export function DetailPanel({
         <p className="detail-kicker">{station.district}</p>
         <h2>{station.name}</h2>
         <p className="detail-desc">
-          {station.interchange ? 'Estación de correspondencia' : 'Estación'} · {connected.length}{' '}
-          líneas
+          {station.majorHub
+            ? 'Gran intercambiador · acerca el zoom para ver el esquema'
+            : station.interchange
+              ? 'Estación de correspondencia'
+              : 'Estación'}{' '}
+          · {connected.length} líneas
         </p>
         <ul className="station-lines">
           {connected.map((l) => (
@@ -94,7 +99,11 @@ export function DetailPanel({
       <div className="detail-header">
         <span className="detail-badge">{line.code}</span>
         <div>
-          <p className="detail-kicker">{MODE_LABELS[line.mode]}</p>
+          <p className="detail-kicker">
+            {line.busFamily
+              ? `Bus · ${BUS_FAMILY_LABELS[line.busFamily]}`
+              : MODE_LABELS[line.mode]}
+          </p>
           <h2>{line.name}</h2>
         </div>
       </div>

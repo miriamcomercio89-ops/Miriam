@@ -3,9 +3,22 @@ export type TransportMode =
   | 'cercanias'
   | 'tranvia'
   | 'bus'
-  | 'hyperloop'
-  | 'ferry'
-  | 'cable';
+  | 'hyperloop';
+
+/** Prefijos de autobús alfanuméricos */
+export type BusFamily =
+  | 'U' // Universitario
+  | 'X' // Express
+  | 'A' // Aeropuerto
+  | 'N' // Nocturno
+  | 'O' // Orbital / Circular
+  | 'P' // Playa / Costa
+  | 'TU' // Turístico
+  | 'H' // Hospitalario
+  | 'L' // Litoral
+  | 'R' // Residencial
+  | 'B' // Barrio
+  | 'E'; // Especial / eventos
 
 export type LineStatus = 'normal' | 'retrasos' | 'obras' | 'suspendida';
 
@@ -16,6 +29,8 @@ export interface Station {
   y: number;
   district: string;
   interchange?: boolean;
+  /** Hub grande con esquema propio al acercar */
+  majorHub?: boolean;
 }
 
 export interface TransitLine {
@@ -31,6 +46,7 @@ export interface TransitLine {
   status: LineStatus;
   occupancy: number;
   operatorNote?: string;
+  busFamily?: BusFamily;
 }
 
 export interface DistrictLabel {
@@ -48,8 +64,6 @@ export const MODE_LABELS: Record<TransportMode, string> = {
   tranvia: 'Tranvía',
   bus: 'Bus',
   hyperloop: 'Hyperloop',
-  ferry: 'Ferry',
-  cable: 'Teleférico',
 };
 
 export const MODE_ORDER: TransportMode[] = [
@@ -58,9 +72,22 @@ export const MODE_ORDER: TransportMode[] = [
   'tranvia',
   'bus',
   'hyperloop',
-  'ferry',
-  'cable',
 ];
+
+export const BUS_FAMILY_LABELS: Record<BusFamily, string> = {
+  U: 'Universitario',
+  X: 'Express',
+  A: 'Aeropuerto',
+  N: 'Nocturno',
+  O: 'Orbital',
+  P: 'Playa',
+  TU: 'Turístico',
+  H: 'Hospitalario',
+  L: 'Litoral',
+  R: 'Residencial',
+  B: 'Barrio',
+  E: 'Especial',
+};
 
 export const STATUS_LABELS: Record<LineStatus, string> = {
   normal: 'Servicio normal',
@@ -69,13 +96,10 @@ export const STATUS_LABELS: Record<LineStatus, string> = {
   suspendida: 'Suspendida',
 };
 
-/** Estilos de trazo en leyenda */
-export const MODE_LEGEND: { mode: TransportMode; style: 'solid' | 'dashed' | 'dotted' | 'glow' }[] = [
+export const MODE_LEGEND: { mode: TransportMode; style: 'solid' | 'dashed' | 'glow' }[] = [
   { mode: 'metro', style: 'solid' },
   { mode: 'cercanias', style: 'solid' },
   { mode: 'tranvia', style: 'solid' },
   { mode: 'bus', style: 'dashed' },
   { mode: 'hyperloop', style: 'glow' },
-  { mode: 'ferry', style: 'dashed' },
-  { mode: 'cable', style: 'dotted' },
 ];

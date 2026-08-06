@@ -1,5 +1,6 @@
 import { CITY, getUniqueStations, lines } from '../data/network';
 import {
+  BUS_FAMILY_LABELS,
   MODE_LABELS,
   MODE_ORDER,
   STATUS_LABELS,
@@ -46,7 +47,10 @@ function LineRow({
       <span className="line-meta">
         <span className="line-name">{line.name}</span>
         <span className="line-sub">
-          {MODE_LABELS[line.mode]} · cada {line.frequencyMin} min
+          {line.busFamily
+            ? `Bus ${BUS_FAMILY_LABELS[line.busFamily]}`
+            : MODE_LABELS[line.mode]}{' '}
+          · cada {line.frequencyMin} min
           {role === 'operador' && (
             <> · {STATUS_LABELS[line.status]} · {line.occupancy}%</>
           )}
@@ -98,7 +102,7 @@ export function SidePanel({
   return (
     <aside className="side-panel">
       <header className="side-brand">
-        <p className="brand-kicker">Red Mundial · v0.1</p>
+        <p className="brand-kicker">Costa Sur · v0.2</p>
         <h1 className="brand-name">{CITY.name}</h1>
         <p className="brand-tag">{CITY.tagline}</p>
         <div className="brand-stats">

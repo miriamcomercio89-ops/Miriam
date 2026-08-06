@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { getUniqueStations } from '../data/network';
-import { findRoute, stationLabel, type RoutePlan } from '../data/routing';
+import { findRoutes, stationLabel, type RoutePlan } from '../data/routing';
 import './RoutePlanner.css';
 
 interface Props {
@@ -15,13 +15,15 @@ export function RoutePlanner({ onRoute, onPickStation }: Props) {
   );
   const [fromId, setFromId] = useState('');
   const [toId, setToId] = useState('');
-  const [plan, setPlan] = useState<RoutePlan | null>(null);
+  const [plans, setPlans] = useState<RoutePlan[]>([]);
+  const [selectedIdx, setSelectedIdx] = useState(0);
   const [error, setError] = useState('');
 
   const swap = () => {
     setFromId(toId);
     setToId(fromId);
-    setPlan(null);
+    setPlans([]);
+    setSelectedIdx(0);
     onRoute(null);
     setError('');
   };
@@ -35,23 +37,32 @@ export function RoutePlanner({ onRoute, onPickStation }: Props) {
       setError('Origen y destino deben ser distintos');
       return;
     }
-    const result = findRoute(fromId, toId);
-    if (!result) {
-      setError('No hay ruta disponible (línea suspendida o sin conexión)');
-      setPlan(null);
+    const results = findRoutes(fromId, toId, 3);
+    if (!results.length) {
+      setError('No hay ruta disponible');
+      setPlans([]);
       onRoute(null);
       return;
     }
     setError('');
-    setPlan(result);
-    onRoute(result);
+    setPlans(results);
+    setSelectedIdx(0);
+    onRoute(results[0]);
   };
 
   const clear = () => {
-    setPlan(null);
+    setPlans([]);
+    setSelectedIdx(0);
     onRoute(null);
     setError('');
   };
+
+  const selectPlan = (idx: number) => {
+    setSelectedIdx(idx);
+    onRoute(plans[idx] ?? null);
+  };
+
+  const plan = plans[selectedIdx] ?? null;
 
   return (
     <section className="route-planner">
@@ -68,7 +79,7 @@ export function RoutePlanner({ onRoute, onPickStation }: Props) {
         </select>
       </label>
       <div className="route-swap-row">
-        <button type="button" className="swap-btn" onClick={swap} aria-label="Intercambiar origen y destino">
+        <button type="button" className="swap-btn" onClick={swap} aria-label="Intercambiar">
           ↕
         </button>
       </div>
@@ -85,7 +96,7 @@ export function RoutePlanner({ onRoute, onPickStation }: Props) {
       </label>
       <div className="route-actions">
         <button type="button" className="primary" onClick={calculate}>
-          Calcular ruta
+          Calcular rutas
         </button>
         {plan && (
           <button type="button" className="ghost" onClick={clear}>
@@ -94,6 +105,25 @@ export function RoutePlanner({ onRoute, onPickStation }: Props) {
         )}
       </div>
       {error && <p className="route-error">{error}</p>}
+
+      {plans.length > 0 && (
+        <div className="route-alts">
+          {plans.map((p, idx) => (
+            <button
+              key={`${p.label}-${idx}`}
+              type="button"
+              className={`alt-chip ${idx === selectedIdx ? 'active' : ''}`}
+              onClick={() => selectPlan(idx)}
+            >
+              <strong>{p.label}</strong>
+              <span>
+                {p.estimatedMinutes} min · {p.transfers} trasb.
+              </span>
+            </button>
+          ))}
+        </div>
+      )}
+
       {plan && (
         <div className="route-result">
           <p className="route-summary">
@@ -102,6 +132,32 @@ export function RoutePlanner({ onRoute, onPickStation }: Props) {
               {plan.totalStops} paradas · {plan.transfers} trasbordo{plan.transfers === 1 ? '' : 's'}
             </span>
           </p>
+
+          <h3 className="steps-title">Indicaciones</h3>
+          <ol className="route-steps">
+            {plan.steps.map((step, i) => (
+              <li key={i} className={`step-${step.kind}`}>
+                {step.line && (
+                  <span className="leg-badge" style={{ background: step.line.color }}>
+                    {step.line.code}
+                  </span>
+                )}
+                <span>
+                  {step.text}
+                  {step.stationId && (
+                    <>
+                      {' '}
+                      <button type="button" className="inline-link" onClick={() => onPickStation(step.stationId!)}>
+                        ver
+                      </button>
+                    </>
+                  )}
+                </span>
+              </li>
+            ))}
+          </ol>
+
+          <h3 className="steps-title">Tramos</h3>
           <ol className="route-legs">
             {plan.legs.map((leg, idx) => (
               <li key={`${leg.line.id}-${idx}`}>

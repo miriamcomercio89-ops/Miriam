@@ -92,6 +92,80 @@
   color: #ff8a80;
 }
 
+.route-alts {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-top: 0.65rem;
+}
+
+.alt-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.1rem;
+  padding: 0.45rem 0.6rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.18);
+  color: #e8edf3;
+  cursor: pointer;
+  text-align: left;
+  font-family: 'Manrope', sans-serif;
+}
+
+.alt-chip strong {
+  font-family: 'Sora', sans-serif;
+  font-size: 0.78rem;
+}
+
+.alt-chip span {
+  font-size: 0.68rem;
+  color: rgba(232, 237, 243, 0.55);
+}
+
+.alt-chip.active {
+  border-color: rgba(196, 92, 38, 0.55);
+  background: rgba(196, 92, 38, 0.18);
+}
+
+.steps-title {
+  margin: 0.75rem 0 0.4rem;
+  font-family: 'Sora', sans-serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(232, 237, 243, 0.45);
+}
+
+.route-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.route-steps li {
+  display: flex;
+  gap: 0.45rem;
+  align-items: flex-start;
+  font-size: 0.75rem;
+  line-height: 1.35;
+  color: rgba(232, 237, 243, 0.88);
+}
+
+.inline-link {
+  border: none;
+  background: none;
+  color: #ffb74d;
+  padding: 0;
+  cursor: pointer;
+  font-size: inherit;
+  text-decoration: underline;
+}
+
 .route-result {
   margin-top: 0.75rem;
   padding: 0.65rem;

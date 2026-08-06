@@ -13,8 +13,8 @@ export interface Bounds {
   maxY: number;
 }
 
-const MIN_SCALE = 0.28;
-const MAX_SCALE = 3.2;
+const MIN_SCALE = 0.18;
+const MAX_SCALE = 3.5;
 
 export function usePanZoom(initial?: Partial<PanZoomState>) {
   const [state, setState] = useState<PanZoomState>({
@@ -87,7 +87,7 @@ export function usePanZoom(initial?: Partial<PanZoomState>) {
   }, []);
 
   const reset = useCallback(() => {
-    setState({ x: 40, y: 20, scale: 0.42 });
+    setState({ x: 20, y: 10, scale: 0.28 });
   }, []);
 
   const fitBounds = useCallback((bounds: Bounds, padding = 80) => {

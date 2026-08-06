@@ -4,16 +4,18 @@
 }
 
 .district-labels text {
-  fill: rgba(40, 55, 75, 0.18);
+  fill: rgba(40, 55, 75, 0.16);
   font-family: 'Sora', system-ui, sans-serif;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
-.water-fill {
-  fill: rgba(56, 120, 160, 0.1);
+.coastline {
+  stroke: rgba(56, 120, 160, 0.35);
+  stroke-width: 3;
+  stroke-dasharray: 8 6;
 }
 
 .line-hit {
@@ -49,6 +51,13 @@
   fill: #1a2332;
 }
 
+.hub-ring-outer {
+  fill: none;
+  stroke: rgba(196, 92, 38, 0.35);
+  stroke-width: 2;
+  stroke-dasharray: 3 3;
+}
+
 .station.active .station-ring {
   stroke: #c45c26;
   stroke-width: 3;
@@ -66,5 +75,31 @@
   paint-order: stroke;
   stroke: rgba(238, 241, 244, 0.92);
   stroke-width: 3px;
+  pointer-events: none;
+}
+
+.hub-diagram-bg {
+  fill: rgba(255, 255, 255, 0.88);
+  stroke: rgba(26, 35, 50, 0.15);
+  stroke-width: 2;
+}
+
+.hub-diagram-title {
+  font-family: 'Sora', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  fill: #1a2332;
+  letter-spacing: 0.04em;
+}
+
+.hub-spoke {
+  cursor: pointer;
+}
+
+.hub-spoke-code {
+  fill: #fff;
+  font-family: 'Sora', sans-serif;
+  font-size: 7px;
+  font-weight: 700;
   pointer-events: none;
 }

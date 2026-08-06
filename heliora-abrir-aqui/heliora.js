@@ -12764,365 +12764,460 @@
   // src/data/network.ts
   var CITY = {
     name: "Heliora",
-    tagline: "La red de transporte p\xFAblico m\xE1s grande del mundo",
-    population: "52,8 millones",
-    dailyTrips: "28,1 millones",
-    mapWidth: 2400,
-    mapHeight: 1800
+    tagline: "Costa, casco antiguo y la red m\xE1s grande del Mediterr\xE1neo",
+    population: "61,4 millones",
+    dailyTrips: "34,2 millones",
+    mapWidth: 4200,
+    mapHeight: 2800,
+    inspiration: "Ciudad costera tur\xEDstica del sur de Espa\xF1a"
   };
   var DISTRICT_SEEDS = [
+    // ——— Núcleo histórico / centro ———
     {
-      id: "centro",
-      name: "Centro Hist\xF3rico",
-      x: 1200,
-      y: 900,
+      id: "casco",
+      name: "Casco Antiguo",
+      x: 2100,
+      y: 1500,
       stations: [
-        { key: "plaza_orbe", name: "Plaza del Orbe", interchange: true },
-        { key: "catedral", name: "Catedral Nova", dx: -70, dy: -50, interchange: true },
-        { key: "agora", name: "\xC1gora Central", dx: 70, dy: -50, interchange: true },
-        { key: "museo", name: "Museo Mundial", dx: 0, dy: -100 },
-        { key: "senado", name: "Senado", dx: -50, dy: 60 },
-        { key: "bolsa", name: "Bolsa de Heliora", dx: 50, dy: 60, interchange: true },
-        { key: "mercado_central", name: "Mercado Central", dx: 0, dy: -30, interchange: true },
-        { key: "biblioteca", name: "Biblioteca Mundial", dx: -110, dy: -20 },
-        { key: "tribunales", name: "Tribunales", dx: 110, dy: -20 }
+        { key: "plaza_mayor", name: "Plaza Mayor", interchange: true, majorHub: true },
+        { key: "catedral", name: "Catedral de Heliora", dx: -80, dy: -55, interchange: true },
+        { key: "alcazaba", name: "Alcazaba", dx: 70, dy: -70 },
+        { key: "juderia", name: "La Juder\xEDa", dx: -100, dy: 40 },
+        { key: "ayuntamiento", name: "Ayuntamiento", dx: 90, dy: 35 }
       ]
     },
     {
-      id: "financiero",
-      name: "Distrito Financiero",
-      x: 1380,
-      y: 820,
-      stations: [
-        { key: "torre_helix", name: "Torre H\xE9lix", interchange: true },
-        { key: "torres_gemelas", name: "Torres Gemelas", dx: 80, dy: -40 },
-        { key: "banco_central", name: "Banco Central", dx: 40, dy: 50 },
-        { key: "plaza_trading", name: "Plaza Trading", dx: -40, dy: 40 }
-      ]
-    },
-    {
-      id: "gubernamental",
-      name: "Distrito Gubernamental",
-      x: 1020,
-      y: 820,
-      stations: [
-        { key: "palacio", name: "Palacio Federal", interchange: true },
-        { key: "ministerios", name: "Ministerios", dx: -60, dy: 40 },
-        { key: "embajadas", name: "Barrio Embajadas", dx: 50, dy: -30 }
-      ]
-    },
-    {
-      id: "artes",
-      name: "Distrito de las Artes",
-      x: 1080,
-      y: 1040,
-      stations: [
-        { key: "plaza_artes", name: "Plaza de las Artes", interchange: true },
-        { key: "opera", name: "\xD3pera Heliora", dx: -50, dy: 50 },
-        { key: "cineteatro", name: "Cineteatro Imperial", dx: 60, dy: 30 },
-        { key: "galeria", name: "Galer\xEDa Contempor\xE1nea", dx: 20, dy: -40 }
-      ]
-    },
-    {
-      id: "internacional",
-      name: "Barrio Internacional",
-      x: 1320,
-      y: 1020,
-      stations: [
-        { key: "barrio_oriental", name: "Barrio Oriental", interchange: true },
-        { key: "little_atlantic", name: "Little Atlantic", dx: -70, dy: 20 },
-        { key: "plaza_mundos", name: "Plaza de los Mundos", dx: 50, dy: 40 }
-      ]
-    },
-    {
-      id: "medico",
-      name: "Distrito M\xE9dico",
-      x: 1500,
-      y: 700,
-      stations: [
-        { key: "hospital", name: "Hospital Central", interchange: true },
-        { key: "biomed", name: "Campus Biom\xE9dico", dx: 70, dy: -40 },
-        { key: "farmacia_hub", name: "Hub Farmac\xE9utico", dx: 40, dy: 50 }
-      ]
-    },
-    {
-      id: "universidad",
-      name: "Campus Universitario",
-      x: 1500,
-      y: 420,
-      stations: [
-        { key: "universidad", name: "Universidad Heliora", interchange: true },
-        { key: "residencia", name: "Residencia Estudiantil", dx: 80, dy: -50 },
-        { key: "politecnica", name: "Polit\xE9cnica", dx: -40, dy: 60 },
-        { key: "biblioteca_campus", name: "Biblioteca Campus", dx: 50, dy: 40 }
-      ]
-    },
-    {
-      id: "deportivo",
-      name: "Ciudad Deportiva",
-      x: 1680,
-      y: 380,
-      stations: [
-        { key: "estadio", name: "Estadio Mundialis", interchange: true },
-        { key: "ciudad_deportiva", name: "Ciudad Deportiva", dx: 70, dy: -40, interchange: true },
-        { key: "hipodromo", name: "Hip\xF3dromo", dx: 40, dy: 60 },
-        { key: "arena_norte", name: "Arena Norte", dx: -50, dy: 40 }
-      ]
-    },
-    {
-      id: "puerto_norte",
-      name: "Puerto Norte",
-      x: 1200,
-      y: 220,
-      stations: [
-        { key: "puerto_norte", name: "Puerto Norte", interchange: true },
-        { key: "astilleros", name: "Astilleros", dx: -90, dy: 40 },
-        { key: "faro", name: "El Faro", dx: 90, dy: 40 },
-        { key: "dunas", name: "Las Dunas", dx: -140, dy: -20 },
-        { key: "mirador", name: "Mirador del Mar", dx: 140, dy: -20 }
-      ]
-    },
-    {
-      id: "colinas",
-      name: "Colinas Altas",
-      x: 820,
-      y: 280,
-      stations: [
-        { key: "colinas", name: "Colinas Altas", interchange: true },
-        { key: "observatorio", name: "Observatorio", dx: -60, dy: -50, interchange: true },
-        { key: "cascada", name: "Cascada Norte", dx: -100, dy: 20 },
-        { key: "bosque", name: "Bosque Urbano", dx: 40, dy: 50 },
-        { key: "mirador_colina", name: "Mirador Colina", dx: 80, dy: -30 }
-      ]
-    },
-    {
-      id: "residencial_norte",
-      name: "Residencial Norte",
-      x: 1200,
-      y: 480,
-      stations: [
-        { key: "norte_viejo", name: "Barrio Norte", interchange: true },
-        { key: "arco_norte", name: "Arco Norte", dx: 0, dy: 70, interchange: true },
-        { key: "mercado_norte", name: "Mercado Norte", dx: -80, dy: 20 },
-        { key: "jardin_botanico", name: "Jard\xEDn Bot\xE1nico", dx: 80, dy: 20 },
-        { key: "puente_rojo", name: "Puente Rojo", dx: 60, dy: 90, interchange: true }
-      ]
-    },
-    {
-      id: "lujo",
-      name: "Altos del Lujo",
-      x: 900,
-      y: 520,
-      stations: [
-        { key: "luxury_heights", name: "Luxury Heights", interchange: true },
-        { key: "club_privado", name: "Club Privado", dx: -50, dy: -40 },
-        { key: "avenida_palmeras", name: "Av. Palmeras", dx: 50, dy: 30 }
-      ]
-    },
-    {
-      id: "oeste",
-      name: "Barrio Oeste",
-      x: 720,
-      y: 900,
-      stations: [
-        { key: "barrio_oeste", name: "Barrio Oeste", interchange: true },
-        { key: "ribera_oeste", name: "Ribera Oeste", dx: -80, dy: 0, interchange: true },
-        { key: "mercado_oeste", name: "Mercado Oeste", dx: -40, dy: 80 },
-        { key: "zoologico", name: "Zool\xF3gico", dx: -60, dy: -90 }
-      ]
-    },
-    {
-      id: "satelite_oeste",
-      name: "Sat\xE9lite Oeste",
-      x: 360,
-      y: 900,
-      stations: [
-        { key: "satelite_oeste", name: "Sat\xE9lite Oeste", interchange: true },
-        { key: "canteras", name: "Las Canteras", dx: 60, dy: -70 },
-        { key: "playa_oeste", name: "Playa Oeste", dx: -80, dy: -60 },
-        { key: "silos", name: "Los Silos", dx: -40, dy: 80 },
-        { key: "planta", name: "Planta Energ\xE9tica", dx: 40, dy: 100 },
-        { key: "valle", name: "Valle Verde", dx: 90, dy: 40 }
-      ]
-    },
-    {
-      id: "obrero",
-      name: "Barrio Obrero",
-      x: 600,
-      y: 1100,
-      stations: [
-        { key: "barrio_obrero", name: "Barrio Obrero", interchange: true },
-        { key: "cooperativa", name: "Cooperativa", dx: -50, dy: 40 },
-        { key: "talleres", name: "Los Talleres", dx: 50, dy: 30 }
-      ]
-    },
-    {
-      id: "industrial",
-      name: "Zona Industrial",
-      x: 780,
-      y: 1400,
-      stations: [
-        { key: "industrial", name: "Zona Industrial", interchange: true },
-        { key: "cement_plant", name: "F\xE1brica Cemento", dx: -70, dy: 50 },
-        { key: "fundicion", name: "Fundici\xF3n", dx: 60, dy: 40 },
-        { key: "logistica_oeste", name: "Log\xEDstica Oeste", dx: 20, dy: -50 }
-      ]
-    },
-    {
-      id: "puerto_sur",
-      name: "Puerto Sur",
-      x: 1200,
+      id: "perchel",
+      name: "El Perchel",
+      x: 1920,
       y: 1580,
       stations: [
-        { key: "puerto_sur", name: "Puerto Sur", interchange: true },
-        { key: "muelles", name: "Los Muelles", dx: -100, dy: 0 },
-        { key: "isla_verde", name: "Isla Verde", dx: 0, dy: 70, interchange: true },
-        { key: "faro_sur", name: "Faro Sur", dx: 110, dy: 40 },
-        { key: "terminal_sur", name: "Terminal Sur", dx: 0, dy: -70, interchange: true }
+        { key: "perchel", name: "El Perchel", interchange: true, majorHub: true },
+        { key: "atarazanas", name: "Mercado Atarazanas", dx: -60, dy: -40 },
+        { key: "calle_llanitos", name: "Calle Llanitos", dx: 50, dy: 45 }
       ]
     },
     {
-      id: "sur",
-      name: "Residencial Sur",
-      x: 1200,
-      y: 1280,
+      id: "soho",
+      name: "Soho Heliora",
+      x: 2220,
+      y: 1620,
       stations: [
-        { key: "barrio_sur", name: "Barrio Sur", interchange: true },
-        { key: "arco_sur", name: "Arco Sur", dx: 0, dy: -70, interchange: true },
-        { key: "plaza_sol", name: "Plaza del Sol", dx: -80, dy: -20 },
-        { key: "arena", name: "Arena Heliora", dx: 80, dy: -20, interchange: true },
-        { key: "vivero", name: "Vivero Municipal", dx: -100, dy: 40 },
-        { key: "puente_azul", name: "Puente Azul", dx: -50, dy: -100, interchange: true }
+        { key: "soho", name: "Soho", interchange: true },
+        { key: "teatro_cervantes", name: "Teatro Cervantes", dx: 55, dy: -40 },
+        { key: "plaza_unos", name: "Plaza de la Merced", dx: -40, dy: 50 }
       ]
     },
     {
-      id: "tech",
-      name: "Parque Tecnol\xF3gico",
-      x: 1560,
-      y: 1400,
+      id: "ense",
+      name: "La Ensenada",
+      x: 2100,
+      y: 1720,
       stations: [
-        { key: "tech_park", name: "Parque Tecnol\xF3gico", interchange: true },
-        { key: "data_center", name: "Centro de Datos", dx: 80, dy: 50 },
-        { key: "logistica", name: "Hub Log\xEDstico", dx: -60, dy: -40 },
-        { key: "startup_valley", name: "Startup Valley", dx: 40, dy: -60 }
+        { key: "paseo_maritimo", name: "Paseo Mar\xEDtimo", interchange: true, majorHub: true },
+        { key: "muelle_uno", name: "Muelle Uno", dx: -70, dy: 40 },
+        { key: "palmeral", name: "Palmeral de Sur", dx: 80, dy: 30 }
+      ]
+    },
+    // ——— Costa / playas (sur y sureste) ———
+    {
+      id: "malagueta",
+      name: "Playa del Faro",
+      x: 2340,
+      y: 1880,
+      stations: [
+        { key: "playa_faro", name: "Playa del Faro", interchange: true },
+        { key: "faro_hel", name: "El Faro", dx: 60, dy: 50 },
+        { key: "ba\xF1os_carmen", name: "Ba\xF1os del Carmen", dx: 120, dy: 20 }
       ]
     },
     {
-      id: "este",
-      name: "Barrio Este",
-      x: 1560,
-      y: 900,
+      id: "pedregalejo",
+      name: "Cala Serena",
+      x: 2700,
+      y: 1950,
       stations: [
-        { key: "barrio_este", name: "Barrio Este", interchange: true },
-        { key: "ribera_este", name: "Ribera Este", dx: 80, dy: 0, interchange: true },
-        { key: "lago", name: "Lago Serena", dx: 160, dy: -20, interchange: true },
-        { key: "expo", name: "Recinto Expo", dx: 100, dy: 90, interchange: true }
+        { key: "cala_serena", name: "Cala Serena", interchange: true },
+        { key: "chiringuitos", name: "Los Chiringuitos", dx: 70, dy: 40 },
+        { key: "paseo_cala", name: "Paseo de la Cala", dx: -50, dy: -30 }
       ]
     },
     {
-      id: "satelite_este",
-      name: "Sat\xE9lite Este",
-      x: 1900,
-      y: 700,
+      id: "palo",
+      name: "Los Arenales",
+      x: 3100,
+      y: 2e3,
       stations: [
-        { key: "satelite_este", name: "Sat\xE9lite Este", interchange: true },
-        { key: "oriente_nuevo", name: "Oriente Nuevo", dx: 40, dy: 90 },
-        { key: "marina", name: "Marina Este", dx: 20, dy: 140 },
-        { key: "playa_este", name: "Playa Este", dx: 100, dy: 160 }
+        { key: "arenales", name: "Los Arenales", interchange: true },
+        { key: "playa_arenales", name: "Playa Arenales", dx: 40, dy: 55 },
+        { key: "mercado_arenales", name: "Mercado Arenales", dx: -55, dy: -25 }
       ]
     },
+    {
+      id: "rincon",
+      name: "Rinc\xF3n del Mar",
+      x: 3500,
+      y: 2050,
+      stations: [
+        { key: "rincon_mar", name: "Rinc\xF3n del Mar", interchange: true },
+        { key: "cala_viento", name: "Cala del Viento", dx: 60, dy: 40 },
+        { key: "faro_este", name: "Faro Este", dx: 100, dy: 10 }
+      ]
+    },
+    {
+      id: "torres",
+      name: "Torres del Mar",
+      x: 1680,
+      y: 1980,
+      stations: [
+        { key: "torres_mar", name: "Torres del Mar", interchange: true },
+        { key: "aquapark", name: "Aquapark Heliora", dx: -60, dy: 45 },
+        { key: "paseo_torres", name: "Paseo Torres", dx: 55, dy: -20 }
+      ]
+    },
+    {
+      id: "bajadilla",
+      name: "La Bajadilla",
+      x: 1400,
+      y: 1920,
+      stations: [
+        { key: "bajadilla", name: "La Bajadilla", interchange: true },
+        { key: "puerto_deportivo", name: "Puerto Deportivo", dx: -50, dy: 50 },
+        { key: "playa_bajadilla", name: "Playa Bajadilla", dx: 40, dy: 55 }
+      ]
+    },
+    // ——— Puerto / oeste costero ———
+    {
+      id: "puerto",
+      name: "Puerto Heliora",
+      x: 1100,
+      y: 1750,
+      stations: [
+        { key: "puerto_hel", name: "Puerto Heliora", interchange: true, majorHub: true },
+        { key: "muelles_carga", name: "Muelles de Carga", dx: -80, dy: 40 },
+        { key: "terminal_cruceros", name: "Terminal Cruceros", dx: 60, dy: 55 },
+        { key: "lonja", name: "La Lonja", dx: 40, dy: -45 }
+      ]
+    },
+    {
+      id: "san_andres",
+      name: "San Andr\xE9s",
+      x: 1280,
+      y: 1600,
+      stations: [
+        { key: "san_andres", name: "San Andr\xE9s", interchange: true },
+        { key: "huelin", name: "Huelin", dx: 70, dy: 40 },
+        { key: "parque_oeste", name: "Parque del Oeste", dx: -40, dy: -50 }
+      ]
+    },
+    // ——— Aeropuerto / zona franca (oeste) ———
     {
       id: "aeropuerto",
-      name: "Aeropuerto Mundial",
-      x: 2140,
-      y: 900,
+      name: "Aeropuerto Costa del Sol",
+      x: 520,
+      y: 1500,
       stations: [
-        { key: "aeropuerto", name: "Aeropuerto Mundial", interchange: true },
-        { key: "terminal_aerea", name: "Terminal A\xE9rea T2", dx: -50, dy: -60 },
-        { key: "freetrade", name: "Zona Franca", dx: -70, dy: 50 },
-        { key: "cargo_air", name: "Carga A\xE9rea", dx: 40, dy: 70 }
+        { key: "aeropuerto", name: "Aeropuerto T1", interchange: true, majorHub: true },
+        { key: "aeropuerto_t2", name: "Aeropuerto T2", dx: -40, dy: -70 },
+        { key: "zona_franca", name: "Zona Franca", dx: 80, dy: 60 },
+        { key: "cargo_aereo", name: "Carga A\xE9rea", dx: 50, dy: 100 }
       ]
     },
     {
-      id: "comercial",
-      name: "Distrito Comercial",
-      x: 1400,
-      y: 1180,
+      id: "guadalmar",
+      name: "Guadalmar",
+      x: 780,
+      y: 1720,
       stations: [
-        { key: "gran_centro", name: "Gran Centro Comercial", interchange: true },
-        { key: "outlet", name: "Outlet Mundial", dx: 70, dy: 40 },
-        { key: "feria", name: "Feria de Muestras", dx: -50, dy: 50 }
+        { key: "guadalmar", name: "Guadalmar", interchange: true },
+        { key: "campo_golf", name: "Campo de Golf", dx: -50, dy: 40 },
+        { key: "hotel_costa", name: "Hotel Costa Azul", dx: 55, dy: -30 }
+      ]
+    },
+    // ——— Comercial / avenida ———
+    {
+      id: "avenida_sol",
+      name: "Avenida del Sol",
+      x: 1750,
+      y: 1680,
+      stations: [
+        { key: "av_sol", name: "Avenida del Sol", interchange: true },
+        { key: "cc_miramar", name: "C.C. Miramar", dx: -60, dy: 50, interchange: true },
+        { key: "larios_sur", name: "Larios Sur", dx: 70, dy: -30 }
       ]
     },
     {
-      id: "memorial",
-      name: "Parque Memorial",
-      x: 560,
-      y: 640,
-      stations: [
-        { key: "cementerio", name: "Cementerio Hist\xF3rico", interchange: true },
-        { key: "parque_memorial", name: "Parque Memorial", dx: 50, dy: -40 },
-        { key: "panteon", name: "Pante\xF3n C\xEDvico", dx: -40, dy: 40 }
-      ]
-    },
-    {
-      id: "anillo_ne",
-      name: "Anillo NE",
-      x: 1500,
-      y: 560,
-      stations: [{ key: "anillo_ne", name: "Anillo NE", interchange: true }]
-    },
-    {
-      id: "anillo_se",
-      name: "Anillo SE",
+      id: "teatinos_com",
+      name: "Plaza Mayor Comercial",
       x: 1500,
       y: 1200,
-      stations: [{ key: "anillo_se", name: "Anillo SE", interchange: true }]
+      stations: [
+        { key: "plaza_comercial", name: "Plaza Comercial", interchange: true },
+        { key: "ikea_hel", name: "Parque Comercial", dx: -70, dy: 40 },
+        { key: "outlet_sol", name: "Outlet del Sol", dx: 60, dy: -35 }
+      ]
+    },
+    // ——— Universidad / norte ———
+    {
+      id: "campus",
+      name: "Campus del Olivar",
+      x: 1600,
+      y: 780,
+      stations: [
+        { key: "universidad", name: "Universidad Heliora", interchange: true, majorHub: true },
+        { key: "rectorado", name: "Rectorado", dx: -70, dy: -40 },
+        { key: "biblioteca_campus", name: "Biblioteca Campus", dx: 60, dy: -30 },
+        { key: "residencia_u", name: "Residencia Universitaria", dx: 80, dy: 50 },
+        { key: "polideportivo_u", name: "Polideportivo Campus", dx: -50, dy: 60 }
+      ]
     },
     {
-      id: "anillo_so",
-      name: "Anillo SO",
-      x: 900,
+      id: "ciudad_jardin",
+      name: "Ciudad Jard\xEDn",
+      x: 2e3,
+      y: 1e3,
+      stations: [
+        { key: "ciudad_jardin", name: "Ciudad Jard\xEDn", interchange: true },
+        { key: "jardin_botanico", name: "Jard\xEDn Bot\xE1nico", dx: 60, dy: -45 },
+        { key: "parque_norte", name: "Parque Norte", dx: -50, dy: 40 }
+      ]
+    },
+    {
+      id: "el_pastor",
+      name: "El Pastor",
+      x: 1750,
+      y: 980,
+      stations: [
+        { key: "el_pastor", name: "El Pastor", interchange: true },
+        { key: "mercado_pastor", name: "Mercado del Pastor", dx: 45, dy: 40 }
+      ]
+    },
+    // ——— Residencial / colinas ———
+    {
+      id: "cerrado",
+      name: "Cerrado de Calder\xF3n",
+      x: 2500,
       y: 1200,
-      stations: [{ key: "anillo_so", name: "Anillo SO", interchange: true }]
+      stations: [
+        { key: "cerrado", name: "Cerrado de Calder\xF3n", interchange: true },
+        { key: "mirador_calderon", name: "Mirador Calder\xF3n", dx: 50, dy: -55 },
+        { key: "colegios_este", name: "Zona Colegios Este", dx: -40, dy: 45 }
+      ]
     },
     {
-      id: "anillo_no",
-      name: "Anillo NO",
-      x: 900,
-      y: 560,
-      stations: [{ key: "anillo_no", name: "Anillo NO", interchange: true }]
-    },
-    {
-      id: "nueva_heliora",
-      name: "Nueva Heliora",
-      x: 480,
+      id: "limonar",
+      name: "El Limonar",
+      x: 2400,
       y: 1400,
       stations: [
-        { key: "nueva_heliora", name: "Nueva Heliora", interchange: true },
-        { key: "eco_barrio", name: "Eco-Barrio", dx: -60, dy: 50 },
-        { key: "plaza_nueva", name: "Plaza Nueva", dx: 50, dy: 30 }
+        { key: "limonar", name: "El Limonar", interchange: true },
+        { key: "hospital_este", name: "Hospital Este", dx: 70, dy: -30, interchange: true },
+        { key: "avenida_limonar", name: "Av. Limonar", dx: -45, dy: 40 }
       ]
     },
     {
-      id: "bahia_este",
-      name: "Bah\xEDa Este",
-      x: 1860,
-      y: 1180,
+      id: "monte",
+      name: "Monte Heliora",
+      x: 2300,
+      y: 900,
       stations: [
-        { key: "bahia_este", name: "Bah\xEDa Este", interchange: true },
-        { key: "muelle_yates", name: "Muelle de Yates", dx: 60, dy: 40 }
+        { key: "monte_hel", name: "Monte Heliora", interchange: true },
+        { key: "mirador_monte", name: "Mirador del Monte", dx: 40, dy: -50 },
+        { key: "urbanizacion_pinares", name: "Urbanizaci\xF3n Pinares", dx: -60, dy: 35 }
       ]
     },
     {
-      id: "suburbio_sur",
-      name: "Suburbio Sur",
-      x: 1680,
-      y: 1580,
+      id: "altos",
+      name: "Altos del Mediterr\xE1neo",
+      x: 2800,
+      y: 1050,
       stations: [
-        { key: "suburbio_sur", name: "Suburbio Sur", interchange: true },
-        { key: "urbanizacion", name: "Urbanizaci\xF3n Sol", dx: -50, dy: -40 },
-        { key: "colegios", name: "Ciudad Educativa", dx: 50, dy: -30 }
+        { key: "altos_med", name: "Altos del Mediterr\xE1neo", interchange: true },
+        { key: "club_golf_este", name: "Club de Golf Este", dx: 55, dy: -40 },
+        { key: "sierra_blanca", name: "Sierra Blanca", dx: -40, dy: 50 }
+      ]
+    },
+    // ——— Deportivo / feria ———
+    {
+      id: "estadio",
+      name: "La Rosaleda",
+      x: 1950,
+      y: 1280,
+      stations: [
+        { key: "rosaleda", name: "Estadio Rosaleda", interchange: true, majorHub: true },
+        { key: "ciudad_deportiva", name: "Ciudad Deportiva", dx: 70, dy: -40 },
+        { key: "palacio_deportes", name: "Palacio de Deportes", dx: -50, dy: 45 }
+      ]
+    },
+    {
+      id: "feria",
+      name: "Recinto Ferial",
+      x: 1650,
+      y: 1380,
+      stations: [
+        { key: "feria", name: "Recinto Ferial", interchange: true },
+        { key: "pabellones", name: "Pabellones IFEMA-H", dx: 55, dy: 40 },
+        { key: "parking_feria", name: "Parking Feria", dx: -50, dy: -30 }
+      ]
+    },
+    // ——— Hospital / administrativo ———
+    {
+      id: "hospital_civil",
+      name: "Distrito Hospitalario",
+      x: 2050,
+      y: 1350,
+      stations: [
+        { key: "hospital_civil", name: "Hospital Civil", interchange: true, majorHub: true },
+        { key: "materno", name: "Materno-Infantil", dx: 60, dy: 40 },
+        { key: "facultad_medicina", name: "Facultad de Medicina", dx: -55, dy: -35 }
+      ]
+    },
+    {
+      id: "ciudad_jardin_admin",
+      name: "Ciudad de la Justicia",
+      x: 1850,
+      y: 1150,
+      stations: [
+        { key: "justicia", name: "Ciudad de la Justicia", interchange: true },
+        { key: "comisar\xEDas", name: "Complejo Policial", dx: 50, dy: 40 }
+      ]
+    },
+    // ——— Este interior / nuevo ———
+    {
+      id: "nueva_hel",
+      name: "Nueva Heliora",
+      x: 3200,
+      y: 1500,
+      stations: [
+        { key: "nueva_hel", name: "Nueva Heliora", interchange: true, majorHub: true },
+        { key: "eco_barrio", name: "Eco-Barrio Levante", dx: 60, dy: -40 },
+        { key: "tech_levante", name: "Parque Tech Levante", dx: -50, dy: 50 },
+        { key: "plaza_levante", name: "Plaza Levante", dx: 40, dy: 60 }
+      ]
+    },
+    {
+      id: "vinuela",
+      name: "La Vi\xF1uela",
+      x: 3600,
+      y: 1400,
+      stations: [
+        { key: "vinuela", name: "La Vi\xF1uela", interchange: true },
+        { key: "embalse", name: "Embalse Vi\xF1uela", dx: 50, dy: -45 },
+        { key: "pueblo_blanco", name: "Pueblo Blanco", dx: -40, dy: 40 }
+      ]
+    },
+    // ——— Oeste interior / industrial ———
+    {
+      id: "industrial",
+      name: "Pol\xEDgono Guadalhorce",
+      x: 900,
+      y: 1300,
+      stations: [
+        { key: "poligono", name: "Pol\xEDgono Guadalhorce", interchange: true },
+        { key: "logistica", name: "Hub Log\xEDstico", dx: 60, dy: 45 },
+        { key: "nave_central", name: "Nave Central", dx: -50, dy: -30 }
+      ]
+    },
+    {
+      id: "campanillas",
+      name: "Campanillas",
+      x: 1100,
+      y: 1050,
+      stations: [
+        { key: "campanillas", name: "Campanillas", interchange: true },
+        { key: "pta", name: "Parque Tecnol\xF3gico", dx: 70, dy: -40, interchange: true },
+        { key: "smart_city", name: "Smart City Hub", dx: -40, dy: 50 }
+      ]
+    },
+    // ——— Intercambiadores anillo ———
+    {
+      id: "int_ne",
+      name: "Intercambiador NE",
+      x: 2550,
+      y: 1100,
+      stations: [{ key: "int_ne", name: "Intercambiador NE", interchange: true, majorHub: true }]
+    },
+    {
+      id: "int_se",
+      name: "Intercambiador SE",
+      x: 2650,
+      y: 1700,
+      stations: [{ key: "int_se", name: "Intercambiador SE", interchange: true, majorHub: true }]
+    },
+    {
+      id: "int_so",
+      name: "Intercambiador SO",
+      x: 1450,
+      y: 1750,
+      stations: [{ key: "int_so", name: "Intercambiador SO", interchange: true, majorHub: true }]
+    },
+    {
+      id: "int_no",
+      name: "Intercambiador NO",
+      x: 1450,
+      y: 1100,
+      stations: [{ key: "int_no", name: "Intercambiador NO", interchange: true, majorHub: true }]
+    },
+    {
+      id: "maria_zambrano",
+      name: "Estaci\xF3n Mar\xEDa Zambrano",
+      x: 1900,
+      y: 1480,
+      stations: [
+        { key: "maria_zambrano", name: "Mar\xEDa Zambrano", interchange: true, majorHub: true },
+        { key: "renfe_sur", name: "Andenes Cercan\xEDas", dx: 40, dy: 50 }
+      ]
+    },
+    {
+      id: "carretera_cadiz",
+      name: "Carretera de C\xE1diz",
+      x: 1550,
+      y: 1550,
+      stations: [
+        { key: "ctra_cadiz", name: "Carretera de C\xE1diz", interchange: true },
+        { key: "pacifico", name: "Pac\xEDfico", dx: 55, dy: 40 },
+        { key: "el_torcal", name: "El Torcal", dx: -50, dy: -35 }
+      ]
+    },
+    {
+      id: "capuchinos",
+      name: "Capuchinos",
+      x: 2200,
+      y: 1380,
+      stations: [
+        { key: "capuchinos", name: "Capuchinos", interchange: true },
+        { key: "cruz_verde", name: "Cruz Verde", dx: 45, dy: -40 },
+        { key: "olletas", name: "Olletas", dx: -40, dy: 45 }
+      ]
+    },
+    {
+      id: "victoria",
+      name: "La Victoria",
+      x: 2280,
+      y: 1520,
+      stations: [
+        { key: "victoria", name: "La Victoria", interchange: true },
+        { key: "cruz_humilladero", name: "Cruz Humilladero", dx: -80, dy: 60 }
+      ]
+    },
+    {
+      id: "ciudad_olivo",
+      name: "Ciudad del Olivo",
+      x: 1300,
+      y: 900,
+      stations: [
+        { key: "ciudad_olivo", name: "Ciudad del Olivo", interchange: true },
+        { key: "olivar_norte", name: "Olivar Norte", dx: 50, dy: -40 }
+      ]
+    },
+    {
+      id: "churriana",
+      name: "Churriana",
+      x: 1e3,
+      y: 1550,
+      stations: [
+        { key: "churriana", name: "Churriana", interchange: true },
+        { key: "jardin_churriana", name: "Jard\xEDn Churriana", dx: 45, dy: -35 }
       ]
     }
   ];
@@ -13137,7 +13232,8 @@
           x: d.x + ((_a = s.dx) != null ? _a : 0),
           y: d.y + ((_b = s.dy) != null ? _b : 0),
           district: d.name,
-          interchange: s.interchange
+          interchange: s.interchange,
+          majorHub: s.majorHub
         };
       }
     }
@@ -13147,29 +13243,48 @@
   var districtLabels = DISTRICT_SEEDS.map((d) => ({
     id: d.id,
     name: d.name,
+    // Empujar etiquetas hacia arriba para no tapar estaciones
     x: d.x,
-    y: d.y - 95
+    y: d.y - 110
   }));
-  var METRO_COLORS = [
-    "#E53935",
-    "#1E88E5",
-    "#43A047",
-    "#FB8C00",
-    "#8E24AA",
+  var METRO = [
+    "#C62828",
+    "#1565C0",
+    "#2E7D32",
+    "#EF6C00",
+    "#6A1B9A",
+    "#00838F",
+    "#4527A0",
+    "#558B2F",
+    "#AD1457",
+    "#0277BD",
+    "#5D4037",
+    "#00695C",
+    "#D84315",
+    "#283593",
+    "#689F38",
     "#00897B",
-    "#3949AB",
-    "#C0CA33",
-    "#00ACC1",
-    "#6D4C41",
-    "#D81B60",
-    "#5E35B1",
-    "#039BE5",
-    "#7CB342",
-    "#F4511E",
-    "#00838F"
+    "#C2185B",
+    "#37474F",
+    "#F9A825",
+    "#4E342E"
   ];
-  var CERC_COLORS = ["#B71C1C", "#0D47A1", "#1B5E20", "#E65100", "#4A148C", "#00695C", "#4527A0", "#827717"];
-  var TRAM_COLORS = ["#E65100", "#2E7D32", "#F9A825", "#0277BD", "#AD1457", "#558B2F", "#00695C", "#6A1B9A", "#EF6C00", "#1565C0"];
+  var CERC = ["#B71C1C", "#0D47A1", "#1B5E20", "#E65100", "#4A148C", "#00695C", "#33691E", "#880E4F", "#01579B", "#3E2723"];
+  var TRAM = ["#E65100", "#2E7D32", "#F9A825", "#0277BD", "#AD1457", "#558B2F", "#00695C", "#6A1B9A", "#EF6C00", "#1565C0", "#8D6E63", "#00838F"];
+  var BUS_COLORS = {
+    U: "#1565C0",
+    X: "#C62828",
+    A: "#F9A825",
+    N: "#212121",
+    O: "#6A1B9A",
+    P: "#00838F",
+    TU: "#EF6C00",
+    H: "#AD1457",
+    L: "#0277BD",
+    R: "#558B2F",
+    B: "#5D4037",
+    E: "#D84315"
+  };
   function line(code, name, mode, color, stationIds, opts = {}) {
     var _a, _b, _c, _d, _e;
     const valid = stationIds.filter((id) => stations[id]);
@@ -13180,423 +13295,579 @@
       mode,
       color,
       stationIds: valid,
-      frequencyMin: (_a = opts.frequencyMin) != null ? _a : mode === "metro" ? 3 : mode === "tranvia" ? 7 : mode === "cercanias" ? 12 : 10,
-      firstDeparture: (_b = opts.firstDeparture) != null ? _b : "05:00",
-      lastDeparture: (_c = opts.lastDeparture) != null ? _c : "01:00",
+      frequencyMin: (_a = opts.frequencyMin) != null ? _a : 6,
+      firstDeparture: (_b = opts.firstDeparture) != null ? _b : "06:00",
+      lastDeparture: (_c = opts.lastDeparture) != null ? _c : "23:30",
       status: (_d = opts.status) != null ? _d : "normal",
-      occupancy: (_e = opts.occupancy) != null ? _e : 50 + Math.floor(Math.random() * 40),
-      operatorNote: opts.operatorNote
+      occupancy: (_e = opts.occupancy) != null ? _e : 50,
+      operatorNote: opts.operatorNote,
+      busFamily: opts.busFamily
     };
   }
-  function ensureStatuses(list) {
-    const map = {
-      l3: { status: "retrasos", occupancy: 72, note: "Retrasos de 4\u20137 min por saturaci\xF3n en Torre H\xE9lix." },
-      l6: { status: "obras", occupancy: 48, note: "Tramo Canteras\u2013Cementerio con velocidad reducida." },
-      l12: { status: "retrasos", occupancy: 81 },
-      t3: { status: "obras", occupancy: 33, note: "Desv\xEDo temporal en Vivero Municipal." },
-      c3: { status: "retrasos", occupancy: 55, note: "Incidencia de se\xF1alizaci\xF3n cerca de Anillo SE." },
-      h3: { status: "suspendida", occupancy: 0, note: "Mantenimiento del tubo de vac\xEDo hasta las 14:00." },
-      b48: { status: "retrasos", occupancy: 51, note: "Tr\xE1fico denso en Anillo SE\u2013SO." },
-      f3: { status: "retrasos", occupancy: 28, note: "Oleaje moderado; demoras de 10\u201315 min." }
+  function ensureMeta(list) {
+    const overrides = {
+      l3: { status: "retrasos", occupancy: 78, note: "Retrasos 3\u20136 min por saturaci\xF3n en Mar\xEDa Zambrano." },
+      l7: { status: "obras", occupancy: 44, note: "Obras en tramo Puerto\u2013Intercambiador SO." },
+      c2: { status: "retrasos", occupancy: 82, note: "Demora en acceso al Aeropuerto T1." },
+      t4: { status: "obras", occupancy: 36, note: "Desv\xEDo temporal en Cala Serena." },
+      x1: { status: "retrasos", occupancy: 71, note: "Tr\xE1fico en Avenida del Sol." },
+      hl1: { status: "suspendida", occupancy: 0, note: "Hyperloop en mantenimiento hasta las 15:00." }
     };
     return list.map((l, i) => {
-      var _a;
-      const override = map[l.id];
-      if (override) return { ...l, ...override, operatorNote: (_a = override.note) != null ? _a : l.operatorNote };
-      const occ = 35 + i * 17 % 55;
-      return { ...l, occupancy: occ };
+      const o = overrides[l.id];
+      if (o) return { ...l, status: o.status, occupancy: o.occupancy, operatorNote: o.note };
+      return { ...l, occupancy: 32 + i * 13 % 58 };
     });
   }
+  var F = {
+    metroPeak: 3,
+    metro: 5,
+    cerc: 15,
+    cercAirport: 20,
+    tram: 8,
+    tramCoast: 10,
+    busUrban: 12,
+    busExpress: 15,
+    busUni: 10,
+    busNight: 30,
+    busAirport: 20,
+    hyper: 12
+  };
   var metroLines = [
-    line("L1", "Norte\u2013Sur", "metro", METRO_COLORS[0], [
-      "puerto_norte",
-      "astilleros",
-      "norte_viejo",
-      "arco_norte",
-      "catedral",
-      "plaza_orbe",
-      "bolsa",
-      "arco_sur",
-      "barrio_sur",
-      "terminal_sur",
-      "isla_verde"
-    ], { frequencyMin: 2 }),
-    line("L2", "Este\u2013Oeste", "metro", METRO_COLORS[1], [
-      "satelite_oeste",
-      "ribera_oeste",
-      "barrio_oeste",
-      "palacio",
-      "catedral",
-      "plaza_orbe",
-      "agora",
-      "torre_helix",
-      "barrio_este",
-      "ribera_este",
-      "lago",
-      "satelite_este",
-      "aeropuerto"
-    ], { frequencyMin: 2 }),
-    line("L3", "Diagonal Universitaria", "metro", METRO_COLORS[2], [
-      "observatorio",
-      "colinas",
-      "anillo_no",
-      "biblioteca",
-      "plaza_orbe",
-      "torre_helix",
-      "gran_centro",
-      "anillo_se",
-      "tech_park",
-      "data_center"
-    ]),
-    line("L4", "Anillo Interior", "metro", METRO_COLORS[3], [
-      "arco_norte",
-      "puente_rojo",
-      "anillo_ne",
-      "hospital",
-      "barrio_este",
-      "torre_helix",
-      "arco_sur",
-      "puente_azul",
-      "anillo_so",
-      "plaza_artes",
-      "barrio_oeste",
-      "anillo_no",
-      "arco_norte"
-    ]),
-    line("L5", "Costa Atl\xE1ntica", "metro", METRO_COLORS[4], [
-      "dunas",
-      "puerto_norte",
-      "faro",
-      "mirador",
+    line("L1", "Andaluc\xEDa Tech \u2013 Arenales", "metro", METRO[0], [
+      "pta",
+      "campanillas",
+      "ciudad_olivo",
       "universidad",
-      "estadio",
-      "anillo_ne",
-      "ribera_este",
-      "expo",
-      "marina",
-      "playa_este"
-    ]),
-    line("L6", "Corredor Oeste", "metro", METRO_COLORS[5], [
-      "playa_oeste",
-      "satelite_oeste",
-      "canteras",
-      "cementerio",
-      "zoologico",
-      "anillo_no",
-      "luxury_heights",
-      "barrio_oeste",
-      "little_atlantic",
-      "senado",
-      "plaza_orbe"
-    ]),
-    line("L7", "Sur Industrial", "metro", METRO_COLORS[6], [
-      "plaza_orbe",
-      "plaza_artes",
-      "anillo_so",
-      "barrio_obrero",
-      "industrial",
-      "cement_plant",
-      "muelles",
-      "puerto_sur",
-      "isla_verde"
-    ]),
-    line("L8", "Tech Express", "metro", METRO_COLORS[7], [
-      "plaza_orbe",
-      "agora",
-      "barrio_oriental",
-      "tribunales",
-      "anillo_ne",
-      "hipodromo",
-      "satelite_este",
-      "freetrade",
-      "aeropuerto"
-    ]),
-    line("L9", "Ribera Completa", "metro", METRO_COLORS[8], [
-      "cascada",
-      "bosque",
-      "zoologico",
-      "anillo_no",
-      "mercado_norte",
-      "arco_norte",
-      "museo",
-      "plaza_orbe",
-      "arco_sur",
-      "plaza_sol",
-      "barrio_sur",
-      "logistica",
-      "tech_park"
-    ]),
-    line("L10", "Perimetral Sur", "metro", METRO_COLORS[9], [
-      "planta",
-      "valle",
-      "mercado_oeste",
-      "anillo_so",
-      "plaza_sol",
-      "arena",
-      "anillo_se",
-      "expo",
-      "bahia_este",
-      "playa_este"
-    ]),
-    line("L11", "Campus\u2013Deportes", "metro", METRO_COLORS[10], [
-      "residencia",
+      "int_no",
+      "el_pastor",
+      "ciudad_jardin",
+      "justicia",
+      "rosaleda",
+      "hospital_civil",
+      "maria_zambrano",
+      "plaza_mayor",
+      "victoria",
+      "limonar",
+      "int_se",
+      "cala_serena",
+      "arenales"
+    ], { frequencyMin: F.metroPeak, firstDeparture: "06:15", lastDeparture: "01:15" }),
+    line("L2", "Aeropuerto \u2013 Rinc\xF3n del Mar", "metro", METRO[1], [
+      "aeropuerto",
+      "churriana",
+      "guadalmar",
+      "puerto_hel",
+      "int_so",
+      "ctra_cadiz",
+      "perchel",
+      "plaza_mayor",
+      "soho",
+      "paseo_maritimo",
+      "playa_faro",
+      "int_se",
+      "cala_serena",
+      "arenales",
+      "rincon_mar"
+    ], { frequencyMin: F.metroPeak, firstDeparture: "05:45", lastDeparture: "01:30" }),
+    line("L3", "Campus \u2013 Playa del Faro", "metro", METRO[2], [
       "universidad",
-      "politecnica",
-      "estadio",
-      "ciudad_deportiva",
-      "anillo_ne",
-      "hospital",
-      "torre_helix",
-      "plaza_orbe"
-    ]),
-    line("L12", "Aeropuerto Directo", "metro", METRO_COLORS[11], [
-      "plaza_orbe",
-      "torre_helix",
-      "barrio_este",
-      "lago",
-      "terminal_aerea",
-      "aeropuerto"
-    ], { frequencyMin: 3, lastDeparture: "02:30" }),
-    line("L13", "Nueva Heliora", "metro", METRO_COLORS[12], [
-      "nueva_heliora",
-      "eco_barrio",
-      "industrial",
-      "anillo_so",
-      "plaza_artes",
-      "plaza_orbe",
-      "torre_helix",
-      "gran_centro",
-      "suburbio_sur"
-    ]),
-    line("L14", "Lujo\u2013Finanzas", "metro", METRO_COLORS[13], [
-      "club_privado",
-      "luxury_heights",
-      "avenida_palmeras",
-      "palacio",
-      "plaza_orbe",
-      "torre_helix",
-      "torres_gemelas",
-      "banco_central",
-      "plaza_trading"
-    ]),
-    line("L15", "M\xE9dico\u2013Expo", "metro", METRO_COLORS[14], [
-      "biomed",
-      "hospital",
-      "farmacia_hub",
-      "anillo_ne",
-      "barrio_este",
-      "expo",
-      "bahia_este",
-      "marina"
-    ]),
-    line("L16", "Anillo Exterior Norte", "metro", METRO_COLORS[15], [
-      "observatorio",
-      "cascada",
-      "dunas",
-      "puerto_norte",
-      "mirador",
-      "residencia",
-      "ciudad_deportiva",
-      "satelite_este"
-    ])
+      "residencia_u",
+      "el_pastor",
+      "feria",
+      "maria_zambrano",
+      "plaza_mayor",
+      "soho",
+      "paseo_maritimo",
+      "playa_faro",
+      "faro_hel"
+    ], { frequencyMin: F.metro, firstDeparture: "06:20", lastDeparture: "00:45" }),
+    line("L4", "Anillo Interior", "metro", METRO[3], [
+      "int_no",
+      "ciudad_jardin",
+      "capuchinos",
+      "int_ne",
+      "limonar",
+      "int_se",
+      "paseo_maritimo",
+      "av_sol",
+      "int_so",
+      "plaza_comercial",
+      "int_no"
+    ], { frequencyMin: F.metro, firstDeparture: "06:30", lastDeparture: "00:30" }),
+    line("L5", "Puerto \u2013 Nueva Heliora", "metro", METRO[4], [
+      "puerto_hel",
+      "san_andres",
+      "int_so",
+      "perchel",
+      "plaza_mayor",
+      "victoria",
+      "capuchinos",
+      "cerrado",
+      "int_ne",
+      "altos_med",
+      "nueva_hel",
+      "vinuela"
+    ], { frequencyMin: F.metro, firstDeparture: "06:15", lastDeparture: "00:50" }),
+    line("L6", "Guadalhorce \u2013 Torres del Mar", "metro", METRO[5], [
+      "poligono",
+      "campanillas",
+      "int_no",
+      "plaza_comercial",
+      "ctra_cadiz",
+      "av_sol",
+      "int_so",
+      "bajadilla",
+      "torres_mar",
+      "aquapark"
+    ], { frequencyMin: F.metro, firstDeparture: "06:25", lastDeparture: "23:50" }),
+    line("L7", "Costa Oeste", "metro", METRO[6], [
+      "aeropuerto_t2",
+      "aeropuerto",
+      "guadalmar",
+      "puerto_hel",
+      "bajadilla",
+      "torres_mar",
+      "paseo_maritimo",
+      "playa_faro"
+    ], { frequencyMin: F.metro, firstDeparture: "06:10", lastDeparture: "00:20" }),
+    line("L8", "Hospitalario Express", "metro", METRO[7], [
+      "hospital_civil",
+      "materno",
+      "facultad_medicina",
+      "rosaleda",
+      "capuchinos",
+      "hospital_este",
+      "limonar",
+      "cerrado",
+      "int_ne"
+    ], { frequencyMin: 4, firstDeparture: "05:50", lastDeparture: "01:00" }),
+    line("L9", "Monte \u2013 Casco", "metro", METRO[8], [
+      "monte_hel",
+      "mirador_monte",
+      "ciudad_jardin",
+      "capuchinos",
+      "victoria",
+      "plaza_mayor",
+      "catedral",
+      "alcazaba"
+    ], { frequencyMin: F.metro, firstDeparture: "06:40", lastDeparture: "23:40" }),
+    line("L10", "Litoral Este", "metro", METRO[9], [
+      "paseo_maritimo",
+      "playa_faro",
+      "ba\xF1os_carmen",
+      "cala_serena",
+      "chiringuitos",
+      "arenales",
+      "playa_arenales",
+      "rincon_mar",
+      "faro_este"
+    ], { frequencyMin: F.metro, firstDeparture: "06:35", lastDeparture: "00:10" }),
+    line("L11", "Tech Corridor", "metro", METRO[10], [
+      "pta",
+      "smart_city",
+      "campanillas",
+      "ciudad_olivo",
+      "universidad",
+      "feria",
+      "maria_zambrano",
+      "plaza_mayor",
+      "int_se",
+      "tech_levante",
+      "nueva_hel"
+    ], { frequencyMin: F.metro, firstDeparture: "06:00", lastDeparture: "01:00" }),
+    line("L12", "Justicia \u2013 Cruceros", "metro", METRO[11], [
+      "justicia",
+      "el_pastor",
+      "rosaleda",
+      "hospital_civil",
+      "maria_zambrano",
+      "perchel",
+      "ctra_cadiz",
+      "san_andres",
+      "puerto_hel",
+      "terminal_cruceros"
+    ], { frequencyMin: F.metro, firstDeparture: "06:20", lastDeparture: "23:55" }),
+    line("L13", "Altos \u2013 Soho", "metro", METRO[12], [
+      "sierra_blanca",
+      "altos_med",
+      "club_golf_este",
+      "int_ne",
+      "cerrado",
+      "limonar",
+      "victoria",
+      "soho",
+      "teatro_cervantes",
+      "plaza_mayor"
+    ], { frequencyMin: 6, firstDeparture: "06:45", lastDeparture: "23:20" }),
+    line("L14", "Feria \u2013 Arenales", "metro", METRO[13], [
+      "feria",
+      "pabellones",
+      "av_sol",
+      "paseo_maritimo",
+      "int_se",
+      "paseo_cala",
+      "cala_serena",
+      "mercado_arenales",
+      "arenales"
+    ], { frequencyMin: F.metro, firstDeparture: "06:30", lastDeparture: "00:00" }),
+    line("L15", "Churriana \u2013 Capuchinos", "metro", METRO[14], [
+      "churriana",
+      "jardin_churriana",
+      "guadalmar",
+      "int_so",
+      "pacifico",
+      "perchel",
+      "plaza_mayor",
+      "victoria",
+      "capuchinos",
+      "cruz_verde"
+    ], { frequencyMin: F.metro, firstDeparture: "06:25", lastDeparture: "23:45" }),
+    line("L16", "Vi\xF1uela \u2013 Mar\xEDa Zambrano", "metro", METRO[15], [
+      "pueblo_blanco",
+      "vinuela",
+      "embalse",
+      "nueva_hel",
+      "plaza_levante",
+      "int_ne",
+      "hospital_este",
+      "capuchinos",
+      "hospital_civil",
+      "maria_zambrano"
+    ], { frequencyMin: 6, firstDeparture: "06:10", lastDeparture: "23:30" }),
+    line("L17", "Perchel \u2013 Campus", "metro", METRO[16], [
+      "perchel",
+      "atarazanas",
+      "maria_zambrano",
+      "rosaleda",
+      "ciudad_jardin",
+      "universidad",
+      "rectorado",
+      "biblioteca_campus"
+    ], { frequencyMin: 4, firstDeparture: "06:05", lastDeparture: "01:10" }),
+    line("L18", "Diagonal Costa", "metro", METRO[17], [
+      "poligono",
+      "churriana",
+      "puerto_hel",
+      "bajadilla",
+      "torres_mar",
+      "paseo_maritimo",
+      "soho",
+      "victoria",
+      "limonar",
+      "altos_med"
+    ], { frequencyMin: F.metro, firstDeparture: "06:20", lastDeparture: "00:15" }),
+    line("L19", "Olivar \u2013 Playa", "metro", METRO[18], [
+      "olivar_norte",
+      "ciudad_olivo",
+      "universidad",
+      "plaza_comercial",
+      "ctra_cadiz",
+      "av_sol",
+      "paseo_maritimo",
+      "muelle_uno",
+      "palmeral"
+    ], { frequencyMin: F.metro, firstDeparture: "06:35", lastDeparture: "23:35" }),
+    line("L20", "Anillo Exterior Norte", "metro", METRO[19], [
+      "pta",
+      "ciudad_olivo",
+      "universidad",
+      "monte_hel",
+      "int_ne",
+      "altos_med",
+      "nueva_hel",
+      "vinuela"
+    ], { frequencyMin: 7, firstDeparture: "06:40", lastDeparture: "23:00" })
   ];
   var cercaniasLines = [
-    line("C1", "Regional Costa Norte", "cercanias", CERC_COLORS[0], [
-      "observatorio",
-      "cascada",
-      "puerto_norte",
-      "norte_viejo",
-      "plaza_orbe",
-      "barrio_sur",
-      "terminal_sur",
-      "puerto_sur"
-    ], { frequencyMin: 12, firstDeparture: "04:30" }),
-    line("C2", "Regional Aeropuerto", "cercanias", CERC_COLORS[1], [
-      "satelite_oeste",
-      "ribera_oeste",
-      "plaza_orbe",
-      "ribera_este",
-      "lago",
-      "aeropuerto"
-    ], { frequencyMin: 10, firstDeparture: "04:00", lastDeparture: "02:30" }),
-    line("C3", "Tech Corridor", "cercanias", CERC_COLORS[2], [
+    line("C1", "\xC1lora Costa \u2013 Rinc\xF3n", "cercanias", CERC[0], [
+      "pta",
+      "campanillas",
       "universidad",
-      "estadio",
-      "anillo_ne",
-      "plaza_orbe",
-      "anillo_se",
-      "tech_park",
-      "data_center"
-    ], { frequencyMin: 15 }),
-    line("C4", "Anillo Exterior", "cercanias", CERC_COLORS[3], [
-      "puerto_norte",
-      "universidad",
-      "satelite_este",
+      "maria_zambrano",
+      "plaza_mayor",
+      "paseo_maritimo",
+      "playa_faro",
+      "cala_serena",
+      "arenales",
+      "rincon_mar"
+    ], { frequencyMin: F.cerc, firstDeparture: "05:30", lastDeparture: "23:45" }),
+    line("C2", "Aeropuerto \u2013 Mar\xEDa Zambrano", "cercanias", CERC[1], [
       "aeropuerto",
-      "marina",
-      "puerto_sur",
-      "industrial",
-      "nueva_heliora",
-      "satelite_oeste",
-      "bosque",
-      "puerto_norte"
-    ], { frequencyMin: 20, lastDeparture: "22:30" }),
-    line("C5", "Expreso Deportivo", "cercanias", CERC_COLORS[4], [
-      "ciudad_deportiva",
-      "residencia",
+      "churriana",
+      "guadalmar",
+      "puerto_hel",
+      "int_so",
+      "ctra_cadiz",
+      "perchel",
+      "maria_zambrano"
+    ], { frequencyMin: F.cercAirport, firstDeparture: "05:00", lastDeparture: "00:30" }),
+    line("C3", "Campus \u2013 Nueva Heliora", "cercanias", CERC[2], [
       "universidad",
-      "arco_norte",
-      "plaza_orbe",
-      "arco_sur",
-      "arena"
-    ], { frequencyMin: 15 }),
-    line("C6", "Valle\u2013Sur", "cercanias", CERC_COLORS[5], [
-      "playa_oeste",
-      "satelite_oeste",
-      "valle",
-      "barrio_obrero",
-      "industrial",
-      "terminal_sur",
-      "suburbio_sur"
-    ], { frequencyMin: 18 }),
-    line("C7", "Costera Este", "cercanias", CERC_COLORS[6], [
-      "estadio",
-      "satelite_este",
-      "bahia_este",
-      "expo",
-      "suburbio_sur",
-      "faro_sur"
-    ], { frequencyMin: 16 }),
-    line("C8", "Gubernamental\u2013Nueva", "cercanias", CERC_COLORS[7], [
-      "embajadas",
-      "palacio",
-      "plaza_orbe",
-      "anillo_so",
-      "nueva_heliora",
-      "eco_barrio"
-    ], { frequencyMin: 15 })
+      "ciudad_jardin",
+      "rosaleda",
+      "maria_zambrano",
+      "capuchinos",
+      "int_ne",
+      "nueva_hel"
+    ], { frequencyMin: F.cerc, firstDeparture: "05:45", lastDeparture: "23:20" }),
+    line("C4", "Fuengirola-H \u2013 Vi\xF1uela (l\xEDnea litoral)", "cercanias", CERC[3], [
+      "aeropuerto",
+      "guadalmar",
+      "torres_mar",
+      "paseo_maritimo",
+      "cala_serena",
+      "arenales",
+      "rincon_mar",
+      "nueva_hel",
+      "vinuela"
+    ], { frequencyMin: 20, firstDeparture: "05:40", lastDeparture: "22:50" }),
+    line("C5", "Pol\xEDgono \u2013 Rosaleda", "cercanias", CERC[4], [
+      "poligono",
+      "logistica",
+      "campanillas",
+      "plaza_comercial",
+      "feria",
+      "rosaleda",
+      "maria_zambrano"
+    ], { frequencyMin: F.cerc, firstDeparture: "05:50", lastDeparture: "22:40" }),
+    line("C6", "Churriana \u2013 Hospital Este", "cercanias", CERC[5], [
+      "churriana",
+      "san_andres",
+      "perchel",
+      "plaza_mayor",
+      "victoria",
+      "limonar",
+      "hospital_este"
+    ], { frequencyMin: 18, firstDeparture: "06:00", lastDeparture: "23:10" }),
+    line("C7", "PTA \u2013 Aeropuerto (directo tech)", "cercanias", CERC[6], [
+      "pta",
+      "campanillas",
+      "churriana",
+      "aeropuerto"
+    ], { frequencyMin: 25, firstDeparture: "05:20", lastDeparture: "23:00" }),
+    line("C8", "Monte \u2013 Puerto", "cercanias", CERC[7], [
+      "monte_hel",
+      "ciudad_jardin",
+      "maria_zambrano",
+      "ctra_cadiz",
+      "puerto_hel"
+    ], { frequencyMin: F.cerc, firstDeparture: "06:05", lastDeparture: "22:55" }),
+    line("C9", "Altos \u2013 Casco", "cercanias", CERC[8], [
+      "altos_med",
+      "cerrado",
+      "limonar",
+      "victoria",
+      "plaza_mayor",
+      "catedral"
+    ], { frequencyMin: 18, firstDeparture: "06:15", lastDeparture: "23:05" }),
+    line("C10", "Cercan\xEDas Feria (estacional reforzada)", "cercanias", CERC[9], [
+      "universidad",
+      "feria",
+      "av_sol",
+      "paseo_maritimo",
+      "playa_faro"
+    ], { frequencyMin: 12, firstDeparture: "07:00", lastDeparture: "02:00" })
   ];
   var tramLines = [
-    line("T1", "Centro Hist\xF3rico", "tranvia", TRAM_COLORS[0], [
-      "biblioteca",
+    line("T1", "Casco Hist\xF3rico", "tranvia", TRAM[0], [
       "catedral",
-      "museo",
-      "agora",
-      "tribunales",
-      "bolsa",
-      "plaza_artes",
-      "senado",
-      "biblioteca"
-    ], { frequencyMin: 6, firstDeparture: "06:00", lastDeparture: "23:00" }),
-    line("T2", "Norte Verde", "tranvia", TRAM_COLORS[1], [
-      "jardin_botanico",
-      "arco_norte",
-      "mercado_norte",
-      "anillo_no",
-      "luxury_heights",
-      "mercado_central"
-    ], { frequencyMin: 7 }),
-    line("T3", "Sur Solar", "tranvia", TRAM_COLORS[2], [
-      "arena",
-      "arco_sur",
-      "plaza_sol",
-      "vivero",
-      "barrio_sur",
-      "logistica",
-      "arena"
-    ], { frequencyMin: 7 }),
-    line("T4", "Ribera Este", "tranvia", TRAM_COLORS[3], [
-      "hospital",
-      "barrio_este",
-      "ribera_este",
-      "lago",
-      "expo",
-      "marina"
-    ], { frequencyMin: 8 }),
-    line("T5", "Campus", "tranvia", TRAM_COLORS[4], [
-      "residencia",
+      "alcazaba",
+      "plaza_mayor",
+      "ayuntamiento",
+      "juderia",
+      "atarazanas",
+      "perchel",
+      "maria_zambrano",
+      "plaza_mayor"
+    ], { frequencyMin: F.tram, firstDeparture: "07:00", lastDeparture: "00:00" }),
+    line("T2", "Paseo Mar\xEDtimo", "tranvia", TRAM[1], [
+      "puerto_deportivo",
+      "bajadilla",
+      "torres_mar",
+      "paseo_maritimo",
+      "muelle_uno",
+      "palmeral",
+      "playa_faro",
+      "ba\xF1os_carmen",
+      "cala_serena"
+    ], { frequencyMin: F.tramCoast, firstDeparture: "07:15", lastDeparture: "00:30" }),
+    line("T3", "Universidad \u2013 Justicia", "tranvia", TRAM[2], [
+      "residencia_u",
       "universidad",
-      "estadio",
-      "hipodromo",
-      "anillo_ne",
-      "hospital"
-    ], { frequencyMin: 6, lastDeparture: "00:00" }),
-    line("T6", "Financiero", "tranvia", TRAM_COLORS[5], [
-      "plaza_trading",
-      "banco_central",
-      "torre_helix",
-      "torres_gemelas",
-      "barrio_oriental",
-      "agora"
-    ], { frequencyMin: 6 }),
-    line("T7", "Artes\u2013Comercial", "tranvia", TRAM_COLORS[6], [
-      "opera",
-      "plaza_artes",
-      "galeria",
-      "cineteatro",
-      "gran_centro",
-      "outlet",
-      "feria"
-    ], { frequencyMin: 8 }),
-    line("T8", "Oeste Local", "tranvia", TRAM_COLORS[7], [
-      "playa_oeste",
-      "satelite_oeste",
-      "canteras",
-      "ribera_oeste",
-      "barrio_oeste",
-      "mercado_oeste"
-    ], { frequencyMin: 9 }),
-    line("T9", "M\xE9dico Circular", "tranvia", TRAM_COLORS[8], [
-      "hospital",
-      "biomed",
-      "farmacia_hub",
-      "anillo_ne",
-      "hospital"
-    ], { frequencyMin: 7 }),
-    line("T10", "Puerto Sur Local", "tranvia", TRAM_COLORS[9], [
-      "muelles",
-      "terminal_sur",
-      "isla_verde",
-      "faro_sur",
-      "puerto_sur",
-      "muelles"
-    ], { frequencyMin: 10 })
+      "polideportivo_u",
+      "el_pastor",
+      "justicia",
+      "ciudad_jardin",
+      "rosaleda"
+    ], { frequencyMin: F.tram, firstDeparture: "06:45", lastDeparture: "23:30" }),
+    line("T4", "Cala \u2013 Arenales", "tranvia", TRAM[3], [
+      "paseo_cala",
+      "cala_serena",
+      "chiringuitos",
+      "mercado_arenales",
+      "arenales",
+      "playa_arenales",
+      "rincon_mar"
+    ], { frequencyMin: F.tramCoast, firstDeparture: "07:30", lastDeparture: "23:45" }),
+    line("T5", "Hospitalario", "tranvia", TRAM[4], [
+      "facultad_medicina",
+      "hospital_civil",
+      "materno",
+      "capuchinos",
+      "hospital_este",
+      "limonar"
+    ], { frequencyMin: 7, firstDeparture: "06:30", lastDeparture: "22:45" }),
+    line("T6", "Soho Cultural", "tranvia", TRAM[5], [
+      "teatro_cervantes",
+      "soho",
+      "plaza_unos",
+      "victoria",
+      "cruz_humilladero",
+      "plaza_mayor",
+      "ayuntamiento"
+    ], { frequencyMin: F.tram, firstDeparture: "07:00", lastDeparture: "01:00" }),
+    line("T7", "Avenida del Sol", "tranvia", TRAM[6], [
+      "cc_miramar",
+      "av_sol",
+      "larios_sur",
+      "paseo_maritimo",
+      "soho",
+      "plaza_mayor"
+    ], { frequencyMin: F.tram, firstDeparture: "07:00", lastDeparture: "23:50" }),
+    line("T8", "Campanillas \u2013 PTA", "tranvia", TRAM[7], [
+      "pta",
+      "smart_city",
+      "campanillas",
+      "ciudad_olivo",
+      "plaza_comercial",
+      "ikea_hel"
+    ], { frequencyMin: 9, firstDeparture: "06:50", lastDeparture: "22:30" }),
+    line("T9", "Nueva Heliora Local", "tranvia", TRAM[8], [
+      "eco_barrio",
+      "nueva_hel",
+      "plaza_levante",
+      "tech_levante",
+      "int_ne",
+      "cerrado"
+    ], { frequencyMin: 9, firstDeparture: "07:10", lastDeparture: "22:40" }),
+    line("T10", "Puerto \u2013 San Andr\xE9s", "tranvia", TRAM[9], [
+      "lonja",
+      "puerto_hel",
+      "muelles_carga",
+      "terminal_cruceros",
+      "san_andres",
+      "huelin",
+      "parque_oeste"
+    ], { frequencyMin: F.tram, firstDeparture: "07:05", lastDeparture: "23:15" }),
+    line("T11", "Feria \u2013 Centro", "tranvia", TRAM[10], [
+      "parking_feria",
+      "feria",
+      "pabellones",
+      "av_sol",
+      "perchel",
+      "plaza_mayor"
+    ], { frequencyMin: 8, firstDeparture: "07:00", lastDeparture: "00:00" }),
+    line("T12", "Monte Urbano", "tranvia", TRAM[11], [
+      "urbanizacion_pinares",
+      "monte_hel",
+      "mirador_monte",
+      "ciudad_jardin",
+      "jardin_botanico",
+      "parque_norte"
+    ], { frequencyMin: 10, firstDeparture: "07:20", lastDeparture: "22:20" })
   ];
-  var otherLines = [
-    line("B11", "Bus Expreso Norte", "bus", "#546E7A", ["puerto_norte", "norte_viejo", "arco_norte", "plaza_orbe"], { frequencyMin: 5 }),
-    line("B22", "Bus Expreso Sur", "bus", "#607D8B", ["plaza_orbe", "arco_sur", "barrio_sur", "terminal_sur"], { frequencyMin: 5 }),
-    line("B35", "Bus Aeropuerto", "bus", "#455A64", ["plaza_orbe", "barrio_este", "lago", "terminal_aerea", "aeropuerto"], { frequencyMin: 8, firstDeparture: "04:00", lastDeparture: "03:00" }),
-    line("B48", "Bus Circunvalaci\xF3n", "bus", "#78909C", ["anillo_no", "anillo_ne", "anillo_se", "anillo_so", "anillo_no"], { frequencyMin: 10 }),
-    line("B60", "Bus Puerto\u2013Tech", "bus", "#90A4AE", ["muelles", "industrial", "barrio_sur", "logistica", "tech_park"], { frequencyMin: 12 }),
-    line("B71", "Bus Colinas", "bus", "#78909C", ["observatorio", "cascada", "bosque", "colinas", "anillo_no", "plaza_orbe"], { frequencyMin: 12 }),
-    line("B82", "Bus Nocturno Centro", "bus", "#263238", ["catedral", "plaza_orbe", "agora", "torre_helix", "bolsa", "catedral"], { frequencyMin: 15, firstDeparture: "23:00", lastDeparture: "05:00" }),
-    line("B90", "Bus Sat\xE9lite Oeste", "bus", "#37474F", ["playa_oeste", "satelite_oeste", "silos", "planta", "valle", "ribera_oeste"], { frequencyMin: 15 }),
-    line("B100", "Bus Nueva Heliora", "bus", "#546E7A", ["nueva_heliora", "plaza_nueva", "barrio_obrero", "anillo_so", "plaza_orbe"], { frequencyMin: 12 }),
-    line("B110", "Bus Suburbio Sur", "bus", "#607D8B", ["suburbio_sur", "colegios", "urbanizacion", "tech_park", "anillo_se"], { frequencyMin: 14 }),
-    line("H1", "Hyperloop Orbe\u2013Aeropuerto", "hyperloop", "#00BFA5", ["plaza_orbe", "lago", "aeropuerto"], { frequencyMin: 8 }),
-    line("H2", "Hyperloop Costa a Costa", "hyperloop", "#1DE9B6", ["satelite_oeste", "plaza_orbe", "satelite_este"], { frequencyMin: 10 }),
-    line("H3", "Hyperloop Norte\u2013Tech", "hyperloop", "#64FFDA", ["puerto_norte", "plaza_orbe", "tech_park"], { frequencyMin: 12 }),
-    line("F1", "Ferry Bah\xEDa Norte", "ferry", "#0288D1", ["dunas", "puerto_norte", "faro", "mirador"], { frequencyMin: 20, firstDeparture: "06:30", lastDeparture: "21:00" }),
-    line("F2", "Ferry Delta Sur", "ferry", "#039BE5", ["muelles", "isla_verde", "faro_sur", "puerto_sur"], { frequencyMin: 25, firstDeparture: "07:00", lastDeparture: "20:30" }),
-    line("F3", "Ferry Transbah\xEDa", "ferry", "#29B6F6", ["puerto_norte", "marina", "puerto_sur"], { frequencyMin: 40, firstDeparture: "08:00", lastDeparture: "19:00" }),
-    line("CBL1", "Telef\xE9rico Colinas", "cable", "#8D6E63", ["cascada", "observatorio", "bosque", "colinas"], { frequencyMin: 8, firstDeparture: "08:00", lastDeparture: "20:00" }),
-    line("CBL2", "Telef\xE9rico Mirador", "cable", "#A1887F", ["faro", "mirador", "universidad"], { frequencyMin: 10, firstDeparture: "09:00", lastDeparture: "19:30" })
+  function bus(code, name, family, stationIds, frequencyMin, first, last) {
+    return line(code, name, "bus", BUS_COLORS[family], stationIds, {
+      frequencyMin,
+      firstDeparture: first,
+      lastDeparture: last,
+      busFamily: family
+    });
+  }
+  var busLines = [
+    // Universitario
+    bus("U1", "Campus \u2013 Casco", "U", ["universidad", "el_pastor", "rosaleda", "maria_zambrano", "plaza_mayor"], F.busUni, "06:30", "23:00"),
+    bus("U2", "Campus \u2013 PTA", "U", ["universidad", "ciudad_olivo", "campanillas", "pta"], F.busUni, "06:45", "22:30"),
+    bus("U3", "Residencia \u2013 Hospital Civil", "U", ["residencia_u", "universidad", "ciudad_jardin", "hospital_civil"], F.busUni, "07:00", "22:00"),
+    bus("U4", "Campus \u2013 Playa (verano reforzado)", "U", ["universidad", "feria", "av_sol", "paseo_maritimo", "playa_faro"], 12, "07:30", "01:00"),
+    bus("U5", "Polideportivo \u2013 Justicia", "U", ["polideportivo_u", "universidad", "el_pastor", "justicia"], F.busUni, "07:00", "21:30"),
+    // Express
+    bus("X1", "Express Casco \u2013 Aeropuerto", "X", ["plaza_mayor", "perchel", "int_so", "churriana", "aeropuerto"], F.busExpress, "05:30", "00:30"),
+    bus("X2", "Express Campus \u2013 Arenales", "X", ["universidad", "maria_zambrano", "int_se", "arenales"], F.busExpress, "06:00", "23:00"),
+    bus("X3", "Express Puerto \u2013 Nueva Heliora", "X", ["puerto_hel", "plaza_mayor", "int_ne", "nueva_hel"], F.busExpress, "06:15", "22:45"),
+    bus("X4", "Express PTA \u2013 Mar\xEDa Zambrano", "X", ["pta", "plaza_comercial", "maria_zambrano"], 12, "05:45", "23:30"),
+    bus("X5", "Express Torres \u2013 Rinc\xF3n", "X", ["torres_mar", "paseo_maritimo", "cala_serena", "rincon_mar"], F.busExpress, "07:00", "23:15"),
+    // Aeropuerto
+    bus("A1", "Aeropuerto \u2013 Plaza Mayor", "A", ["aeropuerto", "aeropuerto_t2", "churriana", "int_so", "perchel", "plaza_mayor"], F.busAirport, "04:45", "01:00"),
+    bus("A2", "Aeropuerto \u2013 Hotel Costa / Guadalmar", "A", ["aeropuerto", "guadalmar", "hotel_costa", "campo_golf", "bajadilla"], 25, "05:30", "00:00"),
+    bus("A3", "Aeropuerto \u2013 Campus", "A", ["aeropuerto", "campanillas", "universidad"], 25, "05:50", "23:00"),
+    bus("A4", "Aeropuerto \u2013 Cruceros", "A", ["aeropuerto", "puerto_hel", "terminal_cruceros"], 20, "05:00", "23:30"),
+    // Nocturno
+    bus("N1", "B\xFAho Casco \u2013 Playa", "N", ["plaza_mayor", "soho", "paseo_maritimo", "playa_faro", "cala_serena"], F.busNight, "23:30", "05:30"),
+    bus("N2", "B\xFAho Campus \u2013 Centro", "N", ["universidad", "rosaleda", "maria_zambrano", "plaza_mayor", "soho"], F.busNight, "23:45", "05:15"),
+    bus("N3", "B\xFAho Puerto \u2013 Arenales", "N", ["puerto_hel", "torres_mar", "paseo_maritimo", "arenales"], 35, "00:00", "05:00"),
+    bus("N4", "B\xFAho Feria (madrugada eventos)", "N", ["feria", "av_sol", "plaza_mayor", "soho", "playa_faro"], 25, "22:00", "06:00"),
+    // Orbital / Circular (O — no confundir con Cercanías C)
+    bus("O1", "Orbital Centro", "O", ["plaza_mayor", "catedral", "victoria", "soho", "paseo_maritimo", "perchel", "plaza_mayor"], 10, "07:00", "23:30"),
+    bus("O2", "Orbital Hospitales", "O", ["hospital_civil", "rosaleda", "capuchinos", "hospital_este", "limonar", "hospital_civil"], 12, "06:45", "22:30"),
+    bus("O3", "Orbital Intercambiadores", "O", ["int_no", "int_ne", "int_se", "int_so", "int_no"], 15, "06:30", "23:00"),
+    // Playa
+    bus("P1", "Playa Express Faro \u2013 Rinc\xF3n", "P", ["playa_faro", "ba\xF1os_carmen", "cala_serena", "arenales", "rincon_mar"], 12, "07:00", "00:30"),
+    bus("P2", "Playa Bajadilla \u2013 Faro", "P", ["bajadilla", "torres_mar", "paseo_maritimo", "playa_faro"], 12, "07:15", "00:00"),
+    bus("P3", "Chiringuitos Shuttle", "P", ["cala_serena", "chiringuitos", "paseo_cala", "ba\xF1os_carmen"], 15, "10:00", "02:00"),
+    bus("P4", "Aquapark \u2013 Palmeral", "P", ["aquapark", "torres_mar", "paseo_maritimo", "palmeral"], 20, "09:00", "21:00"),
+    // Turístico (TU — no confundir con Tranvía T)
+    bus("TU1", "Bus Tur\xEDstico Casco (hop-on)", "TU", ["plaza_mayor", "catedral", "alcazaba", "paseo_maritimo", "muelle_uno", "playa_faro", "plaza_mayor"], 20, "09:30", "20:00"),
+    bus("TU2", "Ruta Pueblos / Vi\xF1uela", "TU", ["plaza_mayor", "nueva_hel", "pueblo_blanco", "vinuela", "embalse"], 40, "09:00", "19:00"),
+    bus("TU3", "Miradores del Monte", "TU", ["plaza_mayor", "ciudad_jardin", "monte_hel", "mirador_monte", "altos_med"], 30, "10:00", "19:30"),
+    // Hospitalario
+    bus("H1", "Hospital Civil \u2013 Campus Medicina", "H", ["hospital_civil", "materno", "facultad_medicina", "universidad"], 12, "06:00", "22:00"),
+    bus("H2", "Hospital Este \u2013 Capuchinos", "H", ["hospital_este", "limonar", "capuchinos", "hospital_civil"], 12, "06:15", "21:45"),
+    bus("H3", "Ambulatorio Arenales", "H", ["arenales", "mercado_arenales", "int_se", "hospital_este"], 15, "07:00", "21:00"),
+    // Litoral
+    bus("L1", "Litoral Completo", "L", ["guadalmar", "bajadilla", "torres_mar", "paseo_maritimo", "playa_faro", "cala_serena", "arenales", "rincon_mar"], 15, "06:45", "23:30"),
+    bus("L2", "Litoral Oeste", "L", ["aeropuerto", "guadalmar", "puerto_hel", "bajadilla", "torres_mar"], 15, "06:30", "23:00"),
+    // Residencial
+    bus("R1", "Cerrado \u2013 Centro", "R", ["cerrado", "colegios_este", "limonar", "victoria", "plaza_mayor"], F.busUrban, "06:40", "22:40"),
+    bus("R2", "Altos \u2013 Intercambiador NE", "R", ["sierra_blanca", "altos_med", "club_golf_este", "int_ne"], F.busUrban, "06:50", "22:20"),
+    bus("R3", "Ciudad Jard\xEDn \u2013 Pastor", "R", ["parque_norte", "ciudad_jardin", "jardin_botanico", "el_pastor", "mercado_pastor"], F.busUrban, "07:00", "22:00"),
+    bus("R4", "Pinares \u2013 Rosaleda", "R", ["urbanizacion_pinares", "monte_hel", "ciudad_jardin", "rosaleda"], F.busUrban, "07:10", "21:50"),
+    // Barrio
+    bus("B1", "El Perchel \u2013 Cruz Humilladero", "B", ["perchel", "atarazanas", "cruz_humilladero", "victoria", "capuchinos"], F.busUrban, "06:35", "22:50"),
+    bus("B2", "San Andr\xE9s \u2013 Huelin", "B", ["san_andres", "huelin", "parque_oeste", "ctra_cadiz", "el_torcal"], F.busUrban, "06:40", "22:30"),
+    bus("B3", "La Victoria Local", "B", ["victoria", "olletas", "cruz_verde", "capuchinos", "plaza_unos"], F.busUrban, "07:00", "22:15"),
+    bus("B4", "Churriana Local", "B", ["churriana", "jardin_churriana", "guadalmar", "san_andres"], F.busUrban, "06:55", "22:00"),
+    bus("B5", "Campanillas Local", "B", ["campanillas", "nave_central", "poligono", "logistica", "plaza_comercial"], F.busUrban, "06:30", "21:45"),
+    bus("B6", "Nueva Heliora Barrios", "B", ["nueva_hel", "eco_barrio", "plaza_levante", "tech_levante"], F.busUrban, "07:05", "22:10"),
+    // Especial
+    bus("E1", "Feria de Agosto (especial)", "E", ["universidad", "feria", "pabellones", "av_sol", "plaza_mayor", "paseo_maritimo"], 8, "12:00", "04:00"),
+    bus("E2", "Partido Rosaleda (especial)", "E", ["maria_zambrano", "rosaleda", "ciudad_deportiva", "palacio_deportes", "plaza_comercial"], 8, "14:00", "23:30"),
+    bus("E3", "Cruceristas Shuttle", "E", ["terminal_cruceros", "puerto_hel", "paseo_maritimo", "catedral", "alcazaba"], 15, "08:00", "20:00")
   ];
-  otherLines.forEach((l) => {
-    if (l.id === "cbl1") {
-      l.code = "TF1";
-      l.id = "tf1";
-    }
-    if (l.id === "cbl2") {
-      l.code = "TF2";
-      l.id = "tf2";
-    }
-  });
-  var lines = ensureStatuses([
+  var hyperLines = [
+    line("HL1", "Hyperloop Aeropuerto \u2013 Casco", "hyperloop", "#00BFA5", [
+      "aeropuerto",
+      "maria_zambrano",
+      "plaza_mayor"
+    ], { frequencyMin: F.hyper, firstDeparture: "06:00", lastDeparture: "00:00" }),
+    line("HL2", "Hyperloop Campus \u2013 Arenales", "hyperloop", "#1DE9B6", [
+      "universidad",
+      "plaza_mayor",
+      "arenales"
+    ], { frequencyMin: F.hyper, firstDeparture: "06:30", lastDeparture: "23:30" }),
+    line("HL3", "Hyperloop Puerto \u2013 Nueva Heliora", "hyperloop", "#64FFDA", [
+      "puerto_hel",
+      "plaza_mayor",
+      "nueva_hel"
+    ], { frequencyMin: 15, firstDeparture: "07:00", lastDeparture: "23:00" })
+  ];
+  var lines = ensureMeta([
     ...metroLines,
     ...cercaniasLines,
     ...tramLines,
-    ...otherLines
+    ...busLines,
+    ...hyperLines
   ]);
   function getUniqueStations() {
     const seen = /* @__PURE__ */ new Set();
@@ -13697,19 +13968,29 @@
     cercanias: "Cercan\xEDas",
     tranvia: "Tranv\xEDa",
     bus: "Bus",
-    hyperloop: "Hyperloop",
-    ferry: "Ferry",
-    cable: "Telef\xE9rico"
+    hyperloop: "Hyperloop"
   };
   var MODE_ORDER = [
     "metro",
     "cercanias",
     "tranvia",
     "bus",
-    "hyperloop",
-    "ferry",
-    "cable"
+    "hyperloop"
   ];
+  var BUS_FAMILY_LABELS = {
+    U: "Universitario",
+    X: "Express",
+    A: "Aeropuerto",
+    N: "Nocturno",
+    O: "Orbital",
+    P: "Playa",
+    TU: "Tur\xEDstico",
+    H: "Hospitalario",
+    L: "Litoral",
+    R: "Residencial",
+    B: "Barrio",
+    E: "Especial"
+  };
   var STATUS_LABELS = {
     normal: "Servicio normal",
     retrasos: "Retrasos",
@@ -13721,9 +14002,7 @@
     { mode: "cercanias", style: "solid" },
     { mode: "tranvia", style: "solid" },
     { mode: "bus", style: "dashed" },
-    { mode: "hyperloop", style: "glow" },
-    { mode: "ferry", style: "dashed" },
-    { mode: "cable", style: "dotted" }
+    { mode: "hyperloop", style: "glow" }
   ];
 
   // src/components/DetailPanel.css
@@ -13766,11 +14045,11 @@
         /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: "detail-kicker", children: station.district }),
         /* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", { children: station.name }),
         /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", { className: "detail-desc", children: [
-          station.interchange ? "Estaci\xF3n de correspondencia" : "Estaci\xF3n",
-          " \xB7 ",
-          connected.length,
+          station.majorHub ? "Gran intercambiador \xB7 acerca el zoom para ver el esquema" : station.interchange ? "Estaci\xF3n de correspondencia" : "Estaci\xF3n",
           " ",
-          "l\xEDneas"
+          "\xB7 ",
+          connected.length,
+          " l\xEDneas"
         ] }),
         /* @__PURE__ */ (0, import_jsx_runtime.jsx)("ul", { className: "station-lines", children: connected.map((l) => {
           var _a2;
@@ -13797,7 +14076,7 @@
       /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "detail-header", children: [
         /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "detail-badge", children: line2.code }),
         /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: "detail-kicker", children: MODE_LABELS[line2.mode] }),
+          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: "detail-kicker", children: line2.busFamily ? `Bus \xB7 ${BUS_FAMILY_LABELS[line2.busFamily]}` : MODE_LABELS[line2.mode] }),
           /* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", { children: line2.name })
         ] })
       ] }),
@@ -13878,7 +14157,7 @@
   // src/components/MapLegend.css
   (() => {
     const style = document.createElement("style");
-    style.textContent = ".map-legend {\n  position: absolute;\n  left: 0.85rem;\n  bottom: 0.85rem;\n  z-index: 12;\n  background: rgba(255, 255, 255, 0.94);\n  backdrop-filter: blur(10px);\n  border: 1px solid rgba(26, 35, 50, 0.1);\n  border-radius: 12px;\n  padding: 0.7rem 0.85rem 0.75rem;\n  box-shadow: 0 8px 22px rgba(18, 26, 38, 0.12);\n  min-width: 150px;\n}\n\n.legend-title {\n  margin: 0 0 0.45rem;\n  font-family: 'Sora', sans-serif;\n  font-size: 0.65rem;\n  letter-spacing: 0.12em;\n  text-transform: uppercase;\n  color: rgba(26, 35, 50, 0.5);\n  font-weight: 600;\n}\n\n.map-legend ul {\n  list-style: none;\n  margin: 0;\n  padding: 0;\n  display: flex;\n  flex-direction: column;\n  gap: 0.28rem;\n}\n\n.map-legend li {\n  display: flex;\n  align-items: center;\n  gap: 0.5rem;\n  font-size: 0.75rem;\n  font-weight: 600;\n  color: #1a2332;\n}\n\n.legend-codes {\n  margin: 0.55rem 0 0;\n  font-size: 0.65rem;\n  color: rgba(26, 35, 50, 0.45);\n  line-height: 1.3;\n}\n\n@media (max-width: 720px) {\n  .map-legend {\n    left: 0.55rem;\n    bottom: 2.6rem;\n    padding: 0.5rem 0.65rem;\n    min-width: 0;\n  }\n\n  .map-legend li span {\n    font-size: 0.68rem;\n  }\n}\n";
+    style.textContent = ".map-legend {\n  position: absolute;\n  left: 0.85rem;\n  bottom: 0.85rem;\n  z-index: 12;\n  background: rgba(255, 255, 255, 0.94);\n  backdrop-filter: blur(10px);\n  border: 1px solid rgba(26, 35, 50, 0.1);\n  border-radius: 12px;\n  padding: 0.7rem 0.85rem 0.75rem;\n  box-shadow: 0 8px 22px rgba(18, 26, 38, 0.12);\n  min-width: 150px;\n}\n\n.legend-title {\n  margin: 0 0 0.45rem;\n  font-family: 'Sora', sans-serif;\n  font-size: 0.65rem;\n  letter-spacing: 0.12em;\n  text-transform: uppercase;\n  color: rgba(26, 35, 50, 0.5);\n  font-weight: 600;\n}\n\n.map-legend ul {\n  list-style: none;\n  margin: 0;\n  padding: 0;\n  display: flex;\n  flex-direction: column;\n  gap: 0.28rem;\n}\n\n.map-legend li {\n  display: flex;\n  align-items: center;\n  gap: 0.5rem;\n  font-size: 0.75rem;\n  font-weight: 600;\n  color: #1a2332;\n}\n\n.legend-codes {\n  margin: 0.55rem 0 0;\n  font-size: 0.65rem;\n  color: rgba(26, 35, 50, 0.45);\n  line-height: 1.3;\n}\n\n.legend-codes.bus-codes {\n  margin-top: 0.25rem;\n  max-width: 180px;\n}\n\n@media (max-width: 720px) {\n  .map-legend {\n    left: 0.55rem;\n    bottom: 2.6rem;\n    padding: 0.5rem 0.65rem;\n    min-width: 0;\n  }\n\n  .map-legend li span {\n    font-size: 0.68rem;\n  }\n}\n";
     document.head.appendChild(style);
   })();
 
@@ -13887,18 +14166,16 @@
   var STYLE_SAMPLE = {
     solid: { width: 4 },
     dashed: { dash: "5 4", width: 3.5 },
-    dotted: { dash: "2 3", width: 3 },
     glow: { width: 4, glow: true }
   };
   var SAMPLE_COLORS = {
-    metro: "#E53935",
+    metro: "#C62828",
     cercanias: "#0D47A1",
     tranvia: "#E65100",
-    bus: "#546E7A",
-    hyperloop: "#00BFA5",
-    ferry: "#0288D1",
-    cable: "#8D6E63"
+    bus: "#5D4037",
+    hyperloop: "#00BFA5"
   };
+  var BUS_KEYS = Object.keys(BUS_FAMILY_LABELS);
   function MapLegend() {
     return /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "map-legend", "aria-label": "Leyenda del mapa", children: [
       /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { className: "legend-title", children: "Leyenda" }),
@@ -13943,9 +14220,20 @@
             /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("circle", { cx: "14", cy: "7", r: "2.2", fill: "#1a2332" })
           ] }),
           /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { children: "Correspondencia" })
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("li", { children: [
+          /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("svg", { width: "28", height: "14", "aria-hidden": true, children: [
+            /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("circle", { cx: "14", cy: "7", r: "6", fill: "none", stroke: "#c45c26", strokeWidth: "1.5", strokeDasharray: "2 2" }),
+            /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("circle", { cx: "14", cy: "7", r: "3.5", fill: "#eef1f4", stroke: "#1a2332", strokeWidth: "1.5" })
+          ] }),
+          /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { children: "Gran intercambiador" })
         ] })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { className: "legend-codes", children: "Metro L \xB7 Cercan\xEDas C \xB7 Tranv\xEDa T" })
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { className: "legend-codes", children: "Metro L \xB7 Cercan\xEDas C \xB7 Tranv\xEDa T" }),
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("p", { className: "legend-codes bus-codes", children: [
+        "Bus: ",
+        BUS_KEYS.map((k) => `${k}=${BUS_FAMILY_LABELS[k].slice(0, 3)}`).join(" \xB7 ")
+      ] })
     ] });
   }
 
@@ -13975,45 +14263,25 @@
     return graph2;
   }
   var graph = buildGraph();
-  function findRoute(fromId, toId) {
-    var _a, _b;
-    if (!stations[fromId] || !stations[toId] || fromId === toId) return null;
-    const q = [{ stationId: fromId, lineId: null }];
-    const prev = /* @__PURE__ */ new Map();
-    const startKey = `${fromId}|_`;
-    prev.set(startKey, { prevKey: null, viaLine: null });
-    while (q.length) {
-      const cur = q.shift();
-      const curKey = `${cur.stationId}|${(_a = cur.lineId) != null ? _a : "_"}`;
-      if (cur.stationId === toId) {
-        const stationPath = [];
-        const arrivalLines = [];
-        let k = curKey;
-        while (k) {
-          const st = k.split("|")[0];
-          const meta = prev.get(k);
-          stationPath.push(st);
-          arrivalLines.push(meta.viaLine);
-          k = meta.prevKey;
-        }
-        stationPath.reverse();
-        arrivalLines.reverse();
-        return legsFromPath(stationPath, arrivalLines);
-      }
-      const edges = (_b = graph.get(cur.stationId)) != null ? _b : [];
-      const ordered = [...edges].sort((a, b) => {
-        const aSame = cur.lineId && a.lineId === cur.lineId ? 0 : 1;
-        const bSame = cur.lineId && b.lineId === cur.lineId ? 0 : 1;
-        return aSame - bSame;
-      });
-      for (const e of ordered) {
-        const nk = `${e.to}|${e.lineId}`;
-        if (prev.has(nk)) continue;
-        prev.set(nk, { prevKey: curKey, viaLine: e.lineId });
-        q.push({ stationId: e.to, lineId: e.lineId });
-      }
+  function modeWeight(mode) {
+    switch (mode) {
+      case "hyperloop":
+        return 1;
+      case "metro":
+        return 2;
+      case "tranvia":
+        return 2.4;
+      case "cercanias":
+        return 3;
+      default:
+        return 3.6;
     }
-    return null;
+  }
+  function scorePlan(plan, prefer) {
+    if (prefer === "transfers") {
+      return plan.transfers * 1e3 + plan.estimatedMinutes;
+    }
+    return plan.estimatedMinutes * 10 + plan.transfers * 40;
   }
   function legsFromPath(stationPath, arrivalLines) {
     if (stationPath.length < 2) return null;
@@ -14048,17 +14316,139 @@
     const transfers = Math.max(0, legs.length - 1);
     const estimatedMinutes = Math.round(
       legs.reduce((acc, leg) => {
-        const perStop = leg.line.mode === "hyperloop" ? 1.2 : leg.line.mode === "metro" ? 2 : leg.line.mode === "cercanias" ? 3 : leg.line.mode === "tranvia" ? 2.4 : 3.5;
-        return acc + leg.stopCount * perStop + leg.line.frequencyMin * 0.35;
+        const wait = Math.min(8, leg.line.frequencyMin * 0.4);
+        return acc + leg.stopCount * modeWeight(leg.line.mode) + wait;
       }, 0) + transfers * 4
     );
-    return {
+    const plan = {
       legs,
       totalStops,
       transfers,
       estimatedMinutes,
-      stationIds: stationPath
+      stationIds: stationPath,
+      label: "",
+      steps: []
     };
+    plan.steps = buildSteps(plan);
+    return plan;
+  }
+  function buildSteps(plan) {
+    const steps = [];
+    plan.legs.forEach((leg, idx) => {
+      const fromName = stationLabel(leg.fromId);
+      const toName = stationLabel(leg.toId);
+      if (idx === 0) {
+        steps.push({
+          kind: "board",
+          text: `En ${fromName}, toma la ${leg.line.code} (${leg.line.name}) sentido ${toName}`,
+          line: leg.line,
+          stationId: leg.fromId
+        });
+      } else {
+        steps.push({
+          kind: "transfer",
+          text: `Baja en ${fromName} y cambia a la ${leg.line.code} (${leg.line.name})`,
+          line: leg.line,
+          stationId: leg.fromId
+        });
+      }
+      steps.push({
+        kind: "ride",
+        text: `Viaja ${leg.stopCount} parada${leg.stopCount === 1 ? "" : "s"} hasta ${toName}`,
+        line: leg.line,
+        stationId: leg.toId
+      });
+    });
+    const last = plan.legs[plan.legs.length - 1];
+    steps.push({
+      kind: "alight",
+      text: `Llegada a ${stationLabel(last.toId)}`,
+      stationId: last.toId
+    });
+    return steps;
+  }
+  function planSignature(plan) {
+    return plan.legs.map((l) => `${l.line.id}:${l.fromId}>${l.toId}`).join("|");
+  }
+  function findRoutes(fromId, toId, maxRoutes = 3) {
+    var _a, _b;
+    if (!stations[fromId] || !stations[toId] || fromId === toId) return [];
+    const candidates = [];
+    const seen = /* @__PURE__ */ new Set();
+    const trySearch = (transferPenalty, avoidLineId) => {
+      const plan = searchOne(fromId, toId, transferPenalty, avoidLineId);
+      if (!plan) return;
+      const sig = planSignature(plan);
+      if (seen.has(sig)) return;
+      seen.add(sig);
+      candidates.push(plan);
+    };
+    trySearch(8);
+    trySearch(2);
+    if ((_a = candidates[0]) == null ? void 0 : _a.legs[0]) {
+      trySearch(3, candidates[0].legs[0].line.id);
+    }
+    const hyperLeg = (_b = candidates[0]) == null ? void 0 : _b.legs.find((l) => l.line.mode === "hyperloop");
+    if (hyperLeg) trySearch(3, hyperLeg.line.id);
+    const byFast = [...candidates].sort((a, b) => scorePlan(a, "fast") - scorePlan(b, "fast"));
+    const byTrans = [...candidates].sort((a, b) => scorePlan(a, "transfers") - scorePlan(b, "transfers"));
+    const result = [];
+    const pushLabeled = (plan, label) => {
+      if (result.some((r) => planSignature(r) === planSignature(plan))) return;
+      result.push({ ...plan, label, steps: buildSteps(plan) });
+    };
+    if (byFast[0]) pushLabeled(byFast[0], "M\xE1s r\xE1pida");
+    if (byTrans[0]) pushLabeled(byTrans[0], "Menos trasbordos");
+    for (const p of byFast) {
+      if (result.length >= maxRoutes) break;
+      pushLabeled(p, "Alternativa");
+    }
+    return result.slice(0, maxRoutes);
+  }
+  function searchOne(fromId, toId, transferPenalty, avoidLineId) {
+    var _a, _b, _c;
+    const keyOf = (s, l) => `${s}|${l != null ? l : "_"}`;
+    const dist = /* @__PURE__ */ new Map();
+    const prev = /* @__PURE__ */ new Map();
+    const startKey = keyOf(fromId, null);
+    dist.set(startKey, 0);
+    prev.set(startKey, { prevKey: null, viaLine: null });
+    const heap = [{ stationId: fromId, lineId: null, cost: 0 }];
+    while (heap.length) {
+      heap.sort((a, b) => a.cost - b.cost);
+      const cur = heap.shift();
+      const curKey = keyOf(cur.stationId, cur.lineId);
+      if (cur.cost > ((_a = dist.get(curKey)) != null ? _a : Infinity)) continue;
+      if (cur.stationId === toId) {
+        const stationPath = [];
+        const arrivalLines = [];
+        let k = curKey;
+        while (k) {
+          const st = k.split("|")[0];
+          const meta = prev.get(k);
+          stationPath.push(st);
+          arrivalLines.push(meta.viaLine);
+          k = meta.prevKey;
+        }
+        stationPath.reverse();
+        arrivalLines.reverse();
+        return legsFromPath(stationPath, arrivalLines);
+      }
+      for (const e of (_b = graph.get(cur.stationId)) != null ? _b : []) {
+        if (avoidLineId && e.lineId === avoidLineId && !cur.lineId) continue;
+        const line2 = lines.find((l) => l.id === e.lineId);
+        if (!line2) continue;
+        const transfer = cur.lineId && cur.lineId !== e.lineId ? transferPenalty : 0;
+        const nextCost = cur.cost + modeWeight(line2.mode) + transfer + line2.frequencyMin * 0.05;
+        const nk = keyOf(e.to, e.lineId);
+        if (nextCost < ((_c = dist.get(nk)) != null ? _c : Infinity)) {
+          dist.set(nk, nextCost);
+          prev.set(nk, { prevKey: curKey, viaLine: e.lineId });
+          heap.push({ stationId: e.to, lineId: e.lineId, cost: nextCost });
+        }
+      }
+    }
+    return null;
   }
   function stationLabel(id) {
     var _a, _b;
@@ -14068,25 +14458,28 @@
   // src/components/RoutePlanner.css
   (() => {
     const style = document.createElement("style");
-    style.textContent = ".route-planner {\n  padding: 0.85rem 1rem;\n  border-bottom: 1px solid rgba(255, 255, 255, 0.06);\n}\n\n.route-planner h2 {\n  margin: 0 0 0.65rem;\n  font-family: 'Sora', sans-serif;\n  font-size: 0.7rem;\n  letter-spacing: 0.12em;\n  text-transform: uppercase;\n  color: rgba(232, 237, 243, 0.5);\n  font-weight: 600;\n}\n\n.route-planner label {\n  display: flex;\n  flex-direction: column;\n  gap: 0.3rem;\n  margin-bottom: 0.45rem;\n}\n\n.route-planner label span {\n  font-size: 0.7rem;\n  color: rgba(232, 237, 243, 0.5);\n}\n\n.route-planner select {\n  width: 100%;\n  padding: 0.55rem 0.65rem;\n  border-radius: 8px;\n  border: 1px solid rgba(255, 255, 255, 0.1);\n  background: rgba(0, 0, 0, 0.25);\n  color: #e8edf3;\n  font-family: 'Manrope', sans-serif;\n  font-size: 0.82rem;\n  outline: none;\n}\n\n.route-planner select:focus {\n  border-color: rgba(196, 92, 38, 0.55);\n}\n\n.route-swap-row {\n  display: flex;\n  justify-content: center;\n  margin: 0.15rem 0;\n}\n\n.swap-btn {\n  border: 1px solid rgba(255, 255, 255, 0.12);\n  background: rgba(255, 255, 255, 0.05);\n  color: #e8edf3;\n  width: 2rem;\n  height: 2rem;\n  border-radius: 6px;\n  cursor: pointer;\n}\n\n.route-actions {\n  display: flex;\n  gap: 0.45rem;\n  margin-top: 0.45rem;\n}\n\n.route-actions .primary {\n  flex: 1;\n  border: none;\n  background: #c45c26;\n  color: #fff;\n  font-weight: 700;\n  font-family: 'Sora', sans-serif;\n  font-size: 0.8rem;\n  padding: 0.55rem 0.75rem;\n  border-radius: 8px;\n  cursor: pointer;\n}\n\n.route-actions .ghost {\n  border: 1px solid rgba(255, 255, 255, 0.15);\n  background: transparent;\n  color: rgba(232, 237, 243, 0.7);\n  border-radius: 8px;\n  padding: 0.55rem 0.65rem;\n  cursor: pointer;\n  font-size: 0.78rem;\n}\n\n.route-error {\n  margin: 0.5rem 0 0;\n  font-size: 0.75rem;\n  color: #ff8a80;\n}\n\n.route-result {\n  margin-top: 0.75rem;\n  padding: 0.65rem;\n  border-radius: 10px;\n  background: rgba(0, 0, 0, 0.22);\n}\n\n.route-summary {\n  display: flex;\n  flex-direction: column;\n  gap: 0.15rem;\n  margin: 0 0 0.55rem;\n}\n\n.route-summary strong {\n  font-family: 'Sora', sans-serif;\n  font-size: 1.05rem;\n}\n\n.route-summary span {\n  font-size: 0.72rem;\n  color: rgba(232, 237, 243, 0.55);\n}\n\n.route-legs {\n  list-style: none;\n  margin: 0;\n  padding: 0;\n  display: flex;\n  flex-direction: column;\n  gap: 0.45rem;\n}\n\n.route-legs li {\n  display: flex;\n  gap: 0.55rem;\n  align-items: flex-start;\n}\n\n.leg-badge {\n  flex-shrink: 0;\n  min-width: 2.2rem;\n  text-align: center;\n  padding: 0.25rem 0.3rem;\n  border-radius: 5px;\n  color: #fff;\n  font-family: 'Sora', sans-serif;\n  font-size: 0.68rem;\n  font-weight: 700;\n}\n\n.leg-text {\n  font-size: 0.78rem;\n  line-height: 1.35;\n  color: #e8edf3;\n}\n\n.leg-text button {\n  border: none;\n  background: none;\n  color: #fff;\n  font-weight: 600;\n  padding: 0;\n  cursor: pointer;\n  text-decoration: underline;\n  text-underline-offset: 2px;\n  font-family: inherit;\n  font-size: inherit;\n}\n\n.leg-text small {\n  display: block;\n  color: rgba(232, 237, 243, 0.45);\n  font-size: 0.68rem;\n  margin-top: 0.1rem;\n}\n";
+    style.textContent = ".route-planner {\n  padding: 0.85rem 1rem;\n  border-bottom: 1px solid rgba(255, 255, 255, 0.06);\n}\n\n.route-planner h2 {\n  margin: 0 0 0.65rem;\n  font-family: 'Sora', sans-serif;\n  font-size: 0.7rem;\n  letter-spacing: 0.12em;\n  text-transform: uppercase;\n  color: rgba(232, 237, 243, 0.5);\n  font-weight: 600;\n}\n\n.route-planner label {\n  display: flex;\n  flex-direction: column;\n  gap: 0.3rem;\n  margin-bottom: 0.45rem;\n}\n\n.route-planner label span {\n  font-size: 0.7rem;\n  color: rgba(232, 237, 243, 0.5);\n}\n\n.route-planner select {\n  width: 100%;\n  padding: 0.55rem 0.65rem;\n  border-radius: 8px;\n  border: 1px solid rgba(255, 255, 255, 0.1);\n  background: rgba(0, 0, 0, 0.25);\n  color: #e8edf3;\n  font-family: 'Manrope', sans-serif;\n  font-size: 0.82rem;\n  outline: none;\n}\n\n.route-planner select:focus {\n  border-color: rgba(196, 92, 38, 0.55);\n}\n\n.route-swap-row {\n  display: flex;\n  justify-content: center;\n  margin: 0.15rem 0;\n}\n\n.swap-btn {\n  border: 1px solid rgba(255, 255, 255, 0.12);\n  background: rgba(255, 255, 255, 0.05);\n  color: #e8edf3;\n  width: 2rem;\n  height: 2rem;\n  border-radius: 6px;\n  cursor: pointer;\n}\n\n.route-actions {\n  display: flex;\n  gap: 0.45rem;\n  margin-top: 0.45rem;\n}\n\n.route-actions .primary {\n  flex: 1;\n  border: none;\n  background: #c45c26;\n  color: #fff;\n  font-weight: 700;\n  font-family: 'Sora', sans-serif;\n  font-size: 0.8rem;\n  padding: 0.55rem 0.75rem;\n  border-radius: 8px;\n  cursor: pointer;\n}\n\n.route-actions .ghost {\n  border: 1px solid rgba(255, 255, 255, 0.15);\n  background: transparent;\n  color: rgba(232, 237, 243, 0.7);\n  border-radius: 8px;\n  padding: 0.55rem 0.65rem;\n  cursor: pointer;\n  font-size: 0.78rem;\n}\n\n.route-error {\n  margin: 0.5rem 0 0;\n  font-size: 0.75rem;\n  color: #ff8a80;\n}\n\n.route-alts {\n  display: flex;\n  flex-direction: column;\n  gap: 0.35rem;\n  margin-top: 0.65rem;\n}\n\n.alt-chip {\n  display: flex;\n  flex-direction: column;\n  align-items: flex-start;\n  gap: 0.1rem;\n  padding: 0.45rem 0.6rem;\n  border-radius: 8px;\n  border: 1px solid rgba(255, 255, 255, 0.1);\n  background: rgba(0, 0, 0, 0.18);\n  color: #e8edf3;\n  cursor: pointer;\n  text-align: left;\n  font-family: 'Manrope', sans-serif;\n}\n\n.alt-chip strong {\n  font-family: 'Sora', sans-serif;\n  font-size: 0.78rem;\n}\n\n.alt-chip span {\n  font-size: 0.68rem;\n  color: rgba(232, 237, 243, 0.55);\n}\n\n.alt-chip.active {\n  border-color: rgba(196, 92, 38, 0.55);\n  background: rgba(196, 92, 38, 0.18);\n}\n\n.steps-title {\n  margin: 0.75rem 0 0.4rem;\n  font-family: 'Sora', sans-serif;\n  font-size: 0.65rem;\n  letter-spacing: 0.1em;\n  text-transform: uppercase;\n  color: rgba(232, 237, 243, 0.45);\n}\n\n.route-steps {\n  list-style: none;\n  margin: 0;\n  padding: 0;\n  display: flex;\n  flex-direction: column;\n  gap: 0.4rem;\n}\n\n.route-steps li {\n  display: flex;\n  gap: 0.45rem;\n  align-items: flex-start;\n  font-size: 0.75rem;\n  line-height: 1.35;\n  color: rgba(232, 237, 243, 0.88);\n}\n\n.inline-link {\n  border: none;\n  background: none;\n  color: #ffb74d;\n  padding: 0;\n  cursor: pointer;\n  font-size: inherit;\n  text-decoration: underline;\n}\n\n.route-result {\n  margin-top: 0.75rem;\n  padding: 0.65rem;\n  border-radius: 10px;\n  background: rgba(0, 0, 0, 0.22);\n}\n\n.route-summary {\n  display: flex;\n  flex-direction: column;\n  gap: 0.15rem;\n  margin: 0 0 0.55rem;\n}\n\n.route-summary strong {\n  font-family: 'Sora', sans-serif;\n  font-size: 1.05rem;\n}\n\n.route-summary span {\n  font-size: 0.72rem;\n  color: rgba(232, 237, 243, 0.55);\n}\n\n.route-legs {\n  list-style: none;\n  margin: 0;\n  padding: 0;\n  display: flex;\n  flex-direction: column;\n  gap: 0.45rem;\n}\n\n.route-legs li {\n  display: flex;\n  gap: 0.55rem;\n  align-items: flex-start;\n}\n\n.leg-badge {\n  flex-shrink: 0;\n  min-width: 2.2rem;\n  text-align: center;\n  padding: 0.25rem 0.3rem;\n  border-radius: 5px;\n  color: #fff;\n  font-family: 'Sora', sans-serif;\n  font-size: 0.68rem;\n  font-weight: 700;\n}\n\n.leg-text {\n  font-size: 0.78rem;\n  line-height: 1.35;\n  color: #e8edf3;\n}\n\n.leg-text button {\n  border: none;\n  background: none;\n  color: #fff;\n  font-weight: 600;\n  padding: 0;\n  cursor: pointer;\n  text-decoration: underline;\n  text-underline-offset: 2px;\n  font-family: inherit;\n  font-size: inherit;\n}\n\n.leg-text small {\n  display: block;\n  color: rgba(232, 237, 243, 0.45);\n  font-size: 0.68rem;\n  margin-top: 0.1rem;\n}\n";
     document.head.appendChild(style);
   })();
 
   // src/components/RoutePlanner.tsx
   var import_jsx_runtime3 = __toESM(require_jsx_runtime(), 1);
   function RoutePlanner({ onRoute, onPickStation }) {
+    var _a;
     const stations2 = (0, import_react2.useMemo)(
       () => getUniqueStations().sort((a, b) => a.name.localeCompare(b.name, "es")),
       []
     );
     const [fromId, setFromId] = (0, import_react2.useState)("");
     const [toId, setToId] = (0, import_react2.useState)("");
-    const [plan, setPlan] = (0, import_react2.useState)(null);
+    const [plans, setPlans] = (0, import_react2.useState)([]);
+    const [selectedIdx, setSelectedIdx] = (0, import_react2.useState)(0);
     const [error, setError] = (0, import_react2.useState)("");
     const swap = () => {
       setFromId(toId);
       setToId(fromId);
-      setPlan(null);
+      setPlans([]);
+      setSelectedIdx(0);
       onRoute(null);
       setError("");
     };
@@ -14099,22 +14492,30 @@
         setError("Origen y destino deben ser distintos");
         return;
       }
-      const result = findRoute(fromId, toId);
-      if (!result) {
-        setError("No hay ruta disponible (l\xEDnea suspendida o sin conexi\xF3n)");
-        setPlan(null);
+      const results = findRoutes(fromId, toId, 3);
+      if (!results.length) {
+        setError("No hay ruta disponible");
+        setPlans([]);
         onRoute(null);
         return;
       }
       setError("");
-      setPlan(result);
-      onRoute(result);
+      setPlans(results);
+      setSelectedIdx(0);
+      onRoute(results[0]);
     };
     const clear = () => {
-      setPlan(null);
+      setPlans([]);
+      setSelectedIdx(0);
       onRoute(null);
       setError("");
     };
+    const selectPlan = (idx) => {
+      var _a2;
+      setSelectedIdx(idx);
+      onRoute((_a2 = plans[idx]) != null ? _a2 : null);
+    };
+    const plan = (_a = plans[selectedIdx]) != null ? _a : null;
     return /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("section", { className: "route-planner", children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h2", { children: "Planificar viaje" }),
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("label", { children: [
@@ -14131,7 +14532,7 @@
           ] }, s.id))
         ] })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "route-swap-row", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { type: "button", className: "swap-btn", onClick: swap, "aria-label": "Intercambiar origen y destino", children: "\u2195" }) }),
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "route-swap-row", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { type: "button", className: "swap-btn", onClick: swap, "aria-label": "Intercambiar", children: "\u2195" }) }),
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("label", { children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { children: "Destino" }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("select", { value: toId, onChange: (e) => {
@@ -14147,10 +14548,28 @@
         ] })
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "route-actions", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { type: "button", className: "primary", onClick: calculate, children: "Calcular ruta" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { type: "button", className: "primary", onClick: calculate, children: "Calcular rutas" }),
         plan && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { type: "button", className: "ghost", onClick: clear, children: "Limpiar" })
       ] }),
       error && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("p", { className: "route-error", children: error }),
+      plans.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "route-alts", children: plans.map((p, idx) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)(
+        "button",
+        {
+          type: "button",
+          className: `alt-chip ${idx === selectedIdx ? "active" : ""}`,
+          onClick: () => selectPlan(idx),
+          children: [
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("strong", { children: p.label }),
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { children: [
+              p.estimatedMinutes,
+              " min \xB7 ",
+              p.transfers,
+              " trasb."
+            ] })
+          ]
+        },
+        `${p.label}-${idx}`
+      )) }),
       plan && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "route-result", children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("p", { className: "route-summary", children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("strong", { children: [
@@ -14165,6 +14584,18 @@
             plan.transfers === 1 ? "" : "s"
           ] })
         ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h3", { className: "steps-title", children: "Indicaciones" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("ol", { className: "route-steps", children: plan.steps.map((step, i) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("li", { className: `step-${step.kind}`, children: [
+          step.line && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "leg-badge", style: { background: step.line.color }, children: step.line.code }),
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { children: [
+            step.text,
+            step.stationId && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)(import_jsx_runtime3.Fragment, { children: [
+              " ",
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { type: "button", className: "inline-link", onClick: () => onPickStation(step.stationId), children: "ver" })
+            ] })
+          ] })
+        ] }, i)) }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h3", { className: "steps-title", children: "Tramos" }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("ol", { className: "route-legs", children: plan.legs.map((leg, idx) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("li", { children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "leg-badge", style: { background: leg.line.color }, children: leg.line.code }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { className: "leg-text", children: [
@@ -14209,8 +14640,9 @@
           /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("span", { className: "line-meta", children: [
             /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("span", { className: "line-name", children: line2.name }),
             /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("span", { className: "line-sub", children: [
-              MODE_LABELS[line2.mode],
-              " \xB7 cada ",
+              line2.busFamily ? `Bus ${BUS_FAMILY_LABELS[line2.busFamily]}` : MODE_LABELS[line2.mode],
+              " ",
+              "\xB7 cada ",
               line2.frequencyMin,
               " min",
               role === "operador" && /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)(import_jsx_runtime4.Fragment, { children: [
@@ -14254,7 +14686,7 @@
     })).filter((g) => g.items.length > 0);
     return /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("aside", { className: "side-panel", children: [
       /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("header", { className: "side-brand", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("p", { className: "brand-kicker", children: "Red Mundial \xB7 v0.1" }),
+        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("p", { className: "brand-kicker", children: "Costa Sur \xB7 v0.2" }),
         /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("h1", { className: "brand-name", children: CITY.name }),
         /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("p", { className: "brand-tag", children: CITY.tagline }),
         /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("div", { className: "brand-stats", children: [
@@ -14400,7 +14832,7 @@
   // src/components/TransitMap.css
   (() => {
     const style = document.createElement("style");
-    style.textContent = ".transit-map {\n  display: block;\n  user-select: none;\n}\n\n.district-labels text {\n  fill: rgba(40, 55, 75, 0.18);\n  font-family: 'Sora', system-ui, sans-serif;\n  font-size: 15px;\n  font-weight: 600;\n  letter-spacing: 0.1em;\n  text-transform: uppercase;\n}\n\n.water-fill {\n  fill: rgba(56, 120, 160, 0.1);\n}\n\n.line-hit {\n  cursor: pointer;\n}\n\n.line-path {\n  transition: stroke-width 0.2s ease, opacity 0.25s ease;\n}\n\n.line-selected {\n  filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.25));\n}\n\n.station {\n  cursor: pointer;\n  transition: opacity 0.2s ease;\n}\n\n.station-dot {\n  fill: #1a2332;\n  stroke: #eef1f4;\n  stroke-width: 1.5;\n}\n\n.station-ring {\n  fill: #eef1f4;\n  stroke: #1a2332;\n  stroke-width: 2.5;\n}\n\n.station-core {\n  fill: #1a2332;\n}\n\n.station.active .station-ring {\n  stroke: #c45c26;\n  stroke-width: 3;\n}\n\n.station.active .station-core,\n.station.active .station-dot {\n  fill: #c45c26;\n}\n\n.station-label {\n  fill: #1a2332;\n  font-family: 'Manrope', system-ui, sans-serif;\n  font-weight: 600;\n  paint-order: stroke;\n  stroke: rgba(238, 241, 244, 0.92);\n  stroke-width: 3px;\n  pointer-events: none;\n}\n";
+    style.textContent = ".transit-map {\n  display: block;\n  user-select: none;\n}\n\n.district-labels text {\n  fill: rgba(40, 55, 75, 0.16);\n  font-family: 'Sora', system-ui, sans-serif;\n  font-size: 14px;\n  font-weight: 600;\n  letter-spacing: 0.08em;\n  text-transform: uppercase;\n}\n\n.coastline {\n  stroke: rgba(56, 120, 160, 0.35);\n  stroke-width: 3;\n  stroke-dasharray: 8 6;\n}\n\n.line-hit {\n  cursor: pointer;\n}\n\n.line-path {\n  transition: stroke-width 0.2s ease, opacity 0.25s ease;\n}\n\n.line-selected {\n  filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.25));\n}\n\n.station {\n  cursor: pointer;\n  transition: opacity 0.2s ease;\n}\n\n.station-dot {\n  fill: #1a2332;\n  stroke: #eef1f4;\n  stroke-width: 1.5;\n}\n\n.station-ring {\n  fill: #eef1f4;\n  stroke: #1a2332;\n  stroke-width: 2.5;\n}\n\n.station-core {\n  fill: #1a2332;\n}\n\n.hub-ring-outer {\n  fill: none;\n  stroke: rgba(196, 92, 38, 0.35);\n  stroke-width: 2;\n  stroke-dasharray: 3 3;\n}\n\n.station.active .station-ring {\n  stroke: #c45c26;\n  stroke-width: 3;\n}\n\n.station.active .station-core,\n.station.active .station-dot {\n  fill: #c45c26;\n}\n\n.station-label {\n  fill: #1a2332;\n  font-family: 'Manrope', system-ui, sans-serif;\n  font-weight: 600;\n  paint-order: stroke;\n  stroke: rgba(238, 241, 244, 0.92);\n  stroke-width: 3px;\n  pointer-events: none;\n}\n\n.hub-diagram-bg {\n  fill: rgba(255, 255, 255, 0.88);\n  stroke: rgba(26, 35, 50, 0.15);\n  stroke-width: 2;\n}\n\n.hub-diagram-title {\n  font-family: 'Sora', sans-serif;\n  font-size: 11px;\n  font-weight: 700;\n  fill: #1a2332;\n  letter-spacing: 0.04em;\n}\n\n.hub-spoke {\n  cursor: pointer;\n}\n\n.hub-spoke-code {\n  fill: #fff;\n  font-family: 'Sora', sans-serif;\n  font-size: 7px;\n  font-weight: 700;\n  pointer-events: none;\n}\n";
     document.head.appendChild(style);
   })();
 
@@ -14414,7 +14846,7 @@
       const curr = points[i];
       const dx = curr.x - prev.x;
       const dy = curr.y - prev.y;
-      if (Math.abs(dx) > 8 && Math.abs(dy) > 8) {
+      if (Math.abs(dx) > 10 && Math.abs(dy) > 10) {
         if (Math.abs(dx) >= Math.abs(dy)) {
           d += ` L ${curr.x} ${prev.y} L ${curr.x} ${curr.y}`;
         } else {
@@ -14436,18 +14868,12 @@
         return 5.5;
       case "tranvia":
         return 4;
-      case "ferry":
-        return 3.5;
-      case "cable":
-        return 3;
       default:
         return 3.2;
     }
   }
   function dashArray(mode) {
     if (mode === "bus") return "6 5";
-    if (mode === "ferry") return "10 6";
-    if (mode === "cable") return "2 4";
     return void 0;
   }
   function TransitMap({
@@ -14456,6 +14882,7 @@
     highlightedMode,
     routeStationIds,
     routeLineIds,
+    mapScale,
     dimOthers,
     onSelectLine,
     onSelectStation
@@ -14463,6 +14890,10 @@
     const uniqueStations = getUniqueStations();
     const routeSet = new Set(routeStationIds != null ? routeStationIds : []);
     const routeLines = new Set(routeLineIds != null ? routeLineIds : []);
+    const showDistricts = mapScale < 0.75;
+    const showInterchangeLabels = mapScale >= 0.55;
+    const showAllLabels = mapScale >= 1.05;
+    const showHubDiagram = mapScale >= 1.25;
     const isLineActive = (line2) => {
       if (routeLines.size) return routeLines.has(line2.id);
       if (selectedLineId) return line2.id === selectedLineId;
@@ -14470,12 +14901,14 @@
       return true;
     };
     const lineOpacity = (line2) => {
-      if (routeLines.size) return routeLines.has(line2.id) ? 1 : 0.08;
+      if (routeLines.size) return routeLines.has(line2.id) ? 1 : 0.07;
       if (!dimOthers && !selectedLineId && !highlightedMode) return 1;
-      return isLineActive(line2) ? 1 : 0.1;
+      return isLineActive(line2) ? 1 : 0.09;
     };
-    const order = ["bus", "ferry", "cable", "tranvia", "cercanias", "metro", "hyperloop"];
+    const order = ["bus", "tranvia", "cercanias", "metro", "hyperloop"];
     const sorted = [...lines].sort((a, b) => order.indexOf(a.mode) - order.indexOf(b.mode));
+    const selectedStation = selectedStationId ? stations[selectedStationId] : null;
+    const hubFocus = showHubDiagram && (selectedStation == null ? void 0 : selectedStation.majorHub) ? selectedStation : null;
     return /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)(
       "svg",
       {
@@ -14487,21 +14920,23 @@
         "aria-label": "Plano de la red de transporte de Heliora",
         children: [
           /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("defs", { children: [
-            /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("pattern", { id: "grid", width: "50", height: "50", patternUnits: "userSpaceOnUse", children: /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("path", { d: "M 50 0 L 0 0 0 50", fill: "none", stroke: "rgba(30,40,55,0.035)", strokeWidth: "1" }) }),
-            /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("filter", { id: "softGlow", x: "-20%", y: "-20%", width: "140%", height: "140%", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("feGaussianBlur", { stdDeviation: "2.5", result: "b" }),
-              /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("feMerge", { children: [
-                /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("feMergeNode", { in: "b" }),
-                /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("feMergeNode", { in: "SourceGraphic" })
-              ] })
+            /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("pattern", { id: "grid", width: "60", height: "60", patternUnits: "userSpaceOnUse", children: /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("path", { d: "M 60 0 L 0 0 0 60", fill: "none", stroke: "rgba(30,40,55,0.03)", strokeWidth: "1" }) }),
+            /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("linearGradient", { id: "sea", x1: "0", y1: "0", x2: "0", y2: "1", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("stop", { offset: "0%", stopColor: "rgba(56,140,180,0.08)" }),
+              /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("stop", { offset: "100%", stopColor: "rgba(56,140,180,0.22)" })
             ] })
           ] }),
           /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("rect", { width: CITY.mapWidth, height: CITY.mapHeight, fill: "url(#grid)" }),
-          /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("g", { className: "district-labels", pointerEvents: "none", children: districtLabels.map((d) => /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("text", { x: d.x, y: d.y, textAnchor: "middle", children: d.name }, d.id)) }),
-          /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("ellipse", { className: "water-fill", cx: "1200", cy: "120", rx: "160", ry: "40" }),
-          /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("ellipse", { className: "water-fill", cx: "1200", cy: "1680", rx: "170", ry: "42" }),
-          /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("ellipse", { className: "water-fill", cx: "1720", cy: "880", rx: "70", ry: "45", opacity: "0.45" }),
-          /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("ellipse", { className: "water-fill", cx: "320", cy: "840", rx: "55", ry: "35", opacity: "0.35" }),
+          /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("rect", { className: "sea-band", x: "0", y: "2100", width: CITY.mapWidth, height: "700", fill: "url(#sea)" }),
+          /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
+            "path",
+            {
+              className: "coastline",
+              d: "M 0 2140 C 400 2180, 800 2080, 1200 2120 S 1800 2200, 2200 2160 S 3000 2080, 3600 2140 S 4000 2200, 4200 2150",
+              fill: "none"
+            }
+          ),
+          showDistricts && /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("g", { className: "district-labels", pointerEvents: "none", children: districtLabels.map((d) => /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("text", { x: d.x, y: d.y, textAnchor: "middle", children: d.name }, d.id)) }),
           sorted.map((line2) => {
             const pts = getLinePath(line2);
             const d = pathD(pts);
@@ -14531,10 +14966,9 @@
                   fill: "none",
                   stroke: line2.color,
                   strokeWidth: strokeWidth(line2.mode) + 4,
-                  strokeOpacity: 0.25,
+                  strokeOpacity: 0.22,
                   strokeLinejoin: "round",
                   strokeLinecap: "round",
-                  filter: selected ? "url(#softGlow)" : void 0,
                   pointerEvents: "none"
                 }
               ),
@@ -14551,18 +14985,6 @@
                   className: selected ? "line-selected" : "line-path",
                   pointerEvents: "none"
                 }
-              ),
-              isLineActive(line2) && line2.status === "suspendida" && /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
-                "path",
-                {
-                  d,
-                  fill: "none",
-                  stroke: "#1a2332",
-                  strokeWidth: 2,
-                  strokeDasharray: "4 6",
-                  strokeLinejoin: "round",
-                  pointerEvents: "none"
-                }
               )
             ] }, line2.id);
           }),
@@ -14576,40 +14998,106 @@
               const s = stations[id];
               return s && s.x === st.x && s.y === st.y;
             });
-            const atSelected = selectedStationId === st.id || onSelectedLine || onRoute;
-            const showLabel = st.interchange || atSelected || !selectedLineId && !routeSet.size && st.interchange;
+            const atSelected = selectedStationId === st.id || Boolean(onSelectedLine) || onRoute;
+            const showLabel = atSelected || showAllLabels || showInterchangeLabels && (st.interchange || st.majorHub);
             const faded = selectedLineId && !onSelectedLine || routeSet.size > 0 && !onRoute;
             return /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)(
               "g",
               {
                 "data-station": true,
-                className: `station ${st.interchange ? "interchange" : ""} ${atSelected ? "active" : ""}`,
-                opacity: faded ? 0.12 : 1,
+                className: `station ${st.interchange ? "interchange" : ""} ${st.majorHub ? "major-hub" : ""} ${atSelected ? "active" : ""}`,
+                opacity: faded ? 0.1 : 1,
                 transform: `translate(${st.x}, ${st.y})`,
                 onClick: (e) => {
                   e.stopPropagation();
                   onSelectStation(st.id);
                 },
                 children: [
-                  st.interchange ? /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)(import_jsx_runtime6.Fragment, { children: [
+                  st.majorHub ? /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)(import_jsx_runtime6.Fragment, { children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("circle", { r: "13", className: "hub-ring-outer" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("circle", { r: "8", className: "station-ring" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("circle", { r: "4", className: "station-core" })
+                  ] }) : st.interchange ? /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)(import_jsx_runtime6.Fragment, { children: [
                     /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("circle", { r: "9", className: "station-ring" }),
                     /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("circle", { r: "5", className: "station-core" })
                   ] }) : /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("circle", { r: "4.5", className: "station-dot" }),
-                  showLabel && /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("text", { className: "station-label", x: 11, y: 4, style: { fontSize: st.interchange ? 11 : 9 }, children: st.name })
+                  showLabel && /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
+                    "text",
+                    {
+                      className: "station-label",
+                      x: st.majorHub ? 16 : 11,
+                      y: 4,
+                      style: { fontSize: st.majorHub ? 12 : st.interchange ? 11 : 9 },
+                      children: st.name
+                    }
+                  )
                 ]
               },
               st.id
             );
-          })
+          }),
+          hubFocus && /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
+            HubDiagram,
+            {
+              stationId: hubFocus.id,
+              x: hubFocus.x,
+              y: hubFocus.y,
+              onSelectLine
+            }
+          )
         ]
       }
     );
   }
+  function HubDiagram({
+    stationId,
+    x,
+    y,
+    onSelectLine
+  }) {
+    const connected = getLinesForStation(stationId).slice(0, 12);
+    const r = 52;
+    return /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("g", { className: "hub-diagram", transform: `translate(${x}, ${y})`, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("circle", { r: r + 18, className: "hub-diagram-bg" }),
+      /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("text", { className: "hub-diagram-title", y: -r - 24, textAnchor: "middle", children: "Esquema del intercambiador" }),
+      connected.map((line2, i) => {
+        const angle = i / Math.max(connected.length, 1) * Math.PI * 2 - Math.PI / 2;
+        const x2 = Math.cos(angle) * r;
+        const y2 = Math.sin(angle) * r;
+        return /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)(
+          "g",
+          {
+            className: "hub-spoke",
+            onClick: (e) => {
+              e.stopPropagation();
+              onSelectLine(line2.id);
+            },
+            children: [
+              /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("line", { x1: 0, y1: 0, x2, y2, stroke: line2.color, strokeWidth: 4 }),
+              /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("circle", { cx: x2, cy: y2, r: 10, fill: line2.color }),
+              /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
+                "text",
+                {
+                  x: x2,
+                  y: y2 + 3.5,
+                  textAnchor: "middle",
+                  className: "hub-spoke-code",
+                  children: line2.code
+                }
+              )
+            ]
+          },
+          line2.id
+        );
+      }),
+      /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("circle", { r: 10, fill: "#eef1f4", stroke: "#1a2332", strokeWidth: 2.5 })
+    ] });
+  }
 
   // src/hooks/usePanZoom.ts
   var import_react3 = __toESM(require_react(), 1);
-  var MIN_SCALE = 0.28;
-  var MAX_SCALE = 3.2;
+  var MIN_SCALE = 0.18;
+  var MAX_SCALE = 3.5;
   function usePanZoom(initial) {
     var _a, _b, _c;
     const [state, setState] = (0, import_react3.useState)({
@@ -14675,7 +15163,7 @@
       });
     }, []);
     const reset = (0, import_react3.useCallback)(() => {
-      setState({ x: 40, y: 20, scale: 0.42 });
+      setState({ x: 20, y: 10, scale: 0.28 });
     }, []);
     const fitBounds = (0, import_react3.useCallback)((bounds, padding = 80) => {
       const el = containerRef.current;
@@ -14766,7 +15254,7 @@
       reset,
       fitBounds,
       focusPoint
-    } = usePanZoom({ scale: 0.42, x: 40, y: 20 });
+    } = usePanZoom({ scale: 0.28, x: 20, y: 10 });
     (0, import_react4.useEffect)(() => {
       const id = window.setInterval(() => setClock(simulatedClock()), 15e3);
       return () => window.clearInterval(id);
@@ -14898,6 +15386,7 @@
                     highlightedMode: filterMode,
                     routeStationIds: (_a = routePlan == null ? void 0 : routePlan.stationIds) != null ? _a : null,
                     routeLineIds: (_b = routePlan == null ? void 0 : routePlan.legs.map((l) => l.line.id)) != null ? _b : null,
+                    mapScale: state.scale,
                     dimOthers: Boolean(selectedLineId || filterMode || routePlan),
                     onSelectLine: selectLine,
                     onSelectStation: selectStation

@@ -1,45 +1,28 @@
-# Heliora — Red de Transporte Mundial (v0.1)
+# Heliora — Red de Transporte (v0.2)
 
-Plano interactivo de la red de transporte público de **Heliora**, una mega-metrópolis inventada.
+Mega-metrópolis costera turística del sur de España, con plano interactivo tipo metro.
 
-## Características v0.1
+## v0.2
 
-- Mapa esquema tipo metro (SVG) con pan/zoom
-- Menú lateral con todas las líneas (L / C / T + bus, hyperloop, ferry, teleférico)
-- Planificador de viaje A→B con trasbordos
-- Búsqueda de líneas y estaciones
-- Leyenda de modos de transporte
-- Zoom automático al seleccionar línea/estación/ruta
-- Atajos: `Esc` cierra, `+` / `-` zoom
-- Enlace compartible `?linea=L1`
-- Modos Pasajero y Operador
-- Horarios simulados · UI en español
+- Ciudad mucho más grande (costa, casco, puerto, aeropuerto, campus, playas…)
+- Sin ferry ni teleférico
+- Metro **L**, Cercanías **C**, Tranvía **T**
+- Autobuses alfanuméricos: **U** uni, **X** express, **A** aeropuerto, **N** nocturno, **O** orbital, **P** playa, **TU** turístico, **H** hospital, **L** litoral, **R** residencial, **B** barrio, **E** especial
+- Planificador con **rutas alternativas** e **indicaciones paso a paso**
+- Etiquetas según zoom + esquema de grandes intercambiadores
 
 ## Abrir sin instalar nada
 
-Usa la carpeta **`heliora-abrir-aqui/`** y haz doble clic en `index.html`.
-
-> No abras el `index.html` de la raíz del proyecto: ese es solo para desarrollo y saldrá en blanco.
-
-Para regenerar esa carpeta:
+Carpeta **`heliora-abrir-aqui/`** → doble clic en `index.html`.
 
 ```bash
 npm install
 npm run build:standalone
 ```
 
-## Desarrollo con Node
+## Desarrollo
 
 ```bash
 npm install
 npm run dev
 ```
-
-```bash
-npm run build
-npm run preview
-```
-
-## Stack
-
-Vite + React + TypeScript. Datos simulados en el cliente.
