@@ -41,7 +41,8 @@ await esbuild.build({
   define: {
     'process.env.NODE_ENV': '"production"',
   },
-  minify: true,
+  // Sin minificar: algunos antivirus marcan JS empaquetado/minificado como sospechoso
+  minify: false,
   logLevel: 'info',
 });
 

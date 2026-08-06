@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Evitar ZIP empaquetado (falsos positivos AV)
+heliora-abrir-aqui.zip
