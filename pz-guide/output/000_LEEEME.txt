@@ -1,12 +1,13 @@
-GUÍA CORTA B42.20 — muchas subzonas
+GUÍA CORTA B42.20 — un PDF por zona
 
-• Un PDF = una zona/calle (también rurales)
-• Título en español con la zona exacta
-• Línea Acceso + Orden en calle
-• Mapa PZwiki
-• Lista edificio a edificio
-• → RECOGER solo si hay loot importante
+• Un PDF = un pueblo / POI (Riverside, Scenic Grove, Brandenburg, etc.)
+• Índice 000 agrupado por ciudad
+• Acceso + Orden + Map item + Vehículos + Base + Croquis
+• Cada edificio: tipo · pisos/sótano · ALARMA si aplica
+• → RECOGER: armas, meds, skillbooks, tools, gas, generator, neveras, telas…
+• Louisville con calles B42 (Rockford, Manslick, Industry, Bruiser, Hikes…)
+• POIs B42: Echo Creek, Ekron, Irvington (+ Speedway), Cortman, etc.
+• Stash maps consolidados por ciudad (031+)
 • Coords clicables → map.projectzomboid.com
-• PDFs 085+ = mapas anotados (stash) de la wiki
 
-Empieza por 000_Indice_Orden_y_Enlaces.pdf
+Empieza por 000_Indice_por_Ciudad.pdf
