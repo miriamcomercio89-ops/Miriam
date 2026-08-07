@@ -1,0 +1,12 @@
+GUÍA CORTA B42.20 — muchas subzonas
+
+• Un PDF = una zona/calle (también rurales)
+• Título en español con la zona exacta
+• Línea Acceso + Orden en calle
+• Mapa PZwiki
+• Lista edificio a edificio
+• → RECOGER solo si hay loot importante
+• Coords clicables → map.projectzomboid.com
+• PDFs 085+ = mapas anotados (stash) de la wiki
+
+Empieza por 000_Indice_Orden_y_Enlaces.pdf
