@@ -1,2 +1,4 @@
+assets/maps/*.png
+assets/maps/pdf/*.png
 src/__pycache__/
 *.pyc

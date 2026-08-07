@@ -1,0 +1,9 @@
+GUÍA CORTA B42.20 — Limpieza total
+
+Formato: un PDF por subzona.
+Contenido: mapa wiki + lista numerada de casas/edificios.
+Solo aparece → RECOGER cuando hay loot importante en ese edificio.
+Sin checklists.
+
+Orden: empieza por 00_Indice_y_Orden.pdf y sigue los números de archivo.
+Fuentes: PZwiki (Riverside businesses, Street_names, Map items, town pages).
