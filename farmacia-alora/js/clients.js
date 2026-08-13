@@ -96,6 +96,23 @@
 
     if (!peticionTexto) peticionTexto = "Buenas, ¿me puede atender?";
 
+    const metodos = ["efectivo", "tarjeta_contactless", "tarjeta_chip", "bizum", "transferencia", "vale", "ticket_rest", "mixto"];
+    // SNS cargo more likely if mutua ss / has recipe
+    if (quiereReceta && (tramoSNS !== "particular") && r() < 0.35) metodos.push("sns_cargo");
+    const metodoPago = pick(r, metodos);
+    const metodoNombre = {
+      efectivo: "efectivo",
+      tarjeta_contactless: "tarjeta contactless",
+      tarjeta_chip: "tarjeta con chip",
+      bizum: "Bizum",
+      transferencia: "transferencia",
+      vale: "vale regalo",
+      ticket_rest: "ticket restaurant",
+      sns_cargo: "cargo SNS / receta",
+      mixto: "pago mixto",
+    }[metodoPago] || metodoPago;
+    peticionTexto += ` Pagaré con ${metodoNombre}.`;
+
     return {
       id: "CLI-" + String(n).padStart(7, "0"),
       seedId: n,
@@ -116,6 +133,7 @@
       quiereProductoIds,
       quiereReceta,
       productosReceta,
+      metodoPago,
     };
   }
 

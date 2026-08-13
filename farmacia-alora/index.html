@@ -61,6 +61,8 @@
       <button type="button" class="tab" data-tab="pedidos"><span>💬</span> Clientes <span id="cola-count" class="count-pill">0</span></button>
       <button type="button" class="tab" data-tab="almacen"><span>🚚</span> Almacén <span id="alm-count" class="count-pill">0</span></button>
       <button type="button" class="tab" data-tab="inventario"><span>📦</span> Inventario</button>
+      <button type="button" class="tab" data-tab="gestion"><span>🧮</span> Gestión</button>
+      <button type="button" class="tab" data-tab="minijuegos"><span>🎮</span> Minijuegos</button>
       <button type="button" class="tab" data-tab="pacientes"><span>🗂</span> Pacientes</button>
       <button type="button" class="tab" data-tab="caja"><span>🖥</span> TPV / Caja</button>
       <button type="button" class="tab" data-tab="libro"><span>📕</span> Estupefacientes</button>
@@ -192,10 +194,68 @@
       <div class="card">
         <div class="card-head">
           <h2><span class="h-ico">📦</span> Inventario por categoría</h2>
-          <button type="button" class="btn btn-sm btn-primary" id="btn-auto-pedidos">🚚 Pedir categorías bajas</button>
+          <div class="actions-row" style="margin:0">
+            <button type="button" class="btn btn-sm btn-primary" id="btn-auto-pedidos">🚚 Pedir bajas</button>
+            <button type="button" class="btn btn-sm btn-accent" id="btn-inv-fisico">🧮 Conteo físico</button>
+          </div>
         </div>
-        <p class="muted">Stock total, mínimo y aviso si hay que reponer. El almacén puede pedir solo.</p>
+        <p class="muted">Colores de caducidad: <span class="cad-dot g"></span> ok · <span class="cad-dot o"></span> pronto · <span class="cad-dot r"></span> crítico/caducado</p>
         <div id="inventario-cats" class="inv-grid"></div>
+        <h3 class="subh">Conteo físico (corrige diferencias)</h3>
+        <div id="inv-fisico-box" class="list-block"></div>
+      </div>
+    </section>
+
+    <!-- GESTIÓN -->
+    <section id="panel-gestion" class="panel">
+      <div class="layout-2">
+        <div class="card">
+          <h2><span class="h-ico">↩️</span> Devoluciones a proveedor</h2>
+          <div class="form-grid">
+            <div class="full"><label class="lbl" for="dev-search">Producto</label><input id="dev-search" type="search" placeholder="Buscar…" /></div>
+            <div><label class="lbl" for="dev-qty">Cantidad</label><input id="dev-qty" type="number" min="1" value="1" /></div>
+            <div><label class="lbl" for="dev-motivo">Motivo</label>
+              <select id="dev-motivo"><option value="caducado">Caducado</option><option value="error_pedido">Error pedido</option><option value="retirada">Retirada sanitaria</option></select>
+            </div>
+          </div>
+          <div id="dev-suggest" class="list-block"></div>
+          <button type="button" class="btn btn-primary" id="btn-devolver">Registrar devolución</button>
+          <div id="dev-list" class="list-block"></div>
+        </div>
+        <div class="card">
+          <h2><span class="h-ico">💥</span> Roturas / dañados</h2>
+          <div class="form-grid">
+            <div class="full"><label class="lbl" for="rot-search">Producto</label><input id="rot-search" type="search" /></div>
+            <div><label class="lbl" for="rot-qty">Ud.</label><input id="rot-qty" type="number" min="1" value="1" /></div>
+            <div><label class="lbl" for="rot-motivo">Motivo</label>
+              <select id="rot-motivo"><option value="caida">Caída</option><option value="roto">Envase roto</option><option value="nevera">Fallo nevera</option></select>
+            </div>
+          </div>
+          <div id="rot-suggest" class="list-block"></div>
+          <button type="button" class="btn btn-accent" id="btn-rotura">Registrar rotura</button>
+          <h3 class="subh">💶 Gastos de la farmacia</h3>
+          <div class="form-grid">
+            <div><label class="lbl" for="gasto-tipo">Tipo</label>
+              <select id="gasto-tipo"><option value="luz">Luz</option><option value="personal">Personal</option><option value="pedido">Pedido almacén</option><option value="alquiler">Alquiler</option><option value="otros">Otros</option></select>
+            </div>
+            <div><label class="lbl" for="gasto-imp">Importe €</label><input id="gasto-imp" type="number" min="0" step="0.01" value="50" /></div>
+          </div>
+          <button type="button" class="btn btn-primary" id="btn-gasto">Añadir gasto</button>
+          <div id="gastos-list" class="list-block"></div>
+          <div id="gastos-total" class="cambio-box" style="margin-top:8px">Gastos: 0 €</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MINIJUEGOS -->
+    <section id="panel-minijuegos" class="panel">
+      <div class="card">
+        <div class="card-head">
+          <h2><span class="h-ico">🎮</span> Entrenar minijuegos</h2>
+          <button type="button" class="btn btn-sm btn-primary" id="btn-mini-random">Aleatorio</button>
+        </div>
+        <p class="muted">Practica fuera de una venta. En el cobro real saldrán solos según el caso.</p>
+        <div id="mini-train-grid" class="mini-train-grid"></div>
       </div>
     </section>
 
@@ -301,11 +361,11 @@
       <div class="card help-card">
         <h2>✨ Cómo usar el TPV</h2>
         <ol class="help-steps">
-          <li>En <strong>Clientes</strong>, atiende a alguien: te dirá qué le pasa.</li>
-          <li>En <strong>Venta</strong>, busca por síntoma o nombre y <strong>añade</strong> al carrito.</li>
-          <li>Elige tramo SNS, pensionista o familia numerosa si aplica.</li>
-          <li>Pulsa <strong>Cobrar TPV</strong> y elige cómo paga (efectivo con cambio, tarjeta…).</li>
-          <li>Si falta stock: pestaña <strong>Almacén</strong>.</li>
+          <li>En <strong>Clientes</strong>, atiende a alguien: te dirá producto, síntomas y <strong>cómo quiere pagar</strong>.</li>
+          <li>En <strong>Venta</strong>, busca por categoría/síntoma y añade al carrito. Respeta receta papel o electrónica.</li>
+          <li>Al cobrar, usa el <strong>método que eligió el cliente</strong>. Saldrán minijuegos (escáner, cortar códigos, PIN, firma…).</li>
+          <li><strong>Inventario</strong>: puntos de caducidad y conteo físico. <strong>Gestión</strong>: devoluciones, roturas y gastos.</li>
+          <li>Entrena en la pestaña <strong>Minijuegos</strong> sin una venta real.</li>
         </ol>
         <p><kbd>F2</kbd> buscar · <kbd>F4</kbd> cobrar · <kbd>Esc</kbd> cerrar</p>
         <p class="warn-text">Simulador educativo. No es consejo médico real.</p>
@@ -417,6 +477,13 @@
     </div>
   </div></div>
 
+  <div class="modal" id="modal-minijuego"><div class="modal-card modal-wide">
+    <h2>🎮 Minijuego de mostrador</h2>
+    <div class="mini-progress" id="mini-progress"></div>
+    <div id="mini-root"></div>
+    <p class="muted tiny" id="mini-status"></p>
+  </div></div>
+
   <div id="toasts" aria-live="polite"></div>
 
   <script src="js/catalog.js"></script>
@@ -424,6 +491,7 @@
   <script src="js/clients.js"></script>
   <script src="js/caja.js"></script>
   <script src="js/sounds.js"></script>
+  <script src="js/minigames.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

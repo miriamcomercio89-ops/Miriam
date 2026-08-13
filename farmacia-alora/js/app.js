@@ -5,12 +5,13 @@
 (function () {
   "use strict";
 
-  const STORAGE_KEY = "farmacia-alora-v4";
+  const STORAGE_KEY = "farmacia-alora-v5";
   const REAL_MS_PER_GAME_HOUR = 60 * 1000;
   const Clinica = window.FarmaciaClinica;
   const Caja = window.FarmaciaCaja;
   const Clientes = window.FarmaciaClientes;
   const Sounds = window.FarmaciaSounds;
+  const Minis = window.FarmaciaMinijuegos;
 
   const MUTUAS = [
     { id: "particular", nombre: "Particular", cobertura: 0 },
@@ -37,6 +38,12 @@
   let pacienteEditId = null, selectedPacienteId = null, almPickId = null;
   let soundOn = true;
   let pendingCtrlContinue = null;
+  let pendingPago = null;
+  let miniQueue = [];
+  let miniIndex = 0;
+  let miniFails = 0;
+  let gestPickId = null;
+  let rotPickId = null;
 
   const $ = (s) => document.querySelector(s);
   const $$ = (s) => Array.from(document.querySelectorAll(s));
@@ -97,7 +104,7 @@
     }
     const start = new Date(); start.setHours(9,0,0,0);
     return {
-      version: 3,
+      version: 5,
       gameTimeMs: start.getTime(),
       paused: false,
       stock, lotes,
@@ -113,9 +120,13 @@
       pacientes: [],
       libroEstupefacientes: [],
       pedidosAlmacen: [],
+      devoluciones: [],
+      roturas: [],
+      gastos: [],
+      conteoFisico: {},
       ofertasDia: makeOfertas(list),
       caja: Caja.defaultCaja(start.getTime()),
-      stats: { tickets: 0, facturacion: 0, recetas: 0 },
+      stats: { tickets: 0, facturacion: 0, recetas: 0, minijuegosOk: 0, minijuegosFail: 0 },
       nextCustomerAt: start.getTime() + 15 * 60 * 1000,
       settings: { horarioManana:[9,14], horarioTarde:[17,20.5], abiertoSabadoManana:true, enGuardia:false },
     };
@@ -128,6 +139,7 @@
       peticionTexto: "", sintomas: [], quiereProductoIds: [], modo: "",
       alergias: [], cronicos: [],
       embarazo: false, lactancia: false, edad: null,
+      metodoPago: null,
     };
   }
 
@@ -159,6 +171,11 @@
         ofertasDia: data.ofertasDia?.length ? data.ofertasDia : base.ofertasDia,
         pedidosAlmacen: data.pedidosAlmacen || [],
         pacientes: data.pacientes || [],
+        devoluciones: data.devoluciones || [],
+        roturas: data.roturas || [],
+        gastos: data.gastos || [],
+        conteoFisico: data.conteoFisico || {},
+        stats: { tickets: 0, facturacion: 0, recetas: 0, minijuegosOk: 0, minijuegosFail: 0, ...(data.stats || {}) },
       };
     } catch { return defaultState(list); }
   }
@@ -178,6 +195,22 @@
   }
   function isExpired(p) { return daysToExpiry(p) < 0; }
   function expiresSoon(p) { const d = daysToExpiry(p); return d >= 0 && d <= 60; }
+  function cadClass(p) {
+    const d = daysToExpiry(p);
+    if (d < 0 || d <= 30) return "r";
+    if (d <= 90) return "o";
+    return "g";
+  }
+  function cadLabel(p) {
+    const d = daysToExpiry(p);
+    if (d < 0) return "Caducado";
+    if (d <= 30) return "Crítico (" + Math.ceil(d) + "d)";
+    if (d <= 90) return "Pronto (" + Math.ceil(d) + "d)";
+    return "Ok (" + Math.ceil(d) + "d)";
+  }
+  function metodoNombre(id) {
+    return (Caja.METODOS.find((m) => m.id === id) || {}).nombre || id || "—";
+  }
   function isLow(p) {
     const st = state.stock[p.id] || 0;
     const min = state.lotes[p.id]?.stockMinimo ?? p.stockMinimo ?? 10;
@@ -244,14 +277,22 @@
         pacienteDni = "00000000T"; // DNI incorrecto a propósito
         obs = "ATENCIÓN formativa: esta receta puede no coincidir.";
       }
+      const tipoRx = r() < 0.55 ? "electronica" : "papel";
+      if (tipoRx === "papel") obs = (obs ? obs + " " : "") + "Receta papel: cortar códigos y sellar.";
+      else obs = (obs ? obs + " " : "") + "Receta electrónica: PIN SNS.";
       receta = {
-        numero: genRecetaNum(r, emitida), tipo: r() < 0.75 ? "electronica" : "papel",
+        numero: genRecetaNum(r, emitida), tipo: tipoRx,
         pacienteNombre: cli.nombre, pacienteDni,
         medico: med.nombre, colegiado: med.colegiado,
         fechaEmision: emitida,
         validezDias: items.some((i) => i.controlado) ? 10 : 30,
         productos: items, dispensada: false, observaciones: obs,
       };
+    }
+    if (receta) {
+      cli.peticionTexto = (cli.peticionTexto || "") + (receta.tipo === "papel"
+        ? " (es receta en papel)."
+        : " (es receta electrónica del SNS).");
     }
     return {
       id: "ped-" + cli.id + "-" + Date.now().toString(36),
@@ -395,13 +436,18 @@
     if (receta.pacienteDni.toUpperCase() !== state.clienteActual.dni.toUpperCase()) {
       return { ok: false, motivo: "RECHAZAR: el DNI no coincide con la receta", warnings: [] };
     }
+    if (!receta.tipo || (receta.tipo !== "papel" && receta.tipo !== "electronica")) {
+      return { ok: false, motivo: "RECHAZAR: tipo de receta desconocido (papel/electrónica)", warnings: [] };
+    }
     const warnings = [];
+    if (receta.tipo === "papel") warnings.push("Receta en PAPEL: cortar/pegar códigos + sello obligatorio.");
+    if (receta.tipo === "electronica") warnings.push("Receta ELECTRÓNICA: validar PIN SNS en el TPV.");
     for (const linea of necesita) {
       const p = productos.find((x) => x.id === linea.productId);
       const en = receta.productos.find((rp) => rp.productId === linea.productId);
       if (!en) return { ok: false, motivo: `RECHAZAR: "${p.nombre}" no está en la receta`, warnings };
       if (linea.cantidad > en.cantidad) return { ok: false, motivo: `RECHAZAR: cantidad de "${p.nombre}" supera la prescrita`, warnings };
-      if (p.controlado) warnings.push("Controlado: requiere doble comprobación (DNI + libro).");
+      if (p.controlado) warnings.push("Controlado: DNI + libro + firma del farmacéutico.");
       if (p.nevera) warnings.push(`Frigorífico: ${p.nombre}`);
     }
     return { ok: true, warnings };
@@ -493,7 +539,8 @@
 
   function openPagoModalAfterCtrl() {
     const alerts = refreshClinicalAlerts();
-    pagoMetodo = "efectivo";
+    const preferido = state.clienteActual.metodoPago;
+    pagoMetodo = preferido && Caja.METODOS.some((m) => m.id === preferido) ? preferido : "efectivo";
     const tot = cartTotals();
     $("#pago-total").textContent = euro(tot.aPagar);
     $("#pago-recibido").value = tot.aPagar.toFixed(2);
@@ -503,17 +550,25 @@
     renderMetodos();
     updatePagoUI();
     const val = validarDispensacion();
+    const pagoHint = preferido
+      ? `<div class="alert alert-leve">Cliente elige pagar con <strong>${escapeHtml(metodoNombre(preferido))}</strong> — usa ese método.</div>`
+      : "";
     $("#pago-alerts").innerHTML = [
+      pagoHint,
       ...(val.warnings || []).map((w) => `<div class="alert alert-moderada">${escapeHtml(w)}</div>`),
       ...alerts.filter((a) => a.nivel !== "leve").map((a) => `<div class="alert alert-${a.nivel}">${escapeHtml(a.msg)}</div>`),
     ].join("");
+    Sounds.beepPay();
     $("#modal-pago").classList.add("open");
   }
 
   function renderMetodos() {
-    $("#metodos-grid").innerHTML = Caja.METODOS.map((m) =>
-      `<button type="button" class="metodo-btn ${pagoMetodo===m.id?"active":""}" data-metodo="${m.id}"><span>${m.icon}</span>${m.nombre}</button>`
-    ).join("");
+    const forced = state.clienteActual.metodoPago;
+    $("#metodos-grid").innerHTML = Caja.METODOS.map((m) => {
+      const locked = forced && forced !== m.id;
+      const active = pagoMetodo === m.id;
+      return `<button type="button" class="metodo-btn ${active ? "active" : ""} ${locked ? "locked" : ""}" data-metodo="${m.id}"${locked ? " disabled" : ""}><span>${m.icon}</span>${m.nombre}${forced === m.id ? '<em class="metodo-cli">Cliente</em>' : ""}</button>`;
+    }).join("");
     $("#pago-euro-pad").innerHTML = Caja.DENOMS.map((d) => Caja.htmlDenom(d, state.caja.denoms[d.id]||0, { clickable:true })).join("");
     $("#quick-cash").innerHTML = ["exacto",5,10,20,50,100].map((n) =>
       `<button type="button" class="chip" data-quick="${n}">${n==="exacto"?"Exacto":n+" €"}</button>`
@@ -543,6 +598,12 @@
   }
 
   function confirmarPago() {
+    const forced = state.clienteActual.metodoPago;
+    if (forced && pagoMetodo !== forced) {
+      toast("El cliente quiere pagar con " + metodoNombre(forced), "err");
+      Sounds.beepAlert();
+      return;
+    }
     const tot = cartTotals();
     const total = tot.aPagar;
     let pago = { metodo:pagoMetodo, total, recibido:0, cambio:0, mixto:null, cambioUsado:null, entregaDenoms:null };
@@ -559,7 +620,124 @@
       pago.recibido = ef;
       if (ef>0) pago.entregaDenoms = Caja.desgloseEntregaRapida(ef);
     } else pago.recibido = total;
-    finalizarVenta(pago, tot);
+    $("#modal-pago").classList.remove("open");
+    startMinigameQueue(pago, tot);
+  }
+
+  function buildSaleGameCtx(pago, tot) {
+    const lineas = state.cart.map((l) => {
+      const p = productos.find((x) => x.id === l.productId);
+      return {
+        productId: l.productId, nombre: p?.nombre, icon: p?.icon, ean: p?.ean, sku: p?.sku,
+        requiereReceta: !!p?.requiereReceta, controlado: !!p?.controlado, nevera: !!p?.nevera,
+        categoria: p?.categoria, principioActivo: p?.principioActivo, cantidad: l.cantidad,
+      };
+    });
+    const gens = lineas[0]?.principioActivo
+      ? productos.filter((x) => x.principioActivo === lineas[0].principioActivo).slice(0, 6)
+      : [];
+    return {
+      lineas,
+      receta: state.recetaActiva,
+      cliente: state.clienteActual,
+      hasNevera: lineas.some((l) => l.nevera),
+      hasCtrl: lineas.some((l) => l.controlado),
+      metodoPago: pago.metodo,
+      cambioSugerido: pago.cambio || 1.25,
+      categorias: catalogMeta.categoriasUI || [],
+      genericos: gens,
+    };
+  }
+
+  function startMinigameQueue(pago, tot) {
+    if (!Minis) { finalizarVenta(pago, tot); return; }
+    const ctx = buildSaleGameCtx(pago, tot);
+    miniQueue = Minis.pickGamesForSale(ctx);
+    miniIndex = 0;
+    miniFails = 0;
+    pendingPago = { pago, tot };
+    if (!miniQueue.length) { finalizarVenta(pago, tot); return; }
+    $("#modal-minijuego").classList.add("open");
+    runNextMinigame();
+  }
+
+  function runNextMinigame() {
+    if (miniIndex >= miniQueue.length) {
+      $("#modal-minijuego").classList.remove("open");
+      const { pago, tot } = pendingPago;
+      pendingPago = null;
+      if (miniFails > 0) toast(`Minijuegos: ${miniFails} fallo(s) — se completa la venta igual`, "warn");
+      finalizarVenta(pago, tot);
+      return;
+    }
+    const game = miniQueue[miniIndex];
+    const total = miniQueue.length;
+    $("#mini-progress").innerHTML = miniQueue.map((_, i) =>
+      `<span class="mini-step ${i < miniIndex ? "done" : i === miniIndex ? "now" : ""}">${i + 1}</span>`
+    ).join("");
+    $("#mini-status").textContent = `Minijuego ${miniIndex + 1} de ${total}`;
+    Minis.runGame(game, $("#mini-root"), (ok) => {
+      if (ok) state.stats.minijuegosOk = (state.stats.minijuegosOk || 0) + 1;
+      else {
+        miniFails += 1;
+        state.stats.minijuegosFail = (state.stats.minijuegosFail || 0) + 1;
+        toast("Minijuego fallido — reintenta o sigue", ok ? "ok" : "warn");
+      }
+      miniIndex += 1;
+      setTimeout(runNextMinigame, ok ? 350 : 550);
+    });
+  }
+
+  function renderMiniTrain() {
+    if (!Minis || !$("#mini-train-grid")) return;
+    $("#mini-train-grid").innerHTML = Minis.DEFS.map((d) =>
+      `<button type="button" class="mini-train-card" data-mini="${d.id}"><span>${d.icon === "Stamp" ? "🔖" : d.icon}</span><strong>${escapeHtml(d.nombre)}</strong><span class="muted tiny">${escapeHtml(d.desc)}</span></button>`
+    ).join("");
+  }
+
+  function practiceMini(type) {
+    if (!Minis) return;
+    const sample = productos[Math.floor(Math.random() * productos.length)];
+    const gameMap = {
+      barcode_scan: { type, product: sample },
+      cut_paste_rx: {
+        type, receta: { numero: "RE-PRACTICA", tipo: "papel" },
+        productos: productos.filter((p) => p.requiereReceta).slice(0, 3).map((p) => ({ productId: p.id, nombre: p.nombre, ean: p.ean })),
+      },
+      e_receta_pin: { type, receta: { numero: "RE-ELEC-DEMO" } },
+      firma_controlado: { type },
+      contar_blister: { type },
+      nevera_temp: { type },
+      ordenar_caducidad: { type },
+      verificar_dni: { type, dni: state.clienteActual.dni || "12345678Z" },
+      bolsa_frio: {
+        type,
+        lineas: productos.filter((p) => p.nevera).slice(0, 2).concat(productos.filter((p) => !p.nevera).slice(0, 2))
+          .map((p) => ({ nombre: p.nombre, icon: p.icon, nevera: !!p.nevera })),
+      },
+      cambio_rapido: { type, cambio: 1.35 },
+      etiqueta_estante: { type, product: sample, categorias: catalogMeta.categoriasUI || [] },
+      sello_receta: { type, tipo: Math.random() < 0.5 ? "papel" : "electronica" },
+      emparejar_generico: { type, product: sample, opciones: productos.filter((p) => p.principioActivo === sample.principioActivo).slice(0, 4) },
+      lavado_manos: { type },
+      preguntar_alergia: { type, alergias: state.clienteActual.alergias?.length ? state.clienteActual.alergias : ["penicilina"] },
+      pesar_pomada: { type, gramos: 20 + Math.floor(Math.random() * 30) },
+      triage_urgencia: { type, urgencia: Math.random() < 0.45 },
+    };
+    const game = gameMap[type] || { type };
+    miniQueue = [game];
+    miniIndex = 0;
+    miniFails = 0;
+    pendingPago = null;
+    $("#modal-minijuego").classList.add("open");
+    $("#mini-progress").innerHTML = `<span class="mini-step now">★</span>`;
+    $("#mini-status").textContent = "Modo entrenamiento";
+    Minis.runGame(game, $("#mini-root"), (ok) => {
+      if (ok) { state.stats.minijuegosOk = (state.stats.minijuegosOk || 0) + 1; toast("¡Bien!", "ok"); }
+      else { state.stats.minijuegosFail = (state.stats.minijuegosFail || 0) + 1; toast("Fallaste — prueba otra vez", "warn"); }
+      setTimeout(() => $("#modal-minijuego").classList.remove("open"), 500);
+      save();
+    });
   }
 
   function finalizarVenta(pago, tot) {
@@ -624,7 +802,7 @@
     state.stats.facturacion += ticket.total;
     state.cart = [];
     $("#modal-pago").classList.remove("open");
-    Sounds.beepOk();
+    Sounds.beepPay();
     save();
     renderCart(); renderReceta(); renderStats(); renderCatalog();
     renderCaja(); renderLibro(); renderPacientes(); renderSpeech();
@@ -717,7 +895,9 @@
     $("#catalog-body").innerHTML = slice.map((p) => {
       const stock = state.stock[p.id] ?? 0;
       const offer = state.ofertasDia.includes(p.id);
+      const cc = cadClass(p);
       const badges = [
+        `<span class="cad-dot ${cc}" title="${escapeHtml(cadLabel(p))}"></span>`,
         p.requiereReceta ? '<span class="tag tag-rx">Receta</span>' : '<span class="tag tag-otc">OTC</span>',
         p.controlado ? '<span class="tag tag-ctrl">CTRL</span>' : "",
         p.nevera ? '<span class="tag tag-exp">❄ Nevera</span>' : "",
@@ -733,7 +913,7 @@
             <span class="prod-ico" style="background:${p.colorCategoria || "#e2e8f0"}22">${p.icon || "💊"}</span>
             <div>
               <div class="prod-name">${escapeHtml(p.nombre)}</div>
-              <div class="prod-meta">${escapeHtml(p.marca)} · ${escapeHtml(p.principioActivo)} · ${escapeHtml(p.categoria)}</div>
+              <div class="prod-meta">${escapeHtml(p.marca)} · ${escapeHtml(p.principioActivo)} · ${escapeHtml(p.categoria)} · <span class="cad-txt ${cc}">${escapeHtml(cadLabel(p))}</span></div>
               <div class="prod-tags">${badges}</div>
             </div>
           </div>
@@ -790,9 +970,13 @@
     if (!c.peticionTexto) { box.classList.add("hidden"); return; }
     box.classList.remove("hidden");
     const modo = { exacto: "Pide producto", sintoma: "Por síntomas", receta: "Trae receta", ambas: "Producto + receta" }[c.modo] || "";
-    $("#speech-name").textContent = `${c.nombre || "Cliente"}${c.edad != null ? ` (${c.edad} años)` : ""}${modo ? " · " + modo : ""}`;
+    const pagoTxt = c.metodoPago ? " · Paga: " + metodoNombre(c.metodoPago) : "";
+    $("#speech-name").textContent = `${c.nombre || "Cliente"}${c.edad != null ? ` (${c.edad} años)` : ""}${modo ? " · " + modo : ""}${pagoTxt}`;
     $("#speech-text").textContent = `«${c.peticionTexto}»`;
-    $("#speech-tags").innerHTML = (c.sintomas || []).map((s) => `<button type="button" class="chip" data-sintoma="${escapeHtml(s)}">${escapeHtml(s)}</button>`).join("");
+    const tags = (c.sintomas || []).map((s) => `<button type="button" class="chip" data-sintoma="${escapeHtml(s)}">${escapeHtml(s)}</button>`);
+    if (c.metodoPago) tags.push(`<span class="chip chip-pago">💳 ${escapeHtml(metodoNombre(c.metodoPago))}</span>`);
+    if (state.recetaActiva) tags.push(`<span class="chip">${state.recetaActiva.tipo === "papel" ? "📄 Papel" : "💻 Electrónica"}</span>`);
+    $("#speech-tags").innerHTML = tags.join("");
   }
 
   function renderReceta() {
@@ -809,6 +993,7 @@
     $("#receta-panel").innerHTML = `
       <div class="receta-grid">
         <div><span class="lbl">Nº</span> ${escapeHtml(r.numero)}</div>
+        <div><span class="lbl">Tipo</span> ${r.tipo === "papel" ? "📄 Papel" : "💻 Electrónica"}</div>
         <div><span class="lbl">Médico</span> ${escapeHtml(r.medico)}</div>
         <div><span class="lbl">Paciente</span> ${escapeHtml(r.pacienteNombre)} (${escapeHtml(r.pacienteDni)})</div>
         <div><span class="lbl">Validez</span> ${r.validezDias} días</div>
@@ -828,8 +1013,9 @@
         <div class="muted tiny">${escapeHtml(c.id)} · ${c.edad || "?"} años · ${escapeHtml(modoLabel)}</div>
         <p class="quote">«${escapeHtml(c.peticionTexto)}»</p>
         <div>${(c.sintomas || []).map((s) => `<span class="chip">${escapeHtml(s)}</span>`).join("")}
-          ${ped.receta ? `<span class="tag tag-rx">Receta ×${ped.receta.productos.length}</span>` : ""}
+          ${ped.receta ? `<span class="tag tag-rx">Receta ${ped.receta.tipo === "papel" ? "papel" : "e-"}×${ped.receta.productos.length}</span>` : ""}
           ${(c.quiereProductoIds || []).length ? '<span class="tag tag-offer">Pide exacto</span>' : ""}
+          ${c.metodoPago ? `<span class="tag tag-otc">💳 ${escapeHtml(metodoNombre(c.metodoPago))}</span>` : ""}
         </div>
         <div class="pedido-actions" style="margin-top:10px">
           <button class="btn btn-sm btn-primary" data-atender="${ped.id}">Atender</button>
@@ -899,11 +1085,136 @@
     const cats = catalogMeta.categoriasUI || [];
     $("#inventario-cats").innerHTML = cats.map((c) => {
       const info = stockByCategory(c.nombre);
+      const crit = info.list.filter((p) => cadClass(p) === "r").length;
+      const soon = info.list.filter((p) => cadClass(p) === "o").length;
       return `<div class="inv-card ${info.low ? "low" : ""}" style="background:${c.color}">
         <div class="inv-top"><span>${c.icon} ${escapeHtml(c.nombre)}</span><strong>${info.stock}</strong></div>
-        <div class="inv-meta">${c.count} referencias · mín. ~${info.min}${info.low ? " · ⚠ BAJO" : ""}${c.requiereReceta ? " · ℞" : ""}</div>
+        <div class="inv-meta">${c.count} refs · mín. ~${info.min}${info.low ? " · ⚠ BAJO" : ""}${c.requiereReceta ? " · ℞" : ""}</div>
+        <div class="inv-cad"><span class="cad-dot r"></span>${crit} · <span class="cad-dot o"></span>${soon} · <span class="cad-dot g"></span>${info.list.length - crit - soon}</div>
       </div>`;
     }).join("");
+  }
+
+  function renderConteoFisico() {
+    const box = $("#inv-fisico-box");
+    if (!box) return;
+    const q = ($("#dev-search")?.value || "").toLowerCase(); // reuse search optional
+    // show products with mismatch or sample from active category / low stock
+    let list = productos.filter((p) => isLow(p) || isOut(p) || cadClass(p) !== "g").slice(0, 25);
+    if (!list.length) list = productos.slice(0, 15);
+    box.innerHTML = list.map((p) => {
+      const teorico = state.stock[p.id] || 0;
+      const fisico = state.conteoFisico[p.id];
+      const diff = fisico == null ? "—" : (fisico - teorico);
+      return `<div class="list-item conteo-row">
+        <div class="prod-row"><span class="cad-dot ${cadClass(p)}"></span><span class="prod-ico">${p.icon||"💊"}</span>
+          <div><strong>${escapeHtml(p.nombre)}</strong><div class="muted tiny">Teórico ${teorico} · ${escapeHtml(cadLabel(p))}</div></div>
+        </div>
+        <div class="conteo-actions">
+          <input type="number" min="0" class="conteo-in" data-conteo="${p.id}" value="${fisico == null ? teorico : fisico}" />
+          <button type="button" class="btn btn-sm btn-primary" data-aplicar-conteo="${p.id}">Corregir</button>
+          <span class="muted tiny">${diff === "—" ? "" : ("Δ " + diff)}</span>
+        </div>
+      </div>`;
+    }).join("") || `<div class="empty">Sin ítems</div>`;
+  }
+
+  function aplicarConteo(productId, fisico) {
+    const teorico = state.stock[productId] || 0;
+    state.conteoFisico[productId] = fisico;
+    state.stock[productId] = Math.max(0, fisico);
+    const delta = fisico - teorico;
+    toast(delta === 0 ? "Conteo OK (sin cambio)" : `Stock corregido Δ${delta > 0 ? "+" : ""}${delta}`, delta === 0 ? "ok" : "warn");
+    Sounds.beepOk();
+    renderConteoFisico(); renderCatalog(); renderInventario(); renderStats(); save();
+  }
+
+  function renderGestion() {
+    const devList = $("#dev-list");
+    const rotList = $("#gastos-list"); // roturas shown before gastos - use separate
+    if ($("#dev-list")) {
+      $("#dev-list").innerHTML = (state.devoluciones || []).slice().reverse().slice(0, 30).map((d) =>
+        `<div class="list-item"><div><strong>${escapeHtml(d.nombre)}</strong><div class="muted tiny">×${d.cantidad} · ${escapeHtml(d.motivo)} · ${formatShort(d.fecha)}</div></div><span class="badge badge-warn">DEV</span></div>`
+      ).join("") || `<div class="empty">Sin devoluciones</div>`;
+    }
+    // roturas: insert list if missing - use rot-suggest sibling... we'll put recent in rot-suggest area after button via #rot-list if exists
+    let rotBox = $("#rot-list");
+    if (!rotBox && $("#btn-rotura")) {
+      rotBox = document.createElement("div");
+      rotBox.id = "rot-list";
+      rotBox.className = "list-block";
+      $("#btn-rotura").after(rotBox);
+    }
+    if (rotBox) {
+      rotBox.innerHTML = (state.roturas || []).slice().reverse().slice(0, 20).map((d) =>
+        `<div class="list-item"><div><strong>${escapeHtml(d.nombre)}</strong><div class="muted tiny">×${d.cantidad} · ${escapeHtml(d.motivo)} · ${formatShort(d.fecha)}</div></div><span class="badge badge-err">ROT</span></div>`
+      ).join("") || `<div class="empty">Sin roturas</div>`;
+    }
+    if ($("#gastos-list")) {
+      $("#gastos-list").innerHTML = (state.gastos || []).slice().reverse().slice(0, 30).map((g) =>
+        `<div class="list-item"><div><strong>${escapeHtml(g.tipo)}</strong><div class="muted tiny">${formatShort(g.fecha)}</div></div><strong>${euro(g.importe)}</strong></div>`
+      ).join("") || `<div class="empty">Sin gastos</div>`;
+      const sum = (state.gastos || []).reduce((a, g) => a + (g.importe || 0), 0);
+      $("#gastos-total").textContent = "Gastos: " + euro(sum);
+    }
+  }
+
+  function suggestGestion(inputId, suggestId, pickVar) {
+    const q = ($(inputId)?.value || "").toLowerCase();
+    const hits = !q ? [] : productos.filter((p) => `${p.nombre} ${p.marca}`.toLowerCase().includes(q)).slice(0, 12);
+    $(suggestId).innerHTML = hits.map((p) =>
+      `<div class="list-item"><div><strong>${escapeHtml(p.nombre)}</strong><div class="muted tiny">stock ${state.stock[p.id]||0} · <span class="cad-dot ${cadClass(p)}"></span>${escapeHtml(cadLabel(p))}</div></div>
+      <button class="btn btn-sm" data-gpick="${p.id}">Elegir</button></div>`
+    ).join("") || (q ? `<div class="empty">Sin resultados</div>` : `<div class="empty">Escribe para buscar</div>`);
+  }
+
+  function registrarDevolucion() {
+    if (!gestPickId) { toast("Elige producto", "warn"); return; }
+    const p = productos.find((x) => x.id === gestPickId);
+    const qty = Math.max(1, Number($("#dev-qty").value) || 1);
+    if ((state.stock[p.id] || 0) < qty) { toast("No hay stock suficiente", "err"); return; }
+    state.stock[p.id] -= qty;
+    state.devoluciones.unshift({
+      id: "DEV-" + Date.now().toString(36), fecha: state.gameTimeMs, productId: p.id,
+      nombre: p.nombre, cantidad: qty, motivo: $("#dev-motivo").value,
+    });
+    Sounds.beepWarn();
+    toast(`Devolución: ${p.nombre} ×${qty}`, "ok");
+    gestPickId = null; renderGestion(); renderCatalog(); renderInventario(); save();
+  }
+
+  function registrarRotura() {
+    if (!rotPickId) { toast("Elige producto", "warn"); return; }
+    const p = productos.find((x) => x.id === rotPickId);
+    const qty = Math.max(1, Number($("#rot-qty").value) || 1);
+    if ((state.stock[p.id] || 0) < qty) { toast("No hay stock suficiente", "err"); return; }
+    state.stock[p.id] -= qty;
+    state.roturas.unshift({
+      id: "ROT-" + Date.now().toString(36), fecha: state.gameTimeMs, productId: p.id,
+      nombre: p.nombre, cantidad: qty, motivo: $("#rot-motivo").value,
+    });
+    Sounds.beepAlert();
+    toast(`Rotura registrada: ${p.nombre} ×${qty}`, "warn");
+    rotPickId = null; renderGestion(); renderCatalog(); renderInventario(); save();
+  }
+
+  function registrarGasto() {
+    const importe = Number($("#gasto-imp").value) || 0;
+    if (importe <= 0) { toast("Importe inválido", "warn"); return; }
+    state.gastos.unshift({
+      id: "GAS-" + Date.now().toString(36), fecha: state.gameTimeMs,
+      tipo: $("#gasto-tipo").value, importe: Caja.round2(importe),
+    });
+    // restar de caja efectivo si abierta
+    if (state.caja.abierta) {
+      state.caja.movimientos.push({
+        id: "MOV-G-" + Date.now().toString(36), fecha: state.gameTimeMs,
+        metodo: "gasto", total: -importe, ticketId: "GASTO",
+      });
+    }
+    Sounds.beepCoin();
+    toast("Gasto añadido", "ok");
+    renderGestion(); renderCaja(); save();
   }
 
   function renderCaja() {
@@ -984,6 +1295,11 @@
       </div>
       <div class="informe-card"><h3>🏆 Top productos</h3>
         <ol>${top.map(([n, c]) => `<li>${escapeHtml(n)} ×${c}</li>`).join("") || "<li>Sin datos</li>"}</ol>
+      </div>
+      <div class="informe-card"><h3>🎮 Minijuegos / gestión</h3>
+        <p>OK: <strong>${state.stats.minijuegosOk||0}</strong> · Fallos: <strong>${state.stats.minijuegosFail||0}</strong></p>
+        <p>Devoluciones: <strong>${(state.devoluciones||[]).length}</strong> · Roturas: <strong>${(state.roturas||[]).length}</strong></p>
+        <p>Gastos: <strong>${euro((state.gastos||[]).reduce((a,g)=>a+(g.importe||0),0))}</strong></p>
       </div>`;
   }
 
@@ -1022,6 +1338,7 @@
       quiereProductoIds: c.quiereProductoIds || [], modo: c.modo,
       alergias: c.alergias || [], cronicos: c.cronicos || [],
       embarazo: !!c.embarazo, lactancia: !!c.lactancia, edad: c.edad,
+      metodoPago: c.metodoPago || null,
     };
     state.mutuaId = c.mutuaId || "particular";
     state.tramoSNS = c.tramoSNS || "particular";
@@ -1169,7 +1486,9 @@
     if (name === "pacientes") renderPacientes();
     if (name === "libro") renderLibro();
     if (name === "almacen") renderAlmacen();
-    if (name === "inventario") renderInventario();
+    if (name === "inventario") { renderInventario(); renderConteoFisico(); }
+    if (name === "gestion") renderGestion();
+    if (name === "minijuegos") renderMiniTrain();
     if (name === "pedidos") renderCola();
   }
 
@@ -1371,11 +1690,58 @@
       state.clienteActual.dni = dni;
       $("#cliente-dni").value = dni;
       $("#modal-controlado").classList.remove("open");
+      Sounds.beepFirma();
       const fn = pendingCtrlContinue; pendingCtrlContinue = null;
       if (fn) fn();
     });
 
-    $$(".modal").forEach((m) => m.addEventListener("click", (e) => { if (e.target === m) m.classList.remove("open"); }));
+    $("#btn-inv-fisico")?.addEventListener("click", () => { renderConteoFisico(); toast("Conteo físico listo", "ok"); });
+    $("#inv-fisico-box")?.addEventListener("click", (e) => {
+      const b = e.target.closest("[data-aplicar-conteo]");
+      if (!b) return;
+      const id = Number(b.dataset.aplicarConteo);
+      const inp = $(`#inv-fisico-box [data-conteo="${id}"]`);
+      aplicarConteo(id, Math.max(0, Number(inp?.value) || 0));
+    });
+
+    $("#dev-search")?.addEventListener("input", () => suggestGestion("#dev-search", "#dev-suggest"));
+    $("#dev-suggest")?.addEventListener("click", (e) => {
+      const b = e.target.closest("[data-gpick]"); if (!b) return;
+      gestPickId = Number(b.dataset.gpick); toast("Producto para devolución", "ok");
+    });
+    $("#btn-devolver")?.addEventListener("click", registrarDevolucion);
+
+    $("#rot-search")?.addEventListener("input", () => {
+      const q = ($("#rot-search").value || "").toLowerCase();
+      const hits = !q ? [] : productos.filter((p) => `${p.nombre} ${p.marca}`.toLowerCase().includes(q)).slice(0, 12);
+      $("#rot-suggest").innerHTML = hits.map((p) =>
+        `<div class="list-item"><div><strong>${escapeHtml(p.nombre)}</strong><div class="muted tiny">stock ${state.stock[p.id]||0}</div></div>
+        <button class="btn btn-sm" data-rpick="${p.id}">Elegir</button></div>`
+      ).join("") || (q ? `<div class="empty">Sin resultados</div>` : `<div class="empty">Escribe para buscar</div>`);
+    });
+    $("#rot-suggest")?.addEventListener("click", (e) => {
+      const b = e.target.closest("[data-rpick]"); if (!b) return;
+      rotPickId = Number(b.dataset.rpick); toast("Producto para rotura", "ok");
+    });
+    $("#btn-rotura")?.addEventListener("click", registrarRotura);
+    $("#btn-gasto")?.addEventListener("click", registrarGasto);
+
+    $("#btn-mini-random")?.addEventListener("click", () => {
+      if (!Minis) return;
+      const d = Minis.DEFS[Math.floor(Math.random() * Minis.DEFS.length)];
+      practiceMini(d.id);
+    });
+    $("#mini-train-grid")?.addEventListener("click", (e) => {
+      const b = e.target.closest("[data-mini]"); if (!b) return;
+      practiceMini(b.dataset.mini);
+    });
+
+    // no cerrar minijuego de cobro al clic fuera
+    $$(".modal").forEach((m) => m.addEventListener("click", (e) => {
+      if (e.target !== m) return;
+      if (m.id === "modal-minijuego" && pendingPago) return;
+      m.classList.remove("open");
+    }));
 
     $("#btn-reset").onclick = ()=>{
       if(!confirm("¿Reiniciar todo?")) return;
@@ -1395,7 +1761,10 @@
     };
 
     document.addEventListener("keydown", (e)=>{
-      if(e.key==="Escape"){ $$(".modal.open").forEach(m=>m.classList.remove("open")); e.preventDefault(); }
+      if(e.key==="Escape"){
+        $$(".modal.open").forEach((m)=>{ if(m.id==="modal-minijuego" && pendingPago) return; m.classList.remove("open"); });
+        e.preventDefault();
+      }
       if(e.key==="F2"){ e.preventDefault(); showTab("venta"); $("#search-q").focus(); $("#search-q").select(); }
       if(e.key==="F4"){ e.preventDefault(); openPagoModal(); }
     });
@@ -1454,6 +1823,7 @@
     renderClock(); renderCategorias(); renderSintomas(); renderPedidoExacto();
     renderCatalog(); renderCart(); renderReceta(); renderCola(); renderStats();
     renderCaja(); renderLibro(); renderPacientes(); renderAlmacen(); renderInventario();
+    renderConteoFisico(); renderGestion(); renderMiniTrain();
     renderSpeech(); refreshClinicalAlerts();
   }
 
