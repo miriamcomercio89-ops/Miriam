@@ -1,24 +1,26 @@
 # Farmacia Álora — Simulador de práctica
 
-Simulador de farmacia en el navegador (HTML/CSS/JS), ubicado en **Álora**. Sirve como herramienta seria de práctica: catálogo amplio, dispensación con/sin receta, cola de pedidos, tickets, IVA, mutuas y exportación.
+Simulador completo de farmacia en el navegador (HTML/CSS/JS), ubicado en **Álora**.
 
-## Cómo abrir
+## Abrir
 
-Abre `index.html` en un navegador de escritorio moderno (Chrome, Firefox, Edge).
+Abre `index.html` en Chrome, Firefox o Edge (escritorio).
 
-No requiere servidor. Los datos se guardan en `localStorage`.
+## Novedades principales
 
-## Características
-
-- **Miles de productos** generados con marcas y principios activos habituales en farmacia española (medicamentos OTC/℞, dermocosmética, higiene, bebé, ortopedia, vitaminas, homeopatía, veterinaria, diabetes, etc.).
-- **Búsqueda y filtros** por nombre, marca, principio activo, categoría y tipo de receta.
-- **Recetas completas**: electrónica/papel, DNI, médico, colegiado, vigencia, cantidades, controlados.
-- **Pedidos de clientes** en cola (llegada automática según horario de juego).
-- **Cobro**: IVA 4/10/21 %, descuento, mutuas, ticket imprimible.
-- **Exportar** ventas a CSV y estado a JSON.
-- **Reloj de juego**: **1 minuto real = 1 hora de juego**.
-- Horario simulado: mañana y tarde (sábado solo mañana; domingo cerrado).
+- **~8000 productos** con marcas, genéricos, síntomas, costes y grupos de interacción
+- **Alertas clínicas**: alergias, embarazo/lactancia e interacciones
+- **Fichas de paciente** con historial, mutua y medicación crónica
+- **Sustitución por genérico** con cálculo de ahorro
+- **Libro de estupefacientes / psicótropos**
+- **Búsqueda por síntomas** (chips + texto)
+- **Modo guardia** (atención fuera de horario)
+- **Informe del día**: ventas, margen, métodos de pago, top productos
+- **Caja completa**: efectivo (cambio en euros con desglose), tarjeta, Bizum, transferencia, mixto, arqueo
+- **Atajos**: `F2` buscar, `F4` cobrar, `Esc` cerrar
+- Reloj: **1 minuto real = 1 hora de juego**
+- Persistencia en `localStorage`
 
 ## Aviso
 
-Herramienta educativa. No es un sistema sanitario real ni consejo médico. Precios y coberturas son simulados.
+Herramienta educativa. No es un sistema sanitario real ni consejo médico.

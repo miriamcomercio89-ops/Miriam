@@ -4,57 +4,88 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Farmacia Álora — Simulador de práctica</title>
-  <meta name="description" content="Simulador de farmacia en Álora: catálogo, recetas, pedidos, tickets e IVA. Herramienta de práctica." />
+  <meta name="description" content="Simulador completo de farmacia en Álora: catálogo, recetas, caja, pacientes e informes." />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
+  <div class="app-bg" aria-hidden="true"></div>
   <div class="app-shell">
     <header class="topbar">
       <div class="brand-block">
-        <h1>Farmacia Álora</h1>
-        <p>Simulador de práctica · Catálogo, recetas y dispensación</p>
-      </div>
-      <div class="clock-block">
-        <div id="game-clock">—</div>
-        <div class="clock-meta">
-          <span id="open-badge" class="badge">—</span>
-          <span class="muted" id="speed-label">1 min real = 1 h juego</span>
-          <button type="button" class="btn btn-sm" id="pause-btn">⏸ Pausar</button>
+        <div class="logo-mark" aria-hidden="true">
+          <svg viewBox="0 0 64 64" width="56" height="56">
+            <defs>
+              <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#16a34a"/>
+                <stop offset="100%" stop-color="#0891b2"/>
+              </linearGradient>
+            </defs>
+            <circle cx="32" cy="32" r="30" fill="url(#g1)"/>
+            <rect x="28" y="14" width="8" height="36" rx="2" fill="#fff"/>
+            <rect x="14" y="28" width="36" height="8" rx="2" fill="#fff"/>
+            <circle cx="48" cy="16" r="6" fill="#fbbf24"/>
+          </svg>
+        </div>
+        <div>
+          <h1>Farmacia Álora</h1>
+          <p>Mostrador digital · práctica profesional</p>
         </div>
       </div>
+
+      <div class="clock-block">
+        <div class="clock-main" id="game-clock">—</div>
+        <div class="clock-meta">
+          <span id="open-badge" class="badge">—</span>
+          <span id="guardia-badge" class="badge badge-purple hidden">🚑 Guardia</span>
+          <span class="chip-soft">⏱ 1 min = 1 h</span>
+          <button type="button" class="btn btn-ghost btn-sm" id="pause-btn">Pausar</button>
+          <button type="button" class="btn btn-accent btn-sm" id="btn-guardia">Activar guardia</button>
+        </div>
+      </div>
+
       <div class="top-actions">
-        <button type="button" class="btn btn-sm" id="btn-csv">Exportar CSV</button>
-        <button type="button" class="btn btn-sm" id="btn-export-json">Exportar JSON</button>
-        <button type="button" class="btn btn-sm" id="btn-restock">Reponer stock</button>
-        <button type="button" class="btn btn-sm" id="btn-reset">Reiniciar</button>
+        <button type="button" class="btn btn-sm" id="btn-csv" title="Exportar ventas">⬇ CSV</button>
+        <button type="button" class="btn btn-sm" id="btn-export-json">⬇ JSON</button>
+        <button type="button" class="btn btn-sm" id="btn-restock">📦 Stock</button>
+        <button type="button" class="btn btn-sm btn-danger-soft" id="btn-reset">Reiniciar</button>
       </div>
     </header>
 
     <section class="stats-row" aria-label="Indicadores">
-      <div class="stat"><span class="lbl">Catálogo</span><strong id="stat-catalog">—</strong></div>
-      <div class="stat"><span class="lbl">Tickets</span><strong id="stat-tickets">0</strong></div>
-      <div class="stat"><span class="lbl">Facturación</span><strong id="stat-fact">0 €</strong></div>
-      <div class="stat"><span class="lbl">Recetas dispensadas</span><strong id="stat-recetas">0</strong></div>
+      <article class="stat s-teal"><span class="stat-ico">💊</span><div><span class="lbl">Catálogo</span><strong id="stat-catalog">—</strong></div></article>
+      <article class="stat s-blue"><span class="stat-ico">🧾</span><div><span class="lbl">Tickets</span><strong id="stat-tickets">0</strong></div></article>
+      <article class="stat s-amber"><span class="stat-ico">💶</span><div><span class="lbl">Facturación</span><strong id="stat-fact">0 €</strong></div></article>
+      <article class="stat s-pink"><span class="stat-ico">📋</span><div><span class="lbl">Recetas</span><strong id="stat-recetas">0</strong></div></article>
+      <article class="stat s-violet"><span class="stat-ico">🛡</span><div><span class="lbl">Caja contada</span><strong id="stat-caja">0 €</strong></div></article>
     </section>
 
     <nav class="tabs" aria-label="Secciones">
-      <button type="button" class="tab active" data-tab="venta">Venta</button>
-      <button type="button" class="tab" data-tab="pedidos">Pedidos <span id="cola-count" class="badge badge-muted">0</span></button>
-      <button type="button" class="tab" data-tab="recetas">Recetas</button>
-      <button type="button" class="tab" data-tab="ticket">Último ticket</button>
-      <button type="button" class="tab" data-tab="ayuda">Ayuda</button>
+      <button type="button" class="tab active" data-tab="venta"><span>🛒</span> Venta <kbd>F2</kbd></button>
+      <button type="button" class="tab" data-tab="pedidos"><span>👥</span> Pedidos <span id="cola-count" class="count-pill">0</span></button>
+      <button type="button" class="tab" data-tab="pacientes"><span>🗂</span> Pacientes</button>
+      <button type="button" class="tab" data-tab="caja"><span>🖥</span> Caja</button>
+      <button type="button" class="tab" data-tab="libro"><span>📕</span> Estupefacientes</button>
+      <button type="button" class="tab" data-tab="informes"><span>📊</span> Informes</button>
+      <button type="button" class="tab" data-tab="ticket"><span>🎟</span> Ticket</button>
+      <button type="button" class="tab" data-tab="ayuda"><span>❓</span> Ayuda</button>
     </nav>
+
+    <div id="alerts-bar" class="alerts-bar" hidden></div>
 
     <!-- VENTA -->
     <section id="panel-venta" class="panel active">
       <div class="layout-venta">
-        <div class="card">
-          <div class="catalog-head">
-            <h2>Catálogo</h2>
+        <div class="card card-catalog">
+          <div class="card-head">
+            <h2><span class="h-ico">🏪</span> Catálogo</h2>
             <span class="muted" id="catalog-count">—</span>
           </div>
+
+          <div class="sintomas-row" id="sintomas-row"></div>
+
           <div class="filters">
-            <input id="search-q" type="search" placeholder="Buscar nombre, EAN, SKU…" autocomplete="off" />
+            <input id="search-q" type="search" placeholder="F2 · Buscar nombre, EAN, síntoma…" autocomplete="off" />
             <select id="filter-cat"></select>
             <select id="filter-receta">
               <option value="">Receta: todas</option>
@@ -65,12 +96,13 @@
             <input id="filter-marca" type="search" placeholder="Marca" autocomplete="off" />
             <input id="filter-pa" type="search" placeholder="Principio activo" autocomplete="off" />
           </div>
+
           <div class="table-wrap">
             <table>
               <thead>
                 <tr>
                   <th>Producto</th>
-                  <th>PVP base</th>
+                  <th>PVP</th>
                   <th>Stock</th>
                   <th></th>
                 </tr>
@@ -81,12 +113,15 @@
         </div>
 
         <div class="stack">
-          <div class="card">
-            <h3>Cliente y cobro</h3>
+          <div class="card card-patient">
+            <div class="card-head">
+              <h3><span class="h-ico">👤</span> Paciente / cliente</h3>
+              <button type="button" class="btn btn-sm btn-primary" id="btn-load-paciente">Cargar ficha</button>
+            </div>
             <div class="form-grid">
               <div>
                 <label class="lbl" for="cliente-nombre">Nombre</label>
-                <input id="cliente-nombre" type="text" placeholder="Nombre del cliente" />
+                <input id="cliente-nombre" type="text" placeholder="Nombre" />
               </div>
               <div>
                 <label class="lbl" for="cliente-dni">DNI / NIE</label>
@@ -94,40 +129,48 @@
               </div>
               <div>
                 <label class="lbl" for="cliente-tel">Teléfono</label>
-                <input id="cliente-tel" type="text" placeholder="600000000" />
+                <input id="cliente-tel" type="text" />
               </div>
               <div>
                 <label class="lbl" for="descuento-pct">Descuento %</label>
                 <input id="descuento-pct" type="number" min="0" max="100" step="1" value="0" />
               </div>
               <div class="full">
-                <label class="lbl" for="mutua-select">Mutua / cobertura</label>
+                <label class="lbl" for="mutua-select">Mutua</label>
                 <select id="mutua-select"></select>
               </div>
             </div>
+            <div id="paciente-chips" class="paciente-chips"></div>
+          </div>
+
+          <div class="card card-cart">
+            <div class="card-head">
+              <h3><span class="h-ico">🧺</span> Carrito</h3>
+              <button type="button" class="btn btn-sm" id="btn-vaciar">Vaciar</button>
+            </div>
             <div id="cart-body"></div>
             <div class="totals">
-              <div><span>Base imponible</span><span id="tot-base">0 €</span></div>
+              <div><span>Base</span><span id="tot-base">0 €</span></div>
               <div><span>IVA</span><span id="tot-iva">0 €</span></div>
               <div><span>Descuento</span><span id="tot-desc">0 €</span></div>
               <div><span>Mutua (<span id="mutua-label">Particular</span>)</span><span id="tot-mutua">0 €</span></div>
               <div class="grand"><span>A pagar</span><span id="tot-pagar">0 €</span></div>
             </div>
             <div class="actions-row">
-              <button type="button" class="btn btn-primary" id="btn-cobrar">Cobrar / emitir ticket</button>
-              <button type="button" class="btn" id="btn-vaciar">Vaciar carrito</button>
+              <button type="button" class="btn btn-primary btn-lg" id="btn-cobrar">Cobrar <kbd>F4</kbd></button>
+              <button type="button" class="btn btn-soft" id="btn-sugerir-generico">♻ Genérico</button>
             </div>
           </div>
 
-          <div class="card">
-            <div class="catalog-head">
-              <h3>Receta activa</h3>
+          <div class="card card-rx">
+            <div class="card-head">
+              <h3><span class="h-ico">📝</span> Receta activa</h3>
               <span id="receta-status" class="badge badge-muted">Sin receta</span>
             </div>
             <div id="receta-panel"></div>
             <div class="actions-row">
-              <button type="button" class="btn btn-sm btn-primary" id="btn-nueva-receta">Cargar / crear receta</button>
-              <button type="button" class="btn btn-sm" id="btn-limpiar-receta">Quitar receta</button>
+              <button type="button" class="btn btn-sm btn-primary" id="btn-nueva-receta">Crear / cargar</button>
+              <button type="button" class="btn btn-sm" id="btn-limpiar-receta">Quitar</button>
             </div>
           </div>
         </div>
@@ -137,76 +180,118 @@
     <!-- PEDIDOS -->
     <section id="panel-pedidos" class="panel">
       <div class="card">
-        <div class="catalog-head">
-          <h2>Cola de pedidos</h2>
-          <button type="button" class="btn btn-sm btn-primary" id="btn-spawn">Generar cliente</button>
+        <div class="card-head">
+          <h2><span class="h-ico">👥</span> Cola de pedidos</h2>
+          <button type="button" class="btn btn-primary btn-sm" id="btn-spawn">+ Cliente</button>
         </div>
-        <p class="muted">Los clientes llegan solos mientras la farmacia está abierta (hora de juego). Atender un pedido carga cliente, carrito, mutua y receta si aplica.</p>
-        <div id="cola-list" class="pedidos-grid" style="margin-top:12px"></div>
+        <p class="muted">Llegan solos en horario normal. Con <strong>guardia</strong> también fuera de hora.</p>
+        <div id="cola-list" class="pedidos-grid"></div>
       </div>
     </section>
 
-    <!-- RECETAS -->
-    <section id="panel-recetas" class="panel">
-      <div class="card">
-        <h2>Dispensación con receta</h2>
-        <p>Flujo completo de práctica:</p>
-        <ol>
-          <li>Identifica al paciente (DNI/NIE obligatorio en controlados).</li>
-          <li>Carga la receta (electrónica o papel) con médico y nº de colegiado.</li>
-          <li>Comprueba vigencia (caducidad según días de validez; controlados suelen 10 días).</li>
-          <li>Verifica que cada medicamento ℞ del carrito figure en la receta y no exceda la cantidad.</li>
-          <li>Aplica mutua si corresponde (solo sobre medicamentos IVA 4% en este simulador).</li>
-          <li>Cobra: se marca la receta como dispensada y se registra el ticket.</li>
-        </ol>
-        <p class="muted">Medicamentos controlados (psicótropos/estupefacientes) exigen identidad y generan avisos de libro de control.</p>
-        <div class="actions-row">
-          <button type="button" class="btn btn-primary" onclick="document.querySelector('[data-tab=venta]').click(); document.getElementById('btn-nueva-receta').click();">Crear receta ahora</button>
+    <!-- PACIENTES -->
+    <section id="panel-pacientes" class="panel">
+      <div class="layout-2">
+        <div class="card">
+          <div class="card-head">
+            <h2><span class="h-ico">🗂</span> Fichas de paciente</h2>
+            <button type="button" class="btn btn-primary btn-sm" id="btn-nuevo-paciente">+ Nueva ficha</button>
+          </div>
+          <input id="paciente-search" type="search" placeholder="Buscar por nombre o DNI…" />
+          <div id="pacientes-list" class="list-block"></div>
         </div>
+        <div class="card" id="paciente-detail-card">
+          <h2><span class="h-ico">📄</span> Detalle</h2>
+          <div id="paciente-detail" class="empty">Selecciona o crea un paciente</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CAJA -->
+    <section id="panel-caja" class="panel">
+      <div class="layout-2">
+        <div class="card">
+          <div class="card-head">
+            <h2><span class="h-ico">🖥</span> Terminal de caja</h2>
+            <span id="caja-estado" class="badge badge-ok">Abierta</span>
+          </div>
+          <div id="caja-resumen" class="caja-resumen"></div>
+          <div class="actions-row">
+            <button type="button" class="btn btn-primary" id="btn-abrir-caja">Abrir / reabrir caja</button>
+            <button type="button" class="btn btn-accent" id="btn-arqueo">Arqueo / cierre</button>
+          </div>
+          <h3 class="subh">Denominaciones en cajón</h3>
+          <div id="caja-denoms" class="denoms-grid"></div>
+        </div>
+        <div class="card">
+          <h2><span class="h-ico">📒</span> Movimientos</h2>
+          <div id="caja-movimientos" class="list-block"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LIBRO -->
+    <section id="panel-libro" class="panel">
+      <div class="card">
+        <div class="card-head">
+          <h2><span class="h-ico">📕</span> Libro de estupefacientes / psicótropos</h2>
+          <button type="button" class="btn btn-sm" id="btn-libro-csv">Exportar libro</button>
+        </div>
+        <div id="libro-list" class="table-wrap tall"></div>
+      </div>
+    </section>
+
+    <!-- INFORMES -->
+    <section id="panel-informes" class="panel">
+      <div class="card">
+        <div class="card-head">
+          <h2><span class="h-ico">📊</span> Informe del día (hora de juego)</h2>
+          <button type="button" class="btn btn-sm btn-primary" id="btn-refresh-informe">Actualizar</button>
+        </div>
+        <div id="informe-content" class="informe-grid"></div>
       </div>
     </section>
 
     <!-- TICKET -->
     <section id="panel-ticket" class="panel">
       <div class="card">
-        <div class="catalog-head">
-          <h2>Ticket / factura simplificada</h2>
-          <button type="button" class="btn btn-sm btn-primary" id="btn-print">Imprimir</button>
+        <div class="card-head">
+          <h2><span class="h-ico">🎟</span> Último ticket</h2>
+          <button type="button" class="btn btn-primary btn-sm" id="btn-print">Imprimir</button>
         </div>
-        <div id="ticket-content">
-          <p class="empty">Aún no hay ticket. Realiza una venta para verlo aquí.</p>
-        </div>
+        <div id="ticket-content"><p class="empty">Aún no hay ticket</p></div>
       </div>
     </section>
 
     <!-- AYUDA -->
     <section id="panel-ayuda" class="panel">
-      <div class="card">
-        <h2>Cómo usar el simulador</h2>
+      <div class="card help-card">
+        <h2><span class="h-ico">✨</span> Atajos y guía rápida</h2>
+        <div class="help-grid">
+          <div><kbd>F2</kbd> Buscar en catálogo</div>
+          <div><kbd>F4</kbd> Cobrar</div>
+          <div><kbd>Esc</kbd> Cerrar modales / cancelar foco</div>
+          <div><kbd>G</kbd> (con Alt) Alternar guardia — usa el botón</div>
+        </div>
         <ul>
-          <li><strong>Tiempo:</strong> 1 minuto real = 1 hora de juego. La farmacia abre mañana y tarde (sábado solo mañana).</li>
-          <li><strong>Catálogo:</strong> miles de productos con marcas habituales, filtros y stock fijo inicial (reponible).</li>
-          <li><strong>Pedidos:</strong> llegan solos o con «Generar cliente». «Atender» prepara la venta.</li>
-          <li><strong>Recetas:</strong> validación de vigencia, coincidencia de paciente, productos y cantidades.</li>
-          <li><strong>Cobro:</strong> IVA (4/10/21%), descuento %, mutuas, ticket imprimible y export CSV/JSON.</li>
-          <li><strong>Datos:</strong> se guardan en localStorage del navegador.</li>
+          <li>Alertas clínicas: alergias, embarazo/lactancia e interacciones al cobrar o al cargar paciente.</li>
+          <li>Sustitución por genérico: botón ♻ en venta.</li>
+          <li>Caja: efectivo con cambio en euros, tarjeta, Bizum, transferencia y mixto.</li>
+          <li>Guardia: atiende fuera de horario normal.</li>
         </ul>
-        <p class="warn-text">Herramienta educativa de práctica. No es un sistema sanitario real ni consejo médico. Precios y coberturas son simulados.</p>
+        <p class="warn-text">Simulador educativo. No es un sistema sanitario real ni consejo médico.</p>
       </div>
     </section>
 
-    <p class="disclaimer">Farmacia Álora · Simulador local en el navegador · Los nombres comerciales se usan con fines formativos de práctica.</p>
+    <footer class="disclaimer">Farmacia Álora · Simulador local · Marcas con fines formativos</footer>
   </div>
 
   <!-- Modal receta -->
-  <div class="modal" id="modal-receta" role="dialog" aria-modal="true" aria-labelledby="rx-title">
+  <div class="modal" id="modal-receta" role="dialog" aria-modal="true">
     <div class="modal-card">
-      <h2 id="rx-title" style="font-family:var(--display);color:var(--brand-deep);margin:0 0 12px">Receta médica</h2>
+      <h2>📝 Receta médica</h2>
       <div class="form-grid">
-        <div>
-          <label class="lbl" for="rx-numero">Nº receta</label>
-          <input id="rx-numero" type="text" />
-        </div>
+        <div><label class="lbl" for="rx-numero">Nº receta</label><input id="rx-numero" type="text" /></div>
         <div>
           <label class="lbl" for="rx-tipo">Tipo</label>
           <select id="rx-tipo">
@@ -214,39 +299,18 @@
             <option value="papel">Papel</option>
           </select>
         </div>
-        <div>
-          <label class="lbl" for="rx-paciente">Paciente</label>
-          <input id="rx-paciente" type="text" />
-        </div>
-        <div>
-          <label class="lbl" for="rx-dni">DNI/NIE paciente</label>
-          <input id="rx-dni" type="text" />
-        </div>
-        <div>
-          <label class="lbl" for="rx-medico">Médico prescritor</label>
-          <input id="rx-medico" type="text" />
-        </div>
-        <div>
-          <label class="lbl" for="rx-colegiado">Nº colegiado</label>
-          <input id="rx-colegiado" type="text" />
-        </div>
-        <div>
-          <label class="lbl" for="rx-fecha">Fecha emisión</label>
-          <input id="rx-fecha" type="date" />
-        </div>
-        <div>
-          <label class="lbl" for="rx-validez">Validez (días)</label>
-          <input id="rx-validez" type="number" min="1" max="365" value="30" />
-        </div>
+        <div><label class="lbl" for="rx-paciente">Paciente</label><input id="rx-paciente" type="text" /></div>
+        <div><label class="lbl" for="rx-dni">DNI/NIE</label><input id="rx-dni" type="text" /></div>
+        <div><label class="lbl" for="rx-medico">Médico</label><input id="rx-medico" type="text" /></div>
+        <div><label class="lbl" for="rx-colegiado">Colegiado</label><input id="rx-colegiado" type="text" /></div>
+        <div><label class="lbl" for="rx-fecha">Emisión</label><input id="rx-fecha" type="date" /></div>
+        <div><label class="lbl" for="rx-validez">Validez (días)</label><input id="rx-validez" type="number" value="30" /></div>
         <div class="full">
-          <label class="lbl" for="rx-productos">Productos prescritos</label>
-          <textarea id="rx-productos" rows="5" placeholder="id|cantidad"></textarea>
+          <label class="lbl" for="rx-productos">Productos (id|cantidad)</label>
+          <textarea id="rx-productos" rows="4"></textarea>
           <p class="muted tiny" id="rx-hint"></p>
         </div>
-        <div class="full">
-          <label class="lbl" for="rx-obs">Observaciones</label>
-          <textarea id="rx-obs" rows="2"></textarea>
-        </div>
+        <div class="full"><label class="lbl" for="rx-obs">Observaciones</label><textarea id="rx-obs" rows="2"></textarea></div>
       </div>
       <div class="actions-row">
         <button type="button" class="btn btn-primary" id="btn-rx-guardar">Validar y activar</button>
@@ -255,9 +319,87 @@
     </div>
   </div>
 
+  <!-- Modal pago / caja -->
+  <div class="modal" id="modal-pago" role="dialog" aria-modal="true">
+    <div class="modal-card modal-wide">
+      <h2>💶 Cobro en caja</h2>
+      <p class="pago-total">Total a pagar: <strong id="pago-total">0 €</strong></p>
+      <div class="metodos-grid" id="metodos-grid"></div>
+
+      <div id="pago-efectivo-panel" class="pago-panel">
+        <div class="form-grid">
+          <div>
+            <label class="lbl" for="pago-recibido">Entrega cliente (€)</label>
+            <input id="pago-recibido" type="number" min="0" step="0.01" />
+          </div>
+          <div>
+            <label class="lbl">Cambio</label>
+            <div class="cambio-box" id="pago-cambio">0 €</div>
+          </div>
+        </div>
+        <div class="quick-cash" id="quick-cash"></div>
+        <h3 class="subh">Desglose del cambio</h3>
+        <div id="cambio-desglose" class="desglose-cambio"></div>
+      </div>
+
+      <div id="pago-mixto-panel" class="pago-panel hidden">
+        <div class="form-grid">
+          <div><label class="lbl" for="mixto-efectivo">Efectivo (€)</label><input id="mixto-efectivo" type="number" min="0" step="0.01" value="0" /></div>
+          <div><label class="lbl" for="mixto-tarjeta">Tarjeta (€)</label><input id="mixto-tarjeta" type="number" min="0" step="0.01" value="0" /></div>
+          <div><label class="lbl" for="mixto-bizum">Bizum (€)</label><input id="mixto-bizum" type="number" min="0" step="0.01" value="0" /></div>
+          <div><label class="lbl">Suma</label><div class="cambio-box" id="mixto-suma">0 €</div></div>
+        </div>
+      </div>
+
+      <div id="pago-alerts" class="pago-alerts"></div>
+      <div class="actions-row">
+        <button type="button" class="btn btn-primary btn-lg" id="btn-confirmar-pago">Confirmar cobro</button>
+        <button type="button" class="btn" id="btn-cancelar-pago">Cancelar <kbd>Esc</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal paciente -->
+  <div class="modal" id="modal-paciente" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <h2>🗂 Ficha de paciente</h2>
+      <div class="form-grid">
+        <div><label class="lbl" for="np-nombre">Nombre</label><input id="np-nombre" type="text" /></div>
+        <div><label class="lbl" for="np-dni">DNI/NIE</label><input id="np-dni" type="text" /></div>
+        <div><label class="lbl" for="np-tel">Teléfono</label><input id="np-tel" type="text" /></div>
+        <div>
+          <label class="lbl" for="np-mutua">Mutua</label>
+          <select id="np-mutua"></select>
+        </div>
+        <div class="full"><label class="lbl" for="np-alergias">Alergias (separadas por coma)</label><input id="np-alergias" type="text" placeholder="penicilina, aines…" /></div>
+        <div class="full"><label class="lbl" for="np-cronicos">Medicación crónica (coma)</label><input id="np-cronicos" type="text" placeholder="enalapril, metformina…" /></div>
+        <div><label class="check"><input id="np-embarazo" type="checkbox" /> Embarazo</label></div>
+        <div><label class="check"><input id="np-lactancia" type="checkbox" /> Lactancia</label></div>
+        <div class="full"><label class="lbl" for="np-notas">Notas</label><textarea id="np-notas" rows="2"></textarea></div>
+      </div>
+      <div class="actions-row">
+        <button type="button" class="btn btn-primary" id="btn-guardar-paciente">Guardar ficha</button>
+        <button type="button" class="btn" id="btn-cerrar-paciente">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal genéricos -->
+  <div class="modal" id="modal-generico" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <h2>♻ Sustitución por genérico</h2>
+      <div id="generico-list" class="list-block"></div>
+      <div class="actions-row">
+        <button type="button" class="btn" id="btn-cerrar-generico">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
   <div id="toasts" aria-live="polite"></div>
 
   <script src="js/catalog.js"></script>
+  <script src="js/clinical.js"></script>
+  <script src="js/caja.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
