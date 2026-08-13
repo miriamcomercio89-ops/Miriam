@@ -121,7 +121,47 @@ html, body { margin: 0; min-height: 100%; font-family: var(--font); font-size: v
 .speech-text { margin: 0; font-size: 1.12rem; font-weight: 650; }
 .speech-tags { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
 
-.filters { display:grid; grid-template-columns:1.5fr 1fr .95fr .9fr .9fr; gap:8px; margin-bottom:10px; }
+.cat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.cat-btn {
+  border: 0; border-radius: 14px; padding: 12px 10px; cursor: pointer;
+  color: #fff; font: inherit; font-weight: 800; text-align: left;
+  display: flex; flex-direction: column; gap: 4px; min-height: 78px;
+  box-shadow: 0 6px 14px rgba(0,0,0,.12); transition: .15s;
+}
+.cat-btn:hover { transform: translateY(-2px); filter: brightness(1.05); }
+.cat-btn.active { outline: 3px solid #0f172a; outline-offset: 2px; }
+.cat-btn .cat-ico { font-size: 1.45rem; }
+.cat-btn .cat-name { font-size: .88rem; line-height: 1.2; }
+.cat-btn .cat-count { font-size: .75rem; opacity: .9; }
+
+.pedido-exacto {
+  margin-bottom: 10px; padding: 10px 12px; border-radius: 12px;
+  background: linear-gradient(120deg, #fef3c7, #ffedd5); border: 1px solid #f59e0b;
+  display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+}
+.prod-ico {
+  display: inline-flex; width: 36px; height: 36px; border-radius: 10px;
+  align-items: center; justify-content: center; font-size: 1.25rem;
+  background: #f1f5f9; margin-right: 8px; flex-shrink: 0;
+}
+.prod-row { display: flex; align-items: flex-start; gap: 4px; }
+
+.inv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; margin-top: 12px; }
+.inv-card {
+  border-radius: 14px; padding: 12px; color: #fff; font-weight: 700;
+  box-shadow: 0 8px 16px rgba(0,0,0,.1);
+}
+.inv-card .inv-top { display: flex; justify-content: space-between; gap: 8px; align-items: start; }
+.inv-card .inv-meta { font-size: .85rem; opacity: .95; margin-top: 6px; }
+.inv-card.low { box-shadow: 0 0 0 3px #fbbf24, 0 8px 16px rgba(0,0,0,.1); }
+
+.filters { display: grid; grid-template-columns: 1.6fr 1fr .9fr .9fr; gap: 8px; margin-bottom: 10px; }
+
 .sintomas-row { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px; }
 .chip, .chip-soft {
   border:0; cursor:pointer; font:inherit; font-weight:800; font-size:.84rem;

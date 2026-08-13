@@ -1,896 +1,602 @@
 /**
- * Catálogo de Farmacia Álora — generador de miles de productos realistas
- * (marcas y principios activos de uso habitual en farmacia española).
- * Solo para simulación / práctica. No es consejo médico ni fuente oficial.
+ * Catálogo curado de Farmacia Álora — 363 productos reales de práctica.
+ * Simulación educativa. No es consejo médico ni fuente oficial.
  */
 (function (global) {
-  const CATEGORIAS = [
-    "Medicamentos OTC",
-    "Medicamentos con receta",
-    "Antibióticos",
-    "Cardiovascular",
-    "Respiratorio",
-    "Digestivo",
-    "Analgésicos y antiinflamatorios",
-    "Dolor y fiebre",
-    "Sistema nervioso",
-    "Sueño y estrés",
-    "Dermatología",
-    "Dermocosmética",
-    "Capilar",
-    "Higiene personal",
-    "Higiene bucal",
-    "Higiene íntima",
-    "Bebé y maternidad",
-    "Pediatría",
-    "Geriatría",
-    "Embarazo y fertilidad",
-    "Vitaminas y suplementos",
-    "Nutrición",
-    "Control de peso",
-    "Deporte y nutrición deportiva",
-    "Ortopedia",
-    "Podología",
-    "Primeros auxilios",
-    "Heridas y cura",
-    "Material sanitario",
-    "Diagnóstico y tests",
-    "Salud sexual",
-    "Óptica",
-    "Oftalmología",
-    "Otorrinolaringología",
-    "Otorrino y oftalmología",
-    "Homeopatía",
-    "Fitoterapia",
-    "Veterinaria",
-    "Diabetes",
-    "Alergia",
-    "Ginecología",
-    "Urología",
-    "Incontinencia",
-    "Solar y fotoprotección",
-    "Dejar de fumar",
-    "Viajes y botiquín",
+  const CATEGORIAS_UI = [
+    {
+      "id": "resfriado",
+      "nombre": "Resfriado y gripe",
+      "icon": "🤧",
+      "color": "#3B82F6",
+      "requiereReceta": false,
+      "count": 32
+    },
+    {
+      "id": "digestivo",
+      "nombre": "Digestivo",
+      "icon": "🤢",
+      "color": "#10B981",
+      "requiereReceta": false,
+      "count": 20
+    },
+    {
+      "id": "dolor",
+      "nombre": "Alivio del dolor",
+      "icon": "💊",
+      "color": "#EF4444",
+      "requiereReceta": false,
+      "count": 14
+    },
+    {
+      "id": "piel",
+      "nombre": "Piel / Dermatología",
+      "icon": "🧴",
+      "color": "#F59E0B",
+      "requiereReceta": false,
+      "count": 38
+    },
+    {
+      "id": "sexual",
+      "nombre": "Salud sexual",
+      "icon": "❤️",
+      "color": "#EC4899",
+      "requiereReceta": false,
+      "count": 17
+    },
+    {
+      "id": "vitaminas",
+      "nombre": "Vitaminas",
+      "icon": "🍊",
+      "color": "#84CC16",
+      "requiereReceta": false,
+      "count": 32
+    },
+    {
+      "id": "viaje",
+      "nombre": "Viaje",
+      "icon": "✈️",
+      "color": "#06B6D4",
+      "requiereReceta": false,
+      "count": 9
+    },
+    {
+      "id": "mascotas",
+      "nombre": "Mascotas",
+      "icon": "🐾",
+      "color": "#A855F7",
+      "requiereReceta": false,
+      "count": 11
+    },
+    {
+      "id": "revistas",
+      "nombre": "Revistas",
+      "icon": "📰",
+      "color": "#64748B",
+      "requiereReceta": false,
+      "count": 1
+    },
+    {
+      "id": "snacks",
+      "nombre": "Snacks / Aperitivos",
+      "icon": "🍫",
+      "color": "#D97706",
+      "requiereReceta": false,
+      "count": 10
+    },
+    {
+      "id": "bebidas",
+      "nombre": "Bebidas",
+      "icon": "💧",
+      "color": "#0EA5E9",
+      "requiereReceta": false,
+      "count": 4
+    },
+    {
+      "id": "antibioticos",
+      "nombre": "Antibióticos",
+      "icon": "🦠",
+      "color": "#DC2626",
+      "requiereReceta": true,
+      "count": 13
+    },
+    {
+      "id": "cardio",
+      "nombre": "Cardiovascular",
+      "icon": "❤️‍🩹",
+      "color": "#BE123C",
+      "requiereReceta": true,
+      "count": 38
+    },
+    {
+      "id": "controlados",
+      "nombre": "Controlados",
+      "icon": "🔒",
+      "color": "#7C2D12",
+      "requiereReceta": true,
+      "count": 24
+    },
+    {
+      "id": "diabetes",
+      "nombre": "Diabetes",
+      "icon": "🩸",
+      "color": "#2563EB",
+      "requiereReceta": true,
+      "count": 8
+    },
+    {
+      "id": "digestivo-rx",
+      "nombre": "Digestivo con receta",
+      "icon": "📋",
+      "color": "#059669",
+      "requiereReceta": true,
+      "count": 23
+    },
+    {
+      "id": "dispensario",
+      "nombre": "Dispensario",
+      "icon": "🏥",
+      "color": "#4B5563",
+      "requiereReceta": true,
+      "count": 8
+    },
+    {
+      "id": "hormonas",
+      "nombre": "Hormonas",
+      "icon": "⚖️",
+      "color": "#C026D3",
+      "requiereReceta": true,
+      "count": 6
+    },
+    {
+      "id": "mental",
+      "nombre": "Salud mental",
+      "icon": "🧠",
+      "color": "#7C3AED",
+      "requiereReceta": true,
+      "count": 19
+    },
+    {
+      "id": "neuro",
+      "nombre": "Neurología",
+      "icon": "⚡",
+      "color": "#4338CA",
+      "requiereReceta": true,
+      "count": 13
+    },
+    {
+      "id": "frigo",
+      "nombre": "Frigorífico",
+      "icon": "❄️",
+      "color": "#0284C7",
+      "requiereReceta": true,
+      "count": 7
+    },
+    {
+      "id": "respiratorio",
+      "nombre": "Respiratorio",
+      "icon": "🌬️",
+      "color": "#0891B2",
+      "requiereReceta": true,
+      "count": 7
+    },
+    {
+      "id": "corticoides",
+      "nombre": "Corticoides / Esteroides",
+      "icon": "💉",
+      "color": "#B45309",
+      "requiereReceta": true,
+      "count": 9
+    }
   ];
 
-  const MARCAS_FARMA = [
-    "Cinfa", "Kern Pharma", "Normon", "Teva", "Sandoz", "Stada", "Ratiopharm",
-    "Bayer", "Pfizer", "GSK", "Sanofi", "Novartis", "AstraZeneca", "Boehringer",
-    "Esteve", "Almirall", "Ferrer", "Uriach", "ERN", "Mylan", "Aurovitas",
-    "Aristo", "Qualigen", "Pensa", "Alter", "Viatris", "Lilly", "MSD",
-    "Janssen", "Roche", "AbbVie", "Gedeon Richter", "Menarini", "Servier",
-    "Faes Farma", "Chiesi", "Italfarmaco", "Gebro", "Lacer", "Isdin Farma",
-  ];
-
-  const MARCAS_PARA = [
-    "Isdin", "La Roche-Posay", "Avène", "Bioderma", "Vichy", "Eucerin", "CeraVe",
-    "Mustela", "Chicco", "Dodot", "Durex", "Hansaplast", "Compeed", "Bepanthol",
-    "Leti", "Sesderma", "Martiderm", "Uriage", "SVR", "Ducray", "A-Derma",
-    "Nuxe", "Filorga", "Lutsine", "Cumlaude", "Gynea", "Pharmaton", "Supradyn",
-    "Redoxon", "Berocca", "Centrum", "Juvamine", "Aquilea", "Arkopharma",
-    "Weleda", "Boiron", "Heel", "Elgydium", "Vitis", "Oral-B", "Colgate",
-    "Sensodyne", "Listerine", "Philips Avent", "Medela", "Suavinex", "Lansinoh",
-    "Farmalastic", "Prim", "Futuro", "Bauerfeind", "Thuasne", "Comfeel",
-    "Urgo", "Mepiform", "Biatain", "OneTouch", "Accu-Chek", "FreeStyle",
-    "Frontline", "Advantix", "Seresto", "Hills", "Royal Canin", "Affinity",
-  ];
+  const CATEGORIAS = CATEGORIAS_UI.map((c) => c.nombre);
 
   const SINTOMAS = [
-    "dolor de cabeza", "fiebre", "tos", "alergia", "acidez", "diarrea",
-    "estreñimiento", "congestión", "dolor muscular", "piel irritada",
-    "insomnio", "estres", "vitaminas", "higiene bucal", "solar",
-    "ojos secos", "heridas", "higiene íntima", "control peso",
-    "dejar de fumar", "deporte", "pediatría", "geriatría", "fitoterapia",
+    "dolor de cabeza",
+    "fiebre",
+    "tos",
+    "alergia",
+    "acidez",
+    "diarrea",
+    "estreñimiento",
+    "congestión",
+    "dolor muscular",
+    "piel irritada",
+    "insomnio",
+    "estres",
+    "vitaminas",
+    "higiene íntima",
+    "solar",
+    "heridas",
+    "dejar de fumar",
+    "deporte",
+    "pediatría",
+    "viaje",
+    "mascotas"
   ];
 
-  const GRUPOS_INTERACCION = [
-    "nsaid", "anticoagulante", "isrs", "benzo", "opioide", "tramadol_opioide",
-    "antibiotico", "antibiotico_macrolido", "estatina", "ieca", "diuretico",
-    "antihistaminico", "ipp", "antidiabetico", "metformina", "corticoide",
-    "zolpidem", "analgesico", "otro",
+  const PRODUCTOS = [
+    {"id":1,"sku":"OTC-0001","ean":"8400000000001","nombre":"Frenadol Complex sobres","marca":"Frenadol","laboratorio":"J&J","principioActivo":"Paracetamol + clorfenamina + dextrometorfano","categoria":"Resfriado y gripe","subcategoria":"Gripe","presentacion":"Sobres","dosis":"10 sobres","unidadesEnvase":10,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🤧","sintomas":["fiebre","tos","congestión","dolor de cabeza"],"grupoInteraccion":"analgesico","precio":9.95,"coste":5.97,"iva":4,"stock":21,"stockInicial":21,"stockMinimo":6,"lote":"BH271017","caducidadMs":1795910400000,"esGenerico":false,"colorCategoria":"#3B82F6"},
+    {"id":2,"sku":"OTC-0002","ean":"8400000000002","nombre":"Frenadol Junior sobres","marca":"Frenadol","laboratorio":"J&J","principioActivo":"Paracetamol + dextrometorfano","categoria":"Resfriado y gripe","subcategoria":"Pediátrico","presentacion":"Sobres","dosis":"10 sobres","unidadesEnvase":10,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🧒","sintomas":["fiebre","tos"],"grupoInteraccion":"analgesico","precio":8.5,"coste":5.1,"iva":4,"stock":34,"stockInicial":34,"stockMinimo":7,"lote":"CQ281034","caducidadMs":1799452800000,"esGenerico":false,"colorCategoria":"#3B82F6"},
+    {"id":3,"sku":"OTC-0003","ean":"8400000000003","nombre":"Frenadol Descongestivo","marca":"Frenadol","laboratorio":"J&J","principioActivo":"Paracetamol + pseudoefedrina","categoria":"Resfriado y gripe","subcategoria":"Congestión","presentacion":"Cápsulas","dosis":"16 cáps","unidadesEnvase":16,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"👃","sintomas":["congestión","fiebre"],"grupoInteraccion":"otro","precio":10.2,"coste":6.12,"iva":4,"stock":47,"stockInicial":47,"stockMinimo":8,"lote":"DX261051","caducidadMs":1802995200000,"esGenerico":false,"colorCategoria":"#3B82F6"},
+    {"id":4,"sku":"OTC-0004","ean":"8400000000004","nombre":"Bisolvon Compositum jarabe","marca":"Bisolvon","laboratorio":"Boehringer","principioActivo":"Bromhexina + dextrometorfano","categoria":"Resfriado y gripe","subcategoria":"Tos","presentacion":"Jarabe 200 ml","dosis":"200 ml","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🫁","sintomas":["tos","congestión"],"grupoInteraccion":"otro","precio":11.4,"coste":6.84,"iva":4,"stock":60,"stockInicial":60,"stockMinimo":9,"lote":"EE271068","caducidadMs":1806537600000,"esGenerico":false,"colorCategoria":"#3B82F6"},
+    {"id":5,"sku":"OTC-0005","ean":"8400000000005","nombre":"Bisolvon Mucolítico comprimidos","marca":"Bisolvon","laboratorio":"Boehringer","principioActivo":"Bromhexina","categoria":"Resfriado y gripe","subcategoria":"Tos productiva","presentacion":"Comprimidos","dosis":"8 mg × 20","unidadesEnvase":20,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"💊","sintomas":["tos"],"grupoInteraccion":"otro","precio":7.8,"coste":4.68,"iva":4,"stock":73,"stockInicial":73,"stockMinimo":10,"lote":"FM281085","caducidadMs":1810080000000,"esGenerico":false,"colorCategoria":"#3B82F6"},
+    {"id":6,"sku":"OTC-0006","ean":"8400000000006","nombre":"Mucosan jarabe","marca":"Mucosan","laboratorio":"Boehringer","principioActivo":"Ambroxol","categoria":"Resfriado y gripe","subcategoria":"Mucolítico","presentacion":"Jarabe 200 ml","dosis":"15 mg/5 ml","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🫁","sintomas":["tos","congestión"],"grupoInteraccion":"otro","precio":8.9,"coste":5.34,"iva":4,"stock":86,"stockInicial":86,"stockMinimo":11,"lote":"GU261102","caducidadMs":1813622400000,"esGenerico":false,"colorCategoria":"#3B82F6"},
+    {"id":7,"sku":"OTC-0007","ean":"8400000000007","nombre":"Fluimucil 600 mg","marca":"Fluimucil","laboratorio":"Zambon","principioActivo":"Acetilcisteína","categoria":"Resfriado y gripe","subcategoria":"Mucolítico","presentacion":"Sobres efervescentes","dosis":"600 mg × 10","unidadesEnvase":10,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🫧","sintomas":["tos","congestión"],"grupoInteraccion":"otro","precio":9.75,"coste":5.85,"iva":4,"stock":9,"stockInicial":9,"stockMinimo":12,"lote":"HB271119","caducidadMs":1817164800000,"esGenerico":false,"colorCategoria":"#3B82F6"},
+    {"id":8,"sku":"OTC-0008","ean":"8400000000008","nombre":"Fluimucil 200 mg","marca":"Fluimucil","laboratorio":"Zambon","principioActivo":"Acetilcisteína","categoria":"Resfriado y gripe","subcategoria":"Mucolítico","presentacion":"Sobres","dosis":"200 mg × 30","unidadesEnvase":30,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🫧","sintomas":["tos"],"grupoInteraccion":"otro","precio":8.2,"coste":4.92,"iva":4,"stock":22,"stockInicial":22,"stockMinimo":13,"lote":"JJ281136","caducidadMs":1820707200000,"esGenerico":false,"colorCategoria":"#3B82F6"},
+    {"id":9,"sku":"OTC-0009","ean":"8400000000009","nombre":"Cinfatos 15 mg","marca":"Cinfatos","laboratorio":"Cinfa","principioActivo":"Dextrometorfano","categoria":"Resfriado y gripe","subcategoria":"Antitusivo","presentacion":"Comprimidos","dosis":"15 mg × 20","unidadesEnvase":20,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"💊","sintomas":["tos"],"grupoInteraccion":"otro","precio":6.5,"coste":3.9,"iva":4,"stock":35,"stockInicial":35,"stockMinimo":14,"lote":"KR261153","caducidadMs":1824249600000,"esGenerico":true,"colorCategoria":"#3B82F6"},
+    {"id":10,"sku":"OTC-0010","ean":"8400000000010","nombre":"Romilar jarabe","marca":"Romilar","laboratorio":"Sanofi","principioActivo":"Dextrometorfano","categoria":"Resfriado y gripe","subcategoria":"Antitusivo","presentacion":"Jarabe 125 ml","dosis":"15 mg/5 ml","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🍯","sintomas":["tos"],"grupoInteraccion":"otro","precio":7.95,"coste":4.77,"iva":4,"stock":48,"stockInicial":48,"stockMinimo":5,"lote":"LY271170","caducidadMs":1827792000000,"esGenerico":false,"colorCategoria":"#3B82F6"},
+    {"id":11,"sku":"OTC-0011","ean":"8400000000011","nombre":"Iniston Tos y Congestión","marca":"Iniston","laboratorio":"J&J","principioActivo":"Dextrometorfano + pseudoefedrina","categoria":"Resfriado y gripe","subcategoria":"Tos + congestión","presentacion":"Jarabe 120 ml","dosis":"120 ml","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🤧","sintomas":["tos","congestión"],"grupoInteraccion":"otro","precio":10.5,"coste":6.3,"iva":4,"stock":61,"stockInicial":61,"stockMinimo":6,"lote":"MF281187","caducidadMs":1831334400000,"esGenerico":false,"colorCategoria":"#3B82F6"},
+    {"id":12,"sku":"OTC-0012","ean":"8400000000012","nombre":"Iniston Antigripal","marca":"Iniston","laboratorio":"J&J","principioActivo":"Paracetamol + clorfenamina + fenilefrina","categoria":"Resfriado y gripe","subcategoria":"Gripe","presentacion":"Comprimidos","dosis":"16 comp","unidadesEnvase":16,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🤒","sintomas":["fiebre","congestión","dolor de cabeza"],"grupoInteraccion":"analgesico","precio":9.2,"coste":5.52,"iva":4,"stock":74,"stockInicial":74,"stockMinimo":7,"lote":"NN261204","caducidadMs":1834876800000,"esGenerico":false,"colorCategoria":"#3B82F6"},
+    {"id":13,"sku":"OTC-0013","ean":"8400000000013","nombre":"Termalgin Resfriado","marca":"Termalgin","laboratorio":"GSK","principioActivo":"Paracetamol + fenilefrina + clorfenamina","categoria":"Resfriado y gripe","subcategoria":"Gripe","presentacion":"Cápsulas","dosis":"16 cáps","unidadesEnvase":16,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🤒","sintomas":["fiebre","congestión"],"grupoInteraccion":"analgesico","precio":8.75,"coste":5.25,"iva":4,"stock":87,"stockInicial":87,"stockMinimo":8,"lote":"PV271221","caducidadMs":1838419200000,"esGenerico":false,"colorCategoria":"#3B82F6"},
+    {"id":14,"sku":"OTC-0014","ean":"8400000000014","nombre":"Aspirina Complex","marca":"Aspirina","laboratorio":"Bayer","principioActivo":"AAS + pseudoefedrina + clorfenamina","categoria":"Resfriado y gripe","subcategoria":"Gripe","presentacion":"Sobres","dosis":"10 sobres","unidadesEnvase":10,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🤧","sintomas":["fiebre","congestión","dolor de cabeza"],"grupoInteraccion":"nsaid","precio":9.4,"coste":5.64,"iva":4,"stock":10,"stockInicial":10,"stockMinimo":9,"lote":"QC281238","caducidadMs":1841961600000,"esGenerico":false,"colorCategoria":"#3B82F6"},
+    {"id":15,"sku":"OTC-0015","ean":"8400000000015","nombre":"Rinobanedif pomada nasal","marca":"Rinobanedif","laboratorio":"Almirall","principioActivo":"Bacitracina + neomicina + prednisolona","categoria":"Resfriado y gripe","subcategoria":"Nasal","presentacion":"Pomada 10 g","dosis":"10 g","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"👃","sintomas":["congestión"],"grupoInteraccion":"otro","precio":7.6,"coste":4.56,"iva":4,"stock":23,"stockInicial":23,"stockMinimo":10,"lote":"RK261255","caducidadMs":1845504000000,"esGenerico":false,"colorCategoria":"#3B82F6"},
+    {"id":16,"sku":"OTC-0016","ean":"8400000000016","nombre":"Vicks VapoRub","marca":"Vicks","laboratorio":"P&G","principioActivo":"Alcanfor + mentol + eucalipto","categoria":"Resfriado y gripe","subcategoria":"Descongestivo tópico","presentacion":"Pomada 50 g","dosis":"50 g","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🧴","sintomas":["congestión","tos"],"grupoInteraccion":"otro","precio":8.3,"coste":4.98,"iva":4,"stock":36,"stockInicial":36,"stockMinimo":11,"lote":"SS271272","caducidadMs":1849046400000,"esGenerico":false,"colorCategoria":"#3B82F6"},
+    {"id":17,"sku":"OTC-0017","ean":"8400000000017","nombre":"Narine solución nasal","marca":"Narine","laboratorio":"Alcon","principioActivo":"Cloruro sódico","categoria":"Resfriado y gripe","subcategoria":"Lavado nasal","presentacion":"Spray 100 ml","dosis":"0,9%","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"💦","sintomas":["congestión"],"grupoInteraccion":"otro","precio":6.9,"coste":4.14,"iva":4,"stock":49,"stockInicial":49,"stockMinimo":12,"lote":"TZ281289","caducidadMs":1852588800000,"esGenerico":false,"colorCategoria":"#3B82F6"},
+    {"id":18,"sku":"OTC-0018","ean":"8400000000018","nombre":"Rhinomer Fuerza Media","marca":"Rhinomer","laboratorio":"GSK","principioActivo":"Agua de mar","categoria":"Resfriado y gripe","subcategoria":"Lavado nasal","presentacion":"Spray 135 ml","dosis":"Isotónica","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🌊","sintomas":["congestión"],"grupoInteraccion":"otro","precio":8.1,"coste":4.86,"iva":21,"stock":62,"stockInicial":62,"stockMinimo":13,"lote":"UG261306","caducidadMs":1856131200000,"esGenerico":false,"colorCategoria":"#3B82F6"},
+    {"id":19,"sku":"OTC-0019","ean":"8400000000019","nombre":"Respibien spray nasal","marca":"Respibien","laboratorio":"Uriach","principioActivo":"Oximetazolina","categoria":"Resfriado y gripe","subcategoria":"Descongestivo","presentacion":"Spray 15 ml","dosis":"0,5 mg/ml","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"👃","sintomas":["congestión"],"grupoInteraccion":"otro","precio":7.25,"coste":4.35,"iva":4,"stock":75,"stockInicial":75,"stockMinimo":14,"lote":"VP271323","caducidadMs":1859673600000,"esGenerico":false,"colorCategoria":"#3B82F6"},
+    {"id":20,"sku":"OTC-0020","ean":"8400000000020","nombre":"Ilvico comprimidos","marca":"Ilvico","laboratorio":"Boehringer","principioActivo":"Paracetamol + cafeína + clorfenamina","categoria":"Resfriado y gripe","subcategoria":"Gripe","presentacion":"Comprimidos","dosis":"20 comp","unidadesEnvase":20,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"💊","sintomas":["fiebre","dolor de cabeza","alergia"],"grupoInteraccion":"analgesico","precio":7.5,"coste":4.5,"iva":4,"stock":88,"stockInicial":88,"stockMinimo":5,"lote":"WW281340","caducidadMs":1863216000000,"esGenerico":false,"colorCategoria":"#3B82F6"},
+    {"id":21,"sku":"OTC-0021","ean":"8400000000021","nombre":"Cinfalair 5 mg","marca":"Cinfalair","laboratorio":"Cinfa","principioActivo":"Montelukast","categoria":"Resfriado y gripe","subcategoria":"Alergia / asma leve","presentacion":"Comprimidos masticables","dosis":"5 mg × 28","unidadesEnvase":28,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🌬️","sintomas":["alergia"],"grupoInteraccion":"otro","precio":12.8,"coste":7.68,"iva":4,"stock":11,"stockInicial":11,"stockMinimo":6,"lote":"XD261357","caducidadMs":1794096000000,"esGenerico":true,"colorCategoria":"#3B82F6"},
+    {"id":22,"sku":"OTC-0022","ean":"8400000000022","nombre":"Clarityne 10 mg","marca":"Clarityne","laboratorio":"Bayer","principioActivo":"Loratadina","categoria":"Resfriado y gripe","subcategoria":"Antihistamínico","presentacion":"Comprimidos","dosis":"10 mg × 7","unidadesEnvase":7,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🌸","sintomas":["alergia"],"grupoInteraccion":"antihistaminico","precio":6.95,"coste":4.17,"iva":4,"stock":24,"stockInicial":24,"stockMinimo":7,"lote":"YL271374","caducidadMs":1797638400000,"esGenerico":false,"colorCategoria":"#3B82F6"},
+    {"id":23,"sku":"OTC-0023","ean":"8400000000023","nombre":"Zyrtec 10 mg","marca":"Zyrtec","laboratorio":"UCB","principioActivo":"Cetirizina","categoria":"Resfriado y gripe","subcategoria":"Antihistamínico","presentacion":"Comprimidos","dosis":"10 mg × 7","unidadesEnvase":7,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🌸","sintomas":["alergia"],"grupoInteraccion":"antihistaminico","precio":7.4,"coste":4.44,"iva":4,"stock":37,"stockInicial":37,"stockMinimo":8,"lote":"ZT281391","caducidadMs":1801180800000,"esGenerico":false,"colorCategoria":"#3B82F6"},
+    {"id":24,"sku":"OTC-0024","ean":"8400000000024","nombre":"Aerius 5 mg","marca":"Aerius","laboratorio":"MSD","principioActivo":"Desloratadina","categoria":"Resfriado y gripe","subcategoria":"Antihistamínico","presentacion":"Comprimidos","dosis":"5 mg × 7","unidadesEnvase":7,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🌸","sintomas":["alergia"],"grupoInteraccion":"antihistaminico","precio":8.9,"coste":5.34,"iva":4,"stock":50,"stockInicial":50,"stockMinimo":9,"lote":"AA261408","caducidadMs":1804723200000,"esGenerico":false,"colorCategoria":"#3B82F6"},
+    {"id":25,"sku":"OTC-0025","ean":"8400000000025","nombre":"Polaramine jarabe","marca":"Polaramine","laboratorio":"MSD","principioActivo":"Dexclorfeniramina","categoria":"Resfriado y gripe","subcategoria":"Antihistamínico","presentacion":"Jarabe 100 ml","dosis":"2 mg/5 ml","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🍯","sintomas":["alergia"],"grupoInteraccion":"antihistaminico","precio":6.8,"coste":4.08,"iva":4,"stock":63,"stockInicial":63,"stockMinimo":10,"lote":"BH271425","caducidadMs":1808265600000,"esGenerico":false,"colorCategoria":"#3B82F6"},
+    {"id":26,"sku":"OTC-0026","ean":"8400000000026","nombre":"Prospan jarabe","marca":"Prospan","laboratorio":"Engelhard","principioActivo":"Hedera helix","categoria":"Resfriado y gripe","subcategoria":"Tos","presentacion":"Jarabe 100 ml","dosis":"100 ml","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🌿","sintomas":["tos"],"grupoInteraccion":"otro","precio":9.15,"coste":5.49,"iva":4,"stock":76,"stockInicial":76,"stockMinimo":11,"lote":"CQ281442","caducidadMs":1811808000000,"esGenerico":false,"colorCategoria":"#3B82F6"},
+    {"id":27,"sku":"OTC-0027","ean":"8400000000027","nombre":"Pectox Mucolítico","marca":"Pectox","laboratorio":"Ferrer","principioActivo":"Carbocisteína","categoria":"Resfriado y gripe","subcategoria":"Mucolítico","presentacion":"Jarabe 200 ml","dosis":"5%","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🫁","sintomas":["tos","congestión"],"grupoInteraccion":"otro","precio":8.4,"coste":5.04,"iva":4,"stock":89,"stockInicial":89,"stockMinimo":12,"lote":"DX261459","caducidadMs":1815350400000,"esGenerico":false,"colorCategoria":"#3B82F6"},
+    {"id":28,"sku":"OTC-0028","ean":"8400000000028","nombre":"Grippostad C","marca":"Grippostad","laboratorio":"Stada","principioActivo":"Paracetamol + cafeína + clorfenamina + ácido ascórbico","categoria":"Resfriado y gripe","subcategoria":"Gripe","presentacion":"Cápsulas","dosis":"12 cáps","unidadesEnvase":12,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🤒","sintomas":["fiebre","dolor de cabeza"],"grupoInteraccion":"analgesico","precio":8.6,"coste":5.16,"iva":4,"stock":12,"stockInicial":12,"stockMinimo":13,"lote":"EE271476","caducidadMs":1818892800000,"esGenerico":true,"colorCategoria":"#3B82F6"},
+    {"id":29,"sku":"OTC-0029","ean":"8400000000029","nombre":"Tosédin Jarabe","marca":"Tosédin","laboratorio":"Faes Farma","principioActivo":"Dextrometorfano","categoria":"Resfriado y gripe","subcategoria":"Antitusivo","presentacion":"Jarabe 125 ml","dosis":"125 ml","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🍯","sintomas":["tos"],"grupoInteraccion":"otro","precio":7.1,"coste":4.26,"iva":4,"stock":25,"stockInicial":25,"stockMinimo":14,"lote":"FM281493","caducidadMs":1822435200000,"esGenerico":false,"colorCategoria":"#3B82F6"},
+    {"id":30,"sku":"OTC-0030","ean":"8400000000030","nombre":"Bálsamo de Tiger (mentol)","marca":"Tiger Balm","laboratorio":"Haw Par","principioActivo":"Mentol + alcanfor","categoria":"Resfriado y gripe","subcategoria":"Alivio tópico","presentacion":"Bálsamo 19 g","dosis":"19 g","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🐯","sintomas":["congestión","dolor muscular"],"grupoInteraccion":"otro","precio":9.5,"coste":5.7,"iva":21,"stock":38,"stockInicial":38,"stockMinimo":5,"lote":"GU261510","caducidadMs":1825977600000,"esGenerico":false,"colorCategoria":"#3B82F6"},
+    {"id":31,"sku":"OTC-0031","ean":"8400000000031","nombre":"Cinfamucol acetilcisteína","marca":"Cinfamucol","laboratorio":"Cinfa","principioActivo":"Acetilcisteína","categoria":"Resfriado y gripe","subcategoria":"Mucolítico","presentacion":"Sobres","dosis":"600 mg × 20","unidadesEnvase":20,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🫧","sintomas":["tos"],"grupoInteraccion":"otro","precio":7.9,"coste":4.74,"iva":4,"stock":51,"stockInicial":51,"stockMinimo":6,"lote":"HB271527","caducidadMs":1829520000000,"esGenerico":true,"colorCategoria":"#3B82F6"},
+    {"id":32,"sku":"OTC-0032","ean":"8400000000032","nombre":"Stopcold Plus","marca":"Stopcold","laboratorio":"Kern","principioActivo":"Paracetamol + pseudoefedrina","categoria":"Resfriado y gripe","subcategoria":"Gripe","presentacion":"Comprimidos","dosis":"12 comp","unidadesEnvase":12,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🤧","sintomas":["fiebre","congestión"],"grupoInteraccion":"analgesico","precio":8.25,"coste":4.95,"iva":4,"stock":64,"stockInicial":64,"stockMinimo":7,"lote":"JJ281544","caducidadMs":1833062400000,"esGenerico":true,"colorCategoria":"#3B82F6"},
+    {"id":33,"sku":"OTC-0033","ean":"8400000000033","nombre":"Omeprazol Cinfa 20 mg","marca":"Cinfa","laboratorio":"Cinfa","principioActivo":"Omeprazol","categoria":"Digestivo","subcategoria":"Acidez","presentacion":"Cápsulas gastrorresistentes","dosis":"20 mg × 14","unidadesEnvase":14,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🔥","sintomas":["acidez"],"grupoInteraccion":"ipp","precio":4.95,"coste":2.97,"iva":4,"stock":77,"stockInicial":77,"stockMinimo":8,"lote":"KR261561","caducidadMs":1836604800000,"esGenerico":true,"colorCategoria":"#10B981"},
+    {"id":34,"sku":"OTC-0034","ean":"8400000000034","nombre":"Omeprazol Normon 20 mg","marca":"Normon","laboratorio":"Normon","principioActivo":"Omeprazol","categoria":"Digestivo","subcategoria":"Acidez","presentacion":"Cápsulas","dosis":"20 mg × 28","unidadesEnvase":28,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🔥","sintomas":["acidez"],"grupoInteraccion":"ipp","precio":6.2,"coste":3.72,"iva":4,"stock":90,"stockInicial":90,"stockMinimo":9,"lote":"LY271578","caducidadMs":1840147200000,"esGenerico":true,"colorCategoria":"#10B981"},
+    {"id":35,"sku":"OTC-0035","ean":"8400000000035","nombre":"Almax Forte sobres","marca":"Almax","laboratorio":"Almirall","principioActivo":"Almagato","categoria":"Digestivo","subcategoria":"Antiácido","presentacion":"Sobres","dosis":"1,5 g × 24","unidadesEnvase":24,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🫠","sintomas":["acidez"],"grupoInteraccion":"otro","precio":8.9,"coste":5.34,"iva":4,"stock":13,"stockInicial":13,"stockMinimo":10,"lote":"MF281595","caducidadMs":1843689600000,"esGenerico":false,"colorCategoria":"#10B981"},
+    {"id":36,"sku":"OTC-0036","ean":"8400000000036","nombre":"Gaviscon doble acción","marca":"Gaviscon","laboratorio":"Reckitt","principioActivo":"Alginato + bicarbonato + carbonato","categoria":"Digestivo","subcategoria":"Reflujo","presentacion":"Comprimidos masticables","dosis":"24 comp","unidadesEnvase":24,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🫧","sintomas":["acidez"],"grupoInteraccion":"otro","precio":9.75,"coste":5.85,"iva":4,"stock":26,"stockInicial":26,"stockMinimo":11,"lote":"NN261612","caducidadMs":1847232000000,"esGenerico":false,"colorCategoria":"#10B981"},
+    {"id":37,"sku":"OTC-0037","ean":"8400000000037","nombre":"Rennie Digestarom","marca":"Rennie","laboratorio":"Bayer","principioActivo":"Carbonato cálcico + magnesio","categoria":"Digestivo","subcategoria":"Antiácido","presentacion":"Comprimidos","dosis":"48 comp","unidadesEnvase":48,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🍬","sintomas":["acidez"],"grupoInteraccion":"otro","precio":7.4,"coste":4.44,"iva":4,"stock":39,"stockInicial":39,"stockMinimo":12,"lote":"PV271629","caducidadMs":1850774400000,"esGenerico":false,"colorCategoria":"#10B981"},
+    {"id":38,"sku":"OTC-0038","ean":"8400000000038","nombre":"Fortasec 2 mg","marca":"Fortasec","laboratorio":"J&J","principioActivo":"Loperamida","categoria":"Digestivo","subcategoria":"Diarrea","presentacion":"Cápsulas","dosis":"2 mg × 10","unidadesEnvase":10,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🚽","sintomas":["diarrea"],"grupoInteraccion":"otro","precio":6.5,"coste":3.9,"iva":4,"stock":52,"stockInicial":52,"stockMinimo":13,"lote":"QC281646","caducidadMs":1854316800000,"esGenerico":false,"colorCategoria":"#10B981"},
+    {"id":39,"sku":"OTC-0039","ean":"8400000000039","nombre":"Imodium Instant","marca":"Imodium","laboratorio":"J&J","principioActivo":"Loperamida","categoria":"Digestivo","subcategoria":"Diarrea","presentacion":"Liotabs","dosis":"2 mg × 12","unidadesEnvase":12,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🚽","sintomas":["diarrea"],"grupoInteraccion":"otro","precio":8.2,"coste":4.92,"iva":4,"stock":65,"stockInicial":65,"stockMinimo":14,"lote":"RK261663","caducidadMs":1857859200000,"esGenerico":false,"colorCategoria":"#10B981"},
+    {"id":40,"sku":"OTC-0040","ean":"8400000000040","nombre":"Smecta naranja","marca":"Smecta","laboratorio":"Ipsen","principioActivo":"Diosmectita","categoria":"Digestivo","subcategoria":"Diarrea","presentacion":"Sobres","dosis":"3 g × 30","unidadesEnvase":30,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🍊","sintomas":["diarrea"],"grupoInteraccion":"otro","precio":10.5,"coste":6.3,"iva":4,"stock":78,"stockInicial":78,"stockMinimo":5,"lote":"SS271680","caducidadMs":1861401600000,"esGenerico":false,"colorCategoria":"#10B981"},
+    {"id":41,"sku":"OTC-0041","ean":"8400000000041","nombre":"Enterol 250 mg","marca":"Enterol","laboratorio":"Biocodex","principioActivo":"Saccharomyces boulardii","categoria":"Digestivo","subcategoria":"Probiótico","presentacion":"Cápsulas","dosis":"250 mg × 10","unidadesEnvase":10,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🦠","sintomas":["diarrea"],"grupoInteraccion":"otro","precio":11.9,"coste":7.14,"iva":4,"stock":91,"stockInicial":91,"stockMinimo":6,"lote":"TZ281697","caducidadMs":1792281600000,"esGenerico":false,"colorCategoria":"#10B981"},
+    {"id":42,"sku":"OTC-0042","ean":"8400000000042","nombre":"Ulcorem 20 mg","marca":"Ulcorem","laboratorio":"Almirall","principioActivo":"Pantoprazol","categoria":"Digestivo","subcategoria":"Acidez","presentacion":"Comprimidos","dosis":"20 mg × 7","unidadesEnvase":7,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🔥","sintomas":["acidez"],"grupoInteraccion":"ipp","precio":7.8,"coste":4.68,"iva":4,"stock":14,"stockInicial":14,"stockMinimo":7,"lote":"UG261714","caducidadMs":1795824000000,"esGenerico":false,"colorCategoria":"#10B981"},
+    {"id":43,"sku":"OTC-0043","ean":"8400000000043","nombre":"Buscapina Compositum OTC","marca":"Buscapina","laboratorio":"Boehringer","principioActivo":"Butilescopolamina + paracetamol","categoria":"Digestivo","subcategoria":"Cólico","presentacion":"Comprimidos","dosis":"10 comp","unidadesEnvase":10,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"💊","sintomas":["dolor de cabeza","acidez"],"grupoInteraccion":"analgesico","precio":8.6,"coste":5.16,"iva":4,"stock":27,"stockInicial":27,"stockMinimo":8,"lote":"VP271731","caducidadMs":1799366400000,"esGenerico":false,"colorCategoria":"#10B981"},
+    {"id":44,"sku":"OTC-0044","ean":"8400000000044","nombre":"Aero-Red gotas","marca":"Aero-Red","laboratorio":"Uriach","principioActivo":"Simeticona","categoria":"Digestivo","subcategoria":"Gases","presentacion":"Gotas 30 ml","dosis":"100 mg/ml","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"💨","sintomas":["acidez"],"grupoInteraccion":"otro","precio":7.2,"coste":4.32,"iva":4,"stock":40,"stockInicial":40,"stockMinimo":9,"lote":"WW281748","caducidadMs":1802908800000,"esGenerico":false,"colorCategoria":"#10B981"},
+    {"id":45,"sku":"OTC-0045","ean":"8400000000045","nombre":"Espaven Digesti","marca":"Espaven","laboratorio":"Armstrong","principioActivo":"Dimeticona + enzimas","categoria":"Digestivo","subcategoria":"Digestión","presentacion":"Cápsulas","dosis":"20 cáps","unidadesEnvase":20,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🥗","sintomas":["acidez"],"grupoInteraccion":"otro","precio":9.3,"coste":5.58,"iva":4,"stock":53,"stockInicial":53,"stockMinimo":10,"lote":"XD261765","caducidadMs":1806451200000,"esGenerico":false,"colorCategoria":"#10B981"},
+    {"id":46,"sku":"OTC-0046","ean":"8400000000046","nombre":"Duphalac solución","marca":"Duphalac","laboratorio":"Abbott","principioActivo":"Lactulosa","categoria":"Digestivo","subcategoria":"Estreñimiento","presentacion":"Solución 200 ml","dosis":"200 ml","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"💧","sintomas":["estreñimiento"],"grupoInteraccion":"otro","precio":6.9,"coste":4.14,"iva":4,"stock":66,"stockInicial":66,"stockMinimo":11,"lote":"YL271782","caducidadMs":1809993600000,"esGenerico":false,"colorCategoria":"#10B981"},
+    {"id":47,"sku":"OTC-0047","ean":"8400000000047","nombre":"Movicol sobres","marca":"Movicol","laboratorio":"Norgine","principioActivo":"Macrogol 3350","categoria":"Digestivo","subcategoria":"Estreñimiento","presentacion":"Sobres","dosis":"20 sobres","unidadesEnvase":20,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"📦","sintomas":["estreñimiento"],"grupoInteraccion":"otro","precio":12.4,"coste":7.44,"iva":4,"stock":79,"stockInicial":79,"stockMinimo":12,"lote":"ZT281799","caducidadMs":1813536000000,"esGenerico":false,"colorCategoria":"#10B981"},
+    {"id":48,"sku":"OTC-0048","ean":"8400000000048","nombre":"Plantaben sobres","marca":"Plantaben","laboratorio":"Madaus","principioActivo":"Ispaghula (Plantago ovata)","categoria":"Digestivo","subcategoria":"Fibra","presentacion":"Sobres","dosis":"3,5 g × 20","unidadesEnvase":20,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🌿","sintomas":["estreñimiento"],"grupoInteraccion":"otro","precio":8.75,"coste":5.25,"iva":4,"stock":92,"stockInicial":92,"stockMinimo":13,"lote":"AA261816","caducidadMs":1817078400000,"esGenerico":false,"colorCategoria":"#10B981"},
+    {"id":49,"sku":"OTC-0049","ean":"8400000000049","nombre":"Bioralsuero naranja","marca":"Bioralsuero","laboratorio":"Casen","principioActivo":"Sales de rehidratación","categoria":"Digestivo","subcategoria":"Rehidratación","presentacion":"Sobres","dosis":"5 sobres","unidadesEnvase":5,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🥤","sintomas":["diarrea"],"grupoInteraccion":"otro","precio":7.5,"coste":4.5,"iva":4,"stock":15,"stockInicial":15,"stockMinimo":14,"lote":"BH271833","caducidadMs":1820620800000,"esGenerico":false,"colorCategoria":"#10B981"},
+    {"id":50,"sku":"OTC-0050","ean":"8400000000050","nombre":"Aquilea Gas","marca":"Aquilea","laboratorio":"Uriach","principioActivo":"Carbón vegetal + hinojo","categoria":"Digestivo","subcategoria":"Gases","presentacion":"Cápsulas","dosis":"30 cáps","unidadesEnvase":30,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"💨","sintomas":["acidez"],"grupoInteraccion":"otro","precio":10.2,"coste":6.12,"iva":21,"stock":28,"stockInicial":28,"stockMinimo":5,"lote":"CQ281850","caducidadMs":1824163200000,"esGenerico":false,"colorCategoria":"#10B981"},
+    {"id":51,"sku":"OTC-0051","ean":"8400000000051","nombre":"Omepral 20 mg","marca":"Omepral","laboratorio":"Teva","principioActivo":"Omeprazol","categoria":"Digestivo","subcategoria":"Acidez","presentacion":"Cápsulas","dosis":"20 mg × 14","unidadesEnvase":14,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🔥","sintomas":["acidez"],"grupoInteraccion":"ipp","precio":5.1,"coste":3.06,"iva":4,"stock":41,"stockInicial":41,"stockMinimo":6,"lote":"DX261867","caducidadMs":1827705600000,"esGenerico":true,"colorCategoria":"#10B981"},
+    {"id":52,"sku":"OTC-0052","ean":"8400000000052","nombre":"Gelocatil Digestivo","marca":"Gelocatil","laboratorio":"Ferrer","principioActivo":"Paracetamol + simeticona","categoria":"Digestivo","subcategoria":"Dispepsia","presentacion":"Comprimidos","dosis":"12 comp","unidadesEnvase":12,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"💊","sintomas":["acidez","dolor de cabeza"],"grupoInteraccion":"analgesico","precio":6.4,"coste":3.84,"iva":4,"stock":54,"stockInicial":54,"stockMinimo":7,"lote":"EE271884","caducidadMs":1831248000000,"esGenerico":false,"colorCategoria":"#10B981"},
+    {"id":53,"sku":"OTC-0053","ean":"8400000000053","nombre":"Nolotil 575 mg","marca":"Nolotil","laboratorio":"Boehringer","principioActivo":"Metamizol magnésico","categoria":"Alivio del dolor","subcategoria":"Analgésico","presentacion":"Cápsulas","dosis":"575 mg × 20","unidadesEnvase":20,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"💊","sintomas":["dolor de cabeza","dolor muscular","fiebre"],"grupoInteraccion":"analgesico","precio":4.2,"coste":2.52,"iva":4,"stock":67,"stockInicial":67,"stockMinimo":8,"lote":"FM281901","caducidadMs":1834790400000,"esGenerico":false,"colorCategoria":"#EF4444"},
+    {"id":54,"sku":"OTC-0054","ean":"8400000000054","nombre":"Dalsy 40 mg/ml","marca":"Dalsy","laboratorio":"AbbVie","principioActivo":"Ibuprofeno","categoria":"Alivio del dolor","subcategoria":"Pediátrico","presentacion":"Suspensión 200 ml","dosis":"40 mg/ml","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🧒","sintomas":["fiebre","dolor de cabeza"],"grupoInteraccion":"nsaid","precio":6.95,"coste":4.17,"iva":4,"stock":80,"stockInicial":80,"stockMinimo":9,"lote":"GU261918","caducidadMs":1838332800000,"esGenerico":false,"colorCategoria":"#EF4444"},
+    {"id":55,"sku":"OTC-0055","ean":"8400000000055","nombre":"Apiretal 100 mg/ml","marca":"Apiretal","laboratorio":"ERN","principioActivo":"Paracetamol","categoria":"Alivio del dolor","subcategoria":"Pediátrico","presentacion":"Solución 60 ml","dosis":"100 mg/ml","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🌡️","sintomas":["fiebre","dolor de cabeza"],"grupoInteraccion":"analgesico","precio":5.5,"coste":3.3,"iva":4,"stock":93,"stockInicial":93,"stockMinimo":10,"lote":"HB271935","caducidadMs":1841875200000,"esGenerico":false,"colorCategoria":"#EF4444"},
+    {"id":56,"sku":"OTC-0056","ean":"8400000000056","nombre":"Gelocatil 1 g","marca":"Gelocatil","laboratorio":"Ferrer","principioActivo":"Paracetamol","categoria":"Alivio del dolor","subcategoria":"Analgésico","presentacion":"Comprimidos","dosis":"1 g × 12","unidadesEnvase":12,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"💊","sintomas":["dolor de cabeza","fiebre"],"grupoInteraccion":"analgesico","precio":4.8,"coste":2.88,"iva":4,"stock":16,"stockInicial":16,"stockMinimo":11,"lote":"JJ281952","caducidadMs":1845417600000,"esGenerico":false,"colorCategoria":"#EF4444"},
+    {"id":57,"sku":"OTC-0057","ean":"8400000000057","nombre":"Efferalgan 1 g","marca":"Efferalgan","laboratorio":"UPSA","principioActivo":"Paracetamol","categoria":"Alivio del dolor","subcategoria":"Analgésico","presentacion":"Efervescentes","dosis":"1 g × 8","unidadesEnvase":8,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🫧","sintomas":["dolor de cabeza","fiebre"],"grupoInteraccion":"analgesico","precio":5.2,"coste":3.12,"iva":4,"stock":29,"stockInicial":29,"stockMinimo":12,"lote":"KR261969","caducidadMs":1848960000000,"esGenerico":false,"colorCategoria":"#EF4444"},
+    {"id":58,"sku":"OTC-0058","ean":"8400000000058","nombre":"Ibuprofeno Cinfa 400 mg","marca":"Cinfa","laboratorio":"Cinfa","principioActivo":"Ibuprofeno","categoria":"Alivio del dolor","subcategoria":"AINE","presentacion":"Comprimidos","dosis":"400 mg × 20","unidadesEnvase":20,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"💊","sintomas":["dolor de cabeza","dolor muscular","fiebre"],"grupoInteraccion":"nsaid","precio":3.9,"coste":2.34,"iva":4,"stock":42,"stockInicial":42,"stockMinimo":13,"lote":"LY271986","caducidadMs":1852502400000,"esGenerico":true,"colorCategoria":"#EF4444"},
+    {"id":59,"sku":"OTC-0059","ean":"8400000000059","nombre":"Neobrufen 600 mg","marca":"Neobrufen","laboratorio":"AbbVie","principioActivo":"Ibuprofeno","categoria":"Alivio del dolor","subcategoria":"AINE","presentacion":"Comprimidos","dosis":"600 mg × 20","unidadesEnvase":20,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"💊","sintomas":["dolor muscular","fiebre"],"grupoInteraccion":"nsaid","precio":5.6,"coste":3.36,"iva":4,"stock":55,"stockInicial":55,"stockMinimo":14,"lote":"MF282003","caducidadMs":1856044800000,"esGenerico":false,"colorCategoria":"#EF4444"},
+    {"id":60,"sku":"OTC-0060","ean":"8400000000060","nombre":"Enantyum 25 mg","marca":"Enantyum","laboratorio":"Menarini","principioActivo":"Dexketoprofeno","categoria":"Alivio del dolor","subcategoria":"AINE","presentacion":"Comprimidos","dosis":"25 mg × 20","unidadesEnvase":20,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"💊","sintomas":["dolor de cabeza","dolor muscular"],"grupoInteraccion":"nsaid","precio":7.8,"coste":4.68,"iva":4,"stock":68,"stockInicial":68,"stockMinimo":5,"lote":"NN262020","caducidadMs":1859587200000,"esGenerico":false,"colorCategoria":"#EF4444"},
+    {"id":61,"sku":"OTC-0061","ean":"8400000000061","nombre":"Voltaren Emulgel","marca":"Voltaren","laboratorio":"GSK","principioActivo":"Diclofenaco","categoria":"Alivio del dolor","subcategoria":"Tópico","presentacion":"Gel 100 g","dosis":"1%","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🧴","sintomas":["dolor muscular"],"grupoInteraccion":"nsaid","precio":12.9,"coste":7.74,"iva":4,"stock":81,"stockInicial":81,"stockMinimo":6,"lote":"PV272037","caducidadMs":1863129600000,"esGenerico":false,"colorCategoria":"#EF4444"},
+    {"id":62,"sku":"OTC-0062","ean":"8400000000062","nombre":"Flector Tissugel","marca":"Flector","laboratorio":"IBSA","principioActivo":"Diclofenaco","categoria":"Alivio del dolor","subcategoria":"Parche","presentacion":"Parches","dosis":"140 mg × 5","unidadesEnvase":5,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🩹","sintomas":["dolor muscular"],"grupoInteraccion":"nsaid","precio":14.5,"coste":8.7,"iva":4,"stock":94,"stockInicial":94,"stockMinimo":7,"lote":"QC282054","caducidadMs":1794009600000,"esGenerico":false,"colorCategoria":"#EF4444"},
+    {"id":63,"sku":"OTC-0063","ean":"8400000000063","nombre":"Aspirina 500 mg","marca":"Aspirina","laboratorio":"Bayer","principioActivo":"Ácido acetilsalicílico","categoria":"Alivio del dolor","subcategoria":"Analgésico","presentacion":"Comprimidos","dosis":"500 mg × 20","unidadesEnvase":20,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"💊","sintomas":["dolor de cabeza","fiebre"],"grupoInteraccion":"nsaid","precio":4.5,"coste":2.7,"iva":4,"stock":17,"stockInicial":17,"stockMinimo":8,"lote":"RK262071","caducidadMs":1797552000000,"esGenerico":false,"colorCategoria":"#EF4444"},
+    {"id":64,"sku":"OTC-0064","ean":"8400000000064","nombre":"Termalgin 650 mg","marca":"Termalgin","laboratorio":"GSK","principioActivo":"Paracetamol","categoria":"Alivio del dolor","subcategoria":"Analgésico","presentacion":"Comprimidos","dosis":"650 mg × 20","unidadesEnvase":20,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"💊","sintomas":["dolor de cabeza","fiebre"],"grupoInteraccion":"analgesico","precio":4.1,"coste":2.46,"iva":4,"stock":30,"stockInicial":30,"stockMinimo":9,"lote":"SS272088","caducidadMs":1801094400000,"esGenerico":false,"colorCategoria":"#EF4444"},
+    {"id":65,"sku":"OTC-0065","ean":"8400000000065","nombre":"Frenadol Soft (dolor)","marca":"Frenadol","laboratorio":"J&J","principioActivo":"Paracetamol","categoria":"Alivio del dolor","subcategoria":"Analgésico","presentacion":"Cápsulas blandas","dosis":"500 mg × 16","unidadesEnvase":16,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"💊","sintomas":["dolor de cabeza"],"grupoInteraccion":"analgesico","precio":6.2,"coste":3.72,"iva":4,"stock":43,"stockInicial":43,"stockMinimo":10,"lote":"TZ282105","caducidadMs":1804636800000,"esGenerico":false,"colorCategoria":"#EF4444"},
+    {"id":66,"sku":"OTC-0066","ean":"8400000000066","nombre":"Naproxeno Kern 500 mg","marca":"Kern","laboratorio":"Kern Pharma","principioActivo":"Naproxeno","categoria":"Alivio del dolor","subcategoria":"AINE","presentacion":"Comprimidos","dosis":"500 mg × 20","unidadesEnvase":20,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"💊","sintomas":["dolor muscular","dolor de cabeza"],"grupoInteraccion":"nsaid","precio":5.3,"coste":3.18,"iva":4,"stock":56,"stockInicial":56,"stockMinimo":11,"lote":"UG262122","caducidadMs":1808179200000,"esGenerico":true,"colorCategoria":"#EF4444"},
+    {"id":67,"sku":"OTC-0067","ean":"8400000000067","nombre":"Bepanthol crema","marca":"Bepanthol","laboratorio":"Bayer","principioActivo":"Dexpantenol","categoria":"Piel / Dermatología","subcategoria":"Reparadora","presentacion":"Crema 30 g","dosis":"5%","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🧴","sintomas":["piel irritada"],"grupoInteraccion":"otro","precio":9.9,"coste":5.94,"iva":21,"stock":69,"stockInicial":69,"stockMinimo":12,"lote":"VP272139","caducidadMs":1811721600000,"esGenerico":false,"colorCategoria":"#F59E0B"},
+    {"id":68,"sku":"OTC-0068","ean":"8400000000068","nombre":"Bepanthol pomada","marca":"Bepanthol","laboratorio":"Bayer","principioActivo":"Dexpantenol","categoria":"Piel / Dermatología","subcategoria":"Reparadora","presentacion":"Pomada 30 g","dosis":"5%","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🧴","sintomas":["piel irritada","heridas"],"grupoInteraccion":"otro","precio":10.5,"coste":6.3,"iva":21,"stock":82,"stockInicial":82,"stockMinimo":13,"lote":"WW282156","caducidadMs":1815264000000,"esGenerico":false,"colorCategoria":"#F59E0B"},
+    {"id":69,"sku":"OTC-0069","ean":"8400000000069","nombre":"Cicatricure gel","marca":"Cicatricure","laboratorio":"Genomma","principioActivo":"Allantoína + extractos","categoria":"Piel / Dermatología","subcategoria":"Cicatrices","presentacion":"Gel 30 g","dosis":"30 g","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"✨","sintomas":["piel irritada"],"grupoInteraccion":"otro","precio":14.9,"coste":8.94,"iva":21,"stock":95,"stockInicial":95,"stockMinimo":14,"lote":"XD262173","caducidadMs":1818806400000,"esGenerico":false,"colorCategoria":"#F59E0B"},
+    {"id":70,"sku":"OTC-0070","ean":"8400000000070","nombre":"Cicaplast Baume B5","marca":"La Roche-Posay","laboratorio":"L'Oréal","principioActivo":"Pantenol + madecassoside","categoria":"Piel / Dermatología","subcategoria":"Reparadora","presentacion":"Bálsamo 40 ml","dosis":"40 ml","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🧴","sintomas":["piel irritada"],"grupoInteraccion":"otro","precio":14.5,"coste":8.7,"iva":21,"stock":18,"stockInicial":18,"stockMinimo":5,"lote":"YL272190","caducidadMs":1822348800000,"esGenerico":false,"colorCategoria":"#F59E0B"},
+    {"id":71,"sku":"OTC-0071","ean":"8400000000071","nombre":"CeraVe Crema hidratante","marca":"CeraVe","laboratorio":"L'Oréal","principioActivo":"Ceramidas + HA","categoria":"Piel / Dermatología","subcategoria":"Hidratación","presentacion":"Crema 177 ml","dosis":"177 ml","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🧴","sintomas":["piel irritada"],"grupoInteraccion":"otro","precio":12.9,"coste":7.74,"iva":21,"stock":31,"stockInicial":31,"stockMinimo":6,"lote":"ZT282207","caducidadMs":1825891200000,"esGenerico":false,"colorCategoria":"#F59E0B"},
+    {"id":72,"sku":"OTC-0072","ean":"8400000000072","nombre":"Avène Cicalfate+","marca":"Avène","laboratorio":"Pierre Fabre","principioActivo":"Sulfato de cobre/zinc","categoria":"Piel / Dermatología","subcategoria":"Reparadora","presentacion":"Crema 40 ml","dosis":"40 ml","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🧴","sintomas":["piel irritada"],"grupoInteraccion":"otro","precio":13.8,"coste":8.28,"iva":21,"stock":44,"stockInicial":44,"stockMinimo":7,"lote":"AA262224","caducidadMs":1829433600000,"esGenerico":false,"colorCategoria":"#F59E0B"},
+    {"id":73,"sku":"OTC-0073","ean":"8400000000073","nombre":"Isdin Fotoprotector Fusion Water SPF50+","marca":"Isdin","laboratorio":"Isdin","principioActivo":"Filtros UV","categoria":"Piel / Dermatología","subcategoria":"Solar","presentacion":"Fluido 50 ml","dosis":"SPF 50+","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"☀️","sintomas":["solar"],"grupoInteraccion":"otro","precio":22.5,"coste":13.5,"iva":21,"stock":57,"stockInicial":57,"stockMinimo":8,"lote":"BH272241","caducidadMs":1832976000000,"esGenerico":false,"colorCategoria":"#F59E0B"},
+    {"id":74,"sku":"OTC-0074","ean":"8400000000074","nombre":"Isdin Fotoprotector Pediatrics SPF50+","marca":"Isdin","laboratorio":"Isdin","principioActivo":"Filtros UV","categoria":"Piel / Dermatología","subcategoria":"Solar infantil","presentacion":"Loción 200 ml","dosis":"SPF 50+","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🧒","sintomas":["solar"],"grupoInteraccion":"otro","precio":24.9,"coste":14.94,"iva":21,"stock":70,"stockInicial":70,"stockMinimo":9,"lote":"CQ282258","caducidadMs":1836518400000,"esGenerico":false,"colorCategoria":"#F59E0B"},
+    {"id":75,"sku":"OTC-0075","ean":"8400000000075","nombre":"Eucerin AtopiControl","marca":"Eucerin","laboratorio":"Beiersdorf","principioActivo":"Omega + ceramidas","categoria":"Piel / Dermatología","subcategoria":"Atopia","presentacion":"Crema 400 ml","dosis":"400 ml","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🧴","sintomas":["piel irritada"],"grupoInteraccion":"otro","precio":28.5,"coste":17.1,"iva":21,"stock":83,"stockInicial":83,"stockMinimo":10,"lote":"DX262275","caducidadMs":1840060800000,"esGenerico":false,"colorCategoria":"#F59E0B"},
+    {"id":76,"sku":"OTC-0076","ean":"8400000000076","nombre":"Bioderma Atoderm Intensive","marca":"Bioderma","laboratorio":"NAOS","principioActivo":"Complejo Skin Barrier","categoria":"Piel / Dermatología","subcategoria":"Atopia","presentacion":"Bálsamo 500 ml","dosis":"500 ml","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🧴","sintomas":["piel irritada"],"grupoInteraccion":"otro","precio":26.9,"coste":16.14,"iva":21,"stock":96,"stockInicial":96,"stockMinimo":11,"lote":"EE272292","caducidadMs":1843603200000,"esGenerico":false,"colorCategoria":"#F59E0B"},
+    {"id":77,"sku":"OTC-0077","ean":"8400000000077","nombre":"Canesten crema 1%","marca":"Canesten","laboratorio":"Bayer","principioActivo":"Clotrimazol","categoria":"Piel / Dermatología","subcategoria":"Antifúngico","presentacion":"Crema 20 g","dosis":"1%","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🦶","sintomas":["piel irritada"],"grupoInteraccion":"otro","precio":8.4,"coste":5.04,"iva":4,"stock":19,"stockInicial":19,"stockMinimo":12,"lote":"FM282309","caducidadMs":1847145600000,"esGenerico":false,"colorCategoria":"#F59E0B"},
+    {"id":78,"sku":"OTC-0078","ean":"8400000000078","nombre":"Lamisil crema","marca":"Lamisil","laboratorio":"GSK","principioActivo":"Terbinafina","categoria":"Piel / Dermatología","subcategoria":"Antifúngico","presentacion":"Crema 15 g","dosis":"1%","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🦶","sintomas":["piel irritada"],"grupoInteraccion":"otro","precio":11.2,"coste":6.72,"iva":4,"stock":32,"stockInicial":32,"stockMinimo":13,"lote":"GU262326","caducidadMs":1850688000000,"esGenerico":false,"colorCategoria":"#F59E0B"},
+    {"id":79,"sku":"OTC-0079","ean":"8400000000079","nombre":"Quadriderm crema","marca":"Quadriderm","laboratorio":"Schering","principioActivo":"Betametasona + gentamicina + clotrimazol","categoria":"Piel / Dermatología","subcategoria":"Dermatitis","presentacion":"Crema 15 g","dosis":"15 g","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🧴","sintomas":["piel irritada"],"grupoInteraccion":"corticoide","precio":9.8,"coste":5.88,"iva":4,"stock":45,"stockInicial":45,"stockMinimo":14,"lote":"HB272343","caducidadMs":1854230400000,"esGenerico":false,"colorCategoria":"#F59E0B"},
+    {"id":80,"sku":"OTC-0080","ean":"8400000000080","nombre":"Hydrocortisona ISDIN 1%","marca":"Isdin","laboratorio":"Isdin","principioActivo":"Hidrocortisona","categoria":"Piel / Dermatología","subcategoria":"Corticoide tópico","presentacion":"Crema 30 g","dosis":"1%","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🧴","sintomas":["piel irritada"],"grupoInteraccion":"corticoide","precio":7.5,"coste":4.5,"iva":4,"stock":58,"stockInicial":58,"stockMinimo":5,"lote":"JJ282360","caducidadMs":1857772800000,"esGenerico":false,"colorCategoria":"#F59E0B"},
+    {"id":81,"sku":"OTC-0081","ean":"8400000000081","nombre":"Calmatopic crema","marca":"Calmatopic","laboratorio":"Isdin","principioActivo":"Piroctona + avena","categoria":"Piel / Dermatología","subcategoria":"Picor","presentacion":"Crema 100 ml","dosis":"100 ml","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"😌","sintomas":["piel irritada"],"grupoInteraccion":"otro","precio":16.9,"coste":10.14,"iva":21,"stock":71,"stockInicial":71,"stockMinimo":6,"lote":"KR262377","caducidadMs":1861315200000,"esGenerico":false,"colorCategoria":"#F59E0B"},
+    {"id":82,"sku":"OTC-0082","ean":"8400000000082","nombre":"Urgo Quemaduras","marca":"Urgo","laboratorio":"Urgo","principioActivo":"Hidrocoloide","categoria":"Piel / Dermatología","subcategoria":"Quemaduras","presentacion":"Apósitos","dosis":"6 uds","unidadesEnvase":6,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🩹","sintomas":["heridas"],"grupoInteraccion":"otro","precio":9.5,"coste":5.7,"iva":21,"stock":84,"stockInicial":84,"stockMinimo":7,"lote":"LY272394","caducidadMs":1792195200000,"esGenerico":false,"colorCategoria":"#F59E0B"},
+    {"id":83,"sku":"OTC-0083","ean":"8400000000083","nombre":"Hansaplast Universal","marca":"Hansaplast","laboratorio":"Beiersdorf","principioActivo":"Apósito adhesivo","categoria":"Piel / Dermatología","subcategoria":"Heridas","presentacion":"Surtido 40 uds","dosis":"40 uds","unidadesEnvase":40,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🩹","sintomas":["heridas"],"grupoInteraccion":"otro","precio":4.9,"coste":2.94,"iva":21,"stock":97,"stockInicial":97,"stockMinimo":8,"lote":"MF282411","caducidadMs":1795737600000,"esGenerico":false,"colorCategoria":"#F59E0B"},
+    {"id":84,"sku":"OTC-0084","ean":"8400000000084","nombre":"Compeed ampollas","marca":"Compeed","laboratorio":"J&J","principioActivo":"Hidrocoloide","categoria":"Piel / Dermatología","subcategoria":"Ampollas","presentacion":"Apósitos","dosis":"5 uds","unidadesEnvase":5,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🦶","sintomas":["heridas"],"grupoInteraccion":"otro","precio":7.8,"coste":4.68,"iva":21,"stock":20,"stockInicial":20,"stockMinimo":9,"lote":"NN262428","caducidadMs":1799280000000,"esGenerico":false,"colorCategoria":"#F59E0B"},
+    {"id":85,"sku":"OTC-0085","ean":"8400000000085","nombre":"Betadine solución","marca":"Betadine","laboratorio":"Meda","principioActivo":"Povidona yodada","categoria":"Piel / Dermatología","subcategoria":"Antiséptico","presentacion":"Solución 125 ml","dosis":"10%","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🟤","sintomas":["heridas"],"grupoInteraccion":"otro","precio":6.5,"coste":3.9,"iva":4,"stock":33,"stockInicial":33,"stockMinimo":10,"lote":"PV272445","caducidadMs":1802822400000,"esGenerico":false,"colorCategoria":"#F59E0B"},
+    {"id":86,"sku":"OTC-0086","ean":"8400000000086","nombre":"Cristalmina solución","marca":"Cristalmina","laboratorio":"Salvat","principioActivo":"Clorhexidina","categoria":"Piel / Dermatología","subcategoria":"Antiséptico","presentacion":"Spray 25 ml","dosis":"1%","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"💦","sintomas":["heridas"],"grupoInteraccion":"otro","precio":5.9,"coste":3.54,"iva":4,"stock":46,"stockInicial":46,"stockMinimo":11,"lote":"QC282462","caducidadMs":1806364800000,"esGenerico":false,"colorCategoria":"#F59E0B"},
+    {"id":87,"sku":"OTC-0087","ean":"8400000000087","nombre":"Aquaphor pomada","marca":"Aquaphor","laboratorio":"Eucerin","principioActivo":"Petrolato","categoria":"Piel / Dermatología","subcategoria":"Barrera","presentacion":"Pomada 45 g","dosis":"45 g","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🧴","sintomas":["piel irritada"],"grupoInteraccion":"otro","precio":11.5,"coste":6.9,"iva":21,"stock":59,"stockInicial":59,"stockMinimo":12,"lote":"RK262479","caducidadMs":1809907200000,"esGenerico":false,"colorCategoria":"#F59E0B"},
+    {"id":88,"sku":"OTC-0088","ean":"8400000000088","nombre":"Uriage Bariéderm","marca":"Uriage","laboratorio":"Uriage","principioActivo":"Poli-2p + triglicéridos","categoria":"Piel / Dermatología","subcategoria":"Fisuras","presentacion":"Crema 75 ml","dosis":"75 ml","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🧴","sintomas":["piel irritada"],"grupoInteraccion":"otro","precio":15.2,"coste":9.12,"iva":21,"stock":72,"stockInicial":72,"stockMinimo":13,"lote":"SS272496","caducidadMs":1813449600000,"esGenerico":false,"colorCategoria":"#F59E0B"},
+    {"id":89,"sku":"OTC-0089","ean":"8400000000089","nombre":"SVR Cicavit+","marca":"SVR","laboratorio":"SVR","principioActivo":"Complejo reparador","categoria":"Piel / Dermatología","subcategoria":"Reparadora","presentacion":"Crema 40 ml","dosis":"40 ml","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🧴","sintomas":["piel irritada"],"grupoInteraccion":"otro","precio":13.4,"coste":8.04,"iva":21,"stock":85,"stockInicial":85,"stockMinimo":14,"lote":"TZ282513","caducidadMs":1816992000000,"esGenerico":false,"colorCategoria":"#F59E0B"},
+    {"id":90,"sku":"OTC-0090","ean":"8400000000090","nombre":"Martiderm Proteos Screen SPF50+","marca":"Martiderm","laboratorio":"Martiderm","principioActivo":"Filtros UV + proteoglicanos","categoria":"Piel / Dermatología","subcategoria":"Solar","presentacion":"Fluido 40 ml","dosis":"SPF 50+","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"☀️","sintomas":["solar"],"grupoInteraccion":"otro","precio":27.9,"coste":16.74,"iva":21,"stock":8,"stockInicial":8,"stockMinimo":5,"lote":"UG262530","caducidadMs":1820534400000,"esGenerico":false,"colorCategoria":"#F59E0B"},
+    {"id":91,"sku":"OTC-0091","ean":"8400000000091","nombre":"Sesderma C-Vit","marca":"Sesderma","laboratorio":"Sesderma","principioActivo":"Vitamina C liposomada","categoria":"Piel / Dermatología","subcategoria":"Antioxidante","presentacion":"Crema 50 ml","dosis":"50 ml","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"✨","sintomas":["piel irritada"],"grupoInteraccion":"otro","precio":32.5,"coste":19.5,"iva":21,"stock":21,"stockInicial":21,"stockMinimo":6,"lote":"VP272547","caducidadMs":1824076800000,"esGenerico":false,"colorCategoria":"#F59E0B"},
+    {"id":92,"sku":"OTC-0092","ean":"8400000000092","nombre":"Vichy Capital Soleil SPF50+","marca":"Vichy","laboratorio":"L'Oréal","principioActivo":"Filtros UV","categoria":"Piel / Dermatología","subcategoria":"Solar","presentacion":"Fluido 50 ml","dosis":"SPF 50+","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"☀️","sintomas":["solar"],"grupoInteraccion":"otro","precio":19.9,"coste":11.94,"iva":21,"stock":34,"stockInicial":34,"stockMinimo":7,"lote":"WW282564","caducidadMs":1827619200000,"esGenerico":false,"colorCategoria":"#F59E0B"},
+    {"id":93,"sku":"OTC-0093","ean":"8400000000093","nombre":"Mustela Crema bálsamo","marca":"Mustela","laboratorio":"Expanscience","principioActivo":"Óxido de zinc","categoria":"Piel / Dermatología","subcategoria":"Pañal","presentacion":"Crema 100 ml","dosis":"100 ml","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"👶","sintomas":["piel irritada"],"grupoInteraccion":"otro","precio":11.8,"coste":7.08,"iva":21,"stock":47,"stockInicial":47,"stockMinimo":8,"lote":"XD262581","caducidadMs":1831161600000,"esGenerico":false,"colorCategoria":"#F59E0B"},
+    {"id":94,"sku":"OTC-0094","ean":"8400000000094","nombre":"A-Derma Epitheliale A.H.","marca":"A-Derma","laboratorio":"Pierre Fabre","principioActivo":"Avena Rhealba","categoria":"Piel / Dermatología","subcategoria":"Reparadora","presentacion":"Crema 40 ml","dosis":"40 ml","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🧴","sintomas":["piel irritada"],"grupoInteraccion":"otro","precio":14.2,"coste":8.52,"iva":21,"stock":60,"stockInicial":60,"stockMinimo":9,"lote":"YL272598","caducidadMs":1834704000000,"esGenerico":false,"colorCategoria":"#F59E0B"},
+    {"id":95,"sku":"OTC-0095","ean":"8400000000095","nombre":"LetiAT4 Intensive","marca":"Leti","laboratorio":"Leti Pharma","principioActivo":"Complejo atópico","categoria":"Piel / Dermatología","subcategoria":"Atopia","presentacion":"Crema 100 ml","dosis":"100 ml","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🧴","sintomas":["piel irritada"],"grupoInteraccion":"otro","precio":18.5,"coste":11.1,"iva":21,"stock":73,"stockInicial":73,"stockMinimo":10,"lote":"ZT282615","caducidadMs":1838246400000,"esGenerico":false,"colorCategoria":"#F59E0B"},
+    {"id":96,"sku":"OTC-0096","ean":"8400000000096","nombre":"Ducray Dexyane MeD","marca":"Ducray","laboratorio":"Pierre Fabre","principioActivo":"Complejo barrera","categoria":"Piel / Dermatología","subcategoria":"Eccema","presentacion":"Crema 100 ml","dosis":"100 ml","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🧴","sintomas":["piel irritada"],"grupoInteraccion":"otro","precio":17.9,"coste":10.74,"iva":21,"stock":86,"stockInicial":86,"stockMinimo":11,"lote":"AA262632","caducidadMs":1841788800000,"esGenerico":false,"colorCategoria":"#F59E0B"},
+    {"id":97,"sku":"OTC-0097","ean":"8400000000097","nombre":"Filorga Oxygen-Glow","marca":"Filorga","laboratorio":"Filorga","principioActivo":"Complejo oxigenante","categoria":"Piel / Dermatología","subcategoria":"Luminosidad","presentacion":"Crema 50 ml","dosis":"50 ml","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"✨","sintomas":["piel irritada"],"grupoInteraccion":"otro","precio":45,"coste":27,"iva":21,"stock":9,"stockInicial":9,"stockMinimo":12,"lote":"BH272649","caducidadMs":1845331200000,"esGenerico":false,"colorCategoria":"#F59E0B"},
+    {"id":98,"sku":"OTC-0098","ean":"8400000000098","nombre":"Nuxe Rêve de Miel","marca":"Nuxe","laboratorio":"Nuxe","principioActivo":"Miel + aceites","categoria":"Piel / Dermatología","subcategoria":"Manos","presentacion":"Crema 50 ml","dosis":"50 ml","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🍯","sintomas":["piel irritada"],"grupoInteraccion":"otro","precio":12.5,"coste":7.5,"iva":21,"stock":22,"stockInicial":22,"stockMinimo":13,"lote":"CQ282666","caducidadMs":1848873600000,"esGenerico":false,"colorCategoria":"#F59E0B"},
+    {"id":99,"sku":"OTC-0099","ean":"8400000000099","nombre":"Lutsine Eryplast","marca":"Lutsine","laboratorio":"Isdin","principioActivo":"Óxido de zinc","categoria":"Piel / Dermatología","subcategoria":"Pañal","presentacion":"Pasta 75 g","dosis":"75 g","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"👶","sintomas":["piel irritada"],"grupoInteraccion":"otro","precio":10.9,"coste":6.54,"iva":21,"stock":35,"stockInicial":35,"stockMinimo":14,"lote":"DX262683","caducidadMs":1852416000000,"esGenerico":false,"colorCategoria":"#F59E0B"},
+    {"id":100,"sku":"OTC-0100","ean":"8400000000100","nombre":"Mepiform lámina","marca":"Mepiform","laboratorio":"Mölnlycke","principioActivo":"Silicona","categoria":"Piel / Dermatología","subcategoria":"Cicatrices","presentacion":"Lámina 5×7 cm","dosis":"1 ud","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🩹","sintomas":["piel irritada"],"grupoInteraccion":"otro","precio":28,"coste":16.8,"iva":21,"stock":48,"stockInicial":48,"stockMinimo":5,"lote":"EE272700","caducidadMs":1855958400000,"esGenerico":false,"colorCategoria":"#F59E0B"},
+    {"id":101,"sku":"OTC-0101","ean":"8400000000101","nombre":"Comfeel Plus","marca":"Comfeel","laboratorio":"Coloplast","principioActivo":"Hidrocoloide","categoria":"Piel / Dermatología","subcategoria":"Úlceras","presentacion":"Apósitos 10×10","dosis":"10 uds","unidadesEnvase":10,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🩹","sintomas":["heridas"],"grupoInteraccion":"otro","precio":32.5,"coste":19.5,"iva":21,"stock":61,"stockInicial":61,"stockMinimo":6,"lote":"FM282717","caducidadMs":1859500800000,"esGenerico":false,"colorCategoria":"#F59E0B"},
+    {"id":102,"sku":"OTC-0102","ean":"8400000000102","nombre":"Biatain Adhesive","marca":"Biatain","laboratorio":"Coloplast","principioActivo":"Espuma","categoria":"Piel / Dermatología","subcategoria":"Heridas","presentacion":"Apósitos 10×10","dosis":"10 uds","unidadesEnvase":10,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🩹","sintomas":["heridas"],"grupoInteraccion":"otro","precio":45,"coste":27,"iva":21,"stock":74,"stockInicial":74,"stockMinimo":7,"lote":"GU262734","caducidadMs":1863043200000,"esGenerico":false,"colorCategoria":"#F59E0B"},
+    {"id":103,"sku":"OTC-0103","ean":"8400000000103","nombre":"Isdin Acniben Control","marca":"Isdin","laboratorio":"Isdin","principioActivo":"Ácido salicílico + retinoides","categoria":"Piel / Dermatología","subcategoria":"Acné","presentacion":"Gel crema 40 ml","dosis":"40 ml","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🪞","sintomas":["piel irritada"],"grupoInteraccion":"otro","precio":18.9,"coste":11.34,"iva":21,"stock":87,"stockInicial":87,"stockMinimo":8,"lote":"HB272751","caducidadMs":1793923200000,"esGenerico":false,"colorCategoria":"#F59E0B"},
+    {"id":104,"sku":"OTC-0104","ean":"8400000000104","nombre":"La Roche-Posay Effaclar Duo+","marca":"La Roche-Posay","laboratorio":"L'Oréal","principioActivo":"Niacinamida + LHA","categoria":"Piel / Dermatología","subcategoria":"Acné","presentacion":"Crema 40 ml","dosis":"40 ml","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🪞","sintomas":["piel irritada"],"grupoInteraccion":"otro","precio":19.5,"coste":11.7,"iva":21,"stock":10,"stockInicial":10,"stockMinimo":9,"lote":"JJ282768","caducidadMs":1797465600000,"esGenerico":false,"colorCategoria":"#F59E0B"},
+    {"id":105,"sku":"OTC-0105","ean":"8400000000105","nombre":"Durex Originales","marca":"Durex","laboratorio":"Reckitt","principioActivo":"Látex natural","categoria":"Salud sexual","subcategoria":"Preservativos","presentacion":"Caja","dosis":"12 uds","unidadesEnvase":12,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🔒","sintomas":["higiene íntima"],"grupoInteraccion":"otro","precio":8.9,"coste":5.34,"iva":21,"stock":23,"stockInicial":23,"stockMinimo":10,"lote":"KR262785","caducidadMs":1801008000000,"esGenerico":false,"colorCategoria":"#EC4899"},
+    {"id":106,"sku":"OTC-0106","ean":"8400000000106","nombre":"Durex Real Feel","marca":"Durex","laboratorio":"Reckitt","principioActivo":"Poliisopropeno","categoria":"Salud sexual","subcategoria":"Sin látex","presentacion":"Caja","dosis":"10 uds","unidadesEnvase":10,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🔒","sintomas":["higiene íntima"],"grupoInteraccion":"otro","precio":11.5,"coste":6.9,"iva":21,"stock":36,"stockInicial":36,"stockMinimo":11,"lote":"LY272802","caducidadMs":1804550400000,"esGenerico":false,"colorCategoria":"#EC4899"},
+    {"id":107,"sku":"OTC-0107","ean":"8400000000107","nombre":"Durex Placer Prolongado","marca":"Durex","laboratorio":"Reckitt","principioActivo":"Látex + benzocaína","categoria":"Salud sexual","subcategoria":"Preservativos","presentacion":"Caja","dosis":"12 uds","unidadesEnvase":12,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🔒","sintomas":["higiene íntima"],"grupoInteraccion":"otro","precio":10.9,"coste":6.54,"iva":21,"stock":49,"stockInicial":49,"stockMinimo":12,"lote":"MF282819","caducidadMs":1808092800000,"esGenerico":false,"colorCategoria":"#EC4899"},
+    {"id":108,"sku":"OTC-0108","ean":"8400000000108","nombre":"Control Nature","marca":"Control","laboratorio":"Art. Ginec.","principioActivo":"Látex","categoria":"Salud sexual","subcategoria":"Preservativos","presentacion":"Caja","dosis":"12 uds","unidadesEnvase":12,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🔒","sintomas":["higiene íntima"],"grupoInteraccion":"otro","precio":6.5,"coste":3.9,"iva":21,"stock":62,"stockInicial":62,"stockMinimo":13,"lote":"NN262836","caducidadMs":1811635200000,"esGenerico":false,"colorCategoria":"#EC4899"},
+    {"id":109,"sku":"OTC-0109","ean":"8400000000109","nombre":"Control Adapta Sensitivo","marca":"Control","laboratorio":"Art. Ginec.","principioActivo":"Látex","categoria":"Salud sexual","subcategoria":"Preservativos","presentacion":"Caja","dosis":"12 uds","unidadesEnvase":12,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🔒","sintomas":["higiene íntima"],"grupoInteraccion":"otro","precio":7.2,"coste":4.32,"iva":21,"stock":75,"stockInicial":75,"stockMinimo":14,"lote":"PV272853","caducidadMs":1815177600000,"esGenerico":false,"colorCategoria":"#EC4899"},
+    {"id":110,"sku":"OTC-0110","ean":"8400000000110","nombre":"Gynea Gel hidratante","marca":"Gynea","laboratorio":"Procare","principioActivo":"Ácido hialurónico","categoria":"Salud sexual","subcategoria":"Lubricante","presentacion":"Gel 30 ml","dosis":"30 ml","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"💧","sintomas":["higiene íntima"],"grupoInteraccion":"otro","precio":14.5,"coste":8.7,"iva":21,"stock":88,"stockInicial":88,"stockMinimo":5,"lote":"QC282870","caducidadMs":1818720000000,"esGenerico":false,"colorCategoria":"#EC4899"},
+    {"id":111,"sku":"OTC-0111","ean":"8400000000111","nombre":"Cumlaude Lubripiu","marca":"Cumlaude","laboratorio":"Candioli","principioActivo":"Glicerina + HA","categoria":"Salud sexual","subcategoria":"Lubricante","presentacion":"Gel 30 ml","dosis":"30 ml","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"💧","sintomas":["higiene íntima"],"grupoInteraccion":"otro","precio":13.9,"coste":8.34,"iva":21,"stock":11,"stockInicial":11,"stockMinimo":6,"lote":"RK262887","caducidadMs":1822262400000,"esGenerico":false,"colorCategoria":"#EC4899"},
+    {"id":112,"sku":"OTC-0112","ean":"8400000000112","nombre":"Durex Play Feel","marca":"Durex","laboratorio":"Reckitt","principioActivo":"Glicerina","categoria":"Salud sexual","subcategoria":"Lubricante","presentacion":"Gel 50 ml","dosis":"50 ml","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"💧","sintomas":["higiene íntima"],"grupoInteraccion":"otro","precio":9.5,"coste":5.7,"iva":21,"stock":24,"stockInicial":24,"stockMinimo":7,"lote":"SS272904","caducidadMs":1825804800000,"esGenerico":false,"colorCategoria":"#EC4899"},
+    {"id":113,"sku":"OTC-0113","ean":"8400000000113","nombre":"Clearblue Digital","marca":"Clearblue","laboratorio":"SPD","principioActivo":"hCG","categoria":"Salud sexual","subcategoria":"Test embarazo","presentacion":"Test","dosis":"1 ud","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🤰","sintomas":[],"grupoInteraccion":"otro","precio":14.9,"coste":8.94,"iva":21,"stock":37,"stockInicial":37,"stockMinimo":8,"lote":"TZ282921","caducidadMs":1829347200000,"esGenerico":false,"colorCategoria":"#EC4899"},
+    {"id":114,"sku":"OTC-0114","ean":"8400000000114","nombre":"Clearblue Ovulación","marca":"Clearblue","laboratorio":"SPD","principioActivo":"LH","categoria":"Salud sexual","subcategoria":"Test ovulación","presentacion":"Tests","dosis":"10 uds","unidadesEnvase":10,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"📅","sintomas":[],"grupoInteraccion":"otro","precio":24.5,"coste":14.7,"iva":21,"stock":50,"stockInicial":50,"stockMinimo":9,"lote":"UG262938","caducidadMs":1832889600000,"esGenerico":false,"colorCategoria":"#EC4899"},
+    {"id":115,"sku":"OTC-0115","ean":"8400000000115","nombre":"Preductor Ovulación","marca":"Preductor","laboratorio":"Quidel","principioActivo":"LH","categoria":"Salud sexual","subcategoria":"Test ovulación","presentacion":"Tests","dosis":"5 uds","unidadesEnvase":5,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"📅","sintomas":[],"grupoInteraccion":"otro","precio":16.9,"coste":10.14,"iva":21,"stock":63,"stockInicial":63,"stockMinimo":10,"lote":"VP272955","caducidadMs":1836432000000,"esGenerico":false,"colorCategoria":"#EC4899"},
+    {"id":116,"sku":"OTC-0116","ean":"8400000000116","nombre":"Femme Test embarazo","marca":"Femme","laboratorio":"Quidel","principioActivo":"hCG","categoria":"Salud sexual","subcategoria":"Test embarazo","presentacion":"Test","dosis":"1 ud","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🤰","sintomas":[],"grupoInteraccion":"otro","precio":7.5,"coste":4.5,"iva":21,"stock":76,"stockInicial":76,"stockMinimo":11,"lote":"WW282972","caducidadMs":1839974400000,"esGenerico":false,"colorCategoria":"#EC4899"},
+    {"id":117,"sku":"OTC-0117","ean":"8400000000117","nombre":"Gine-Canestén óvulos","marca":"Gine-Canestén","laboratorio":"Bayer","principioActivo":"Clotrimazol","categoria":"Salud sexual","subcategoria":"Candidiasis","presentacion":"Óvulos","dosis":"500 mg × 1","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"💊","sintomas":["higiene íntima"],"grupoInteraccion":"otro","precio":9.8,"coste":5.88,"iva":4,"stock":89,"stockInicial":89,"stockMinimo":12,"lote":"XD262989","caducidadMs":1843516800000,"esGenerico":false,"colorCategoria":"#EC4899"},
+    {"id":118,"sku":"OTC-0118","ean":"8400000000118","nombre":"Fluomizin comprimidos vaginales","marca":"Fluomizin","laboratorio":"Medinova","principioActivo":"Cloruro de dequalinio","categoria":"Salud sexual","subcategoria":"Infección vaginal","presentacion":"Comprimidos vag.","dosis":"10 mg × 6","unidadesEnvase":6,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"💊","sintomas":["higiene íntima"],"grupoInteraccion":"otro","precio":18.5,"coste":11.1,"iva":4,"stock":12,"stockInicial":12,"stockMinimo":13,"lote":"YL273006","caducidadMs":1847059200000,"esGenerico":false,"colorCategoria":"#EC4899"},
+    {"id":119,"sku":"OTC-0119","ean":"8400000000119","nombre":"Lactacyd Gel íntimo","marca":"Lactacyd","laboratorio":"GSK","principioActivo":"Ácido láctico","categoria":"Salud sexual","subcategoria":"Higiene","presentacion":"Gel 200 ml","dosis":"200 ml","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🧼","sintomas":["higiene íntima"],"grupoInteraccion":"otro","precio":8.9,"coste":5.34,"iva":21,"stock":25,"stockInicial":25,"stockMinimo":14,"lote":"ZT283023","caducidadMs":1850601600000,"esGenerico":false,"colorCategoria":"#EC4899"},
+    {"id":120,"sku":"OTC-0120","ean":"8400000000120","nombre":"Isdin Woman Hidratante","marca":"Isdin","laboratorio":"Isdin","principioActivo":"Ácido hialurónico","categoria":"Salud sexual","subcategoria":"Sequedad","presentacion":"Gel 30 g","dosis":"30 g","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"💧","sintomas":["higiene íntima"],"grupoInteraccion":"otro","precio":16.5,"coste":9.9,"iva":21,"stock":38,"stockInicial":38,"stockMinimo":5,"lote":"AA263040","caducidadMs":1854144000000,"esGenerico":false,"colorCategoria":"#EC4899"},
+    {"id":121,"sku":"OTC-0121","ean":"8400000000121","nombre":"Durex Mutual Pleasure","marca":"Durex","laboratorio":"Reckitt","principioActivo":"Látex","categoria":"Salud sexual","subcategoria":"Preservativos","presentacion":"Caja","dosis":"12 uds","unidadesEnvase":12,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🔒","sintomas":["higiene íntima"],"grupoInteraccion":"otro","precio":11.2,"coste":6.72,"iva":21,"stock":51,"stockInicial":51,"stockMinimo":6,"lote":"BH273057","caducidadMs":1857686400000,"esGenerico":false,"colorCategoria":"#EC4899"},
+    {"id":122,"sku":"OTC-0122","ean":"8400000000122","nombre":"Redoxon Triple Acción","marca":"Redoxon","laboratorio":"Bayer","principioActivo":"Vitamina C + zinc + D","categoria":"Vitaminas","subcategoria":"Inmunidad","presentacion":"Comprimidos efervescentes","dosis":"15 comp","unidadesEnvase":15,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🍊","sintomas":["vitaminas"],"grupoInteraccion":"otro","precio":9.95,"coste":5.97,"iva":21,"stock":64,"stockInicial":64,"stockMinimo":7,"lote":"CQ283074","caducidadMs":1861228800000,"esGenerico":false,"colorCategoria":"#84CC16"},
+    {"id":123,"sku":"OTC-0123","ean":"8400000000123","nombre":"Berocca Performance","marca":"Berocca","laboratorio":"Bayer","principioActivo":"Vitaminas B + C + zinc + magnesio","categoria":"Vitaminas","subcategoria":"Energía","presentacion":"Efervescentes","dosis":"15 comp","unidadesEnvase":15,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"⚡","sintomas":["vitaminas","estres"],"grupoInteraccion":"otro","precio":12.5,"coste":7.5,"iva":21,"stock":77,"stockInicial":77,"stockMinimo":8,"lote":"DX263091","caducidadMs":1792108800000,"esGenerico":false,"colorCategoria":"#84CC16"},
+    {"id":124,"sku":"OTC-0124","ean":"8400000000124","nombre":"Supradyn Activo","marca":"Supradyn","laboratorio":"Bayer","principioActivo":"Multivitamínico + coQ10","categoria":"Vitaminas","subcategoria":"General","presentacion":"Comprimidos","dosis":"30 comp","unidadesEnvase":30,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"💊","sintomas":["vitaminas"],"grupoInteraccion":"otro","precio":14.9,"coste":8.94,"iva":21,"stock":90,"stockInicial":90,"stockMinimo":9,"lote":"EE273108","caducidadMs":1795651200000,"esGenerico":false,"colorCategoria":"#84CC16"},
+    {"id":125,"sku":"OTC-0125","ean":"8400000000125","nombre":"Supradyn Energy","marca":"Supradyn","laboratorio":"Bayer","principioActivo":"Multivitamínico + ginseng","categoria":"Vitaminas","subcategoria":"Energía","presentacion":"Comprimidos","dosis":"30 comp","unidadesEnvase":30,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"⚡","sintomas":["vitaminas","estres"],"grupoInteraccion":"otro","precio":15.5,"coste":9.3,"iva":21,"stock":13,"stockInicial":13,"stockMinimo":10,"lote":"FM283125","caducidadMs":1799193600000,"esGenerico":false,"colorCategoria":"#84CC16"},
+    {"id":126,"sku":"OTC-0126","ean":"8400000000126","nombre":"Centrum Adultos","marca":"Centrum","laboratorio":"Haleon","principioActivo":"Multivitamínico","categoria":"Vitaminas","subcategoria":"General","presentacion":"Comprimidos","dosis":"30 comp","unidadesEnvase":30,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"💊","sintomas":["vitaminas"],"grupoInteraccion":"otro","precio":11.9,"coste":7.14,"iva":21,"stock":26,"stockInicial":26,"stockMinimo":11,"lote":"GU263142","caducidadMs":1802736000000,"esGenerico":false,"colorCategoria":"#84CC16"},
+    {"id":127,"sku":"OTC-0127","ean":"8400000000127","nombre":"Pharmaton Complex","marca":"Pharmaton","laboratorio":"Sanofi","principioActivo":"Ginseng + vitaminas","categoria":"Vitaminas","subcategoria":"Tónico","presentacion":"Cápsulas","dosis":"30 cáps","unidadesEnvase":30,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🌿","sintomas":["vitaminas","estres"],"grupoInteraccion":"otro","precio":16.8,"coste":10.08,"iva":21,"stock":39,"stockInicial":39,"stockMinimo":12,"lote":"HB273159","caducidadMs":1806278400000,"esGenerico":false,"colorCategoria":"#84CC16"},
+    {"id":128,"sku":"OTC-0128","ean":"8400000000128","nombre":"Juvamine Vitamina D3","marca":"Juvamine","laboratorio":"Urgo","principioActivo":"Colecalciferol","categoria":"Vitaminas","subcategoria":"Vitamina D","presentacion":"Cápsulas","dosis":"1000 UI × 60","unidadesEnvase":60,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"☀️","sintomas":["vitaminas"],"grupoInteraccion":"otro","precio":8.5,"coste":5.1,"iva":21,"stock":52,"stockInicial":52,"stockMinimo":13,"lote":"JJ283176","caducidadMs":1809820800000,"esGenerico":false,"colorCategoria":"#84CC16"},
+    {"id":129,"sku":"OTC-0129","ean":"8400000000129","nombre":"Aquilea Magnesio","marca":"Aquilea","laboratorio":"Uriach","principioActivo":"Magnesio","categoria":"Vitaminas","subcategoria":"Mineral","presentacion":"Comprimidos","dosis":"400 mg × 40","unidadesEnvase":40,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"💪","sintomas":["vitaminas","dolor muscular"],"grupoInteraccion":"otro","precio":9.2,"coste":5.52,"iva":21,"stock":65,"stockInicial":65,"stockMinimo":14,"lote":"KR263193","caducidadMs":1813363200000,"esGenerico":false,"colorCategoria":"#84CC16"},
+    {"id":130,"sku":"OTC-0130","ean":"8400000000130","nombre":"Aquilea Sueño","marca":"Aquilea","laboratorio":"Uriach","principioActivo":"Melatonina + pasiflora","categoria":"Vitaminas","subcategoria":"Sueño","presentacion":"Comprimidos","dosis":"1,95 mg × 30","unidadesEnvase":30,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"😴","sintomas":["insomnio"],"grupoInteraccion":"otro","precio":11.5,"coste":6.9,"iva":21,"stock":78,"stockInicial":78,"stockMinimo":5,"lote":"LY273210","caducidadMs":1816905600000,"esGenerico":false,"colorCategoria":"#84CC16"},
+    {"id":131,"sku":"OTC-0131","ean":"8400000000131","nombre":"Arkocápsulas Valeriana","marca":"Arkopharma","laboratorio":"Arkopharma","principioActivo":"Valeriana officinalis","categoria":"Vitaminas","subcategoria":"Sueño","presentacion":"Cápsulas","dosis":"350 mg × 50","unidadesEnvase":50,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🌿","sintomas":["insomnio","estres"],"grupoInteraccion":"otro","precio":10.9,"coste":6.54,"iva":21,"stock":91,"stockInicial":91,"stockMinimo":6,"lote":"MF283227","caducidadMs":1820448000000,"esGenerico":false,"colorCategoria":"#84CC16"},
+    {"id":132,"sku":"OTC-0132","ean":"8400000000132","nombre":"Hidropolivit mineral","marca":"Hidropolivit","laboratorio":"Menarini","principioActivo":"Multivitamínico","categoria":"Vitaminas","subcategoria":"General","presentacion":"Comprimidos","dosis":"30 comp","unidadesEnvase":30,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"💊","sintomas":["vitaminas"],"grupoInteraccion":"otro","precio":8.9,"coste":5.34,"iva":21,"stock":14,"stockInicial":14,"stockMinimo":7,"lote":"NN263244","caducidadMs":1823990400000,"esGenerico":false,"colorCategoria":"#84CC16"},
+    {"id":133,"sku":"OTC-0133","ean":"8400000000133","nombre":"Cebión 1000 mg","marca":"Cebión","laboratorio":"Merck","principioActivo":"Ácido ascórbico","categoria":"Vitaminas","subcategoria":"Vitamina C","presentacion":"Efervescentes","dosis":"1000 mg × 10","unidadesEnvase":10,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🍊","sintomas":["vitaminas"],"grupoInteraccion":"otro","precio":6.5,"coste":3.9,"iva":21,"stock":27,"stockInicial":27,"stockMinimo":8,"lote":"PV273261","caducidadMs":1827532800000,"esGenerico":false,"colorCategoria":"#84CC16"},
+    {"id":134,"sku":"OTC-0134","ean":"8400000000134","nombre":"Ferrer Ferroprotina","marca":"Ferroprotina","laboratorio":"Ferrer","principioActivo":"Hierro protein-succinilato","categoria":"Vitaminas","subcategoria":"Hierro","presentacion":"Sobres","dosis":"40 mg × 20","unidadesEnvase":20,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🩸","sintomas":["vitaminas"],"grupoInteraccion":"otro","precio":14.2,"coste":8.52,"iva":4,"stock":40,"stockInicial":40,"stockMinimo":9,"lote":"QC283278","caducidadMs":1831075200000,"esGenerico":false,"colorCategoria":"#84CC16"},
+    {"id":135,"sku":"OTC-0135","ean":"8400000000135","nombre":"Actiferol Fe","marca":"Actiferol","laboratorio":"Pierre Fabre","principioActivo":"Hierro + vitamina C","categoria":"Vitaminas","subcategoria":"Hierro","presentacion":"Cápsulas","dosis":"30 cáps","unidadesEnvase":30,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🩸","sintomas":["vitaminas"],"grupoInteraccion":"otro","precio":12.8,"coste":7.68,"iva":21,"stock":53,"stockInicial":53,"stockMinimo":10,"lote":"RK263295","caducidadMs":1834617600000,"esGenerico":false,"colorCategoria":"#84CC16"},
+    {"id":136,"sku":"OTC-0136","ean":"8400000000136","nombre":"Becozyme C Forte","marca":"Becozyme","laboratorio":"Bayer","principioActivo":"Complejo B + C","categoria":"Vitaminas","subcategoria":"Vitaminas B","presentacion":"Comprimidos","dosis":"30 comp","unidadesEnvase":30,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"💊","sintomas":["vitaminas"],"grupoInteraccion":"otro","precio":10.5,"coste":6.3,"iva":21,"stock":66,"stockInicial":66,"stockMinimo":11,"lote":"SS273312","caducidadMs":1838160000000,"esGenerico":false,"colorCategoria":"#84CC16"},
+    {"id":137,"sku":"OTC-0137","ean":"8400000000137","nombre":"Elevit Pronatal","marca":"Elevit","laboratorio":"Bayer","principioActivo":"Multivitamínico prenatal","categoria":"Vitaminas","subcategoria":"Embarazo","presentacion":"Comprimidos","dosis":"30 comp","unidadesEnvase":30,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🤰","sintomas":["vitaminas"],"grupoInteraccion":"otro","precio":18.9,"coste":11.34,"iva":21,"stock":79,"stockInicial":79,"stockMinimo":12,"lote":"TZ283329","caducidadMs":1841702400000,"esGenerico":false,"colorCategoria":"#84CC16"},
+    {"id":138,"sku":"OTC-0138","ean":"8400000000138","nombre":"Natalben Supra","marca":"Natalben","laboratorio":"Italfarmaco","principioActivo":"Ácido fólico + DHA + vitaminas","categoria":"Vitaminas","subcategoria":"Embarazo","presentacion":"Cápsulas","dosis":"30 cáps","unidadesEnvase":30,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🤰","sintomas":["vitaminas"],"grupoInteraccion":"otro","precio":19.5,"coste":11.7,"iva":21,"stock":92,"stockInicial":92,"stockMinimo":13,"lote":"UG263346","caducidadMs":1845244800000,"esGenerico":false,"colorCategoria":"#84CC16"},
+    {"id":139,"sku":"OTC-0139","ean":"8400000000139","nombre":"Omega 3 Aquilea","marca":"Aquilea","laboratorio":"Uriach","principioActivo":"EPA + DHA","categoria":"Vitaminas","subcategoria":"Omega 3","presentacion":"Cápsulas","dosis":"90 cáps","unidadesEnvase":90,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🐟","sintomas":["vitaminas"],"grupoInteraccion":"otro","precio":16.9,"coste":10.14,"iva":21,"stock":15,"stockInicial":15,"stockMinimo":14,"lote":"VP273363","caducidadMs":1848787200000,"esGenerico":false,"colorCategoria":"#84CC16"},
+    {"id":140,"sku":"OTC-0140","ean":"8400000000140","nombre":"Colágeno Confort","marca":"Aquilea","laboratorio":"Uriach","principioActivo":"Colágeno + ácido hialurónico","categoria":"Vitaminas","subcategoria":"Articulaciones","presentacion":"Sobres","dosis":"30 sobres","unidadesEnvase":30,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🦴","sintomas":["dolor muscular","vitaminas"],"grupoInteraccion":"otro","precio":22.5,"coste":13.5,"iva":21,"stock":28,"stockInicial":28,"stockMinimo":5,"lote":"WW283380","caducidadMs":1852329600000,"esGenerico":false,"colorCategoria":"#84CC16"},
+    {"id":141,"sku":"OTC-0141","ean":"8400000000141","nombre":"Vitamina D3 Kern 25.000 UI","marca":"Kern","laboratorio":"Kern Pharma","principioActivo":"Colecalciferol","categoria":"Vitaminas","subcategoria":"Vitamina D","presentacion":"Cápsulas","dosis":"25.000 UI × 4","unidadesEnvase":4,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"☀️","sintomas":["vitaminas"],"grupoInteraccion":"otro","precio":9.8,"coste":5.88,"iva":4,"stock":41,"stockInicial":41,"stockMinimo":6,"lote":"XD263397","caducidadMs":1855872000000,"esGenerico":true,"colorCategoria":"#84CC16"},
+    {"id":142,"sku":"OTC-0142","ean":"8400000000142","nombre":"Magnesio Cinfa","marca":"Cinfa","laboratorio":"Cinfa","principioActivo":"Óxido de magnesio","categoria":"Vitaminas","subcategoria":"Mineral","presentacion":"Comprimidos","dosis":"400 mg × 60","unidadesEnvase":60,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"💪","sintomas":["vitaminas"],"grupoInteraccion":"otro","precio":6.9,"coste":4.14,"iva":21,"stock":54,"stockInicial":54,"stockMinimo":7,"lote":"YL273414","caducidadMs":1859414400000,"esGenerico":true,"colorCategoria":"#84CC16"},
+    {"id":143,"sku":"OTC-0143","ean":"8400000000143","nombre":"Potasio Cinfa","marca":"Cinfa","laboratorio":"Cinfa","principioActivo":"Cloruro potásico","categoria":"Vitaminas","subcategoria":"Mineral","presentacion":"Comprimidos","dosis":"600 mg × 50","unidadesEnvase":50,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🧂","sintomas":["vitaminas"],"grupoInteraccion":"otro","precio":5.5,"coste":3.3,"iva":21,"stock":67,"stockInicial":67,"stockMinimo":8,"lote":"ZT283431","caducidadMs":1862956800000,"esGenerico":true,"colorCategoria":"#84CC16"},
+    {"id":144,"sku":"OTC-0144","ean":"8400000000144","nombre":"Zinc + Vitamina C","marca":"Juvamine","laboratorio":"Urgo","principioActivo":"Zinc + ácido ascórbico","categoria":"Vitaminas","subcategoria":"Inmunidad","presentacion":"Comprimidos","dosis":"30 comp","unidadesEnvase":30,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🛡️","sintomas":["vitaminas"],"grupoInteraccion":"otro","precio":7.8,"coste":4.68,"iva":21,"stock":80,"stockInicial":80,"stockMinimo":9,"lote":"AA263448","caducidadMs":1793836800000,"esGenerico":false,"colorCategoria":"#84CC16"},
+    {"id":145,"sku":"OTC-0145","ean":"8400000000145","nombre":"Ginseng Arkopharma","marca":"Arkopharma","laboratorio":"Arkopharma","principioActivo":"Panax ginseng","categoria":"Vitaminas","subcategoria":"Tónico","presentacion":"Cápsulas","dosis":"45 cáps","unidadesEnvase":45,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🌿","sintomas":["estres","vitaminas"],"grupoInteraccion":"otro","precio":13.5,"coste":8.1,"iva":21,"stock":93,"stockInicial":93,"stockMinimo":10,"lote":"BH273465","caducidadMs":1797379200000,"esGenerico":false,"colorCategoria":"#84CC16"},
+    {"id":146,"sku":"OTC-0146","ean":"8400000000146","nombre":"Rhodiola Arkocápsulas","marca":"Arkopharma","laboratorio":"Arkopharma","principioActivo":"Rhodiola rosea","categoria":"Vitaminas","subcategoria":"Estrés","presentacion":"Cápsulas","dosis":"45 cáps","unidadesEnvase":45,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🌿","sintomas":["estres"],"grupoInteraccion":"otro","precio":14.2,"coste":8.52,"iva":21,"stock":16,"stockInicial":16,"stockMinimo":11,"lote":"CQ283482","caducidadMs":1800921600000,"esGenerico":false,"colorCategoria":"#84CC16"},
+    {"id":147,"sku":"OTC-0147","ean":"8400000000147","nombre":"Melatonina Aquilea 1,95 mg","marca":"Aquilea","laboratorio":"Uriach","principioActivo":"Melatonina","categoria":"Vitaminas","subcategoria":"Sueño","presentacion":"Comprimidos","dosis":"1,95 mg × 60","unidadesEnvase":60,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"😴","sintomas":["insomnio"],"grupoInteraccion":"otro","precio":12.9,"coste":7.74,"iva":21,"stock":29,"stockInicial":29,"stockMinimo":12,"lote":"DX263499","caducidadMs":1804464000000,"esGenerico":false,"colorCategoria":"#84CC16"},
+    {"id":148,"sku":"OTC-0148","ean":"8400000000148","nombre":"Probiótico Aquilea Flora","marca":"Aquilea","laboratorio":"Uriach","principioActivo":"Lactobacillus + Bifidobacterium","categoria":"Vitaminas","subcategoria":"Flora","presentacion":"Cápsulas","dosis":"30 cáps","unidadesEnvase":30,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🦠","sintomas":["diarrea","vitaminas"],"grupoInteraccion":"otro","precio":15.5,"coste":9.3,"iva":21,"stock":42,"stockInicial":42,"stockMinimo":13,"lote":"EE273516","caducidadMs":1808006400000,"esGenerico":false,"colorCategoria":"#84CC16"},
+    {"id":149,"sku":"OTC-0149","ean":"8400000000149","nombre":"Calcio + Vitamina D3","marca":"Cinfa","laboratorio":"Cinfa","principioActivo":"Carbonato cálcico + colecalciferol","categoria":"Vitaminas","subcategoria":"Hueso","presentacion":"Comprimidos","dosis":"600 mg/400 UI × 60","unidadesEnvase":60,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🦴","sintomas":["vitaminas"],"grupoInteraccion":"otro","precio":8.2,"coste":4.92,"iva":21,"stock":55,"stockInicial":55,"stockMinimo":14,"lote":"FM283533","caducidadMs":1811548800000,"esGenerico":true,"colorCategoria":"#84CC16"},
+    {"id":150,"sku":"OTC-0150","ean":"8400000000150","nombre":"Q10 Pharmaton","marca":"Pharmaton","laboratorio":"Sanofi","principioActivo":"Coenzima Q10","categoria":"Vitaminas","subcategoria":"Energía","presentacion":"Cápsulas","dosis":"30 cáps","unidadesEnvase":30,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"⚡","sintomas":["vitaminas"],"grupoInteraccion":"otro","precio":17.5,"coste":10.5,"iva":21,"stock":68,"stockInicial":68,"stockMinimo":5,"lote":"GU263550","caducidadMs":1815091200000,"esGenerico":false,"colorCategoria":"#84CC16"},
+    {"id":151,"sku":"OTC-0151","ean":"8400000000151","nombre":"Spirulina Arkopharma","marca":"Arkopharma","laboratorio":"Arkopharma","principioActivo":"Spirulina platensis","categoria":"Vitaminas","subcategoria":"Superalimento","presentacion":"Cápsulas","dosis":"45 cáps","unidadesEnvase":45,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🟢","sintomas":["vitaminas"],"grupoInteraccion":"otro","precio":11.8,"coste":7.08,"iva":21,"stock":81,"stockInicial":81,"stockMinimo":6,"lote":"HB273567","caducidadMs":1818633600000,"esGenerico":false,"colorCategoria":"#84CC16"},
+    {"id":152,"sku":"OTC-0152","ean":"8400000000152","nombre":"Aloe Vera Juvamine","marca":"Juvamine","laboratorio":"Urgo","principioActivo":"Aloe vera","categoria":"Vitaminas","subcategoria":"Digestivo / bienestar","presentacion":"Cápsulas","dosis":"30 cáps","unidadesEnvase":30,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🌿","sintomas":["vitaminas"],"grupoInteraccion":"otro","precio":9.5,"coste":5.7,"iva":21,"stock":94,"stockInicial":94,"stockMinimo":7,"lote":"JJ283584","caducidadMs":1822176000000,"esGenerico":false,"colorCategoria":"#84CC16"},
+    {"id":153,"sku":"OTC-0153","ean":"8400000000153","nombre":"Multicentrum Kids","marca":"Centrum","laboratorio":"Haleon","principioActivo":"Multivitamínico infantil","categoria":"Vitaminas","subcategoria":"Pediátrico","presentacion":"Gominolas","dosis":"30 uds","unidadesEnvase":30,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🧒","sintomas":["vitaminas","pediatría"],"grupoInteraccion":"otro","precio":10.9,"coste":6.54,"iva":21,"stock":17,"stockInicial":17,"stockMinimo":8,"lote":"KR263601","caducidadMs":1825718400000,"esGenerico":false,"colorCategoria":"#84CC16"},
+    {"id":154,"sku":"OTC-0154","ean":"8400000000154","nombre":"Biodramina 50 mg","marca":"Biodramina","laboratorio":"Uriach","principioActivo":"Dimenhidrinato","categoria":"Viaje","subcategoria":"Cinetosis","presentacion":"Comprimidos","dosis":"50 mg × 12","unidadesEnvase":12,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"✈️","sintomas":["viaje"],"grupoInteraccion":"antihistaminico","precio":6.5,"coste":3.9,"iva":4,"stock":30,"stockInicial":30,"stockMinimo":9,"lote":"LY273618","caducidadMs":1829260800000,"esGenerico":false,"colorCategoria":"#06B6D4"},
+    {"id":155,"sku":"OTC-0155","ean":"8400000000155","nombre":"Biodramina Infantil","marca":"Biodramina","laboratorio":"Uriach","principioActivo":"Dimenhidrinato","categoria":"Viaje","subcategoria":"Cinetosis pediátrica","presentacion":"Chicles","dosis":"12 uds","unidadesEnvase":12,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🧒","sintomas":["viaje","pediatría"],"grupoInteraccion":"antihistaminico","precio":7.2,"coste":4.32,"iva":4,"stock":43,"stockInicial":43,"stockMinimo":10,"lote":"MF283635","caducidadMs":1832803200000,"esGenerico":false,"colorCategoria":"#06B6D4"},
+    {"id":156,"sku":"OTC-0156","ean":"8400000000156","nombre":"Cinfamar 50 mg","marca":"Cinfamar","laboratorio":"Cinfa","principioActivo":"Dimenhidrinato","categoria":"Viaje","subcategoria":"Cinetosis","presentacion":"Comprimidos","dosis":"50 mg × 10","unidadesEnvase":10,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🚢","sintomas":["viaje"],"grupoInteraccion":"antihistaminico","precio":4.9,"coste":2.94,"iva":4,"stock":56,"stockInicial":56,"stockMinimo":11,"lote":"NN263652","caducidadMs":1836345600000,"esGenerico":true,"colorCategoria":"#06B6D4"},
+    {"id":157,"sku":"OTC-0157","ean":"8400000000157","nombre":"Repelente Autan Family","marca":"Autan","laboratorio":"SC Johnson","principioActivo":"Icaridina","categoria":"Viaje","subcategoria":"Insectos","presentacion":"Spray 100 ml","dosis":"100 ml","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🦟","sintomas":["viaje"],"grupoInteraccion":"otro","precio":9.5,"coste":5.7,"iva":21,"stock":69,"stockInicial":69,"stockMinimo":12,"lote":"PV273669","caducidadMs":1839888000000,"esGenerico":false,"colorCategoria":"#06B6D4"},
+    {"id":158,"sku":"OTC-0158","ean":"8400000000158","nombre":"Repelente Relec Extra Fuerte","marca":"Relec","laboratorio":"Bayer","principioActivo":"DEET","categoria":"Viaje","subcategoria":"Insectos","presentacion":"Spray 75 ml","dosis":"50%","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🦟","sintomas":["viaje"],"grupoInteraccion":"otro","precio":11.2,"coste":6.72,"iva":21,"stock":82,"stockInicial":82,"stockMinimo":13,"lote":"QC283686","caducidadMs":1843430400000,"esGenerico":false,"colorCategoria":"#06B6D4"},
+    {"id":159,"sku":"OTC-0159","ean":"8400000000159","nombre":"After Bite Classic","marca":"After Bite","laboratorio":"Tender","principioActivo":"Amoníaco","categoria":"Viaje","subcategoria":"Picaduras","presentacion":"Aplicador 14 ml","dosis":"14 ml","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🦟","sintomas":["piel irritada","viaje"],"grupoInteraccion":"otro","precio":6.8,"coste":4.08,"iva":21,"stock":95,"stockInicial":95,"stockMinimo":14,"lote":"RK263703","caducidadMs":1846972800000,"esGenerico":false,"colorCategoria":"#06B6D4"},
+    {"id":160,"sku":"OTC-0160","ean":"8400000000160","nombre":"Dioralyte sobres","marca":"Dioralyte","laboratorio":"Sanofi","principioActivo":"Sales de rehidratación","categoria":"Viaje","subcategoria":"Diarrea del viajero","presentacion":"Sobres","dosis":"8 sobres","unidadesEnvase":8,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"💧","sintomas":["diarrea","viaje"],"grupoInteraccion":"otro","precio":8.9,"coste":5.34,"iva":4,"stock":18,"stockInicial":18,"stockMinimo":5,"lote":"SS273720","caducidadMs":1850515200000,"esGenerico":false,"colorCategoria":"#06B6D4"},
+    {"id":161,"sku":"OTC-0161","ean":"8400000000161","nombre":"Botiquín viaje básico","marca":"Farmalastic","laboratorio":"Textil Planas","principioActivo":"Material sanitario","categoria":"Viaje","subcategoria":"Botiquín","presentacion":"Estuche","dosis":"1 ud","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🧰","sintomas":["viaje","heridas"],"grupoInteraccion":"otro","precio":18.5,"coste":11.1,"iva":21,"stock":31,"stockInicial":31,"stockMinimo":6,"lote":"TZ283737","caducidadMs":1854057600000,"esGenerico":false,"colorCategoria":"#06B6D4"},
+    {"id":162,"sku":"OTC-0162","ean":"8400000000162","nombre":"Compeed Viaje ampollas","marca":"Compeed","laboratorio":"J&J","principioActivo":"Hidrocoloide","categoria":"Viaje","subcategoria":"Ampollas","presentacion":"Kit viaje","dosis":"5 uds","unidadesEnvase":5,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🦶","sintomas":["viaje","heridas"],"grupoInteraccion":"otro","precio":8.5,"coste":5.1,"iva":21,"stock":44,"stockInicial":44,"stockMinimo":7,"lote":"UG263754","caducidadMs":1857600000000,"esGenerico":false,"colorCategoria":"#06B6D4"},
+    {"id":163,"sku":"OTC-0163","ean":"8400000000163","nombre":"Frontline Spot On perros M","marca":"Frontline","laboratorio":"Boehringer","principioActivo":"Fipronil","categoria":"Mascotas","subcategoria":"Antiparasitario","presentacion":"Pipetas","dosis":"3 uds","unidadesEnvase":3,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🐶","sintomas":["mascotas"],"grupoInteraccion":"otro","precio":24.9,"coste":14.94,"iva":21,"stock":57,"stockInicial":57,"stockMinimo":8,"lote":"VP273771","caducidadMs":1861142400000,"esGenerico":false,"colorCategoria":"#A855F7"},
+    {"id":164,"sku":"OTC-0164","ean":"8400000000164","nombre":"Frontline Combo gatos","marca":"Frontline","laboratorio":"Boehringer","principioActivo":"Fipronil + (S)-metopreno","categoria":"Mascotas","subcategoria":"Antiparasitario","presentacion":"Pipetas","dosis":"3 uds","unidadesEnvase":3,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🐱","sintomas":["mascotas"],"grupoInteraccion":"otro","precio":22.5,"coste":13.5,"iva":21,"stock":70,"stockInicial":70,"stockMinimo":9,"lote":"WW283788","caducidadMs":1792022400000,"esGenerico":false,"colorCategoria":"#A855F7"},
+    {"id":165,"sku":"OTC-0165","ean":"8400000000165","nombre":"Advantix Spot On perros L","marca":"Advantix","laboratorio":"Elanco","principioActivo":"Imidacloprid + permetrina","categoria":"Mascotas","subcategoria":"Antiparasitario","presentacion":"Pipetas","dosis":"4 uds","unidadesEnvase":4,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🐶","sintomas":["mascotas"],"grupoInteraccion":"otro","precio":32.9,"coste":19.74,"iva":21,"stock":83,"stockInicial":83,"stockMinimo":10,"lote":"XD263805","caducidadMs":1795564800000,"esGenerico":false,"colorCategoria":"#A855F7"},
+    {"id":166,"sku":"OTC-0166","ean":"8400000000166","nombre":"Seresto collar perros","marca":"Seresto","laboratorio":"Elanco","principioActivo":"Imidacloprid + flumetrina","categoria":"Mascotas","subcategoria":"Collar","presentacion":"Collar 70 cm","dosis":"1 ud","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🐶","sintomas":["mascotas"],"grupoInteraccion":"otro","precio":42,"coste":25.2,"iva":21,"stock":96,"stockInicial":96,"stockMinimo":11,"lote":"YL273822","caducidadMs":1799107200000,"esGenerico":false,"colorCategoria":"#A855F7"},
+    {"id":167,"sku":"OTC-0167","ean":"8400000000167","nombre":"Seresto collar gatos","marca":"Seresto","laboratorio":"Elanco","principioActivo":"Imidacloprid + flumetrina","categoria":"Mascotas","subcategoria":"Collar","presentacion":"Collar 38 cm","dosis":"1 ud","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🐱","sintomas":["mascotas"],"grupoInteraccion":"otro","precio":38.5,"coste":23.1,"iva":21,"stock":19,"stockInicial":19,"stockMinimo":12,"lote":"ZT283839","caducidadMs":1802649600000,"esGenerico":false,"colorCategoria":"#A855F7"},
+    {"id":168,"sku":"OTC-0168","ean":"8400000000168","nombre":"Drontal perro sabor","marca":"Drontal","laboratorio":"Elanco","principioActivo":"Prazicuantel + pirantel + febantel","categoria":"Mascotas","subcategoria":"Desparasitante","presentacion":"Comprimidos","dosis":"2 comp","unidadesEnvase":2,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🐶","sintomas":["mascotas"],"grupoInteraccion":"otro","precio":14.5,"coste":8.7,"iva":21,"stock":32,"stockInicial":32,"stockMinimo":13,"lote":"AA263856","caducidadMs":1806192000000,"esGenerico":false,"colorCategoria":"#A855F7"},
+    {"id":169,"sku":"OTC-0169","ean":"8400000000169","nombre":"Milibó gatos","marca":"Milibó","laboratorio":"Virbac","principioActivo":"Milbemicina + prazicuantel","categoria":"Mascotas","subcategoria":"Desparasitante","presentacion":"Comprimidos","dosis":"2 comp","unidadesEnvase":2,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🐱","sintomas":["mascotas"],"grupoInteraccion":"otro","precio":12.9,"coste":7.74,"iva":21,"stock":45,"stockInicial":45,"stockMinimo":14,"lote":"BH273873","caducidadMs":1809734400000,"esGenerico":false,"colorCategoria":"#A855F7"},
+    {"id":170,"sku":"OTC-0170","ean":"8400000000170","nombre":"Hills Science Plan Adult","marca":"Hills","laboratorio":"Hill's","principioActivo":"Nutrición completa","categoria":"Mascotas","subcategoria":"Alimento","presentacion":"Saco 3 kg","dosis":"3 kg","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🥣","sintomas":["mascotas"],"grupoInteraccion":"otro","precio":28.9,"coste":17.34,"iva":21,"stock":58,"stockInicial":58,"stockMinimo":5,"lote":"CQ283890","caducidadMs":1813276800000,"esGenerico":false,"colorCategoria":"#A855F7"},
+    {"id":171,"sku":"OTC-0171","ean":"8400000000171","nombre":"Royal Canin Adult Medium","marca":"Royal Canin","laboratorio":"Mars","principioActivo":"Nutrición completa","categoria":"Mascotas","subcategoria":"Alimento","presentacion":"Saco 4 kg","dosis":"4 kg","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🥣","sintomas":["mascotas"],"grupoInteraccion":"otro","precio":32.5,"coste":19.5,"iva":21,"stock":71,"stockInicial":71,"stockMinimo":6,"lote":"DX263907","caducidadMs":1816819200000,"esGenerico":false,"colorCategoria":"#A855F7"},
+    {"id":172,"sku":"OTC-0172","ean":"8400000000172","nombre":"Affinity Advance Sensitive","marca":"Advance","laboratorio":"Affinity","principioActivo":"Nutrición sensible","categoria":"Mascotas","subcategoria":"Alimento","presentacion":"Saco 3 kg","dosis":"3 kg","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🥣","sintomas":["mascotas"],"grupoInteraccion":"otro","precio":26.9,"coste":16.14,"iva":21,"stock":84,"stockInicial":84,"stockMinimo":7,"lote":"EE273924","caducidadMs":1820361600000,"esGenerico":false,"colorCategoria":"#A855F7"},
+    {"id":173,"sku":"OTC-0173","ean":"8400000000173","nombre":"Beaphar Pasta vitaminas","marca":"Beaphar","laboratorio":"Beaphar","principioActivo":"Vitaminas + taurina","categoria":"Mascotas","subcategoria":"Complemento","presentacion":"Pasta 100 g","dosis":"100 g","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🐱","sintomas":["mascotas"],"grupoInteraccion":"otro","precio":9.5,"coste":5.7,"iva":21,"stock":97,"stockInicial":97,"stockMinimo":8,"lote":"FM283941","caducidadMs":1823904000000,"esGenerico":false,"colorCategoria":"#A855F7"},
+    {"id":174,"sku":"OTC-0174","ean":"8400000000174","nombre":"Hola Farmacia — Especial Salud","marca":"¡Hola!","laboratorio":"Hola S.L.","principioActivo":"—","categoria":"Revistas","subcategoria":"Revista","presentacion":"Ejemplar","dosis":"1 ud","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"📰","sintomas":[],"grupoInteraccion":"otro","precio":3.5,"coste":2.1,"iva":21,"stock":20,"stockInicial":20,"stockMinimo":9,"lote":"GU263958","caducidadMs":1827446400000,"esGenerico":false,"colorCategoria":"#64748B"},
+    {"id":175,"sku":"OTC-0175","ean":"8400000000175","nombre":"Chicles Nicotinell Freshmint 2 mg","marca":"Nicotinell","laboratorio":"Haleon","principioActivo":"Nicotina","categoria":"Snacks / Aperitivos","subcategoria":"Dejar de fumar","presentacion":"Chicles","dosis":"2 mg × 96","unidadesEnvase":96,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🚭","sintomas":["dejar de fumar"],"grupoInteraccion":"otro","precio":24.9,"coste":14.94,"iva":21,"stock":33,"stockInicial":33,"stockMinimo":10,"lote":"HB273975","caducidadMs":1830988800000,"esGenerico":false,"colorCategoria":"#D97706"},
+    {"id":176,"sku":"OTC-0176","ean":"8400000000176","nombre":"Chicles Stimorol Spearmint","marca":"Stimorol","laboratorio":"Mondelez","principioActivo":"—","categoria":"Snacks / Aperitivos","subcategoria":"Chicles","presentacion":"Paquete","dosis":"14 uds","unidadesEnvase":14,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🍬","sintomas":[],"grupoInteraccion":"otro","precio":1.8,"coste":1.08,"iva":21,"stock":46,"stockInicial":46,"stockMinimo":11,"lote":"JJ283992","caducidadMs":1834531200000,"esGenerico":false,"colorCategoria":"#D97706"},
+    {"id":177,"sku":"OTC-0177","ean":"8400000000177","nombre":"Chicles Trident Menta","marca":"Trident","laboratorio":"Mondelez","principioActivo":"—","categoria":"Snacks / Aperitivos","subcategoria":"Chicles","presentacion":"Paquete","dosis":"14 uds","unidadesEnvase":14,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🍬","sintomas":[],"grupoInteraccion":"otro","precio":1.6,"coste":0.96,"iva":21,"stock":59,"stockInicial":59,"stockMinimo":12,"lote":"KR264009","caducidadMs":1838073600000,"esGenerico":false,"colorCategoria":"#D97706"},
+    {"id":178,"sku":"OTC-0178","ean":"8400000000178","nombre":"Barrita Cereal Nestlé Fitness","marca":"Fitness","laboratorio":"Nestlé","principioActivo":"—","categoria":"Snacks / Aperitivos","subcategoria":"Barrita","presentacion":"Barrita 23,5 g","dosis":"1 ud","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🍫","sintomas":[],"grupoInteraccion":"otro","precio":1.2,"coste":0.72,"iva":21,"stock":72,"stockInicial":72,"stockMinimo":13,"lote":"LY274026","caducidadMs":1841616000000,"esGenerico":false,"colorCategoria":"#D97706"},
+    {"id":179,"sku":"OTC-0179","ean":"8400000000179","nombre":"Barrita Nature Valley avena","marca":"Nature Valley","laboratorio":"General Mills","principioActivo":"—","categoria":"Snacks / Aperitivos","subcategoria":"Barrita","presentacion":"Barrita","dosis":"2×","unidadesEnvase":2,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🌾","sintomas":[],"grupoInteraccion":"otro","precio":1.5,"coste":0.9,"iva":21,"stock":85,"stockInicial":85,"stockMinimo":14,"lote":"MF284043","caducidadMs":1845158400000,"esGenerico":false,"colorCategoria":"#D97706"},
+    {"id":180,"sku":"OTC-0180","ean":"8400000000180","nombre":"Caramelos Halls Mentol","marca":"Halls","laboratorio":"Mondelez","principioActivo":"Mentol","categoria":"Snacks / Aperitivos","subcategoria":"Caramelos","presentacion":"Paquete","dosis":"20 uds","unidadesEnvase":20,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"❄️","sintomas":["tos"],"grupoInteraccion":"otro","precio":1.4,"coste":0.84,"iva":21,"stock":8,"stockInicial":8,"stockMinimo":5,"lote":"NN264060","caducidadMs":1848700800000,"esGenerico":false,"colorCategoria":"#D97706"},
+    {"id":181,"sku":"OTC-0181","ean":"8400000000181","nombre":"Caramelos Ricola Hierbas","marca":"Ricola","laboratorio":"Ricola","principioActivo":"Hierbas suizas","categoria":"Snacks / Aperitivos","subcategoria":"Caramelos","presentacion":"Bolsa 70 g","dosis":"70 g","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🌿","sintomas":["tos"],"grupoInteraccion":"otro","precio":2.9,"coste":1.74,"iva":21,"stock":21,"stockInicial":21,"stockMinimo":6,"lote":"PV274077","caducidadMs":1852243200000,"esGenerico":false,"colorCategoria":"#D97706"},
+    {"id":182,"sku":"OTC-0182","ean":"8400000000182","nombre":"Galletas María Fontaneda","marca":"Fontaneda","laboratorio":"Mondelēz","principioActivo":"—","categoria":"Snacks / Aperitivos","subcategoria":"Galletas","presentacion":"Paquete 200 g","dosis":"200 g","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🍪","sintomas":[],"grupoInteraccion":"otro","precio":1.9,"coste":1.14,"iva":21,"stock":34,"stockInicial":34,"stockMinimo":7,"lote":"QC284094","caducidadMs":1855785600000,"esGenerico":false,"colorCategoria":"#D97706"},
+    {"id":183,"sku":"OTC-0183","ean":"8400000000183","nombre":"Frutos secos Cocktail","marca":"Borges","laboratorio":"Borges","principioActivo":"—","categoria":"Snacks / Aperitivos","subcategoria":"Frutos secos","presentacion":"Bolsa 150 g","dosis":"150 g","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🥜","sintomas":[],"grupoInteraccion":"otro","precio":2.8,"coste":1.68,"iva":21,"stock":47,"stockInicial":47,"stockMinimo":8,"lote":"RK264111","caducidadMs":1859328000000,"esGenerico":false,"colorCategoria":"#D97706"},
+    {"id":184,"sku":"OTC-0184","ean":"8400000000184","nombre":"Chocolatina Kinder Bueno Mini","marca":"Kinder","laboratorio":"Ferrero","principioActivo":"—","categoria":"Snacks / Aperitivos","subcategoria":"Chocolate","presentacion":"Pack","dosis":"5 uds","unidadesEnvase":5,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🍫","sintomas":[],"grupoInteraccion":"otro","precio":2.5,"coste":1.5,"iva":21,"stock":60,"stockInicial":60,"stockMinimo":9,"lote":"SS274128","caducidadMs":1862870400000,"esGenerico":false,"colorCategoria":"#D97706"},
+    {"id":185,"sku":"OTC-0185","ean":"8400000000185","nombre":"Agua Font Vella 50 cl","marca":"Font Vella","laboratorio":"Danone","principioActivo":"—","categoria":"Bebidas","subcategoria":"Agua","presentacion":"Botella 50 cl","dosis":"50 cl","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"💧","sintomas":[],"grupoInteraccion":"otro","precio":0.85,"coste":0.51,"iva":21,"stock":73,"stockInicial":73,"stockMinimo":10,"lote":"TZ284145","caducidadMs":1793750400000,"esGenerico":false,"colorCategoria":"#0EA5E9"},
+    {"id":186,"sku":"OTC-0186","ean":"8400000000186","nombre":"Agua Lanjarón 50 cl","marca":"Lanjarón","laboratorio":"Danone","principioActivo":"—","categoria":"Bebidas","subcategoria":"Agua","presentacion":"Botella 50 cl","dosis":"50 cl","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"💧","sintomas":[],"grupoInteraccion":"otro","precio":0.9,"coste":0.54,"iva":21,"stock":86,"stockInicial":86,"stockMinimo":11,"lote":"UG264162","caducidadMs":1797292800000,"esGenerico":false,"colorCategoria":"#0EA5E9"},
+    {"id":187,"sku":"OTC-0187","ean":"8400000000187","nombre":"Aquarius Naranja 50 cl","marca":"Aquarius","laboratorio":"Coca-Cola","principioActivo":"Sales minerales","categoria":"Bebidas","subcategoria":"Isotónica","presentacion":"Botella 50 cl","dosis":"50 cl","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🟠","sintomas":["deporte"],"grupoInteraccion":"otro","precio":1.6,"coste":0.96,"iva":21,"stock":9,"stockInicial":9,"stockMinimo":12,"lote":"VP274179","caducidadMs":1800835200000,"esGenerico":false,"colorCategoria":"#0EA5E9"},
+    {"id":188,"sku":"OTC-0188","ean":"8400000000188","nombre":"Powerade Mountain Blast 50 cl","marca":"Powerade","laboratorio":"Coca-Cola","principioActivo":"Sales minerales","categoria":"Bebidas","subcategoria":"Isotónica","presentacion":"Botella 50 cl","dosis":"50 cl","unidadesEnvase":1,"requiereReceta":false,"controlado":false,"nevera":false,"icon":"🔵","sintomas":["deporte"],"grupoInteraccion":"otro","precio":1.8,"coste":1.08,"iva":21,"stock":22,"stockInicial":22,"stockMinimo":13,"lote":"WW284196","caducidadMs":1804377600000,"esGenerico":false,"colorCategoria":"#0EA5E9"},
+    {"id":189,"sku":"RX-0189","ean":"8400000000189","nombre":"Augmentine 875/125 mg","marca":"Augmentine","laboratorio":"GSK","principioActivo":"Amoxicilina/Ácido clavulánico","categoria":"Antibióticos","subcategoria":"Betalactámico","presentacion":"Comprimidos","dosis":"875/125 mg × 20","unidadesEnvase":20,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"🦠","sintomas":[],"grupoInteraccion":"antibiotico","precio":8.5,"coste":5.1,"iva":4,"stock":35,"stockInicial":35,"stockMinimo":14,"lote":"XD264213","caducidadMs":1807920000000,"esGenerico":false,"colorCategoria":"#DC2626"},
+    {"id":190,"sku":"RX-0190","ean":"8400000000190","nombre":"Amoxicilina Cinfa 500 mg","marca":"Cinfa","laboratorio":"Cinfa","principioActivo":"Amoxicilina","categoria":"Antibióticos","subcategoria":"Betalactámico","presentacion":"Cápsulas","dosis":"500 mg × 24","unidadesEnvase":24,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"antibiotico","precio":3.2,"coste":1.92,"iva":4,"stock":48,"stockInicial":48,"stockMinimo":5,"lote":"YL274230","caducidadMs":1811462400000,"esGenerico":true,"colorCategoria":"#DC2626"},
+    {"id":191,"sku":"RX-0191","ean":"8400000000191","nombre":"Amoxicilina Normon 1 g","marca":"Normon","laboratorio":"Normon","principioActivo":"Amoxicilina","categoria":"Antibióticos","subcategoria":"Betalactámico","presentacion":"Comprimidos","dosis":"1 g × 12","unidadesEnvase":12,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"antibiotico","precio":4.1,"coste":2.46,"iva":4,"stock":61,"stockInicial":61,"stockMinimo":6,"lote":"ZT284247","caducidadMs":1815004800000,"esGenerico":true,"colorCategoria":"#DC2626"},
+    {"id":192,"sku":"RX-0192","ean":"8400000000192","nombre":"Zitromax 500 mg","marca":"Zitromax","laboratorio":"Pfizer","principioActivo":"Azitromicina","categoria":"Antibióticos","subcategoria":"Macrólido","presentacion":"Comprimidos","dosis":"500 mg × 3","unidadesEnvase":3,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"antibiotico_macrolido","precio":9.8,"coste":5.88,"iva":4,"stock":74,"stockInicial":74,"stockMinimo":7,"lote":"AA264264","caducidadMs":1818547200000,"esGenerico":false,"colorCategoria":"#DC2626"},
+    {"id":193,"sku":"RX-0193","ean":"8400000000193","nombre":"Azitromicina Cinfa 500 mg","marca":"Cinfa","laboratorio":"Cinfa","principioActivo":"Azitromicina","categoria":"Antibióticos","subcategoria":"Macrólido","presentacion":"Comprimidos","dosis":"500 mg × 3","unidadesEnvase":3,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"antibiotico_macrolido","precio":5.5,"coste":3.3,"iva":4,"stock":87,"stockInicial":87,"stockMinimo":8,"lote":"BH274281","caducidadMs":1822089600000,"esGenerico":true,"colorCategoria":"#DC2626"},
+    {"id":194,"sku":"RX-0194","ean":"8400000000194","nombre":"Claritromicina Kern 500 mg","marca":"Kern","laboratorio":"Kern Pharma","principioActivo":"Claritromicina","categoria":"Antibióticos","subcategoria":"Macrólido","presentacion":"Comprimidos","dosis":"500 mg × 14","unidadesEnvase":14,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"antibiotico_macrolido","precio":7.9,"coste":4.74,"iva":4,"stock":10,"stockInicial":10,"stockMinimo":9,"lote":"CQ284298","caducidadMs":1825632000000,"esGenerico":true,"colorCategoria":"#DC2626"},
+    {"id":195,"sku":"RX-0195","ean":"8400000000195","nombre":"Ciprofloxacino Normon 500 mg","marca":"Normon","laboratorio":"Normon","principioActivo":"Ciprofloxacino","categoria":"Antibióticos","subcategoria":"Quinolona","presentacion":"Comprimidos","dosis":"500 mg × 10","unidadesEnvase":10,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"antibiotico","precio":4.8,"coste":2.88,"iva":4,"stock":23,"stockInicial":23,"stockMinimo":10,"lote":"DX264315","caducidadMs":1829174400000,"esGenerico":true,"colorCategoria":"#DC2626"},
+    {"id":196,"sku":"RX-0196","ean":"8400000000196","nombre":"Levofloxacino Cinfa 500 mg","marca":"Cinfa","laboratorio":"Cinfa","principioActivo":"Levofloxacino","categoria":"Antibióticos","subcategoria":"Quinolona","presentacion":"Comprimidos","dosis":"500 mg × 7","unidadesEnvase":7,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"antibiotico","precio":6.2,"coste":3.72,"iva":4,"stock":36,"stockInicial":36,"stockMinimo":11,"lote":"EE274332","caducidadMs":1832716800000,"esGenerico":true,"colorCategoria":"#DC2626"},
+    {"id":197,"sku":"RX-0197","ean":"8400000000197","nombre":"Doxiciclina Normon 100 mg","marca":"Normon","laboratorio":"Normon","principioActivo":"Doxiciclina","categoria":"Antibióticos","subcategoria":"Tetraciclina","presentacion":"Cápsulas","dosis":"100 mg × 14","unidadesEnvase":14,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"antibiotico","precio":3.9,"coste":2.34,"iva":4,"stock":49,"stockInicial":49,"stockMinimo":12,"lote":"FM284349","caducidadMs":1836259200000,"esGenerico":true,"colorCategoria":"#DC2626"},
+    {"id":198,"sku":"RX-0198","ean":"8400000000198","nombre":"Zinnat 500 mg","marca":"Zinnat","laboratorio":"GSK","principioActivo":"Cefuroxima","categoria":"Antibióticos","subcategoria":"Cefalosporina","presentacion":"Comprimidos","dosis":"500 mg × 10","unidadesEnvase":10,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"antibiotico","precio":11.5,"coste":6.9,"iva":4,"stock":62,"stockInicial":62,"stockMinimo":13,"lote":"GU264366","caducidadMs":1839801600000,"esGenerico":false,"colorCategoria":"#DC2626"},
+    {"id":199,"sku":"RX-0199","ean":"8400000000199","nombre":"Flagyl 250 mg","marca":"Flagyl","laboratorio":"Sanofi","principioActivo":"Metronidazol","categoria":"Antibióticos","subcategoria":"Nitroimidazol","presentacion":"Comprimidos","dosis":"250 mg × 20","unidadesEnvase":20,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"antibiotico","precio":4.5,"coste":2.7,"iva":4,"stock":75,"stockInicial":75,"stockMinimo":14,"lote":"HB274383","caducidadMs":1843344000000,"esGenerico":false,"colorCategoria":"#DC2626"},
+    {"id":200,"sku":"RX-0200","ean":"8400000000200","nombre":"Monurol 3 g","marca":"Monurol","laboratorio":"Zambon","principioActivo":"Fosfomicina","categoria":"Antibióticos","subcategoria":"ITU","presentacion":"Sobres","dosis":"3 g × 1","unidadesEnvase":1,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"antibiotico","precio":8.9,"coste":5.34,"iva":4,"stock":88,"stockInicial":88,"stockMinimo":5,"lote":"JJ284400","caducidadMs":1846886400000,"esGenerico":false,"colorCategoria":"#DC2626"},
+    {"id":201,"sku":"RX-0201","ean":"8400000000201","nombre":"Septrin Forte","marca":"Septrin","laboratorio":"GSK","principioActivo":"Sulfametoxazol + trimetoprima","categoria":"Antibióticos","subcategoria":"Sulfamida","presentacion":"Comprimidos","dosis":"800/160 mg × 10","unidadesEnvase":10,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"antibiotico","precio":5.8,"coste":3.48,"iva":4,"stock":11,"stockInicial":11,"stockMinimo":6,"lote":"KR264417","caducidadMs":1850428800000,"esGenerico":false,"colorCategoria":"#DC2626"},
+    {"id":202,"sku":"RX-0202","ean":"8400000000202","nombre":"Enalapril Cinfa 10 mg","marca":"Cinfa","laboratorio":"Cinfa","principioActivo":"Enalapril","categoria":"Cardiovascular","subcategoria":"IECA","presentacion":"Comprimidos","dosis":"10 mg × 28","unidadesEnvase":28,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"❤️","sintomas":[],"grupoInteraccion":"ieca","precio":2.8,"coste":1.68,"iva":4,"stock":24,"stockInicial":24,"stockMinimo":7,"lote":"LY274434","caducidadMs":1853971200000,"esGenerico":true,"colorCategoria":"#BE123C"},
+    {"id":203,"sku":"RX-0203","ean":"8400000000203","nombre":"Enalapril Normon 20 mg","marca":"Normon","laboratorio":"Normon","principioActivo":"Enalapril","categoria":"Cardiovascular","subcategoria":"IECA","presentacion":"Comprimidos","dosis":"20 mg × 28","unidadesEnvase":28,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"❤️","sintomas":[],"grupoInteraccion":"ieca","precio":3.1,"coste":1.86,"iva":4,"stock":37,"stockInicial":37,"stockMinimo":8,"lote":"MF284451","caducidadMs":1857513600000,"esGenerico":true,"colorCategoria":"#BE123C"},
+    {"id":204,"sku":"RX-0204","ean":"8400000000204","nombre":"Ramipril Teva 5 mg","marca":"Teva","laboratorio":"Teva","principioActivo":"Ramipril","categoria":"Cardiovascular","subcategoria":"IECA","presentacion":"Cápsulas","dosis":"5 mg × 28","unidadesEnvase":28,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"❤️","sintomas":[],"grupoInteraccion":"ieca","precio":3.5,"coste":2.1,"iva":4,"stock":50,"stockInicial":50,"stockMinimo":9,"lote":"NN264468","caducidadMs":1861056000000,"esGenerico":true,"colorCategoria":"#BE123C"},
+    {"id":205,"sku":"RX-0205","ean":"8400000000205","nombre":"Ramipril Cinfa 10 mg","marca":"Cinfa","laboratorio":"Cinfa","principioActivo":"Ramipril","categoria":"Cardiovascular","subcategoria":"IECA","presentacion":"Cápsulas","dosis":"10 mg × 28","unidadesEnvase":28,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"❤️","sintomas":[],"grupoInteraccion":"ieca","precio":3.8,"coste":2.28,"iva":4,"stock":63,"stockInicial":63,"stockMinimo":10,"lote":"PV274485","caducidadMs":1791936000000,"esGenerico":true,"colorCategoria":"#BE123C"},
+    {"id":206,"sku":"RX-0206","ean":"8400000000206","nombre":"Losartán Cinfa 50 mg","marca":"Cinfa","laboratorio":"Cinfa","principioActivo":"Losartán","categoria":"Cardiovascular","subcategoria":"ARA-II","presentacion":"Comprimidos","dosis":"50 mg × 28","unidadesEnvase":28,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"❤️","sintomas":[],"grupoInteraccion":"ieca","precio":3.2,"coste":1.92,"iva":4,"stock":76,"stockInicial":76,"stockMinimo":11,"lote":"QC284502","caducidadMs":1795478400000,"esGenerico":true,"colorCategoria":"#BE123C"},
+    {"id":207,"sku":"RX-0207","ean":"8400000000207","nombre":"Losartán Normon 100 mg","marca":"Normon","laboratorio":"Normon","principioActivo":"Losartán","categoria":"Cardiovascular","subcategoria":"ARA-II","presentacion":"Comprimidos","dosis":"100 mg × 28","unidadesEnvase":28,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"❤️","sintomas":[],"grupoInteraccion":"ieca","precio":4,"coste":2.4,"iva":4,"stock":89,"stockInicial":89,"stockMinimo":12,"lote":"RK264519","caducidadMs":1799020800000,"esGenerico":true,"colorCategoria":"#BE123C"},
+    {"id":208,"sku":"RX-0208","ean":"8400000000208","nombre":"Valsartán Sandoz 80 mg","marca":"Sandoz","laboratorio":"Sandoz","principioActivo":"Valsartán","categoria":"Cardiovascular","subcategoria":"ARA-II","presentacion":"Comprimidos","dosis":"80 mg × 28","unidadesEnvase":28,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"❤️","sintomas":[],"grupoInteraccion":"ieca","precio":4.2,"coste":2.52,"iva":4,"stock":12,"stockInicial":12,"stockMinimo":13,"lote":"SS274536","caducidadMs":1802563200000,"esGenerico":true,"colorCategoria":"#BE123C"},
+    {"id":209,"sku":"RX-0209","ean":"8400000000209","nombre":"Valsartán/HCTZ Cinfa 160/12,5","marca":"Cinfa","laboratorio":"Cinfa","principioActivo":"Valsartán + hidroclorotiazida","categoria":"Cardiovascular","subcategoria":"ARA-II + diurético","presentacion":"Comprimidos","dosis":"160/12,5 mg × 28","unidadesEnvase":28,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"❤️","sintomas":[],"grupoInteraccion":"ieca","precio":5.5,"coste":3.3,"iva":4,"stock":25,"stockInicial":25,"stockMinimo":14,"lote":"TZ284553","caducidadMs":1806105600000,"esGenerico":true,"colorCategoria":"#BE123C"},
+    {"id":210,"sku":"RX-0210","ean":"8400000000210","nombre":"Amlodipino Cinfa 5 mg","marca":"Cinfa","laboratorio":"Cinfa","principioActivo":"Amlodipino","categoria":"Cardiovascular","subcategoria":"Calcioantagonista","presentacion":"Comprimidos","dosis":"5 mg × 28","unidadesEnvase":28,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"otro","precio":2.5,"coste":1.5,"iva":4,"stock":38,"stockInicial":38,"stockMinimo":5,"lote":"UG264570","caducidadMs":1809648000000,"esGenerico":true,"colorCategoria":"#BE123C"},
+    {"id":211,"sku":"RX-0211","ean":"8400000000211","nombre":"Amlodipino Normon 10 mg","marca":"Normon","laboratorio":"Normon","principioActivo":"Amlodipino","categoria":"Cardiovascular","subcategoria":"Calcioantagonista","presentacion":"Comprimidos","dosis":"10 mg × 28","unidadesEnvase":28,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"otro","precio":2.9,"coste":1.74,"iva":4,"stock":51,"stockInicial":51,"stockMinimo":6,"lote":"VP274587","caducidadMs":1813190400000,"esGenerico":true,"colorCategoria":"#BE123C"},
+    {"id":212,"sku":"RX-0212","ean":"8400000000212","nombre":"Adalat Oros 30 mg","marca":"Adalat","laboratorio":"Bayer","principioActivo":"Nifedipino","categoria":"Cardiovascular","subcategoria":"Calcioantagonista","presentacion":"Comprimidos OROS","dosis":"30 mg × 28","unidadesEnvase":28,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"otro","precio":9.8,"coste":5.88,"iva":4,"stock":64,"stockInicial":64,"stockMinimo":7,"lote":"WW284604","caducidadMs":1816732800000,"esGenerico":false,"colorCategoria":"#BE123C"},
+    {"id":213,"sku":"RX-0213","ean":"8400000000213","nombre":"Atenolol Cinfa 50 mg","marca":"Cinfa","laboratorio":"Cinfa","principioActivo":"Atenolol","categoria":"Cardiovascular","subcategoria":"Betabloqueante","presentacion":"Comprimidos","dosis":"50 mg × 28","unidadesEnvase":28,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"otro","precio":2.4,"coste":1.44,"iva":4,"stock":77,"stockInicial":77,"stockMinimo":8,"lote":"XD264621","caducidadMs":1820275200000,"esGenerico":true,"colorCategoria":"#BE123C"},
+    {"id":214,"sku":"RX-0214","ean":"8400000000214","nombre":"Bisoprolol Kern 5 mg","marca":"Kern","laboratorio":"Kern Pharma","principioActivo":"Bisoprolol","categoria":"Cardiovascular","subcategoria":"Betabloqueante","presentacion":"Comprimidos","dosis":"5 mg × 28","unidadesEnvase":28,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"otro","precio":3,"coste":1.8,"iva":4,"stock":90,"stockInicial":90,"stockMinimo":9,"lote":"YL274638","caducidadMs":1823817600000,"esGenerico":true,"colorCategoria":"#BE123C"},
+    {"id":215,"sku":"RX-0215","ean":"8400000000215","nombre":"Bisoprolol Normon 10 mg","marca":"Normon","laboratorio":"Normon","principioActivo":"Bisoprolol","categoria":"Cardiovascular","subcategoria":"Betabloqueante","presentacion":"Comprimidos","dosis":"10 mg × 28","unidadesEnvase":28,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"otro","precio":3.4,"coste":2.04,"iva":4,"stock":13,"stockInicial":13,"stockMinimo":10,"lote":"ZT284655","caducidadMs":1827360000000,"esGenerico":true,"colorCategoria":"#BE123C"},
+    {"id":216,"sku":"RX-0216","ean":"8400000000216","nombre":"Carvedilol Cinfa 25 mg","marca":"Cinfa","laboratorio":"Cinfa","principioActivo":"Carvedilol","categoria":"Cardiovascular","subcategoria":"Betabloqueante","presentacion":"Comprimidos","dosis":"25 mg × 28","unidadesEnvase":28,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"otro","precio":3.6,"coste":2.16,"iva":4,"stock":26,"stockInicial":26,"stockMinimo":11,"lote":"AA264672","caducidadMs":1830902400000,"esGenerico":true,"colorCategoria":"#BE123C"},
+    {"id":217,"sku":"RX-0217","ean":"8400000000217","nombre":"Atorvastatina Cinfa 20 mg","marca":"Cinfa","laboratorio":"Cinfa","principioActivo":"Atorvastatina","categoria":"Cardiovascular","subcategoria":"Estatina","presentacion":"Comprimidos","dosis":"20 mg × 28","unidadesEnvase":28,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"estatina","precio":4.5,"coste":2.7,"iva":4,"stock":39,"stockInicial":39,"stockMinimo":12,"lote":"BH274689","caducidadMs":1834444800000,"esGenerico":true,"colorCategoria":"#BE123C"},
+    {"id":218,"sku":"RX-0218","ean":"8400000000218","nombre":"Atorvastatina Normon 40 mg","marca":"Normon","laboratorio":"Normon","principioActivo":"Atorvastatina","categoria":"Cardiovascular","subcategoria":"Estatina","presentacion":"Comprimidos","dosis":"40 mg × 28","unidadesEnvase":28,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"estatina","precio":5.2,"coste":3.12,"iva":4,"stock":52,"stockInicial":52,"stockMinimo":13,"lote":"CQ284706","caducidadMs":1837987200000,"esGenerico":true,"colorCategoria":"#BE123C"},
+    {"id":219,"sku":"RX-0219","ean":"8400000000219","nombre":"Simvastatina Cinfa 20 mg","marca":"Cinfa","laboratorio":"Cinfa","principioActivo":"Simvastatina","categoria":"Cardiovascular","subcategoria":"Estatina","presentacion":"Comprimidos","dosis":"20 mg × 28","unidadesEnvase":28,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"estatina","precio":3.8,"coste":2.28,"iva":4,"stock":65,"stockInicial":65,"stockMinimo":14,"lote":"DX264723","caducidadMs":1841529600000,"esGenerico":true,"colorCategoria":"#BE123C"},
+    {"id":220,"sku":"RX-0220","ean":"8400000000220","nombre":"Rosuvastatina Teva 10 mg","marca":"Teva","laboratorio":"Teva","principioActivo":"Rosuvastatina","categoria":"Cardiovascular","subcategoria":"Estatina","presentacion":"Comprimidos","dosis":"10 mg × 28","unidadesEnvase":28,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"estatina","precio":6.5,"coste":3.9,"iva":4,"stock":78,"stockInicial":78,"stockMinimo":5,"lote":"EE274740","caducidadMs":1845072000000,"esGenerico":true,"colorCategoria":"#BE123C"},
+    {"id":221,"sku":"RX-0221","ean":"8400000000221","nombre":"Rosuvastatina Cinfa 20 mg","marca":"Cinfa","laboratorio":"Cinfa","principioActivo":"Rosuvastatina","categoria":"Cardiovascular","subcategoria":"Estatina","presentacion":"Comprimidos","dosis":"20 mg × 28","unidadesEnvase":28,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"estatina","precio":7.2,"coste":4.32,"iva":4,"stock":91,"stockInicial":91,"stockMinimo":6,"lote":"FM284757","caducidadMs":1848614400000,"esGenerico":true,"colorCategoria":"#BE123C"},
+    {"id":222,"sku":"RX-0222","ean":"8400000000222","nombre":"Pravastatina Normon 40 mg","marca":"Normon","laboratorio":"Normon","principioActivo":"Pravastatina","categoria":"Cardiovascular","subcategoria":"Estatina","presentacion":"Comprimidos","dosis":"40 mg × 28","unidadesEnvase":28,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"estatina","precio":4.1,"coste":2.46,"iva":4,"stock":14,"stockInicial":14,"stockMinimo":7,"lote":"GU264774","caducidadMs":1852156800000,"esGenerico":true,"colorCategoria":"#BE123C"},
+    {"id":223,"sku":"RX-0223","ean":"8400000000223","nombre":"Adiro 100 mg","marca":"Adiro","laboratorio":"Bayer","principioActivo":"Ácido acetilsalicílico","categoria":"Cardiovascular","subcategoria":"Antiagregante","presentacion":"Comprimidos gastrorresistentes","dosis":"100 mg × 30","unidadesEnvase":30,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"nsaid","precio":3.5,"coste":2.1,"iva":4,"stock":27,"stockInicial":27,"stockMinimo":8,"lote":"HB274791","caducidadMs":1855699200000,"esGenerico":false,"colorCategoria":"#BE123C"},
+    {"id":224,"sku":"RX-0224","ean":"8400000000224","nombre":"Clopidogrel Cinfa 75 mg","marca":"Cinfa","laboratorio":"Cinfa","principioActivo":"Clopidogrel","categoria":"Cardiovascular","subcategoria":"Antiagregante","presentacion":"Comprimidos","dosis":"75 mg × 28","unidadesEnvase":28,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"anticoagulante","precio":6.8,"coste":4.08,"iva":4,"stock":40,"stockInicial":40,"stockMinimo":9,"lote":"JJ284808","caducidadMs":1859241600000,"esGenerico":true,"colorCategoria":"#BE123C"},
+    {"id":225,"sku":"RX-0225","ean":"8400000000225","nombre":"Plavix 75 mg","marca":"Plavix","laboratorio":"Sanofi","principioActivo":"Clopidogrel","categoria":"Cardiovascular","subcategoria":"Antiagregante","presentacion":"Comprimidos","dosis":"75 mg × 28","unidadesEnvase":28,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"anticoagulante","precio":28.5,"coste":17.1,"iva":4,"stock":53,"stockInicial":53,"stockMinimo":10,"lote":"KR264825","caducidadMs":1862784000000,"esGenerico":false,"colorCategoria":"#BE123C"},
+    {"id":226,"sku":"RX-0226","ean":"8400000000226","nombre":"Sintrom 4 mg","marca":"Sintrom","laboratorio":"Meda","principioActivo":"Acenocumarol","categoria":"Cardiovascular","subcategoria":"Anticoagulante","presentacion":"Comprimidos","dosis":"4 mg × 20","unidadesEnvase":20,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"anticoagulante","precio":2.9,"coste":1.74,"iva":4,"stock":66,"stockInicial":66,"stockMinimo":11,"lote":"LY274842","caducidadMs":1793664000000,"esGenerico":false,"colorCategoria":"#BE123C"},
+    {"id":227,"sku":"RX-0227","ean":"8400000000227","nombre":"Eliquis 5 mg","marca":"Eliquis","laboratorio":"BMS/Pfizer","principioActivo":"Apixabán","categoria":"Cardiovascular","subcategoria":"ACO","presentacion":"Comprimidos","dosis":"5 mg × 60","unidadesEnvase":60,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"anticoagulante","precio":85,"coste":51,"iva":4,"stock":79,"stockInicial":79,"stockMinimo":12,"lote":"MF284859","caducidadMs":1797206400000,"esGenerico":false,"colorCategoria":"#BE123C"},
+    {"id":228,"sku":"RX-0228","ean":"8400000000228","nombre":"Xarelto 20 mg","marca":"Xarelto","laboratorio":"Bayer","principioActivo":"Rivaroxabán","categoria":"Cardiovascular","subcategoria":"ACO","presentacion":"Comprimidos","dosis":"20 mg × 28","unidadesEnvase":28,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"anticoagulante","precio":78.5,"coste":47.1,"iva":4,"stock":92,"stockInicial":92,"stockMinimo":13,"lote":"NN264876","caducidadMs":1800748800000,"esGenerico":false,"colorCategoria":"#BE123C"},
+    {"id":229,"sku":"RX-0229","ean":"8400000000229","nombre":"Pradaxa 150 mg","marca":"Pradaxa","laboratorio":"Boehringer","principioActivo":"Dabigatrán","categoria":"Cardiovascular","subcategoria":"ACO","presentacion":"Cápsulas","dosis":"150 mg × 60","unidadesEnvase":60,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"anticoagulante","precio":82,"coste":49.2,"iva":4,"stock":15,"stockInicial":15,"stockMinimo":14,"lote":"PV274893","caducidadMs":1804291200000,"esGenerico":false,"colorCategoria":"#BE123C"},
+    {"id":230,"sku":"RX-0230","ean":"8400000000230","nombre":"Seguril 40 mg","marca":"Seguril","laboratorio":"Sanofi","principioActivo":"Furosemida","categoria":"Cardiovascular","subcategoria":"Diurético","presentacion":"Comprimidos","dosis":"40 mg × 30","unidadesEnvase":30,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"diuretico","precio":2.2,"coste":1.32,"iva":4,"stock":28,"stockInicial":28,"stockMinimo":5,"lote":"QC284910","caducidadMs":1807833600000,"esGenerico":false,"colorCategoria":"#BE123C"},
+    {"id":231,"sku":"RX-0231","ean":"8400000000231","nombre":"Furosemida Cinfa 40 mg","marca":"Cinfa","laboratorio":"Cinfa","principioActivo":"Furosemida","categoria":"Cardiovascular","subcategoria":"Diurético","presentacion":"Comprimidos","dosis":"40 mg × 30","unidadesEnvase":30,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"diuretico","precio":1.9,"coste":1.14,"iva":4,"stock":41,"stockInicial":41,"stockMinimo":6,"lote":"RK264927","caducidadMs":1811376000000,"esGenerico":true,"colorCategoria":"#BE123C"},
+    {"id":232,"sku":"RX-0232","ean":"8400000000232","nombre":"Hidrósaluretil 50 mg","marca":"Hidrósaluretil","laboratorio":"Chiesi","principioActivo":"Hidroclorotiazida","categoria":"Cardiovascular","subcategoria":"Diurético","presentacion":"Comprimidos","dosis":"50 mg × 20","unidadesEnvase":20,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"diuretico","precio":2.5,"coste":1.5,"iva":4,"stock":54,"stockInicial":54,"stockMinimo":7,"lote":"SS274944","caducidadMs":1814918400000,"esGenerico":false,"colorCategoria":"#BE123C"},
+    {"id":233,"sku":"RX-0233","ean":"8400000000233","nombre":"Aldactone 25 mg","marca":"Aldactone","laboratorio":"Pfizer","principioActivo":"Espironolactona","categoria":"Cardiovascular","subcategoria":"Diurético ahorrador K","presentacion":"Comprimidos","dosis":"25 mg × 20","unidadesEnvase":20,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"diuretico","precio":4.8,"coste":2.88,"iva":4,"stock":67,"stockInicial":67,"stockMinimo":8,"lote":"TZ284961","caducidadMs":1818460800000,"esGenerico":false,"colorCategoria":"#BE123C"},
+    {"id":234,"sku":"RX-0234","ean":"8400000000234","nombre":"Digoxina Kern 0,25 mg","marca":"Kern","laboratorio":"Kern Pharma","principioActivo":"Digoxina","categoria":"Cardiovascular","subcategoria":"Cardiotónico","presentacion":"Comprimidos","dosis":"0,25 mg × 30","unidadesEnvase":30,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"otro","precio":3.2,"coste":1.92,"iva":4,"stock":80,"stockInicial":80,"stockMinimo":9,"lote":"UG264978","caducidadMs":1822003200000,"esGenerico":true,"colorCategoria":"#BE123C"},
+    {"id":235,"sku":"RX-0235","ean":"8400000000235","nombre":"Isordil 5 mg","marca":"Isordil","laboratorio":"Wyeth","principioActivo":"Dinitrato de isosorbida","categoria":"Cardiovascular","subcategoria":"Nitrato","presentacion":"Comprimidos","dosis":"5 mg × 50","unidadesEnvase":50,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"otro","precio":4,"coste":2.4,"iva":4,"stock":93,"stockInicial":93,"stockMinimo":10,"lote":"VP274995","caducidadMs":1825545600000,"esGenerico":false,"colorCategoria":"#BE123C"},
+    {"id":236,"sku":"RX-0236","ean":"8400000000236","nombre":"Cordarone 200 mg","marca":"Cordarone","laboratorio":"Sanofi","principioActivo":"Amiodarona","categoria":"Cardiovascular","subcategoria":"Antiarrítmico","presentacion":"Comprimidos","dosis":"200 mg × 30","unidadesEnvase":30,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"otro","precio":8.5,"coste":5.1,"iva":4,"stock":16,"stockInicial":16,"stockMinimo":11,"lote":"WW285012","caducidadMs":1829088000000,"esGenerico":false,"colorCategoria":"#BE123C"},
+    {"id":237,"sku":"RX-0237","ean":"8400000000237","nombre":"Diltiazem Normon 60 mg","marca":"Normon","laboratorio":"Normon","principioActivo":"Diltiazem","categoria":"Cardiovascular","subcategoria":"Calcioantagonista","presentacion":"Comprimidos","dosis":"60 mg × 30","unidadesEnvase":30,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"otro","precio":3.7,"coste":2.22,"iva":4,"stock":29,"stockInicial":29,"stockMinimo":12,"lote":"XD265029","caducidadMs":1832630400000,"esGenerico":true,"colorCategoria":"#BE123C"},
+    {"id":238,"sku":"RX-0238","ean":"8400000000238","nombre":"Nebivolol Cinfa 5 mg","marca":"Cinfa","laboratorio":"Cinfa","principioActivo":"Nebivolol","categoria":"Cardiovascular","subcategoria":"Betabloqueante","presentacion":"Comprimidos","dosis":"5 mg × 28","unidadesEnvase":28,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"otro","precio":5.9,"coste":3.54,"iva":4,"stock":42,"stockInicial":42,"stockMinimo":13,"lote":"YL275046","caducidadMs":1836172800000,"esGenerico":true,"colorCategoria":"#BE123C"},
+    {"id":239,"sku":"RX-0239","ean":"8400000000239","nombre":"Olmesartán Teva 20 mg","marca":"Teva","laboratorio":"Teva","principioActivo":"Olmesartán","categoria":"Cardiovascular","subcategoria":"ARA-II","presentacion":"Comprimidos","dosis":"20 mg × 28","unidadesEnvase":28,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"❤️","sintomas":[],"grupoInteraccion":"ieca","precio":6.2,"coste":3.72,"iva":4,"stock":55,"stockInicial":55,"stockMinimo":14,"lote":"ZT285063","caducidadMs":1839715200000,"esGenerico":true,"colorCategoria":"#BE123C"},
+    {"id":240,"sku":"CTL-0240","ean":"8400000000240","nombre":"Orfidal 1 mg","marca":"Orfidal","laboratorio":"Pfizer","principioActivo":"Lorazepam","categoria":"Controlados","subcategoria":"Benzodiacepina","presentacion":"Comprimidos","dosis":"1 mg × 25","unidadesEnvase":25,"requiereReceta":true,"controlado":true,"nevera":false,"icon":"🔒","sintomas":[],"grupoInteraccion":"benzo","precio":2.5,"coste":1.5,"iva":4,"stock":68,"stockInicial":68,"stockMinimo":5,"lote":"AA265080","caducidadMs":1843257600000,"esGenerico":false,"colorCategoria":"#7C2D12"},
+    {"id":241,"sku":"CTL-0241","ean":"8400000000241","nombre":"Valium 5 mg","marca":"Valium","laboratorio":"Roche","principioActivo":"Diazepam","categoria":"Controlados","subcategoria":"Benzodiacepina","presentacion":"Comprimidos","dosis":"5 mg × 30","unidadesEnvase":30,"requiereReceta":true,"controlado":true,"nevera":false,"icon":"🔒","sintomas":[],"grupoInteraccion":"benzo","precio":3.2,"coste":1.92,"iva":4,"stock":81,"stockInicial":81,"stockMinimo":6,"lote":"BH275097","caducidadMs":1846800000000,"esGenerico":false,"colorCategoria":"#7C2D12"},
+    {"id":242,"sku":"CTL-0242","ean":"8400000000242","nombre":"Valium 10 mg","marca":"Valium","laboratorio":"Roche","principioActivo":"Diazepam","categoria":"Controlados","subcategoria":"Benzodiacepina","presentacion":"Comprimidos","dosis":"10 mg × 25","unidadesEnvase":25,"requiereReceta":true,"controlado":true,"nevera":false,"icon":"🔒","sintomas":[],"grupoInteraccion":"benzo","precio":3.8,"coste":2.28,"iva":4,"stock":94,"stockInicial":94,"stockMinimo":7,"lote":"CQ285114","caducidadMs":1850342400000,"esGenerico":false,"colorCategoria":"#7C2D12"},
+    {"id":243,"sku":"CTL-0243","ean":"8400000000243","nombre":"Trankimazin 0,5 mg","marca":"Trankimazin","laboratorio":"Pfizer","principioActivo":"Alprazolam","categoria":"Controlados","subcategoria":"Benzodiacepina","presentacion":"Comprimidos","dosis":"0,5 mg × 30","unidadesEnvase":30,"requiereReceta":true,"controlado":true,"nevera":false,"icon":"🔒","sintomas":[],"grupoInteraccion":"benzo","precio":2.8,"coste":1.68,"iva":4,"stock":17,"stockInicial":17,"stockMinimo":8,"lote":"DX265131","caducidadMs":1853884800000,"esGenerico":false,"colorCategoria":"#7C2D12"},
+    {"id":244,"sku":"CTL-0244","ean":"8400000000244","nombre":"Trankimazin 1 mg","marca":"Trankimazin","laboratorio":"Pfizer","principioActivo":"Alprazolam","categoria":"Controlados","subcategoria":"Benzodiacepina","presentacion":"Comprimidos","dosis":"1 mg × 30","unidadesEnvase":30,"requiereReceta":true,"controlado":true,"nevera":false,"icon":"🔒","sintomas":[],"grupoInteraccion":"benzo","precio":3.5,"coste":2.1,"iva":4,"stock":30,"stockInicial":30,"stockMinimo":9,"lote":"EE275148","caducidadMs":1857427200000,"esGenerico":false,"colorCategoria":"#7C2D12"},
+    {"id":245,"sku":"CTL-0245","ean":"8400000000245","nombre":"Noctamid 2 mg","marca":"Noctamid","laboratorio":"Bayer","principioActivo":"Lormetazepam","categoria":"Controlados","subcategoria":"Benzodiacepina","presentacion":"Comprimidos","dosis":"2 mg × 20","unidadesEnvase":20,"requiereReceta":true,"controlado":true,"nevera":false,"icon":"🔒","sintomas":[],"grupoInteraccion":"benzo","precio":3,"coste":1.8,"iva":4,"stock":43,"stockInicial":43,"stockMinimo":10,"lote":"FM285165","caducidadMs":1860969600000,"esGenerico":false,"colorCategoria":"#7C2D12"},
+    {"id":246,"sku":"CTL-0246","ean":"8400000000246","nombre":"Dormicum 7,5 mg","marca":"Dormicum","laboratorio":"Roche","principioActivo":"Midazolam","categoria":"Controlados","subcategoria":"Benzodiacepina","presentacion":"Comprimidos","dosis":"7,5 mg × 14","unidadesEnvase":14,"requiereReceta":true,"controlado":true,"nevera":false,"icon":"🔒","sintomas":[],"grupoInteraccion":"benzo","precio":4.5,"coste":2.7,"iva":4,"stock":56,"stockInicial":56,"stockMinimo":11,"lote":"GU265182","caducidadMs":1791849600000,"esGenerico":false,"colorCategoria":"#7C2D12"},
+    {"id":247,"sku":"CTL-0247","ean":"8400000000247","nombre":"Stilnox 10 mg","marca":"Stilnox","laboratorio":"Sanofi","principioActivo":"Zolpidem","categoria":"Controlados","subcategoria":"Hipnótico","presentacion":"Comprimidos","dosis":"10 mg × 28","unidadesEnvase":28,"requiereReceta":true,"controlado":true,"nevera":false,"icon":"🔒","sintomas":[],"grupoInteraccion":"zolpidem","precio":5.2,"coste":3.12,"iva":4,"stock":69,"stockInicial":69,"stockMinimo":12,"lote":"HB275199","caducidadMs":1795392000000,"esGenerico":false,"colorCategoria":"#7C2D12"},
+    {"id":248,"sku":"CTL-0248","ean":"8400000000248","nombre":"Zolpidem Cinfa 10 mg","marca":"Cinfa","laboratorio":"Cinfa","principioActivo":"Zolpidem","categoria":"Controlados","subcategoria":"Hipnótico","presentacion":"Comprimidos","dosis":"10 mg × 28","unidadesEnvase":28,"requiereReceta":true,"controlado":true,"nevera":false,"icon":"🔒","sintomas":[],"grupoInteraccion":"zolpidem","precio":3.9,"coste":2.34,"iva":4,"stock":82,"stockInicial":82,"stockMinimo":13,"lote":"JJ285216","caducidadMs":1798934400000,"esGenerico":true,"colorCategoria":"#7C2D12"},
+    {"id":249,"sku":"CTL-0249","ean":"8400000000249","nombre":"Zopiclona Normon 7,5 mg","marca":"Normon","laboratorio":"Normon","principioActivo":"Zopiclona","categoria":"Controlados","subcategoria":"Hipnótico","presentacion":"Comprimidos","dosis":"7,5 mg × 28","unidadesEnvase":28,"requiereReceta":true,"controlado":true,"nevera":false,"icon":"🔒","sintomas":[],"grupoInteraccion":"zolpidem","precio":4.1,"coste":2.46,"iva":4,"stock":95,"stockInicial":95,"stockMinimo":14,"lote":"KR265233","caducidadMs":1802476800000,"esGenerico":true,"colorCategoria":"#7C2D12"},
+    {"id":250,"sku":"CTL-0250","ean":"8400000000250","nombre":"Adolonta 50 mg","marca":"Adolonta","laboratorio":"Grünenthal","principioActivo":"Tramadol","categoria":"Controlados","subcategoria":"Opioide","presentacion":"Cápsulas","dosis":"50 mg × 20","unidadesEnvase":20,"requiereReceta":true,"controlado":true,"nevera":false,"icon":"🔒","sintomas":[],"grupoInteraccion":"tramadol_opioide","precio":4.8,"coste":2.88,"iva":4,"stock":18,"stockInicial":18,"stockMinimo":5,"lote":"LY275250","caducidadMs":1806019200000,"esGenerico":false,"colorCategoria":"#7C2D12"},
+    {"id":251,"sku":"CTL-0251","ean":"8400000000251","nombre":"Adolonta retard 100 mg","marca":"Adolonta","laboratorio":"Grünenthal","principioActivo":"Tramadol","categoria":"Controlados","subcategoria":"Opioide","presentacion":"Comprimidos retard","dosis":"100 mg × 20","unidadesEnvase":20,"requiereReceta":true,"controlado":true,"nevera":false,"icon":"🔒","sintomas":[],"grupoInteraccion":"tramadol_opioide","precio":8.5,"coste":5.1,"iva":4,"stock":31,"stockInicial":31,"stockMinimo":6,"lote":"MF285267","caducidadMs":1809561600000,"esGenerico":false,"colorCategoria":"#7C2D12"},
+    {"id":252,"sku":"CTL-0252","ean":"8400000000252","nombre":"Tramadol/Paracetamol Normon","marca":"Normon","laboratorio":"Normon","principioActivo":"Tramadol + paracetamol","categoria":"Controlados","subcategoria":"Opioide","presentacion":"Comprimidos","dosis":"37,5/325 mg × 20","unidadesEnvase":20,"requiereReceta":true,"controlado":true,"nevera":false,"icon":"🔒","sintomas":[],"grupoInteraccion":"tramadol_opioide","precio":5.5,"coste":3.3,"iva":4,"stock":44,"stockInicial":44,"stockMinimo":7,"lote":"NN265284","caducidadMs":1813104000000,"esGenerico":true,"colorCategoria":"#7C2D12"},
+    {"id":253,"sku":"CTL-0253","ean":"8400000000253","nombre":"Codeisan 30 mg","marca":"Codeisan","laboratorio":"Almirall","principioActivo":"Codeína","categoria":"Controlados","subcategoria":"Opioide","presentacion":"Comprimidos","dosis":"30 mg × 20","unidadesEnvase":20,"requiereReceta":true,"controlado":true,"nevera":false,"icon":"🔒","sintomas":[],"grupoInteraccion":"opioide","precio":3.6,"coste":2.16,"iva":4,"stock":57,"stockInicial":57,"stockMinimo":8,"lote":"PV275301","caducidadMs":1816646400000,"esGenerico":false,"colorCategoria":"#7C2D12"},
+    {"id":254,"sku":"CTL-0254","ean":"8400000000254","nombre":"Termalgin Codeína","marca":"Termalgin","laboratorio":"GSK","principioActivo":"Paracetamol + codeína","categoria":"Controlados","subcategoria":"Opioide","presentacion":"Comprimidos","dosis":"500/30 mg × 20","unidadesEnvase":20,"requiereReceta":true,"controlado":true,"nevera":false,"icon":"🔒","sintomas":[],"grupoInteraccion":"opioide","precio":4.9,"coste":2.94,"iva":4,"stock":70,"stockInicial":70,"stockMinimo":9,"lote":"QC285318","caducidadMs":1820188800000,"esGenerico":false,"colorCategoria":"#7C2D12"},
+    {"id":255,"sku":"CTL-0255","ean":"8400000000255","nombre":"Durogesic Matrix 25 µg/h","marca":"Durogesic","laboratorio":"Janssen","principioActivo":"Fentanilo","categoria":"Controlados","subcategoria":"Opioide","presentacion":"Parches","dosis":"25 µg/h × 5","unidadesEnvase":5,"requiereReceta":true,"controlado":true,"nevera":false,"icon":"🔒","sintomas":[],"grupoInteraccion":"opioide","precio":42,"coste":25.2,"iva":4,"stock":83,"stockInicial":83,"stockMinimo":10,"lote":"RK265335","caducidadMs":1823731200000,"esGenerico":false,"colorCategoria":"#7C2D12"},
+    {"id":256,"sku":"CTL-0256","ean":"8400000000256","nombre":"Durogesic Matrix 50 µg/h","marca":"Durogesic","laboratorio":"Janssen","principioActivo":"Fentanilo","categoria":"Controlados","subcategoria":"Opioide","presentacion":"Parches","dosis":"50 µg/h × 5","unidadesEnvase":5,"requiereReceta":true,"controlado":true,"nevera":false,"icon":"🔒","sintomas":[],"grupoInteraccion":"opioide","precio":68,"coste":40.8,"iva":4,"stock":96,"stockInicial":96,"stockMinimo":11,"lote":"SS275352","caducidadMs":1827273600000,"esGenerico":false,"colorCategoria":"#7C2D12"},
+    {"id":257,"sku":"CTL-0257","ean":"8400000000257","nombre":"MST Continus 30 mg","marca":"MST Continus","laboratorio":"Mundipharma","principioActivo":"Morfina","categoria":"Controlados","subcategoria":"Opioide","presentacion":"Comprimidos retard","dosis":"30 mg × 30","unidadesEnvase":30,"requiereReceta":true,"controlado":true,"nevera":false,"icon":"🔒","sintomas":[],"grupoInteraccion":"opioide","precio":18.5,"coste":11.1,"iva":4,"stock":19,"stockInicial":19,"stockMinimo":12,"lote":"TZ285369","caducidadMs":1830816000000,"esGenerico":false,"colorCategoria":"#7C2D12"},
+    {"id":258,"sku":"CTL-0258","ean":"8400000000258","nombre":"Sevredol 10 mg","marca":"Sevredol","laboratorio":"Mundipharma","principioActivo":"Morfina","categoria":"Controlados","subcategoria":"Opioide","presentacion":"Comprimidos","dosis":"10 mg × 20","unidadesEnvase":20,"requiereReceta":true,"controlado":true,"nevera":false,"icon":"🔒","sintomas":[],"grupoInteraccion":"opioide","precio":9.2,"coste":5.52,"iva":4,"stock":32,"stockInicial":32,"stockMinimo":13,"lote":"UG265386","caducidadMs":1834358400000,"esGenerico":false,"colorCategoria":"#7C2D12"},
+    {"id":259,"sku":"CTL-0259","ean":"8400000000259","nombre":"Oxicodona/Naloxona Targin 10/5","marca":"Targin","laboratorio":"Mundipharma","principioActivo":"Oxicodona + naloxona","categoria":"Controlados","subcategoria":"Opioide","presentacion":"Comprimidos retard","dosis":"10/5 mg × 28","unidadesEnvase":28,"requiereReceta":true,"controlado":true,"nevera":false,"icon":"🔒","sintomas":[],"grupoInteraccion":"opioide","precio":55,"coste":33,"iva":4,"stock":45,"stockInicial":45,"stockMinimo":14,"lote":"VP275403","caducidadMs":1837900800000,"esGenerico":false,"colorCategoria":"#7C2D12"},
+    {"id":260,"sku":"CTL-0260","ean":"8400000000260","nombre":"Rubifén 10 mg","marca":"Rubifén","laboratorio":"Rubió","principioActivo":"Metilfenidato","categoria":"Controlados","subcategoria":"Estimulante","presentacion":"Comprimidos","dosis":"10 mg × 30","unidadesEnvase":30,"requiereReceta":true,"controlado":true,"nevera":false,"icon":"🔒","sintomas":[],"grupoInteraccion":"otro","precio":8.9,"coste":5.34,"iva":4,"stock":58,"stockInicial":58,"stockMinimo":5,"lote":"WW285420","caducidadMs":1841443200000,"esGenerico":false,"colorCategoria":"#7C2D12"},
+    {"id":261,"sku":"CTL-0261","ean":"8400000000261","nombre":"Concerta 36 mg","marca":"Concerta","laboratorio":"Janssen","principioActivo":"Metilfenidato","categoria":"Controlados","subcategoria":"Estimulante OROS","presentacion":"Comprimidos","dosis":"36 mg × 30","unidadesEnvase":30,"requiereReceta":true,"controlado":true,"nevera":false,"icon":"🔒","sintomas":[],"grupoInteraccion":"otro","precio":48,"coste":28.8,"iva":4,"stock":71,"stockInicial":71,"stockMinimo":6,"lote":"XD265437","caducidadMs":1844985600000,"esGenerico":false,"colorCategoria":"#7C2D12"},
+    {"id":262,"sku":"CTL-0262","ean":"8400000000262","nombre":"Rivotril 2 mg","marca":"Rivotril","laboratorio":"Roche","principioActivo":"Clonazepam","categoria":"Controlados","subcategoria":"Benzodiacepina","presentacion":"Comprimidos","dosis":"2 mg × 30","unidadesEnvase":30,"requiereReceta":true,"controlado":true,"nevera":false,"icon":"🔒","sintomas":[],"grupoInteraccion":"benzo","precio":4.2,"coste":2.52,"iva":4,"stock":84,"stockInicial":84,"stockMinimo":7,"lote":"YL275454","caducidadMs":1848528000000,"esGenerico":false,"colorCategoria":"#7C2D12"},
+    {"id":263,"sku":"CTL-0263","ean":"8400000000263","nombre":"Lexatin 1,5 mg","marca":"Lexatin","laboratorio":"Roche","principioActivo":"Bromazepam","categoria":"Controlados","subcategoria":"Benzodiacepina","presentacion":"Cápsulas","dosis":"1,5 mg × 30","unidadesEnvase":30,"requiereReceta":true,"controlado":true,"nevera":false,"icon":"🔒","sintomas":[],"grupoInteraccion":"benzo","precio":3.4,"coste":2.04,"iva":4,"stock":97,"stockInicial":97,"stockMinimo":8,"lote":"ZT285471","caducidadMs":1852070400000,"esGenerico":false,"colorCategoria":"#7C2D12"},
+    {"id":264,"sku":"RX-0264","ean":"8400000000264","nombre":"Metformina Cinfa 850 mg","marca":"Cinfa","laboratorio":"Cinfa","principioActivo":"Metformina","categoria":"Diabetes","subcategoria":"Biguanida","presentacion":"Comprimidos","dosis":"850 mg × 50","unidadesEnvase":50,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"🩸","sintomas":[],"grupoInteraccion":"metformina","precio":3.5,"coste":2.1,"iva":4,"stock":20,"stockInicial":20,"stockMinimo":9,"lote":"AA265488","caducidadMs":1855612800000,"esGenerico":true,"colorCategoria":"#2563EB"},
+    {"id":265,"sku":"RX-0265","ean":"8400000000265","nombre":"Metformina Normon 1000 mg","marca":"Normon","laboratorio":"Normon","principioActivo":"Metformina","categoria":"Diabetes","subcategoria":"Biguanida","presentacion":"Comprimidos","dosis":"1000 mg × 50","unidadesEnvase":50,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"🩸","sintomas":[],"grupoInteraccion":"metformina","precio":4.2,"coste":2.52,"iva":4,"stock":33,"stockInicial":33,"stockMinimo":10,"lote":"BH275505","caducidadMs":1859155200000,"esGenerico":true,"colorCategoria":"#2563EB"},
+    {"id":266,"sku":"RX-0266","ean":"8400000000266","nombre":"Diamicron MR 60 mg","marca":"Diamicron","laboratorio":"Servier","principioActivo":"Gliclazida","categoria":"Diabetes","subcategoria":"Sulfonilurea","presentacion":"Comprimidos MR","dosis":"60 mg × 30","unidadesEnvase":30,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"🩸","sintomas":[],"grupoInteraccion":"antidiabetico","precio":8.5,"coste":5.1,"iva":4,"stock":46,"stockInicial":46,"stockMinimo":11,"lote":"CQ285522","caducidadMs":1862697600000,"esGenerico":false,"colorCategoria":"#2563EB"},
+    {"id":267,"sku":"RX-0267","ean":"8400000000267","nombre":"Januvia 100 mg","marca":"Januvia","laboratorio":"MSD","principioActivo":"Sitagliptina","categoria":"Diabetes","subcategoria":"iDPP-4","presentacion":"Comprimidos","dosis":"100 mg × 28","unidadesEnvase":28,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"🩸","sintomas":[],"grupoInteraccion":"antidiabetico","precio":42,"coste":25.2,"iva":4,"stock":59,"stockInicial":59,"stockMinimo":12,"lote":"DX265539","caducidadMs":1793577600000,"esGenerico":false,"colorCategoria":"#2563EB"},
+    {"id":268,"sku":"RX-0268","ean":"8400000000268","nombre":"Jardiance 10 mg","marca":"Jardiance","laboratorio":"Boehringer/Lilly","principioActivo":"Empagliflozina","categoria":"Diabetes","subcategoria":"iSGLT2","presentacion":"Comprimidos","dosis":"10 mg × 30","unidadesEnvase":30,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"🩸","sintomas":[],"grupoInteraccion":"antidiabetico","precio":55,"coste":33,"iva":4,"stock":72,"stockInicial":72,"stockMinimo":13,"lote":"EE275556","caducidadMs":1797120000000,"esGenerico":false,"colorCategoria":"#2563EB"},
+    {"id":269,"sku":"FRI-0269","ean":"8400000000269","nombre":"Victoza 6 mg/ml","marca":"Victoza","laboratorio":"Novo Nordisk","principioActivo":"Liraglutida","categoria":"Diabetes","subcategoria":"GLP-1","presentacion":"Pluma precargada","dosis":"6 mg/ml × 3 ml","unidadesEnvase":1,"requiereReceta":true,"controlado":false,"nevera":true,"icon":"💉","sintomas":[],"grupoInteraccion":"antidiabetico","precio":98,"coste":58.8,"iva":4,"stock":85,"stockInicial":85,"stockMinimo":14,"lote":"FM285573","caducidadMs":1800662400000,"esGenerico":false,"colorCategoria":"#2563EB"},
+    {"id":270,"sku":"FRI-0270","ean":"8400000000270","nombre":"Lantus Solostar","marca":"Lantus","laboratorio":"Sanofi","principioActivo":"Insulina glargina","categoria":"Diabetes","subcategoria":"Insulina basal","presentacion":"Pluma","dosis":"100 UI/ml × 3 ml","unidadesEnvase":1,"requiereReceta":true,"controlado":false,"nevera":true,"icon":"💉","sintomas":[],"grupoInteraccion":"antidiabetico","precio":45,"coste":27,"iva":4,"stock":8,"stockInicial":8,"stockMinimo":5,"lote":"GU265590","caducidadMs":1804204800000,"esGenerico":false,"colorCategoria":"#2563EB"},
+    {"id":271,"sku":"FRI-0271","ean":"8400000000271","nombre":"NovoRapid FlexPen","marca":"NovoRapid","laboratorio":"Novo Nordisk","principioActivo":"Insulina aspart","categoria":"Diabetes","subcategoria":"Insulina rápida","presentacion":"Pluma","dosis":"100 UI/ml × 3 ml","unidadesEnvase":1,"requiereReceta":true,"controlado":false,"nevera":true,"icon":"💉","sintomas":[],"grupoInteraccion":"antidiabetico","precio":38.5,"coste":23.1,"iva":4,"stock":21,"stockInicial":21,"stockMinimo":6,"lote":"HB275607","caducidadMs":1807747200000,"esGenerico":false,"colorCategoria":"#2563EB"},
+    {"id":272,"sku":"RX-0272","ean":"8400000000272","nombre":"Pantoprazol Cinfa 40 mg","marca":"Cinfa","laboratorio":"Cinfa","principioActivo":"Pantoprazol","categoria":"Digestivo con receta","subcategoria":"IBP","presentacion":"Comprimidos gastrorresistentes","dosis":"40 mg × 28","unidadesEnvase":28,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"🔥","sintomas":[],"grupoInteraccion":"ipp","precio":5.5,"coste":3.3,"iva":4,"stock":34,"stockInicial":34,"stockMinimo":7,"lote":"JJ285624","caducidadMs":1811289600000,"esGenerico":true,"colorCategoria":"#059669"},
+    {"id":273,"sku":"RX-0273","ean":"8400000000273","nombre":"Pantoprazol Normon 20 mg","marca":"Normon","laboratorio":"Normon","principioActivo":"Pantoprazol","categoria":"Digestivo con receta","subcategoria":"IBP","presentacion":"Comprimidos","dosis":"20 mg × 28","unidadesEnvase":28,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"🔥","sintomas":[],"grupoInteraccion":"ipp","precio":4.2,"coste":2.52,"iva":4,"stock":47,"stockInicial":47,"stockMinimo":8,"lote":"KR265641","caducidadMs":1814832000000,"esGenerico":true,"colorCategoria":"#059669"},
+    {"id":274,"sku":"RX-0274","ean":"8400000000274","nombre":"Nexium 40 mg","marca":"Nexium","laboratorio":"AstraZeneca","principioActivo":"Esomeprazol","categoria":"Digestivo con receta","subcategoria":"IBP","presentacion":"Comprimidos","dosis":"40 mg × 28","unidadesEnvase":28,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"🔥","sintomas":[],"grupoInteraccion":"ipp","precio":18.5,"coste":11.1,"iva":4,"stock":60,"stockInicial":60,"stockMinimo":9,"lote":"LY275658","caducidadMs":1818374400000,"esGenerico":false,"colorCategoria":"#059669"},
+    {"id":275,"sku":"RX-0275","ean":"8400000000275","nombre":"Esomeprazol Cinfa 40 mg","marca":"Cinfa","laboratorio":"Cinfa","principioActivo":"Esomeprazol","categoria":"Digestivo con receta","subcategoria":"IBP","presentacion":"Cápsulas","dosis":"40 mg × 28","unidadesEnvase":28,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"🔥","sintomas":[],"grupoInteraccion":"ipp","precio":7.8,"coste":4.68,"iva":4,"stock":73,"stockInicial":73,"stockMinimo":10,"lote":"MF285675","caducidadMs":1821916800000,"esGenerico":true,"colorCategoria":"#059669"},
+    {"id":276,"sku":"RX-0276","ean":"8400000000276","nombre":"Lansoprazol Kern 30 mg","marca":"Kern","laboratorio":"Kern Pharma","principioActivo":"Lansoprazol","categoria":"Digestivo con receta","subcategoria":"IBP","presentacion":"Cápsulas","dosis":"30 mg × 28","unidadesEnvase":28,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"🔥","sintomas":[],"grupoInteraccion":"ipp","precio":6.5,"coste":3.9,"iva":4,"stock":86,"stockInicial":86,"stockMinimo":11,"lote":"NN265692","caducidadMs":1825459200000,"esGenerico":true,"colorCategoria":"#059669"},
+    {"id":277,"sku":"RX-0277","ean":"8400000000277","nombre":"Rabeprazol Normon 20 mg","marca":"Normon","laboratorio":"Normon","principioActivo":"Rabeprazol","categoria":"Digestivo con receta","subcategoria":"IBP","presentacion":"Comprimidos","dosis":"20 mg × 28","unidadesEnvase":28,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"🔥","sintomas":[],"grupoInteraccion":"ipp","precio":8.2,"coste":4.92,"iva":4,"stock":9,"stockInicial":9,"stockMinimo":12,"lote":"PV275709","caducidadMs":1829001600000,"esGenerico":true,"colorCategoria":"#059669"},
+    {"id":278,"sku":"RX-0278","ean":"8400000000278","nombre":"Motilium 10 mg","marca":"Motilium","laboratorio":"J&J","principioActivo":"Domperidona","categoria":"Digestivo con receta","subcategoria":"Procinético","presentacion":"Comprimidos","dosis":"10 mg × 30","unidadesEnvase":30,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"🤢","sintomas":[],"grupoInteraccion":"otro","precio":5.9,"coste":3.54,"iva":4,"stock":22,"stockInicial":22,"stockMinimo":13,"lote":"QC285726","caducidadMs":1832544000000,"esGenerico":false,"colorCategoria":"#059669"},
+    {"id":279,"sku":"RX-0279","ean":"8400000000279","nombre":"Primperan 10 mg","marca":"Primperan","laboratorio":"Sanofi","principioActivo":"Metoclopramida","categoria":"Digestivo con receta","subcategoria":"Procinético","presentacion":"Comprimidos","dosis":"10 mg × 40","unidadesEnvase":40,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"🤢","sintomas":[],"grupoInteraccion":"otro","precio":3.8,"coste":2.28,"iva":4,"stock":35,"stockInicial":35,"stockMinimo":14,"lote":"RK265743","caducidadMs":1836086400000,"esGenerico":false,"colorCategoria":"#059669"},
+    {"id":280,"sku":"RX-0280","ean":"8400000000280","nombre":"Buscapina 10 mg","marca":"Buscapina","laboratorio":"Boehringer","principioActivo":"Butilescopolamina","categoria":"Digestivo con receta","subcategoria":"Antiespasmódico","presentacion":"Comprimidos","dosis":"10 mg × 20","unidadesEnvase":20,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"otro","precio":4.5,"coste":2.7,"iva":4,"stock":48,"stockInicial":48,"stockMinimo":5,"lote":"SS275760","caducidadMs":1839628800000,"esGenerico":false,"colorCategoria":"#059669"},
+    {"id":281,"sku":"RX-0281","ean":"8400000000281","nombre":"Buscapina Compositum","marca":"Buscapina","laboratorio":"Boehringer","principioActivo":"Butilescopolamina + metamizol","categoria":"Digestivo con receta","subcategoria":"Cólico","presentacion":"Comprimidos","dosis":"10+250 mg × 20","unidadesEnvase":20,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"analgesico","precio":6.8,"coste":4.08,"iva":4,"stock":61,"stockInicial":61,"stockMinimo":6,"lote":"TZ285777","caducidadMs":1843171200000,"esGenerico":false,"colorCategoria":"#059669"},
+    {"id":282,"sku":"RX-0282","ean":"8400000000282","nombre":"Ulcogant 1 g","marca":"Ulcogant","laboratorio":"Merck","principioActivo":"Sucralfato","categoria":"Digestivo con receta","subcategoria":"Protector gástrico","presentacion":"Comprimidos","dosis":"1 g × 40","unidadesEnvase":40,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"🛡️","sintomas":[],"grupoInteraccion":"otro","precio":9.5,"coste":5.7,"iva":4,"stock":74,"stockInicial":74,"stockMinimo":7,"lote":"UG265794","caducidadMs":1846713600000,"esGenerico":false,"colorCategoria":"#059669"},
+    {"id":283,"sku":"RX-0283","ean":"8400000000283","nombre":"Urdox 300 mg","marca":"Urdox","laboratorio":"Faes","principioActivo":"Ácido ursodesoxicólico","categoria":"Digestivo con receta","subcategoria":"Hepático","presentacion":"Cápsulas","dosis":"300 mg × 60","unidadesEnvase":60,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"🫁","sintomas":[],"grupoInteraccion":"otro","precio":28,"coste":16.8,"iva":4,"stock":87,"stockInicial":87,"stockMinimo":8,"lote":"VP275811","caducidadMs":1850256000000,"esGenerico":false,"colorCategoria":"#059669"},
+    {"id":284,"sku":"RX-0284","ean":"8400000000284","nombre":"Salofalk 500 mg","marca":"Salofalk","laboratorio":"Falk","principioActivo":"Mesalazina","categoria":"Digestivo con receta","subcategoria":"EII","presentacion":"Comprimidos","dosis":"500 mg × 100","unidadesEnvase":100,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"otro","precio":45,"coste":27,"iva":4,"stock":10,"stockInicial":10,"stockMinimo":9,"lote":"WW285828","caducidadMs":1853798400000,"esGenerico":false,"colorCategoria":"#059669"},
+    {"id":285,"sku":"RX-0285","ean":"8400000000285","nombre":"Pentasa 1 g","marca":"Pentasa","laboratorio":"Ferring","principioActivo":"Mesalazina","categoria":"Digestivo con receta","subcategoria":"EII","presentacion":"Sobres","dosis":"1 g × 50","unidadesEnvase":50,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"📦","sintomas":[],"grupoInteraccion":"otro","precio":68,"coste":40.8,"iva":4,"stock":23,"stockInicial":23,"stockMinimo":10,"lote":"XD265845","caducidadMs":1857340800000,"esGenerico":false,"colorCategoria":"#059669"},
+    {"id":286,"sku":"RX-0286","ean":"8400000000286","nombre":"Entocort 3 mg","marca":"Entocort","laboratorio":"Tillotts","principioActivo":"Budesonida","categoria":"Digestivo con receta","subcategoria":"EII / corticoide","presentacion":"Cápsulas","dosis":"3 mg × 100","unidadesEnvase":100,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"corticoide","precio":85,"coste":51,"iva":4,"stock":36,"stockInicial":36,"stockMinimo":11,"lote":"YL275862","caducidadMs":1860883200000,"esGenerico":false,"colorCategoria":"#059669"},
+    {"id":287,"sku":"RX-0287","ean":"8400000000287","nombre":"Resolor 2 mg","marca":"Resolor","laboratorio":"Shire","principioActivo":"Prucaloprida","categoria":"Digestivo con receta","subcategoria":"Estreñimiento crónico","presentacion":"Comprimidos","dosis":"2 mg × 28","unidadesEnvase":28,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"otro","precio":52,"coste":31.2,"iva":4,"stock":49,"stockInicial":49,"stockMinimo":12,"lote":"ZT285879","caducidadMs":1791763200000,"esGenerico":false,"colorCategoria":"#059669"},
+    {"id":288,"sku":"RX-0288","ean":"8400000000288","nombre":"Constella 290 µg","marca":"Constella","laboratorio":"Allergan","principioActivo":"Linaclotida","categoria":"Digestivo con receta","subcategoria":"SII-E","presentacion":"Cápsulas","dosis":"290 µg × 28","unidadesEnvase":28,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"otro","precio":58,"coste":34.8,"iva":4,"stock":62,"stockInicial":62,"stockMinimo":13,"lote":"AA265896","caducidadMs":1795305600000,"esGenerico":false,"colorCategoria":"#059669"},
+    {"id":289,"sku":"RX-0289","ean":"8400000000289","nombre":"Debridat 100 mg","marca":"Debridat","laboratorio":"Pfizer","principioActivo":"Trimebutina","categoria":"Digestivo con receta","subcategoria":"Espasmolítico","presentacion":"Comprimidos","dosis":"100 mg × 20","unidadesEnvase":20,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"otro","precio":6.2,"coste":3.72,"iva":4,"stock":75,"stockInicial":75,"stockMinimo":14,"lote":"BH275913","caducidadMs":1798848000000,"esGenerico":false,"colorCategoria":"#059669"},
+    {"id":290,"sku":"RX-0290","ean":"8400000000290","nombre":"Aloxi 0,25 mg (sim. oral)","marca":"Aloxi","laboratorio":"Helsinn","principioActivo":"Palonosetrón","categoria":"Digestivo con receta","subcategoria":"Antiemético","presentacion":"Cápsulas","dosis":"0,5 mg × 1","unidadesEnvase":1,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"otro","precio":95,"coste":57,"iva":4,"stock":88,"stockInicial":88,"stockMinimo":5,"lote":"CQ285930","caducidadMs":1802390400000,"esGenerico":false,"colorCategoria":"#059669"},
+    {"id":291,"sku":"RX-0291","ean":"8400000000291","nombre":"Ondansetrón Normon 8 mg","marca":"Normon","laboratorio":"Normon","principioActivo":"Ondansetrón","categoria":"Digestivo con receta","subcategoria":"Antiemético","presentacion":"Comprimidos","dosis":"8 mg × 10","unidadesEnvase":10,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"otro","precio":12.5,"coste":7.5,"iva":4,"stock":11,"stockInicial":11,"stockMinimo":6,"lote":"DX265947","caducidadMs":1805932800000,"esGenerico":true,"colorCategoria":"#059669"},
+    {"id":292,"sku":"RX-0292","ean":"8400000000292","nombre":"Creon 25000","marca":"Creon","laboratorio":"Mylan","principioActivo":"Pancreatina","categoria":"Digestivo con receta","subcategoria":"Enzimas pancreáticas","presentacion":"Cápsulas","dosis":"25000 × 100","unidadesEnvase":100,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"otro","precio":42,"coste":25.2,"iva":4,"stock":24,"stockInicial":24,"stockMinimo":7,"lote":"EE275964","caducidadMs":1809475200000,"esGenerico":true,"colorCategoria":"#059669"},
+    {"id":293,"sku":"RX-0293","ean":"8400000000293","nombre":"Ursofalk 250 mg","marca":"Ursofalk","laboratorio":"Falk","principioActivo":"Ácido ursodesoxicólico","categoria":"Digestivo con receta","subcategoria":"Hepático","presentacion":"Cápsulas","dosis":"250 mg × 60","unidadesEnvase":60,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"otro","precio":32,"coste":19.2,"iva":4,"stock":37,"stockInicial":37,"stockMinimo":8,"lote":"FM285981","caducidadMs":1813017600000,"esGenerico":false,"colorCategoria":"#059669"},
+    {"id":294,"sku":"RX-0294","ean":"8400000000294","nombre":"Pariet 20 mg","marca":"Pariet","laboratorio":"Janssen","principioActivo":"Rabeprazol","categoria":"Digestivo con receta","subcategoria":"IBP","presentacion":"Comprimidos","dosis":"20 mg × 28","unidadesEnvase":28,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"🔥","sintomas":[],"grupoInteraccion":"ipp","precio":22,"coste":13.2,"iva":4,"stock":50,"stockInicial":50,"stockMinimo":9,"lote":"GU265998","caducidadMs":1816560000000,"esGenerico":false,"colorCategoria":"#059669"},
+    {"id":295,"sku":"RX-0295","ean":"8400000000295","nombre":"Suero fisiológico Braun 500 ml","marca":"Braun","laboratorio":"B. Braun","principioActivo":"Cloruro sódico 0,9%","categoria":"Dispensario","subcategoria":"Suero","presentacion":"Bolsa IV","dosis":"500 ml","unidadesEnvase":1,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💧","sintomas":[],"grupoInteraccion":"otro","precio":2.5,"coste":1.5,"iva":4,"stock":63,"stockInicial":63,"stockMinimo":10,"lote":"HB276015","caducidadMs":1820102400000,"esGenerico":false,"colorCategoria":"#4B5563"},
+    {"id":296,"sku":"RX-0296","ean":"8400000000296","nombre":"Glucosa 5% Fresenius 500 ml","marca":"Fresenius","laboratorio":"Fresenius Kabi","principioActivo":"Glucosa","categoria":"Dispensario","subcategoria":"Suero","presentacion":"Bolsa IV","dosis":"500 ml","unidadesEnvase":1,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💧","sintomas":[],"grupoInteraccion":"otro","precio":2.8,"coste":1.68,"iva":4,"stock":76,"stockInicial":76,"stockMinimo":11,"lote":"JJ286032","caducidadMs":1823644800000,"esGenerico":false,"colorCategoria":"#4B5563"},
+    {"id":297,"sku":"RX-0297","ean":"8400000000297","nombre":"Agujas BD Microlance 21G","marca":"BD","laboratorio":"Becton Dickinson","principioActivo":"—","categoria":"Dispensario","subcategoria":"Material","presentacion":"Caja","dosis":"100 uds","unidadesEnvase":100,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💉","sintomas":[],"grupoInteraccion":"otro","precio":8.5,"coste":5.1,"iva":21,"stock":89,"stockInicial":89,"stockMinimo":12,"lote":"KR266049","caducidadMs":1827187200000,"esGenerico":false,"colorCategoria":"#4B5563"},
+    {"id":298,"sku":"RX-0298","ean":"8400000000298","nombre":"Jeringas BD Plastipak 5 ml","marca":"BD","laboratorio":"Becton Dickinson","principioActivo":"—","categoria":"Dispensario","subcategoria":"Material","presentacion":"Caja","dosis":"100 uds","unidadesEnvase":100,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💉","sintomas":[],"grupoInteraccion":"otro","precio":12,"coste":7.2,"iva":21,"stock":12,"stockInicial":12,"stockMinimo":13,"lote":"LY276066","caducidadMs":1830729600000,"esGenerico":false,"colorCategoria":"#4B5563"},
+    {"id":299,"sku":"RX-0299","ean":"8400000000299","nombre":"Gasas estériles Indas","marca":"Indas","laboratorio":"Absorvic","principioActivo":"Algodón","categoria":"Dispensario","subcategoria":"Curas","presentacion":"Sobres","dosis":"100 uds","unidadesEnvase":100,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"🩹","sintomas":["heridas"],"grupoInteraccion":"otro","precio":6.5,"coste":3.9,"iva":21,"stock":25,"stockInicial":25,"stockMinimo":14,"lote":"MF286083","caducidadMs":1834272000000,"esGenerico":false,"colorCategoria":"#4B5563"},
+    {"id":300,"sku":"RX-0300","ean":"8400000000300","nombre":"Vendas elásticas Idealbin","marca":"Idealbin","laboratorio":"Texpol","principioActivo":"Tejido elástico","categoria":"Dispensario","subcategoria":"Vendaje","presentacion":"Rollo 10×10","dosis":"1 ud","unidadesEnvase":1,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"🩹","sintomas":["heridas"],"grupoInteraccion":"otro","precio":3.2,"coste":1.92,"iva":21,"stock":38,"stockInicial":38,"stockMinimo":5,"lote":"NN266100","caducidadMs":1837814400000,"esGenerico":false,"colorCategoria":"#4B5563"},
+    {"id":301,"sku":"RX-0301","ean":"8400000000301","nombre":"Guantes nitrilo talla M","marca":"Sempercare","laboratorio":"Sempermed","principioActivo":"Nitrilo","categoria":"Dispensario","subcategoria":"Protección","presentacion":"Caja","dosis":"100 uds","unidadesEnvase":100,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"🧤","sintomas":[],"grupoInteraccion":"otro","precio":9.5,"coste":5.7,"iva":21,"stock":51,"stockInicial":51,"stockMinimo":6,"lote":"PV276117","caducidadMs":1841356800000,"esGenerico":false,"colorCategoria":"#4B5563"},
+    {"id":302,"sku":"RX-0302","ean":"8400000000302","nombre":"Alcohol 70° Acofar","marca":"Acofar","laboratorio":"Acofarma","principioActivo":"Etanol","categoria":"Dispensario","subcategoria":"Antiséptico","presentacion":"Frasco 250 ml","dosis":"250 ml","unidadesEnvase":1,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"🧴","sintomas":["heridas"],"grupoInteraccion":"otro","precio":2.1,"coste":1.26,"iva":4,"stock":64,"stockInicial":64,"stockMinimo":7,"lote":"QC286134","caducidadMs":1844899200000,"esGenerico":false,"colorCategoria":"#4B5563"},
+    {"id":303,"sku":"RX-0303","ean":"8400000000303","nombre":"Eutirox 50 µg","marca":"Eutirox","laboratorio":"Merck","principioActivo":"Levotiroxina","categoria":"Hormonas","subcategoria":"Tiroides","presentacion":"Comprimidos","dosis":"50 µg × 30","unidadesEnvase":30,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"⚖️","sintomas":[],"grupoInteraccion":"otro","precio":3.5,"coste":2.1,"iva":4,"stock":77,"stockInicial":77,"stockMinimo":8,"lote":"RK266151","caducidadMs":1848441600000,"esGenerico":false,"colorCategoria":"#C026D3"},
+    {"id":304,"sku":"RX-0304","ean":"8400000000304","nombre":"Eutirox 100 µg","marca":"Eutirox","laboratorio":"Merck","principioActivo":"Levotiroxina","categoria":"Hormonas","subcategoria":"Tiroides","presentacion":"Comprimidos","dosis":"100 µg × 30","unidadesEnvase":30,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"⚖️","sintomas":[],"grupoInteraccion":"otro","precio":3.9,"coste":2.34,"iva":4,"stock":90,"stockInicial":90,"stockMinimo":9,"lote":"SS276168","caducidadMs":1851984000000,"esGenerico":false,"colorCategoria":"#C026D3"},
+    {"id":305,"sku":"RX-0305","ean":"8400000000305","nombre":"Levothroid 75 µg","marca":"Levothroid","laboratorio":"Aspen","principioActivo":"Levotiroxina","categoria":"Hormonas","subcategoria":"Tiroides","presentacion":"Comprimidos","dosis":"75 µg × 30","unidadesEnvase":30,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"⚖️","sintomas":[],"grupoInteraccion":"otro","precio":3.7,"coste":2.22,"iva":4,"stock":13,"stockInicial":13,"stockMinimo":10,"lote":"TZ286185","caducidadMs":1855526400000,"esGenerico":false,"colorCategoria":"#C026D3"},
+    {"id":306,"sku":"RX-0306","ean":"8400000000306","nombre":"Duphaston 10 mg","marca":"Duphaston","laboratorio":"Abbott","principioActivo":"Didrogesterona","categoria":"Hormonas","subcategoria":"Progestágeno","presentacion":"Comprimidos","dosis":"10 mg × 20","unidadesEnvase":20,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"⚖️","sintomas":[],"grupoInteraccion":"otro","precio":12.5,"coste":7.5,"iva":4,"stock":26,"stockInicial":26,"stockMinimo":11,"lote":"UG266202","caducidadMs":1859068800000,"esGenerico":false,"colorCategoria":"#C026D3"},
+    {"id":307,"sku":"RX-0307","ean":"8400000000307","nombre":"Progyluton","marca":"Progyluton","laboratorio":"Bayer","principioActivo":"Estradiol + norgestrel","categoria":"Hormonas","subcategoria":"THS / ciclo","presentacion":"Comprimidos","dosis":"21 comp","unidadesEnvase":21,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"⚖️","sintomas":[],"grupoInteraccion":"otro","precio":9.8,"coste":5.88,"iva":4,"stock":39,"stockInicial":39,"stockMinimo":12,"lote":"VP276219","caducidadMs":1862611200000,"esGenerico":false,"colorCategoria":"#C026D3"},
+    {"id":308,"sku":"RX-0308","ean":"8400000000308","nombre":"Yasmin","marca":"Yasmin","laboratorio":"Bayer","principioActivo":"Etinilestradiol + drospirenona","categoria":"Hormonas","subcategoria":"Anticonceptivo","presentacion":"Comprimidos","dosis":"21 comp","unidadesEnvase":21,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"otro","precio":14.5,"coste":8.7,"iva":4,"stock":52,"stockInicial":52,"stockMinimo":13,"lote":"WW286236","caducidadMs":1793491200000,"esGenerico":false,"colorCategoria":"#C026D3"},
+    {"id":309,"sku":"RX-0309","ean":"8400000000309","nombre":"Sertralina Cinfa 50 mg","marca":"Cinfa","laboratorio":"Cinfa","principioActivo":"Sertralina","categoria":"Salud mental","subcategoria":"ISRS","presentacion":"Comprimidos","dosis":"50 mg × 30","unidadesEnvase":30,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"🧠","sintomas":[],"grupoInteraccion":"isrs","precio":4.5,"coste":2.7,"iva":4,"stock":65,"stockInicial":65,"stockMinimo":14,"lote":"XD266253","caducidadMs":1797033600000,"esGenerico":true,"colorCategoria":"#7C3AED"},
+    {"id":310,"sku":"RX-0310","ean":"8400000000310","nombre":"Sertralina Normon 100 mg","marca":"Normon","laboratorio":"Normon","principioActivo":"Sertralina","categoria":"Salud mental","subcategoria":"ISRS","presentacion":"Comprimidos","dosis":"100 mg × 30","unidadesEnvase":30,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"🧠","sintomas":[],"grupoInteraccion":"isrs","precio":5.2,"coste":3.12,"iva":4,"stock":78,"stockInicial":78,"stockMinimo":5,"lote":"YL276270","caducidadMs":1800576000000,"esGenerico":true,"colorCategoria":"#7C3AED"},
+    {"id":311,"sku":"RX-0311","ean":"8400000000311","nombre":"Escitalopram Cinfa 10 mg","marca":"Cinfa","laboratorio":"Cinfa","principioActivo":"Escitalopram","categoria":"Salud mental","subcategoria":"ISRS","presentacion":"Comprimidos","dosis":"10 mg × 28","unidadesEnvase":28,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"🧠","sintomas":[],"grupoInteraccion":"isrs","precio":5.8,"coste":3.48,"iva":4,"stock":91,"stockInicial":91,"stockMinimo":6,"lote":"ZT286287","caducidadMs":1804118400000,"esGenerico":true,"colorCategoria":"#7C3AED"},
+    {"id":312,"sku":"RX-0312","ean":"8400000000312","nombre":"Escitalopram Normon 20 mg","marca":"Normon","laboratorio":"Normon","principioActivo":"Escitalopram","categoria":"Salud mental","subcategoria":"ISRS","presentacion":"Comprimidos","dosis":"20 mg × 28","unidadesEnvase":28,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"🧠","sintomas":[],"grupoInteraccion":"isrs","precio":6.5,"coste":3.9,"iva":4,"stock":14,"stockInicial":14,"stockMinimo":7,"lote":"AA266304","caducidadMs":1807660800000,"esGenerico":true,"colorCategoria":"#7C3AED"},
+    {"id":313,"sku":"RX-0313","ean":"8400000000313","nombre":"Fluoxetina Cinfa 20 mg","marca":"Cinfa","laboratorio":"Cinfa","principioActivo":"Fluoxetina","categoria":"Salud mental","subcategoria":"ISRS","presentacion":"Cápsulas","dosis":"20 mg × 28","unidadesEnvase":28,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"🧠","sintomas":[],"grupoInteraccion":"isrs","precio":3.9,"coste":2.34,"iva":4,"stock":27,"stockInicial":27,"stockMinimo":8,"lote":"BH276321","caducidadMs":1811203200000,"esGenerico":true,"colorCategoria":"#7C3AED"},
+    {"id":314,"sku":"RX-0314","ean":"8400000000314","nombre":"Prozac 20 mg","marca":"Prozac","laboratorio":"Lilly","principioActivo":"Fluoxetina","categoria":"Salud mental","subcategoria":"ISRS","presentacion":"Cápsulas","dosis":"20 mg × 28","unidadesEnvase":28,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"🧠","sintomas":[],"grupoInteraccion":"isrs","precio":18.5,"coste":11.1,"iva":4,"stock":40,"stockInicial":40,"stockMinimo":9,"lote":"CQ286338","caducidadMs":1814745600000,"esGenerico":false,"colorCategoria":"#7C3AED"},
+    {"id":315,"sku":"RX-0315","ean":"8400000000315","nombre":"Paroxetina Normon 20 mg","marca":"Normon","laboratorio":"Normon","principioActivo":"Paroxetina","categoria":"Salud mental","subcategoria":"ISRS","presentacion":"Comprimidos","dosis":"20 mg × 28","unidadesEnvase":28,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"🧠","sintomas":[],"grupoInteraccion":"isrs","precio":5.5,"coste":3.3,"iva":4,"stock":53,"stockInicial":53,"stockMinimo":10,"lote":"DX266355","caducidadMs":1818288000000,"esGenerico":true,"colorCategoria":"#7C3AED"},
+    {"id":316,"sku":"RX-0316","ean":"8400000000316","nombre":"Venlafaxina Retard Cinfa 75 mg","marca":"Cinfa","laboratorio":"Cinfa","principioActivo":"Venlafaxina","categoria":"Salud mental","subcategoria":"IRSN","presentacion":"Cápsulas retard","dosis":"75 mg × 30","unidadesEnvase":30,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"🧠","sintomas":[],"grupoInteraccion":"isrs","precio":7.8,"coste":4.68,"iva":4,"stock":66,"stockInicial":66,"stockMinimo":11,"lote":"EE276372","caducidadMs":1821830400000,"esGenerico":true,"colorCategoria":"#7C3AED"},
+    {"id":317,"sku":"RX-0317","ean":"8400000000317","nombre":"Duloxetina Kern 60 mg","marca":"Kern","laboratorio":"Kern Pharma","principioActivo":"Duloxetina","categoria":"Salud mental","subcategoria":"IRSN","presentacion":"Cápsulas","dosis":"60 mg × 28","unidadesEnvase":28,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"🧠","sintomas":[],"grupoInteraccion":"isrs","precio":12.5,"coste":7.5,"iva":4,"stock":79,"stockInicial":79,"stockMinimo":12,"lote":"FM286389","caducidadMs":1825372800000,"esGenerico":true,"colorCategoria":"#7C3AED"},
+    {"id":318,"sku":"RX-0318","ean":"8400000000318","nombre":"Mirtazapina Cinfa 30 mg","marca":"Cinfa","laboratorio":"Cinfa","principioActivo":"Mirtazapina","categoria":"Salud mental","subcategoria":"Antidepresivo","presentacion":"Comprimidos","dosis":"30 mg × 30","unidadesEnvase":30,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"🧠","sintomas":[],"grupoInteraccion":"otro","precio":6.2,"coste":3.72,"iva":4,"stock":92,"stockInicial":92,"stockMinimo":13,"lote":"GU266406","caducidadMs":1828915200000,"esGenerico":true,"colorCategoria":"#7C3AED"},
+    {"id":319,"sku":"RX-0319","ean":"8400000000319","nombre":"Trazodona Normon 100 mg","marca":"Normon","laboratorio":"Normon","principioActivo":"Trazodona","categoria":"Salud mental","subcategoria":"Antidepresivo","presentacion":"Comprimidos","dosis":"100 mg × 30","unidadesEnvase":30,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"🧠","sintomas":[],"grupoInteraccion":"otro","precio":5.9,"coste":3.54,"iva":4,"stock":15,"stockInicial":15,"stockMinimo":14,"lote":"HB276423","caducidadMs":1832457600000,"esGenerico":true,"colorCategoria":"#7C3AED"},
+    {"id":320,"sku":"RX-0320","ean":"8400000000320","nombre":"Quetiapina Cinfa 25 mg","marca":"Cinfa","laboratorio":"Cinfa","principioActivo":"Quetiapina","categoria":"Salud mental","subcategoria":"Antipsicótico","presentacion":"Comprimidos","dosis":"25 mg × 60","unidadesEnvase":60,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"🧠","sintomas":[],"grupoInteraccion":"otro","precio":8.5,"coste":5.1,"iva":4,"stock":28,"stockInicial":28,"stockMinimo":5,"lote":"JJ286440","caducidadMs":1836000000000,"esGenerico":true,"colorCategoria":"#7C3AED"},
+    {"id":321,"sku":"RX-0321","ean":"8400000000321","nombre":"Quetiapina Normon 100 mg","marca":"Normon","laboratorio":"Normon","principioActivo":"Quetiapina","categoria":"Salud mental","subcategoria":"Antipsicótico","presentacion":"Comprimidos","dosis":"100 mg × 60","unidadesEnvase":60,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"🧠","sintomas":[],"grupoInteraccion":"otro","precio":14,"coste":8.4,"iva":4,"stock":41,"stockInicial":41,"stockMinimo":6,"lote":"KR266457","caducidadMs":1839542400000,"esGenerico":true,"colorCategoria":"#7C3AED"},
+    {"id":322,"sku":"RX-0322","ean":"8400000000322","nombre":"Olanzapina Teva 5 mg","marca":"Teva","laboratorio":"Teva","principioActivo":"Olanzapina","categoria":"Salud mental","subcategoria":"Antipsicótico","presentacion":"Comprimidos","dosis":"5 mg × 28","unidadesEnvase":28,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"🧠","sintomas":[],"grupoInteraccion":"otro","precio":18,"coste":10.8,"iva":4,"stock":54,"stockInicial":54,"stockMinimo":7,"lote":"LY276474","caducidadMs":1843084800000,"esGenerico":true,"colorCategoria":"#7C3AED"},
+    {"id":323,"sku":"RX-0323","ean":"8400000000323","nombre":"Risperdal 1 mg","marca":"Risperdal","laboratorio":"Janssen","principioActivo":"Risperidona","categoria":"Salud mental","subcategoria":"Antipsicótico","presentacion":"Comprimidos","dosis":"1 mg × 20","unidadesEnvase":20,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"🧠","sintomas":[],"grupoInteraccion":"otro","precio":12.5,"coste":7.5,"iva":4,"stock":67,"stockInicial":67,"stockMinimo":8,"lote":"MF286491","caducidadMs":1846627200000,"esGenerico":false,"colorCategoria":"#7C3AED"},
+    {"id":324,"sku":"RX-0324","ean":"8400000000324","nombre":"Aripiprazol Cinfa 10 mg","marca":"Cinfa","laboratorio":"Cinfa","principioActivo":"Aripiprazol","categoria":"Salud mental","subcategoria":"Antipsicótico","presentacion":"Comprimidos","dosis":"10 mg × 28","unidadesEnvase":28,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"🧠","sintomas":[],"grupoInteraccion":"otro","precio":22,"coste":13.2,"iva":4,"stock":80,"stockInicial":80,"stockMinimo":9,"lote":"NN266508","caducidadMs":1850169600000,"esGenerico":true,"colorCategoria":"#7C3AED"},
+    {"id":325,"sku":"RX-0325","ean":"8400000000325","nombre":"Haloperidol Esteve 10 mg","marca":"Esteve","laboratorio":"Esteve","principioActivo":"Haloperidol","categoria":"Salud mental","subcategoria":"Antipsicótico","presentacion":"Comprimidos","dosis":"10 mg × 30","unidadesEnvase":30,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"🧠","sintomas":[],"grupoInteraccion":"otro","precio":4.8,"coste":2.88,"iva":4,"stock":93,"stockInicial":93,"stockMinimo":10,"lote":"PV276525","caducidadMs":1853712000000,"esGenerico":false,"colorCategoria":"#7C3AED"},
+    {"id":326,"sku":"CTL-0326","ean":"8400000000326","nombre":"Orfidal 1 mg (salud mental)","marca":"Orfidal","laboratorio":"Pfizer","principioActivo":"Lorazepam","categoria":"Salud mental","subcategoria":"Benzodiacepina","presentacion":"Comprimidos","dosis":"1 mg × 50","unidadesEnvase":50,"requiereReceta":true,"controlado":true,"nevera":false,"icon":"🔒","sintomas":[],"grupoInteraccion":"benzo","precio":3.2,"coste":1.92,"iva":4,"stock":16,"stockInicial":16,"stockMinimo":11,"lote":"QC286542","caducidadMs":1857254400000,"esGenerico":false,"colorCategoria":"#7C3AED"},
+    {"id":327,"sku":"CTL-0327","ean":"8400000000327","nombre":"Alprazolam Cinfa 0,5 mg","marca":"Cinfa","laboratorio":"Cinfa","principioActivo":"Alprazolam","categoria":"Salud mental","subcategoria":"Benzodiacepina","presentacion":"Comprimidos","dosis":"0,5 mg × 30","unidadesEnvase":30,"requiereReceta":true,"controlado":true,"nevera":false,"icon":"🔒","sintomas":[],"grupoInteraccion":"benzo","precio":2.6,"coste":1.56,"iva":4,"stock":29,"stockInicial":29,"stockMinimo":12,"lote":"RK266559","caducidadMs":1860796800000,"esGenerico":true,"colorCategoria":"#7C3AED"},
+    {"id":328,"sku":"RX-0328","ean":"8400000000328","nombre":"Gabapentina Cinfa 300 mg","marca":"Cinfa","laboratorio":"Cinfa","principioActivo":"Gabapentina","categoria":"Neurología","subcategoria":"Antiepiléptico","presentacion":"Cápsulas","dosis":"300 mg × 50","unidadesEnvase":50,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"⚡","sintomas":[],"grupoInteraccion":"otro","precio":6.5,"coste":3.9,"iva":4,"stock":42,"stockInicial":42,"stockMinimo":13,"lote":"SS276576","caducidadMs":1864339200000,"esGenerico":true,"colorCategoria":"#4338CA"},
+    {"id":329,"sku":"RX-0329","ean":"8400000000329","nombre":"Gabapentina Normon 600 mg","marca":"Normon","laboratorio":"Normon","principioActivo":"Gabapentina","categoria":"Neurología","subcategoria":"Antiepiléptico","presentacion":"Comprimidos","dosis":"600 mg × 50","unidadesEnvase":50,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"⚡","sintomas":[],"grupoInteraccion":"otro","precio":9.8,"coste":5.88,"iva":4,"stock":55,"stockInicial":55,"stockMinimo":14,"lote":"TZ286593","caducidadMs":1795219200000,"esGenerico":true,"colorCategoria":"#4338CA"},
+    {"id":330,"sku":"RX-0330","ean":"8400000000330","nombre":"Lyrica 75 mg","marca":"Lyrica","laboratorio":"Pfizer","principioActivo":"Pregabalina","categoria":"Neurología","subcategoria":"Antiepiléptico / dolor","presentacion":"Cápsulas","dosis":"75 mg × 56","unidadesEnvase":56,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"⚡","sintomas":[],"grupoInteraccion":"otro","precio":32,"coste":19.2,"iva":4,"stock":68,"stockInicial":68,"stockMinimo":5,"lote":"UG266610","caducidadMs":1798761600000,"esGenerico":false,"colorCategoria":"#4338CA"},
+    {"id":331,"sku":"RX-0331","ean":"8400000000331","nombre":"Pregabalina Cinfa 150 mg","marca":"Cinfa","laboratorio":"Cinfa","principioActivo":"Pregabalina","categoria":"Neurología","subcategoria":"Antiepiléptico","presentacion":"Cápsulas","dosis":"150 mg × 56","unidadesEnvase":56,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"⚡","sintomas":[],"grupoInteraccion":"otro","precio":18.5,"coste":11.1,"iva":4,"stock":81,"stockInicial":81,"stockMinimo":6,"lote":"VP276627","caducidadMs":1802304000000,"esGenerico":true,"colorCategoria":"#4338CA"},
+    {"id":332,"sku":"RX-0332","ean":"8400000000332","nombre":"Keppra 500 mg","marca":"Keppra","laboratorio":"UCB","principioActivo":"Levetiracetam","categoria":"Neurología","subcategoria":"Antiepiléptico","presentacion":"Comprimidos","dosis":"500 mg × 60","unidadesEnvase":60,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"⚡","sintomas":[],"grupoInteraccion":"otro","precio":28,"coste":16.8,"iva":4,"stock":94,"stockInicial":94,"stockMinimo":7,"lote":"WW286644","caducidadMs":1805846400000,"esGenerico":false,"colorCategoria":"#4338CA"},
+    {"id":333,"sku":"RX-0333","ean":"8400000000333","nombre":"Levetiracetam Normon 1000 mg","marca":"Normon","laboratorio":"Normon","principioActivo":"Levetiracetam","categoria":"Neurología","subcategoria":"Antiepiléptico","presentacion":"Comprimidos","dosis":"1000 mg × 60","unidadesEnvase":60,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"⚡","sintomas":[],"grupoInteraccion":"otro","precio":22,"coste":13.2,"iva":4,"stock":17,"stockInicial":17,"stockMinimo":8,"lote":"XD266661","caducidadMs":1809388800000,"esGenerico":true,"colorCategoria":"#4338CA"},
+    {"id":334,"sku":"RX-0334","ean":"8400000000334","nombre":"Depakine Crono 500 mg","marca":"Depakine","laboratorio":"Sanofi","principioActivo":"Ácido valproico","categoria":"Neurología","subcategoria":"Antiepiléptico","presentacion":"Comprimidos","dosis":"500 mg × 30","unidadesEnvase":30,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"⚡","sintomas":[],"grupoInteraccion":"otro","precio":8.5,"coste":5.1,"iva":4,"stock":30,"stockInicial":30,"stockMinimo":9,"lote":"YL276678","caducidadMs":1812931200000,"esGenerico":false,"colorCategoria":"#4338CA"},
+    {"id":335,"sku":"RX-0335","ean":"8400000000335","nombre":"Tegretol 200 mg","marca":"Tegretol","laboratorio":"Novartis","principioActivo":"Carbamazepina","categoria":"Neurología","subcategoria":"Antiepiléptico","presentacion":"Comprimidos","dosis":"200 mg × 50","unidadesEnvase":50,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"⚡","sintomas":[],"grupoInteraccion":"otro","precio":6.2,"coste":3.72,"iva":4,"stock":43,"stockInicial":43,"stockMinimo":10,"lote":"ZT286695","caducidadMs":1816473600000,"esGenerico":false,"colorCategoria":"#4338CA"},
+    {"id":336,"sku":"RX-0336","ean":"8400000000336","nombre":"Lamictal 100 mg","marca":"Lamictal","laboratorio":"GSK","principioActivo":"Lamotrigina","categoria":"Neurología","subcategoria":"Antiepiléptico","presentacion":"Comprimidos","dosis":"100 mg × 56","unidadesEnvase":56,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"⚡","sintomas":[],"grupoInteraccion":"otro","precio":24,"coste":14.4,"iva":4,"stock":56,"stockInicial":56,"stockMinimo":11,"lote":"AA266712","caducidadMs":1820016000000,"esGenerico":false,"colorCategoria":"#4338CA"},
+    {"id":337,"sku":"RX-0337","ean":"8400000000337","nombre":"Sinemet Plus","marca":"Sinemet","laboratorio":"MSD","principioActivo":"Levodopa + carbidopa","categoria":"Neurología","subcategoria":"Parkinson","presentacion":"Comprimidos","dosis":"25/100 mg × 100","unidadesEnvase":100,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"⚡","sintomas":[],"grupoInteraccion":"otro","precio":18.5,"coste":11.1,"iva":4,"stock":69,"stockInicial":69,"stockMinimo":12,"lote":"BH276729","caducidadMs":1823558400000,"esGenerico":false,"colorCategoria":"#4338CA"},
+    {"id":338,"sku":"CTL-0338","ean":"8400000000338","nombre":"Rivotril gotas 2,5 mg/ml","marca":"Rivotril","laboratorio":"Roche","principioActivo":"Clonazepam","categoria":"Neurología","subcategoria":"Antiepiléptico / benzo","presentacion":"Gotas 20 ml","dosis":"2,5 mg/ml","unidadesEnvase":1,"requiereReceta":true,"controlado":true,"nevera":false,"icon":"🔒","sintomas":[],"grupoInteraccion":"benzo","precio":6.8,"coste":4.08,"iva":4,"stock":82,"stockInicial":82,"stockMinimo":13,"lote":"CQ286746","caducidadMs":1827100800000,"esGenerico":false,"colorCategoria":"#4338CA"},
+    {"id":339,"sku":"RX-0339","ean":"8400000000339","nombre":"Topiramato Cinfa 50 mg","marca":"Cinfa","laboratorio":"Cinfa","principioActivo":"Topiramato","categoria":"Neurología","subcategoria":"Antiepiléptico","presentacion":"Comprimidos","dosis":"50 mg × 60","unidadesEnvase":60,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"⚡","sintomas":[],"grupoInteraccion":"otro","precio":9.5,"coste":5.7,"iva":4,"stock":95,"stockInicial":95,"stockMinimo":14,"lote":"DX266763","caducidadMs":1830643200000,"esGenerico":true,"colorCategoria":"#4338CA"},
+    {"id":340,"sku":"RX-0340","ean":"8400000000340","nombre":"Trileptal 300 mg","marca":"Trileptal","laboratorio":"Novartis","principioActivo":"Oxcarbazepina","categoria":"Neurología","subcategoria":"Antiepiléptico","presentacion":"Comprimidos","dosis":"300 mg × 50","unidadesEnvase":50,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"⚡","sintomas":[],"grupoInteraccion":"otro","precio":16,"coste":9.6,"iva":4,"stock":18,"stockInicial":18,"stockMinimo":5,"lote":"EE276780","caducidadMs":1834185600000,"esGenerico":false,"colorCategoria":"#4338CA"},
+    {"id":341,"sku":"FRI-0341","ean":"8400000000341","nombre":"Humira 40 mg","marca":"Humira","laboratorio":"AbbVie","principioActivo":"Adalimumab","categoria":"Frigorífico","subcategoria":"Biológico","presentacion":"Pluma precargada","dosis":"40 mg","unidadesEnvase":1,"requiereReceta":true,"controlado":false,"nevera":true,"icon":"❄️","sintomas":[],"grupoInteraccion":"otro","precio":950,"coste":570,"iva":4,"stock":31,"stockInicial":31,"stockMinimo":6,"lote":"FM286797","caducidadMs":1837728000000,"esGenerico":false,"colorCategoria":"#0284C7"},
+    {"id":342,"sku":"FRI-0342","ean":"8400000000342","nombre":"Enbrel 50 mg","marca":"Enbrel","laboratorio":"Pfizer","principioActivo":"Etanercept","categoria":"Frigorífico","subcategoria":"Biológico","presentacion":"Pluma","dosis":"50 mg","unidadesEnvase":1,"requiereReceta":true,"controlado":false,"nevera":true,"icon":"❄️","sintomas":[],"grupoInteraccion":"otro","precio":480,"coste":288,"iva":4,"stock":44,"stockInicial":44,"stockMinimo":7,"lote":"GU266814","caducidadMs":1841270400000,"esGenerico":false,"colorCategoria":"#0284C7"},
+    {"id":343,"sku":"FRI-0343","ean":"8400000000343","nombre":"Stelara 90 mg","marca":"Stelara","laboratorio":"Janssen","principioActivo":"Ustekinumab","categoria":"Frigorífico","subcategoria":"Biológico","presentacion":"Jeringa","dosis":"90 mg","unidadesEnvase":1,"requiereReceta":true,"controlado":false,"nevera":true,"icon":"❄️","sintomas":[],"grupoInteraccion":"otro","precio":2800,"coste":1680,"iva":4,"stock":57,"stockInicial":57,"stockMinimo":8,"lote":"HB276831","caducidadMs":1844812800000,"esGenerico":false,"colorCategoria":"#0284C7"},
+    {"id":344,"sku":"FRI-0344","ean":"8400000000344","nombre":"Prolia 60 mg","marca":"Prolia","laboratorio":"Amgen","principioActivo":"Denosumab","categoria":"Frigorífico","subcategoria":"Biológico","presentacion":"Jeringa precargada","dosis":"60 mg","unidadesEnvase":1,"requiereReceta":true,"controlado":false,"nevera":true,"icon":"❄️","sintomas":[],"grupoInteraccion":"otro","precio":220,"coste":132,"iva":4,"stock":70,"stockInicial":70,"stockMinimo":9,"lote":"JJ286848","caducidadMs":1848355200000,"esGenerico":false,"colorCategoria":"#0284C7"},
+    {"id":345,"sku":"FRI-0345","ean":"8400000000345","nombre":"Neulasta 6 mg","marca":"Neulasta","laboratorio":"Amgen","principioActivo":"Pegfilgrastim","categoria":"Frigorífico","subcategoria":"Factor crecimiento","presentacion":"Jeringa","dosis":"6 mg","unidadesEnvase":1,"requiereReceta":true,"controlado":false,"nevera":true,"icon":"❄️","sintomas":[],"grupoInteraccion":"otro","precio":1100,"coste":660,"iva":4,"stock":83,"stockInicial":83,"stockMinimo":10,"lote":"KR266865","caducidadMs":1851897600000,"esGenerico":false,"colorCategoria":"#0284C7"},
+    {"id":346,"sku":"FRI-0346","ean":"8400000000346","nombre":"Ozempic 1 mg","marca":"Ozempic","laboratorio":"Novo Nordisk","principioActivo":"Semaglutida","categoria":"Frigorífico","subcategoria":"GLP-1","presentacion":"Pluma","dosis":"1 mg","unidadesEnvase":1,"requiereReceta":true,"controlado":false,"nevera":true,"icon":"❄️","sintomas":[],"grupoInteraccion":"antidiabetico","precio":145,"coste":87,"iva":4,"stock":96,"stockInicial":96,"stockMinimo":11,"lote":"LY276882","caducidadMs":1855440000000,"esGenerico":false,"colorCategoria":"#0284C7"},
+    {"id":347,"sku":"FRI-0347","ean":"8400000000347","nombre":"EpiPen 0,3 mg","marca":"EpiPen","laboratorio":"Mylan","principioActivo":"Adrenalina","categoria":"Frigorífico","subcategoria":"Anafilaxia","presentacion":"Autoinyector","dosis":"0,3 mg","unidadesEnvase":1,"requiereReceta":true,"controlado":false,"nevera":true,"icon":"❄️","sintomas":[],"grupoInteraccion":"otro","precio":85,"coste":51,"iva":4,"stock":19,"stockInicial":19,"stockMinimo":12,"lote":"MF286899","caducidadMs":1858982400000,"esGenerico":true,"colorCategoria":"#0284C7"},
+    {"id":348,"sku":"RX-0348","ean":"8400000000348","nombre":"Ventolin Inhalador","marca":"Ventolin","laboratorio":"GSK","principioActivo":"Salbutamol","categoria":"Respiratorio","subcategoria":"Broncodilatador","presentacion":"Inhalador MDI","dosis":"100 µg × 200 dosis","unidadesEnvase":1,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"🌬️","sintomas":[],"grupoInteraccion":"otro","precio":4.5,"coste":2.7,"iva":4,"stock":32,"stockInicial":32,"stockMinimo":13,"lote":"NN266916","caducidadMs":1862524800000,"esGenerico":false,"colorCategoria":"#0891B2"},
+    {"id":349,"sku":"RX-0349","ean":"8400000000349","nombre":"Salbutamol Cinfa inhalador","marca":"Cinfa","laboratorio":"Cinfa","principioActivo":"Salbutamol","categoria":"Respiratorio","subcategoria":"Broncodilatador","presentacion":"Inhalador","dosis":"100 µg × 200 dosis","unidadesEnvase":1,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"🌬️","sintomas":[],"grupoInteraccion":"otro","precio":3.2,"coste":1.92,"iva":4,"stock":45,"stockInicial":45,"stockMinimo":14,"lote":"PV276933","caducidadMs":1793404800000,"esGenerico":true,"colorCategoria":"#0891B2"},
+    {"id":350,"sku":"RX-0350","ean":"8400000000350","nombre":"Pulmicort Turbuhaler 200","marca":"Pulmicort","laboratorio":"AstraZeneca","principioActivo":"Budesonida","categoria":"Respiratorio","subcategoria":"Corticoide inhalado","presentacion":"Inhalador polvo","dosis":"200 µg × 100 dosis","unidadesEnvase":1,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"🌬️","sintomas":[],"grupoInteraccion":"corticoide","precio":18.5,"coste":11.1,"iva":4,"stock":58,"stockInicial":58,"stockMinimo":5,"lote":"QC286950","caducidadMs":1796947200000,"esGenerico":false,"colorCategoria":"#0891B2"},
+    {"id":351,"sku":"RX-0351","ean":"8400000000351","nombre":"Symbicort Turbuhaler 160/4,5","marca":"Symbicort","laboratorio":"AstraZeneca","principioActivo":"Budesonida + formoterol","categoria":"Respiratorio","subcategoria":"Asociación","presentacion":"Inhalador polvo","dosis":"160/4,5 µg × 120","unidadesEnvase":1,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"🌬️","sintomas":[],"grupoInteraccion":"corticoide","precio":42,"coste":25.2,"iva":4,"stock":71,"stockInicial":71,"stockMinimo":6,"lote":"RK266967","caducidadMs":1800489600000,"esGenerico":false,"colorCategoria":"#0891B2"},
+    {"id":352,"sku":"RX-0352","ean":"8400000000352","nombre":"Seretide Accuhaler 50/500","marca":"Seretide","laboratorio":"GSK","principioActivo":"Fluticasona + salmeterol","categoria":"Respiratorio","subcategoria":"Asociación","presentacion":"Inhalador polvo","dosis":"50/500 µg × 60","unidadesEnvase":1,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"🌬️","sintomas":[],"grupoInteraccion":"corticoide","precio":48,"coste":28.8,"iva":4,"stock":84,"stockInicial":84,"stockMinimo":7,"lote":"SS276984","caducidadMs":1804032000000,"esGenerico":false,"colorCategoria":"#0891B2"},
+    {"id":353,"sku":"RX-0353","ean":"8400000000353","nombre":"Spiriva Respimat","marca":"Spiriva","laboratorio":"Boehringer","principioActivo":"Tiotropio","categoria":"Respiratorio","subcategoria":"Anticolinérgico","presentacion":"Inhalador solución","dosis":"2,5 µg × 60 dosis","unidadesEnvase":1,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"🌬️","sintomas":[],"grupoInteraccion":"otro","precio":55,"coste":33,"iva":4,"stock":97,"stockInicial":97,"stockMinimo":8,"lote":"TZ287001","caducidadMs":1807574400000,"esGenerico":false,"colorCategoria":"#0891B2"},
+    {"id":354,"sku":"RX-0354","ean":"8400000000354","nombre":"Singulair 10 mg","marca":"Singulair","laboratorio":"MSD","principioActivo":"Montelukast","categoria":"Respiratorio","subcategoria":"Antileucotrieno","presentacion":"Comprimidos","dosis":"10 mg × 28","unidadesEnvase":28,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"otro","precio":22,"coste":13.2,"iva":4,"stock":20,"stockInicial":20,"stockMinimo":9,"lote":"UG267018","caducidadMs":1811116800000,"esGenerico":false,"colorCategoria":"#0891B2"},
+    {"id":355,"sku":"RX-0355","ean":"8400000000355","nombre":"Prednisona Cinfa 5 mg","marca":"Cinfa","laboratorio":"Cinfa","principioActivo":"Prednisona","categoria":"Corticoides / Esteroides","subcategoria":"Corticoide oral","presentacion":"Comprimidos","dosis":"5 mg × 30","unidadesEnvase":30,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"corticoide","precio":2.8,"coste":1.68,"iva":4,"stock":33,"stockInicial":33,"stockMinimo":10,"lote":"VP277035","caducidadMs":1814659200000,"esGenerico":true,"colorCategoria":"#B45309"},
+    {"id":356,"sku":"RX-0356","ean":"8400000000356","nombre":"Prednisona Normon 10 mg","marca":"Normon","laboratorio":"Normon","principioActivo":"Prednisona","categoria":"Corticoides / Esteroides","subcategoria":"Corticoide oral","presentacion":"Comprimidos","dosis":"10 mg × 30","unidadesEnvase":30,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"corticoide","precio":3.2,"coste":1.92,"iva":4,"stock":46,"stockInicial":46,"stockMinimo":11,"lote":"WW287052","caducidadMs":1818201600000,"esGenerico":true,"colorCategoria":"#B45309"},
+    {"id":357,"sku":"RX-0357","ean":"8400000000357","nombre":"Dacortin 30 mg","marca":"Dacortin","laboratorio":"Merck","principioActivo":"Prednisona","categoria":"Corticoides / Esteroides","subcategoria":"Corticoide oral","presentacion":"Comprimidos","dosis":"30 mg × 30","unidadesEnvase":30,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"corticoide","precio":4.5,"coste":2.7,"iva":4,"stock":59,"stockInicial":59,"stockMinimo":12,"lote":"XD267069","caducidadMs":1821744000000,"esGenerico":false,"colorCategoria":"#B45309"},
+    {"id":358,"sku":"RX-0358","ean":"8400000000358","nombre":"Urbason 16 mg","marca":"Urbason","laboratorio":"Sanofi","principioActivo":"Metilprednisolona","categoria":"Corticoides / Esteroides","subcategoria":"Corticoide oral","presentacion":"Comprimidos","dosis":"16 mg × 20","unidadesEnvase":20,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"corticoide","precio":5.8,"coste":3.48,"iva":4,"stock":72,"stockInicial":72,"stockMinimo":13,"lote":"YL277086","caducidadMs":1825286400000,"esGenerico":false,"colorCategoria":"#B45309"},
+    {"id":359,"sku":"RX-0359","ean":"8400000000359","nombre":"Fortecortin 4 mg","marca":"Fortecortin","laboratorio":"Merck","principioActivo":"Dexametasona","categoria":"Corticoides / Esteroides","subcategoria":"Corticoide oral","presentacion":"Comprimidos","dosis":"4 mg × 20","unidadesEnvase":20,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"corticoide","precio":4.2,"coste":2.52,"iva":4,"stock":85,"stockInicial":85,"stockMinimo":14,"lote":"ZT287103","caducidadMs":1828828800000,"esGenerico":false,"colorCategoria":"#B45309"},
+    {"id":360,"sku":"RX-0360","ean":"8400000000360","nombre":"Celestone Cronodose","marca":"Celestone","laboratorio":"MSD","principioActivo":"Betametasona","categoria":"Corticoides / Esteroides","subcategoria":"Corticoide inyectable","presentacion":"Ampollas","dosis":"1 ml × 1","unidadesEnvase":1,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💉","sintomas":[],"grupoInteraccion":"corticoide","precio":8.5,"coste":5.1,"iva":4,"stock":8,"stockInicial":8,"stockMinimo":5,"lote":"AA267120","caducidadMs":1832371200000,"esGenerico":false,"colorCategoria":"#B45309"},
+    {"id":361,"sku":"RX-0361","ean":"8400000000361","nombre":"Deflazacort Cinfa 30 mg","marca":"Cinfa","laboratorio":"Cinfa","principioActivo":"Deflazacort","categoria":"Corticoides / Esteroides","subcategoria":"Corticoide oral","presentacion":"Comprimidos","dosis":"30 mg × 20","unidadesEnvase":20,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"corticoide","precio":6.9,"coste":4.14,"iva":4,"stock":21,"stockInicial":21,"stockMinimo":6,"lote":"BH277137","caducidadMs":1835913600000,"esGenerico":true,"colorCategoria":"#B45309"},
+    {"id":362,"sku":"RX-0362","ean":"8400000000362","nombre":"Hidroaltesona 20 mg","marca":"Hidroaltesona","laboratorio":"Almirall","principioActivo":"Hidrocortisona","categoria":"Corticoides / Esteroides","subcategoria":"Corticoide oral","presentacion":"Comprimidos","dosis":"20 mg × 50","unidadesEnvase":50,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"💊","sintomas":[],"grupoInteraccion":"corticoide","precio":7.5,"coste":4.5,"iva":4,"stock":34,"stockInicial":34,"stockMinimo":7,"lote":"CQ287154","caducidadMs":1839456000000,"esGenerico":false,"colorCategoria":"#B45309"},
+    {"id":363,"sku":"RX-0363","ean":"8400000000363","nombre":"Estilsona gotas","marca":"Estilsona","laboratorio":"ERN","principioActivo":"Prednisolona","categoria":"Corticoides / Esteroides","subcategoria":"Corticoide pediátrico","presentacion":"Gotas 20 ml","dosis":"13,3 mg/ml","unidadesEnvase":1,"requiereReceta":true,"controlado":false,"nevera":false,"icon":"🧒","sintomas":[],"grupoInteraccion":"corticoide","precio":5.5,"coste":3.3,"iva":4,"stock":47,"stockInicial":47,"stockMinimo":8,"lote":"DX267171","caducidadMs":1842998400000,"esGenerico":false,"colorCategoria":"#B45309"}
   ];
 
-  const PRINCIPIOS = [
-    // OTC / analgésicos
-    { nombre: "Paracetamol", receta: false, cats: ["Medicamentos OTC", "Analgésicos y antiinflamatorios"], controlado: false, grupoInteraccion: "analgesico", sintomas: ["dolor de cabeza", "fiebre", "dolor muscular"] },
-    { nombre: "Ibuprofeno", receta: false, cats: ["Medicamentos OTC", "Analgésicos y antiinflamatorios"], controlado: false, grupoInteraccion: "nsaid", sintomas: ["dolor de cabeza", "fiebre", "dolor muscular"] },
-    { nombre: "Ácido acetilsalicílico", receta: false, cats: ["Medicamentos OTC", "Analgésicos y antiinflamatorios"], controlado: false, grupoInteraccion: "nsaid", sintomas: ["dolor de cabeza", "fiebre"] },
-    { nombre: "Metamizol", receta: true, cats: ["Medicamentos con receta", "Analgésicos y antiinflamatorios"], controlado: false, grupoInteraccion: "analgesico", sintomas: [] },
-    { nombre: "Dexketoprofeno", receta: true, cats: ["Medicamentos con receta", "Analgésicos y antiinflamatorios"], controlado: false, grupoInteraccion: "nsaid", sintomas: [] },
-    { nombre: "Naproxeno", receta: false, cats: ["Medicamentos OTC", "Analgésicos y antiinflamatorios"], controlado: false, grupoInteraccion: "nsaid", sintomas: ["dolor muscular", "dolor de cabeza"] },
-    { nombre: "Diclofenaco", receta: false, cats: ["Medicamentos OTC", "Dermatología", "Analgésicos y antiinflamatorios"], controlado: false, grupoInteraccion: "nsaid", sintomas: ["dolor muscular", "piel irritada"] },
-    { nombre: "Tramadol", receta: true, cats: ["Medicamentos con receta", "Analgésicos y antiinflamatorios"], controlado: true, grupoInteraccion: "tramadol_opioide", sintomas: [] },
-    { nombre: "Codeína + Paracetamol", receta: true, cats: ["Medicamentos con receta", "Analgésicos y antiinflamatorios"], controlado: true, grupoInteraccion: "opioide", sintomas: [] },
-    { nombre: "Fentanilo", receta: true, cats: ["Medicamentos con receta", "Analgésicos y antiinflamatorios"], controlado: true, grupoInteraccion: "opioide", sintomas: [] },
-    { nombre: "Morfina", receta: true, cats: ["Medicamentos con receta", "Analgésicos y antiinflamatorios"], controlado: true, grupoInteraccion: "opioide", sintomas: [] },
-    // Antibióticos
-    { nombre: "Amoxicilina", receta: true, cats: ["Antibióticos", "Medicamentos con receta"], controlado: false, grupoInteraccion: "antibiotico", sintomas: [] },
-    { nombre: "Amoxicilina/Ácido clavulánico", receta: true, cats: ["Antibióticos", "Medicamentos con receta"], controlado: false, grupoInteraccion: "antibiotico", sintomas: [] },
-    { nombre: "Azitromicina", receta: true, cats: ["Antibióticos", "Medicamentos con receta"], controlado: false, grupoInteraccion: "antibiotico_macrolido", sintomas: [] },
-    { nombre: "Ciprofloxacino", receta: true, cats: ["Antibióticos", "Medicamentos con receta"], controlado: false, grupoInteraccion: "antibiotico", sintomas: [] },
-    { nombre: "Doxiciclina", receta: true, cats: ["Antibióticos", "Medicamentos con receta"], controlado: false, grupoInteraccion: "antibiotico", sintomas: [] },
-    { nombre: "Claritromicina", receta: true, cats: ["Antibióticos", "Medicamentos con receta"], controlado: false, grupoInteraccion: "antibiotico_macrolido", sintomas: [] },
-    { nombre: "Cefuroxima", receta: true, cats: ["Antibióticos", "Medicamentos con receta"], controlado: false, grupoInteraccion: "antibiotico", sintomas: [] },
-    { nombre: "Levofloxacino", receta: true, cats: ["Antibióticos", "Medicamentos con receta"], controlado: false, grupoInteraccion: "antibiotico", sintomas: [] },
-    { nombre: "Metronidazol", receta: true, cats: ["Antibióticos", "Medicamentos con receta"], controlado: false, grupoInteraccion: "antibiotico", sintomas: [] },
-    { nombre: "Fosfomicina", receta: true, cats: ["Antibióticos", "Medicamentos con receta"], controlado: false, grupoInteraccion: "antibiotico", sintomas: [] },
-    // Cardiovascular
-    { nombre: "Enalapril", receta: true, cats: ["Cardiovascular", "Medicamentos con receta"], controlado: false, grupoInteraccion: "ieca", sintomas: [] },
-    { nombre: "Ramipril", receta: true, cats: ["Cardiovascular", "Medicamentos con receta"], controlado: false, grupoInteraccion: "ieca", sintomas: [] },
-    { nombre: "Losartán", receta: true, cats: ["Cardiovascular", "Medicamentos con receta"], controlado: false, grupoInteraccion: "ieca", sintomas: [] },
-    { nombre: "Amlodipino", receta: true, cats: ["Cardiovascular", "Medicamentos con receta"], controlado: false, grupoInteraccion: "otro", sintomas: [] },
-    { nombre: "Atenolol", receta: true, cats: ["Cardiovascular", "Medicamentos con receta"], controlado: false, grupoInteraccion: "otro", sintomas: [] },
-    { nombre: "Bisoprolol", receta: true, cats: ["Cardiovascular", "Medicamentos con receta"], controlado: false, grupoInteraccion: "otro", sintomas: [] },
-    { nombre: "Atorvastatina", receta: true, cats: ["Cardiovascular", "Medicamentos con receta"], controlado: false, grupoInteraccion: "estatina", sintomas: [] },
-    { nombre: "Simvastatina", receta: true, cats: ["Cardiovascular", "Medicamentos con receta"], controlado: false, grupoInteraccion: "estatina", sintomas: [] },
-    { nombre: "Ácido acetilsalicílico 100 mg", receta: false, cats: ["Cardiovascular", "Medicamentos OTC"], controlado: false, grupoInteraccion: "nsaid", sintomas: [] },
-    { nombre: "Clopidogrel", receta: true, cats: ["Cardiovascular", "Medicamentos con receta"], controlado: false, grupoInteraccion: "anticoagulante", sintomas: [] },
-    { nombre: "Furosemida", receta: true, cats: ["Cardiovascular", "Medicamentos con receta"], controlado: false, grupoInteraccion: "diuretico", sintomas: [] },
-    { nombre: "Warfarina", receta: true, cats: ["Cardiovascular", "Medicamentos con receta"], controlado: false, grupoInteraccion: "anticoagulante", sintomas: [] },
-    { nombre: "Apixabán", receta: true, cats: ["Cardiovascular", "Medicamentos con receta"], controlado: false, grupoInteraccion: "anticoagulante", sintomas: [] },
-    // Respiratorio / alergia
-    { nombre: "Salbutamol", receta: true, cats: ["Respiratorio", "Medicamentos con receta"], controlado: false, grupoInteraccion: "otro", sintomas: [] },
-    { nombre: "Budesonida", receta: true, cats: ["Respiratorio", "Medicamentos con receta"], controlado: false, grupoInteraccion: "corticoide", sintomas: [] },
-    { nombre: "Montelukast", receta: true, cats: ["Respiratorio", "Alergia", "Medicamentos con receta"], controlado: false, grupoInteraccion: "otro", sintomas: [] },
-    { nombre: "Loratadina", receta: false, cats: ["Alergia", "Medicamentos OTC"], controlado: false, grupoInteraccion: "antihistaminico", sintomas: ["alergia"] },
-    { nombre: "Cetirizina", receta: false, cats: ["Alergia", "Medicamentos OTC"], controlado: false, grupoInteraccion: "antihistaminico", sintomas: ["alergia"] },
-    { nombre: "Desloratadina", receta: false, cats: ["Alergia", "Medicamentos OTC"], controlado: false, grupoInteraccion: "antihistaminico", sintomas: ["alergia"] },
-    { nombre: "Fexofenadina", receta: false, cats: ["Alergia", "Medicamentos OTC"], controlado: false, grupoInteraccion: "antihistaminico", sintomas: ["alergia"] },
-    { nombre: "Dextrometorfano", receta: false, cats: ["Respiratorio", "Medicamentos OTC"], controlado: false, grupoInteraccion: "otro", sintomas: ["tos"] },
-    { nombre: "Ambroxol", receta: false, cats: ["Respiratorio", "Medicamentos OTC"], controlado: false, grupoInteraccion: "otro", sintomas: ["tos", "congestión"] },
-    { nombre: "Acetilcisteína", receta: false, cats: ["Respiratorio", "Medicamentos OTC"], controlado: false, grupoInteraccion: "otro", sintomas: ["tos", "congestión"] },
-    { nombre: "Pseudoefedrina", receta: false, cats: ["Respiratorio", "Medicamentos OTC"], controlado: false, grupoInteraccion: "otro", sintomas: ["congestión"] },
-    // Digestivo
-    { nombre: "Omeprazol", receta: false, cats: ["Digestivo", "Medicamentos OTC"], controlado: false, grupoInteraccion: "ipp", sintomas: ["acidez"] },
-    { nombre: "Pantoprazol", receta: true, cats: ["Digestivo", "Medicamentos con receta"], controlado: false, grupoInteraccion: "ipp", sintomas: [] },
-    { nombre: "Esomeprazol", receta: true, cats: ["Digestivo", "Medicamentos con receta"], controlado: false, grupoInteraccion: "ipp", sintomas: [] },
-    { nombre: "Ranitidina", receta: false, cats: ["Digestivo", "Medicamentos OTC"], controlado: false, grupoInteraccion: "ipp", sintomas: ["acidez"] },
-    { nombre: "Domperidona", receta: true, cats: ["Digestivo", "Medicamentos con receta"], controlado: false, grupoInteraccion: "otro", sintomas: [] },
-    { nombre: "Metoclopramida", receta: true, cats: ["Digestivo", "Medicamentos con receta"], controlado: false, grupoInteraccion: "otro", sintomas: [] },
-    { nombre: "Loperamida", receta: false, cats: ["Digestivo", "Medicamentos OTC"], controlado: false, grupoInteraccion: "otro", sintomas: ["diarrea"] },
-    { nombre: "Lactulosa", receta: false, cats: ["Digestivo", "Medicamentos OTC"], controlado: false, grupoInteraccion: "otro", sintomas: ["estreñimiento"] },
-    { nombre: "Macrogol", receta: false, cats: ["Digestivo", "Medicamentos OTC"], controlado: false, grupoInteraccion: "otro", sintomas: ["estreñimiento"] },
-    { nombre: "Simeticona", receta: false, cats: ["Digestivo", "Medicamentos OTC"], controlado: false, grupoInteraccion: "otro", sintomas: ["acidez"] },
-    { nombre: "Saccharomyces boulardii", receta: false, cats: ["Digestivo", "Medicamentos OTC"], controlado: false, grupoInteraccion: "otro", sintomas: ["diarrea"] },
-    // Sistema nervioso
-    { nombre: "Sertralina", receta: true, cats: ["Sistema nervioso", "Medicamentos con receta"], controlado: false, grupoInteraccion: "isrs", sintomas: [] },
-    { nombre: "Escitalopram", receta: true, cats: ["Sistema nervioso", "Medicamentos con receta"], controlado: false, grupoInteraccion: "isrs", sintomas: [] },
-    { nombre: "Fluoxetina", receta: true, cats: ["Sistema nervioso", "Medicamentos con receta"], controlado: false, grupoInteraccion: "isrs", sintomas: [] },
-    { nombre: "Alprazolam", receta: true, cats: ["Sistema nervioso", "Medicamentos con receta"], controlado: true, grupoInteraccion: "benzo", sintomas: [] },
-    { nombre: "Lorazepam", receta: true, cats: ["Sistema nervioso", "Medicamentos con receta"], controlado: true, grupoInteraccion: "benzo", sintomas: [] },
-    { nombre: "Diazepam", receta: true, cats: ["Sistema nervioso", "Medicamentos con receta"], controlado: true, grupoInteraccion: "benzo", sintomas: [] },
-    { nombre: "Zolpidem", receta: true, cats: ["Sistema nervioso", "Medicamentos con receta"], controlado: true, grupoInteraccion: "zolpidem", sintomas: [] },
-    { nombre: "Quetiapina", receta: true, cats: ["Sistema nervioso", "Medicamentos con receta"], controlado: false, grupoInteraccion: "otro", sintomas: [] },
-    { nombre: "Gabapentina", receta: true, cats: ["Sistema nervioso", "Medicamentos con receta"], controlado: false, grupoInteraccion: "otro", sintomas: [] },
-    { nombre: "Pregabalina", receta: true, cats: ["Sistema nervioso", "Medicamentos con receta"], controlado: false, grupoInteraccion: "otro", sintomas: [] },
-    { nombre: "Metilfenidato", receta: true, cats: ["Sistema nervioso", "Medicamentos con receta"], controlado: true, grupoInteraccion: "otro", sintomas: [] },
-    // Diabetes
-    { nombre: "Metformina", receta: true, cats: ["Diabetes", "Medicamentos con receta"], controlado: false, grupoInteraccion: "metformina", sintomas: [] },
-    { nombre: "Gliclazida", receta: true, cats: ["Diabetes", "Medicamentos con receta"], controlado: false, grupoInteraccion: "antidiabetico", sintomas: [] },
-    { nombre: "Sitagliptina", receta: true, cats: ["Diabetes", "Medicamentos con receta"], controlado: false, grupoInteraccion: "antidiabetico", sintomas: [] },
-    { nombre: "Insulina glargina", receta: true, cats: ["Diabetes", "Medicamentos con receta"], controlado: false, grupoInteraccion: "antidiabetico", sintomas: [] },
-    { nombre: "Insulina aspart", receta: true, cats: ["Diabetes", "Medicamentos con receta"], controlado: false, grupoInteraccion: "antidiabetico", sintomas: [] },
-    { nombre: "Empagliflozina", receta: true, cats: ["Diabetes", "Medicamentos con receta"], controlado: false, grupoInteraccion: "antidiabetico", sintomas: [] },
-    // Dermatología
-    { nombre: "Hidrocortisona", receta: false, cats: ["Dermatología", "Medicamentos OTC"], controlado: false, grupoInteraccion: "corticoide", sintomas: ["piel irritada"] },
-    { nombre: "Clotrimazol", receta: false, cats: ["Dermatología", "Medicamentos OTC"], controlado: false, grupoInteraccion: "otro", sintomas: ["piel irritada"] },
-    { nombre: "Mupirocina", receta: true, cats: ["Dermatología", "Medicamentos con receta"], controlado: false, grupoInteraccion: "antibiotico", sintomas: [] },
-    { nombre: "Aciclovir tópico", receta: false, cats: ["Dermatología", "Medicamentos OTC"], controlado: false, grupoInteraccion: "otro", sintomas: ["piel irritada"] },
-    { nombre: "Isotretinoína", receta: true, cats: ["Dermatología", "Medicamentos con receta"], controlado: false, grupoInteraccion: "otro", sintomas: [] },
-    { nombre: "Permetrina", receta: false, cats: ["Dermatología", "Medicamentos OTC"], controlado: false, grupoInteraccion: "otro", sintomas: ["piel irritada"] },
-    // Ginecología
-    { nombre: "Levonorgestrel", receta: false, cats: ["Ginecología", "Medicamentos OTC"], controlado: false, grupoInteraccion: "otro", sintomas: [] },
-    { nombre: "Etinilestradiol/Levonorgestrel", receta: true, cats: ["Ginecología", "Medicamentos con receta"], controlado: false, grupoInteraccion: "otro", sintomas: [] },
-    { nombre: "Clotrimazol vaginal", receta: false, cats: ["Ginecología", "Medicamentos OTC"], controlado: false, grupoInteraccion: "otro", sintomas: ["piel irritada"] },
-    // Oftalmo / ORL
-    { nombre: "Lágrimas artificiales", receta: false, cats: ["Otorrino y oftalmología", "Oftalmología", "Óptica"], controlado: false, grupoInteraccion: "otro", sintomas: ["ojos secos"] },
-    { nombre: "Tobramicina oftálmica", receta: true, cats: ["Otorrino y oftalmología", "Oftalmología", "Medicamentos con receta"], controlado: false, grupoInteraccion: "antibiotico", sintomas: [] },
-    { nombre: "Xilometazolina", receta: false, cats: ["Otorrino y oftalmología", "Otorrinolaringología", "Medicamentos OTC"], controlado: false, grupoInteraccion: "otro", sintomas: ["congestión"] },
-    { nombre: "Fluticasona nasal", receta: false, cats: ["Otorrino y oftalmología", "Otorrinolaringología", "Alergia"], controlado: false, grupoInteraccion: "corticoide", sintomas: ["alergia", "congestión"] },
-    { nombre: "Paracetamol infantil", receta: false, cats: ["Pediatría", "Medicamentos OTC", "Dolor y fiebre"], controlado: false, grupoInteraccion: "analgesico", sintomas: ["fiebre", "dolor de cabeza", "pediatría"] },
-    { nombre: "Ibuprofeno infantil", receta: false, cats: ["Pediatría", "Medicamentos OTC", "Dolor y fiebre"], controlado: false, grupoInteraccion: "nsaid", sintomas: ["fiebre", "dolor muscular", "pediatría"] },
-    { nombre: "Vareniclina", receta: true, cats: ["Dejar de fumar", "Medicamentos con receta"], controlado: false, grupoInteraccion: "otro", sintomas: ["dejar de fumar"] },
-    { nombre: "Orlistat", receta: false, cats: ["Control de peso", "Medicamentos OTC"], controlado: false, grupoInteraccion: "otro", sintomas: ["control peso"] },
-    { nombre: "Melatonina", receta: false, cats: ["Sueño y estrés", "Medicamentos OTC"], controlado: false, grupoInteraccion: "otro", sintomas: ["insomnio"] },
-    { nombre: "Tamsulosina", receta: true, cats: ["Urología", "Geriatría", "Medicamentos con receta"], controlado: false, grupoInteraccion: "otro", sintomas: ["geriatría"] },
-  ];
-
-  const MARCAS_COMERCIALES = {
-    "Paracetamol": ["Gelocatil", "Efferalgan", "Termalgin", "Paracetamol"],
-    "Ibuprofeno": ["Dalsy", "Neobrufen", "Espidifen", "Ibuprofeno"],
-    "Metamizol": ["Nolotil", "Metamizol"],
-    "Dexketoprofeno": ["Enantyum", "Dexketoprofeno"],
-    "Diclofenaco": ["Voltaren", "Diclofenaco"],
-    "Omeprazol": ["Omeprazol", "Losec"],
-    "Amoxicilina": ["Clamoxyl", "Amoxicilina"],
-    "Amoxicilina/Ácido clavulánico": ["Augmentine", "Clavucid", "Amoxicilina/Clavulánico"],
-    "Loratadina": ["Clarityne", "Loratadina"],
-    "Cetirizina": ["Zyrtec", "Cetirizina"],
-    "Salbutamol": ["Ventolin", "Salbutamol"],
-    "Atorvastatina": ["Zarator", "Atorvastatina"],
-    "Metformina": ["Dianben", "Metformina"],
-    "Alprazolam": ["Trankimazin", "Alprazolam"],
-    "Lorazepam": ["Orfidal", "Lorazepam"],
-    "Sertralina": ["Besitran", "Sertralina"],
-    "Escitalopram": ["Esertia", "Escitalopram"],
-    "Levonorgestrel": ["NorLevo", "Postinor", "Levonorgestrel"],
-    "Acetilcisteína": ["Fluimucil", "Acetilcisteína"],
-    "Ambroxol": ["Mucosan", "Ambroxol"],
-    "Dextrometorfano": ["Romilar", "Dextrometorfano"],
-    "Loperamida": ["Fortasec", "Loperamida"],
-    "Simeticona": ["Aerored", "Simonet"],
-  };
-
-  const PRESENTACIONES_FARMA = [
-    { tipo: "comprimidos", packs: [10, 20, 28, 30, 40, 60], dosis: ["500 mg", "600 mg", "1 g", "10 mg", "20 mg", "25 mg", "50 mg", "100 mg", "250 mg", "400 mg"] },
-    { tipo: "cápsulas", packs: [14, 28, 30, 56], dosis: ["10 mg", "20 mg", "40 mg", "75 mg", "150 mg", "300 mg"] },
-    { tipo: "sobres", packs: [10, 20, 30], dosis: ["500 mg", "600 mg", "1 g", "3 g"] },
-    { tipo: "jarabe", packs: [1], dosis: ["100 ml", "120 ml", "150 ml", "200 ml"] },
-    { tipo: "suspensión", packs: [1], dosis: ["60 ml", "100 ml", "120 ml"] },
-    { tipo: "gotas", packs: [1], dosis: ["15 ml", "20 ml", "30 ml"] },
-    { tipo: "crema", packs: [1], dosis: ["15 g", "30 g", "40 g", "60 g"] },
-    { tipo: "gel", packs: [1], dosis: ["30 g", "50 g", "100 g"] },
-    { tipo: "pomada", packs: [1], dosis: ["15 g", "30 g"] },
-    { tipo: "spray nasal", packs: [1], dosis: ["10 ml", "15 ml", "20 ml"] },
-    { tipo: "inhalador", packs: [1], dosis: ["100 mcg", "200 mcg", "120 dosis"] },
-    { tipo: "parche", packs: [5, 7, 10], dosis: ["12 mcg/h", "25 mcg/h", "50 mcg/h", "75 mcg/h"] },
-    { tipo: "inyectable", packs: [1, 5], dosis: ["1 ml", "2 ml", "5 ml"] },
-    { tipo: "óvulos", packs: [3, 6], dosis: ["100 mg", "500 mg"] },
-    { tipo: "colirio", packs: [1], dosis: ["5 ml", "10 ml"] },
-  ];
-
-  const PARA_LINEAS = [
-    // Dermocosmética
-    { marca: "La Roche-Posay", linea: "Effaclar Gel", cat: "Dermocosmética", sub: "Acné", precios: [12.9, 16.5, 19.9], tamanos: ["200 ml", "400 ml"] },
-    { marca: "La Roche-Posay", linea: "Cicaplast Baume B5", cat: "Dermocosmética", sub: "Reparación", precios: [9.9, 14.5], tamanos: ["40 ml", "100 ml"] },
-    { marca: "La Roche-Posay", linea: "Anthelios Fluido", cat: "Dermocosmética", sub: "Solar", precios: [18.9, 22.5], tamanos: ["50 ml"] },
-    { marca: "Avène", linea: "Cicalfate+", cat: "Dermocosmética", sub: "Reparación", precios: [8.5, 12.9], tamanos: ["40 ml", "100 ml"] },
-    { marca: "Avène", linea: "Cleanance Gel", cat: "Dermocosmética", sub: "Acné", precios: [11.5, 15.9], tamanos: ["200 ml", "400 ml"] },
-    { marca: "Avène", linea: "Agua termal", cat: "Dermocosmética", sub: "Calmante", precios: [6.9, 9.5, 12.9], tamanos: ["50 ml", "150 ml", "300 ml"] },
-    { marca: "Bioderma", linea: "Sensibio H2O", cat: "Dermocosmética", sub: "Limpieza", precios: [10.9, 14.9, 18.9], tamanos: ["250 ml", "500 ml", "1 L"] },
-    { marca: "Bioderma", linea: "Atoderm Crema", cat: "Dermocosmética", sub: "Atopia", precios: [13.5, 19.9], tamanos: ["200 ml", "500 ml"] },
-    { marca: "Bioderma", linea: "Photoderm MAX", cat: "Dermocosmética", sub: "Solar", precios: [16.9, 21.5], tamanos: ["40 ml"] },
-    { marca: "Isdin", linea: "Fusion Water SPF50", cat: "Dermocosmética", sub: "Solar", precios: [19.9, 24.5], tamanos: ["50 ml"] },
-    { marca: "Isdin", linea: "Ureadin Crema", cat: "Dermocosmética", sub: "Hidratación", precios: [14.5, 18.9], tamanos: ["50 ml", "200 ml"] },
-    { marca: "Isdin", linea: "Si-Nails", cat: "Dermocosmética", sub: "Uñas", precios: [17.9], tamanos: ["2.5 ml"] },
-    { marca: "Eucerin", linea: "AtopiControl", cat: "Dermocosmética", sub: "Atopia", precios: [15.9, 22.5], tamanos: ["250 ml", "400 ml"] },
-    { marca: "Eucerin", linea: "Hyaluron-Filler", cat: "Dermocosmética", sub: "Antiedad", precios: [28.9, 34.5], tamanos: ["50 ml"] },
-    { marca: "Eucerin", linea: "DermoPure Gel", cat: "Dermocosmética", sub: "Acné", precios: [13.9], tamanos: ["200 ml"] },
-    { marca: "Vichy", linea: "Mineral 89", cat: "Dermocosmética", sub: "Hidratación", precios: [22.9, 29.9], tamanos: ["50 ml"] },
-    { marca: "Vichy", linea: "Capital Soleil", cat: "Dermocosmética", sub: "Solar", precios: [17.5, 21.9], tamanos: ["50 ml"] },
-    { marca: "CeraVe", linea: "Crema hidratante", cat: "Dermocosmética", sub: "Hidratación", precios: [12.9, 18.5], tamanos: ["177 ml", "340 ml"] },
-    { marca: "CeraVe", linea: "Gel limpiador", cat: "Dermocosmética", sub: "Limpieza", precios: [11.9, 16.9], tamanos: ["236 ml", "473 ml"] },
-    { marca: "Sesderma", linea: "C-Vit Serum", cat: "Dermocosmética", sub: "Antiedad", precios: [32.9], tamanos: ["30 ml"] },
-    { marca: "Martiderm", linea: "Proteos Hydra Plus", cat: "Dermocosmética", sub: "Ampollas", precios: [28.5, 39.9], tamanos: ["10 amp", "30 amp"] },
-    { marca: "Bepanthol", linea: "Pomada protectora", cat: "Dermocosmética", sub: "Reparación", precios: [7.9, 11.5], tamanos: ["30 g", "100 g"] },
-    { marca: "Leti", linea: "AT4 Crema", cat: "Dermocosmética", sub: "Atopia", precios: [14.9, 21.5], tamanos: ["200 ml"] },
-    // Higiene
-    { marca: "Vitis", linea: "Pasta orthodontic", cat: "Higiene bucal", sub: "Pasta", precios: [5.9, 7.5], tamanos: ["100 ml"] },
-    { marca: "Vitis", linea: "Enjuague Gingival", cat: "Higiene bucal", sub: "Enjuague", precios: [8.9, 12.5], tamanos: ["500 ml"] },
-    { marca: "Elgydium", linea: "Pasta antiplaca", cat: "Higiene bucal", sub: "Pasta", precios: [6.5], tamanos: ["75 ml"] },
-    { marca: "Sensodyne", linea: "Repair & Protect", cat: "Higiene bucal", sub: "Pasta", precios: [5.5, 7.9], tamanos: ["75 ml"] },
-    { marca: "Oral-B", linea: "Pro-Expert", cat: "Higiene bucal", sub: "Pasta", precios: [4.9, 6.5], tamanos: ["75 ml"] },
-    { marca: "Listerine", linea: "Total Care", cat: "Higiene bucal", sub: "Enjuague", precios: [6.9, 9.5], tamanos: ["500 ml", "1 L"] },
-    { marca: "Lactovit", linea: "Gel de ducha", cat: "Higiene personal", sub: "Ducha", precios: [3.5, 4.9], tamanos: ["250 ml", "500 ml"] },
-    { marca: "Lactovit", linea: "Desodorante", cat: "Higiene personal", sub: "Desodorante", precios: [3.9, 5.2], tamanos: ["50 ml"] },
-    { marca: "Nivea", linea: "Crema manos", cat: "Higiene personal", sub: "Manos", precios: [2.9, 4.5], tamanos: ["75 ml", "100 ml"] },
-    { marca: "Dove", linea: "Jabón pastilla", cat: "Higiene personal", sub: "Jabón", precios: [1.5, 2.2], tamanos: ["90 g"] },
-    // Bebé
-    { marca: "Mustela", linea: "Hydra Bébé", cat: "Bebé y maternidad", sub: "Hidratación", precios: [9.9, 14.5], tamanos: ["300 ml", "500 ml"] },
-    { marca: "Mustela", linea: "Creme change", cat: "Bebé y maternidad", sub: "Pañal", precios: [8.5, 11.9], tamanos: ["100 ml"] },
-    { marca: "Dodot", linea: "Pañales Sensitive", cat: "Bebé y maternidad", sub: "Pañales", precios: [12.9, 18.5, 24.9], tamanos: ["T1 28 u", "T2 40 u", "T3 56 u", "T4 48 u", "T5 42 u"] },
-    { marca: "Dodot", linea: "Toallitas Aqua", cat: "Bebé y maternidad", sub: "Toallitas", precios: [2.5, 4.9], tamanos: ["56 u", "144 u"] },
-    { marca: "Chicco", linea: "Biberón Natural Feeling", cat: "Bebé y maternidad", sub: "Biberón", precios: [9.5, 12.9], tamanos: ["150 ml", "250 ml"] },
-    { marca: "Philips Avent", linea: "Biberón Natural", cat: "Bebé y maternidad", sub: "Biberón", precios: [11.5, 14.9], tamanos: ["125 ml", "260 ml"] },
-    { marca: "Medela", linea: "Extractor Swing Flex", cat: "Bebé y maternidad", sub: "Extractor", precios: [129.0], tamanos: ["1 ud"] },
-    { marca: "Suavinex", linea: "Chupete Physiological", cat: "Bebé y maternidad", sub: "Chupete", precios: [6.5, 8.9], tamanos: ["0-6 m", "6-18 m"] },
-    { marca: "Lansinoh", linea: "Lanolina HPA", cat: "Bebé y maternidad", sub: "Lactancia", precios: [12.9], tamanos: ["40 ml"] },
-    // Vitaminas
-    { marca: "Supradyn", linea: "Activo", cat: "Vitaminas y suplementos", sub: "Multivitamínico", precios: [12.5, 18.9], tamanos: ["30 comp", "60 comp"] },
-    { marca: "Supradyn", linea: "Energy", cat: "Vitaminas y suplementos", sub: "Multivitamínico", precios: [14.9], tamanos: ["30 comp"] },
-    { marca: "Redoxon", linea: "Doble Acción", cat: "Vitaminas y suplementos", sub: "Vitamina C", precios: [9.9, 14.5], tamanos: ["30 comp", "45 comp"] },
-    { marca: "Berocca", linea: "Performance", cat: "Vitaminas y suplementos", sub: "Energía", precios: [13.5, 19.9], tamanos: ["30 comp"] },
-    { marca: "Pharmaton", linea: "Complex", cat: "Vitaminas y suplementos", sub: "Multivitamínico", precios: [16.9, 24.5], tamanos: ["30 cap", "60 cap"] },
-    { marca: "Centrum", linea: "Adultos", cat: "Vitaminas y suplementos", sub: "Multivitamínico", precios: [11.9, 17.5], tamanos: ["30 comp", "60 comp"] },
-    { marca: "Aquilea", linea: "Sueño", cat: "Vitaminas y suplementos", sub: "Descanso", precios: [10.9, 15.5], tamanos: ["30 comp", "60 comp"] },
-    { marca: "Aquilea", linea: "Magnesio", cat: "Vitaminas y suplementos", sub: "Minerales", precios: [8.9, 12.5], tamanos: ["28 comp"] },
-    { marca: "Arkopharma", linea: "Arkovital Magnesio", cat: "Vitaminas y suplementos", sub: "Minerales", precios: [9.5], tamanos: ["30 cap"] },
-    { marca: "Juvamine", linea: "Vitamina D3", cat: "Vitaminas y suplementos", sub: "Vitamina D", precios: [7.9, 11.5], tamanos: ["30 cap", "60 cap"] },
-    { marca: "Uriach", linea: "Aquilea Articulaciones", cat: "Vitaminas y suplementos", sub: "Articular", precios: [18.9], tamanos: ["30 comp"] },
-    // Nutrición
-    { marca: "Ensure", linea: "Nutrivigor", cat: "Nutrición", sub: "Complemento", precios: [14.5, 22.9], tamanos: ["220 ml x4", "400 g"] },
-    { marca: "Fortimel", linea: "Extra", cat: "Nutrición", sub: "Complemento", precios: [12.9, 19.5], tamanos: ["200 ml x4"] },
-    { marca: "Meritene", linea: "Fuerza y vitalidad", cat: "Nutrición", sub: "Complemento", precios: [13.9], tamanos: ["15 sobres"] },
-    { marca: "Resource", linea: "Diabet Plus", cat: "Nutrición", sub: "Diabetes", precios: [16.5], tamanos: ["200 ml x4"] },
-    // Ortopedia
-    { marca: "Farmalastic", linea: "Tobillera", cat: "Ortopedia", sub: "Tobillo", precios: [14.9, 19.5], tamanos: ["Talla S", "Talla M", "Talla L"] },
-    { marca: "Farmalastic", linea: "Muñequera", cat: "Ortopedia", sub: "Muñeca", precios: [12.5, 16.9], tamanos: ["Talla S/M", "Talla L/XL"] },
-    { marca: "Prim", linea: "Rodillera elástica", cat: "Ortopedia", sub: "Rodilla", precios: [11.9, 15.5], tamanos: ["Talla M", "Talla L", "Talla XL"] },
-    { marca: "Futuro", linea: "Coderas Comfort", cat: "Ortopedia", sub: "Codo", precios: [13.5], tamanos: ["Talla M", "Talla L"] },
-    { marca: "Thuasne", linea: "Faja lumbar", cat: "Ortopedia", sub: "Lumbar", precios: [29.9, 39.5], tamanos: ["Talla 1", "Talla 2", "Talla 3"] },
-    { marca: "Bauerfeind", linea: "GenuTrain", cat: "Ortopedia", sub: "Rodilla", precios: [79.0, 89.0], tamanos: ["Talla 3", "Talla 4", "Talla 5"] },
-    { marca: "Compeed", linea: "Apósitos ampollas", cat: "Primeros auxilios", sub: "Ampollas", precios: [6.5, 8.9], tamanos: ["5 u", "10 u"] },
-    // Primeros auxilios
-    { marca: "Hansaplast", linea: "Apósitos surtidos", cat: "Primeros auxilios", sub: "Apósitos", precios: [3.5, 5.9], tamanos: ["20 u", "40 u"] },
-    { marca: "Hansaplast", linea: "Spray antiséptico", cat: "Primeros auxilios", sub: "Antiséptico", precios: [6.9], tamanos: ["50 ml"] },
-    { marca: "Urgo", linea: "Cicatrizante", cat: "Primeros auxilios", sub: "Heridas", precios: [7.5, 10.9], tamanos: ["3.5 ml"] },
-    { marca: "Betadine", linea: "Solución dérmica", cat: "Primeros auxilios", sub: "Antiséptico", precios: [5.5, 8.9], tamanos: ["50 ml", "125 ml"] },
-    { marca: "Alcohol", linea: "Alcohol 70º", cat: "Primeros auxilios", sub: "Antiséptico", precios: [1.8, 2.5], tamanos: ["250 ml", "500 ml"] },
-    { marca: "Suero", linea: "Suero fisiológico", cat: "Primeros auxilios", sub: "Suero", precios: [2.2, 3.5], tamanos: ["30 monodosis", "250 ml"] },
-    // Salud sexual
-    { marca: "Durex", linea: "Preservativos Natural", cat: "Salud sexual", sub: "Preservativos", precios: [5.9, 9.5, 14.9], tamanos: ["6 u", "12 u", "24 u"] },
-    { marca: "Durex", linea: "Preservativos Sensitive", cat: "Salud sexual", sub: "Preservativos", precios: [6.5, 10.9], tamanos: ["6 u", "12 u"] },
-    { marca: "Durex", linea: "Gel Play", cat: "Salud sexual", sub: "Lubricante", precios: [8.9, 12.5], tamanos: ["50 ml"] },
-    { marca: "Control", linea: "Preservativos Adapta", cat: "Salud sexual", sub: "Preservativos", precios: [4.9, 7.5], tamanos: ["6 u", "12 u"] },
-    { marca: "Gynea", linea: "Cumlaude CLX", cat: "Ginecología", sub: "Higiene íntima", precios: [11.9, 15.5], tamanos: ["500 ml"] },
-    // Óptica
-    { marca: "Opti-Free", linea: "PureMoist", cat: "Óptica", sub: "Lentillas", precios: [9.9, 14.5], tamanos: ["300 ml", "2x300 ml"] },
-    { marca: "ReNu", linea: "MultiPlus", cat: "Óptica", sub: "Lentillas", precios: [8.5, 12.9], tamanos: ["360 ml"] },
-    { marca: "Systane", linea: "Ultra", cat: "Óptica", sub: "Lágrimas", precios: [12.9, 16.5], tamanos: ["10 ml"] },
-    { marca: "Artelac", linea: "Rebalance", cat: "Óptica", sub: "Lágrimas", precios: [11.5], tamanos: ["10 ml"] },
-    // Homeopatía
-    { marca: "Boiron", linea: "Oscillococcinum", cat: "Homeopatía", sub: "Gripe", precios: [9.5, 14.9], tamanos: ["6 dosis", "30 dosis"] },
-    { marca: "Boiron", linea: "Arnigel", cat: "Homeopatía", sub: "Traumatismos", precios: [8.9], tamanos: ["45 g"] },
-    { marca: "Boiron", linea: "Coryzalia", cat: "Homeopatía", sub: "Resfriado", precios: [7.5], tamanos: ["40 comp"] },
-    { marca: "Heel", linea: "Traumeel", cat: "Homeopatía", sub: "Traumatismos", precios: [11.9], tamanos: ["50 g"] },
-    { marca: "Weleda", linea: "Caléndula pomada", cat: "Homeopatía", sub: "Piel", precios: [8.5], tamanos: ["25 g"] },
-    // Veterinaria
-    { marca: "Frontline", linea: "Combo Spot-On Perro", cat: "Veterinaria", sub: "Antiparasitario", precios: [18.9, 28.5, 39.9], tamanos: ["S", "M", "L", "XL"] },
-    { marca: "Frontline", linea: "Combo Spot-On Gato", cat: "Veterinaria", sub: "Antiparasitario", precios: [16.9, 24.5], tamanos: ["1 pipeta", "3 pipetas"] },
-    { marca: "Advantix", linea: "Spot-On Perro", cat: "Veterinaria", sub: "Antiparasitario", precios: [19.5, 29.9], tamanos: ["S", "M", "L"] },
-    { marca: "Seresto", linea: "Collar Perro", cat: "Veterinaria", sub: "Collar", precios: [34.9, 39.9], tamanos: ["≤8 kg", ">8 kg"] },
-    { marca: "Hills", linea: "Prescription Diet", cat: "Veterinaria", sub: "Alimento", precios: [22.9, 34.5], tamanos: ["1.5 kg", "4 kg"] },
-    // Diabetes material
-    { marca: "Accu-Chek", linea: "Guide tiras", cat: "Diabetes", sub: "Tiras", precios: [24.9, 39.9], tamanos: ["50 u", "100 u"] },
-    { marca: "Accu-Chek", linea: "FastClix lancetas", cat: "Diabetes", sub: "Lancetas", precios: [9.5, 14.9], tamanos: ["102 u", "204 u"] },
-    { marca: "OneTouch", linea: "Select Plus tiras", cat: "Diabetes", sub: "Tiras", precios: [22.5, 36.9], tamanos: ["50 u", "100 u"] },
-    { marca: "FreeStyle", linea: "Libre sensores", cat: "Diabetes", sub: "Sensor", precios: [59.9], tamanos: ["1 sensor"] },
-    // Solar y fotoprotección
-    { marca: "Isdin", linea: "Fotoprotector Pediatrics", cat: "Solar y fotoprotección", sub: "Pediatría", precios: [16.9, 21.5], tamanos: ["50 ml", "250 ml"] },
-    { marca: "Isdin", linea: "Eryfotona Actinica", cat: "Solar y fotoprotección", sub: "Actínica", precios: [24.9], tamanos: ["50 ml"] },
-    { marca: "La Roche-Posay", linea: "Anthelios Kids", cat: "Solar y fotoprotección", sub: "Niños", precios: [15.9, 19.9], tamanos: ["50 ml", "250 ml"] },
-    { marca: "Avène", linea: "Solar Intense Protect", cat: "Solar y fotoprotección", sub: "Alta protección", precios: [18.5, 22.9], tamanos: ["50 ml"] },
-    { marca: "Bioderma", linea: "Photoderm Pediatrics", cat: "Solar y fotoprotección", sub: "Niños", precios: [14.9, 18.5], tamanos: ["100 ml"] },
-    { marca: "Heliocare", linea: "360° Gel Oil-Free", cat: "Solar y fotoprotección", sub: "Gel", precios: [22.5], tamanos: ["50 ml"] },
-    // Higiene íntima
-    { marca: "Cumlaude", linea: "Daily íntimo", cat: "Higiene íntima", sub: "Gel", precios: [9.9, 13.5], tamanos: ["200 ml", "500 ml"] },
-    { marca: "Gynea", linea: "HydraGel íntimo", cat: "Higiene íntima", sub: "Hidratación", precios: [12.5], tamanos: ["30 ml"] },
-    { marca: "Lactacyd", linea: "Higiene íntima", cat: "Higiene íntima", sub: "Gel", precios: [6.9, 9.5], tamanos: ["200 ml", "400 ml"] },
-    { marca: "Corporess", linea: "Jabón íntimo", cat: "Higiene íntima", sub: "Jabón", precios: [5.5, 7.9], tamanos: ["250 ml"] },
-    { marca: "Saforelle", linea: "Cuidado íntimo", cat: "Higiene íntima", sub: "Gel", precios: [8.9, 11.5], tamanos: ["250 ml"] },
-    // Pediatría
-    { marca: "Bepanthol", linea: "Baby pomada", cat: "Pediatría", sub: "Pañal", precios: [7.5, 10.9], tamanos: ["30 g", "100 g"] },
-    { marca: "Isdin", linea: "Nutratopic Pro-AMP Baby", cat: "Pediatría", sub: "Atopia", precios: [16.9], tamanos: ["200 ml"] },
-    { marca: "Mustela", linea: "Stelatopia", cat: "Pediatría", sub: "Atopia", precios: [14.5, 19.9], tamanos: ["200 ml"] },
-    { marca: "Apiretal", linea: "Supositorios infantiles", cat: "Pediatría", sub: "Fiebre", precios: [4.5], tamanos: ["6 u"] },
-    { marca: "Fisiomer", linea: "Baby spray nasal", cat: "Pediatría", sub: "Nasal", precios: [8.9], tamanos: ["115 ml"] },
-    // Geriatría
-    { marca: "Meritene", linea: "Senior proteínas", cat: "Geriatría", sub: "Nutrición", precios: [15.9, 22.5], tamanos: ["15 sobres", "400 g"] },
-    { marca: "Ensure", linea: "Plus Advance", cat: "Geriatría", sub: "Complemento", precios: [16.5, 24.9], tamanos: ["220 ml x4"] },
-    { marca: "Fortimel", linea: "Compact Protein", cat: "Geriatría", sub: "Complemento", precios: [18.9], tamanos: ["125 ml x4"] },
-    { marca: "Tena", linea: "Lady Discreet", cat: "Geriatría", sub: "Incontinencia", precios: [8.5, 12.9], tamanos: ["12 u", "24 u"] },
-    // Oftalmología
-    { marca: "Systane", linea: "Hydration UD", cat: "Oftalmología", sub: "Lágrimas", precios: [14.9], tamanos: ["30 monodosis"] },
-    { marca: "Optava", linea: "Fusion", cat: "Oftalmología", sub: "Lágrimas", precios: [13.5], tamanos: ["10 ml"] },
-    { marca: "Vispring", linea: "Colirio calmante", cat: "Oftalmología", sub: "Colirio", precios: [9.5], tamanos: ["10 ml"] },
-    { marca: "Blephaclean", linea: "Toallitas párpados", cat: "Oftalmología", sub: "Párpados", precios: [11.9], tamanos: ["20 u"] },
-    // Heridas y cura
-    { marca: "Mepiform", linea: "Apósito silicona", cat: "Heridas y cura", sub: "Cicatriz", precios: [24.9, 34.5], tamanos: ["5×7 cm", "10×18 cm"] },
-    { marca: "Biatain", linea: "Apósito espuma", cat: "Heridas y cura", sub: "Úlceras", precios: [18.5, 28.9], tamanos: ["10×10 cm"] },
-    { marca: "Comfeel", linea: "Plus transparente", cat: "Heridas y cura", sub: "Hidrocoloide", precios: [16.9], tamanos: ["10×10 cm"] },
-    { marca: "Urgo", linea: "Tul Absorb", cat: "Heridas y cura", sub: "Apósito", precios: [9.5, 14.5], tamanos: ["10×12 cm"] },
-    { marca: "Betadine", linea: "Tul grasado", cat: "Heridas y cura", sub: "Antiséptico", precios: [7.9], tamanos: ["10 u"] },
-    // Control de peso
-    { marca: "XLS Medical", linea: "Captagrasas", cat: "Control de peso", sub: "Captagrasas", precios: [24.9, 39.9], tamanos: ["30 comp", "60 comp"] },
-    { marca: "Plantaben", linea: "Glucomanano", cat: "Control de peso", sub: "Fibra", precios: [12.5, 18.9], tamanos: ["30 sobres"] },
-    { marca: "Aquilea", linea: "Quemagrasas", cat: "Control de peso", sub: "Termogénico", precios: [14.9], tamanos: ["30 comp"] },
-    { marca: "Arkopharma", linea: "Arkocápsulas Alcachofa", cat: "Control de peso", sub: "Drenante", precios: [9.9, 14.5], tamanos: ["45 cap"] },
-    // Deporte
-    { marca: "Weider", linea: "Protein 80+", cat: "Deporte y nutrición deportiva", sub: "Proteína", precios: [29.9, 44.5], tamanos: ["500 g", "1 kg"] },
-    { marca: "Amix", linea: "IsoPrime CFM", cat: "Deporte y nutrición deportiva", sub: "Proteína", precios: [39.9], tamanos: ["1 kg"] },
-    { marca: "Victory", linea: "Endurance Gel", cat: "Deporte y nutrición deportiva", sub: "Energía", precios: [2.5, 18.9], tamanos: ["1 gel", "24 gels"] },
-    { marca: "HSN", linea: "Electrolitos", cat: "Deporte y nutrición deportiva", sub: "Hidratación", precios: [11.9], tamanos: ["20 sticks"] },
-    { marca: "Compeed", linea: "Sport ampollas", cat: "Deporte y nutrición deportiva", sub: "Ampollas", precios: [7.5], tamanos: ["5 u"] },
-    // Dejar de fumar
-    { marca: "Nicorette", linea: "Chicles 2 mg", cat: "Dejar de fumar", sub: "Nicotina", precios: [18.9, 28.5], tamanos: ["30 u", "105 u"] },
-    { marca: "Nicorette", linea: "Spray bucal", cat: "Dejar de fumar", sub: "Nicotina", precios: [24.9], tamanos: ["1 spray"] },
-    { marca: "NiQuitin", linea: "Parches 21 mg", cat: "Dejar de fumar", sub: "Parche", precios: [32.9], tamanos: ["7 u"] },
-    { marca: "Nicotinell", linea: "Chicles mint", cat: "Dejar de fumar", sub: "Nicotina", precios: [16.5, 25.9], tamanos: ["24 u", "96 u"] },
-    // Fitoterapia
-    { marca: "Arkopharma", linea: "Arkocápsulas Valeriana", cat: "Fitoterapia", sub: "Sueño", precios: [8.9, 12.5], tamanos: ["50 cap"] },
-    { marca: "Arkopharma", linea: "Arkocápsulas Harpagofito", cat: "Fitoterapia", sub: "Articular", precios: [9.5, 13.9], tamanos: ["45 cap"] },
-    { marca: "Aquilea", linea: "Infusiones digestivas", cat: "Fitoterapia", sub: "Digestivo", precios: [4.5, 6.9], tamanos: ["20 bolsitas"] },
-    { marca: "Plantaben", linea: "Ispaghula", cat: "Fitoterapia", sub: "Fibra", precios: [7.9, 11.5], tamanos: ["30 sobres"] },
-    { marca: "Cistitus", linea: "Arándano rojo", cat: "Fitoterapia", sub: "Urinario", precios: [14.9], tamanos: ["30 comp"] },
-    { marca: "Prostaquinon", linea: "Sabal", cat: "Fitoterapia", sub: "Próstata", precios: [16.5], tamanos: ["30 cap"] },
-    // Capilar
-    { marca: "Ducray", linea: "Anaphase+", cat: "Capilar", sub: "Anticaída", precios: [14.9, 19.5], tamanos: ["200 ml", "400 ml"] },
-    { marca: "Vichy", linea: "Dercos Energy+", cat: "Capilar", sub: "Anticaída", precios: [16.9], tamanos: ["200 ml"] },
-    { marca: "Priorin", linea: "Cápsulas", cat: "Capilar", sub: "Anticaída", precios: [28.9], tamanos: ["30 cap"] },
-    { marca: "Leti", linea: "SR champú", cat: "Capilar", sub: "Seborrea", precios: [12.5], tamanos: ["250 ml"] },
-    // Podología
-    { marca: "Scholl", linea: "Lima electrónica", cat: "Podología", sub: "Durezas", precios: [29.9], tamanos: ["1 ud"] },
-    { marca: "Compeed", linea: "Apósitos juanetes", cat: "Podología", sub: "Juanetes", precios: [8.5], tamanos: ["5 u"] },
-    { marca: "Farmalastic", linea: "Plantillas gel", cat: "Podología", sub: "Plantillas", precios: [11.9, 15.5], tamanos: ["Talla 38-40", "Talla 41-43"] },
-    { marca: "Akileïne", linea: "Crema pies secos", cat: "Podología", sub: "Hidratación", precios: [9.5], tamanos: ["75 ml"] },
-    // Incontinencia / urología material
-    { marca: "Tena", linea: "Pants Plus", cat: "Incontinencia", sub: "Pants", precios: [14.9, 22.5], tamanos: ["M 10 u", "L 10 u"] },
-    { marca: "Depend", linea: "Normal", cat: "Incontinencia", sub: "Absorbente", precios: [11.5, 17.9], tamanos: ["10 u", "14 u"] },
-    { marca: "Indasec", linea: "Maxi", cat: "Urología", sub: "Absorbente", precios: [6.9, 9.5], tamanos: ["12 u"] },
-    // Material sanitario / diagnóstico
-    { marca: "Omron", linea: "Tensiómetro M2", cat: "Material sanitario", sub: "Tensión", precios: [39.9], tamanos: ["1 ud"] },
-    { marca: "Braun", linea: "Termómetro ThermoScan", cat: "Material sanitario", sub: "Temperatura", precios: [49.9], tamanos: ["1 ud"] },
-    { marca: "Hartmann", linea: "Gasas estériles", cat: "Material sanitario", sub: "Gasas", precios: [3.5, 5.9], tamanos: ["20 u", "50 u"] },
-    { marca: "Clearblue", linea: "Test embarazo Ultra", cat: "Diagnóstico y tests", sub: "Embarazo", precios: [9.9, 14.5], tamanos: ["1 u", "2 u"] },
-    { marca: "Flowflex", linea: "Test antígenos COVID", cat: "Diagnóstico y tests", sub: "COVID", precios: [2.5, 8.9], tamanos: ["1 u", "5 u"] },
-    { marca: "Accutrend", linea: "Colesterol tiras", cat: "Diagnóstico y tests", sub: "Colesterol", precios: [24.5], tamanos: ["25 u"] },
-    // Embarazo / viajes / sueño
-    { marca: "Elevit", linea: "Pronatal", cat: "Embarazo y fertilidad", sub: "Vitaminas", precios: [18.9, 29.5], tamanos: ["30 comp", "90 comp"] },
-    { marca: "Femibion", linea: "1 Embarazo", cat: "Embarazo y fertilidad", sub: "Ácido fólico", precios: [16.5], tamanos: ["28 comp"] },
-    { marca: "Repel", linea: "Repelente tropical", cat: "Viajes y botiquín", sub: "Insectos", precios: [8.9, 12.5], tamanos: ["75 ml", "100 ml"] },
-    { marca: "Dormidina", linea: "Valeriana forte", cat: "Sueño y estrés", sub: "Sueño", precios: [9.5, 13.9], tamanos: ["30 comp"] },
-    { marca: "Passiflora", linea: "Comprimidos", cat: "Sueño y estrés", sub: "Estrés", precios: [7.9], tamanos: ["30 comp"] },
-    { marca: "Otorrinol", linea: "Spray ótico", cat: "Otorrinolaringología", sub: "Oídos", precios: [8.5], tamanos: ["20 ml"] },
-    { marca: "Audi-Spray", linea: "Limpieza oídos", cat: "Otorrinolaringología", sub: "Oídos", precios: [9.9], tamanos: ["30 ml"] },
-  ];
-
-  const MARCAS_COMERCIALES_EXTRA = [
-    { nombre: "Frenadol Complex", pa: "Paracetamol + Clorfenamina + Cafeína", marca: "Frenadol", cat: "Medicamentos OTC", receta: false, precio: 8.95, presentacion: "sobres 10 u", iva: 4 },
-    { nombre: "Frenadol Junior", pa: "Paracetamol + Clorfenamina", marca: "Frenadol", cat: "Medicamentos OTC", receta: false, precio: 7.5, presentacion: "sobres 10 u", iva: 4 },
-    { nombre: "Bisolvon Antitusivo", pa: "Dextrometorfano", marca: "Bisolvon", cat: "Respiratorio", receta: false, precio: 9.2, presentacion: "jarabe 200 ml", iva: 4 },
-    { nombre: "Apiretal 100 mg/ml", pa: "Paracetamol", marca: "Apiretal", cat: "Medicamentos OTC", receta: false, precio: 4.85, presentacion: "gotas 30 ml", iva: 4 },
-    { nombre: "Dalsy 20 mg/ml", pa: "Ibuprofeno", marca: "Dalsy", cat: "Medicamentos OTC", receta: false, precio: 5.45, presentacion: "suspensión 200 ml", iva: 4 },
-    { nombre: "Almax Forte", pa: "Almagato", marca: "Almax", cat: "Digestivo", receta: false, precio: 7.8, presentacion: "sobres 24 u", iva: 4 },
-    { nombre: "Buscapina Compositum", pa: "Butilescopolamina + Metamizol", marca: "Buscapina", cat: "Digestivo", receta: true, precio: 6.5, presentacion: "comprimidos 20 u", iva: 4 },
-    { nombre: "Daflon 500", pa: "Diosmina + Hesperidina", marca: "Daflon", cat: "Cardiovascular", receta: true, precio: 14.9, presentacion: "comprimidos 30 u", iva: 4 },
-    { nombre: "Venoruton", pa: "Oxerutina", marca: "Venoruton", cat: "Cardiovascular", receta: false, precio: 12.5, presentacion: "comprimidos 30 u", iva: 4 },
-    { nombre: "Hirudoid Forte", pa: "Polisulfato de mucopolisacárido", marca: "Hirudoid", cat: "Dermatología", receta: false, precio: 9.8, presentacion: "gel 50 g", iva: 4 },
-    { nombre: "Canesten", pa: "Clotrimazol", marca: "Canesten", cat: "Dermatología", receta: false, precio: 8.5, presentacion: "crema 30 g", iva: 4 },
-    { nombre: "GineCanesdin", pa: "Clotrimazol", marca: "Canesdin", cat: "Ginecología", receta: false, precio: 10.9, presentacion: "crema 20 g", iva: 4 },
-    { nombre: "Xyzall", pa: "Levocetirizina", marca: "Xyzall", cat: "Alergia", receta: true, precio: 7.2, presentacion: "comprimidos 20 u", iva: 4 },
-    { nombre: "Singulair 10 mg", pa: "Montelukast", marca: "Singulair", cat: "Respiratorio", receta: true, precio: 18.5, presentacion: "comprimidos 28 u", iva: 4 },
-    { nombre: "Spiriva HandiHaler", pa: "Tiotropio", marca: "Spiriva", cat: "Respiratorio", receta: true, precio: 42.0, presentacion: "inhalador 30 cáps", iva: 4 },
-    { nombre: "Eutirox 50 mcg", pa: "Levotiroxina", marca: "Eutirox", cat: "Medicamentos con receta", receta: true, precio: 3.5, presentacion: "comprimidos 28 u", iva: 4 },
-    { nombre: "Eutirox 75 mcg", pa: "Levotiroxina", marca: "Eutirox", cat: "Medicamentos con receta", receta: true, precio: 3.8, presentacion: "comprimidos 28 u", iva: 4 },
-    { nombre: "Eutirox 100 mcg", pa: "Levotiroxina", marca: "Eutirox", cat: "Medicamentos con receta", receta: true, precio: 4.1, presentacion: "comprimidos 28 u", iva: 4 },
-    { nombre: "Orfidal 1 mg", pa: "Lorazepam", marca: "Orfidal", cat: "Sistema nervioso", receta: true, precio: 2.9, presentacion: "comprimidos 30 u", iva: 4, controlado: true },
-    { nombre: "Trankimazin 0.5 mg", pa: "Alprazolam", marca: "Trankimazin", cat: "Sistema nervioso", receta: true, precio: 3.2, presentacion: "comprimidos 30 u", iva: 4, controlado: true },
-    { nombre: "Trankimazin 1 mg", pa: "Alprazolam", marca: "Trankimazin", cat: "Sistema nervioso", receta: true, precio: 3.6, presentacion: "comprimidos 30 u", iva: 4, controlado: true },
-    { nombre: "Stilnox 10 mg", pa: "Zolpidem", marca: "Stilnox", cat: "Sistema nervioso", receta: true, precio: 4.5, presentacion: "comprimidos 28 u", iva: 4, controlado: true },
-    { nombre: "Adolonta 50 mg", pa: "Tramadol", marca: "Adolonta", cat: "Analgésicos y antiinflamatorios", receta: true, precio: 3.8, presentacion: "cápsulas 20 u", iva: 4, controlado: true },
-    { nombre: "Durogesic Matrix 25", pa: "Fentanilo", marca: "Durogesic", cat: "Analgésicos y antiinflamatorios", receta: true, precio: 28.0, presentacion: "parches 5 u", iva: 4, controlado: true },
-    { nombre: "Rivotril 0.5 mg", pa: "Clonazepam", marca: "Rivotril", cat: "Sistema nervioso", receta: true, precio: 3.1, presentacion: "comprimidos 30 u", iva: 4, controlado: true },
-    { nombre: "Concerta 18 mg", pa: "Metilfenidato", marca: "Concerta", cat: "Sistema nervioso", receta: true, precio: 32.0, presentacion: "comprimidos 30 u", iva: 4, controlado: true },
-    { nombre: "Rubifen 10 mg", pa: "Metilfenidato", marca: "Rubifen", cat: "Sistema nervioso", receta: true, precio: 8.5, presentacion: "comprimidos 30 u", iva: 4, controlado: true },
-    { nombre: "Eliquis 5 mg", pa: "Apixabán", marca: "Eliquis", cat: "Cardiovascular", receta: true, precio: 85.0, presentacion: "comprimidos 60 u", iva: 4 },
-    { nombre: "Xarelto 20 mg", pa: "Rivaroxabán", marca: "Xarelto", cat: "Cardiovascular", receta: true, precio: 78.0, presentacion: "comprimidos 28 u", iva: 4 },
-    { nombre: "Lantus SoloStar", pa: "Insulina glargina", marca: "Lantus", cat: "Diabetes", receta: true, precio: 48.0, presentacion: "pluma 3 ml", iva: 4 },
-    { nombre: "NovoRapid FlexPen", pa: "Insulina aspart", marca: "NovoRapid", cat: "Diabetes", receta: true, precio: 42.0, presentacion: "pluma 3 ml", iva: 4 },
-    { nombre: "Jardiance 10 mg", pa: "Empagliflozina", marca: "Jardiance", cat: "Diabetes", receta: true, precio: 55.0, presentacion: "comprimidos 30 u", iva: 4 },
-    { nombre: "Januvia 100 mg", pa: "Sitagliptina", marca: "Januvia", cat: "Diabetes", receta: true, precio: 48.5, presentacion: "comprimidos 28 u", iva: 4 },
-    { nombre: "Ozempic 0.25/0.5 mg", pa: "Semaglutida", marca: "Ozempic", cat: "Diabetes", receta: true, precio: 120.0, presentacion: "pluma 1.5 ml", iva: 4 },
-    { nombre: "Roaccutane 20 mg", pa: "Isotretinoína", marca: "Roaccutane", cat: "Dermatología", receta: true, precio: 28.0, presentacion: "cápsulas 30 u", iva: 4 },
-    { nombre: "Diane 35", pa: "Ciproterona + Etinilestradiol", marca: "Diane", cat: "Ginecología", receta: true, precio: 9.5, presentacion: "comprimidos 21 u", iva: 4 },
-    { nombre: "Yasmin", pa: "Drospirenona + Etinilestradiol", marca: "Yasmin", cat: "Ginecología", receta: true, precio: 12.9, presentacion: "comprimidos 21 u", iva: 4 },
-    { nombre: "Cerazette", pa: "Desogestrel", marca: "Cerazette", cat: "Ginecología", receta: true, precio: 11.5, presentacion: "comprimidos 28 u", iva: 4 },
-    { nombre: "NuvaRing", pa: "Etonogestrel + Etinilestradiol", marca: "NuvaRing", cat: "Ginecología", receta: true, precio: 18.9, presentacion: "anillo 1 u", iva: 4 },
-  ];
-
-  function hashSeed(str) {
-    let h = 2166136261;
-    for (let i = 0; i < str.length; i++) {
-      h ^= str.charCodeAt(i);
-      h = Math.imul(h, 16777619);
-    }
-    return h >>> 0;
-  }
-
-  function mulberry32(a) {
-    return function () {
-      let t = (a += 0x6d2b79f5);
-      t = Math.imul(t ^ (t >>> 15), t | 1);
-      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-    };
-  }
-
-  function pick(rng, arr) {
-    return arr[Math.floor(rng() * arr.length)];
-  }
-
-  function precioBase(principio, dosis, pack, rng) {
-    let base = principio.receta ? 4 + rng() * 40 : 2.5 + rng() * 12;
-    if (principio.controlado) base *= 1.3;
-    if (String(dosis).includes("mg") && parseInt(dosis, 10) >= 500) base *= 1.15;
-    if (pack >= 60) base *= 1.4;
-    else if (pack >= 30) base *= 1.15;
-    return Math.round(base * 100) / 100;
-  }
-
-  function ivaParaCategoria(cat, esMedicamento) {
-    if (esMedicamento) return 4;
-    if (
-      cat === "Nutrición" ||
-      cat === "Bebé y maternidad" ||
-      cat === "Pediatría" ||
-      cat === "Geriatría" ||
-      cat === "Control de peso" ||
-      cat === "Deporte y nutrición deportiva" ||
-      cat === "Embarazo y fertilidad"
-    ) {
-      return 10;
-    }
-    return 21;
-  }
-
-  const BASE_HOY_MS = Date.UTC(2026, 7, 13);
-  const MS_DIA = 86400000;
-
-  function camposInventario(rng) {
-    const dias = 60 + Math.floor(rng() * 841); // 60–900 días desde base
-    return {
-      lote: "L" + String(100000 + Math.floor(rng() * 900000)),
-      caducidadMs: BASE_HOY_MS + dias * MS_DIA,
-      stockMinimo: 5 + Math.floor(rng() * 21), // 5–25
-    };
-  }
-
-  function costeFromPrecio(precio, rng) {
-    return Math.round(precio * (0.55 + rng() * 0.2) * 100) / 100;
-  }
-
-  function esGenericoProducto(nombre, marca, laboratorio, principioActivo) {
-    const n = String(nombre || "");
-    const m = String(marca || "");
-    const lab = String(laboratorio || "");
-    const pa = String(principioActivo || "");
-    if (/\bEFG\b/i.test(n)) return true;
-    if (pa && (m === pa || n.startsWith(pa + " "))) return true;
-    if (lab && m === lab && pa && !MARCAS_COMERCIALES[pa]?.includes(m)) return true;
-    return false;
-  }
-
-  function grupoDesdeTexto(txt) {
-    const t = String(txt || "").toLowerCase();
-    if (/ibuprofeno|naproxeno|diclofenaco|dexketoprofeno|ácido acetilsalicílico|aines|aas/.test(t)) return "nsaid";
-    if (/warfarina|apixabán|rivaroxabán|clopidogrel|anticoag|sintrom|eliquis|xarelto/.test(t)) return "anticoagulante";
-    if (/sertralina|escitalopram|fluoxetina|isrs|antidepres/.test(t)) return "isrs";
-    if (/alprazolam|lorazepam|diazepam|clonazepam|benzo|orfidal|trankimazin|rivotril/.test(t)) return "benzo";
-    if (/tramadol|adolonta/.test(t)) return "tramadol_opioide";
-    if (/fentanilo|morfina|codeína|opioide|durogesic/.test(t)) return "opioide";
-    if (/atorvastatina|simvastatina|estatina/.test(t)) return "estatina";
-    if (/enalapril|ramipril|ieca|losartán/.test(t)) return "ieca";
-    if (/furosemida|diurético/.test(t)) return "diuretico";
-    if (/azitromicina|claritromicina|macrólido/.test(t)) return "antibiotico_macrolido";
-    if (/amoxicilina|ciprofloxacino|doxiciclina|cefuroxima|levofloxacino|metronidazol|fosfomicina|mupirocina|tobramicina|antibiótico|antibiotico/.test(t)) return "antibiotico";
-    if (/omeprazol|pantoprazol|esomeprazol|ranitidina|ibp|ipp/.test(t)) return "ipp";
-    if (/metformina/.test(t)) return "metformina";
-    if (/gliclazida|sitagliptina|insulina|empagliflozina|semaglutida|antidiab/.test(t)) return "antidiabetico";
-    if (/loratadina|cetirizina|desloratadina|fexofenadina|levocetirizina|antihist/.test(t)) return "antihistaminico";
-    if (/hidrocortisona|budesonida|fluticasona|corticoide/.test(t)) return "corticoide";
-    if (/zolpidem|stilnox/.test(t)) return "zolpidem";
-    if (/paracetamol|metamizol|analgésico|analgesico/.test(t)) return "analgesico";
-    return "otro";
-  }
-
-  function sintomasDesdePa(pa, receta) {
-    const t = String(pa || "").toLowerCase();
-    if (/paracetamol|ibuprofeno|naproxeno|ácido acetilsalicílico/.test(t) && !/100 mg/.test(t)) {
-      return ["dolor de cabeza", "fiebre", "dolor muscular"].filter((s, i) => i < 2 || /ibuprofeno|naproxeno|paracetamol/.test(t));
-    }
-    if (/diclofenaco/.test(t)) return ["dolor muscular", "piel irritada"];
-    if (/loratadina|cetirizina|desloratadina|fexofenadina|levocetirizina|montelukast|fluticasona/.test(t)) return ["alergia"];
-    if (/dextrometorfano|ambroxol|acetilcisteína/.test(t)) return ["tos"];
-    if (/pseudoefedrina|xilometazolina|ambroxol|acetilcisteína|fluticasona/.test(t)) {
-      const s = [];
-      if (/dextrometorfano|ambroxol|acetilcisteína/.test(t)) s.push("tos");
-      if (/pseudoefedrina|xilometazolina|ambroxol|acetilcisteína|fluticasona/.test(t)) s.push("congestión");
-      if (/fluticasona/.test(t) && !s.includes("alergia")) s.push("alergia");
-      return [...new Set(s)];
-    }
-    if (/omeprazol|pantoprazol|esomeprazol|ranitidina|almagato|simeticona/.test(t)) return receta ? [] : ["acidez"];
-    if (/loperamida|saccharomyces/.test(t)) return ["diarrea"];
-    if (/lactulosa|macrogol/.test(t)) return ["estreñimiento"];
-    if (/hidrocortisona|clotrimazol|aciclovir|permetrina/.test(t)) return ["piel irritada"];
-    if (receta) return [];
-    return [];
-  }
-
-  function sintomasParaLinea(linea) {
-    const cat = `${linea.cat} ${linea.sub} ${linea.linea}`.toLowerCase();
-    if (/solar|spf|photoderm|anthelios|soleil|fusion water|fotoprotector|heliocare/.test(cat)) return ["solar"];
-    if (/bucal|pasta|enjuague|oral/.test(cat)) return ["higiene bucal"];
-    if (/íntim|intimo|cumlaude|lactacyd|saforelle/.test(cat)) return ["higiene íntima"];
-    if (/heridas|cura|apósito|mepiform|biatain|comfeel|cicatriz/.test(cat)) return ["heridas"];
-    if (/oftalm|lágrimas|colirio|párpados|ojos/.test(cat)) return ["ojos secos"];
-    if (/control de peso|captagrasas|quemagrasas|glucomanano/.test(cat)) return ["control peso"];
-    if (/dejar de fumar|nicorette|niquitin|nicotinell|nicotina/.test(cat)) return ["dejar de fumar"];
-    if (/deporte|protein|endurance|electrolitos/.test(cat)) return ["deporte"];
-    if (/pediatr|baby|infantil|niños/.test(cat)) return ["pediatría"];
-    if (/geriatr|senior|incontinencia|tena|depend/.test(cat)) return ["geriatría"];
-    if (/fitoterap|arkocápsulas|valeriana|harpagofito|ispaghula|arándano|sabal/.test(cat)) return ["fitoterapia"];
-    if (/vitamina|multivit|magnesio|sueño|energía|redoxon|berocca|supradyn|pharmaton|centrum|aquilea|elevit|femibion/.test(cat)) {
-      if (/sueño|valeriana|passiflora|dormidina/.test(cat)) return ["insomnio"];
-      if (/estrés|estres|passiflora/.test(cat)) return ["estres"];
-      return ["vitaminas"];
-    }
-    if (/atopia|reparación|hidrat|piel|crema|derm|ampollas|antiséptico/.test(cat)) return ["piel irritada"];
-    if (/gripe|resfriado|tos/.test(cat)) return ["tos", "congestión"];
-    return [];
-  }
-
-  function generarCatalogo() {
-    const productos = [];
-    let id = 1;
-    const rng = mulberry32(20260813);
-
-    // 1) Medicamentos genéricos / marcas por principio activo
-    for (const principio of PRINCIPIOS) {
-      const marcasNom = MARCAS_COMERCIALES[principio.nombre] || [principio.nombre];
-      const labs = principio.receta
-        ? MARCAS_FARMA
-        : MARCAS_FARMA.slice(0, 18);
-      const presentaciones = principio.controlado
-        ? PRESENTACIONES_FARMA.filter((p) => ["comprimidos", "cápsulas", "parche", "inyectable"].includes(p.tipo))
-        : PRESENTACIONES_FARMA;
-
-      const variantes = 10 + Math.floor(rng() * 12); // 10–21 por principio
-      for (let v = 0; v < variantes; v++) {
-        const presentacion = pick(rng, presentaciones);
-        const dosis = pick(rng, presentacion.dosis);
-        const pack = pick(rng, presentacion.packs);
-        const lab = pick(rng, labs);
-        const marcaComercial = pick(rng, marcasNom);
-        const cat = pick(rng, principio.cats);
-        const comoGenerico = marcaComercial === principio.nombre || rng() > 0.45;
-        const nombre = comoGenerico
-          ? `${principio.nombre} ${lab} ${dosis} ${presentacion.tipo} ${pack > 1 ? pack + " u" : ""}`.trim()
-          : `${marcaComercial} ${dosis} ${presentacion.tipo}${pack > 1 ? " " + pack + " u" : ""}`;
-
-        const precio = precioBase(principio, dosis, pack, rng);
-        const marca = comoGenerico ? lab : marcaComercial;
-        const esGenerico = esGenericoProducto(nombre, marca, lab, principio.nombre) || comoGenerico;
-        const inv = camposInventario(rng);
-        productos.push({
-          id: id++,
-          sku: `MED-${String(id).padStart(5, "0")}`,
-          ean: String(8400000000000 + id),
-          nombre,
-          marca,
-          laboratorio: lab,
-          principioActivo: principio.nombre,
-          categoria: cat,
-          subcategoria: presentacion.tipo,
-          requiereReceta: principio.receta,
-          controlado: !!principio.controlado,
-          presentacion: `${presentacion.tipo} ${dosis}${pack > 1 ? " × " + pack : ""}`,
-          dosis,
-          unidadesEnvase: pack,
-          precio,
-          coste: costeFromPrecio(precio, rng),
-          esGenerico,
-          grupoInteraccion: principio.grupoInteraccion || grupoDesdeTexto(principio.nombre),
-          sintomas: Array.isArray(principio.sintomas) ? principio.sintomas.slice() : [],
-          iva: 4,
-          stock: 20 + Math.floor(rng() * 180),
-          stockInicial: 0,
-          lote: inv.lote,
-          caducidadMs: inv.caducidadMs,
-          stockMinimo: inv.stockMinimo,
-        });
-      }
-    }
-
-    // 2) Especialidades comerciales fijas
-    for (const esp of MARCAS_COMERCIALES_EXTRA) {
-      const nombre = esp.nombre + (esp.presentacion ? " — " + esp.presentacion : "");
-      const precio = esp.precio;
-      const grupo = grupoDesdeTexto(`${esp.pa} ${esp.nombre}`);
-      const sintomas = sintomasDesdePa(esp.pa, !!esp.receta);
-      const inv = camposInventario(rng);
-      productos.push({
-        id: id++,
-        sku: `ESP-${String(id).padStart(5, "0")}`,
-        ean: String(8400000000000 + id),
-        nombre,
-        marca: esp.marca,
-        laboratorio: esp.marca,
-        principioActivo: esp.pa,
-        categoria: esp.cat,
-        subcategoria: "Especialidad",
-        requiereReceta: !!esp.receta,
-        controlado: !!esp.controlado,
-        presentacion: esp.presentacion,
-        dosis: "",
-        unidadesEnvase: 1,
-        precio,
-        coste: costeFromPrecio(precio, rng),
-        esGenerico: esGenericoProducto(nombre, esp.marca, esp.marca, esp.pa),
-        grupoInteraccion: grupo,
-        sintomas,
-        iva: esp.iva ?? 4,
-        stock: 15 + Math.floor(rng() * 80),
-        stockInicial: 0,
-        lote: inv.lote,
-        caducidadMs: inv.caducidadMs,
-        stockMinimo: inv.stockMinimo,
-      });
-    }
-
-    // 3) Parafarmacia / líneas de marca
-    for (const linea of PARA_LINEAS) {
-      for (const tam of linea.tamanos) {
-        for (let p = 0; p < linea.precios.length; p++) {
-          // Evitar explosión: 1 precio por tamaño, rotando
-          if (p > 0 && linea.tamanos.length > 1 && p !== (linea.tamanos.indexOf(tam) % linea.precios.length)) {
-            continue;
-          }
-          const precio = linea.precios[Math.min(p, linea.precios.length - 1)] + (rng() * 0.4 - 0.2);
-          const precioR = Math.round(Math.max(0.5, precio) * 100) / 100;
-          const nombre = `${linea.marca} ${linea.linea} ${tam}`;
-          const inv = camposInventario(rng);
-          productos.push({
-            id: id++,
-            sku: `PAR-${String(id).padStart(5, "0")}`,
-            ean: String(8410000000000 + id),
-            nombre,
-            marca: linea.marca,
-            laboratorio: linea.marca,
-            principioActivo: "—",
-            categoria: linea.cat,
-            subcategoria: linea.sub,
-            requiereReceta: false,
-            controlado: false,
-            presentacion: tam,
-            dosis: tam,
-            unidadesEnvase: 1,
-            precio: precioR,
-            coste: costeFromPrecio(precioR, rng),
-            esGenerico: false,
-            grupoInteraccion: "otro",
-            sintomas: sintomasParaLinea(linea),
-            iva: ivaParaCategoria(linea.cat, false),
-            stock: 10 + Math.floor(rng() * 120),
-            stockInicial: 0,
-            lote: inv.lote,
-            caducidadMs: inv.caducidadMs,
-            stockMinimo: inv.stockMinimo,
-          });
-        }
-      }
-    }
-
-    // 4) Expansión masiva para alcanzar miles: variantes de sabor/formato/lote lógico
-    const sabores = ["", "sabor naranja", "sabor limón", "sabor fresa", "sabor menta", "sin azúcar"];
-    const extras = ["", "EFG", "Forte", "Plus", "Retard", "Instant", "Junior", "Adultos"];
-    const allMeds = productos.filter((p) => p.sku.startsWith("MED-"));
-    const baseMeds = allMeds.slice(0, 600);
-    const targetMeds = 9000;
-    // Ampliar hasta ~9000 medicamentos (MED-), no solo longitud total
-    let medCount = allMeds.length;
-    let extraIdx = 0;
-    while (medCount < targetMeds && extraIdx < 50000) {
-      const base = baseMeds[extraIdx % baseMeds.length];
-      const rng2 = mulberry32(hashSeed(base.sku + ":" + extraIdx));
-      const sabor = pick(rng2, sabores);
-      const extra = pick(rng2, extras);
-      const lab = pick(rng2, MARCAS_FARMA);
-      const packMult = pick(rng2, [1, 1, 1, 2]);
-      const unidades = base.unidadesEnvase * packMult;
-      const nombre = [
-        base.principioActivo,
-        lab,
-        extra,
-        base.dosis,
-        base.subcategoria,
-        unidades > 1 ? unidades + " u" : "",
-        sabor,
-      ].filter(Boolean).join(" ").replace(/\s+/g, " ").trim();
-
-      const precio = Math.round(base.precio * (0.85 + rng2() * 0.5) * packMult * 100) / 100;
-      const inv = camposInventario(rng2);
-      productos.push({
-        id: id++,
-        sku: `MED-${String(id).padStart(5, "0")}`,
-        ean: String(8400000000000 + id),
-        nombre,
-        marca: lab,
-        laboratorio: lab,
-        principioActivo: base.principioActivo,
-        categoria: base.categoria,
-        subcategoria: base.subcategoria,
-        requiereReceta: base.requiereReceta,
-        controlado: base.controlado,
-        presentacion: `${base.subcategoria} ${base.dosis}${unidades > 1 ? " × " + unidades : ""}`,
-        dosis: base.dosis,
-        unidadesEnvase: unidades,
-        precio,
-        coste: costeFromPrecio(precio, rng2),
-        esGenerico: esGenericoProducto(nombre, lab, lab, base.principioActivo),
-        grupoInteraccion: base.grupoInteraccion || grupoDesdeTexto(base.principioActivo),
-        sintomas: Array.isArray(base.sintomas) ? base.sintomas.slice() : [],
-        iva: 4,
-        stock: 5 + Math.floor(rng2() * 200),
-        stockInicial: 0,
-        lote: inv.lote,
-        caducidadMs: inv.caducidadMs,
-        stockMinimo: inv.stockMinimo,
-      });
-      medCount++;
-      extraIdx++;
-    }
-
-    // Más parafarmacia expandida
-    const fragancias = ["", "perfume suave", "sin perfume", "piel sensible", "FPS 30", "FPS 50", "textura ligera", "edición viaje", "formato ahorro"];
-    const basePara = productos.filter((p) => p.sku.startsWith("PAR-"));
-    const targetTotal = 12000;
-    let pIdx = 0;
-    while (productos.length < targetTotal && pIdx < 40000) {
-      const base = basePara[pIdx % basePara.length];
-      const rng2 = mulberry32(hashSeed(base.sku + "-p-" + pIdx));
-      const frag = pick(rng2, fragancias);
-      if (!frag && pIdx > basePara.length) {
-        pIdx++;
-        continue;
-      }
-      const nombre = frag ? `${base.nombre} (${frag})` : `${base.nombre} ed. ${1 + (pIdx % 5)}`;
-      const precio = Math.round(base.precio * (0.95 + rng2() * 0.15) * 100) / 100;
-      const inv = camposInventario(rng2);
-      productos.push({
-        ...base,
-        id: id++,
-        sku: `PAR-${String(id).padStart(5, "0")}`,
-        ean: String(8410000000000 + id),
-        nombre,
-        precio,
-        coste: costeFromPrecio(precio, rng2),
-        esGenerico: false,
-        grupoInteraccion: base.grupoInteraccion || "otro",
-        sintomas: Array.isArray(base.sintomas) ? base.sintomas.slice() : [],
-        stock: 5 + Math.floor(rng2() * 100),
-        stockInicial: 0,
-        lote: inv.lote,
-        caducidadMs: inv.caducidadMs,
-        stockMinimo: inv.stockMinimo,
-      });
-      pIdx++;
-    }
-
-    // Garantizar campos de inventario en todos los productos
-    for (const p of productos) {
-      p.stockInicial = p.stock;
-      if (!p.lote || !p.caducidadMs || !p.stockMinimo) {
-        const rngL = mulberry32(hashSeed("inv:" + p.sku + ":" + p.id));
-        const inv = camposInventario(rngL);
-        if (!p.lote) p.lote = inv.lote;
-        if (!p.caducidadMs) p.caducidadMs = inv.caducidadMs;
-        if (!p.stockMinimo) p.stockMinimo = inv.stockMinimo;
-      }
-    }
-
-    return {
-      productos,
-      categorias: CATEGORIAS,
-      marcasFarma: MARCAS_FARMA,
-      marcasPara: MARCAS_PARA,
-      sintomas: SINTOMAS,
-      gruposInteraccion: GRUPOS_INTERACCION,
-      generadoEn: new Date().toISOString(),
-      total: productos.length,
-    };
-  }
-
-  let cache = null;
   function getCatalogo() {
-    if (!cache) cache = generarCatalogo();
-    return cache;
+    return {
+      productos: PRODUCTOS.map((p) => ({ ...p, sintomas: (p.sintomas || []).slice() })),
+      categorias: CATEGORIAS.slice(),
+      categoriasUI: CATEGORIAS_UI.map((c) => ({ ...c })),
+      sintomas: SINTOMAS.slice(),
+      total: PRODUCTOS.length,
+      generadoEn: new Date().toISOString(),
+    };
   }
 
   global.FarmaciaCatalogo = {
     getCatalogo,
     CATEGORIAS,
+    CATEGORIAS_UI,
     SINTOMAS,
-    GRUPOS_INTERACCION,
-    generarCatalogo,
   };
 })(typeof window !== "undefined" ? window : globalThis);

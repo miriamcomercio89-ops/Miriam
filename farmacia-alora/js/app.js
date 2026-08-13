@@ -5,7 +5,7 @@
 (function () {
   "use strict";
 
-  const STORAGE_KEY = "farmacia-alora-v3";
+  const STORAGE_KEY = "farmacia-alora-v4";
   const REAL_MS_PER_GAME_HOUR = 60 * 1000;
   const Clinica = window.FarmaciaClinica;
   const Caja = window.FarmaciaCaja;
@@ -33,9 +33,10 @@
 
   let state, productos = [], catalogMeta = null;
   let clockTimer = null, lastFrame = 0, searchTimer = null;
-  let sintomaActivo = "", pagoMetodo = "efectivo";
+  let sintomaActivo = "", categoriaActiva = "", pagoMetodo = "efectivo";
   let pacienteEditId = null, selectedPacienteId = null, almPickId = null;
   let soundOn = true;
+  let pendingCtrlContinue = null;
 
   const $ = (s) => document.querySelector(s);
   const $$ = (s) => Array.from(document.querySelectorAll(s));
@@ -122,10 +123,11 @@
 
   function emptyCliente() {
     return {
-      nombre:"", dni:"", telefono:"", pacienteId:null, seedId:null,
-      tramoSNS:"particular", familiaNumerosa:false,
-      peticionTexto:"", sintomas:[], alergias:[], cronicos:[],
-      embarazo:false, lactancia:false, edad:null,
+      nombre: "", dni: "", telefono: "", pacienteId: null, seedId: null,
+      tramoSNS: "particular", familiaNumerosa: false,
+      peticionTexto: "", sintomas: [], quiereProductoIds: [], modo: "",
+      alergias: [], cronicos: [],
+      embarazo: false, lactancia: false, edad: null,
     };
   }
 
@@ -228,29 +230,27 @@
 
   function crearPedido() {
     const season = seasonInfo(state.gameTimeMs);
-    let cli = Clientes.clienteAleatorio(Math.floor(state.gameTimeMs));
-    // sesgo temporada
-    if (cli.sintomas.length && Math.random() < 0.45) {
-      cli = { ...cli, sintomas: [pick(rng(cli.seedId), season.boost)], peticionTexto: `Por la temporada: me viene bien algo para ${season.boost[0]}. ${cli.peticionTexto}` };
-    }
+    const cli = Clientes.clienteAleatorio(productos, Math.floor(state.gameTimeMs), season.boost);
     let receta = null;
-    if (cli.quiereReceta) {
+    if (cli.quiereReceta && cli.productosReceta?.length) {
       const r = rng(cli.seedId);
-      const pool = productos.filter((p) => p.requiereReceta && !isExpired(p));
-      const items = [];
-      for (let i = 0; i < 1 + Math.floor(r()*2) && pool.length; i++) {
-        const p = pick(r, pool);
-        items.push({ productId: p.id, nombre: p.nombre, cantidad: 1, controlado: p.controlado });
-      }
       const med = pick(r, MEDICOS);
-      const emitida = state.gameTimeMs - Math.floor(r()*8)*86400000;
+      const emitida = state.gameTimeMs - Math.floor(r() * 8) * 86400000;
+      // a veces receta “mala” para practicar rechazo (10%)
+      let items = cli.productosReceta.map((x) => ({ ...x }));
+      let pacienteDni = cli.dni;
+      let obs = items.some((i) => i.controlado) ? "Controlado: DNI + libro." : "";
+      if (r() < 0.1) {
+        pacienteDni = "00000000T"; // DNI incorrecto a propósito
+        obs = "ATENCIÓN formativa: esta receta puede no coincidir.";
+      }
       receta = {
-        numero: genRecetaNum(r, emitida), tipo: "electronica",
-        pacienteNombre: cli.nombre, pacienteDni: cli.dni,
+        numero: genRecetaNum(r, emitida), tipo: r() < 0.75 ? "electronica" : "papel",
+        pacienteNombre: cli.nombre, pacienteDni,
         medico: med.nombre, colegiado: med.colegiado,
-        fechaEmision: emitida, validezDias: items.some(i=>i.controlado)?10:30,
-        productos: items, dispensada: false,
-        observaciones: items.some(i=>i.controlado) ? "Controlado: registrar en libro." : "",
+        fechaEmision: emitida,
+        validezDias: items.some((i) => i.controlado) ? 10 : 30,
+        productos: items, dispensada: false, observaciones: obs,
       };
     }
     return {
@@ -344,13 +344,27 @@
       lactancia: !!state.clienteActual.lactancia,
     };
     const alerts = Clinica.analizarClinica(cartProducts(), pac);
-    // stock / caducidad del carrito
+    const edad = state.clienteActual.edad;
     for (const l of state.cart) {
       const p = productos.find((x) => x.id === l.productId);
       if (!p) continue;
-      if (isExpired(p)) alerts.push({ tipo:"caducidad", nivel:"grave", msg:`${p.nombre} está CADUCADO` });
-      else if (expiresSoon(p)) alerts.push({ tipo:"caducidad", nivel:"moderada", msg:`${p.nombre} caduca pronto (${Math.ceil(daysToExpiry(p))} días)` });
-      if (isLow(p)) alerts.push({ tipo:"stock", nivel:"leve", msg:`Stock bajo de ${p.nombre}` });
+      if (isExpired(p)) alerts.push({ tipo: "caducidad", nivel: "grave", msg: `${p.nombre} está CADUCADO` });
+      else if (expiresSoon(p)) alerts.push({ tipo: "caducidad", nivel: "moderada", msg: `${p.nombre} caduca pronto (${Math.ceil(daysToExpiry(p))} días)` });
+      if (isLow(p)) alerts.push({ tipo: "stock", nivel: "leve", msg: `Stock bajo de ${p.nombre}` });
+      if (p.nevera) alerts.push({ tipo: "nevera", nivel: "moderada", msg: `❄ ${p.nombre} es de FRIGORÍFICO: mantén cadena de frío` });
+      if (edad != null) {
+        if (p.categoria === "Salud sexual" && edad < 16) {
+          alerts.push({ tipo: "edad", nivel: "grave", msg: `Edad ${edad}: revisar venta de salud sexual (menor de 16)` });
+        } else if (p.categoria === "Salud sexual" && edad < 18) {
+          alerts.push({ tipo: "edad", nivel: "moderada", msg: `Edad ${edad}: precaución en salud sexual (menor de 18)` });
+        }
+        if ((p.categoria === "Corticoides / Esteroides" || p.controlado) && edad < 12) {
+          alerts.push({ tipo: "edad", nivel: "grave", msg: `Edad ${edad}: no dispensar ${p.categoria} sin criterio pediátrico` });
+        }
+        if (p.controlado && edad < 18) {
+          alerts.push({ tipo: "edad", nivel: "moderada", msg: `Controlado en menor (${edad} años): verificar tutores / receta` });
+        }
+      }
     }
     const bar = $("#alerts-bar");
     if (!alerts.length) { bar.hidden = true; bar.innerHTML = ""; return alerts; }
@@ -360,50 +374,82 @@
   }
 
   function recetaVigente(receta) {
-    if (!receta) return { ok:false, motivo:"No hay receta" };
-    if (state.gameTimeMs > receta.fechaEmision + receta.validezDias*86400000) return { ok:false, motivo:"Receta caducada" };
-    if (receta.dispensada) return { ok:false, motivo:"Ya dispensada" };
-    if (!receta.numero || !receta.pacienteDni || !receta.medico) return { ok:false, motivo:"Datos incompletos" };
-    return { ok:true, motivo:"Válida" };
+    if (!receta) return { ok: false, motivo: "No hay receta" };
+    if (state.gameTimeMs > receta.fechaEmision + receta.validezDias * 86400000) return { ok: false, motivo: "Receta caducada — RECHAZAR venta" };
+    if (receta.dispensada) return { ok: false, motivo: "Receta ya dispensada — RECHAZAR" };
+    if (!receta.numero || !receta.pacienteDni || !receta.medico) return { ok: false, motivo: "Receta incompleta — RECHAZAR" };
+    return { ok: true, motivo: "Válida" };
   }
 
   function validarDispensacion() {
-    const necesita = state.cart.filter((l) => productos.find((x)=>x.id===l.productId)?.requiereReceta);
+    const necesita = state.cart.filter((l) => productos.find((x) => x.id === l.productId)?.requiereReceta);
     for (const l of state.cart) {
-      const p = productos.find((x)=>x.id===l.productId);
-      if (p && isExpired(p)) return { ok:false, motivo:`No se puede vender caducado: ${p.nombre}`, warnings:[] };
+      const p = productos.find((x) => x.id === l.productId);
+      if (p && isExpired(p)) return { ok: false, motivo: `RECHAZAR: caducado ${p.nombre}`, warnings: [] };
     }
-    if (!necesita.length) return { ok:true, warnings:[] };
+    if (!necesita.length) return { ok: true, warnings: [] };
     const receta = state.recetaActiva;
     const vig = recetaVigente(receta);
-    if (!vig.ok) return { ok:false, motivo:vig.motivo, warnings:[] };
-    if (state.clienteActual.dni && receta.pacienteDni.toUpperCase() !== state.clienteActual.dni.toUpperCase()) {
-      return { ok:false, motivo:"DNI no coincide con la receta", warnings:[] };
+    if (!vig.ok) return { ok: false, motivo: vig.motivo, warnings: [] };
+    if (!state.clienteActual.dni) return { ok: false, motivo: "RECHAZAR: falta DNI del cliente para receta", warnings: [] };
+    if (receta.pacienteDni.toUpperCase() !== state.clienteActual.dni.toUpperCase()) {
+      return { ok: false, motivo: "RECHAZAR: el DNI no coincide con la receta", warnings: [] };
     }
     const warnings = [];
     for (const linea of necesita) {
-      const p = productos.find((x)=>x.id===linea.productId);
-      const en = receta.productos.find((rp)=>rp.productId===linea.productId);
-      if (!en) return { ok:false, motivo:`"${p.nombre}" no está en la receta`, warnings };
-      if (linea.cantidad > en.cantidad) return { ok:false, motivo:`Cantidad de "${p.nombre}" supera la prescrita`, warnings };
-      if (p.controlado && !state.clienteActual.dni) return { ok:false, motivo:"Controlado: DNI obligatorio", warnings };
-      if (p.controlado) warnings.push("Se registrará en el libro de estupefacientes.");
+      const p = productos.find((x) => x.id === linea.productId);
+      const en = receta.productos.find((rp) => rp.productId === linea.productId);
+      if (!en) return { ok: false, motivo: `RECHAZAR: "${p.nombre}" no está en la receta`, warnings };
+      if (linea.cantidad > en.cantidad) return { ok: false, motivo: `RECHAZAR: cantidad de "${p.nombre}" supera la prescrita`, warnings };
+      if (p.controlado) warnings.push("Controlado: requiere doble comprobación (DNI + libro).");
+      if (p.nevera) warnings.push(`Frigorífico: ${p.nombre}`);
     }
-    return { ok:true, warnings };
+    return { ok: true, warnings };
   }
 
-  function addToCart(productId, qty=1) {
-    const p = productos.find((x)=>x.id===productId);
+  function buscarSustitutos(p) {
+    return productos.filter((x) => {
+      if (x.id === p.id) return false;
+      if ((state.stock[x.id] || 0) <= 0) return false;
+      if (isExpired(x)) return false;
+      if (x.requiereReceta !== p.requiereReceta) return false;
+      if (p.principioActivo && x.principioActivo === p.principioActivo) return true;
+      if (x.categoria === p.categoria) return true;
+      return false;
+    }).slice(0, 8);
+  }
+
+  function showSustitutos(p) {
+    const alts = buscarSustitutos(p);
+    $("#sustituto-msg").textContent = `No queda stock de «${p.nombre}». Elige un sustituto:`;
+    $("#sustituto-list").innerHTML = alts.map((a) => `
+      <div class="list-item">
+        <div class="prod-row"><span class="prod-ico">${a.icon || "💊"}</span>
+          <div><strong>${escapeHtml(a.nombre)}</strong><div class="muted tiny">${escapeHtml(a.categoria)} · stock ${state.stock[a.id]||0} · ${euro(a.precio)}</div></div>
+        </div>
+        <button class="btn btn-sm btn-primary" data-add="${a.id}">Añadir</button>
+      </div>`).join("") || `<div class="empty">No hay sustitutos con stock</div>`;
+    $("#modal-sustituto").classList.add("open");
+  }
+
+  function addToCart(productId, qty = 1) {
+    const p = productos.find((x) => x.id === productId);
     if (!p) return;
-    if (isExpired(p)) { toast("Producto caducado: retíralo del stock", "err"); Sounds.beepWarn(); return; }
+    if (isExpired(p)) { toast("Producto caducado: retíralo", "err"); Sounds.beepWarn(); return; }
     const stock = state.stock[p.id] || 0;
-    const existing = state.cart.find((l)=>l.productId===productId);
-    const newQty = (existing?existing.cantidad:0) + qty;
-    if (newQty > stock) { toast(`Stock insuficiente (${stock})`, "warn"); return; }
+    const existing = state.cart.find((l) => l.productId === productId);
+    const newQty = (existing ? existing.cantidad : 0) + qty;
+    if (stock <= 0 || newQty > stock) {
+      toast(`Sin stock de ${p.nombre}`, "warn");
+      showSustitutos(p);
+      Sounds.beepWarn();
+      return;
+    }
     if (existing) existing.cantidad = newQty;
     else state.cart.push({ productId, cantidad: qty });
+    if (p.nevera) toast("❄ Producto de frigorífico", "warn");
     Sounds.beepCoin();
-    renderCart(); refreshClinicalAlerts(); save();
+    renderCart(); refreshClinicalAlerts(); maybeAutoPedidoCategoria(p.categoria); save();
     toast("Añadido al carrito", "ok");
   }
 
@@ -427,11 +473,25 @@
 
   /* ---------- Pago TPV ---------- */
   function openPagoModal() {
-    if (!state.cart.length) { toast("Carrito vacío: elige productos según lo que dice el cliente", "warn"); return; }
+    if (!state.cart.length) { toast("Carrito vacío: elige según lo que pide el cliente", "warn"); return; }
     if (!state.caja.abierta) { toast("Abre la caja primero", "warn"); showTab("caja"); return; }
-    for (const l of state.cart) if ((state.stock[l.productId]||0) < l.cantidad) { toast("Stock insuficiente", "warn"); return; }
+    for (const l of state.cart) if ((state.stock[l.productId] || 0) < l.cantidad) { toast("Stock insuficiente", "warn"); return; }
     const val = validarDispensacion();
     if (!val.ok) { toast(val.motivo, "err"); Sounds.beepWarn(); return; }
+
+    const hasCtrl = state.cart.some((l) => productos.find((x) => x.id === l.productId)?.controlado);
+    if (hasCtrl) {
+      $("#ctrl-dni").value = state.clienteActual.dni || "";
+      $("#ctrl-libro").checked = false;
+      $("#ctrl-id").checked = false;
+      pendingCtrlContinue = () => openPagoModalAfterCtrl();
+      $("#modal-controlado").classList.add("open");
+      return;
+    }
+    openPagoModalAfterCtrl();
+  }
+
+  function openPagoModalAfterCtrl() {
     const alerts = refreshClinicalAlerts();
     pagoMetodo = "efectivo";
     const tot = cartTotals();
@@ -442,9 +502,10 @@
     $("#mixto-bizum").value = "0";
     renderMetodos();
     updatePagoUI();
+    const val = validarDispensacion();
     $("#pago-alerts").innerHTML = [
-      ...val.warnings.map((w)=>`<div class="alert alert-moderada">${escapeHtml(w)}</div>`),
-      ...alerts.filter(a=>a.nivel!=="leve").map((a)=>`<div class="alert alert-${a.nivel}">${escapeHtml(a.msg)}</div>`),
+      ...(val.warnings || []).map((w) => `<div class="alert alert-moderada">${escapeHtml(w)}</div>`),
+      ...alerts.filter((a) => a.nivel !== "leve").map((a) => `<div class="alert alert-${a.nivel}">${escapeHtml(a.msg)}</div>`),
     ].join("");
     $("#modal-pago").classList.add("open");
   }
@@ -595,61 +656,91 @@
   function filteredProducts() {
     if (sintomaActivo) return Clinica.filtrarPorSintoma(productos, sintomaActivo, state.stock);
     const f = {
-      q: ($("#search-q").value||"").trim().toLowerCase(),
-      cat: $("#filter-cat").value,
+      q: ($("#search-q").value || "").trim().toLowerCase(),
       receta: $("#filter-receta").value,
-      marca: ($("#filter-marca").value||"").trim().toLowerCase(),
-      pa: ($("#filter-pa").value||"").trim().toLowerCase(),
+      marca: ($("#filter-marca").value || "").trim().toLowerCase(),
+      pa: ($("#filter-pa").value || "").trim().toLowerCase(),
     };
     return productos.filter((p) => {
-      if (f.cat && p.categoria !== f.cat) return false;
+      if (categoriaActiva && p.categoria !== categoriaActiva) return false;
       if (f.receta === "con" && !p.requiereReceta) return false;
       if (f.receta === "sin" && p.requiereReceta) return false;
       if (f.receta === "controlado" && !p.controlado) return false;
+      if (f.receta === "nevera" && !p.nevera) return false;
       if (f.receta === "oferta" && !state.ofertasDia.includes(p.id)) return false;
       if (f.receta === "caduca" && !expiresSoon(p)) return false;
       if (f.receta === "bajo" && !isLow(p) && !isOut(p)) return false;
-      if (f.marca && !(p.marca||"").toLowerCase().includes(f.marca)) return false;
-      if (f.pa && !(p.principioActivo||"").toLowerCase().includes(f.pa)) return false;
+      if (f.marca && !(p.marca || "").toLowerCase().includes(f.marca)) return false;
+      if (f.pa && !(p.principioActivo || "").toLowerCase().includes(f.pa)) return false;
       if (f.q) {
-        const blob = `${p.nombre} ${p.marca} ${p.principioActivo} ${(p.sintomas||[]).join(" ")} ${p.categoria} ${p.ean}`.toLowerCase();
+        const blob = `${p.nombre} ${p.marca} ${p.principioActivo} ${(p.sintomas || []).join(" ")} ${p.categoria} ${p.ean}`.toLowerCase();
         if (!blob.includes(f.q)) return false;
       }
       return true;
     });
   }
 
+  function renderCatGrid() {
+    const cats = catalogMeta.categoriasUI || window.FarmaciaCatalogo.CATEGORIAS_UI || [];
+    $("#cat-grid").innerHTML = `<button type="button" class="cat-btn ${!categoriaActiva ? "active" : ""}" data-cat="" style="background:linear-gradient(135deg,#334155,#0f172a)">
+      <span class="cat-ico">🏪</span><span class="cat-name">Todas</span><span class="cat-count">${productos.length} prod.</span>
+    </button>` + cats.map((c) => `
+      <button type="button" class="cat-btn ${categoriaActiva === c.nombre ? "active" : ""}" data-cat="${escapeHtml(c.nombre)}" style="background:${c.color}">
+        <span class="cat-ico">${c.icon}</span>
+        <span class="cat-name">${escapeHtml(c.nombre)}</span>
+        <span class="cat-count">${c.count}${c.requiereReceta ? " · ℞" : ""}</span>
+      </button>`).join("");
+  }
+
+  function renderPedidoExacto() {
+    const box = $("#pedido-exacto");
+    const ids = state.clienteActual.quiereProductoIds || [];
+    if (!ids.length) { box.classList.add("hidden"); box.innerHTML = ""; return; }
+    box.classList.remove("hidden");
+    box.innerHTML = `<strong>El cliente pide exactamente:</strong>` + ids.map((id) => {
+      const p = productos.find((x) => x.id === id);
+      if (!p) return "";
+      return `<button type="button" class="btn btn-sm btn-accent" data-add="${p.id}">${p.icon || "💊"} ${escapeHtml(p.nombre)}</button>`;
+    }).join("");
+  }
+
   function renderSintomas() {
-    const list = Clinica.SINTOMAS_UI || [];
-    $("#sintomas-row").innerHTML = `<button type="button" class="chip ${!sintomaActivo?"active":""}" data-sintoma="">Todos</button>` +
-      list.map((s)=>`<button type="button" class="chip ${sintomaActivo===s?"active":""}" data-sintoma="${escapeHtml(s)}">${escapeHtml(s)}</button>`).join("");
+    const list = Clinica.SINTOMAS_UI || catalogMeta.sintomas || [];
+    $("#sintomas-row").innerHTML = `<button type="button" class="chip ${!sintomaActivo ? "active" : ""}" data-sintoma="">Todos síntomas</button>` +
+      list.map((s) => `<button type="button" class="chip ${sintomaActivo === s ? "active" : ""}" data-sintoma="${escapeHtml(s)}">${escapeHtml(s)}</button>`).join("");
   }
 
   function renderCatalog() {
     const list = filteredProducts();
     const slice = list.slice(0, 80);
-    $("#catalog-count").textContent = `${list.length.toLocaleString("es-ES")} productos` + (list.length>80?` (80)`:"");
+    $("#catalog-count").textContent = `${list.length} productos` + (categoriaActiva ? ` · ${categoriaActiva}` : "");
     $("#catalog-body").innerHTML = slice.map((p) => {
-      const stock = state.stock[p.id]??0;
+      const stock = state.stock[p.id] ?? 0;
       const offer = state.ofertasDia.includes(p.id);
       const badges = [
-        p.requiereReceta?'<span class="tag tag-rx">Receta</span>':'<span class="tag tag-otc">OTC</span>',
-        p.controlado?'<span class="tag tag-ctrl">CTRL</span>':"",
-        p.esGenerico?'<span class="tag tag-gen">EFG</span>':"",
-        offer?'<span class="tag tag-offer">−15% día</span>':"",
-        expiresSoon(p)?'<span class="tag tag-exp">Caduca</span>':"",
-        isExpired(p)?'<span class="tag tag-ctrl">CADUCADO</span>':"",
+        p.requiereReceta ? '<span class="tag tag-rx">Receta</span>' : '<span class="tag tag-otc">OTC</span>',
+        p.controlado ? '<span class="tag tag-ctrl">CTRL</span>' : "",
+        p.nevera ? '<span class="tag tag-exp">❄ Nevera</span>' : "",
+        p.esGenerico ? '<span class="tag tag-gen">EFG</span>' : "",
+        offer ? '<span class="tag tag-offer">−15%</span>' : "",
+        expiresSoon(p) ? '<span class="tag tag-exp">Caduca</span>' : "",
+        isExpired(p) ? '<span class="tag tag-ctrl">CADUCADO</span>' : "",
       ].join("");
-      const precioShow = offer ? Caja.round2(p.precio*0.85) : p.precio;
+      const precioShow = offer ? Caja.round2(p.precio * 0.85) : p.precio;
       return `<tr>
         <td>
-          <div class="prod-name">${escapeHtml(p.nombre)}</div>
-          <div class="prod-meta">${escapeHtml(p.marca)} · ${escapeHtml(p.principioActivo)} · ${escapeHtml(p.categoria)} · lote ${escapeHtml(state.lotes[p.id]?.lote||p.lote||"—")}</div>
-          <div class="prod-tags">${badges}</div>
+          <div class="prod-row">
+            <span class="prod-ico" style="background:${p.colorCategoria || "#e2e8f0"}22">${p.icon || "💊"}</span>
+            <div>
+              <div class="prod-name">${escapeHtml(p.nombre)}</div>
+              <div class="prod-meta">${escapeHtml(p.marca)} · ${escapeHtml(p.principioActivo)} · ${escapeHtml(p.categoria)}</div>
+              <div class="prod-tags">${badges}</div>
+            </div>
+          </div>
         </td>
-        <td>${euro(precioShow)} <span class="muted">+${p.iva}%</span></td>
-        <td class="${stock<10||isLow(p)?"stock-low":""}">${stock}</td>
-        <td><button class="btn btn-sm btn-primary" data-add="${p.id}" ${isExpired(p)?"disabled":""}>Añadir</button></td>
+        <td>${euro(precioShow)}</td>
+        <td class="${stock < 10 || isLow(p) ? "stock-low" : ""}">${stock}</td>
+        <td><button class="btn btn-sm btn-primary" data-add="${p.id}" ${isExpired(p) ? "disabled" : ""}>Añadir</button></td>
       </tr>`;
     }).join("") || `<tr><td colspan="4" class="empty">Sin resultados</td></tr>`;
   }
@@ -698,9 +789,10 @@
     const box = $("#cliente-habla");
     if (!c.peticionTexto) { box.classList.add("hidden"); return; }
     box.classList.remove("hidden");
-    $("#speech-name").textContent = c.nombre || "Cliente";
+    const modo = { exacto: "Pide producto", sintoma: "Por síntomas", receta: "Trae receta", ambas: "Producto + receta" }[c.modo] || "";
+    $("#speech-name").textContent = `${c.nombre || "Cliente"}${c.edad != null ? ` (${c.edad} años)` : ""}${modo ? " · " + modo : ""}`;
     $("#speech-text").textContent = `«${c.peticionTexto}»`;
-    $("#speech-tags").innerHTML = (c.sintomas||[]).map((s)=>`<button type="button" class="chip" data-sintoma="${escapeHtml(s)}">${escapeHtml(s)}</button>`).join("");
+    $("#speech-tags").innerHTML = (c.sintomas || []).map((s) => `<button type="button" class="chip" data-sintoma="${escapeHtml(s)}">${escapeHtml(s)}</button>`).join("");
   }
 
   function renderReceta() {
@@ -728,20 +820,23 @@
   function renderCola() {
     $("#cola-count").textContent = String(state.cola.length);
     if (!state.cola.length) { $("#cola-list").innerHTML = `<div class="empty">💬 Nadie en cola</div>`; return; }
-    $("#cola-list").innerHTML = state.cola.map((ped) => `
-      <article class="pedido-card ${ped.guardia?"guardia":""}">
-        <header><strong>${escapeHtml(ped.cliente.nombre)}</strong><span class="muted">${formatShort(ped.llegada)}</span></header>
-        <div class="muted tiny">${escapeHtml(ped.cliente.id)} · ${ped.cliente.edad||"?"} años · SNS: ${escapeHtml(ped.cliente.tramoSNS)}</div>
-        <p class="quote">«${escapeHtml(ped.cliente.peticionTexto)}»</p>
-        <div>${(ped.cliente.sintomas||[]).map(s=>`<span class="chip">${escapeHtml(s)}</span>`).join("")}
-          ${ped.receta?'<span class="tag tag-rx">Trae receta</span>':""}
-          ${ped.cliente.familiaNumerosa?'<span class="chip">Familia numerosa</span>':""}
+    $("#cola-list").innerHTML = state.cola.map((ped) => {
+      const c = ped.cliente;
+      const modoLabel = { exacto: "Producto exacto", sintoma: "Por síntoma", receta: "Con receta", ambas: "Exacto + receta" }[c.modo] || c.modo;
+      return `<article class="pedido-card ${ped.guardia ? "guardia" : ""}">
+        <header><strong>${escapeHtml(c.nombre)}</strong><span class="muted">${formatShort(ped.llegada)}</span></header>
+        <div class="muted tiny">${escapeHtml(c.id)} · ${c.edad || "?"} años · ${escapeHtml(modoLabel)}</div>
+        <p class="quote">«${escapeHtml(c.peticionTexto)}»</p>
+        <div>${(c.sintomas || []).map((s) => `<span class="chip">${escapeHtml(s)}</span>`).join("")}
+          ${ped.receta ? `<span class="tag tag-rx">Receta ×${ped.receta.productos.length}</span>` : ""}
+          ${(c.quiereProductoIds || []).length ? '<span class="tag tag-offer">Pide exacto</span>' : ""}
         </div>
         <div class="pedido-actions" style="margin-top:10px">
           <button class="btn btn-sm btn-primary" data-atender="${ped.id}">Atender</button>
           <button class="btn btn-sm" data-descartar="${ped.id}">Descartar</button>
         </div>
-      </article>`).join("");
+      </article>`;
+    }).join("");
   }
 
   function renderStats() {
@@ -761,10 +856,54 @@
     $("#np-mutua").innerHTML = opts;
   }
 
-  function renderCategorias() {
-    const cats = (catalogMeta.categorias||[]).slice().sort((a,b)=>a.localeCompare(b,"es"));
-    $("#filter-cat").innerHTML = `<option value="">Todas (${cats.length} categorías)</option>` +
-      cats.map((c)=>`<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("");
+  function renderCategorias() { /* categorías vía cat-grid */ renderCatGrid(); }
+
+  function stockByCategory(nombre) {
+    const list = productos.filter((p) => p.categoria === nombre);
+    let stock = 0, min = 0;
+    for (const p of list) {
+      stock += state.stock[p.id] || 0;
+      min += state.lotes[p.id]?.stockMinimo ?? p.stockMinimo ?? 5;
+    }
+    return { list, stock, min, low: stock < min * 0.5 };
+  }
+
+  function maybeAutoPedidoCategoria(catNombre) {
+    const info = stockByCategory(catNombre);
+    if (!info.low) return;
+    const pending = state.pedidosAlmacen.some((p) => !p.recibido && productos.find((x) => x.id === p.productId)?.categoria === catNombre);
+    if (pending) return;
+    // pedir el más bajo de la categoría
+    const sorted = info.list.slice().sort((a, b) => (state.stock[a.id] || 0) - (state.stock[b.id] || 0));
+    const target = sorted[0];
+    if (!target) return;
+    pedirAlmacen(target.id, Math.max(15, target.stockMinimo || 10));
+    toast(`Pedido automático: categoría «${catNombre}» baja`, "warn");
+  }
+
+  function autoPedidosCategoriasBajas() {
+    const cats = catalogMeta.categoriasUI || [];
+    let n = 0;
+    for (const c of cats) {
+      const info = stockByCategory(c.nombre);
+      if (!info.low) continue;
+      const pending = state.pedidosAlmacen.some((p) => !p.recibido && productos.find((x) => x.id === p.productId)?.categoria === c.nombre);
+      if (pending) continue;
+      const sorted = info.list.slice().sort((a, b) => (state.stock[a.id] || 0) - (state.stock[b.id] || 0));
+      if (sorted[0]) { pedirAlmacen(sorted[0].id, 20); n++; }
+    }
+    toast(n ? `Pedidos auto: ${n} categorías` : "Ninguna categoría crítica", n ? "ok" : "warn");
+  }
+
+  function renderInventario() {
+    const cats = catalogMeta.categoriasUI || [];
+    $("#inventario-cats").innerHTML = cats.map((c) => {
+      const info = stockByCategory(c.nombre);
+      return `<div class="inv-card ${info.low ? "low" : ""}" style="background:${c.color}">
+        <div class="inv-top"><span>${c.icon} ${escapeHtml(c.nombre)}</span><strong>${info.stock}</strong></div>
+        <div class="inv-meta">${c.count} referencias · mín. ~${info.min}${info.low ? " · ⚠ BAJO" : ""}${c.requiereReceta ? " · ℞" : ""}</div>
+      </div>`;
+    }).join("");
   }
 
   function renderCaja() {
@@ -814,32 +953,37 @@
   }
 
   function renderInforme() {
-    const hoy = state.ventas.filter((v)=>dayKey(v.fechaJuego)===dayKey(state.gameTimeMs));
+    const hoy = state.ventas.filter((v) => dayKey(v.fechaJuego) === dayKey(state.gameTimeMs));
     const r = Caja.resumenCaja(state.caja, hoy);
     const topMap = {};
-    for (const v of hoy) for (const l of v.lineas) topMap[l.nombre]=(topMap[l.nombre]||0)+l.cantidad;
-    const top = Object.entries(topMap).sort((a,b)=>b[1]-a[1]).slice(0,10);
+    const catMap = {};
+    for (const v of hoy) {
+      for (const l of v.lineas) {
+        topMap[l.nombre] = (topMap[l.nombre] || 0) + l.cantidad;
+        const p = productos.find((x) => x.id === l.productId);
+        const cat = p?.categoria || "Otros";
+        catMap[cat] = (catMap[cat] || 0) + l.total;
+      }
+    }
+    const top = Object.entries(topMap).sort((a, b) => b[1] - a[1]).slice(0, 10);
+    const cats = Object.entries(catMap).sort((a, b) => b[1] - a[1]);
     const season = seasonInfo(state.gameTimeMs);
     $("#informe-content").innerHTML = `
       <div class="informe-card"><h3>🏪 Farmacia Álora</h3>
         <p>${formatGameDate(state.gameTimeMs)}</p>
         <p>Temporada: <strong>${season.label}</strong></p>
-        <p>Tickets: <strong>${hoy.length}</strong></p>
+        <p>Tickets: <strong>${hoy.length}</strong> · Catálogo: <strong>${productos.length}</strong></p>
         <p>Facturación: <strong>${euro(r.facturacion)}</strong></p>
         <p>Margen est.: <strong>${euro(r.margen)}</strong></p>
       </div>
+      <div class="informe-card"><h3>📂 Por categoría</h3>
+        ${cats.map(([n, t]) => `<p>${escapeHtml(n)}: <strong>${euro(t)}</strong></p>`).join("") || "<p>Sin datos</p>"}
+      </div>
       <div class="informe-card"><h3>💳 Métodos TPV</h3>
-        ${Caja.METODOS.map((m)=>`<p>${m.icon} ${m.nombre}: ${euro(r.porMetodo[m.id]||0)}</p>`).join("")}
+        ${Caja.METODOS.map((m) => `<p>${m.icon} ${m.nombre}: ${euro(r.porMetodo[m.id] || 0)}</p>`).join("")}
       </div>
       <div class="informe-card"><h3>🏆 Top productos</h3>
-        <ol>${top.map(([n,c])=>`<li>${escapeHtml(n)} ×${c}</li>`).join("")||"<li>Sin datos</li>"}</ol>
-      </div>
-      <div class="informe-card"><h3>🖥 Caja</h3>
-        <p>Fondo ${euro(r.fondoInicial)}</p>
-        <p>Contado ${euro(r.contado)}</p>
-        <p>Teórico ${euro(r.teorico)}</p>
-        <p>Diferencia <strong>${euro(r.diferencia)}</strong></p>
-        <p>Stock bajo: ${productos.filter(isLow).length} · Caducan: ${productos.filter(expiresSoon).length}</p>
+        <ol>${top.map(([n, c]) => `<li>${escapeHtml(n)} ×${c}</li>`).join("") || "<li>Sin datos</li>"}</ol>
       </div>`;
   }
 
@@ -868,32 +1012,34 @@
   }
 
   function atenderPedido(id) {
-    const ped = state.cola.find((p)=>p.id===id);
+    const ped = state.cola.find((p) => p.id === id);
     if (!ped) return;
     const c = ped.cliente;
     state.clienteActual = {
       nombre: c.nombre, dni: c.dni, telefono: c.telefono, pacienteId: c.id, seedId: c.seedId,
       tramoSNS: c.tramoSNS, familiaNumerosa: !!c.familiaNumerosa,
-      peticionTexto: c.peticionTexto, sintomas: c.sintomas||[],
-      alergias: c.alergias||[], cronicos: c.cronicos||[],
+      peticionTexto: c.peticionTexto, sintomas: c.sintomas || [],
+      quiereProductoIds: c.quiereProductoIds || [], modo: c.modo,
+      alergias: c.alergias || [], cronicos: c.cronicos || [],
       embarazo: !!c.embarazo, lactancia: !!c.lactancia, edad: c.edad,
     };
     state.mutuaId = c.mutuaId || "particular";
     state.tramoSNS = c.tramoSNS || "particular";
     state.flagsDesc.pensionista = c.tramoSNS === "pensionista";
     state.flagsDesc.familia = !!c.familiaNumerosa;
-    state.cart = []; // el farmacéutico elige
-    state.recetaActiva = ped.receta ? { ...ped.receta, productos: ped.receta.productos.map((x)=>({...x})) } : null;
-    state.cola = state.cola.filter((p)=>p.id!==id);
+    state.cart = [];
+    state.recetaActiva = ped.receta ? { ...ped.receta, productos: ped.receta.productos.map((x) => ({ ...x })) } : null;
+    state.cola = state.cola.filter((p) => p.id !== id);
 
-    // filtrar por síntoma del cliente
     sintomaActivo = (c.sintomas && c.sintomas[0]) || "";
+    categoriaActiva = "";
     $("#search-q").value = sintomaActivo;
     bindClienteForm();
-    renderMutuas(); renderSpeech(); renderSintomas(); renderCatalog();
+    renderMutuas(); renderSpeech(); renderPedidoExacto(); renderSintomas();
+    renderCatGrid(); renderCatalog();
     renderCart(); renderReceta(); renderCola(); refreshClinicalAlerts();
     save();
-    toast(`Atiende a ${c.nombre}: escucha y elige productos`, "ok");
+    toast(`Atiende a ${c.nombre}`, "ok");
     showTab("venta");
   }
 
@@ -1016,14 +1162,15 @@
   }
 
   function showTab(name) {
-    $$(".tab").forEach((t)=>t.classList.toggle("active", t.dataset.tab===name));
-    $$(".panel").forEach((p)=>p.classList.toggle("active", p.id==="panel-"+name));
-    if (name==="caja") renderCaja();
-    if (name==="informes") renderInforme();
-    if (name==="pacientes") renderPacientes();
-    if (name==="libro") renderLibro();
-    if (name==="almacen") renderAlmacen();
-    if (name==="pedidos") renderCola();
+    $$(".tab").forEach((t) => t.classList.toggle("active", t.dataset.tab === name));
+    $$(".panel").forEach((p) => p.classList.toggle("active", p.id === "panel-" + name));
+    if (name === "caja") renderCaja();
+    if (name === "informes") renderInforme();
+    if (name === "pacientes") renderPacientes();
+    if (name === "libro") renderLibro();
+    if (name === "almacen") renderAlmacen();
+    if (name === "inventario") renderInventario();
+    if (name === "pedidos") renderCola();
   }
 
   function bindEvents() {
@@ -1041,17 +1188,43 @@
 
     $$(".tab").forEach((tab)=>tab.addEventListener("click", ()=>showTab(tab.dataset.tab)));
 
-    ["search-q","filter-cat","filter-receta","filter-marca","filter-pa"].forEach((id)=>{
-      $("#"+id).addEventListener("input", ()=>{ sintomaActivo=""; renderSintomas(); clearTimeout(searchTimer); searchTimer=setTimeout(renderCatalog,100); });
-      $("#"+id).addEventListener("change", ()=>{ sintomaActivo=""; renderSintomas(); renderCatalog(); });
+    ["search-q", "filter-receta", "filter-marca", "filter-pa"].forEach((id) => {
+      const el = $("#" + id);
+      if (!el) return;
+      el.addEventListener("input", () => {
+        if (id === "search-q") sintomaActivo = "";
+        renderSintomas();
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(renderCatalog, 100);
+      });
+      el.addEventListener("change", () => {
+        if (id === "search-q") sintomaActivo = "";
+        renderSintomas();
+        renderCatalog();
+      });
+    });
+
+    $("#cat-grid").addEventListener("click", (e) => {
+      const b = e.target.closest("[data-cat]");
+      if (!b) return;
+      categoriaActiva = b.dataset.cat || "";
+      sintomaActivo = "";
+      $("#search-q").value = "";
+      renderCatGrid(); renderSintomas(); renderCatalog();
+    });
+
+    $("#pedido-exacto").addEventListener("click", (e) => {
+      const b = e.target.closest("[data-add]");
+      if (b) addToCart(Number(b.dataset.add));
     });
 
     document.body.addEventListener("click", (e) => {
       const syn = e.target.closest("[data-sintoma]");
       if (syn && (syn.closest("#sintomas-row") || syn.closest("#speech-tags"))) {
         sintomaActivo = syn.dataset.sintoma || "";
+        categoriaActiva = "";
         $("#search-q").value = sintomaActivo;
-        renderSintomas(); renderCatalog();
+        renderCatGrid(); renderSintomas(); renderCatalog();
       }
     });
 
@@ -1173,8 +1346,36 @@
     $("#alm-suggest").onclick = (e)=>{ const b=e.target.closest("[data-pick]"); if(!b) return; almPickId=Number(b.dataset.pick); toast("Producto elegido para pedido", "ok"); };
     $("#alm-alertas").onclick = (e)=>{ const b=e.target.closest("[data-pedir]"); if(b) pedirAlmacen(Number(b.dataset.pedir), 30); };
     $("#btn-retirar-caducados").onclick = retirarCaducados;
+    $("#btn-auto-pedidos")?.addEventListener("click", autoPedidosCategoriasBajas);
 
-    $$(".modal").forEach((m)=>m.addEventListener("click",(e)=>{ if(e.target===m) m.classList.remove("open"); }));
+    $("#btn-cerrar-sustituto")?.addEventListener("click", () => $("#modal-sustituto").classList.remove("open"));
+    $("#sustituto-list")?.addEventListener("click", (e) => {
+      const b = e.target.closest("[data-add]");
+      if (!b) return;
+      addToCart(Number(b.dataset.add));
+      $("#modal-sustituto").classList.remove("open");
+    });
+
+    $("#btn-ctrl-cancel")?.addEventListener("click", () => {
+      $("#modal-controlado").classList.remove("open");
+      pendingCtrlContinue = null;
+    });
+    $("#btn-ctrl-ok")?.addEventListener("click", () => {
+      const dni = ($("#ctrl-dni").value || "").trim().toUpperCase();
+      if (!dni || dni !== (state.clienteActual.dni || "").toUpperCase()) {
+        toast("DNI no coincide — RECHAZAR / corregir", "err"); Sounds.beepWarn(); return;
+      }
+      if (!$("#ctrl-libro").checked || !$("#ctrl-id").checked) {
+        toast("Marca las dos confirmaciones", "warn"); return;
+      }
+      state.clienteActual.dni = dni;
+      $("#cliente-dni").value = dni;
+      $("#modal-controlado").classList.remove("open");
+      const fn = pendingCtrlContinue; pendingCtrlContinue = null;
+      if (fn) fn();
+    });
+
+    $$(".modal").forEach((m) => m.addEventListener("click", (e) => { if (e.target === m) m.classList.remove("open"); }));
 
     $("#btn-reset").onclick = ()=>{
       if(!confirm("¿Reiniciar todo?")) return;
@@ -1250,9 +1451,9 @@
   }
 
   function renderAll() {
-    renderClock(); renderCategorias(); renderSintomas(); renderCatalog();
-    renderCart(); renderReceta(); renderCola(); renderStats();
-    renderCaja(); renderLibro(); renderPacientes(); renderAlmacen();
+    renderClock(); renderCategorias(); renderSintomas(); renderPedidoExacto();
+    renderCatalog(); renderCart(); renderReceta(); renderCola(); renderStats();
+    renderCaja(); renderLibro(); renderPacientes(); renderAlmacen(); renderInventario();
     renderSpeech(); refreshClinicalAlerts();
   }
 

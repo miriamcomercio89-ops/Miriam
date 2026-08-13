@@ -60,6 +60,7 @@
       <button type="button" class="tab active" data-tab="venta"><span>🛒</span> Venta <kbd>F2</kbd></button>
       <button type="button" class="tab" data-tab="pedidos"><span>💬</span> Clientes <span id="cola-count" class="count-pill">0</span></button>
       <button type="button" class="tab" data-tab="almacen"><span>🚚</span> Almacén <span id="alm-count" class="count-pill">0</span></button>
+      <button type="button" class="tab" data-tab="inventario"><span>📦</span> Inventario</button>
       <button type="button" class="tab" data-tab="pacientes"><span>🗂</span> Pacientes</button>
       <button type="button" class="tab" data-tab="caja"><span>🖥</span> TPV / Caja</button>
       <button type="button" class="tab" data-tab="libro"><span>📕</span> Estupefacientes</button>
@@ -85,15 +86,16 @@
             <h2><span class="h-ico">🏪</span> Catálogo</h2>
             <span class="muted" id="catalog-count">—</span>
           </div>
+          <div id="cat-grid" class="cat-grid" aria-label="Categorías"></div>
           <div class="sintomas-row" id="sintomas-row"></div>
           <div class="filters">
-            <input id="search-q" type="search" placeholder="F2 · Buscar o síntoma…" autocomplete="off" />
-            <select id="filter-cat"></select>
+            <input id="search-q" type="search" placeholder="F2 · Buscar producto o síntoma…" autocomplete="off" />
             <select id="filter-receta">
-              <option value="">Receta: todas</option>
+              <option value="">Filtro extra</option>
               <option value="sin">Sin receta</option>
               <option value="con">Con receta</option>
               <option value="controlado">Controlados</option>
+              <option value="nevera">❄ Frigorífico</option>
               <option value="oferta">Oferta del día</option>
               <option value="caduca">Caducan pronto</option>
               <option value="bajo">Stock bajo</option>
@@ -101,9 +103,10 @@
             <input id="filter-marca" type="search" placeholder="Marca" />
             <input id="filter-pa" type="search" placeholder="Principio activo" />
           </div>
+          <div id="pedido-exacto" class="pedido-exacto hidden"></div>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>Producto</th><th>PVP / SNS</th><th>Stock</th><th></th></tr></thead>
+              <thead><tr><th>Producto</th><th>PVP</th><th>Stock</th><th></th></tr></thead>
               <tbody id="catalog-body"></tbody>
             </table>
           </div>
@@ -181,6 +184,18 @@
         </div>
         <p class="muted">Hay <strong>millones</strong> de clientes posibles. Cada uno cuenta qué le pasa; tú eliges el producto y lo añades al carrito.</p>
         <div id="cola-list" class="pedidos-grid"></div>
+      </div>
+    </section>
+
+    <!-- INVENTARIO -->
+    <section id="panel-inventario" class="panel">
+      <div class="card">
+        <div class="card-head">
+          <h2><span class="h-ico">📦</span> Inventario por categoría</h2>
+          <button type="button" class="btn btn-sm btn-primary" id="btn-auto-pedidos">🚚 Pedir categorías bajas</button>
+        </div>
+        <p class="muted">Stock total, mínimo y aviso si hay que reponer. El almacén puede pedir solo.</p>
+        <div id="inventario-cats" class="inv-grid"></div>
       </div>
     </section>
 
@@ -297,7 +312,7 @@
       </div>
     </section>
 
-    <footer class="disclaimer">Farmacia Álora · TPV de práctica · 5 millones de clientes posibles · +12.000 productos</footer>
+    <footer class="disclaimer">Farmacia Álora · 23 categorías · 363 productos · clientes con petición exacta, síntoma o receta</footer>
   </div>
 
   <!-- Modal receta -->
@@ -379,6 +394,27 @@
     <h2>♻ Genéricos</h2>
     <div id="generico-list" class="list-block"></div>
     <div class="actions-row"><button type="button" class="btn" id="btn-cerrar-generico">Cerrar</button></div>
+  </div></div>
+
+  <div class="modal" id="modal-sustituto"><div class="modal-card">
+    <h2>🔁 Sustituto (sin stock)</h2>
+    <p id="sustituto-msg" class="muted"></p>
+    <div id="sustituto-list" class="list-block"></div>
+    <div class="actions-row"><button type="button" class="btn" id="btn-cerrar-sustituto">Cerrar</button></div>
+  </div></div>
+
+  <div class="modal" id="modal-controlado"><div class="modal-card">
+    <h2>📕 Controlado — doble comprobación</h2>
+    <p>Hay medicamentos controlados en el carrito. Confirma identidad y libro.</p>
+    <div class="form-grid">
+      <div class="full"><label class="lbl" for="ctrl-dni">DNI del paciente (debe coincidir)</label><input id="ctrl-dni" /></div>
+      <div class="full"><label class="check"><input type="checkbox" id="ctrl-libro" /> Confirmo anotación en libro de estupefacientes</label></div>
+      <div class="full"><label class="check"><input type="checkbox" id="ctrl-id" /> He verificado la identidad del paciente</label></div>
+    </div>
+    <div class="actions-row">
+      <button type="button" class="btn btn-primary" id="btn-ctrl-ok">Continuar al cobro</button>
+      <button type="button" class="btn" id="btn-ctrl-cancel">Cancelar</button>
+    </div>
   </div></div>
 
   <div id="toasts" aria-live="polite"></div>

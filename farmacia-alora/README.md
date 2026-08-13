@@ -1,26 +1,31 @@
-# Farmacia Álora — Simulador de práctica
-
-Simulador completo de farmacia en el navegador (HTML/CSS/JS), ubicado en **Álora**.
+# Farmacia Álora — TPV de práctica
 
 ## Abrir
+Abre `index.html` en el navegador (PC).
 
-Abre `index.html` en Chrome, Firefox o Edge (escritorio).
+## Catálogo (363 productos, 23 categorías)
+Botones grandes por categoría con color e icono.
 
-## Novedades principales
+**Sin receta:** resfriado/gripe, digestivo, dolor, piel, salud sexual, vitaminas, viaje, mascotas, revistas, snacks, bebidas.
 
-- **~8000 productos** con marcas, genéricos, síntomas, costes y grupos de interacción
-- **Alertas clínicas**: alergias, embarazo/lactancia e interacciones
-- **Fichas de paciente** con historial, mutua y medicación crónica
-- **Sustitución por genérico** con cálculo de ahorro
-- **Libro de estupefacientes / psicótropos**
-- **Búsqueda por síntomas** (chips + texto)
-- **Modo guardia** (atención fuera de horario)
-- **Informe del día**: ventas, margen, métodos de pago, top productos
-- **Caja completa**: efectivo (cambio en euros con desglose), tarjeta, Bizum, transferencia, mixto, arqueo
-- **Atajos**: `F2` buscar, `F4` cobrar, `Esc` cerrar
-- Reloj: **1 minuto real = 1 hora de juego**
-- Persistencia en `localStorage`
+**Con receta:** antibióticos, cardiovascular, controlados, diabetes, digestivo ℞, dispensario, hormonas, salud mental, neurología, frigorífico, respiratorio, corticoides.
+
+## Clientes
+Pueden pedir:
+- un **producto exacto**
+- por **síntomas**
+- con **receta** (varios medicamentos)
+- o **ambas** cosas
+
+Si la receta no cuadra (DNI, caducada, producto distinto) → **rechazar**.
+
+## Extra
+- Sustitutos si no hay stock
+- Avisos de frigorífico, edad y controlados (doble comprobación)
+- Inventario por categoría + pedidos automáticos
+- Informe por categoría (imprimible/PDF)
+- TPV con billetes/monedas euro
+- Reloj: 1 min real = 1 h juego
 
 ## Aviso
-
-Herramienta educativa. No es un sistema sanitario real ni consejo médico.
+Simulador educativo. No es consejo médico.
