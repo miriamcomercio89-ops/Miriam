@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Farmacia Álora — Simulador de práctica</title>
+  <meta name="description" content="Simulador de farmacia en Álora: catálogo, recetas, pedidos, tickets e IVA. Herramienta de práctica." />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand-block">
+        <h1>Farmacia Álora</h1>
+        <p>Simulador de práctica · Catálogo, recetas y dispensación</p>
+      </div>
+      <div class="clock-block">
+        <div id="game-clock">—</div>
+        <div class="clock-meta">
+          <span id="open-badge" class="badge">—</span>
+          <span class="muted" id="speed-label">1 min real = 1 h juego</span>
+          <button type="button" class="btn btn-sm" id="pause-btn">⏸ Pausar</button>
+        </div>
+      </div>
+      <div class="top-actions">
+        <button type="button" class="btn btn-sm" id="btn-csv">Exportar CSV</button>
+        <button type="button" class="btn btn-sm" id="btn-export-json">Exportar JSON</button>
+        <button type="button" class="btn btn-sm" id="btn-restock">Reponer stock</button>
+        <button type="button" class="btn btn-sm" id="btn-reset">Reiniciar</button>
+      </div>
+    </header>
+
+    <section class="stats-row" aria-label="Indicadores">
+      <div class="stat"><span class="lbl">Catálogo</span><strong id="stat-catalog">—</strong></div>
+      <div class="stat"><span class="lbl">Tickets</span><strong id="stat-tickets">0</strong></div>
+      <div class="stat"><span class="lbl">Facturación</span><strong id="stat-fact">0 €</strong></div>
+      <div class="stat"><span class="lbl">Recetas dispensadas</span><strong id="stat-recetas">0</strong></div>
+    </section>
+
+    <nav class="tabs" aria-label="Secciones">
+      <button type="button" class="tab active" data-tab="venta">Venta</button>
+      <button type="button" class="tab" data-tab="pedidos">Pedidos <span id="cola-count" class="badge badge-muted">0</span></button>
+      <button type="button" class="tab" data-tab="recetas">Recetas</button>
+      <button type="button" class="tab" data-tab="ticket">Último ticket</button>
+      <button type="button" class="tab" data-tab="ayuda">Ayuda</button>
+    </nav>
+
+    <!-- VENTA -->
+    <section id="panel-venta" class="panel active">
+      <div class="layout-venta">
+        <div class="card">
+          <div class="catalog-head">
+            <h2>Catálogo</h2>
+            <span class="muted" id="catalog-count">—</span>
+          </div>
+          <div class="filters">
+            <input id="search-q" type="search" placeholder="Buscar nombre, EAN, SKU…" autocomplete="off" />
+            <select id="filter-cat"></select>
+            <select id="filter-receta">
+              <option value="">Receta: todas</option>
+              <option value="sin">Sin receta (OTC)</option>
+              <option value="con">Con receta</option>
+              <option value="controlado">Controlados</option>
+            </select>
+            <input id="filter-marca" type="search" placeholder="Marca" autocomplete="off" />
+            <input id="filter-pa" type="search" placeholder="Principio activo" autocomplete="off" />
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Producto</th>
+                  <th>PVP base</th>
+                  <th>Stock</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="catalog-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="stack">
+          <div class="card">
+            <h3>Cliente y cobro</h3>
+            <div class="form-grid">
+              <div>
+                <label class="lbl" for="cliente-nombre">Nombre</label>
+                <input id="cliente-nombre" type="text" placeholder="Nombre del cliente" />
+              </div>
+              <div>
+                <label class="lbl" for="cliente-dni">DNI / NIE</label>
+                <input id="cliente-dni" type="text" placeholder="12345678Z" />
+              </div>
+              <div>
+                <label class="lbl" for="cliente-tel">Teléfono</label>
+                <input id="cliente-tel" type="text" placeholder="600000000" />
+              </div>
+              <div>
+                <label class="lbl" for="descuento-pct">Descuento %</label>
+                <input id="descuento-pct" type="number" min="0" max="100" step="1" value="0" />
+              </div>
+              <div class="full">
+                <label class="lbl" for="mutua-select">Mutua / cobertura</label>
+                <select id="mutua-select"></select>
+              </div>
+            </div>
+            <div id="cart-body"></div>
+            <div class="totals">
+              <div><span>Base imponible</span><span id="tot-base">0 €</span></div>
+              <div><span>IVA</span><span id="tot-iva">0 €</span></div>
+              <div><span>Descuento</span><span id="tot-desc">0 €</span></div>
+              <div><span>Mutua (<span id="mutua-label">Particular</span>)</span><span id="tot-mutua">0 €</span></div>
+              <div class="grand"><span>A pagar</span><span id="tot-pagar">0 €</span></div>
+            </div>
+            <div class="actions-row">
+              <button type="button" class="btn btn-primary" id="btn-cobrar">Cobrar / emitir ticket</button>
+              <button type="button" class="btn" id="btn-vaciar">Vaciar carrito</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="catalog-head">
+              <h3>Receta activa</h3>
+              <span id="receta-status" class="badge badge-muted">Sin receta</span>
+            </div>
+            <div id="receta-panel"></div>
+            <div class="actions-row">
+              <button type="button" class="btn btn-sm btn-primary" id="btn-nueva-receta">Cargar / crear receta</button>
+              <button type="button" class="btn btn-sm" id="btn-limpiar-receta">Quitar receta</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PEDIDOS -->
+    <section id="panel-pedidos" class="panel">
+      <div class="card">
+        <div class="catalog-head">
+          <h2>Cola de pedidos</h2>
+          <button type="button" class="btn btn-sm btn-primary" id="btn-spawn">Generar cliente</button>
+        </div>
+        <p class="muted">Los clientes llegan solos mientras la farmacia está abierta (hora de juego). Atender un pedido carga cliente, carrito, mutua y receta si aplica.</p>
+        <div id="cola-list" class="pedidos-grid" style="margin-top:12px"></div>
+      </div>
+    </section>
+
+    <!-- RECETAS -->
+    <section id="panel-recetas" class="panel">
+      <div class="card">
+        <h2>Dispensación con receta</h2>
+        <p>Flujo completo de práctica:</p>
+        <ol>
+          <li>Identifica al paciente (DNI/NIE obligatorio en controlados).</li>
+          <li>Carga la receta (electrónica o papel) con médico y nº de colegiado.</li>
+          <li>Comprueba vigencia (caducidad según días de validez; controlados suelen 10 días).</li>
+          <li>Verifica que cada medicamento ℞ del carrito figure en la receta y no exceda la cantidad.</li>
+          <li>Aplica mutua si corresponde (solo sobre medicamentos IVA 4% en este simulador).</li>
+          <li>Cobra: se marca la receta como dispensada y se registra el ticket.</li>
+        </ol>
+        <p class="muted">Medicamentos controlados (psicótropos/estupefacientes) exigen identidad y generan avisos de libro de control.</p>
+        <div class="actions-row">
+          <button type="button" class="btn btn-primary" onclick="document.querySelector('[data-tab=venta]').click(); document.getElementById('btn-nueva-receta').click();">Crear receta ahora</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- TICKET -->
+    <section id="panel-ticket" class="panel">
+      <div class="card">
+        <div class="catalog-head">
+          <h2>Ticket / factura simplificada</h2>
+          <button type="button" class="btn btn-sm btn-primary" id="btn-print">Imprimir</button>
+        </div>
+        <div id="ticket-content">
+          <p class="empty">Aún no hay ticket. Realiza una venta para verlo aquí.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- AYUDA -->
+    <section id="panel-ayuda" class="panel">
+      <div class="card">
+        <h2>Cómo usar el simulador</h2>
+        <ul>
+          <li><strong>Tiempo:</strong> 1 minuto real = 1 hora de juego. La farmacia abre mañana y tarde (sábado solo mañana).</li>
+          <li><strong>Catálogo:</strong> miles de productos con marcas habituales, filtros y stock fijo inicial (reponible).</li>
+          <li><strong>Pedidos:</strong> llegan solos o con «Generar cliente». «Atender» prepara la venta.</li>
+          <li><strong>Recetas:</strong> validación de vigencia, coincidencia de paciente, productos y cantidades.</li>
+          <li><strong>Cobro:</strong> IVA (4/10/21%), descuento %, mutuas, ticket imprimible y export CSV/JSON.</li>
+          <li><strong>Datos:</strong> se guardan en localStorage del navegador.</li>
+        </ul>
+        <p class="warn-text">Herramienta educativa de práctica. No es un sistema sanitario real ni consejo médico. Precios y coberturas son simulados.</p>
+      </div>
+    </section>
+
+    <p class="disclaimer">Farmacia Álora · Simulador local en el navegador · Los nombres comerciales se usan con fines formativos de práctica.</p>
+  </div>
+
+  <!-- Modal receta -->
+  <div class="modal" id="modal-receta" role="dialog" aria-modal="true" aria-labelledby="rx-title">
+    <div class="modal-card">
+      <h2 id="rx-title" style="font-family:var(--display);color:var(--brand-deep);margin:0 0 12px">Receta médica</h2>
+      <div class="form-grid">
+        <div>
+          <label class="lbl" for="rx-numero">Nº receta</label>
+          <input id="rx-numero" type="text" />
+        </div>
+        <div>
+          <label class="lbl" for="rx-tipo">Tipo</label>
+          <select id="rx-tipo">
+            <option value="electronica">Electrónica</option>
+            <option value="papel">Papel</option>
+          </select>
+        </div>
+        <div>
+          <label class="lbl" for="rx-paciente">Paciente</label>
+          <input id="rx-paciente" type="text" />
+        </div>
+        <div>
+          <label class="lbl" for="rx-dni">DNI/NIE paciente</label>
+          <input id="rx-dni" type="text" />
+        </div>
+        <div>
+          <label class="lbl" for="rx-medico">Médico prescritor</label>
+          <input id="rx-medico" type="text" />
+        </div>
+        <div>
+          <label class="lbl" for="rx-colegiado">Nº colegiado</label>
+          <input id="rx-colegiado" type="text" />
+        </div>
+        <div>
+          <label class="lbl" for="rx-fecha">Fecha emisión</label>
+          <input id="rx-fecha" type="date" />
+        </div>
+        <div>
+          <label class="lbl" for="rx-validez">Validez (días)</label>
+          <input id="rx-validez" type="number" min="1" max="365" value="30" />
+        </div>
+        <div class="full">
+          <label class="lbl" for="rx-productos">Productos prescritos</label>
+          <textarea id="rx-productos" rows="5" placeholder="id|cantidad"></textarea>
+          <p class="muted tiny" id="rx-hint"></p>
+        </div>
+        <div class="full">
+          <label class="lbl" for="rx-obs">Observaciones</label>
+          <textarea id="rx-obs" rows="2"></textarea>
+        </div>
+      </div>
+      <div class="actions-row">
+        <button type="button" class="btn btn-primary" id="btn-rx-guardar">Validar y activar</button>
+        <button type="button" class="btn" id="btn-rx-cerrar">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toasts" aria-live="polite"></div>
+
+  <script src="js/catalog.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
