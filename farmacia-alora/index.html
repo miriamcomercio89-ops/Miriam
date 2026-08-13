@@ -3,24 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Farmacia Álora — Simulador de práctica</title>
-  <meta name="description" content="Simulador completo de farmacia en Álora: catálogo, recetas, caja, pacientes e informes." />
+  <title>Farmacia Álora — TPV de práctica</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="css/styles.css" />
 </head>
-<body>
+<body class="ui-large">
   <div class="app-bg" aria-hidden="true"></div>
   <div class="app-shell">
     <header class="topbar">
       <div class="brand-block">
         <div class="logo-mark" aria-hidden="true">
-          <svg viewBox="0 0 64 64" width="56" height="56">
-            <defs>
-              <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stop-color="#16a34a"/>
-                <stop offset="100%" stop-color="#0891b2"/>
-              </linearGradient>
-            </defs>
+          <svg viewBox="0 0 64 64" width="58" height="58">
+            <defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#16a34a"/><stop offset="100%" stop-color="#0891b2"/></linearGradient></defs>
             <circle cx="32" cy="32" r="30" fill="url(#g1)"/>
             <rect x="28" y="14" width="8" height="36" rx="2" fill="#fff"/>
             <rect x="14" y="28" width="36" height="8" rx="2" fill="#fff"/>
@@ -29,84 +23,87 @@
         </div>
         <div>
           <h1>Farmacia Álora</h1>
-          <p>Mostrador digital · práctica profesional</p>
+          <p>TPV · mostrador de práctica</p>
         </div>
       </div>
-
       <div class="clock-block">
         <div class="clock-main" id="game-clock">—</div>
         <div class="clock-meta">
           <span id="open-badge" class="badge">—</span>
+          <span id="season-badge" class="badge badge-blue">—</span>
           <span id="guardia-badge" class="badge badge-purple hidden">🚑 Guardia</span>
           <span class="chip-soft">⏱ 1 min = 1 h</span>
           <button type="button" class="btn btn-ghost btn-sm" id="pause-btn">Pausar</button>
-          <button type="button" class="btn btn-accent btn-sm" id="btn-guardia">Activar guardia</button>
+          <button type="button" class="btn btn-accent btn-sm" id="btn-guardia">Guardia</button>
+          <button type="button" class="btn btn-sm" id="btn-sound" title="Sonido">🔊</button>
         </div>
       </div>
-
       <div class="top-actions">
-        <button type="button" class="btn btn-sm" id="btn-csv" title="Exportar ventas">⬇ CSV</button>
+        <button type="button" class="btn btn-sm" id="btn-csv">⬇ CSV</button>
         <button type="button" class="btn btn-sm" id="btn-export-json">⬇ JSON</button>
         <button type="button" class="btn btn-sm" id="btn-restock">📦 Stock</button>
         <button type="button" class="btn btn-sm btn-danger-soft" id="btn-reset">Reiniciar</button>
       </div>
     </header>
 
-    <section class="stats-row" aria-label="Indicadores">
-      <article class="stat s-teal"><span class="stat-ico">💊</span><div><span class="lbl">Catálogo</span><strong id="stat-catalog">—</strong></div></article>
+    <section class="stats-row">
+      <article class="stat s-teal"><span class="stat-ico">💊</span><div><span class="lbl">Productos</span><strong id="stat-catalog">—</strong></div></article>
       <article class="stat s-blue"><span class="stat-ico">🧾</span><div><span class="lbl">Tickets</span><strong id="stat-tickets">0</strong></div></article>
       <article class="stat s-amber"><span class="stat-ico">💶</span><div><span class="lbl">Facturación</span><strong id="stat-fact">0 €</strong></div></article>
-      <article class="stat s-pink"><span class="stat-ico">📋</span><div><span class="lbl">Recetas</span><strong id="stat-recetas">0</strong></div></article>
-      <article class="stat s-violet"><span class="stat-ico">🛡</span><div><span class="lbl">Caja contada</span><strong id="stat-caja">0 €</strong></div></article>
+      <article class="stat s-pink"><span class="stat-ico">⚠️</span><div><span class="lbl">Stock bajo</span><strong id="stat-low">0</strong></div></article>
+      <article class="stat s-violet"><span class="stat-ico">📅</span><div><span class="lbl">Caducan pronto</span><strong id="stat-exp">0</strong></div></article>
     </section>
 
-    <nav class="tabs" aria-label="Secciones">
+    <div id="alerts-bar" class="alerts-bar" hidden></div>
+
+    <nav class="tabs">
       <button type="button" class="tab active" data-tab="venta"><span>🛒</span> Venta <kbd>F2</kbd></button>
-      <button type="button" class="tab" data-tab="pedidos"><span>👥</span> Pedidos <span id="cola-count" class="count-pill">0</span></button>
+      <button type="button" class="tab" data-tab="pedidos"><span>💬</span> Clientes <span id="cola-count" class="count-pill">0</span></button>
+      <button type="button" class="tab" data-tab="almacen"><span>🚚</span> Almacén <span id="alm-count" class="count-pill">0</span></button>
       <button type="button" class="tab" data-tab="pacientes"><span>🗂</span> Pacientes</button>
-      <button type="button" class="tab" data-tab="caja"><span>🖥</span> Caja</button>
+      <button type="button" class="tab" data-tab="caja"><span>🖥</span> TPV / Caja</button>
       <button type="button" class="tab" data-tab="libro"><span>📕</span> Estupefacientes</button>
       <button type="button" class="tab" data-tab="informes"><span>📊</span> Informes</button>
       <button type="button" class="tab" data-tab="ticket"><span>🎟</span> Ticket</button>
       <button type="button" class="tab" data-tab="ayuda"><span>❓</span> Ayuda</button>
     </nav>
 
-    <div id="alerts-bar" class="alerts-bar" hidden></div>
-
     <!-- VENTA -->
     <section id="panel-venta" class="panel active">
+      <div id="cliente-habla" class="speech-card hidden">
+        <div class="speech-avatar" aria-hidden="true">🗣️</div>
+        <div>
+          <div class="speech-name" id="speech-name">Cliente</div>
+          <p id="speech-text" class="speech-text">—</p>
+          <div id="speech-tags" class="speech-tags"></div>
+        </div>
+      </div>
+
       <div class="layout-venta">
         <div class="card card-catalog">
           <div class="card-head">
             <h2><span class="h-ico">🏪</span> Catálogo</h2>
             <span class="muted" id="catalog-count">—</span>
           </div>
-
           <div class="sintomas-row" id="sintomas-row"></div>
-
           <div class="filters">
-            <input id="search-q" type="search" placeholder="F2 · Buscar nombre, EAN, síntoma…" autocomplete="off" />
+            <input id="search-q" type="search" placeholder="F2 · Buscar o síntoma…" autocomplete="off" />
             <select id="filter-cat"></select>
             <select id="filter-receta">
               <option value="">Receta: todas</option>
-              <option value="sin">Sin receta (OTC)</option>
+              <option value="sin">Sin receta</option>
               <option value="con">Con receta</option>
               <option value="controlado">Controlados</option>
+              <option value="oferta">Oferta del día</option>
+              <option value="caduca">Caducan pronto</option>
+              <option value="bajo">Stock bajo</option>
             </select>
-            <input id="filter-marca" type="search" placeholder="Marca" autocomplete="off" />
-            <input id="filter-pa" type="search" placeholder="Principio activo" autocomplete="off" />
+            <input id="filter-marca" type="search" placeholder="Marca" />
+            <input id="filter-pa" type="search" placeholder="Principio activo" />
           </div>
-
           <div class="table-wrap">
             <table>
-              <thead>
-                <tr>
-                  <th>Producto</th>
-                  <th>PVP</th>
-                  <th>Stock</th>
-                  <th></th>
-                </tr>
-              </thead>
+              <thead><tr><th>Producto</th><th>PVP / SNS</th><th>Stock</th><th></th></tr></thead>
               <tbody id="catalog-body"></tbody>
             </table>
           </div>
@@ -115,29 +112,28 @@
         <div class="stack">
           <div class="card card-patient">
             <div class="card-head">
-              <h3><span class="h-ico">👤</span> Paciente / cliente</h3>
-              <button type="button" class="btn btn-sm btn-primary" id="btn-load-paciente">Cargar ficha</button>
+              <h3><span class="h-ico">👤</span> Cliente</h3>
+              <button type="button" class="btn btn-sm btn-primary" id="btn-load-paciente">Fichas</button>
             </div>
             <div class="form-grid">
+              <div><label class="lbl" for="cliente-nombre">Nombre</label><input id="cliente-nombre" type="text" /></div>
+              <div><label class="lbl" for="cliente-dni">DNI / NIE</label><input id="cliente-dni" type="text" /></div>
               <div>
-                <label class="lbl" for="cliente-nombre">Nombre</label>
-                <input id="cliente-nombre" type="text" placeholder="Nombre" />
+                <label class="lbl" for="tramo-sns">Tramo SNS</label>
+                <select id="tramo-sns">
+                  <option value="particular">Particular (paga todo)</option>
+                  <option value="exento">Exento (0%)</option>
+                  <option value="pensionista">Pensionista (10%)</option>
+                  <option value="activo_bajo">Activo bajo (40%)</option>
+                  <option value="activo_medio">Activo medio (50%)</option>
+                  <option value="activo_alto">Activo alto (60%)</option>
+                </select>
               </div>
-              <div>
-                <label class="lbl" for="cliente-dni">DNI / NIE</label>
-                <input id="cliente-dni" type="text" placeholder="12345678Z" />
-              </div>
-              <div>
-                <label class="lbl" for="cliente-tel">Teléfono</label>
-                <input id="cliente-tel" type="text" />
-              </div>
-              <div>
-                <label class="lbl" for="descuento-pct">Descuento %</label>
-                <input id="descuento-pct" type="number" min="0" max="100" step="1" value="0" />
-              </div>
-              <div class="full">
-                <label class="lbl" for="mutua-select">Mutua</label>
-                <select id="mutua-select"></select>
+              <div><label class="lbl" for="mutua-select">Mutua</label><select id="mutua-select"></select></div>
+              <div class="full checks-row">
+                <label class="check"><input type="checkbox" id="chk-pensionista" /> 👴 Pensionista (−10%)</label>
+                <label class="check"><input type="checkbox" id="chk-familia" /> 👪 Familia numerosa (−15%)</label>
+                <label class="check"><input type="checkbox" id="chk-oferta" /> 🏷 Aplicar ofertas del día</label>
               </div>
             </div>
             <div id="paciente-chips" class="paciente-chips"></div>
@@ -150,21 +146,20 @@
             </div>
             <div id="cart-body"></div>
             <div class="totals">
-              <div><span>Base</span><span id="tot-base">0 €</span></div>
-              <div><span>IVA</span><span id="tot-iva">0 €</span></div>
-              <div><span>Descuento</span><span id="tot-desc">0 €</span></div>
-              <div><span>Mutua (<span id="mutua-label">Particular</span>)</span><span id="tot-mutua">0 €</span></div>
-              <div class="grand"><span>A pagar</span><span id="tot-pagar">0 €</span></div>
+              <div><span>PVP + IVA</span><span id="tot-bruto">0 €</span></div>
+              <div><span>Descuentos</span><span id="tot-desc">0 €</span></div>
+              <div><span>SNS / mutua cubre</span><span id="tot-mutua">0 €</span></div>
+              <div class="grand"><span>Cliente paga</span><span id="tot-pagar">0 €</span></div>
             </div>
             <div class="actions-row">
-              <button type="button" class="btn btn-primary btn-lg" id="btn-cobrar">Cobrar <kbd>F4</kbd></button>
+              <button type="button" class="btn btn-primary btn-lg" id="btn-cobrar">Cobrar TPV <kbd>F4</kbd></button>
               <button type="button" class="btn btn-soft" id="btn-sugerir-generico">♻ Genérico</button>
             </div>
           </div>
 
           <div class="card card-rx">
             <div class="card-head">
-              <h3><span class="h-ico">📝</span> Receta activa</h3>
+              <h3><span class="h-ico">📝</span> Receta</h3>
               <span id="receta-status" class="badge badge-muted">Sin receta</span>
             </div>
             <div id="receta-panel"></div>
@@ -177,15 +172,40 @@
       </div>
     </section>
 
-    <!-- PEDIDOS -->
+    <!-- CLIENTES / PEDIDOS -->
     <section id="panel-pedidos" class="panel">
       <div class="card">
         <div class="card-head">
-          <h2><span class="h-ico">👥</span> Cola de pedidos</h2>
+          <h2><span class="h-ico">💬</span> Cola de clientes</h2>
           <button type="button" class="btn btn-primary btn-sm" id="btn-spawn">+ Cliente</button>
         </div>
-        <p class="muted">Llegan solos en horario normal. Con <strong>guardia</strong> también fuera de hora.</p>
+        <p class="muted">Hay <strong>millones</strong> de clientes posibles. Cada uno cuenta qué le pasa; tú eliges el producto y lo añades al carrito.</p>
         <div id="cola-list" class="pedidos-grid"></div>
+      </div>
+    </section>
+
+    <!-- ALMACÉN -->
+    <section id="panel-almacen" class="panel">
+      <div class="layout-2">
+        <div class="card">
+          <h2><span class="h-ico">🚚</span> Pedidos a almacén</h2>
+          <p class="muted">Si falta stock, pídelo. Llegará en horas de juego.</p>
+          <div class="form-grid">
+            <div class="full"><label class="lbl" for="alm-search">Producto</label><input id="alm-search" type="search" placeholder="Buscar para pedir…" /></div>
+            <div><label class="lbl" for="alm-qty">Cantidad</label><input id="alm-qty" type="number" min="1" value="20" /></div>
+            <div class="actions-row" style="align-items:end"><button type="button" class="btn btn-primary" id="btn-hacer-pedido">Pedir</button></div>
+          </div>
+          <div id="alm-suggest" class="list-block"></div>
+        </div>
+        <div class="card">
+          <div class="card-head">
+            <h2><span class="h-ico">📥</span> En camino / recibidos</h2>
+            <button type="button" class="btn btn-sm" id="btn-retirar-caducados">Retirar caducados</button>
+          </div>
+          <div id="alm-pedidos" class="list-block"></div>
+          <h3 class="subh">Alertas de stock y caducidad</h3>
+          <div id="alm-alertas" class="list-block"></div>
+        </div>
       </div>
     </section>
 
@@ -194,212 +214,180 @@
       <div class="layout-2">
         <div class="card">
           <div class="card-head">
-            <h2><span class="h-ico">🗂</span> Fichas de paciente</h2>
-            <button type="button" class="btn btn-primary btn-sm" id="btn-nuevo-paciente">+ Nueva ficha</button>
+            <h2><span class="h-ico">🗂</span> Fichas recientes</h2>
+            <button type="button" class="btn btn-primary btn-sm" id="btn-nuevo-paciente">+ Ficha</button>
           </div>
-          <input id="paciente-search" type="search" placeholder="Buscar por nombre o DNI…" />
+          <input id="paciente-search" type="search" placeholder="Buscar ficha guardada…" />
           <div id="pacientes-list" class="list-block"></div>
         </div>
-        <div class="card" id="paciente-detail-card">
-          <h2><span class="h-ico">📄</span> Detalle</h2>
-          <div id="paciente-detail" class="empty">Selecciona o crea un paciente</div>
-        </div>
+        <div class="card"><h2>📄 Detalle</h2><div id="paciente-detail" class="empty">Selecciona una ficha</div></div>
       </div>
     </section>
 
-    <!-- CAJA -->
+    <!-- TPV CAJA -->
     <section id="panel-caja" class="panel">
       <div class="layout-2">
         <div class="card">
           <div class="card-head">
-            <h2><span class="h-ico">🖥</span> Terminal de caja</h2>
+            <h2><span class="h-ico">🖥</span> Terminal TPV</h2>
             <span id="caja-estado" class="badge badge-ok">Abierta</span>
           </div>
           <div id="caja-resumen" class="caja-resumen"></div>
           <div class="actions-row">
-            <button type="button" class="btn btn-primary" id="btn-abrir-caja">Abrir / reabrir caja</button>
+            <button type="button" class="btn btn-primary" id="btn-abrir-caja">Abrir caja</button>
             <button type="button" class="btn btn-accent" id="btn-arqueo">Arqueo / cierre</button>
           </div>
-          <h3 class="subh">Denominaciones en cajón</h3>
-          <div id="caja-denoms" class="denoms-grid"></div>
+          <h3 class="subh">💶 Billetes y monedas en el cajón</h3>
+          <div id="caja-denoms" class="euro-grid"></div>
         </div>
         <div class="card">
-          <h2><span class="h-ico">📒</span> Movimientos</h2>
+          <h2><span class="h-ico">📒</span> Movimientos TPV</h2>
           <div id="caja-movimientos" class="list-block"></div>
         </div>
       </div>
     </section>
 
-    <!-- LIBRO -->
     <section id="panel-libro" class="panel">
       <div class="card">
         <div class="card-head">
-          <h2><span class="h-ico">📕</span> Libro de estupefacientes / psicótropos</h2>
-          <button type="button" class="btn btn-sm" id="btn-libro-csv">Exportar libro</button>
+          <h2><span class="h-ico">📕</span> Libro de estupefacientes</h2>
+          <button type="button" class="btn btn-sm" id="btn-libro-csv">Exportar</button>
         </div>
         <div id="libro-list" class="table-wrap tall"></div>
       </div>
     </section>
 
-    <!-- INFORMES -->
     <section id="panel-informes" class="panel">
       <div class="card">
         <div class="card-head">
-          <h2><span class="h-ico">📊</span> Informe del día (hora de juego)</h2>
-          <button type="button" class="btn btn-sm btn-primary" id="btn-refresh-informe">Actualizar</button>
+          <h2><span class="h-ico">📊</span> Informe del día</h2>
+          <div class="actions-row" style="margin:0">
+            <button type="button" class="btn btn-sm btn-primary" id="btn-refresh-informe">Actualizar</button>
+            <button type="button" class="btn btn-sm btn-accent" id="btn-print-informe">🖨 Imprimir / PDF</button>
+          </div>
         </div>
-        <div id="informe-content" class="informe-grid"></div>
+        <div id="informe-print-area">
+          <div id="informe-content" class="informe-grid"></div>
+        </div>
       </div>
     </section>
 
-    <!-- TICKET -->
     <section id="panel-ticket" class="panel">
       <div class="card">
         <div class="card-head">
           <h2><span class="h-ico">🎟</span> Último ticket</h2>
           <button type="button" class="btn btn-primary btn-sm" id="btn-print">Imprimir</button>
         </div>
-        <div id="ticket-content"><p class="empty">Aún no hay ticket</p></div>
+        <div id="ticket-content"><p class="empty">Sin ticket aún</p></div>
       </div>
     </section>
 
-    <!-- AYUDA -->
     <section id="panel-ayuda" class="panel">
       <div class="card help-card">
-        <h2><span class="h-ico">✨</span> Atajos y guía rápida</h2>
-        <div class="help-grid">
-          <div><kbd>F2</kbd> Buscar en catálogo</div>
-          <div><kbd>F4</kbd> Cobrar</div>
-          <div><kbd>Esc</kbd> Cerrar modales / cancelar foco</div>
-          <div><kbd>G</kbd> (con Alt) Alternar guardia — usa el botón</div>
-        </div>
-        <ul>
-          <li>Alertas clínicas: alergias, embarazo/lactancia e interacciones al cobrar o al cargar paciente.</li>
-          <li>Sustitución por genérico: botón ♻ en venta.</li>
-          <li>Caja: efectivo con cambio en euros, tarjeta, Bizum, transferencia y mixto.</li>
-          <li>Guardia: atiende fuera de horario normal.</li>
-        </ul>
-        <p class="warn-text">Simulador educativo. No es un sistema sanitario real ni consejo médico.</p>
+        <h2>✨ Cómo usar el TPV</h2>
+        <ol class="help-steps">
+          <li>En <strong>Clientes</strong>, atiende a alguien: te dirá qué le pasa.</li>
+          <li>En <strong>Venta</strong>, busca por síntoma o nombre y <strong>añade</strong> al carrito.</li>
+          <li>Elige tramo SNS, pensionista o familia numerosa si aplica.</li>
+          <li>Pulsa <strong>Cobrar TPV</strong> y elige cómo paga (efectivo con cambio, tarjeta…).</li>
+          <li>Si falta stock: pestaña <strong>Almacén</strong>.</li>
+        </ol>
+        <p><kbd>F2</kbd> buscar · <kbd>F4</kbd> cobrar · <kbd>Esc</kbd> cerrar</p>
+        <p class="warn-text">Simulador educativo. No es consejo médico real.</p>
       </div>
     </section>
 
-    <footer class="disclaimer">Farmacia Álora · Simulador local · Marcas con fines formativos</footer>
+    <footer class="disclaimer">Farmacia Álora · TPV de práctica · 5 millones de clientes posibles · +12.000 productos</footer>
   </div>
 
   <!-- Modal receta -->
-  <div class="modal" id="modal-receta" role="dialog" aria-modal="true">
-    <div class="modal-card">
-      <h2>📝 Receta médica</h2>
+  <div class="modal" id="modal-receta"><div class="modal-card">
+    <h2>📝 Receta</h2>
+    <div class="form-grid">
+      <div><label class="lbl" for="rx-numero">Nº</label><input id="rx-numero" /></div>
+      <div><label class="lbl" for="rx-tipo">Tipo</label><select id="rx-tipo"><option value="electronica">Electrónica</option><option value="papel">Papel</option></select></div>
+      <div><label class="lbl" for="rx-paciente">Paciente</label><input id="rx-paciente" /></div>
+      <div><label class="lbl" for="rx-dni">DNI</label><input id="rx-dni" /></div>
+      <div><label class="lbl" for="rx-medico">Médico</label><input id="rx-medico" /></div>
+      <div><label class="lbl" for="rx-colegiado">Colegiado</label><input id="rx-colegiado" /></div>
+      <div><label class="lbl" for="rx-fecha">Emisión</label><input id="rx-fecha" type="date" /></div>
+      <div><label class="lbl" for="rx-validez">Validez días</label><input id="rx-validez" type="number" value="30" /></div>
+      <div class="full"><label class="lbl" for="rx-productos">id|cantidad</label><textarea id="rx-productos" rows="4"></textarea><p class="muted tiny" id="rx-hint"></p></div>
+      <div class="full"><label class="lbl" for="rx-obs">Obs.</label><textarea id="rx-obs" rows="2"></textarea></div>
+    </div>
+    <div class="actions-row">
+      <button type="button" class="btn btn-primary" id="btn-rx-guardar">Activar</button>
+      <button type="button" class="btn" id="btn-rx-cerrar">Cancelar</button>
+    </div>
+  </div></div>
+
+  <!-- Modal TPV pago -->
+  <div class="modal" id="modal-pago"><div class="modal-card modal-wide">
+    <h2>🖥 Cobro TPV</h2>
+    <p class="pago-total">A pagar: <strong id="pago-total">0 €</strong></p>
+    <div class="metodos-grid" id="metodos-grid"></div>
+
+    <div id="pago-efectivo-panel" class="pago-panel">
       <div class="form-grid">
-        <div><label class="lbl" for="rx-numero">Nº receta</label><input id="rx-numero" type="text" /></div>
-        <div>
-          <label class="lbl" for="rx-tipo">Tipo</label>
-          <select id="rx-tipo">
-            <option value="electronica">Electrónica</option>
-            <option value="papel">Papel</option>
-          </select>
-        </div>
-        <div><label class="lbl" for="rx-paciente">Paciente</label><input id="rx-paciente" type="text" /></div>
-        <div><label class="lbl" for="rx-dni">DNI/NIE</label><input id="rx-dni" type="text" /></div>
-        <div><label class="lbl" for="rx-medico">Médico</label><input id="rx-medico" type="text" /></div>
-        <div><label class="lbl" for="rx-colegiado">Colegiado</label><input id="rx-colegiado" type="text" /></div>
-        <div><label class="lbl" for="rx-fecha">Emisión</label><input id="rx-fecha" type="date" /></div>
-        <div><label class="lbl" for="rx-validez">Validez (días)</label><input id="rx-validez" type="number" value="30" /></div>
-        <div class="full">
-          <label class="lbl" for="rx-productos">Productos (id|cantidad)</label>
-          <textarea id="rx-productos" rows="4"></textarea>
-          <p class="muted tiny" id="rx-hint"></p>
-        </div>
-        <div class="full"><label class="lbl" for="rx-obs">Observaciones</label><textarea id="rx-obs" rows="2"></textarea></div>
+        <div><label class="lbl" for="pago-recibido">Entrega (€)</label><input id="pago-recibido" type="number" min="0" step="0.01" /></div>
+        <div><label class="lbl">Cambio</label><div class="cambio-box" id="pago-cambio">0 €</div></div>
       </div>
-      <div class="actions-row">
-        <button type="button" class="btn btn-primary" id="btn-rx-guardar">Validar y activar</button>
-        <button type="button" class="btn" id="btn-rx-cerrar">Cancelar</button>
+      <p class="muted">Pulsa billetes/monedas para sumar lo que entrega el cliente:</p>
+      <div id="pago-euro-pad" class="euro-grid pad"></div>
+      <div class="quick-cash" id="quick-cash"></div>
+      <h3 class="subh">Cambio a devolver</h3>
+      <div id="cambio-desglose" class="euro-grid compact"></div>
+    </div>
+
+    <div id="pago-mixto-panel" class="pago-panel hidden">
+      <div class="form-grid">
+        <div><label class="lbl" for="mixto-efectivo">Efectivo</label><input id="mixto-efectivo" type="number" min="0" step="0.01" value="0" /></div>
+        <div><label class="lbl" for="mixto-tarjeta">Tarjeta</label><input id="mixto-tarjeta" type="number" min="0" step="0.01" value="0" /></div>
+        <div><label class="lbl" for="mixto-bizum">Bizum</label><input id="mixto-bizum" type="number" min="0" step="0.01" value="0" /></div>
+        <div><label class="lbl">Suma</label><div class="cambio-box" id="mixto-suma">0 €</div></div>
       </div>
     </div>
-  </div>
 
-  <!-- Modal pago / caja -->
-  <div class="modal" id="modal-pago" role="dialog" aria-modal="true">
-    <div class="modal-card modal-wide">
-      <h2>💶 Cobro en caja</h2>
-      <p class="pago-total">Total a pagar: <strong id="pago-total">0 €</strong></p>
-      <div class="metodos-grid" id="metodos-grid"></div>
-
-      <div id="pago-efectivo-panel" class="pago-panel">
-        <div class="form-grid">
-          <div>
-            <label class="lbl" for="pago-recibido">Entrega cliente (€)</label>
-            <input id="pago-recibido" type="number" min="0" step="0.01" />
-          </div>
-          <div>
-            <label class="lbl">Cambio</label>
-            <div class="cambio-box" id="pago-cambio">0 €</div>
-          </div>
-        </div>
-        <div class="quick-cash" id="quick-cash"></div>
-        <h3 class="subh">Desglose del cambio</h3>
-        <div id="cambio-desglose" class="desglose-cambio"></div>
-      </div>
-
-      <div id="pago-mixto-panel" class="pago-panel hidden">
-        <div class="form-grid">
-          <div><label class="lbl" for="mixto-efectivo">Efectivo (€)</label><input id="mixto-efectivo" type="number" min="0" step="0.01" value="0" /></div>
-          <div><label class="lbl" for="mixto-tarjeta">Tarjeta (€)</label><input id="mixto-tarjeta" type="number" min="0" step="0.01" value="0" /></div>
-          <div><label class="lbl" for="mixto-bizum">Bizum (€)</label><input id="mixto-bizum" type="number" min="0" step="0.01" value="0" /></div>
-          <div><label class="lbl">Suma</label><div class="cambio-box" id="mixto-suma">0 €</div></div>
-        </div>
-      </div>
-
-      <div id="pago-alerts" class="pago-alerts"></div>
-      <div class="actions-row">
-        <button type="button" class="btn btn-primary btn-lg" id="btn-confirmar-pago">Confirmar cobro</button>
-        <button type="button" class="btn" id="btn-cancelar-pago">Cancelar <kbd>Esc</kbd></button>
-      </div>
+    <div id="pago-alerts" class="pago-alerts"></div>
+    <div class="actions-row">
+      <button type="button" class="btn btn-primary btn-lg" id="btn-confirmar-pago">✔ Confirmar cobro</button>
+      <button type="button" class="btn" id="btn-cancelar-pago">Cancelar <kbd>Esc</kbd></button>
     </div>
-  </div>
+  </div></div>
 
   <!-- Modal paciente -->
-  <div class="modal" id="modal-paciente" role="dialog" aria-modal="true">
-    <div class="modal-card">
-      <h2>🗂 Ficha de paciente</h2>
-      <div class="form-grid">
-        <div><label class="lbl" for="np-nombre">Nombre</label><input id="np-nombre" type="text" /></div>
-        <div><label class="lbl" for="np-dni">DNI/NIE</label><input id="np-dni" type="text" /></div>
-        <div><label class="lbl" for="np-tel">Teléfono</label><input id="np-tel" type="text" /></div>
-        <div>
-          <label class="lbl" for="np-mutua">Mutua</label>
-          <select id="np-mutua"></select>
-        </div>
-        <div class="full"><label class="lbl" for="np-alergias">Alergias (separadas por coma)</label><input id="np-alergias" type="text" placeholder="penicilina, aines…" /></div>
-        <div class="full"><label class="lbl" for="np-cronicos">Medicación crónica (coma)</label><input id="np-cronicos" type="text" placeholder="enalapril, metformina…" /></div>
-        <div><label class="check"><input id="np-embarazo" type="checkbox" /> Embarazo</label></div>
-        <div><label class="check"><input id="np-lactancia" type="checkbox" /> Lactancia</label></div>
-        <div class="full"><label class="lbl" for="np-notas">Notas</label><textarea id="np-notas" rows="2"></textarea></div>
-      </div>
-      <div class="actions-row">
-        <button type="button" class="btn btn-primary" id="btn-guardar-paciente">Guardar ficha</button>
-        <button type="button" class="btn" id="btn-cerrar-paciente">Cancelar</button>
-      </div>
+  <div class="modal" id="modal-paciente"><div class="modal-card">
+    <h2>🗂 Ficha</h2>
+    <div class="form-grid">
+      <div><label class="lbl" for="np-nombre">Nombre</label><input id="np-nombre" /></div>
+      <div><label class="lbl" for="np-dni">DNI</label><input id="np-dni" /></div>
+      <div><label class="lbl" for="np-tel">Tel</label><input id="np-tel" /></div>
+      <div><label class="lbl" for="np-mutua">Mutua</label><select id="np-mutua"></select></div>
+      <div class="full"><label class="lbl" for="np-alergias">Alergias</label><input id="np-alergias" /></div>
+      <div class="full"><label class="lbl" for="np-cronicos">Crónicos</label><input id="np-cronicos" /></div>
+      <div><label class="check"><input id="np-embarazo" type="checkbox" /> Embarazo</label></div>
+      <div><label class="check"><input id="np-lactancia" type="checkbox" /> Lactancia</label></div>
+      <div class="full"><label class="lbl" for="np-notas">Notas</label><textarea id="np-notas" rows="2"></textarea></div>
     </div>
-  </div>
+    <div class="actions-row">
+      <button type="button" class="btn btn-primary" id="btn-guardar-paciente">Guardar</button>
+      <button type="button" class="btn" id="btn-cerrar-paciente">Cancelar</button>
+    </div>
+  </div></div>
 
-  <!-- Modal genéricos -->
-  <div class="modal" id="modal-generico" role="dialog" aria-modal="true">
-    <div class="modal-card">
-      <h2>♻ Sustitución por genérico</h2>
-      <div id="generico-list" class="list-block"></div>
-      <div class="actions-row">
-        <button type="button" class="btn" id="btn-cerrar-generico">Cerrar</button>
-      </div>
-    </div>
-  </div>
+  <div class="modal" id="modal-generico"><div class="modal-card">
+    <h2>♻ Genéricos</h2>
+    <div id="generico-list" class="list-block"></div>
+    <div class="actions-row"><button type="button" class="btn" id="btn-cerrar-generico">Cerrar</button></div>
+  </div></div>
 
   <div id="toasts" aria-live="polite"></div>
 
   <script src="js/catalog.js"></script>
   <script src="js/clinical.js"></script>
+  <script src="js/clients.js"></script>
   <script src="js/caja.js"></script>
+  <script src="js/sounds.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

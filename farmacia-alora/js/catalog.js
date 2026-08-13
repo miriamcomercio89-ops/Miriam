@@ -12,24 +12,45 @@
     "Respiratorio",
     "Digestivo",
     "Analgésicos y antiinflamatorios",
+    "Dolor y fiebre",
     "Sistema nervioso",
+    "Sueño y estrés",
     "Dermatología",
     "Dermocosmética",
+    "Capilar",
     "Higiene personal",
     "Higiene bucal",
+    "Higiene íntima",
     "Bebé y maternidad",
+    "Pediatría",
+    "Geriatría",
+    "Embarazo y fertilidad",
     "Vitaminas y suplementos",
     "Nutrición",
+    "Control de peso",
+    "Deporte y nutrición deportiva",
     "Ortopedia",
+    "Podología",
     "Primeros auxilios",
+    "Heridas y cura",
+    "Material sanitario",
+    "Diagnóstico y tests",
     "Salud sexual",
     "Óptica",
+    "Oftalmología",
+    "Otorrinolaringología",
+    "Otorrino y oftalmología",
     "Homeopatía",
+    "Fitoterapia",
     "Veterinaria",
     "Diabetes",
     "Alergia",
     "Ginecología",
-    "Otorrino y oftalmología",
+    "Urología",
+    "Incontinencia",
+    "Solar y fotoprotección",
+    "Dejar de fumar",
+    "Viajes y botiquín",
   ];
 
   const MARCAS_FARMA = [
@@ -58,6 +79,8 @@
     "dolor de cabeza", "fiebre", "tos", "alergia", "acidez", "diarrea",
     "estreñimiento", "congestión", "dolor muscular", "piel irritada",
     "insomnio", "estres", "vitaminas", "higiene bucal", "solar",
+    "ojos secos", "heridas", "higiene íntima", "control peso",
+    "dejar de fumar", "deporte", "pediatría", "geriatría", "fitoterapia",
   ];
 
   const GRUPOS_INTERACCION = [
@@ -160,10 +183,16 @@
     { nombre: "Etinilestradiol/Levonorgestrel", receta: true, cats: ["Ginecología", "Medicamentos con receta"], controlado: false, grupoInteraccion: "otro", sintomas: [] },
     { nombre: "Clotrimazol vaginal", receta: false, cats: ["Ginecología", "Medicamentos OTC"], controlado: false, grupoInteraccion: "otro", sintomas: ["piel irritada"] },
     // Oftalmo / ORL
-    { nombre: "Lágrimas artificiales", receta: false, cats: ["Otorrino y oftalmología", "Óptica"], controlado: false, grupoInteraccion: "otro", sintomas: [] },
-    { nombre: "Tobramicina oftálmica", receta: true, cats: ["Otorrino y oftalmología", "Medicamentos con receta"], controlado: false, grupoInteraccion: "antibiotico", sintomas: [] },
-    { nombre: "Xilometazolina", receta: false, cats: ["Otorrino y oftalmología", "Medicamentos OTC"], controlado: false, grupoInteraccion: "otro", sintomas: ["congestión"] },
-    { nombre: "Fluticasona nasal", receta: false, cats: ["Otorrino y oftalmología", "Alergia"], controlado: false, grupoInteraccion: "corticoide", sintomas: ["alergia", "congestión"] },
+    { nombre: "Lágrimas artificiales", receta: false, cats: ["Otorrino y oftalmología", "Oftalmología", "Óptica"], controlado: false, grupoInteraccion: "otro", sintomas: ["ojos secos"] },
+    { nombre: "Tobramicina oftálmica", receta: true, cats: ["Otorrino y oftalmología", "Oftalmología", "Medicamentos con receta"], controlado: false, grupoInteraccion: "antibiotico", sintomas: [] },
+    { nombre: "Xilometazolina", receta: false, cats: ["Otorrino y oftalmología", "Otorrinolaringología", "Medicamentos OTC"], controlado: false, grupoInteraccion: "otro", sintomas: ["congestión"] },
+    { nombre: "Fluticasona nasal", receta: false, cats: ["Otorrino y oftalmología", "Otorrinolaringología", "Alergia"], controlado: false, grupoInteraccion: "corticoide", sintomas: ["alergia", "congestión"] },
+    { nombre: "Paracetamol infantil", receta: false, cats: ["Pediatría", "Medicamentos OTC", "Dolor y fiebre"], controlado: false, grupoInteraccion: "analgesico", sintomas: ["fiebre", "dolor de cabeza", "pediatría"] },
+    { nombre: "Ibuprofeno infantil", receta: false, cats: ["Pediatría", "Medicamentos OTC", "Dolor y fiebre"], controlado: false, grupoInteraccion: "nsaid", sintomas: ["fiebre", "dolor muscular", "pediatría"] },
+    { nombre: "Vareniclina", receta: true, cats: ["Dejar de fumar", "Medicamentos con receta"], controlado: false, grupoInteraccion: "otro", sintomas: ["dejar de fumar"] },
+    { nombre: "Orlistat", receta: false, cats: ["Control de peso", "Medicamentos OTC"], controlado: false, grupoInteraccion: "otro", sintomas: ["control peso"] },
+    { nombre: "Melatonina", receta: false, cats: ["Sueño y estrés", "Medicamentos OTC"], controlado: false, grupoInteraccion: "otro", sintomas: ["insomnio"] },
+    { nombre: "Tamsulosina", receta: true, cats: ["Urología", "Geriatría", "Medicamentos con receta"], controlado: false, grupoInteraccion: "otro", sintomas: ["geriatría"] },
   ];
 
   const MARCAS_COMERCIALES = {
@@ -316,6 +345,93 @@
     { marca: "Accu-Chek", linea: "FastClix lancetas", cat: "Diabetes", sub: "Lancetas", precios: [9.5, 14.9], tamanos: ["102 u", "204 u"] },
     { marca: "OneTouch", linea: "Select Plus tiras", cat: "Diabetes", sub: "Tiras", precios: [22.5, 36.9], tamanos: ["50 u", "100 u"] },
     { marca: "FreeStyle", linea: "Libre sensores", cat: "Diabetes", sub: "Sensor", precios: [59.9], tamanos: ["1 sensor"] },
+    // Solar y fotoprotección
+    { marca: "Isdin", linea: "Fotoprotector Pediatrics", cat: "Solar y fotoprotección", sub: "Pediatría", precios: [16.9, 21.5], tamanos: ["50 ml", "250 ml"] },
+    { marca: "Isdin", linea: "Eryfotona Actinica", cat: "Solar y fotoprotección", sub: "Actínica", precios: [24.9], tamanos: ["50 ml"] },
+    { marca: "La Roche-Posay", linea: "Anthelios Kids", cat: "Solar y fotoprotección", sub: "Niños", precios: [15.9, 19.9], tamanos: ["50 ml", "250 ml"] },
+    { marca: "Avène", linea: "Solar Intense Protect", cat: "Solar y fotoprotección", sub: "Alta protección", precios: [18.5, 22.9], tamanos: ["50 ml"] },
+    { marca: "Bioderma", linea: "Photoderm Pediatrics", cat: "Solar y fotoprotección", sub: "Niños", precios: [14.9, 18.5], tamanos: ["100 ml"] },
+    { marca: "Heliocare", linea: "360° Gel Oil-Free", cat: "Solar y fotoprotección", sub: "Gel", precios: [22.5], tamanos: ["50 ml"] },
+    // Higiene íntima
+    { marca: "Cumlaude", linea: "Daily íntimo", cat: "Higiene íntima", sub: "Gel", precios: [9.9, 13.5], tamanos: ["200 ml", "500 ml"] },
+    { marca: "Gynea", linea: "HydraGel íntimo", cat: "Higiene íntima", sub: "Hidratación", precios: [12.5], tamanos: ["30 ml"] },
+    { marca: "Lactacyd", linea: "Higiene íntima", cat: "Higiene íntima", sub: "Gel", precios: [6.9, 9.5], tamanos: ["200 ml", "400 ml"] },
+    { marca: "Corporess", linea: "Jabón íntimo", cat: "Higiene íntima", sub: "Jabón", precios: [5.5, 7.9], tamanos: ["250 ml"] },
+    { marca: "Saforelle", linea: "Cuidado íntimo", cat: "Higiene íntima", sub: "Gel", precios: [8.9, 11.5], tamanos: ["250 ml"] },
+    // Pediatría
+    { marca: "Bepanthol", linea: "Baby pomada", cat: "Pediatría", sub: "Pañal", precios: [7.5, 10.9], tamanos: ["30 g", "100 g"] },
+    { marca: "Isdin", linea: "Nutratopic Pro-AMP Baby", cat: "Pediatría", sub: "Atopia", precios: [16.9], tamanos: ["200 ml"] },
+    { marca: "Mustela", linea: "Stelatopia", cat: "Pediatría", sub: "Atopia", precios: [14.5, 19.9], tamanos: ["200 ml"] },
+    { marca: "Apiretal", linea: "Supositorios infantiles", cat: "Pediatría", sub: "Fiebre", precios: [4.5], tamanos: ["6 u"] },
+    { marca: "Fisiomer", linea: "Baby spray nasal", cat: "Pediatría", sub: "Nasal", precios: [8.9], tamanos: ["115 ml"] },
+    // Geriatría
+    { marca: "Meritene", linea: "Senior proteínas", cat: "Geriatría", sub: "Nutrición", precios: [15.9, 22.5], tamanos: ["15 sobres", "400 g"] },
+    { marca: "Ensure", linea: "Plus Advance", cat: "Geriatría", sub: "Complemento", precios: [16.5, 24.9], tamanos: ["220 ml x4"] },
+    { marca: "Fortimel", linea: "Compact Protein", cat: "Geriatría", sub: "Complemento", precios: [18.9], tamanos: ["125 ml x4"] },
+    { marca: "Tena", linea: "Lady Discreet", cat: "Geriatría", sub: "Incontinencia", precios: [8.5, 12.9], tamanos: ["12 u", "24 u"] },
+    // Oftalmología
+    { marca: "Systane", linea: "Hydration UD", cat: "Oftalmología", sub: "Lágrimas", precios: [14.9], tamanos: ["30 monodosis"] },
+    { marca: "Optava", linea: "Fusion", cat: "Oftalmología", sub: "Lágrimas", precios: [13.5], tamanos: ["10 ml"] },
+    { marca: "Vispring", linea: "Colirio calmante", cat: "Oftalmología", sub: "Colirio", precios: [9.5], tamanos: ["10 ml"] },
+    { marca: "Blephaclean", linea: "Toallitas párpados", cat: "Oftalmología", sub: "Párpados", precios: [11.9], tamanos: ["20 u"] },
+    // Heridas y cura
+    { marca: "Mepiform", linea: "Apósito silicona", cat: "Heridas y cura", sub: "Cicatriz", precios: [24.9, 34.5], tamanos: ["5×7 cm", "10×18 cm"] },
+    { marca: "Biatain", linea: "Apósito espuma", cat: "Heridas y cura", sub: "Úlceras", precios: [18.5, 28.9], tamanos: ["10×10 cm"] },
+    { marca: "Comfeel", linea: "Plus transparente", cat: "Heridas y cura", sub: "Hidrocoloide", precios: [16.9], tamanos: ["10×10 cm"] },
+    { marca: "Urgo", linea: "Tul Absorb", cat: "Heridas y cura", sub: "Apósito", precios: [9.5, 14.5], tamanos: ["10×12 cm"] },
+    { marca: "Betadine", linea: "Tul grasado", cat: "Heridas y cura", sub: "Antiséptico", precios: [7.9], tamanos: ["10 u"] },
+    // Control de peso
+    { marca: "XLS Medical", linea: "Captagrasas", cat: "Control de peso", sub: "Captagrasas", precios: [24.9, 39.9], tamanos: ["30 comp", "60 comp"] },
+    { marca: "Plantaben", linea: "Glucomanano", cat: "Control de peso", sub: "Fibra", precios: [12.5, 18.9], tamanos: ["30 sobres"] },
+    { marca: "Aquilea", linea: "Quemagrasas", cat: "Control de peso", sub: "Termogénico", precios: [14.9], tamanos: ["30 comp"] },
+    { marca: "Arkopharma", linea: "Arkocápsulas Alcachofa", cat: "Control de peso", sub: "Drenante", precios: [9.9, 14.5], tamanos: ["45 cap"] },
+    // Deporte
+    { marca: "Weider", linea: "Protein 80+", cat: "Deporte y nutrición deportiva", sub: "Proteína", precios: [29.9, 44.5], tamanos: ["500 g", "1 kg"] },
+    { marca: "Amix", linea: "IsoPrime CFM", cat: "Deporte y nutrición deportiva", sub: "Proteína", precios: [39.9], tamanos: ["1 kg"] },
+    { marca: "Victory", linea: "Endurance Gel", cat: "Deporte y nutrición deportiva", sub: "Energía", precios: [2.5, 18.9], tamanos: ["1 gel", "24 gels"] },
+    { marca: "HSN", linea: "Electrolitos", cat: "Deporte y nutrición deportiva", sub: "Hidratación", precios: [11.9], tamanos: ["20 sticks"] },
+    { marca: "Compeed", linea: "Sport ampollas", cat: "Deporte y nutrición deportiva", sub: "Ampollas", precios: [7.5], tamanos: ["5 u"] },
+    // Dejar de fumar
+    { marca: "Nicorette", linea: "Chicles 2 mg", cat: "Dejar de fumar", sub: "Nicotina", precios: [18.9, 28.5], tamanos: ["30 u", "105 u"] },
+    { marca: "Nicorette", linea: "Spray bucal", cat: "Dejar de fumar", sub: "Nicotina", precios: [24.9], tamanos: ["1 spray"] },
+    { marca: "NiQuitin", linea: "Parches 21 mg", cat: "Dejar de fumar", sub: "Parche", precios: [32.9], tamanos: ["7 u"] },
+    { marca: "Nicotinell", linea: "Chicles mint", cat: "Dejar de fumar", sub: "Nicotina", precios: [16.5, 25.9], tamanos: ["24 u", "96 u"] },
+    // Fitoterapia
+    { marca: "Arkopharma", linea: "Arkocápsulas Valeriana", cat: "Fitoterapia", sub: "Sueño", precios: [8.9, 12.5], tamanos: ["50 cap"] },
+    { marca: "Arkopharma", linea: "Arkocápsulas Harpagofito", cat: "Fitoterapia", sub: "Articular", precios: [9.5, 13.9], tamanos: ["45 cap"] },
+    { marca: "Aquilea", linea: "Infusiones digestivas", cat: "Fitoterapia", sub: "Digestivo", precios: [4.5, 6.9], tamanos: ["20 bolsitas"] },
+    { marca: "Plantaben", linea: "Ispaghula", cat: "Fitoterapia", sub: "Fibra", precios: [7.9, 11.5], tamanos: ["30 sobres"] },
+    { marca: "Cistitus", linea: "Arándano rojo", cat: "Fitoterapia", sub: "Urinario", precios: [14.9], tamanos: ["30 comp"] },
+    { marca: "Prostaquinon", linea: "Sabal", cat: "Fitoterapia", sub: "Próstata", precios: [16.5], tamanos: ["30 cap"] },
+    // Capilar
+    { marca: "Ducray", linea: "Anaphase+", cat: "Capilar", sub: "Anticaída", precios: [14.9, 19.5], tamanos: ["200 ml", "400 ml"] },
+    { marca: "Vichy", linea: "Dercos Energy+", cat: "Capilar", sub: "Anticaída", precios: [16.9], tamanos: ["200 ml"] },
+    { marca: "Priorin", linea: "Cápsulas", cat: "Capilar", sub: "Anticaída", precios: [28.9], tamanos: ["30 cap"] },
+    { marca: "Leti", linea: "SR champú", cat: "Capilar", sub: "Seborrea", precios: [12.5], tamanos: ["250 ml"] },
+    // Podología
+    { marca: "Scholl", linea: "Lima electrónica", cat: "Podología", sub: "Durezas", precios: [29.9], tamanos: ["1 ud"] },
+    { marca: "Compeed", linea: "Apósitos juanetes", cat: "Podología", sub: "Juanetes", precios: [8.5], tamanos: ["5 u"] },
+    { marca: "Farmalastic", linea: "Plantillas gel", cat: "Podología", sub: "Plantillas", precios: [11.9, 15.5], tamanos: ["Talla 38-40", "Talla 41-43"] },
+    { marca: "Akileïne", linea: "Crema pies secos", cat: "Podología", sub: "Hidratación", precios: [9.5], tamanos: ["75 ml"] },
+    // Incontinencia / urología material
+    { marca: "Tena", linea: "Pants Plus", cat: "Incontinencia", sub: "Pants", precios: [14.9, 22.5], tamanos: ["M 10 u", "L 10 u"] },
+    { marca: "Depend", linea: "Normal", cat: "Incontinencia", sub: "Absorbente", precios: [11.5, 17.9], tamanos: ["10 u", "14 u"] },
+    { marca: "Indasec", linea: "Maxi", cat: "Urología", sub: "Absorbente", precios: [6.9, 9.5], tamanos: ["12 u"] },
+    // Material sanitario / diagnóstico
+    { marca: "Omron", linea: "Tensiómetro M2", cat: "Material sanitario", sub: "Tensión", precios: [39.9], tamanos: ["1 ud"] },
+    { marca: "Braun", linea: "Termómetro ThermoScan", cat: "Material sanitario", sub: "Temperatura", precios: [49.9], tamanos: ["1 ud"] },
+    { marca: "Hartmann", linea: "Gasas estériles", cat: "Material sanitario", sub: "Gasas", precios: [3.5, 5.9], tamanos: ["20 u", "50 u"] },
+    { marca: "Clearblue", linea: "Test embarazo Ultra", cat: "Diagnóstico y tests", sub: "Embarazo", precios: [9.9, 14.5], tamanos: ["1 u", "2 u"] },
+    { marca: "Flowflex", linea: "Test antígenos COVID", cat: "Diagnóstico y tests", sub: "COVID", precios: [2.5, 8.9], tamanos: ["1 u", "5 u"] },
+    { marca: "Accutrend", linea: "Colesterol tiras", cat: "Diagnóstico y tests", sub: "Colesterol", precios: [24.5], tamanos: ["25 u"] },
+    // Embarazo / viajes / sueño
+    { marca: "Elevit", linea: "Pronatal", cat: "Embarazo y fertilidad", sub: "Vitaminas", precios: [18.9, 29.5], tamanos: ["30 comp", "90 comp"] },
+    { marca: "Femibion", linea: "1 Embarazo", cat: "Embarazo y fertilidad", sub: "Ácido fólico", precios: [16.5], tamanos: ["28 comp"] },
+    { marca: "Repel", linea: "Repelente tropical", cat: "Viajes y botiquín", sub: "Insectos", precios: [8.9, 12.5], tamanos: ["75 ml", "100 ml"] },
+    { marca: "Dormidina", linea: "Valeriana forte", cat: "Sueño y estrés", sub: "Sueño", precios: [9.5, 13.9], tamanos: ["30 comp"] },
+    { marca: "Passiflora", linea: "Comprimidos", cat: "Sueño y estrés", sub: "Estrés", precios: [7.9], tamanos: ["30 comp"] },
+    { marca: "Otorrinol", linea: "Spray ótico", cat: "Otorrinolaringología", sub: "Oídos", precios: [8.5], tamanos: ["20 ml"] },
+    { marca: "Audi-Spray", linea: "Limpieza oídos", cat: "Otorrinolaringología", sub: "Oídos", precios: [9.9], tamanos: ["30 ml"] },
   ];
 
   const MARCAS_COMERCIALES_EXTRA = [
@@ -393,8 +509,30 @@
 
   function ivaParaCategoria(cat, esMedicamento) {
     if (esMedicamento) return 4;
-    if (cat === "Nutrición" || cat === "Bebé y maternidad") return 10;
+    if (
+      cat === "Nutrición" ||
+      cat === "Bebé y maternidad" ||
+      cat === "Pediatría" ||
+      cat === "Geriatría" ||
+      cat === "Control de peso" ||
+      cat === "Deporte y nutrición deportiva" ||
+      cat === "Embarazo y fertilidad"
+    ) {
+      return 10;
+    }
     return 21;
+  }
+
+  const BASE_HOY_MS = Date.UTC(2026, 7, 13);
+  const MS_DIA = 86400000;
+
+  function camposInventario(rng) {
+    const dias = 60 + Math.floor(rng() * 841); // 60–900 días desde base
+    return {
+      lote: "L" + String(100000 + Math.floor(rng() * 900000)),
+      caducidadMs: BASE_HOY_MS + dias * MS_DIA,
+      stockMinimo: 5 + Math.floor(rng() * 21), // 5–25
+    };
   }
 
   function costeFromPrecio(precio, rng) {
@@ -460,13 +598,23 @@
 
   function sintomasParaLinea(linea) {
     const cat = `${linea.cat} ${linea.sub} ${linea.linea}`.toLowerCase();
-    if (/solar|spf|photoderm|anthelios|soleil|fusion water/.test(cat)) return ["solar"];
+    if (/solar|spf|photoderm|anthelios|soleil|fusion water|fotoprotector|heliocare/.test(cat)) return ["solar"];
     if (/bucal|pasta|enjuague|oral/.test(cat)) return ["higiene bucal"];
-    if (/vitamina|multivit|magnesio|sueño|energía|redoxon|berocca|supradyn|pharmaton|centrum|aquilea/.test(cat)) {
-      if (/sueño/.test(cat)) return ["insomnio"];
+    if (/íntim|intimo|cumlaude|lactacyd|saforelle/.test(cat)) return ["higiene íntima"];
+    if (/heridas|cura|apósito|mepiform|biatain|comfeel|cicatriz/.test(cat)) return ["heridas"];
+    if (/oftalm|lágrimas|colirio|párpados|ojos/.test(cat)) return ["ojos secos"];
+    if (/control de peso|captagrasas|quemagrasas|glucomanano/.test(cat)) return ["control peso"];
+    if (/dejar de fumar|nicorette|niquitin|nicotinell|nicotina/.test(cat)) return ["dejar de fumar"];
+    if (/deporte|protein|endurance|electrolitos/.test(cat)) return ["deporte"];
+    if (/pediatr|baby|infantil|niños/.test(cat)) return ["pediatría"];
+    if (/geriatr|senior|incontinencia|tena|depend/.test(cat)) return ["geriatría"];
+    if (/fitoterap|arkocápsulas|valeriana|harpagofito|ispaghula|arándano|sabal/.test(cat)) return ["fitoterapia"];
+    if (/vitamina|multivit|magnesio|sueño|energía|redoxon|berocca|supradyn|pharmaton|centrum|aquilea|elevit|femibion/.test(cat)) {
+      if (/sueño|valeriana|passiflora|dormidina/.test(cat)) return ["insomnio"];
+      if (/estrés|estres|passiflora/.test(cat)) return ["estres"];
       return ["vitaminas"];
     }
-    if (/atopia|reparación|hidrat|piel|crema|derm|cicatriz|ampollas|antiséptico|heridas/.test(cat)) return ["piel irritada"];
+    if (/atopia|reparación|hidrat|piel|crema|derm|ampollas|antiséptico/.test(cat)) return ["piel irritada"];
     if (/gripe|resfriado|tos/.test(cat)) return ["tos", "congestión"];
     return [];
   }
@@ -486,7 +634,7 @@
         ? PRESENTACIONES_FARMA.filter((p) => ["comprimidos", "cápsulas", "parche", "inyectable"].includes(p.tipo))
         : PRESENTACIONES_FARMA;
 
-      const variantes = 8 + Math.floor(rng() * 10); // 8–17 por principio
+      const variantes = 10 + Math.floor(rng() * 12); // 10–21 por principio
       for (let v = 0; v < variantes; v++) {
         const presentacion = pick(rng, presentaciones);
         const dosis = pick(rng, presentacion.dosis);
@@ -502,6 +650,7 @@
         const precio = precioBase(principio, dosis, pack, rng);
         const marca = comoGenerico ? lab : marcaComercial;
         const esGenerico = esGenericoProducto(nombre, marca, lab, principio.nombre) || comoGenerico;
+        const inv = camposInventario(rng);
         productos.push({
           id: id++,
           sku: `MED-${String(id).padStart(5, "0")}`,
@@ -525,6 +674,9 @@
           iva: 4,
           stock: 20 + Math.floor(rng() * 180),
           stockInicial: 0,
+          lote: inv.lote,
+          caducidadMs: inv.caducidadMs,
+          stockMinimo: inv.stockMinimo,
         });
       }
     }
@@ -535,6 +687,7 @@
       const precio = esp.precio;
       const grupo = grupoDesdeTexto(`${esp.pa} ${esp.nombre}`);
       const sintomas = sintomasDesdePa(esp.pa, !!esp.receta);
+      const inv = camposInventario(rng);
       productos.push({
         id: id++,
         sku: `ESP-${String(id).padStart(5, "0")}`,
@@ -558,6 +711,9 @@
         iva: esp.iva ?? 4,
         stock: 15 + Math.floor(rng() * 80),
         stockInicial: 0,
+        lote: inv.lote,
+        caducidadMs: inv.caducidadMs,
+        stockMinimo: inv.stockMinimo,
       });
     }
 
@@ -572,6 +728,7 @@
           const precio = linea.precios[Math.min(p, linea.precios.length - 1)] + (rng() * 0.4 - 0.2);
           const precioR = Math.round(Math.max(0.5, precio) * 100) / 100;
           const nombre = `${linea.marca} ${linea.linea} ${tam}`;
+          const inv = camposInventario(rng);
           productos.push({
             id: id++,
             sku: `PAR-${String(id).padStart(5, "0")}`,
@@ -595,6 +752,9 @@
             iva: ivaParaCategoria(linea.cat, false),
             stock: 10 + Math.floor(rng() * 120),
             stockInicial: 0,
+            lote: inv.lote,
+            caducidadMs: inv.caducidadMs,
+            stockMinimo: inv.stockMinimo,
           });
         }
       }
@@ -603,10 +763,13 @@
     // 4) Expansión masiva para alcanzar miles: variantes de sabor/formato/lote lógico
     const sabores = ["", "sabor naranja", "sabor limón", "sabor fresa", "sabor menta", "sin azúcar"];
     const extras = ["", "EFG", "Forte", "Plus", "Retard", "Instant", "Junior", "Adultos"];
-    const baseMeds = productos.filter((p) => p.sku.startsWith("MED-")).slice(0, 400);
-    const targetMeds = 6500;
+    const allMeds = productos.filter((p) => p.sku.startsWith("MED-"));
+    const baseMeds = allMeds.slice(0, 600);
+    const targetMeds = 9000;
+    // Ampliar hasta ~9000 medicamentos (MED-), no solo longitud total
+    let medCount = allMeds.length;
     let extraIdx = 0;
-    while (productos.length < targetMeds && extraIdx < 30000) {
+    while (medCount < targetMeds && extraIdx < 50000) {
       const base = baseMeds[extraIdx % baseMeds.length];
       const rng2 = mulberry32(hashSeed(base.sku + ":" + extraIdx));
       const sabor = pick(rng2, sabores);
@@ -625,6 +788,7 @@
       ].filter(Boolean).join(" ").replace(/\s+/g, " ").trim();
 
       const precio = Math.round(base.precio * (0.85 + rng2() * 0.5) * packMult * 100) / 100;
+      const inv = camposInventario(rng2);
       productos.push({
         id: id++,
         sku: `MED-${String(id).padStart(5, "0")}`,
@@ -648,16 +812,20 @@
         iva: 4,
         stock: 5 + Math.floor(rng2() * 200),
         stockInicial: 0,
+        lote: inv.lote,
+        caducidadMs: inv.caducidadMs,
+        stockMinimo: inv.stockMinimo,
       });
+      medCount++;
       extraIdx++;
     }
 
     // Más parafarmacia expandida
-    const fragancias = ["", "perfume suave", "sin perfume", "piel sensible", "FPS 30", "FPS 50", "textura ligera"];
+    const fragancias = ["", "perfume suave", "sin perfume", "piel sensible", "FPS 30", "FPS 50", "textura ligera", "edición viaje", "formato ahorro"];
     const basePara = productos.filter((p) => p.sku.startsWith("PAR-"));
-    const targetTotal = 8000;
+    const targetTotal = 12000;
     let pIdx = 0;
-    while (productos.length < targetTotal && pIdx < 10000) {
+    while (productos.length < targetTotal && pIdx < 40000) {
       const base = basePara[pIdx % basePara.length];
       const rng2 = mulberry32(hashSeed(base.sku + "-p-" + pIdx));
       const frag = pick(rng2, fragancias);
@@ -667,6 +835,7 @@
       }
       const nombre = frag ? `${base.nombre} (${frag})` : `${base.nombre} ed. ${1 + (pIdx % 5)}`;
       const precio = Math.round(base.precio * (0.95 + rng2() * 0.15) * 100) / 100;
+      const inv = camposInventario(rng2);
       productos.push({
         ...base,
         id: id++,
@@ -680,12 +849,23 @@
         sintomas: Array.isArray(base.sintomas) ? base.sintomas.slice() : [],
         stock: 5 + Math.floor(rng2() * 100),
         stockInicial: 0,
+        lote: inv.lote,
+        caducidadMs: inv.caducidadMs,
+        stockMinimo: inv.stockMinimo,
       });
       pIdx++;
     }
 
+    // Garantizar campos de inventario en todos los productos
     for (const p of productos) {
       p.stockInicial = p.stock;
+      if (!p.lote || !p.caducidadMs || !p.stockMinimo) {
+        const rngL = mulberry32(hashSeed("inv:" + p.sku + ":" + p.id));
+        const inv = camposInventario(rngL);
+        if (!p.lote) p.lote = inv.lote;
+        if (!p.caducidadMs) p.caducidadMs = inv.caducidadMs;
+        if (!p.stockMinimo) p.stockMinimo = inv.stockMinimo;
+      }
     }
 
     return {
