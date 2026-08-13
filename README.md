@@ -1,21 +1,16 @@
-# Miriam — Administración de Loterías (proyecto)
+# Proyectos Álora (simuladores)
 
-Proyecto: videojuego/simulador de gestión de una administración de loterías ubicado en Álora.
+Este repositorio incluye simuladores en HTML/CSS/JS que corren en el navegador.
 
-Este repositorio contiene el scaffold inicial del proyecto: una aplicación en HTML/CSS/JS que corre totalmente en el navegador (sin servidor), usa localStorage para persistencia y permite exportar/importar el estado en JSON.
+## Farmacia Álora
 
-Características del scaffold inicial:
-- Reloj de juego con escala temporal: el tiempo del juego va 4× más lento que el real (gameTime = start + elapsed * 0.25).
-- Lógica de apertura de oficina: 09:00–14:00 y 17:00–22:00 (hora del juego). Cerrado sábados y domingos. Festivos habilitables manualmente.
-- Funciones básicas de exportar/importar JSON del estado del juego.
-- Estructura básica para añadir los juegos, ventas, contabilidad, clientes, etc.
+Simulador de práctica de farmacia: catálogo con miles de productos, venta con/sin receta, pedidos, tickets, IVA, mutuas y export CSV.
 
-Cómo usar:
-1. Clona el repo o descarga los archivos.
-2. Abre `index.html` en un navegador moderno.
-3. Usa los botones "Exportar" / "Importar" para guardar o restaurar el estado.
+- Abrir: [`farmacia-alora/index.html`](farmacia-alora/index.html)
+- Documentación: [`farmacia-alora/README.md`](farmacia-alora/README.md)
+- Reloj de juego: **1 minuto real = 1 hora de juego**
+- Persistencia: `localStorage`
 
-Siguiente paso:
-- Crear la rama `feature/lottery-full` desde la rama por defecto y continuar con la implementación completa de juegos, contabilidad y UI.
+## Otros
 
-Commit inicial: scaffold con reloj escalado y export/import JSON.
+El scaffold inicial del repo también contempla un simulador de administración de loterías en Álora (rama / documentación histórica del proyecto).
