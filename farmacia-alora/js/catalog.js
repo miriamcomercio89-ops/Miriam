@@ -54,103 +54,116 @@
     "Frontline", "Advantix", "Seresto", "Hills", "Royal Canin", "Affinity",
   ];
 
+  const SINTOMAS = [
+    "dolor de cabeza", "fiebre", "tos", "alergia", "acidez", "diarrea",
+    "estreñimiento", "congestión", "dolor muscular", "piel irritada",
+    "insomnio", "estres", "vitaminas", "higiene bucal", "solar",
+  ];
+
+  const GRUPOS_INTERACCION = [
+    "nsaid", "anticoagulante", "isrs", "benzo", "opioide", "tramadol_opioide",
+    "antibiotico", "antibiotico_macrolido", "estatina", "ieca", "diuretico",
+    "antihistaminico", "ipp", "antidiabetico", "metformina", "corticoide",
+    "zolpidem", "analgesico", "otro",
+  ];
+
   const PRINCIPIOS = [
     // OTC / analgésicos
-    { nombre: "Paracetamol", receta: false, cats: ["Medicamentos OTC", "Analgésicos y antiinflamatorios"], controlado: false },
-    { nombre: "Ibuprofeno", receta: false, cats: ["Medicamentos OTC", "Analgésicos y antiinflamatorios"], controlado: false },
-    { nombre: "Ácido acetilsalicílico", receta: false, cats: ["Medicamentos OTC", "Analgésicos y antiinflamatorios"], controlado: false },
-    { nombre: "Metamizol", receta: true, cats: ["Medicamentos con receta", "Analgésicos y antiinflamatorios"], controlado: false },
-    { nombre: "Dexketoprofeno", receta: true, cats: ["Medicamentos con receta", "Analgésicos y antiinflamatorios"], controlado: false },
-    { nombre: "Naproxeno", receta: false, cats: ["Medicamentos OTC", "Analgésicos y antiinflamatorios"], controlado: false },
-    { nombre: "Diclofenaco", receta: false, cats: ["Medicamentos OTC", "Dermatología", "Analgésicos y antiinflamatorios"], controlado: false },
-    { nombre: "Tramadol", receta: true, cats: ["Medicamentos con receta", "Analgésicos y antiinflamatorios"], controlado: true },
-    { nombre: "Codeína + Paracetamol", receta: true, cats: ["Medicamentos con receta", "Analgésicos y antiinflamatorios"], controlado: true },
-    { nombre: "Fentanilo", receta: true, cats: ["Medicamentos con receta", "Analgésicos y antiinflamatorios"], controlado: true },
-    { nombre: "Morfina", receta: true, cats: ["Medicamentos con receta", "Analgésicos y antiinflamatorios"], controlado: true },
+    { nombre: "Paracetamol", receta: false, cats: ["Medicamentos OTC", "Analgésicos y antiinflamatorios"], controlado: false, grupoInteraccion: "analgesico", sintomas: ["dolor de cabeza", "fiebre", "dolor muscular"] },
+    { nombre: "Ibuprofeno", receta: false, cats: ["Medicamentos OTC", "Analgésicos y antiinflamatorios"], controlado: false, grupoInteraccion: "nsaid", sintomas: ["dolor de cabeza", "fiebre", "dolor muscular"] },
+    { nombre: "Ácido acetilsalicílico", receta: false, cats: ["Medicamentos OTC", "Analgésicos y antiinflamatorios"], controlado: false, grupoInteraccion: "nsaid", sintomas: ["dolor de cabeza", "fiebre"] },
+    { nombre: "Metamizol", receta: true, cats: ["Medicamentos con receta", "Analgésicos y antiinflamatorios"], controlado: false, grupoInteraccion: "analgesico", sintomas: [] },
+    { nombre: "Dexketoprofeno", receta: true, cats: ["Medicamentos con receta", "Analgésicos y antiinflamatorios"], controlado: false, grupoInteraccion: "nsaid", sintomas: [] },
+    { nombre: "Naproxeno", receta: false, cats: ["Medicamentos OTC", "Analgésicos y antiinflamatorios"], controlado: false, grupoInteraccion: "nsaid", sintomas: ["dolor muscular", "dolor de cabeza"] },
+    { nombre: "Diclofenaco", receta: false, cats: ["Medicamentos OTC", "Dermatología", "Analgésicos y antiinflamatorios"], controlado: false, grupoInteraccion: "nsaid", sintomas: ["dolor muscular", "piel irritada"] },
+    { nombre: "Tramadol", receta: true, cats: ["Medicamentos con receta", "Analgésicos y antiinflamatorios"], controlado: true, grupoInteraccion: "tramadol_opioide", sintomas: [] },
+    { nombre: "Codeína + Paracetamol", receta: true, cats: ["Medicamentos con receta", "Analgésicos y antiinflamatorios"], controlado: true, grupoInteraccion: "opioide", sintomas: [] },
+    { nombre: "Fentanilo", receta: true, cats: ["Medicamentos con receta", "Analgésicos y antiinflamatorios"], controlado: true, grupoInteraccion: "opioide", sintomas: [] },
+    { nombre: "Morfina", receta: true, cats: ["Medicamentos con receta", "Analgésicos y antiinflamatorios"], controlado: true, grupoInteraccion: "opioide", sintomas: [] },
     // Antibióticos
-    { nombre: "Amoxicilina", receta: true, cats: ["Antibióticos", "Medicamentos con receta"], controlado: false },
-    { nombre: "Amoxicilina/Ácido clavulánico", receta: true, cats: ["Antibióticos", "Medicamentos con receta"], controlado: false },
-    { nombre: "Azitromicina", receta: true, cats: ["Antibióticos", "Medicamentos con receta"], controlado: false },
-    { nombre: "Ciprofloxacino", receta: true, cats: ["Antibióticos", "Medicamentos con receta"], controlado: false },
-    { nombre: "Doxiciclina", receta: true, cats: ["Antibióticos", "Medicamentos con receta"], controlado: false },
-    { nombre: "Claritromicina", receta: true, cats: ["Antibióticos", "Medicamentos con receta"], controlado: false },
-    { nombre: "Cefuroxima", receta: true, cats: ["Antibióticos", "Medicamentos con receta"], controlado: false },
-    { nombre: "Levofloxacino", receta: true, cats: ["Antibióticos", "Medicamentos con receta"], controlado: false },
-    { nombre: "Metronidazol", receta: true, cats: ["Antibióticos", "Medicamentos con receta"], controlado: false },
-    { nombre: "Fosfomicina", receta: true, cats: ["Antibióticos", "Medicamentos con receta"], controlado: false },
+    { nombre: "Amoxicilina", receta: true, cats: ["Antibióticos", "Medicamentos con receta"], controlado: false, grupoInteraccion: "antibiotico", sintomas: [] },
+    { nombre: "Amoxicilina/Ácido clavulánico", receta: true, cats: ["Antibióticos", "Medicamentos con receta"], controlado: false, grupoInteraccion: "antibiotico", sintomas: [] },
+    { nombre: "Azitromicina", receta: true, cats: ["Antibióticos", "Medicamentos con receta"], controlado: false, grupoInteraccion: "antibiotico_macrolido", sintomas: [] },
+    { nombre: "Ciprofloxacino", receta: true, cats: ["Antibióticos", "Medicamentos con receta"], controlado: false, grupoInteraccion: "antibiotico", sintomas: [] },
+    { nombre: "Doxiciclina", receta: true, cats: ["Antibióticos", "Medicamentos con receta"], controlado: false, grupoInteraccion: "antibiotico", sintomas: [] },
+    { nombre: "Claritromicina", receta: true, cats: ["Antibióticos", "Medicamentos con receta"], controlado: false, grupoInteraccion: "antibiotico_macrolido", sintomas: [] },
+    { nombre: "Cefuroxima", receta: true, cats: ["Antibióticos", "Medicamentos con receta"], controlado: false, grupoInteraccion: "antibiotico", sintomas: [] },
+    { nombre: "Levofloxacino", receta: true, cats: ["Antibióticos", "Medicamentos con receta"], controlado: false, grupoInteraccion: "antibiotico", sintomas: [] },
+    { nombre: "Metronidazol", receta: true, cats: ["Antibióticos", "Medicamentos con receta"], controlado: false, grupoInteraccion: "antibiotico", sintomas: [] },
+    { nombre: "Fosfomicina", receta: true, cats: ["Antibióticos", "Medicamentos con receta"], controlado: false, grupoInteraccion: "antibiotico", sintomas: [] },
     // Cardiovascular
-    { nombre: "Enalapril", receta: true, cats: ["Cardiovascular", "Medicamentos con receta"], controlado: false },
-    { nombre: "Ramipril", receta: true, cats: ["Cardiovascular", "Medicamentos con receta"], controlado: false },
-    { nombre: "Losartán", receta: true, cats: ["Cardiovascular", "Medicamentos con receta"], controlado: false },
-    { nombre: "Amlodipino", receta: true, cats: ["Cardiovascular", "Medicamentos con receta"], controlado: false },
-    { nombre: "Atenolol", receta: true, cats: ["Cardiovascular", "Medicamentos con receta"], controlado: false },
-    { nombre: "Bisoprolol", receta: true, cats: ["Cardiovascular", "Medicamentos con receta"], controlado: false },
-    { nombre: "Atorvastatina", receta: true, cats: ["Cardiovascular", "Medicamentos con receta"], controlado: false },
-    { nombre: "Simvastatina", receta: true, cats: ["Cardiovascular", "Medicamentos con receta"], controlado: false },
-    { nombre: "Ácido acetilsalicílico 100 mg", receta: false, cats: ["Cardiovascular", "Medicamentos OTC"], controlado: false },
-    { nombre: "Clopidogrel", receta: true, cats: ["Cardiovascular", "Medicamentos con receta"], controlado: false },
-    { nombre: "Furosemida", receta: true, cats: ["Cardiovascular", "Medicamentos con receta"], controlado: false },
-    { nombre: "Warfarina", receta: true, cats: ["Cardiovascular", "Medicamentos con receta"], controlado: false },
-    { nombre: "Apixabán", receta: true, cats: ["Cardiovascular", "Medicamentos con receta"], controlado: false },
+    { nombre: "Enalapril", receta: true, cats: ["Cardiovascular", "Medicamentos con receta"], controlado: false, grupoInteraccion: "ieca", sintomas: [] },
+    { nombre: "Ramipril", receta: true, cats: ["Cardiovascular", "Medicamentos con receta"], controlado: false, grupoInteraccion: "ieca", sintomas: [] },
+    { nombre: "Losartán", receta: true, cats: ["Cardiovascular", "Medicamentos con receta"], controlado: false, grupoInteraccion: "ieca", sintomas: [] },
+    { nombre: "Amlodipino", receta: true, cats: ["Cardiovascular", "Medicamentos con receta"], controlado: false, grupoInteraccion: "otro", sintomas: [] },
+    { nombre: "Atenolol", receta: true, cats: ["Cardiovascular", "Medicamentos con receta"], controlado: false, grupoInteraccion: "otro", sintomas: [] },
+    { nombre: "Bisoprolol", receta: true, cats: ["Cardiovascular", "Medicamentos con receta"], controlado: false, grupoInteraccion: "otro", sintomas: [] },
+    { nombre: "Atorvastatina", receta: true, cats: ["Cardiovascular", "Medicamentos con receta"], controlado: false, grupoInteraccion: "estatina", sintomas: [] },
+    { nombre: "Simvastatina", receta: true, cats: ["Cardiovascular", "Medicamentos con receta"], controlado: false, grupoInteraccion: "estatina", sintomas: [] },
+    { nombre: "Ácido acetilsalicílico 100 mg", receta: false, cats: ["Cardiovascular", "Medicamentos OTC"], controlado: false, grupoInteraccion: "nsaid", sintomas: [] },
+    { nombre: "Clopidogrel", receta: true, cats: ["Cardiovascular", "Medicamentos con receta"], controlado: false, grupoInteraccion: "anticoagulante", sintomas: [] },
+    { nombre: "Furosemida", receta: true, cats: ["Cardiovascular", "Medicamentos con receta"], controlado: false, grupoInteraccion: "diuretico", sintomas: [] },
+    { nombre: "Warfarina", receta: true, cats: ["Cardiovascular", "Medicamentos con receta"], controlado: false, grupoInteraccion: "anticoagulante", sintomas: [] },
+    { nombre: "Apixabán", receta: true, cats: ["Cardiovascular", "Medicamentos con receta"], controlado: false, grupoInteraccion: "anticoagulante", sintomas: [] },
     // Respiratorio / alergia
-    { nombre: "Salbutamol", receta: true, cats: ["Respiratorio", "Medicamentos con receta"], controlado: false },
-    { nombre: "Budesonida", receta: true, cats: ["Respiratorio", "Medicamentos con receta"], controlado: false },
-    { nombre: "Montelukast", receta: true, cats: ["Respiratorio", "Alergia", "Medicamentos con receta"], controlado: false },
-    { nombre: "Loratadina", receta: false, cats: ["Alergia", "Medicamentos OTC"], controlado: false },
-    { nombre: "Cetirizina", receta: false, cats: ["Alergia", "Medicamentos OTC"], controlado: false },
-    { nombre: "Desloratadina", receta: false, cats: ["Alergia", "Medicamentos OTC"], controlado: false },
-    { nombre: "Fexofenadina", receta: false, cats: ["Alergia", "Medicamentos OTC"], controlado: false },
-    { nombre: "Dextrometorfano", receta: false, cats: ["Respiratorio", "Medicamentos OTC"], controlado: false },
-    { nombre: "Ambroxol", receta: false, cats: ["Respiratorio", "Medicamentos OTC"], controlado: false },
-    { nombre: "Acetilcisteína", receta: false, cats: ["Respiratorio", "Medicamentos OTC"], controlado: false },
-    { nombre: "Pseudoefedrina", receta: false, cats: ["Respiratorio", "Medicamentos OTC"], controlado: false },
+    { nombre: "Salbutamol", receta: true, cats: ["Respiratorio", "Medicamentos con receta"], controlado: false, grupoInteraccion: "otro", sintomas: [] },
+    { nombre: "Budesonida", receta: true, cats: ["Respiratorio", "Medicamentos con receta"], controlado: false, grupoInteraccion: "corticoide", sintomas: [] },
+    { nombre: "Montelukast", receta: true, cats: ["Respiratorio", "Alergia", "Medicamentos con receta"], controlado: false, grupoInteraccion: "otro", sintomas: [] },
+    { nombre: "Loratadina", receta: false, cats: ["Alergia", "Medicamentos OTC"], controlado: false, grupoInteraccion: "antihistaminico", sintomas: ["alergia"] },
+    { nombre: "Cetirizina", receta: false, cats: ["Alergia", "Medicamentos OTC"], controlado: false, grupoInteraccion: "antihistaminico", sintomas: ["alergia"] },
+    { nombre: "Desloratadina", receta: false, cats: ["Alergia", "Medicamentos OTC"], controlado: false, grupoInteraccion: "antihistaminico", sintomas: ["alergia"] },
+    { nombre: "Fexofenadina", receta: false, cats: ["Alergia", "Medicamentos OTC"], controlado: false, grupoInteraccion: "antihistaminico", sintomas: ["alergia"] },
+    { nombre: "Dextrometorfano", receta: false, cats: ["Respiratorio", "Medicamentos OTC"], controlado: false, grupoInteraccion: "otro", sintomas: ["tos"] },
+    { nombre: "Ambroxol", receta: false, cats: ["Respiratorio", "Medicamentos OTC"], controlado: false, grupoInteraccion: "otro", sintomas: ["tos", "congestión"] },
+    { nombre: "Acetilcisteína", receta: false, cats: ["Respiratorio", "Medicamentos OTC"], controlado: false, grupoInteraccion: "otro", sintomas: ["tos", "congestión"] },
+    { nombre: "Pseudoefedrina", receta: false, cats: ["Respiratorio", "Medicamentos OTC"], controlado: false, grupoInteraccion: "otro", sintomas: ["congestión"] },
     // Digestivo
-    { nombre: "Omeprazol", receta: false, cats: ["Digestivo", "Medicamentos OTC"], controlado: false },
-    { nombre: "Pantoprazol", receta: true, cats: ["Digestivo", "Medicamentos con receta"], controlado: false },
-    { nombre: "Esomeprazol", receta: true, cats: ["Digestivo", "Medicamentos con receta"], controlado: false },
-    { nombre: "Ranitidina", receta: false, cats: ["Digestivo", "Medicamentos OTC"], controlado: false },
-    { nombre: "Domperidona", receta: true, cats: ["Digestivo", "Medicamentos con receta"], controlado: false },
-    { nombre: "Metoclopramida", receta: true, cats: ["Digestivo", "Medicamentos con receta"], controlado: false },
-    { nombre: "Loperamida", receta: false, cats: ["Digestivo", "Medicamentos OTC"], controlado: false },
-    { nombre: "Lactulosa", receta: false, cats: ["Digestivo", "Medicamentos OTC"], controlado: false },
-    { nombre: "Macrogol", receta: false, cats: ["Digestivo", "Medicamentos OTC"], controlado: false },
-    { nombre: "Simeticona", receta: false, cats: ["Digestivo", "Medicamentos OTC"], controlado: false },
-    { nombre: "Saccharomyces boulardii", receta: false, cats: ["Digestivo", "Medicamentos OTC"], controlado: false },
+    { nombre: "Omeprazol", receta: false, cats: ["Digestivo", "Medicamentos OTC"], controlado: false, grupoInteraccion: "ipp", sintomas: ["acidez"] },
+    { nombre: "Pantoprazol", receta: true, cats: ["Digestivo", "Medicamentos con receta"], controlado: false, grupoInteraccion: "ipp", sintomas: [] },
+    { nombre: "Esomeprazol", receta: true, cats: ["Digestivo", "Medicamentos con receta"], controlado: false, grupoInteraccion: "ipp", sintomas: [] },
+    { nombre: "Ranitidina", receta: false, cats: ["Digestivo", "Medicamentos OTC"], controlado: false, grupoInteraccion: "ipp", sintomas: ["acidez"] },
+    { nombre: "Domperidona", receta: true, cats: ["Digestivo", "Medicamentos con receta"], controlado: false, grupoInteraccion: "otro", sintomas: [] },
+    { nombre: "Metoclopramida", receta: true, cats: ["Digestivo", "Medicamentos con receta"], controlado: false, grupoInteraccion: "otro", sintomas: [] },
+    { nombre: "Loperamida", receta: false, cats: ["Digestivo", "Medicamentos OTC"], controlado: false, grupoInteraccion: "otro", sintomas: ["diarrea"] },
+    { nombre: "Lactulosa", receta: false, cats: ["Digestivo", "Medicamentos OTC"], controlado: false, grupoInteraccion: "otro", sintomas: ["estreñimiento"] },
+    { nombre: "Macrogol", receta: false, cats: ["Digestivo", "Medicamentos OTC"], controlado: false, grupoInteraccion: "otro", sintomas: ["estreñimiento"] },
+    { nombre: "Simeticona", receta: false, cats: ["Digestivo", "Medicamentos OTC"], controlado: false, grupoInteraccion: "otro", sintomas: ["acidez"] },
+    { nombre: "Saccharomyces boulardii", receta: false, cats: ["Digestivo", "Medicamentos OTC"], controlado: false, grupoInteraccion: "otro", sintomas: ["diarrea"] },
     // Sistema nervioso
-    { nombre: "Sertralina", receta: true, cats: ["Sistema nervioso", "Medicamentos con receta"], controlado: false },
-    { nombre: "Escitalopram", receta: true, cats: ["Sistema nervioso", "Medicamentos con receta"], controlado: false },
-    { nombre: "Fluoxetina", receta: true, cats: ["Sistema nervioso", "Medicamentos con receta"], controlado: false },
-    { nombre: "Alprazolam", receta: true, cats: ["Sistema nervioso", "Medicamentos con receta"], controlado: true },
-    { nombre: "Lorazepam", receta: true, cats: ["Sistema nervioso", "Medicamentos con receta"], controlado: true },
-    { nombre: "Diazepam", receta: true, cats: ["Sistema nervioso", "Medicamentos con receta"], controlado: true },
-    { nombre: "Zolpidem", receta: true, cats: ["Sistema nervioso", "Medicamentos con receta"], controlado: true },
-    { nombre: "Quetiapina", receta: true, cats: ["Sistema nervioso", "Medicamentos con receta"], controlado: false },
-    { nombre: "Gabapentina", receta: true, cats: ["Sistema nervioso", "Medicamentos con receta"], controlado: false },
-    { nombre: "Pregabalina", receta: true, cats: ["Sistema nervioso", "Medicamentos con receta"], controlado: false },
-    { nombre: "Metilfenidato", receta: true, cats: ["Sistema nervioso", "Medicamentos con receta"], controlado: true },
+    { nombre: "Sertralina", receta: true, cats: ["Sistema nervioso", "Medicamentos con receta"], controlado: false, grupoInteraccion: "isrs", sintomas: [] },
+    { nombre: "Escitalopram", receta: true, cats: ["Sistema nervioso", "Medicamentos con receta"], controlado: false, grupoInteraccion: "isrs", sintomas: [] },
+    { nombre: "Fluoxetina", receta: true, cats: ["Sistema nervioso", "Medicamentos con receta"], controlado: false, grupoInteraccion: "isrs", sintomas: [] },
+    { nombre: "Alprazolam", receta: true, cats: ["Sistema nervioso", "Medicamentos con receta"], controlado: true, grupoInteraccion: "benzo", sintomas: [] },
+    { nombre: "Lorazepam", receta: true, cats: ["Sistema nervioso", "Medicamentos con receta"], controlado: true, grupoInteraccion: "benzo", sintomas: [] },
+    { nombre: "Diazepam", receta: true, cats: ["Sistema nervioso", "Medicamentos con receta"], controlado: true, grupoInteraccion: "benzo", sintomas: [] },
+    { nombre: "Zolpidem", receta: true, cats: ["Sistema nervioso", "Medicamentos con receta"], controlado: true, grupoInteraccion: "zolpidem", sintomas: [] },
+    { nombre: "Quetiapina", receta: true, cats: ["Sistema nervioso", "Medicamentos con receta"], controlado: false, grupoInteraccion: "otro", sintomas: [] },
+    { nombre: "Gabapentina", receta: true, cats: ["Sistema nervioso", "Medicamentos con receta"], controlado: false, grupoInteraccion: "otro", sintomas: [] },
+    { nombre: "Pregabalina", receta: true, cats: ["Sistema nervioso", "Medicamentos con receta"], controlado: false, grupoInteraccion: "otro", sintomas: [] },
+    { nombre: "Metilfenidato", receta: true, cats: ["Sistema nervioso", "Medicamentos con receta"], controlado: true, grupoInteraccion: "otro", sintomas: [] },
     // Diabetes
-    { nombre: "Metformina", receta: true, cats: ["Diabetes", "Medicamentos con receta"], controlado: false },
-    { nombre: "Gliclazida", receta: true, cats: ["Diabetes", "Medicamentos con receta"], controlado: false },
-    { nombre: "Sitagliptina", receta: true, cats: ["Diabetes", "Medicamentos con receta"], controlado: false },
-    { nombre: "Insulina glargina", receta: true, cats: ["Diabetes", "Medicamentos con receta"], controlado: false },
-    { nombre: "Insulina aspart", receta: true, cats: ["Diabetes", "Medicamentos con receta"], controlado: false },
-    { nombre: "Empagliflozina", receta: true, cats: ["Diabetes", "Medicamentos con receta"], controlado: false },
+    { nombre: "Metformina", receta: true, cats: ["Diabetes", "Medicamentos con receta"], controlado: false, grupoInteraccion: "metformina", sintomas: [] },
+    { nombre: "Gliclazida", receta: true, cats: ["Diabetes", "Medicamentos con receta"], controlado: false, grupoInteraccion: "antidiabetico", sintomas: [] },
+    { nombre: "Sitagliptina", receta: true, cats: ["Diabetes", "Medicamentos con receta"], controlado: false, grupoInteraccion: "antidiabetico", sintomas: [] },
+    { nombre: "Insulina glargina", receta: true, cats: ["Diabetes", "Medicamentos con receta"], controlado: false, grupoInteraccion: "antidiabetico", sintomas: [] },
+    { nombre: "Insulina aspart", receta: true, cats: ["Diabetes", "Medicamentos con receta"], controlado: false, grupoInteraccion: "antidiabetico", sintomas: [] },
+    { nombre: "Empagliflozina", receta: true, cats: ["Diabetes", "Medicamentos con receta"], controlado: false, grupoInteraccion: "antidiabetico", sintomas: [] },
     // Dermatología
-    { nombre: "Hidrocortisona", receta: false, cats: ["Dermatología", "Medicamentos OTC"], controlado: false },
-    { nombre: "Clotrimazol", receta: false, cats: ["Dermatología", "Medicamentos OTC"], controlado: false },
-    { nombre: "Mupirocina", receta: true, cats: ["Dermatología", "Medicamentos con receta"], controlado: false },
-    { nombre: "Aciclovir tópico", receta: false, cats: ["Dermatología", "Medicamentos OTC"], controlado: false },
-    { nombre: "Isotretinoína", receta: true, cats: ["Dermatología", "Medicamentos con receta"], controlado: false },
-    { nombre: "Permetrina", receta: false, cats: ["Dermatología", "Medicamentos OTC"], controlado: false },
+    { nombre: "Hidrocortisona", receta: false, cats: ["Dermatología", "Medicamentos OTC"], controlado: false, grupoInteraccion: "corticoide", sintomas: ["piel irritada"] },
+    { nombre: "Clotrimazol", receta: false, cats: ["Dermatología", "Medicamentos OTC"], controlado: false, grupoInteraccion: "otro", sintomas: ["piel irritada"] },
+    { nombre: "Mupirocina", receta: true, cats: ["Dermatología", "Medicamentos con receta"], controlado: false, grupoInteraccion: "antibiotico", sintomas: [] },
+    { nombre: "Aciclovir tópico", receta: false, cats: ["Dermatología", "Medicamentos OTC"], controlado: false, grupoInteraccion: "otro", sintomas: ["piel irritada"] },
+    { nombre: "Isotretinoína", receta: true, cats: ["Dermatología", "Medicamentos con receta"], controlado: false, grupoInteraccion: "otro", sintomas: [] },
+    { nombre: "Permetrina", receta: false, cats: ["Dermatología", "Medicamentos OTC"], controlado: false, grupoInteraccion: "otro", sintomas: ["piel irritada"] },
     // Ginecología
-    { nombre: "Levonorgestrel", receta: false, cats: ["Ginecología", "Medicamentos OTC"], controlado: false },
-    { nombre: "Etinilestradiol/Levonorgestrel", receta: true, cats: ["Ginecología", "Medicamentos con receta"], controlado: false },
-    { nombre: "Clotrimazol vaginal", receta: false, cats: ["Ginecología", "Medicamentos OTC"], controlado: false },
+    { nombre: "Levonorgestrel", receta: false, cats: ["Ginecología", "Medicamentos OTC"], controlado: false, grupoInteraccion: "otro", sintomas: [] },
+    { nombre: "Etinilestradiol/Levonorgestrel", receta: true, cats: ["Ginecología", "Medicamentos con receta"], controlado: false, grupoInteraccion: "otro", sintomas: [] },
+    { nombre: "Clotrimazol vaginal", receta: false, cats: ["Ginecología", "Medicamentos OTC"], controlado: false, grupoInteraccion: "otro", sintomas: ["piel irritada"] },
     // Oftalmo / ORL
-    { nombre: "Lágrimas artificiales", receta: false, cats: ["Otorrino y oftalmología", "Óptica"], controlado: false },
-    { nombre: "Tobramicina oftálmica", receta: true, cats: ["Otorrino y oftalmología", "Medicamentos con receta"], controlado: false },
-    { nombre: "Xilometazolina", receta: false, cats: ["Otorrino y oftalmología", "Medicamentos OTC"], controlado: false },
-    { nombre: "Fluticasona nasal", receta: false, cats: ["Otorrino y oftalmología", "Alergia"], controlado: false },
+    { nombre: "Lágrimas artificiales", receta: false, cats: ["Otorrino y oftalmología", "Óptica"], controlado: false, grupoInteraccion: "otro", sintomas: [] },
+    { nombre: "Tobramicina oftálmica", receta: true, cats: ["Otorrino y oftalmología", "Medicamentos con receta"], controlado: false, grupoInteraccion: "antibiotico", sintomas: [] },
+    { nombre: "Xilometazolina", receta: false, cats: ["Otorrino y oftalmología", "Medicamentos OTC"], controlado: false, grupoInteraccion: "otro", sintomas: ["congestión"] },
+    { nombre: "Fluticasona nasal", receta: false, cats: ["Otorrino y oftalmología", "Alergia"], controlado: false, grupoInteraccion: "corticoide", sintomas: ["alergia", "congestión"] },
   ];
 
   const MARCAS_COMERCIALES = {
@@ -384,6 +397,80 @@
     return 21;
   }
 
+  function costeFromPrecio(precio, rng) {
+    return Math.round(precio * (0.55 + rng() * 0.2) * 100) / 100;
+  }
+
+  function esGenericoProducto(nombre, marca, laboratorio, principioActivo) {
+    const n = String(nombre || "");
+    const m = String(marca || "");
+    const lab = String(laboratorio || "");
+    const pa = String(principioActivo || "");
+    if (/\bEFG\b/i.test(n)) return true;
+    if (pa && (m === pa || n.startsWith(pa + " "))) return true;
+    if (lab && m === lab && pa && !MARCAS_COMERCIALES[pa]?.includes(m)) return true;
+    return false;
+  }
+
+  function grupoDesdeTexto(txt) {
+    const t = String(txt || "").toLowerCase();
+    if (/ibuprofeno|naproxeno|diclofenaco|dexketoprofeno|ácido acetilsalicílico|aines|aas/.test(t)) return "nsaid";
+    if (/warfarina|apixabán|rivaroxabán|clopidogrel|anticoag|sintrom|eliquis|xarelto/.test(t)) return "anticoagulante";
+    if (/sertralina|escitalopram|fluoxetina|isrs|antidepres/.test(t)) return "isrs";
+    if (/alprazolam|lorazepam|diazepam|clonazepam|benzo|orfidal|trankimazin|rivotril/.test(t)) return "benzo";
+    if (/tramadol|adolonta/.test(t)) return "tramadol_opioide";
+    if (/fentanilo|morfina|codeína|opioide|durogesic/.test(t)) return "opioide";
+    if (/atorvastatina|simvastatina|estatina/.test(t)) return "estatina";
+    if (/enalapril|ramipril|ieca|losartán/.test(t)) return "ieca";
+    if (/furosemida|diurético/.test(t)) return "diuretico";
+    if (/azitromicina|claritromicina|macrólido/.test(t)) return "antibiotico_macrolido";
+    if (/amoxicilina|ciprofloxacino|doxiciclina|cefuroxima|levofloxacino|metronidazol|fosfomicina|mupirocina|tobramicina|antibiótico|antibiotico/.test(t)) return "antibiotico";
+    if (/omeprazol|pantoprazol|esomeprazol|ranitidina|ibp|ipp/.test(t)) return "ipp";
+    if (/metformina/.test(t)) return "metformina";
+    if (/gliclazida|sitagliptina|insulina|empagliflozina|semaglutida|antidiab/.test(t)) return "antidiabetico";
+    if (/loratadina|cetirizina|desloratadina|fexofenadina|levocetirizina|antihist/.test(t)) return "antihistaminico";
+    if (/hidrocortisona|budesonida|fluticasona|corticoide/.test(t)) return "corticoide";
+    if (/zolpidem|stilnox/.test(t)) return "zolpidem";
+    if (/paracetamol|metamizol|analgésico|analgesico/.test(t)) return "analgesico";
+    return "otro";
+  }
+
+  function sintomasDesdePa(pa, receta) {
+    const t = String(pa || "").toLowerCase();
+    if (/paracetamol|ibuprofeno|naproxeno|ácido acetilsalicílico/.test(t) && !/100 mg/.test(t)) {
+      return ["dolor de cabeza", "fiebre", "dolor muscular"].filter((s, i) => i < 2 || /ibuprofeno|naproxeno|paracetamol/.test(t));
+    }
+    if (/diclofenaco/.test(t)) return ["dolor muscular", "piel irritada"];
+    if (/loratadina|cetirizina|desloratadina|fexofenadina|levocetirizina|montelukast|fluticasona/.test(t)) return ["alergia"];
+    if (/dextrometorfano|ambroxol|acetilcisteína/.test(t)) return ["tos"];
+    if (/pseudoefedrina|xilometazolina|ambroxol|acetilcisteína|fluticasona/.test(t)) {
+      const s = [];
+      if (/dextrometorfano|ambroxol|acetilcisteína/.test(t)) s.push("tos");
+      if (/pseudoefedrina|xilometazolina|ambroxol|acetilcisteína|fluticasona/.test(t)) s.push("congestión");
+      if (/fluticasona/.test(t) && !s.includes("alergia")) s.push("alergia");
+      return [...new Set(s)];
+    }
+    if (/omeprazol|pantoprazol|esomeprazol|ranitidina|almagato|simeticona/.test(t)) return receta ? [] : ["acidez"];
+    if (/loperamida|saccharomyces/.test(t)) return ["diarrea"];
+    if (/lactulosa|macrogol/.test(t)) return ["estreñimiento"];
+    if (/hidrocortisona|clotrimazol|aciclovir|permetrina/.test(t)) return ["piel irritada"];
+    if (receta) return [];
+    return [];
+  }
+
+  function sintomasParaLinea(linea) {
+    const cat = `${linea.cat} ${linea.sub} ${linea.linea}`.toLowerCase();
+    if (/solar|spf|photoderm|anthelios|soleil|fusion water/.test(cat)) return ["solar"];
+    if (/bucal|pasta|enjuague|oral/.test(cat)) return ["higiene bucal"];
+    if (/vitamina|multivit|magnesio|sueño|energía|redoxon|berocca|supradyn|pharmaton|centrum|aquilea/.test(cat)) {
+      if (/sueño/.test(cat)) return ["insomnio"];
+      return ["vitaminas"];
+    }
+    if (/atopia|reparación|hidrat|piel|crema|derm|cicatriz|ampollas|antiséptico|heridas/.test(cat)) return ["piel irritada"];
+    if (/gripe|resfriado|tos/.test(cat)) return ["tos", "congestión"];
+    return [];
+  }
+
   function generarCatalogo() {
     const productos = [];
     let id = 1;
@@ -407,18 +494,20 @@
         const lab = pick(rng, labs);
         const marcaComercial = pick(rng, marcasNom);
         const cat = pick(rng, principio.cats);
-        const esGenérico = marcaComercial === principio.nombre || rng() > 0.45;
-        const nombre = esGenérico
+        const comoGenerico = marcaComercial === principio.nombre || rng() > 0.45;
+        const nombre = comoGenerico
           ? `${principio.nombre} ${lab} ${dosis} ${presentacion.tipo} ${pack > 1 ? pack + " u" : ""}`.trim()
           : `${marcaComercial} ${dosis} ${presentacion.tipo}${pack > 1 ? " " + pack + " u" : ""}`;
 
         const precio = precioBase(principio, dosis, pack, rng);
+        const marca = comoGenerico ? lab : marcaComercial;
+        const esGenerico = esGenericoProducto(nombre, marca, lab, principio.nombre) || comoGenerico;
         productos.push({
           id: id++,
           sku: `MED-${String(id).padStart(5, "0")}`,
           ean: String(8400000000000 + id),
           nombre,
-          marca: esGenérico ? lab : marcaComercial,
+          marca,
           laboratorio: lab,
           principioActivo: principio.nombre,
           categoria: cat,
@@ -429,6 +518,10 @@
           dosis,
           unidadesEnvase: pack,
           precio,
+          coste: costeFromPrecio(precio, rng),
+          esGenerico,
+          grupoInteraccion: principio.grupoInteraccion || grupoDesdeTexto(principio.nombre),
+          sintomas: Array.isArray(principio.sintomas) ? principio.sintomas.slice() : [],
           iva: 4,
           stock: 20 + Math.floor(rng() * 180),
           stockInicial: 0,
@@ -438,11 +531,15 @@
 
     // 2) Especialidades comerciales fijas
     for (const esp of MARCAS_COMERCIALES_EXTRA) {
+      const nombre = esp.nombre + (esp.presentacion ? " — " + esp.presentacion : "");
+      const precio = esp.precio;
+      const grupo = grupoDesdeTexto(`${esp.pa} ${esp.nombre}`);
+      const sintomas = sintomasDesdePa(esp.pa, !!esp.receta);
       productos.push({
         id: id++,
         sku: `ESP-${String(id).padStart(5, "0")}`,
         ean: String(8400000000000 + id),
-        nombre: esp.nombre + (esp.presentacion ? " — " + esp.presentacion : ""),
+        nombre,
         marca: esp.marca,
         laboratorio: esp.marca,
         principioActivo: esp.pa,
@@ -453,7 +550,11 @@
         presentacion: esp.presentacion,
         dosis: "",
         unidadesEnvase: 1,
-        precio: esp.precio,
+        precio,
+        coste: costeFromPrecio(precio, rng),
+        esGenerico: esGenericoProducto(nombre, esp.marca, esp.marca, esp.pa),
+        grupoInteraccion: grupo,
+        sintomas,
         iva: esp.iva ?? 4,
         stock: 15 + Math.floor(rng() * 80),
         stockInicial: 0,
@@ -470,11 +571,12 @@
           }
           const precio = linea.precios[Math.min(p, linea.precios.length - 1)] + (rng() * 0.4 - 0.2);
           const precioR = Math.round(Math.max(0.5, precio) * 100) / 100;
+          const nombre = `${linea.marca} ${linea.linea} ${tam}`;
           productos.push({
             id: id++,
             sku: `PAR-${String(id).padStart(5, "0")}`,
             ean: String(8410000000000 + id),
-            nombre: `${linea.marca} ${linea.linea} ${tam}`,
+            nombre,
             marca: linea.marca,
             laboratorio: linea.marca,
             principioActivo: "—",
@@ -486,6 +588,10 @@
             dosis: tam,
             unidadesEnvase: 1,
             precio: precioR,
+            coste: costeFromPrecio(precioR, rng),
+            esGenerico: false,
+            grupoInteraccion: "otro",
+            sintomas: sintomasParaLinea(linea),
             iva: ivaParaCategoria(linea.cat, false),
             stock: 10 + Math.floor(rng() * 120),
             stockInicial: 0,
@@ -498,9 +604,9 @@
     const sabores = ["", "sabor naranja", "sabor limón", "sabor fresa", "sabor menta", "sin azúcar"];
     const extras = ["", "EFG", "Forte", "Plus", "Retard", "Instant", "Junior", "Adultos"];
     const baseMeds = productos.filter((p) => p.sku.startsWith("MED-")).slice(0, 400);
-    const target = 4500;
+    const targetMeds = 6500;
     let extraIdx = 0;
-    while (productos.length < target && extraIdx < 20000) {
+    while (productos.length < targetMeds && extraIdx < 30000) {
       const base = baseMeds[extraIdx % baseMeds.length];
       const rng2 = mulberry32(hashSeed(base.sku + ":" + extraIdx));
       const sabor = pick(rng2, sabores);
@@ -518,7 +624,6 @@
         sabor,
       ].filter(Boolean).join(" ").replace(/\s+/g, " ").trim();
 
-      // Evitar duplicados exactos de nombre
       const precio = Math.round(base.precio * (0.85 + rng2() * 0.5) * packMult * 100) / 100;
       productos.push({
         id: id++,
@@ -536,6 +641,10 @@
         dosis: base.dosis,
         unidadesEnvase: unidades,
         precio,
+        coste: costeFromPrecio(precio, rng2),
+        esGenerico: esGenericoProducto(nombre, lab, lab, base.principioActivo),
+        grupoInteraccion: base.grupoInteraccion || grupoDesdeTexto(base.principioActivo),
+        sintomas: Array.isArray(base.sintomas) ? base.sintomas.slice() : [],
         iva: 4,
         stock: 5 + Math.floor(rng2() * 200),
         stockInicial: 0,
@@ -546,8 +655,9 @@
     // Más parafarmacia expandida
     const fragancias = ["", "perfume suave", "sin perfume", "piel sensible", "FPS 30", "FPS 50", "textura ligera"];
     const basePara = productos.filter((p) => p.sku.startsWith("PAR-"));
+    const targetTotal = 8000;
     let pIdx = 0;
-    while (productos.length < 5500 && pIdx < 5000) {
+    while (productos.length < targetTotal && pIdx < 10000) {
       const base = basePara[pIdx % basePara.length];
       const rng2 = mulberry32(hashSeed(base.sku + "-p-" + pIdx));
       const frag = pick(rng2, fragancias);
@@ -556,13 +666,18 @@
         continue;
       }
       const nombre = frag ? `${base.nombre} (${frag})` : `${base.nombre} ed. ${1 + (pIdx % 5)}`;
+      const precio = Math.round(base.precio * (0.95 + rng2() * 0.15) * 100) / 100;
       productos.push({
         ...base,
         id: id++,
         sku: `PAR-${String(id).padStart(5, "0")}`,
         ean: String(8410000000000 + id),
         nombre,
-        precio: Math.round(base.precio * (0.95 + rng2() * 0.15) * 100) / 100,
+        precio,
+        coste: costeFromPrecio(precio, rng2),
+        esGenerico: false,
+        grupoInteraccion: base.grupoInteraccion || "otro",
+        sintomas: Array.isArray(base.sintomas) ? base.sintomas.slice() : [],
         stock: 5 + Math.floor(rng2() * 100),
         stockInicial: 0,
       });
@@ -578,6 +693,8 @@
       categorias: CATEGORIAS,
       marcasFarma: MARCAS_FARMA,
       marcasPara: MARCAS_PARA,
+      sintomas: SINTOMAS,
+      gruposInteraccion: GRUPOS_INTERACCION,
       generadoEn: new Date().toISOString(),
       total: productos.length,
     };
@@ -592,6 +709,8 @@
   global.FarmaciaCatalogo = {
     getCatalogo,
     CATEGORIAS,
+    SINTOMAS,
+    GRUPOS_INTERACCION,
     generarCatalogo,
   };
 })(typeof window !== "undefined" ? window : globalThis);
