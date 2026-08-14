@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Farmacia Álora — TPV de práctica</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="css/styles.css?v=5" />
+  <link rel="stylesheet" href="css/styles.css?v=6" />
 </head>
 <body class="ui-large">
   <div class="app-bg" aria-hidden="true"></div>
@@ -184,7 +184,8 @@
           <h2><span class="h-ico">💬</span> Cola de clientes</h2>
           <button type="button" class="btn btn-primary btn-sm" id="btn-spawn">+ Cliente</button>
         </div>
-        <p class="muted">Hay <strong>millones</strong> de clientes posibles. Cada uno cuenta qué le pasa; tú eliges el producto y lo añades al carrito.</p>
+        <p class="muted">Hay <strong>millones</strong> de clientes posibles. Usa también los <strong>perfiles de práctica</strong>.</p>
+        <div id="perfiles-grid" class="perfiles-grid"></div>
         <div id="cola-list" class="pedidos-grid"></div>
       </div>
     </section>
@@ -203,6 +204,9 @@
         <div id="inventario-cats" class="inv-grid"></div>
         <h3 class="subh">Conteo físico (corrige diferencias)</h3>
         <div id="inv-fisico-box" class="list-block"></div>
+        <h3 class="subh">📊 Inventario ABC (por valor de ventas)</h3>
+        <p class="muted tiny">A = 80% valor · B = siguiente 15% · C = resto</p>
+        <div id="inv-abc" class="abc-grid"></div>
       </div>
     </section>
 
@@ -245,6 +249,32 @@
           <div id="gastos-total" class="cambio-box" style="margin-top:8px">Gastos: 0 €</div>
         </div>
       </div>
+      <div class="layout-2" style="margin-top:12px">
+        <div class="card card-sigre">
+          <h2><span class="h-ico">♻️</span> Punto SIGRE</h2>
+          <p class="muted">Recogida de medicamentos no usados / caducados del domicilio.</p>
+          <div class="form-grid">
+            <div class="full"><label class="lbl" for="sigre-search">Medicamento / descripción</label><input id="sigre-search" type="search" placeholder="Ej. Ibuprofeno caducado…" /></div>
+            <div><label class="lbl" for="sigre-qty">Ud.</label><input id="sigre-qty" type="number" min="1" value="1" /></div>
+            <div><label class="lbl" for="sigre-tipo">Tipo</label>
+              <select id="sigre-tipo"><option value="caducado">Caducado</option><option value="sobra">Sobra tratamiento</option><option value="mal_estado">Mal estado</option></select>
+            </div>
+          </div>
+          <div id="sigre-suggest" class="list-block"></div>
+          <button type="button" class="btn btn-primary" id="btn-sigre">Registrar en SIGRE</button>
+          <div id="sigre-list" class="list-block"></div>
+        </div>
+        <div class="card card-adh">
+          <h2><span class="h-ico">📅</span> Seguimiento / adherencia</h2>
+          <p class="muted">Pregunta por tratamientos crónicos del paciente actual.</p>
+          <div id="adh-cronicos" class="list-block"></div>
+          <div class="form-grid">
+            <div class="full"><label class="lbl" for="adh-nota">Nota de seguimiento</label><textarea id="adh-nota" rows="2" placeholder="Ej. Confirma que toma enalapril cada mañana"></textarea></div>
+          </div>
+          <button type="button" class="btn btn-accent" id="btn-adh-guardar">Guardar seguimiento</button>
+          <div id="adh-list" class="list-block"></div>
+        </div>
+      </div>
     </section>
 
     <!-- MINIJUEGOS -->
@@ -274,9 +304,10 @@
         </div>
         <div class="card">
           <div class="card-head">
-            <h2><span class="h-ico">📥</span> En camino / recibidos</h2>
+            <h2><span class="h-ico">📥</span> En camino / albaranes</h2>
             <button type="button" class="btn btn-sm" id="btn-retirar-caducados">Retirar caducados</button>
           </div>
+          <p class="muted tiny">Al llegar el pedido debes <strong>recepcionar el albarán</strong> (lote, unidades, caducidad).</p>
           <div id="alm-pedidos" class="list-block"></div>
           <h3 class="subh">Alertas de stock y caducidad</h3>
           <div id="alm-alertas" class="list-block"></div>
@@ -350,8 +381,14 @@
     <section id="panel-ticket" class="panel">
       <div class="card">
         <div class="card-head">
-          <h2><span class="h-ico">🎟</span> Último ticket</h2>
-          <button type="button" class="btn btn-primary btn-sm" id="btn-print">Imprimir</button>
+          <h2><span class="h-ico">🎟</span> Ticket / factura</h2>
+          <div class="actions-row" style="margin:0">
+            <label class="check"><input type="radio" name="doc-tipo" value="ticket" checked /> Ticket</label>
+            <label class="check"><input type="radio" name="doc-tipo" value="simplificada" /> Factura simplificada</label>
+            <label class="check"><input type="radio" name="doc-tipo" value="completa" /> Factura completa</label>
+            <button type="button" class="btn btn-primary btn-sm" id="btn-print">🖨 PDF / Imprimir</button>
+            <button type="button" class="btn btn-sm btn-accent" id="btn-regen-doc">Actualizar vista</button>
+          </div>
         </div>
         <div id="ticket-content"><p class="empty">Sin ticket aún</p></div>
       </div>
@@ -361,18 +398,18 @@
       <div class="card help-card">
         <h2>✨ Cómo usar el TPV</h2>
         <ol class="help-steps">
-          <li>En <strong>Clientes</strong>, atiende a alguien: te dirá producto, síntomas y <strong>cómo quiere pagar</strong>.</li>
-          <li>En <strong>Venta</strong>, busca por categoría/síntoma y añade al carrito. Respeta receta papel o electrónica.</li>
-          <li>Al cobrar, usa el <strong>método que eligió el cliente</strong>. Saldrán minijuegos (escáner, cortar códigos, PIN, firma…).</li>
-          <li><strong>Inventario</strong>: puntos de caducidad y conteo físico. <strong>Gestión</strong>: devoluciones, roturas y gastos.</li>
-          <li>Entrena en la pestaña <strong>Minijuegos</strong> sin una venta real.</li>
+          <li><strong>Clientes</strong>: cola libre o perfiles fijos (embarazada, anciano, turista, menor).</li>
+          <li>Respeta pago del cliente, visado, e-receta (1.ª / fin) y tope de copago pensionista.</li>
+          <li><strong>Almacén</strong>: al llegar un pedido, recepciona el <strong>albarán</strong>.</li>
+          <li><strong>Gestión</strong>: SIGRE, adherencia, devoluciones, roturas y gastos.</li>
+          <li><strong>Ticket</strong>: elige ticket, factura simplificada o completa e imprime PDF.</li>
         </ol>
         <p><kbd>F2</kbd> buscar · <kbd>F4</kbd> cobrar · <kbd>Esc</kbd> cerrar</p>
         <p class="warn-text">Simulador educativo. No es consejo médico real.</p>
       </div>
     </section>
 
-    <footer class="disclaimer">Farmacia Álora · 23 categorías · 363 productos · clientes con petición exacta, síntoma o receta</footer>
+    <footer class="disclaimer">Farmacia Álora · práctica avanzada · SIGRE · albaranes · facturas · perfiles</footer>
   </div>
 
   <!-- Modal receta -->
@@ -381,6 +418,9 @@
     <div class="form-grid">
       <div><label class="lbl" for="rx-numero">Nº</label><input id="rx-numero" /></div>
       <div><label class="lbl" for="rx-tipo">Tipo</label><select id="rx-tipo"><option value="electronica">Electrónica</option><option value="papel">Papel</option></select></div>
+      <div><label class="lbl" for="rx-fase">Dispensación e-receta</label>
+        <select id="rx-fase"><option value="primera">Primera dispensación</option><option value="continuacion">Continuación</option><option value="fin">Fin de tratamiento</option></select>
+      </div>
       <div><label class="lbl" for="rx-paciente">Paciente</label><input id="rx-paciente" /></div>
       <div><label class="lbl" for="rx-dni">DNI</label><input id="rx-dni" /></div>
       <div><label class="lbl" for="rx-medico">Médico</label><input id="rx-medico" /></div>
@@ -484,14 +524,45 @@
     <p class="muted tiny" id="mini-status"></p>
   </div></div>
 
+  
+  <div class="modal" id="modal-albaran"><div class="modal-card modal-wide">
+    <h2>📋 Recepcionar albarán</h2>
+    <p id="alb-msg" class="muted"></p>
+    <div class="form-grid">
+      <div><label class="lbl" for="alb-qty">Cantidad recibida</label><input id="alb-qty" type="number" min="1" /></div>
+      <div><label class="lbl" for="alb-lote">Lote</label><input id="alb-lote" /></div>
+      <div><label class="lbl" for="alb-cad">Caducidad</label><input id="alb-cad" type="date" /></div>
+      <div class="full"><label class="check"><input type="checkbox" id="alb-ok" /> He comprobado unidades, lote y caducidad del albarán</label></div>
+    </div>
+    <div class="actions-row">
+      <button type="button" class="btn btn-primary" id="btn-alb-ok">Confirmar recepción</button>
+      <button type="button" class="btn" id="btn-alb-cancel">Cancelar</button>
+    </div>
+  </div></div>
+
+  <div class="modal" id="modal-visado"><div class="modal-card">
+    <h2>🛂 Visado / inspección</h2>
+    <p id="visado-msg" class="muted">Uno o más medicamentos requieren visado antes de dispensar.</p>
+    <div id="visado-list" class="list-block"></div>
+    <div class="form-grid">
+      <div class="full"><label class="check"><input type="checkbox" id="visado-check" /> Confirmo visado electrónico / inspección OK</label></div>
+      <div class="full"><label class="lbl" for="visado-ref">Nº referencia visado</label><input id="visado-ref" placeholder="VIS-…" /></div>
+    </div>
+    <div class="actions-row">
+      <button type="button" class="btn btn-primary" id="btn-visado-ok">Continuar</button>
+      <button type="button" class="btn" id="btn-visado-cancel">Cancelar</button>
+    </div>
+  </div></div>
+
   <div id="toasts" aria-live="polite"></div>
 
-  <script src="js/catalog.js?v=5"></script>
-  <script src="js/clinical.js?v=5"></script>
-  <script src="js/clients.js?v=5"></script>
-  <script src="js/caja.js?v=5"></script>
-  <script src="js/sounds.js?v=5"></script>
-  <script src="js/minigames.js?v=5"></script>
-  <script src="js/app.js?v=5"></script>
+  <script src="js/catalog.js?v=6"></script>
+  <script src="js/clinical.js?v=6"></script>
+  <script src="js/clients.js?v=6"></script>
+  <script src="js/caja.js?v=6"></script>
+  <script src="js/sounds.js?v=6"></script>
+  <script src="js/minigames.js?v=6"></script>
+  <script src="js/extras.js?v=6"></script>
+  <script src="js/app.js?v=6"></script>
 </body>
 </html>

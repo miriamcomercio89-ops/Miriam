@@ -5,13 +5,14 @@
 (function () {
   "use strict";
 
-  const STORAGE_KEY = "farmacia-alora-v5";
+  const STORAGE_KEY = "farmacia-alora-v6";
   const REAL_MS_PER_GAME_HOUR = 60 * 1000;
   const Clinica = window.FarmaciaClinica;
   const Caja = window.FarmaciaCaja;
   const Clientes = window.FarmaciaClientes;
   const Sounds = window.FarmaciaSounds;
   const Minis = window.FarmaciaMinijuegos;
+  const Extras = window.FarmaciaExtras;
 
   const MUTUAS = [
     { id: "particular", nombre: "Particular", cobertura: 0 },
@@ -44,6 +45,11 @@
   let miniFails = 0;
   let gestPickId = null;
   let rotPickId = null;
+  let sigrePickId = null;
+  let pendingAlbId = null;
+  let pendingVisadoContinue = null;
+  let lastTicket = null;
+  let docTipo = "ticket";
 
   const $ = (s) => document.querySelector(s);
   const $$ = (s) => Array.from(document.querySelectorAll(s));
@@ -104,7 +110,7 @@
     }
     const start = new Date(); start.setHours(9,0,0,0);
     return {
-      version: 5,
+      version: 6,
       gameTimeMs: start.getTime(),
       paused: false,
       stock, lotes,
@@ -124,9 +130,12 @@
       roturas: [],
       gastos: [],
       conteoFisico: {},
+      sigre: [],
+      adherencias: [],
+      copagoMes: {},
       ofertasDia: makeOfertas(list),
       caja: Caja.defaultCaja(start.getTime()),
-      stats: { tickets: 0, facturacion: 0, recetas: 0, minijuegosOk: 0, minijuegosFail: 0 },
+      stats: { tickets: 0, facturacion: 0, recetas: 0, minijuegosOk: 0, minijuegosFail: 0, sigre: 0 },
       nextCustomerAt: start.getTime() + 15 * 60 * 1000,
       settings: { horarioManana:[9,14], horarioTarde:[17,20.5], abiertoSabadoManana:true, enGuardia:false },
     };
@@ -140,6 +149,8 @@
       alergias: [], cronicos: [],
       embarazo: false, lactancia: false, edad: null,
       metodoPago: null,
+      perfilId: null,
+      tutor: null,
     };
   }
 
@@ -175,7 +186,10 @@
         roturas: data.roturas || [],
         gastos: data.gastos || [],
         conteoFisico: data.conteoFisico || {},
-        stats: { tickets: 0, facturacion: 0, recetas: 0, minijuegosOk: 0, minijuegosFail: 0, ...(data.stats || {}) },
+        sigre: data.sigre || [],
+        adherencias: data.adherencias || [],
+        copagoMes: data.copagoMes || {},
+        stats: { tickets: 0, facturacion: 0, recetas: 0, minijuegosOk: 0, minijuegosFail: 0, sigre: 0, ...(data.stats || {}) },
       };
     } catch { return defaultState(list); }
   }
@@ -278,21 +292,32 @@
         obs = "ATENCIÓN formativa: esta receta puede no coincidir.";
       }
       const tipoRx = r() < 0.55 ? "electronica" : "papel";
+      const fase = tipoRx === "electronica" ? pick(r, ["primera", "continuacion", "fin"]) : "unica";
+      items = items.map((it) => {
+        const p = productos.find((x) => x.id === it.productId);
+        return { ...it, requiereVisado: Extras.needsVisado(p) };
+      });
       if (tipoRx === "papel") obs = (obs ? obs + " " : "") + "Receta papel: cortar códigos y sellar.";
-      else obs = (obs ? obs + " " : "") + "Receta electrónica: PIN SNS.";
+      else {
+        const faseTxt = { primera: "PRIMERA dispensación", continuacion: "continuación", fin: "FIN de tratamiento" }[fase];
+        obs = (obs ? obs + " " : "") + `Receta electrónica SNS · ${faseTxt}.`;
+      }
+      if (items.some((i) => i.requiereVisado)) obs += " Requiere VISADO.";
       receta = {
-        numero: genRecetaNum(r, emitida), tipo: tipoRx,
+        numero: genRecetaNum(r, emitida), tipo: tipoRx, fase,
         pacienteNombre: cli.nombre, pacienteDni,
         medico: med.nombre, colegiado: med.colegiado,
         fechaEmision: emitida,
         validezDias: items.some((i) => i.controlado) ? 10 : 30,
         productos: items, dispensada: false, observaciones: obs,
+        visadoOk: false, visadoRef: "",
       };
     }
     if (receta) {
       cli.peticionTexto = (cli.peticionTexto || "") + (receta.tipo === "papel"
         ? " (es receta en papel)."
-        : " (es receta electrónica del SNS).");
+        : ` (e-receta SNS · ${receta.fase}).`);
+      if (receta.productos.some((p) => p.requiereVisado)) cli.peticionTexto += " Creo que lleva visado.";
     }
     return {
       id: "ped-" + cli.id + "-" + Date.now().toString(36),
@@ -306,21 +331,52 @@
   function receiveWarehouse() {
     let changed = false;
     for (const ped of state.pedidosAlmacen) {
-      if (!ped.recibido && state.gameTimeMs >= ped.llegadaMs) {
-        state.stock[ped.productId] = (state.stock[ped.productId] || 0) + ped.cantidad;
-        // renovar lote al recibir
-        state.lotes[ped.productId] = {
-          ...(state.lotes[ped.productId] || {}),
-          lote: "L" + Math.floor(100000 + Math.random()*899999),
-          caducidadMs: state.gameTimeMs + (180 + Math.floor(Math.random()*400)) * 86400000,
-        };
-        ped.recibido = true;
+      if (!ped.recibido && !ped.llegado && state.gameTimeMs >= ped.llegadaMs) {
+        ped.llegado = true;
+        ped.albLoteSugerido = "L" + Math.floor(100000 + Math.random() * 899999);
+        ped.albCadSugerida = state.gameTimeMs + (180 + Math.floor(Math.random() * 400)) * 86400000;
         changed = true;
-        toast(`Pedido recibido: ${ped.nombre} ×${ped.cantidad}`, "ok");
-        Sounds.beepOk();
+        toast(`Pedido en muelle: recepciona albarán de ${ped.nombre}`, "warn");
+        Sounds.beepWarn();
       }
     }
-    if (changed) { renderAlmacen(); renderCatalog(); renderStats(); save(); }
+    if (changed) { renderAlmacen(); save(); }
+  }
+
+  function openAlbaran(id) {
+    const ped = state.pedidosAlmacen.find((p) => p.id === id);
+    if (!ped || ped.recibido || !ped.llegado) return;
+    pendingAlbId = id;
+    $("#alb-msg").textContent = `${ped.nombre} · pedido ×${ped.cantidad}`;
+    $("#alb-qty").value = ped.cantidad;
+    $("#alb-lote").value = ped.albLoteSugerido || ("L" + Math.floor(100000 + Math.random() * 899999));
+    const d = new Date(ped.albCadSugerida || (state.gameTimeMs + 200 * 86400000));
+    $("#alb-cad").value = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+    $("#alb-ok").checked = false;
+    $("#modal-albaran").classList.add("open");
+  }
+
+  function confirmarAlbaran() {
+    const ped = state.pedidosAlmacen.find((p) => p.id === pendingAlbId);
+    if (!ped) return;
+    if (!$("#alb-ok").checked) { toast("Marca la comprobación del albarán", "warn"); return; }
+    const qty = Math.max(1, Number($("#alb-qty").value) || ped.cantidad);
+    const lote = ($("#alb-lote").value || "").trim() || ped.albLoteSugerido;
+    const cadStr = $("#alb-cad").value;
+    const cadMs = cadStr ? new Date(cadStr + "T12:00:00").getTime() : ped.albCadSugerida;
+    state.stock[ped.productId] = (state.stock[ped.productId] || 0) + qty;
+    state.lotes[ped.productId] = {
+      ...(state.lotes[ped.productId] || {}),
+      lote, caducidadMs: cadMs, stockMinimo: state.lotes[ped.productId]?.stockMinimo || 10,
+    };
+    ped.recibido = true;
+    ped.cantidadRecibida = qty;
+    ped.loteRecibido = lote;
+    $("#modal-albaran").classList.remove("open");
+    pendingAlbId = null;
+    Sounds.beepOk();
+    toast(`Albarán OK: ${ped.nombre} ×${qty} · lote ${lote}`, "ok");
+    renderAlmacen(); renderCatalog(); renderStats(); save();
   }
 
   function getMutua() { return MUTUAS.find((m) => m.id === state.mutuaId) || MUTUAS[0]; }
@@ -340,12 +396,22 @@
     return { base, iva, total: base + iva, precio, ivaPct: p.iva, producto: p, coste, oferta };
   }
 
+  function mesCopagoKey() {
+    return Extras.monthKey(state.gameTimeMs) + "|" + (state.clienteActual.dni || "anon");
+  }
+  function copagoAcumulado() {
+    return state.copagoMes[mesCopagoKey()] || 0;
+  }
   function cartTotals() {
     let base = 0, iva = 0, coste = 0, brutoMed = 0;
+    const basesIva = { 4: 0, 10: 0, 21: 0 };
     for (const l of state.cart) {
-      const t = lineTotals(l);
-      base += t.base; iva += t.iva; coste += t.coste;
-      if (t.ivaPct === 4) brutoMed += t.total;
+      const lt = lineTotals(l);
+      base += lt.base; iva += lt.iva; coste += lt.coste;
+      if (lt.ivaPct === 4) brutoMed += lt.total;
+      const k = String(lt.ivaPct);
+      if (basesIva[k] != null) basesIva[k] += lt.base;
+      else basesIva[k] = lt.base;
     }
     const bruto = base + iva;
     let descPct = 0;
@@ -355,14 +421,22 @@
     const desc = bruto * (descPct / 100);
     const trasDesc = bruto - desc;
 
-    // SNS aportación sobre medicamentos
     let cubiertoSNS = 0;
+    let aportacionCliente = 0;
+    let topeAplicado = false;
+    let topeInfo = null;
     if (state.tramoSNS !== "particular" && state.mutuaId === "ss") {
       const aport = Clientes.aportacionSNS(state.tramoSNS);
       const medTras = brutoMed * (1 - descPct / 100);
-      cubiertoSNS = medTras * (1 - aport);
+      const teoricaAport = medTras * aport;
+      const tope = Extras.topeSNS(state.tramoSNS);
+      const ya = copagoAcumulado();
+      const restoTope = Math.max(0, tope - ya);
+      aportacionCliente = Math.min(teoricaAport, restoTope);
+      if (teoricaAport > restoTope + 1e-9) topeAplicado = true;
+      cubiertoSNS = Math.max(0, medTras - aportacionCliente);
+      topeInfo = { tope, ya, restoTope, teoricaAport, aportacionCliente };
     }
-    // mutua privada
     const mutua = getMutua();
     let cubiertoMutua = 0;
     if (mutua.cobertura > 0 && state.mutuaId !== "ss") {
@@ -370,7 +444,10 @@
     }
     const cubierto = cubiertoSNS + cubiertoMutua;
     const aPagar = Math.max(0, trasDesc - cubierto);
-    return { base, iva, bruto, descPct, desc, trasDesc, cubierto, cubiertoSNS, cubiertoMutua, aPagar, mutua, coste, margen: Math.max(0, aPagar - coste * 0.5) };
+    return {
+      base, iva, bruto, descPct, desc, trasDesc, cubierto, cubiertoSNS, cubiertoMutua, aPagar, mutua, coste,
+      margen: Math.max(0, aPagar - coste * 0.5), basesIva, aportacionCliente, topeAplicado, topeInfo,
+    };
   }
 
   function cartProducts() {
@@ -441,7 +518,14 @@
     }
     const warnings = [];
     if (receta.tipo === "papel") warnings.push("Receta en PAPEL: cortar/pegar códigos + sello obligatorio.");
-    if (receta.tipo === "electronica") warnings.push("Receta ELECTRÓNICA: validar PIN SNS en el TPV.");
+    if (receta.tipo === "electronica") {
+      const fase = receta.fase || "primera";
+      const faseTxt = { primera: "PRIMERA dispensación", continuacion: "continuación de tratamiento", fin: "FIN de tratamiento" }[fase] || fase;
+      warnings.push(`Receta ELECTRÓNICA SNS: PIN + marcar ${faseTxt}.`);
+      if (fase === "fin") warnings.push("Fin de tratamiento: informa al paciente y cierra la línea en e-receta.");
+      if (fase === "primera") warnings.push("Primera dispensación: verifica posología con el paciente.");
+    }
+    let needVisado = false;
     for (const linea of necesita) {
       const p = productos.find((x) => x.id === linea.productId);
       const en = receta.productos.find((rp) => rp.productId === linea.productId);
@@ -449,8 +533,15 @@
       if (linea.cantidad > en.cantidad) return { ok: false, motivo: `RECHAZAR: cantidad de "${p.nombre}" supera la prescrita`, warnings };
       if (p.controlado) warnings.push("Controlado: DNI + libro + firma del farmacéutico.");
       if (p.nevera) warnings.push(`Frigorífico: ${p.nombre}`);
+      if (en.requiereVisado || Extras.needsVisado(p)) {
+        needVisado = true;
+        warnings.push(`Visado / inspección requerido: ${p.nombre}`);
+      }
     }
-    return { ok: true, warnings };
+    if (needVisado && !receta.visadoOk) {
+      return { ok: false, motivo: "Pendiente de VISADO / inspección antes de cobrar", warnings, needVisado: true };
+    }
+    return { ok: true, warnings, needVisado };
   }
 
   function buscarSustitutos(p) {
@@ -523,8 +614,28 @@
     if (!state.caja.abierta) { toast("Abre la caja primero", "warn"); showTab("caja"); return; }
     for (const l of state.cart) if ((state.stock[l.productId] || 0) < l.cantidad) { toast("Stock insuficiente", "warn"); return; }
     const val = validarDispensacion();
-    if (!val.ok) { toast(val.motivo, "err"); Sounds.beepWarn(); return; }
+    if (!val.ok && !val.needVisado) { toast(val.motivo, "err"); Sounds.beepWarn(); return; }
 
+    const needVisado = val.needVisado || (state.recetaActiva && state.recetaActiva.productos?.some((rp) => {
+      const p = productos.find((x) => x.id === rp.productId);
+      return (rp.requiereVisado || Extras.needsVisado(p)) && state.cart.some((l) => l.productId === rp.productId);
+    }) && !state.recetaActiva.visadoOk);
+
+    if (needVisado) {
+      const items = state.cart.map((l) => productos.find((x) => x.id === l.productId)).filter((p) => p && Extras.needsVisado(p));
+      $("#visado-list").innerHTML = items.map((p) => `<div class="list-item"><strong>${escapeHtml(p.nombre)}</strong><span class="tag tag-ctrl">VISADO</span></div>`).join("") || "<div class='empty'>Medicamentos con visado</div>";
+      $("#visado-check").checked = false;
+      $("#visado-ref").value = "VIS-" + Math.floor(100000 + Math.random() * 899999);
+      pendingVisadoContinue = () => continueAfterVisado();
+      $("#modal-visado").classList.add("open");
+      return;
+    }
+    continueAfterVisado();
+  }
+
+  function continueAfterVisado() {
+    const val = validarDispensacion();
+    if (!val.ok) { toast(val.motivo, "err"); Sounds.beepWarn(); return; }
     const hasCtrl = state.cart.some((l) => productos.find((x) => x.id === l.productId)?.controlado);
     if (hasCtrl) {
       $("#ctrl-dni").value = state.clienteActual.dni || "";
@@ -553,8 +664,13 @@
     const pagoHint = preferido
       ? `<div class="alert alert-leve">Cliente elige pagar con <strong>${escapeHtml(metodoNombre(preferido))}</strong> — usa ese método.</div>`
       : "";
+    const topeHint = tot.topeAplicado
+      ? `<div class="alert alert-leve">Tope mensual SNS alcanzado (ya ${euro(tot.topeInfo.ya)} / tope ${euro(tot.topeInfo.tope)}). Aportación limitada a ${euro(tot.aportacionCliente)}.</div>`
+      : (tot.topeInfo && tot.topeInfo.tope < Infinity
+        ? `<div class="alert alert-leve">Copago SNS este mes: ${euro(tot.topeInfo.ya)} / tope ${euro(tot.topeInfo.tope)} · aportación venta ${euro(tot.aportacionCliente)}</div>`
+        : "");
     $("#pago-alerts").innerHTML = [
-      pagoHint,
+      pagoHint, topeHint,
       ...(val.warnings || []).map((w) => `<div class="alert alert-moderada">${escapeHtml(w)}</div>`),
       ...alerts.filter((a) => a.nivel !== "leve").map((a) => `<div class="alert alert-${a.nivel}">${escapeHtml(a.msg)}</div>`),
     ].join("");
@@ -759,13 +875,22 @@
       descuentoPct: tot.descPct, descuento: tot.desc,
       coberturaMutua: tot.cubierto, base: tot.base, iva: tot.iva, bruto: tot.bruto,
       total: tot.aPagar, margen: tot.margen, coste: tot.coste, lineas, pago,
+      basesIva: tot.basesIva, aportacionCliente: tot.aportacionCliente || 0,
+      topeAplicado: !!tot.topeAplicado, topeInfo: tot.topeInfo || null,
       guardia: state.settings.enGuardia && isOutsideNormal(state.gameTimeMs),
       season: seasonInfo(state.gameTimeMs).id,
       receta: state.recetaActiva ? {
         numero: state.recetaActiva.numero, pacienteDni: state.recetaActiva.pacienteDni,
-        medico: state.recetaActiva.medico, colegiado: state.recetaActiva.colegiado, tipo: state.recetaActiva.tipo,
+        medico: state.recetaActiva.medico, colegiado: state.recetaActiva.colegiado,
+        tipo: state.recetaActiva.tipo, fase: state.recetaActiva.fase || null,
+        visadoRef: state.recetaActiva.visadoRef || "",
       } : null,
     };
+
+    if (tot.aportacionCliente > 0) {
+      const k = mesCopagoKey();
+      state.copagoMes[k] = Caja.round2((state.copagoMes[k] || 0) + tot.aportacionCliente);
+    }
 
     for (const l of state.cart) state.stock[l.productId] -= l.cantidad;
 
@@ -807,6 +932,7 @@
     renderCart(); renderReceta(); renderStats(); renderCatalog();
     renderCaja(); renderLibro(); renderPacientes(); renderSpeech();
     refreshClinicalAlerts();
+    lastTicket = ticket;
     mostrarTicket(ticket);
     toast("Cobro TPV OK", "ok");
   }
@@ -947,7 +1073,7 @@
     const tot = cartTotals();
     $("#tot-bruto").textContent = euro(tot.bruto);
     $("#tot-desc").textContent = euro(tot.desc);
-    $("#tot-mutua").textContent = euro(tot.cubierto);
+    $("#tot-mutua").textContent = euro(tot.cubierto) + (tot.topeAplicado ? " · tope" : "");
     $("#tot-pagar").textContent = euro(tot.aPagar);
     renderPacienteChips();
   }
@@ -971,7 +1097,9 @@
     box.classList.remove("hidden");
     const modo = { exacto: "Pide producto", sintoma: "Por síntomas", receta: "Trae receta", ambas: "Producto + receta" }[c.modo] || "";
     const pagoTxt = c.metodoPago ? " · Paga: " + metodoNombre(c.metodoPago) : "";
-    $("#speech-name").textContent = `${c.nombre || "Cliente"}${c.edad != null ? ` (${c.edad} años)` : ""}${modo ? " · " + modo : ""}${pagoTxt}`;
+    const perfilTxt = c.perfilId ? " · Perfil" : "";
+    const tutorTxt = c.tutor ? ` · Tutor: ${c.tutor}` : "";
+    $("#speech-name").textContent = `${c.nombre || "Cliente"}${c.edad != null ? ` (${c.edad} años)` : ""}${modo ? " · " + modo : ""}${pagoTxt}${perfilTxt}${tutorTxt}`;
     $("#speech-text").textContent = `«${c.peticionTexto}»`;
     const tags = (c.sintomas || []).map((s) => `<button type="button" class="chip" data-sintoma="${escapeHtml(s)}">${escapeHtml(s)}</button>`);
     if (c.metodoPago) tags.push(`<span class="chip chip-pago">💳 ${escapeHtml(metodoNombre(c.metodoPago))}</span>`);
@@ -993,12 +1121,13 @@
     $("#receta-panel").innerHTML = `
       <div class="receta-grid">
         <div><span class="lbl">Nº</span> ${escapeHtml(r.numero)}</div>
-        <div><span class="lbl">Tipo</span> ${r.tipo === "papel" ? "📄 Papel" : "💻 Electrónica"}</div>
+        <div><span class="lbl">Tipo</span> ${r.tipo === "papel" ? "📄 Papel" : "💻 Electrónica"} ${r.fase && r.tipo === "electronica" ? "· " + escapeHtml(r.fase) : ""}</div>
         <div><span class="lbl">Médico</span> ${escapeHtml(r.medico)}</div>
         <div><span class="lbl">Paciente</span> ${escapeHtml(r.pacienteNombre)} (${escapeHtml(r.pacienteDni)})</div>
-        <div><span class="lbl">Validez</span> ${r.validezDias} días</div>
+        <div><span class="lbl">Validez</span> ${r.validezDias} días ${r.visadoOk ? "· ✅ Visado" : ""}</div>
       </div>
-      <ul class="receta-items">${r.productos.map((p)=>`<li>${escapeHtml(p.nombre)} × ${p.cantidad}
+      ${r.observaciones ? `<p class="muted tiny">${escapeHtml(r.observaciones)}</p>` : ""}
+      <ul class="receta-items">${r.productos.map((p)=>`<li>${escapeHtml(p.nombre)} × ${p.cantidad}${p.requiereVisado || Extras.needsVisado(productos.find(x=>x.id===p.productId)) ? ' <span class="tag tag-ctrl">VISADO</span>' : ""}
         <button class="btn btn-sm btn-primary" data-add="${p.productId}">Añadir</button></li>`).join("")}</ul>`;
   }
 
@@ -1157,6 +1286,7 @@
       const sum = (state.gastos || []).reduce((a, g) => a + (g.importe || 0), 0);
       $("#gastos-total").textContent = "Gastos: " + euro(sum);
     }
+    renderSigre();
   }
 
   function suggestGestion(inputId, suggestId, pickVar) {
@@ -1238,11 +1368,18 @@
   function renderAlmacen() {
     const pending = state.pedidosAlmacen.filter((p)=>!p.recibido);
     $("#alm-count").textContent = String(pending.length);
-    $("#alm-pedidos").innerHTML = state.pedidosAlmacen.slice().reverse().slice(0,40).map((p)=>`
-      <div class="list-item">
-        <div><strong>${escapeHtml(p.nombre)}</strong><div class="muted tiny">×${p.cantidad} · llega ${formatShort(p.llegadaMs)} · ${p.recibido?"RECIBIDO":"EN CAMINO"}</div></div>
-        <span class="badge ${p.recibido?"badge-ok":"badge-warn"}">${p.recibido?"OK":"…"}</span>
-      </div>`).join("") || `<div class="empty">Sin pedidos</div>`;
+    $("#alm-pedidos").innerHTML = state.pedidosAlmacen.slice().reverse().slice(0,40).map((p)=>{
+      let st = "EN CAMINO"; let badge = "badge-warn"; let action = "";
+      if (p.recibido) { st = "RECIBIDO · lote " + (p.loteRecibido || "—"); badge = "badge-ok"; }
+      else if (p.llegado) {
+        st = "EN MUELLE — falta albarán"; badge = "badge-purple";
+        action = `<button class="btn btn-sm btn-primary" data-albaran="${p.id}">📋 Albarán</button>`;
+      }
+      return `<div class="list-item">
+        <div><strong>${escapeHtml(p.nombre)}</strong><div class="muted tiny">×${p.cantidad} · ${formatShort(p.llegadaMs)} · ${escapeHtml(st)}</div></div>
+        <div class="actions-row" style="margin:0">${action}<span class="badge ${badge}">${p.recibido?"OK":p.llegado?"ALB":"…"}</span></div>
+      </div>`;
+    }).join("") || `<div class="empty">Sin pedidos</div>`;
 
     const lows = productos.filter((p)=>isLow(p)||isOut(p)).slice(0,30);
     const exps = productos.filter((p)=>expiresSoon(p)||isExpired(p)).slice(0,30);
@@ -1279,27 +1416,43 @@
     const top = Object.entries(topMap).sort((a, b) => b[1] - a[1]).slice(0, 10);
     const cats = Object.entries(catMap).sort((a, b) => b[1] - a[1]);
     const season = seasonInfo(state.gameTimeMs);
+    const F = Extras.FARMACIA;
     $("#informe-content").innerHTML = `
-      <div class="informe-card"><h3>🏪 Farmacia Álora</h3>
-        <p>${formatGameDate(state.gameTimeMs)}</p>
-        <p>Temporada: <strong>${season.label}</strong></p>
-        <p>Tickets: <strong>${hoy.length}</strong> · Catálogo: <strong>${productos.length}</strong></p>
-        <p>Facturación: <strong>${euro(r.facturacion)}</strong></p>
-        <p>Margen est.: <strong>${euro(r.margen)}</strong></p>
-      </div>
-      <div class="informe-card"><h3>📂 Por categoría</h3>
-        ${cats.map(([n, t]) => `<p>${escapeHtml(n)}: <strong>${euro(t)}</strong></p>`).join("") || "<p>Sin datos</p>"}
-      </div>
-      <div class="informe-card"><h3>💳 Métodos TPV</h3>
-        ${Caja.METODOS.map((m) => `<p>${m.icon} ${m.nombre}: ${euro(r.porMetodo[m.id] || 0)}</p>`).join("")}
-      </div>
-      <div class="informe-card"><h3>🏆 Top productos</h3>
-        <ol>${top.map(([n, c]) => `<li>${escapeHtml(n)} ×${c}</li>`).join("") || "<li>Sin datos</li>"}</ol>
-      </div>
-      <div class="informe-card"><h3>🎮 Minijuegos / gestión</h3>
-        <p>OK: <strong>${state.stats.minijuegosOk||0}</strong> · Fallos: <strong>${state.stats.minijuegosFail||0}</strong></p>
-        <p>Devoluciones: <strong>${(state.devoluciones||[]).length}</strong> · Roturas: <strong>${(state.roturas||[]).length}</strong></p>
-        <p>Gastos: <strong>${euro((state.gastos||[]).reduce((a,g)=>a+(g.importe||0),0))}</strong></p>
+      <div class="doc-sheet doc-informe" id="informe-print-inner">
+        <div class="doc-banner">
+          <div class="doc-logo">✚</div>
+          <div>
+            <div class="doc-brand">${escapeHtml(F.nombre)}</div>
+            <div class="doc-sub">${escapeHtml(F.direccion)} · NIF ${escapeHtml(F.nif)}</div>
+          </div>
+          <div class="doc-badge">INFORME DEL DÍA</div>
+        </div>
+        <p class="doc-meta-line">${formatGameDate(state.gameTimeMs)} · ${season.label}</p>
+        <div class="informe-kpis">
+          <div class="ik"><span>Tickets</span><strong>${hoy.length}</strong></div>
+          <div class="ik"><span>Facturación</span><strong>${euro(r.facturacion)}</strong></div>
+          <div class="ik"><span>Margen est.</span><strong>${euro(r.margen)}</strong></div>
+          <div class="ik"><span>SIGRE</span><strong>${state.stats.sigre||0}</strong></div>
+        </div>
+        <div class="informe-grid">
+          <div class="informe-card c-teal"><h3>📂 Categorías</h3>
+            ${cats.map(([n, tt]) => `<div class="inf-row"><span>${escapeHtml(n)}</span><strong>${euro(tt)}</strong></div>`).join("") || "<p>Sin datos</p>"}
+          </div>
+          <div class="informe-card c-blue"><h3>💳 Métodos TPV</h3>
+            ${Caja.METODOS.map((m) => `<div class="inf-row"><span>${m.icon} ${m.nombre}</span><strong>${euro(r.porMetodo[m.id] || 0)}</strong></div>`).join("")}
+          </div>
+          <div class="informe-card c-amber"><h3>🏆 Top productos</h3>
+            <ol>${top.map(([n, c]) => `<li>${escapeHtml(n)} ×${c}</li>`).join("") || "<li>Sin datos</li>"}</ol>
+          </div>
+          <div class="informe-card c-pink"><h3>🎮 Gestión</h3>
+            <div class="inf-row"><span>Minijuegos OK/Fail</span><strong>${state.stats.minijuegosOk||0}/${state.stats.minijuegosFail||0}</strong></div>
+            <div class="inf-row"><span>Devoluciones</span><strong>${(state.devoluciones||[]).length}</strong></div>
+            <div class="inf-row"><span>Roturas</span><strong>${(state.roturas||[]).length}</strong></div>
+            <div class="inf-row"><span>Adherencias</span><strong>${(state.adherencias||[]).length}</strong></div>
+            <div class="inf-row"><span>Gastos</span><strong>${euro((state.gastos||[]).reduce((a,g)=>a+(g.importe||0),0))}</strong></div>
+          </div>
+        </div>
+        <div class="doc-foot"><span>Informe de práctica · Farmacia Álora</span><span>${formatShort(state.gameTimeMs)}</span></div>
       </div>`;
   }
 
@@ -1370,25 +1523,77 @@
   }
 
   function mostrarTicket(ticket) {
+    lastTicket = ticket;
+    renderDocumento(ticket, docTipo);
+    showTab("ticket");
+  }
+
+  function renderDocumento(ticket, tipo) {
+    if (!ticket) {
+      $("#ticket-content").innerHTML = `<p class="empty">Sin ticket aún</p>`;
+      return;
+    }
+    const F = Extras.FARMACIA;
+    const isFact = tipo === "simplificada" || tipo === "completa";
+    const title = tipo === "completa" ? "FACTURA COMPLETA" : tipo === "simplificada" ? "FACTURA SIMPLIFICADA" : "TICKET DE VENTA";
+    const ivaRows = Object.entries(ticket.basesIva || {}).filter(([, b]) => b > 0).map(([pct, b]) => {
+      const cuota = b * (Number(pct) / 100);
+      return `<tr><td>IVA ${pct}%</td><td>${euro(b)}</td><td>${euro(cuota)}</td></tr>`;
+    }).join("");
+    const clienteBlock = isFact ? `
+      <div class="doc-party">
+        <div class="doc-party-label">Cliente</div>
+        <strong>${escapeHtml(ticket.cliente.nombre || "Consumidor final")}</strong>
+        <div>DNI/NIE: ${escapeHtml(ticket.cliente.dni || (tipo === "completa" ? "—" : "—"))}</div>
+        ${tipo === "completa" ? `<div>Tramo SNS: ${escapeHtml(ticket.tramoSNS)}</div><div>Mutua: ${escapeHtml(ticket.mutua)}</div>` : ""}
+      </div>` : `
+      <div class="doc-meta-line">Cliente: <strong>${escapeHtml(ticket.cliente.nombre || "—")}</strong> · ${escapeHtml(ticket.cliente.dni || "—")}</div>
+      <div class="doc-meta-line">SNS: ${escapeHtml(ticket.tramoSNS)} · Pago: ${escapeHtml(metodoNombre(ticket.pago?.metodo))}${ticket.pago?.cambio ? " · Cambio " + euro(ticket.pago.cambio) : ""}</div>`;
+
     $("#ticket-content").innerHTML = `
-      <div class="ticket-paper" id="ticket-print-area">
-        <h2>✚ Farmacia Álora</h2>
-        <p class="muted">TPV de práctica${ticket.guardia?" · GUARDIA":""} · ${escapeHtml(ticket.season||"")}</p>
-        <p><strong>${ticket.id}</strong><br>${formatShort(ticket.fechaJuego)}</p>
-        <p>Cliente: ${escapeHtml(ticket.cliente.nombre||"—")} · DNI ${escapeHtml(ticket.cliente.dni||"—")}<br>
-        SNS: ${escapeHtml(ticket.tramoSNS)} · Pago: ${escapeHtml(ticket.pago?.metodo||"—")}
-        ${ticket.pago?.cambio?`<br>Cambio: ${euro(ticket.pago.cambio)}`:""}</p>
-        <table class="ticket-table"><thead><tr><th>Producto</th><th>Ud</th><th>Importe</th></tr></thead>
-        <tbody>${ticket.lineas.map((l)=>`<tr><td>${escapeHtml(l.nombre)}${l.oferta?" 🏷":""}<br><span class="muted">lote ${escapeHtml(l.lote||"—")}</span></td><td>${l.cantidad}</td><td>${euro(l.total)}</td></tr>`).join("")}</tbody></table>
-        <div class="ticket-totals">
+      <div class="doc-sheet doc-${tipo}" id="ticket-print-area">
+        <div class="doc-banner">
+          <div class="doc-logo">✚</div>
+          <div>
+            <div class="doc-brand">${escapeHtml(F.nombre)}</div>
+            <div class="doc-sub">${escapeHtml(F.direccion)} · Tel. ${escapeHtml(F.telefono)}</div>
+            <div class="doc-sub">NIF ${escapeHtml(F.nif)} · Col. ${escapeHtml(F.colegiado)}</div>
+          </div>
+          <div class="doc-badge">${title}</div>
+        </div>
+        <div class="doc-grid">
+          <div>
+            <div class="doc-id">${escapeHtml(ticket.id)}</div>
+            <div class="doc-meta-line">${formatShort(ticket.fechaJuego)}${ticket.guardia ? " · GUARDIA" : ""}</div>
+            ${ticket.receta ? `<div class="doc-meta-line">Receta ${escapeHtml(ticket.receta.tipo)} ${ticket.receta.fase ? "· " + escapeHtml(ticket.receta.fase) : ""} · ${escapeHtml(ticket.receta.numero)}</div>` : ""}
+          </div>
+          ${clienteBlock}
+        </div>
+        <table class="doc-table">
+          <thead><tr><th>Descripción</th><th>Ud</th><th>PVP</th><th>Importe</th></tr></thead>
+          <tbody>
+            ${ticket.lineas.map((l) => `<tr>
+              <td><strong>${escapeHtml(l.nombre)}</strong>${l.oferta ? " <span class='doc-tag'>Oferta</span>" : ""}
+                <div class="doc-mini">Lote ${escapeHtml(l.lote || "—")} · IVA ${l.iva}%</div></td>
+              <td>${l.cantidad}</td><td>${euro(l.precio)}</td><td>${euro(l.total)}</td>
+            </tr>`).join("")}
+          </tbody>
+        </table>
+        ${isFact ? `<table class="doc-table doc-iva"><thead><tr><th>Tipo</th><th>Base</th><th>Cuota</th></tr></thead><tbody>${ivaRows || "<tr><td colspan=3>—</td></tr>"}</tbody></table>` : ""}
+        <div class="doc-totals">
+          <div><span>Base imponible</span><span>${euro(ticket.base)}</span></div>
+          <div><span>IVA</span><span>${euro(ticket.iva)}</span></div>
           <div><span>Bruto</span><span>${euro(ticket.bruto)}</span></div>
           <div><span>Descuentos</span><span>−${euro(ticket.descuento)}</span></div>
-          <div><span>SNS/Mutua</span><span>−${euro(ticket.coberturaMutua)}</span></div>
-          <div class="grand"><span>TOTAL CLIENTE</span><span>${euro(ticket.total)}</span></div>
+          <div><span>SNS / Mutua</span><span>−${euro(ticket.coberturaMutua)}</span></div>
+          ${ticket.aportacionCliente ? `<div><span>Aportación SNS cliente</span><span>${euro(ticket.aportacionCliente)}</span></div>` : ""}
+          <div class="doc-grand"><span>TOTAL</span><span>${euro(ticket.total)}</span></div>
         </div>
-        <p class="muted tiny">Simulado · no es factura real</p>
+        <div class="doc-foot">
+          <span>Documento de práctica educativa · no válido fiscalmente</span>
+          <span>Farmacia Álora · Álora (Málaga)</span>
+        </div>
       </div>`;
-    showTab("ticket");
   }
 
   function pedirAlmacen(productId, qty) {
@@ -1468,14 +1673,149 @@
     const fechaStr = $("#rx-fecha").value;
     state.recetaActiva = {
       numero:$("#rx-numero").value.trim(), tipo:$("#rx-tipo").value,
+      fase: $("#rx-fase")?.value || "primera",
       pacienteNombre:$("#rx-paciente").value.trim(), pacienteDni:$("#rx-dni").value.trim().toUpperCase(),
       medico:$("#rx-medico").value.trim(), colegiado:$("#rx-colegiado").value.trim(),
       fechaEmision: fechaStr?new Date(fechaStr+"T12:00:00").getTime():state.gameTimeMs,
-      validezDias:Number($("#rx-validez").value)||30, productos:productosRx, dispensada:false,
-      observaciones:$("#rx-obs").value.trim(),
+      validezDias:Number($("#rx-validez").value)||30,
+      productos: productosRx.map((x) => ({ ...x, requiereVisado: Extras.needsVisado(productos.find((p) => p.id === x.productId)) })),
+      dispensada:false, observaciones:$("#rx-obs").value.trim(),
+      visadoOk: false, visadoRef: "",
     };
     $("#modal-receta").classList.remove("open");
     renderReceta(); save(); toast("Receta activa", "ok");
+  }
+
+
+  function renderPerfiles() {
+    const box = $("#perfiles-grid");
+    if (!box || !Extras) return;
+    box.innerHTML = Extras.PERFILES.map((p) =>
+      `<button type="button" class="perfil-card" data-perfil="${p.id}"><span>${p.icon}</span><strong>${escapeHtml(p.label)}</strong><span class="muted tiny">${escapeHtml(p.nombre)}</span></button>`
+    ).join("");
+  }
+
+  function atenderPerfil(id) {
+    const p = Extras.PERFILES.find((x) => x.id === id);
+    if (!p) return;
+    let receta = null;
+    if (p.quiereReceta) {
+      const r = rng(Date.now());
+      const med = pick(r, MEDICOS);
+      const chronics = productos.filter((x) => x.requiereReceta && p.cronicos.some((c) => (x.principioActivo || "").toLowerCase().includes(c) || (x.nombre || "").toLowerCase().includes(c)));
+      let pool = chronics.length ? chronics : productos.filter((x) => x.requiereReceta && x.categoria === "Cardiovascular");
+      const items = pool.slice(0, 2).map((x) => ({
+        productId: x.id, nombre: x.nombre, cantidad: 1, controlado: !!x.controlado, requiereVisado: Extras.needsVisado(x), ean: x.ean,
+      }));
+      if (!items.length) {
+        const any = productos.filter((x) => x.requiereReceta).slice(0, 2);
+        items.push(...any.map((x) => ({ productId: x.id, nombre: x.nombre, cantidad: 1, controlado: !!x.controlado, requiereVisado: Extras.needsVisado(x), ean: x.ean })));
+      }
+      receta = {
+        numero: genRecetaNum(r, state.gameTimeMs), tipo: "electronica", fase: "continuacion",
+        pacienteNombre: p.nombre, pacienteDni: p.dni, medico: med.nombre, colegiado: med.colegiado,
+        fechaEmision: state.gameTimeMs - 2 * 86400000, validezDias: 30, productos: items,
+        dispensada: false, observaciones: "Perfil práctica · e-receta continuación.", visadoOk: false, visadoRef: "",
+      };
+    }
+    state.clienteActual = {
+      ...emptyCliente(),
+      nombre: p.nombre, dni: p.dni, edad: p.edad, tramoSNS: p.tramoSNS, familiaNumerosa: !!p.familiaNumerosa,
+      peticionTexto: p.peticionTexto, sintomas: p.sintomas || [], quiereProductoIds: p.quiereProductoIds || [],
+      modo: p.modo, alergias: p.alergias || [], cronicos: p.cronicos || [],
+      embarazo: !!p.embarazo, lactancia: !!p.lactancia, metodoPago: p.metodoPago,
+      perfilId: p.id, tutor: p.tutor || null, telefono: "600000000",
+    };
+    state.mutuaId = p.mutuaId || "particular";
+    state.tramoSNS = p.tramoSNS;
+    state.flagsDesc.pensionista = p.tramoSNS === "pensionista";
+    state.cart = [];
+    state.recetaActiva = receta;
+    sintomaActivo = (p.sintomas && p.sintomas[0]) || "";
+    $("#search-q").value = sintomaActivo;
+    bindClienteForm(); renderMutuas(); renderSpeech(); renderPedidoExacto(); renderSintomas();
+    renderCatGrid(); renderCatalog(); renderCart(); renderReceta(); renderAdherenciaPanel();
+    refreshClinicalAlerts(); save();
+    toast(`Perfil: ${p.label}`, "ok");
+    showTab("venta");
+  }
+
+  function renderAdherenciaPanel() {
+    const box = $("#adh-cronicos");
+    if (!box) return;
+    const c = state.clienteActual.cronicos || [];
+    if (!c.length) { box.innerHTML = `<div class="empty">Sin crónicos en el paciente actual</div>`; return; }
+    box.innerHTML = c.map((med) => `
+      <div class="list-item adh-row">
+        <strong>${escapeHtml(med)}</strong>
+        <div class="actions-row" style="margin:0">
+          <button class="btn btn-sm btn-primary" data-adh="${escapeHtml(med)}" data-res="si">Cumple</button>
+          <button class="btn btn-sm btn-accent" data-adh="${escapeHtml(med)}" data-res="parcial">Parcial</button>
+          <button class="btn btn-sm" data-adh="${escapeHtml(med)}" data-res="no">No cumple</button>
+        </div>
+      </div>`).join("");
+    renderAdherenciaLista();
+  }
+
+  function renderAdherenciaLista() {
+    const list = $("#adh-list");
+    if (!list) return;
+    const dni = state.clienteActual.dni;
+    const rows = (state.adherencias || []).filter((a) => !dni || a.dni === dni).slice(0, 20);
+    list.innerHTML = rows.map((a) =>
+      `<div class="list-item"><div><strong>${escapeHtml(a.medicamento)}</strong> · ${escapeHtml(a.resultado)}
+        <div class="muted tiny">${formatShort(a.fecha)} · ${escapeHtml(a.nota || "")}</div></div></div>`
+    ).join("") || `<div class="empty">Sin registros de adherencia</div>`;
+  }
+
+  function guardarAdherencia(medicamento, resultado) {
+    if (!state.clienteActual.dni && !state.clienteActual.nombre) { toast("Atiende a un paciente primero", "warn"); return; }
+    state.adherencias.unshift({
+      id: "ADH-" + Date.now().toString(36), fecha: state.gameTimeMs,
+      dni: state.clienteActual.dni || "", nombre: state.clienteActual.nombre || "",
+      medicamento, resultado, nota: ($("#adh-nota")?.value || "").trim(),
+    });
+    toast(`Adherencia ${medicamento}: ${resultado}`, "ok");
+    Sounds.beepOk();
+    renderAdherenciaLista(); save();
+  }
+
+  function renderSigre() {
+    const list = $("#sigre-list");
+    if (!list) return;
+    list.innerHTML = (state.sigre || []).slice(0, 30).map((s) =>
+      `<div class="list-item"><div><strong>${escapeHtml(s.nombre)}</strong><div class="muted tiny">×${s.cantidad} · ${escapeHtml(s.tipo)} · ${formatShort(s.fecha)}</div></div><span class="badge badge-ok">SIGRE</span></div>`
+    ).join("") || `<div class="empty">Sin recogidas SIGRE</div>`;
+  }
+
+  function registrarSigre() {
+    const nombre = ($("#sigre-search")?.value || "").trim();
+    const p = sigrePickId ? productos.find((x) => x.id === sigrePickId) : null;
+    const label = p ? p.nombre : nombre;
+    if (!label) { toast("Indica el medicamento", "warn"); return; }
+    const qty = Math.max(1, Number($("#sigre-qty").value) || 1);
+    state.sigre.unshift({
+      id: "SG-" + Date.now().toString(36), fecha: state.gameTimeMs,
+      productId: p?.id || null, nombre: label, cantidad: qty, tipo: $("#sigre-tipo").value,
+    });
+    state.stats.sigre = (state.stats.sigre || 0) + qty;
+    sigrePickId = null;
+    toast("Registrado en punto SIGRE", "ok");
+    Sounds.beepOk();
+    renderSigre(); save();
+  }
+
+  function renderABC() {
+    const box = $("#inv-abc");
+    if (!box) return;
+    const rows = Extras.clasificarABC(state.ventas, productos, state.stock).slice(0, 36);
+    const groups = { A: [], B: [], C: [] };
+    for (const r of rows) groups[r.abc].push(r);
+    box.innerHTML = ["A", "B", "C"].map((k) => `
+      <div class="abc-col abc-${k}">
+        <h4>Clase ${k} <span>${groups[k].length}</span></h4>
+        ${groups[k].slice(0, 10).map((r) => `<div class="abc-item"><span>${escapeHtml(r.nombre)}</span><strong>${euro(r.valor)}</strong></div>`).join("") || "<div class='muted tiny'>Sin datos</div>"}
+      </div>`).join("");
   }
 
   function showTab(name) {
@@ -1486,10 +1826,11 @@
     if (name === "pacientes") renderPacientes();
     if (name === "libro") renderLibro();
     if (name === "almacen") renderAlmacen();
-    if (name === "inventario") { renderInventario(); renderConteoFisico(); }
-    if (name === "gestion") renderGestion();
+    if (name === "inventario") { renderInventario(); renderConteoFisico(); renderABC(); }
+    if (name === "gestion") { renderGestion(); renderSigre(); renderAdherenciaPanel(); }
     if (name === "minijuegos") renderMiniTrain();
-    if (name === "pedidos") renderCola();
+    if (name === "pedidos") { renderCola(); renderPerfiles(); }
+    if (name === "ticket" && lastTicket) renderDocumento(lastTicket, docTipo);
   }
 
   function bindEvents() {
@@ -1726,6 +2067,65 @@
     $("#btn-rotura")?.addEventListener("click", registrarRotura);
     $("#btn-gasto")?.addEventListener("click", registrarGasto);
 
+    $("#perfiles-grid")?.addEventListener("click", (e) => {
+      const b = e.target.closest("[data-perfil]"); if (b) atenderPerfil(b.dataset.perfil);
+    });
+    $("#sigre-search")?.addEventListener("input", () => {
+      const q = ($("#sigre-search").value || "").toLowerCase();
+      const hits = !q ? [] : productos.filter((p) => `${p.nombre} ${p.marca}`.toLowerCase().includes(q)).slice(0, 10);
+      $("#sigre-suggest").innerHTML = hits.map((p) =>
+        `<div class="list-item"><div><strong>${escapeHtml(p.nombre)}</strong></div>
+        <button class="btn btn-sm" data-spick="${p.id}">Elegir</button></div>`
+      ).join("") || "";
+    });
+    $("#sigre-suggest")?.addEventListener("click", (e) => {
+      const b = e.target.closest("[data-spick]"); if (!b) return;
+      sigrePickId = Number(b.dataset.spick);
+      const p = productos.find((x) => x.id === sigrePickId);
+      if (p) $("#sigre-search").value = p.nombre;
+      toast("Producto SIGRE elegido", "ok");
+    });
+    $("#btn-sigre")?.addEventListener("click", registrarSigre);
+    $("#adh-cronicos")?.addEventListener("click", (e) => {
+      const b = e.target.closest("[data-adh]"); if (!b) return;
+      guardarAdherencia(b.dataset.adh, b.dataset.res);
+    });
+    $("#btn-adh-guardar")?.addEventListener("click", () => {
+      const c = state.clienteActual.cronicos?.[0];
+      if (!c) { toast("Sin crónico o usa los botones Cumple/Parcial/No", "warn"); return; }
+      guardarAdherencia(c, "seguimiento");
+    });
+    $("#alm-pedidos")?.addEventListener("click", (e) => {
+      const b = e.target.closest("[data-albaran]"); if (b) openAlbaran(b.dataset.albaran);
+    });
+    $("#btn-alb-ok")?.addEventListener("click", confirmarAlbaran);
+    $("#btn-alb-cancel")?.addEventListener("click", () => { $("#modal-albaran").classList.remove("open"); pendingAlbId = null; });
+    $("#btn-visado-ok")?.addEventListener("click", () => {
+      if (!$("#visado-check").checked) { toast("Confirma el visado", "warn"); return; }
+      if (state.recetaActiva) {
+        state.recetaActiva.visadoOk = true;
+        state.recetaActiva.visadoRef = ($("#visado-ref").value || "").trim();
+      }
+      $("#modal-visado").classList.remove("open");
+      const fn = pendingVisadoContinue; pendingVisadoContinue = null;
+      Sounds.beepOk();
+      if (fn) fn();
+    });
+    $("#btn-visado-cancel")?.addEventListener("click", () => {
+      $("#modal-visado").classList.remove("open"); pendingVisadoContinue = null;
+    });
+    document.querySelectorAll('input[name="doc-tipo"]').forEach((r) => {
+      r.addEventListener("change", () => {
+        if (r.checked) { docTipo = r.value; if (lastTicket) renderDocumento(lastTicket, docTipo); }
+      });
+    });
+    $("#btn-regen-doc")?.addEventListener("click", () => {
+      if (!lastTicket) { toast("No hay ticket", "warn"); return; }
+      const sel = document.querySelector('input[name="doc-tipo"]:checked');
+      docTipo = sel?.value || "ticket";
+      renderDocumento(lastTicket, docTipo);
+    });
+
     $("#btn-mini-random")?.addEventListener("click", () => {
       if (!Minis) return;
       const d = Minis.DEFS[Math.floor(Math.random() * Minis.DEFS.length)];
@@ -1824,6 +2224,7 @@
     renderCatalog(); renderCart(); renderReceta(); renderCola(); renderStats();
     renderCaja(); renderLibro(); renderPacientes(); renderAlmacen(); renderInventario();
     renderConteoFisico(); renderGestion(); renderMiniTrain();
+    renderPerfiles(); renderSigre(); renderAdherenciaPanel(); renderABC();
     renderSpeech(); refreshClinicalAlerts();
   }
 
