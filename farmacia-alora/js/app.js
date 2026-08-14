@@ -13,6 +13,7 @@
   const Sounds = window.FarmaciaSounds;
   const Minis = window.FarmaciaMinijuegos;
   const Extras = window.FarmaciaExtras;
+  const Pack = window.FarmaciaPackshot;
 
   const MUTUAS = [
     { id: "particular", nombre: "Particular", cobertura: 0 },
@@ -67,6 +68,10 @@
   }
   function escapeHtml(s) {
     return String(s ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  }
+  function packOf(p, size) {
+    if (!p || !Pack) return `<span class="prod-ico">${p?.icon || "💊"}</span>`;
+    return Pack.packHtml(p, size || "md");
   }
   function toast(msg, type="ok") {
     const el = document.createElement("div");
@@ -561,7 +566,7 @@
     $("#sustituto-msg").textContent = `No queda stock de «${p.nombre}». Elige un sustituto:`;
     $("#sustituto-list").innerHTML = alts.map((a) => `
       <div class="list-item">
-        <div class="prod-row"><span class="prod-ico">${a.icon || "💊"}</span>
+        <div class="prod-row">${packOf(a, "sm")}
           <div><strong>${escapeHtml(a.nombre)}</strong><div class="muted tiny">${escapeHtml(a.categoria)} · stock ${state.stock[a.id]||0} · ${euro(a.precio)}</div></div>
         </div>
         <button class="btn btn-sm btn-primary" data-add="${a.id}">Añadir</button>
@@ -1004,7 +1009,7 @@
     box.innerHTML = `<strong>El cliente pide exactamente:</strong>` + ids.map((id) => {
       const p = productos.find((x) => x.id === id);
       if (!p) return "";
-      return `<button type="button" class="btn btn-sm btn-accent" data-add="${p.id}">${p.icon || "💊"} ${escapeHtml(p.nombre)}</button>`;
+      return `<button type="button" class="btn btn-sm btn-accent btn-pack" data-add="${p.id}">${packOf(p, "xs")} <span>${escapeHtml(p.nombre)}</span></button>`;
     }).join("");
   }
 
@@ -1036,7 +1041,7 @@
       return `<tr>
         <td>
           <div class="prod-row">
-            <span class="prod-ico" style="background:${p.colorCategoria || "#e2e8f0"}22">${p.icon || "💊"}</span>
+            ${packOf(p, "md")}
             <div>
               <div class="prod-name">${escapeHtml(p.nombre)}</div>
               <div class="prod-meta">${escapeHtml(p.marca)} · ${escapeHtml(p.principioActivo)} · ${escapeHtml(p.categoria)} · <span class="cad-txt ${cc}">${escapeHtml(cadLabel(p))}</span></div>
@@ -1057,9 +1062,12 @@
       $("#cart-body").innerHTML = state.cart.map((l) => {
         const t = lineTotals(l); const p = t.producto;
         return `<div class="cart-line">
-          <div class="cart-line-main">
-            <strong>${escapeHtml(p.nombre)}</strong>
-            <span class="muted">${euro(t.precio)}${t.oferta?" · oferta":""} · ${p.requiereReceta?"℞":"OTC"}</span>
+          <div class="cart-line-main cart-with-pack">
+            ${packOf(p, "sm")}
+            <div>
+              <strong>${escapeHtml(p.nombre)}</strong>
+              <span class="muted">${euro(t.precio)}${t.oferta?" · oferta":""} · ${p.requiereReceta?"℞":"OTC"}</span>
+            </div>
           </div>
           <div class="cart-line-actions">
             <button class="btn btn-icon" data-dec="${p.id}">−</button><span>${l.cantidad}</span>
@@ -1127,8 +1135,11 @@
         <div><span class="lbl">Validez</span> ${r.validezDias} días ${r.visadoOk ? "· ✅ Visado" : ""}</div>
       </div>
       ${r.observaciones ? `<p class="muted tiny">${escapeHtml(r.observaciones)}</p>` : ""}
-      <ul class="receta-items">${r.productos.map((p)=>`<li>${escapeHtml(p.nombre)} × ${p.cantidad}${p.requiereVisado || Extras.needsVisado(productos.find(x=>x.id===p.productId)) ? ' <span class="tag tag-ctrl">VISADO</span>' : ""}
-        <button class="btn btn-sm btn-primary" data-add="${p.productId}">Añadir</button></li>`).join("")}</ul>`;
+      <ul class="receta-items">${r.productos.map((rp)=>{
+        const full = productos.find((x) => x.id === rp.productId);
+        return `<li class="rx-li">${full ? packOf(full, "xs") : ""}<span>${escapeHtml(rp.nombre)} × ${rp.cantidad}${rp.requiereVisado || Extras.needsVisado(full) ? ' <span class="tag tag-ctrl">VISADO</span>' : ""}</span>
+        <button class="btn btn-sm btn-primary" data-add="${rp.productId}">Añadir</button></li>`;
+      }).join("")}</ul>`;
   }
 
   function renderCola() {
@@ -1236,7 +1247,7 @@
       const fisico = state.conteoFisico[p.id];
       const diff = fisico == null ? "—" : (fisico - teorico);
       return `<div class="list-item conteo-row">
-        <div class="prod-row"><span class="cad-dot ${cadClass(p)}"></span><span class="prod-ico">${p.icon||"💊"}</span>
+        <div class="prod-row"><span class="cad-dot ${cadClass(p)}"></span>${packOf(p, "xs")}
           <div><strong>${escapeHtml(p.nombre)}</strong><div class="muted tiny">Teórico ${teorico} · ${escapeHtml(cadLabel(p))}</div></div>
         </div>
         <div class="conteo-actions">
