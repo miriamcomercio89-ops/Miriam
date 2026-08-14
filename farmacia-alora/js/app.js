@@ -5,7 +5,7 @@
 (function () {
   "use strict";
 
-  const STORAGE_KEY = "farmacia-alora-v6";
+  const STORAGE_KEY = "farmacia-alora-v7";
   const REAL_MS_PER_GAME_HOUR = 60 * 1000;
   const Clinica = window.FarmaciaClinica;
   const Caja = window.FarmaciaCaja;
@@ -14,6 +14,7 @@
   const Minis = window.FarmaciaMinijuegos;
   const Extras = window.FarmaciaExtras;
   const Pack = window.FarmaciaPackshot;
+  const Clinic = window.FarmaciaClinicTools;
 
   const MUTUAS = [
     { id: "particular", nombre: "Particular", cobertura: 0 },
@@ -51,6 +52,8 @@
   let pendingVisadoContinue = null;
   let lastTicket = null;
   let docTipo = "ticket";
+  let catalogView = "cards";
+  let planoPickShelf = null;
 
   const $ = (s) => document.querySelector(s);
   const $$ = (s) => Array.from(document.querySelectorAll(s));
@@ -115,7 +118,7 @@
     }
     const start = new Date(); start.setHours(9,0,0,0);
     return {
-      version: 6,
+      version: 7,
       gameTimeMs: start.getTime(),
       paused: false,
       stock, lotes,
@@ -137,6 +140,10 @@
       conteoFisico: {},
       sigre: [],
       adherencias: [],
+      vitals: [],
+      magistrales: [],
+      chatMedico: [],
+      planograma: null,
       copagoMes: {},
       ofertasDia: makeOfertas(list),
       caja: Caja.defaultCaja(start.getTime()),
@@ -193,6 +200,10 @@
         conteoFisico: data.conteoFisico || {},
         sigre: data.sigre || [],
         adherencias: data.adherencias || [],
+        vitals: data.vitals || [],
+        magistrales: data.magistrales || [],
+        chatMedico: data.chatMedico || [],
+        planograma: data.planograma || null,
         copagoMes: data.copagoMes || {},
         stats: { tickets: 0, facturacion: 0, recetas: 0, minijuegosOk: 0, minijuegosFail: 0, sigre: 0, ...(data.stats || {}) },
       };
@@ -1053,11 +1064,52 @@
         <td class="${stock < 10 || isLow(p) ? "stock-low" : ""}">${stock}</td>
         <td><button class="btn btn-sm btn-primary" data-add="${p.id}" ${isExpired(p) ? "disabled" : ""}>Añadir</button></td>
       </tr>`;
-    }).join("") || `<tr><td colspan="4" class="empty">Sin resultados</td></tr>`;
+    }).join("") || `<tr><td colspan="4" class="empty">Sin resultados — prueba otra categoría o síntoma</td></tr>`;
+
+    const cards = $("#catalog-cards");
+    const tableWrap = $("#catalog-table-wrap");
+    if (cards && tableWrap) {
+      const showCards = catalogView === "cards";
+      cards.classList.toggle("hidden", !showCards);
+      tableWrap.classList.toggle("hidden", showCards);
+      $("#btn-view-cards")?.classList.toggle("btn-primary", showCards);
+      $("#btn-view-table")?.classList.toggle("btn-primary", !showCards);
+      cards.innerHTML = slice.map((p) => {
+        const stock = state.stock[p.id] ?? 0;
+        const offer = state.ofertasDia.includes(p.id);
+        const precioShow = offer ? Caja.round2(p.precio * 0.85) : p.precio;
+        return `<article class="prod-card ${isExpired(p)?"expired":""}">
+          ${packOf(p, "lg")}
+          <div class="prod-card-body">
+            <strong>${escapeHtml(p.nombre)}</strong>
+            <span class="muted tiny">${escapeHtml(p.marca)} · stock ${stock}</span>
+            <span class="prod-card-price">${euro(precioShow)}${offer?" · oferta":""}</span>
+            <button class="btn btn-sm btn-primary" data-add="${p.id}" ${isExpired(p)?"disabled":""}>＋ Añadir</button>
+          </div>
+        </article>`;
+      }).join("") || `<div class="empty">Sin resultados</div>`;
+    }
+    renderCampania();
+  }
+
+  function renderCampania() {
+    const box = $("#campania-banner");
+    if (!box || !Clinic) return;
+    const season = seasonInfo(state.gameTimeMs);
+    const c = Clinic.campaniaActual(season.id);
+    box.hidden = false;
+    box.style.setProperty("--camp-color", c.color);
+    box.innerHTML = `
+      <div class="camp-ico">${c.icon}</div>
+      <div>
+        <strong>${escapeHtml(c.titulo)}</strong>
+        <p>${escapeHtml(c.script)}</p>
+      </div>
+      <button type="button" class="btn btn-sm btn-primary" id="btn-camp-apply">Usar en venta</button>`;
   }
 
   function renderCart() {
-    if (!state.cart.length) $("#cart-body").innerHTML = `<div class="empty">🧺 Vacío — escucha al cliente y elige productos</div>`;
+    if (!state.cart.length) $("#cart-body").innerHTML = `<div class="empty">🧺 Carrito vacío<br><span class="muted">Atiende a un cliente o pulsa una categoría y “＋ Añadir”</span></div>`;
     else {
       $("#cart-body").innerHTML = state.cart.map((l) => {
         const t = lineTotals(l); const p = t.producto;
@@ -1829,6 +1881,90 @@
       </div>`).join("");
   }
 
+
+  function ensurePlanograma() {
+    if (!state.planograma || !state.planograma.length) {
+      state.planograma = Clinic.defaultPlanograma(productos);
+    }
+    return state.planograma;
+  }
+
+  function renderVitals() {
+    const list = $("#vitals-list");
+    if (!list) return;
+    const dni = state.clienteActual.dni;
+    const rows = (state.vitals || []).filter((v) => !dni || v.dni === dni).slice(0, 25);
+    list.innerHTML = rows.map((v) =>
+      `<div class="list-item"><div><strong>${escapeHtml(v.tipo)}</strong> · ${escapeHtml(v.valor)}
+        <div class="muted tiny">${formatShort(v.fecha)} · ${escapeHtml(v.nivel)} · ${escapeHtml(v.consejo)}</div></div></div>`
+    ).join("") || `<div class="empty">Aún no hay mediciones. Atiende a un cliente y registra TA o glucemia.</div>`;
+  }
+
+  function registrarVital(tipo, valor, nivel, consejo) {
+    state.vitals.unshift({
+      id: "VT-" + Date.now().toString(36), fecha: state.gameTimeMs,
+      dni: state.clienteActual.dni || "", nombre: state.clienteActual.nombre || "Cliente",
+      tipo, valor, nivel, consejo,
+    });
+    // also onto patient ficha if exists
+    const pac = state.pacientes.find((p) => p.dni && p.dni === state.clienteActual.dni);
+    if (pac) {
+      pac.vitals = pac.vitals || [];
+      pac.vitals.unshift({ fecha: state.gameTimeMs, tipo, valor, nivel });
+    }
+    renderVitals(); save();
+    toast(tipo + " registrada", "ok");
+    Sounds.beepOk();
+  }
+
+  function renderMedicoChat() {
+    const box = $("#medico-chat");
+    if (!box) return;
+    if (!state.chatMedico.length) {
+      box.innerHTML = `<div class="chat-bubble bot">Hola, soy el médico de guardia (simulado). ¿En qué puedo ayudarte con la dispensación?</div>`;
+      return;
+    }
+    box.innerHTML = state.chatMedico.map((m) =>
+      `<div class="chat-bubble ${m.role}">${escapeHtml(m.text)}</div>`
+    ).join("");
+    box.scrollTop = box.scrollHeight;
+  }
+
+  function sendMedico(text) {
+    const q = (text || "").trim();
+    if (!q) return;
+    state.chatMedico.push({ role: "user", text: q, fecha: state.gameTimeMs });
+    const ans = Clinic.replyMedico(q);
+    state.chatMedico.push({ role: "bot", text: ans, fecha: state.gameTimeMs });
+    if (state.chatMedico.length > 80) state.chatMedico = state.chatMedico.slice(-80);
+    renderMedicoChat(); save();
+  }
+
+  function renderPlanograma() {
+    ensurePlanograma();
+    const pool = $("#plano-pool");
+    const shelves = $("#plano-shelves");
+    if (!pool || !shelves) return;
+    const q = ($("#plano-search")?.value || "").toLowerCase();
+    const used = new Set(state.planograma.flatMap((s) => s.slots));
+    const otc = productos.filter((p) => !p.requiereReceta && (!q || `${p.nombre} ${p.marca} ${p.categoria}`.toLowerCase().includes(q))).slice(0, 40);
+    pool.innerHTML = otc.map((p) =>
+      `<button type="button" class="plano-item ${used.has(p.id)?"used":""}" data-plano-add="${p.id}">${packOf(p,"xs")}<span>${escapeHtml(p.nombre)}</span></button>`
+    ).join("") || `<div class="empty">Sin OTC</div>`;
+    shelves.innerHTML = state.planograma.map((s) => `
+      <div class="shelf-card ${planoPickShelf===s.id?"active-shelf":""}" data-shelf="${s.id}">
+        <div class="shelf-head"><strong>${escapeHtml(s.nombre)}</strong>
+          <button type="button" class="btn btn-sm" data-shelf-pick="${s.id}">Colocar aquí</button></div>
+        <div class="shelf-slots">
+          ${s.slots.map((id) => {
+            const p = productos.find((x) => x.id === id);
+            if (!p) return "";
+            return `<div class="shelf-slot">${packOf(p,"sm")}<button class="btn btn-icon danger" data-shelf-rem="${s.id}" data-pid="${id}">✕</button><span class="tiny">${escapeHtml(p.nombre)}</span></div>`;
+          }).join("") || `<div class="empty tiny">Estante vacío — elige “Colocar aquí” y un producto</div>`}
+        </div>
+      </div>`).join("");
+  }
+
   function showTab(name) {
     $$(".tab").forEach((t) => t.classList.toggle("active", t.dataset.tab === name));
     $$(".panel").forEach((p) => p.classList.toggle("active", p.id === "panel-" + name));
@@ -1842,6 +1978,9 @@
     if (name === "minijuegos") renderMiniTrain();
     if (name === "pedidos") { renderCola(); renderPerfiles(); }
     if (name === "ticket" && lastTicket) renderDocumento(lastTicket, docTipo);
+    if (name === "clinica") renderVitals();
+    if (name === "medico") renderMedicoChat();
+    if (name === "escaparate") renderPlanograma();
   }
 
   function bindEvents() {
@@ -1858,6 +1997,97 @@
     };
 
     $$(".tab").forEach((tab)=>tab.addEventListener("click", ()=>showTab(tab.dataset.tab)));
+
+    $("#quick-bar")?.addEventListener("click", (e) => {
+      const b = e.target.closest("[data-goto]"); if (b) showTab(b.dataset.goto);
+    });
+    $("#btn-view-cards")?.addEventListener("click", () => { catalogView = "cards"; renderCatalog(); });
+    $("#btn-view-table")?.addEventListener("click", () => { catalogView = "table"; renderCatalog(); });
+    $("#catalog-cards")?.addEventListener("click", (e) => {
+      const b = e.target.closest("[data-add]"); if (b) addToCart(Number(b.dataset.add));
+    });
+    document.body.addEventListener("click", (e) => {
+      if (e.target.id === "btn-camp-apply" || e.target.closest?.("#btn-camp-apply")) {
+        const season = seasonInfo(state.gameTimeMs);
+        const c = Clinic.campaniaActual(season.id);
+        categoriaActiva = c.categoriasBoost[0] || "";
+        sintomaActivo = "";
+        $("#search-q").value = "";
+        renderCatGrid(); renderSintomas(); renderCatalog();
+        toast("Campaña aplicada al catálogo", "ok");
+        showTab("venta");
+      }
+    });
+
+    $("#btn-ped-calc")?.addEventListener("click", () => {
+      const r = Clinic.calcPediatrico({
+        pesoKg: $("#ped-peso").value, dosisMgKg: $("#ped-dosis").value,
+        tomasDia: $("#ped-tomas").value, concentracionMgMl: $("#ped-conc").value,
+      });
+      if (!r.ok) { $("#ped-result").textContent = "Revisa peso y dosis."; return; }
+      $("#ped-result").innerHTML = `<strong>${r.mgToma} mg/toma</strong> · ${r.mgDia} mg/día`
+        + (r.mlToma != null ? `<br>Jarabe: <strong>${r.mlToma} ml/toma</strong> (${r.mlDia} ml/día)</br>` : "")
+        + (r.aviso ? `<div class="alert alert-moderada">${escapeHtml(r.aviso)}</div>` : "");
+      Sounds.beepOk();
+    });
+    $("#btn-mag-calc")?.addEventListener("click", () => {
+      const r = Clinic.calcMagistral({
+        principio: $("#mag-pa").value, dosisMg: $("#mag-dosis").value,
+        volumenMl: $("#mag-vol").value, vehiculo: $("#mag-veh").value,
+      });
+      if (!r.ok) { $("#mag-result").textContent = "Completa principio, mg y ml."; return; }
+      state.magistrales.unshift({ id: "MAG-"+Date.now().toString(36), fecha: state.gameTimeMs, etiqueta: r.etiqueta, concentracion: r.concentracion });
+      $("#mag-result").innerHTML = `<strong>${escapeHtml(r.etiqueta)}</strong><ol class="help-steps">${r.pasos.map((p)=>`<li>${escapeHtml(p)}</li>`).join("")}</ol>`;
+      save(); Sounds.beepOk(); toast("Fórmula preparada (práctica)", "ok");
+    });
+    $("#btn-ta")?.addEventListener("click", () => {
+      const sis = $("#ta-sis").value, dia = $("#ta-dia").value;
+      const r = Clinic.interpretarTA(sis, dia);
+      $("#ta-result").innerHTML = `<strong>${escapeHtml(r.nivel)}</strong><div class="muted">${escapeHtml(r.consejo)}</div>`;
+      registrarVital("Tensión arterial", `${sis}/${dia} mmHg`, r.nivel, r.consejo);
+    });
+    $("#btn-glu")?.addEventListener("click", () => {
+      const v = $("#glu-val").value; const ay = $("#glu-ayunas").checked;
+      const r = Clinic.interpretarGlucemia(v, ay);
+      $("#glu-result").innerHTML = `<strong>${escapeHtml(r.nivel)}</strong><div class="muted">${escapeHtml(r.consejo)}</div>`;
+      registrarVital("Glucemia" + (ay ? " (ayunas)" : ""), `${v} mg/dL`, r.nivel, r.consejo);
+    });
+
+    $("#btn-medico-send")?.addEventListener("click", () => {
+      sendMedico($("#medico-q").value); $("#medico-q").value = "";
+    });
+    $("#medico-q")?.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") { sendMedico($("#medico-q").value); $("#medico-q").value = ""; }
+    });
+    $("#medico-quick")?.addEventListener("click", (e) => {
+      const b = e.target.closest("[data-mq]"); if (b) sendMedico(b.dataset.mq);
+    });
+
+    $("#btn-plano-reset")?.addEventListener("click", () => {
+      state.planograma = Clinic.defaultPlanograma(productos); planoPickShelf = null; renderPlanograma(); save(); toast("Planograma reiniciado", "ok");
+    });
+    $("#plano-search")?.addEventListener("input", renderPlanograma);
+    $("#plano-pool")?.addEventListener("click", (e) => {
+      const b = e.target.closest("[data-plano-add]"); if (!b) return;
+      if (!planoPickShelf) { toast("Primero pulsa “Colocar aquí” en un estante", "warn"); return; }
+      const shelf = state.planograma.find((s) => s.id === planoPickShelf);
+      const pid = Number(b.dataset.planoAdd);
+      if (!shelf) return;
+      if (shelf.slots.includes(pid)) { toast("Ya está en el estante", "warn"); return; }
+      if (shelf.slots.length >= 6) { toast("Estante lleno (máx. 6)", "warn"); return; }
+      shelf.slots.push(pid); renderPlanograma(); save(); Sounds.beepCoin();
+    });
+    $("#plano-shelves")?.addEventListener("click", (e) => {
+      const pick = e.target.closest("[data-shelf-pick]");
+      const rem = e.target.closest("[data-shelf-rem]");
+      if (pick) { planoPickShelf = pick.dataset.shelfPick; renderPlanograma(); toast("Estante seleccionado", "ok"); }
+      if (rem) {
+        const shelf = state.planograma.find((s) => s.id === rem.dataset.shelfRem);
+        const pid = Number(rem.dataset.pid);
+        if (shelf) shelf.slots = shelf.slots.filter((x) => x !== pid);
+        renderPlanograma(); save();
+      }
+    });
 
     ["search-q", "filter-receta", "filter-marca", "filter-pa"].forEach((id) => {
       const el = $("#" + id);
@@ -2236,6 +2466,8 @@
     renderCaja(); renderLibro(); renderPacientes(); renderAlmacen(); renderInventario();
     renderConteoFisico(); renderGestion(); renderMiniTrain();
     renderPerfiles(); renderSigre(); renderAdherenciaPanel(); renderABC();
+    renderCampania(); renderVitals(); renderMedicoChat();
+    if (!state.planograma) ensurePlanograma();
     renderSpeech(); refreshClinicalAlerts();
   }
 

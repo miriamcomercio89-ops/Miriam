@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Farmacia Álora — TPV de práctica</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="css/styles.css?v=7" />
+  <link rel="stylesheet" href="css/styles.css?v=8" />
 </head>
 <body class="ui-large">
   <div class="app-bg" aria-hidden="true"></div>
@@ -23,7 +23,7 @@
         </div>
         <div>
           <h1>Farmacia Álora</h1>
-          <p>TPV · mostrador de práctica</p>
+          <p>Tu mostrador de práctica · claro y guiado</p>
         </div>
       </div>
       <div class="clock-block">
@@ -56,23 +56,38 @@
 
     <div id="alerts-bar" class="alerts-bar" hidden></div>
 
-    <nav class="tabs">
+    <div class="quick-bar" id="quick-bar">
+      <button type="button" class="quick-btn" data-goto="pedidos">💬 Atender cliente</button>
+      <button type="button" class="quick-btn" data-goto="venta">🛒 Ir a venta</button>
+      <button type="button" class="quick-btn" data-goto="clinica">🩺 Clínica</button>
+      <button type="button" class="quick-btn" data-goto="escaparate">🗄️ Escaparate</button>
+      <button type="button" class="quick-btn" data-goto="medico">👨‍⚕️ Preguntar médico</button>
+    </div>
+
+    <nav class="tabs" aria-label="Secciones">
+      <span class="tab-group-label">Mostrador</span>
       <button type="button" class="tab active" data-tab="venta"><span>🛒</span> Venta <kbd>F2</kbd></button>
       <button type="button" class="tab" data-tab="pedidos"><span>💬</span> Clientes <span id="cola-count" class="count-pill">0</span></button>
+      <button type="button" class="tab" data-tab="caja"><span>🖥</span> TPV</button>
+      <button type="button" class="tab" data-tab="ticket"><span>🎟</span> Ticket</button>
+      <span class="tab-group-label">Clínica</span>
+      <button type="button" class="tab" data-tab="clinica"><span>🩺</span> Clínica</button>
+      <button type="button" class="tab" data-tab="medico"><span>👨‍⚕️</span> Médico</button>
+      <button type="button" class="tab" data-tab="escaparate"><span>🗄️</span> Escaparate</button>
+      <span class="tab-group-label">Trastienda</span>
       <button type="button" class="tab" data-tab="almacen"><span>🚚</span> Almacén <span id="alm-count" class="count-pill">0</span></button>
       <button type="button" class="tab" data-tab="inventario"><span>📦</span> Inventario</button>
       <button type="button" class="tab" data-tab="gestion"><span>🧮</span> Gestión</button>
-      <button type="button" class="tab" data-tab="minijuegos"><span>🎮</span> Minijuegos</button>
       <button type="button" class="tab" data-tab="pacientes"><span>🗂</span> Pacientes</button>
-      <button type="button" class="tab" data-tab="caja"><span>🖥</span> TPV / Caja</button>
-      <button type="button" class="tab" data-tab="libro"><span>📕</span> Estupefacientes</button>
+      <button type="button" class="tab" data-tab="libro"><span>📕</span> Libro</button>
       <button type="button" class="tab" data-tab="informes"><span>📊</span> Informes</button>
-      <button type="button" class="tab" data-tab="ticket"><span>🎟</span> Ticket</button>
+      <button type="button" class="tab" data-tab="minijuegos"><span>🎮</span> Minijuegos</button>
       <button type="button" class="tab" data-tab="ayuda"><span>❓</span> Ayuda</button>
     </nav>
 
     <!-- VENTA -->
     <section id="panel-venta" class="panel active">
+      <div id="campania-banner" class="campania-banner" hidden></div>
       <div id="cliente-habla" class="speech-card hidden">
         <div class="speech-avatar" aria-hidden="true">🗣️</div>
         <div>
@@ -86,7 +101,11 @@
         <div class="card card-catalog">
           <div class="card-head">
             <h2><span class="h-ico">🏪</span> Catálogo</h2>
-            <span class="muted" id="catalog-count">—</span>
+            <div class="actions-row" style="margin:0">
+              <span class="muted" id="catalog-count">—</span>
+              <button type="button" class="btn btn-sm" id="btn-view-table" title="Vista tabla">☰</button>
+              <button type="button" class="btn btn-sm btn-primary" id="btn-view-cards" title="Vista tarjetas">▦</button>
+            </div>
           </div>
           <div id="cat-grid" class="cat-grid" aria-label="Categorías"></div>
           <div class="sintomas-row" id="sintomas-row"></div>
@@ -106,12 +125,13 @@
             <input id="filter-pa" type="search" placeholder="Principio activo" />
           </div>
           <div id="pedido-exacto" class="pedido-exacto hidden"></div>
-          <div class="table-wrap">
+          <div class="table-wrap hidden" id="catalog-table-wrap">
             <table>
               <thead><tr><th>Producto</th><th>PVP</th><th>Stock</th><th></th></tr></thead>
               <tbody id="catalog-body"></tbody>
             </table>
           </div>
+          <div id="catalog-cards" class="catalog-cards"></div>
         </div>
 
         <div class="stack">
@@ -394,15 +414,115 @@
       </div>
     </section>
 
+
+    <!-- CLÍNICA: magistral, pediatría, vitals, campaña -->
+    <section id="panel-clinica" class="panel">
+      <div class="welcome-strip">
+        <div>
+          <h2>🩺 Herramientas clínicas</h2>
+          <p class="muted">Posología pediátrica, fórmula magistral, tensión/glucemia y campaña del día.</p>
+        </div>
+      </div>
+      <div class="layout-2">
+        <div class="card card-soft">
+          <h3>👶 Posología pediátrica (mg/kg)</h3>
+          <div class="form-grid">
+            <div><label class="lbl" for="ped-peso">Peso (kg)</label><input id="ped-peso" type="number" min="1" step="0.1" value="12" /></div>
+            <div><label class="lbl" for="ped-dosis">Dosis (mg/kg/toma)</label><input id="ped-dosis" type="number" min="0" step="0.1" value="15" /></div>
+            <div><label class="lbl" for="ped-tomas">Tomas / día</label><input id="ped-tomas" type="number" min="1" value="3" /></div>
+            <div><label class="lbl" for="ped-conc">Conc. jarabe (mg/ml)</label><input id="ped-conc" type="number" min="0" step="0.1" value="32" /></div>
+          </div>
+          <button type="button" class="btn btn-primary" id="btn-ped-calc">Calcular</button>
+          <div id="ped-result" class="result-box">Introduce datos y pulsa calcular.</div>
+        </div>
+        <div class="card card-soft">
+          <h3>⚗️ Formulación magistral</h3>
+          <div class="form-grid">
+            <div class="full"><label class="lbl" for="mag-pa">Principio activo</label><input id="mag-pa" placeholder="Ej. Omeprazol" value="Omeprazol" /></div>
+            <div><label class="lbl" for="mag-dosis">Cantidad (mg)</label><input id="mag-dosis" type="number" value="200" /></div>
+            <div><label class="lbl" for="mag-vol">Volumen final (ml)</label><input id="mag-vol" type="number" value="100" /></div>
+            <div class="full"><label class="lbl" for="mag-veh">Vehículo</label><input id="mag-veh" value="Jarabe simple" /></div>
+          </div>
+          <button type="button" class="btn btn-accent" id="btn-mag-calc">Preparar pasos</button>
+          <div id="mag-result" class="result-box">La fórmula se mostrará aquí.</div>
+        </div>
+      </div>
+      <div class="layout-2" style="margin-top:12px">
+        <div class="card card-soft">
+          <h3>❤️ Tensión arterial</h3>
+          <div class="form-grid">
+            <div><label class="lbl" for="ta-sis">Sistólica</label><input id="ta-sis" type="number" value="128" /></div>
+            <div><label class="lbl" for="ta-dia">Diastólica</label><input id="ta-dia" type="number" value="82" /></div>
+          </div>
+          <button type="button" class="btn btn-primary" id="btn-ta">Registrar TA</button>
+          <div id="ta-result" class="result-box">—</div>
+        </div>
+        <div class="card card-soft">
+          <h3>🩸 Glucemia</h3>
+          <div class="form-grid">
+            <div><label class="lbl" for="glu-val">mg/dL</label><input id="glu-val" type="number" value="98" /></div>
+            <div class="full"><label class="check"><input type="checkbox" id="glu-ayunas" checked /> En ayunas</label></div>
+          </div>
+          <button type="button" class="btn btn-primary" id="btn-glu">Registrar glucemia</button>
+          <div id="glu-result" class="result-box">—</div>
+        </div>
+      </div>
+      <div class="card card-soft" style="margin-top:12px">
+        <div class="card-head"><h3>📋 Mediciones del paciente</h3></div>
+        <div id="vitals-list" class="list-block"></div>
+      </div>
+    </section>
+
+    <!-- MÉDICO GUARDIA -->
+    <section id="panel-medico" class="panel">
+      <div class="card card-medico">
+        <div class="card-head">
+          <h2><span class="h-ico">👨‍⚕️</span> Chat con médico de guardia</h2>
+          <span class="badge badge-ok">Simulado</span>
+        </div>
+        <p class="muted">Consulta dudas de dispensación. Las respuestas son educativas, no consejo médico real.</p>
+        <div id="medico-chat" class="chat-box"></div>
+        <div class="chat-input-row">
+          <input id="medico-q" type="text" placeholder="Ej. ¿Puedo dar ibuprofeno en embarazo?" />
+          <button type="button" class="btn btn-primary" id="btn-medico-send">Enviar</button>
+        </div>
+        <div class="chip-row" id="medico-quick">
+          <button type="button" class="chip" data-mq="interacción AINE anticoagulante">Interacción</button>
+          <button type="button" class="chip" data-mq="dosis pediátrica mg/kg">Pediatría</button>
+          <button type="button" class="chip" data-mq="embarazo y paracetamol">Embarazo</button>
+          <button type="button" class="chip" data-mq="medicamento controlado">Controlado</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ESCAPARATE / PLANOGRAMA -->
+    <section id="panel-escaparate" class="panel">
+      <div class="welcome-strip">
+        <div>
+          <h2>🗄️ Escaparate / planograma</h2>
+          <p class="muted">Arrastra o elige productos OTC para colocarlos en cada estante.</p>
+        </div>
+        <button type="button" class="btn btn-sm btn-accent" id="btn-plano-reset">Reset estantes</button>
+      </div>
+      <div class="plano-layout">
+        <div class="card">
+          <h3>Productos disponibles</h3>
+          <input id="plano-search" type="search" placeholder="Buscar OTC…" />
+          <div id="plano-pool" class="plano-pool"></div>
+        </div>
+        <div id="plano-shelves" class="plano-shelves"></div>
+      </div>
+    </section>
+
     <section id="panel-ayuda" class="panel">
       <div class="card help-card">
         <h2>✨ Cómo usar el TPV</h2>
         <ol class="help-steps">
-          <li><strong>Clientes</strong>: cola libre o perfiles fijos (embarazada, anciano, turista, menor).</li>
-          <li>Respeta pago del cliente, visado, e-receta (1.ª / fin) y tope de copago pensionista.</li>
-          <li><strong>Almacén</strong>: al llegar un pedido, recepciona el <strong>albarán</strong>.</li>
-          <li><strong>Gestión</strong>: SIGRE, adherencia, devoluciones, roturas y gastos.</li>
-          <li><strong>Ticket</strong>: elige ticket, factura simplificada o completa e imprime PDF.</li>
+          <li>Usa la <strong>barra rápida</strong> arriba para atender, clínica, escaparate o médico.</li>
+          <li><strong>Clínica</strong>: mg/kg, fórmula magistral, tensión y glucemia.</li>
+          <li><strong>Médico de guardia</strong>: consulta dudas de dispensación (simulado).</li>
+          <li><strong>Escaparate</strong>: monta el planograma OTC del día.</li>
+          <li>Sigue la <strong>campaña estacional</strong> del banner en Venta.</li>
         </ol>
         <p><kbd>F2</kbd> buscar · <kbd>F4</kbd> cobrar · <kbd>Esc</kbd> cerrar</p>
         <p class="warn-text">Simulador educativo. No es consejo médico real.</p>
@@ -556,14 +676,15 @@
 
   <div id="toasts" aria-live="polite"></div>
 
-  <script src="js/catalog.js?v=7"></script>
-  <script src="js/clinical.js?v=7"></script>
-  <script src="js/clients.js?v=7"></script>
-  <script src="js/caja.js?v=7"></script>
-  <script src="js/sounds.js?v=7"></script>
-  <script src="js/minigames.js?v=7"></script>
-  <script src="js/extras.js?v=7"></script>
-  <script src="js/packshot.js?v=7"></script>
-  <script src="js/app.js?v=7"></script>
+  <script src="js/catalog.js?v=8"></script>
+  <script src="js/clinical.js?v=8"></script>
+  <script src="js/clients.js?v=8"></script>
+  <script src="js/caja.js?v=8"></script>
+  <script src="js/sounds.js?v=8"></script>
+  <script src="js/minigames.js?v=8"></script>
+  <script src="js/extras.js?v=8"></script>
+  <script src="js/packshot.js?v=8"></script>
+  <script src="js/clinic-tools.js?v=8"></script>
+  <script src="js/app.js?v=8"></script>
 </body>
 </html>
