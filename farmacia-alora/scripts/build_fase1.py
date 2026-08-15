@@ -810,7 +810,24 @@ def draw_pack(c: canvas.Canvas, x, y, w, h, color, nombre, marca, rx, nevera, ct
     c.drawCentredString(x + 24, y + 11, "CTRL")
 
 
+def _wrap(c, text, font, size, max_w):
+  words = (text or "").split()
+  lines, line = [], ""
+  for w_ in words:
+    test = (line + " " + w_).strip()
+    if c.stringWidth(test, font, size) > max_w:
+      if line:
+        lines.append(line)
+      line = w_
+    else:
+      line = test
+  if line:
+    lines.append(line)
+  return lines
+
+
 def gen_pdfs(products):
+  """PDFs de alto contraste visual: cabecera color, lateral, chips, ficha en tarjetas."""
   OUT_PDF_DIR.mkdir(parents=True, exist_ok=True)
   by_cat = {}
   for p in products:
@@ -823,91 +840,131 @@ def gen_pdfs(products):
     c = canvas.Canvas(str(path), pagesize=A4)
     W, H = A4
     color = meta.get("color", "#0f766e")
+    # lighten helper
+    def light(hexcol, factor=0.88):
+      hexcol = hexcol.lstrip("#")
+      r, g, b = int(hexcol[0:2], 16), int(hexcol[2:4], 16), int(hexcol[4:6], 16)
+      r = int(r + (255 - r) * factor)
+      g = int(g + (255 - g) * factor)
+      b = int(b + (255 - b) * factor)
+      return HexColor(f"#{r:02x}{g:02x}{b:02x}")
 
     for i, p in enumerate(plist, 1):
-      # background band
-      c.setFillColor(HexColor("#f8fafc"))
+      # fondo atmósfera
+      c.setFillColor(light(color, 0.92))
       c.rect(0, 0, W, H, fill=1, stroke=0)
+      # banda lateral
       c.setFillColor(HexColor(color))
-      c.rect(0, H - 70, W, 70, fill=1, stroke=0)
+      c.rect(0, 0, 18, H, fill=1, stroke=0)
+      # cabecera curva-ish
+      c.setFillColor(HexColor(color))
+      c.roundRect(18, H - 78, W - 18, 78, 0, fill=1, stroke=0)
+      c.setFillColor(HexColor("#fbbf24"))
+      c.circle(W - 48, H - 28, 16, fill=1, stroke=0)
       c.setFillColor(white)
-      c.setFont("Helvetica-Bold", 16)
-      c.drawString(25, H - 32, f"Farmacia Álora · Manual de categoría")
-      c.setFont("Helvetica", 11)
-      c.drawString(25, H - 50, f"{meta.get('icon', '')} {cat}  ·  {meta.get('rama', '')}")
-      c.drawRightString(W - 25, H - 40, f"{i} / {len(plist)}")
-
-      # pack
-      draw_pack(c, 40, H - 280, 160, 180, color, p["nombre"], p["marca"], p["requiereReceta"], p["nevera"], p["controlado"])
-
-      # title block
-      c.setFillColor(HexColor("#0f172a"))
       c.setFont("Helvetica-Bold", 18)
-      y = H - 100
-      c.drawString(220, y, p["nombre"][:48])
+      c.drawString(36, H - 34, "Farmacia Álora")
       c.setFont("Helvetica", 11)
-      c.setFillColor(HexColor("#334155"))
-      c.drawString(220, y - 22, f"Marca: {p['marca']}  ·  Lab: {p['laboratorio']}")
-      c.drawString(220, y - 40, f"Principio activo: {p['principioActivo']}")
-      c.drawString(220, y - 58, f"Subcategoría: {p.get('subcategoria', '—')}")
-
-      # info table
-      rows = [
-        ("SKU / EAN", f"{p['sku']} · {p['ean']}"),
-        ("Presentación", p["presentacion"]),
-        ("Dosis / contenido", p["dosis"]),
-        ("Unidades envase", str(p["unidadesEnvase"])),
-        ("PVP (simulado)", f"{p['precio']:.2f} €  ·  IVA {p['iva']}%"),
-        ("Receta", "Sí" if p["requiereReceta"] else "No (OTC)"),
-        ("Controlado", "Sí" if p["controlado"] else "No"),
-        ("Frigorífico", "Sí (2–8 °C)" if p["nevera"] else "No"),
-        ("Genérico EFG", "Sí" if p.get("esGenerico") else "No"),
-        ("Lote / caducidad (sim.)", f"{p['lote']}"),
-        ("Stock inicial", str(p["stockInicial"])),
-        ("Grupo interacción", p.get("grupoInteraccion", "—")),
-        ("Síntomas asociados", ", ".join(p.get("sintomas") or ["—"])),
-      ]
-      y0 = H - 320
-      c.setFont("Helvetica-Bold", 12)
-      c.setFillColor(HexColor(color))
-      c.drawString(40, y0, "Ficha del producto")
-      y0 -= 18
-      for label, val in rows:
-        c.setFillColor(HexColor("#0f766e"))
-        c.setFont("Helvetica-Bold", 9)
-        c.drawString(40, y0, label)
-        c.setFillColor(HexColor("#1e293b"))
-        c.setFont("Helvetica", 9)
-        c.drawString(180, y0, str(val)[:90])
-        y0 -= 14
-
-      # procedure box
-      y0 -= 10
-      c.setFillColor(HexColor(color))
-      c.roundRect(40, 60, W - 80, max(90, y0 - 50), 10, fill=1, stroke=0)
-      c.setFillColor(white)
-      c.setFont("Helvetica-Bold", 11)
-      c.drawString(55, y0 - 10, "Procedimiento de mostrador")
-      c.setFont("Helvetica", 9)
-      proc = p.get("procedimiento", "")
-      # simple wrap
-      words = proc.split()
-      line = ""
-      ly = y0 - 28
-      for w_ in words:
-        test = (line + " " + w_).strip()
-        if c.stringWidth(test, "Helvetica", 9) > W - 120:
-          c.drawString(55, ly, line)
-          ly -= 12
-          line = w_
-        else:
-          line = test
-      if line:
-        c.drawString(55, ly, line)
-
-      c.setFillColor(HexColor("#64748b"))
+      c.drawString(36, H - 52, f"Manual de categoría · {meta.get('icon', '')} {cat}")
+      c.setFont("Helvetica-Bold", 10)
+      c.drawRightString(W - 70, H - 40, f"{i} / {len(plist)}")
+      c.setFillColor(HexColor("#0f172a"))
       c.setFont("Helvetica", 8)
-      c.drawCentredString(W / 2, 28, "Documento educativo Farmacia Álora · No sustituye ficha técnica AEMPS · Envase ilustrado (no foto comercial)")
+      c.drawCentredString(W - 48, H - 31, "✚")
+
+      # chip rama
+      c.setFillColor(white)
+      c.roundRect(36, H - 100, 220, 18, 9, fill=1, stroke=0)
+      c.setFillColor(HexColor(color))
+      c.setFont("Helvetica-Bold", 8)
+      c.drawString(46, H - 94, f"RAMA · {meta.get('rama', '')}"[:42])
+
+      # pack grande
+      draw_pack(c, 40, H - 310, 170, 190, color, p["nombre"], p["marca"], p["requiereReceta"], p["nevera"], p["controlado"])
+
+      # título producto
+      c.setFillColor(HexColor("#0f172a"))
+      c.setFont("Helvetica-Bold", 16)
+      title_lines = _wrap(c, p["nombre"], "Helvetica-Bold", 16, W - 250)
+      ty = H - 118
+      for tl in title_lines[:3]:
+        c.drawString(230, ty, tl)
+        ty -= 18
+      c.setFont("Helvetica", 10)
+      c.setFillColor(HexColor("#334155"))
+      c.drawString(230, ty - 4, f"Marca: {p['marca']}")
+      c.drawString(230, ty - 18, f"Lab: {p['laboratorio']}")
+      c.drawString(230, ty - 32, f"PA: {p['principioActivo']}"[:55])
+      c.drawString(230, ty - 46, f"Subcat: {p.get('subcategoria', '—')}")
+
+      # chips flags
+      chips = []
+      chips.append(("Rx" if p["requiereReceta"] else "OTC", "#db2777" if p["requiereReceta"] else "#059669"))
+      if p["controlado"]:
+        chips.append(("CTRL", "#7c2d12"))
+      if p["nevera"]:
+        chips.append(("FRÍO", "#0284c7"))
+      if p.get("esGenerico"):
+        chips.append(("EFG", "#7c3aed"))
+      cx = 230
+      for label, col in chips:
+        c.setFillColor(HexColor(col))
+        c.roundRect(cx, ty - 70, 40, 16, 6, fill=1, stroke=0)
+        c.setFillColor(white)
+        c.setFont("Helvetica-Bold", 8)
+        c.drawCentredString(cx + 20, ty - 65, label)
+        cx += 46
+
+      # tarjetas de ficha (2 columnas)
+      rows = [
+        ("SKU", p["sku"]), ("EAN", p["ean"]),
+        ("Presentación", p["presentacion"]), ("Dosis", p["dosis"]),
+        ("Uds. envase", str(p["unidadesEnvase"])), ("PVP sim.", f"{p['precio']:.2f} €"),
+        ("IVA", f"{p['iva']}%"), ("Stock ini.", str(p["stockInicial"])),
+        ("Lote sim.", p["lote"]), ("Grupo", p.get("grupoInteraccion", "—")),
+        ("Síntomas", ", ".join(p.get("sintomas") or ["—"])),
+      ]
+      y0 = H - 340
+      c.setFillColor(HexColor(color))
+      c.setFont("Helvetica-Bold", 12)
+      c.drawString(40, y0, "Ficha completa")
+      y0 -= 8
+      col_w = (W - 80) / 2
+      for idx, (label, val) in enumerate(rows):
+        col = idx % 2
+        row = idx // 2
+        x = 40 + col * (col_w + 8)
+        y = y0 - row * 36
+        c.setFillColor(white)
+        c.roundRect(x, y - 22, col_w - 4, 32, 8, fill=1, stroke=0)
+        c.setFillColor(HexColor(color))
+        c.setFont("Helvetica-Bold", 7)
+        c.drawString(x + 8, y - 2, label.upper())
+        c.setFillColor(HexColor("#0f172a"))
+        c.setFont("Helvetica", 9)
+        c.drawString(x + 8, y - 16, str(val)[:42])
+
+      # procedimiento panel
+      proc_top = y0 - ((len(rows) + 1) // 2) * 36 - 20
+      proc_h = max(110, proc_top - 40)
+      c.setFillColor(HexColor(color))
+      c.roundRect(40, 36, W - 80, proc_h, 14, fill=1, stroke=0)
+      c.setFillColor(HexColor("#fbbf24"))
+      c.roundRect(52, 36 + proc_h - 28, 160, 18, 8, fill=1, stroke=0)
+      c.setFillColor(HexColor("#0f172a"))
+      c.setFont("Helvetica-Bold", 9)
+      c.drawString(60, 36 + proc_h - 22, "PROCEDIMIENTO MOSTRADOR")
+      c.setFillColor(white)
+      c.setFont("Helvetica", 9)
+      lines = _wrap(c, p.get("procedimiento", ""), "Helvetica", 9, W - 120)
+      ly = 36 + proc_h - 44
+      for ln in lines[:10]:
+        c.drawString(55, ly, ln)
+        ly -= 12
+
+      c.setFillColor(HexColor("#475569"))
+      c.setFont("Helvetica", 7)
+      c.drawCentredString(W / 2, 18, "Educativo Farmacia Álora · No sustituye ficha AEMPS · Envase ilustrado (no foto comercial) · España")
       c.showPage()
 
     c.save()

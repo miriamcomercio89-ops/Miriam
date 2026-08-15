@@ -5,16 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Farmacia Álora — TPV de práctica</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="css/styles.css?v=11" />
+  <link rel="stylesheet" href="css/styles.css?v=12" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 </head>
-<body class="ui-large">
+<body class="ui-large ui-v3">
   <div class="app-bg" aria-hidden="true"></div>
+  <div id="interrupt-banner" class="interrupt-banner hidden" role="alert"></div>
   <div class="app-shell">
-    <header class="topbar">
+    <header class="topbar topbar-v3">
       <div class="brand-block">
         <div class="logo-mark" aria-hidden="true">
           <svg viewBox="0 0 64 64" width="58" height="58">
-            <defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#16a34a"/><stop offset="100%" stop-color="#0891b2"/></linearGradient></defs>
+            <defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#16a34a"/><stop offset="50%" stop-color="#0891b2"/><stop offset="100%" stop-color="#7c3aed"/></linearGradient></defs>
             <circle cx="32" cy="32" r="30" fill="url(#g1)"/>
             <rect x="28" y="14" width="8" height="36" rx="2" fill="#fff"/>
             <rect x="14" y="28" width="36" height="8" rx="2" fill="#fff"/>
@@ -23,7 +26,7 @@
         </div>
         <div>
           <h1>Farmacia Álora</h1>
-          <p>Tu mostrador de práctica · claro y guiado</p>
+          <p>TPV de práctica · España · Fase 3</p>
         </div>
       </div>
       <div class="clock-block">
@@ -32,6 +35,7 @@
           <span id="open-badge" class="badge">—</span>
           <span id="season-badge" class="badge badge-blue">—</span>
           <span id="guardia-badge" class="badge badge-purple hidden">🚑 Guardia</span>
+          <span id="fatiga-badge" class="badge badge-amber hidden">😮‍💨 Fatiga 0</span>
           <span class="chip-soft">⏱ 1 min = 1 h</span>
           <button type="button" class="btn btn-ghost btn-sm" id="pause-btn">Pausar</button>
           <button type="button" class="btn btn-accent btn-sm" id="btn-guardia">Guardia</button>
@@ -39,6 +43,10 @@
         </div>
       </div>
       <div class="top-actions">
+        <div class="score-pill" id="score-pill" title="Nota del día">
+          <span class="score-letra" id="score-letra">—</span>
+          <span><strong id="score-pts">0</strong> pts</span>
+        </div>
         <button type="button" class="btn btn-sm" id="btn-csv">⬇ CSV</button>
         <button type="button" class="btn btn-sm" id="btn-export-json">⬇ JSON</button>
         <button type="button" class="btn btn-sm" id="btn-restock">📦 Stock</button>
@@ -46,35 +54,43 @@
       </div>
     </header>
 
-    <section class="stats-row">
+    <section class="stats-row stats-v3">
       <article class="stat s-teal"><span class="stat-ico">💊</span><div><span class="lbl">Productos</span><strong id="stat-catalog">—</strong></div></article>
       <article class="stat s-blue"><span class="stat-ico">🧾</span><div><span class="lbl">Tickets</span><strong id="stat-tickets">0</strong></div></article>
       <article class="stat s-amber"><span class="stat-ico">💶</span><div><span class="lbl">Facturación</span><strong id="stat-fact">0 €</strong></div></article>
       <article class="stat s-pink"><span class="stat-ico">⚠️</span><div><span class="lbl">Stock bajo</span><strong id="stat-low">0</strong></div></article>
-      <article class="stat s-violet"><span class="stat-ico">📅</span><div><span class="lbl">Caducan pronto</span><strong id="stat-exp">0</strong></div></article>
+      <article class="stat s-violet"><span class="stat-ico">📅</span><div><span class="lbl">Caducan</span><strong id="stat-exp">0</strong></div></article>
+      <article class="stat s-rose"><span class="stat-ico">🚨</span><div><span class="lbl">Lotes AEMPS</span><strong id="stat-lotes">0</strong></div></article>
     </section>
 
     <div id="alerts-bar" class="alerts-bar" hidden></div>
 
     <div class="quick-bar" id="quick-bar">
-      <button type="button" class="quick-btn" data-goto="pedidos">💬 Atender cliente</button>
-      <button type="button" class="quick-btn" data-goto="venta">🛒 Ir a venta</button>
-      <button type="button" class="quick-btn" data-goto="clinica">🩺 Clínica</button>
-      <button type="button" class="quick-btn" data-goto="escaparate">🗄️ Escaparate</button>
-      <button type="button" class="quick-btn" data-goto="medico">👨‍⚕️ Preguntar médico</button>
+      <button type="button" class="quick-btn q-blue" data-goto="pedidos">💬 Clientes</button>
+      <button type="button" class="quick-btn q-teal" data-goto="venta">🛒 Venta</button>
+      <button type="button" class="quick-btn q-violet" data-goto="ereceta">💻 e-Receta SNS</button>
+      <button type="button" class="quick-btn q-amber" data-goto="evaluacion">⭐ Nota del día</button>
+      <button type="button" class="quick-btn q-rose" data-goto="lotes">🚨 Lotes</button>
+      <button type="button" class="quick-btn q-cyan" data-goto="checklist">📷 Checklist</button>
+      <button type="button" class="quick-btn q-orange" data-goto="botiquines">🏢 Botiquines</button>
     </div>
 
-    <nav class="tabs" aria-label="Secciones">
-      <span class="tab-group-label">Mostrador</span>
-      <button type="button" class="tab active" data-tab="venta"><span>🛒</span> Venta <kbd>F2</kbd></button>
+    <nav class="tabs tabs-v3" aria-label="Secciones">
+      <span class="tab-group-label tg-teal">Mostrador</span>
+      <button type="button" class="tab active" data-tab="venta"><span>🛒</span> Venta</button>
       <button type="button" class="tab" data-tab="pedidos"><span>💬</span> Clientes <span id="cola-count" class="count-pill">0</span></button>
+      <button type="button" class="tab" data-tab="ereceta"><span>💻</span> e-Receta</button>
       <button type="button" class="tab" data-tab="caja"><span>🖥</span> TPV</button>
       <button type="button" class="tab" data-tab="ticket"><span>🎟</span> Ticket</button>
-      <span class="tab-group-label">Clínica</span>
+      <span class="tab-group-label tg-violet">Práctica</span>
+      <button type="button" class="tab" data-tab="evaluacion"><span>⭐</span> Nota</button>
+      <button type="button" class="tab" data-tab="lotes"><span>🚨</span> Lotes</button>
+      <button type="button" class="tab" data-tab="botiquines"><span>🏢</span> Botiquines</button>
+      <button type="button" class="tab" data-tab="checklist"><span>📷</span> Checklist</button>
       <button type="button" class="tab" data-tab="clinica"><span>🩺</span> Clínica</button>
       <button type="button" class="tab" data-tab="medico"><span>👨‍⚕️</span> Médico</button>
       <button type="button" class="tab" data-tab="escaparate"><span>🗄️</span> Escaparate</button>
-      <span class="tab-group-label">Trastienda</span>
+      <span class="tab-group-label tg-amber">Trastienda</span>
       <button type="button" class="tab" data-tab="almacen"><span>🚚</span> Almacén <span id="alm-count" class="count-pill">0</span></button>
       <button type="button" class="tab" data-tab="inventario"><span>📦</span> Inventario</button>
       <button type="button" class="tab" data-tab="gestion"><span>🧮</span> Gestión</button>
@@ -416,6 +432,75 @@
     </section>
 
 
+    <!-- EVALUACIÓN / NOTA DEL DÍA -->
+    <section id="panel-evaluacion" class="panel">
+      <div class="welcome-strip strip-amber">
+        <div>
+          <h2>⭐ Nota del día</h2>
+          <p class="muted">Puntuación por aciertos: recetas, alarmas, lotes, interrupciones y guardia.</p>
+        </div>
+        <button type="button" class="btn btn-primary" id="btn-refresh-nota">Actualizar nota</button>
+      </div>
+      <div class="layout-2">
+        <div class="card card-score">
+          <div id="nota-hero" class="nota-hero">—</div>
+        </div>
+        <div class="card">
+          <h3>📋 Historial reciente</h3>
+          <div id="nota-historial" class="list-block"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LOTES AEMPS -->
+    <section id="panel-lotes" class="panel">
+      <div class="welcome-strip strip-rose">
+        <div>
+          <h2>🚨 Alertas de lote (AEMPS simulado)</h2>
+          <p class="muted">Retira el stock del lote afectado y deja constancia formativa.</p>
+        </div>
+        <button type="button" class="btn btn-accent" id="btn-simular-lote">Simular alerta</button>
+      </div>
+      <div id="lotes-list" class="stack"></div>
+    </section>
+
+    <!-- BOTIQUINES -->
+    <section id="panel-botiquines" class="panel">
+      <div class="welcome-strip strip-orange">
+        <div>
+          <h2>🏢 Botiquines empresa / residencia</h2>
+          <p class="muted">Pedidos grandes con albarán y firma del responsable.</p>
+        </div>
+        <button type="button" class="btn btn-primary" id="btn-nuevo-botiquin">+ Nuevo pedido</button>
+      </div>
+      <div id="botiquines-list" class="stack"></div>
+    </section>
+
+    <!-- CHECKLIST VISUAL -->
+    <section id="panel-checklist" class="panel">
+      <div class="welcome-strip strip-cyan">
+        <div>
+          <h2>📷 Checklist visual</h2>
+          <p class="muted">Revisa mostrador, nevera y estantería con escenas ilustradas.</p>
+        </div>
+      </div>
+      <div id="checklist-root" class="checklist-grid"></div>
+    </section>
+
+    <!-- E-RECETA SNS -->
+    <section id="panel-ereceta" class="panel">
+      <div class="welcome-strip strip-violet">
+        <div>
+          <h2>💻 Módulo e-Receta SNS (simulado)</h2>
+          <p class="muted">PIN, CIP, fase de dispensación y bloqueos — parecido a un módulo real de práctica.</p>
+        </div>
+        <button type="button" class="btn btn-primary" id="btn-sync-ereceta">Sincronizar con cliente actual</button>
+      </div>
+      <div id="ereceta-module" class="ereceta-shell">
+        <p class="empty">Atiende un cliente con e-receta o pulsa sincronizar.</p>
+      </div>
+    </section>
+
     <!-- CLÍNICA: magistral, pediatría, vitals, campaña -->
     <section id="panel-clinica" class="panel">
       <div class="welcome-strip">
@@ -517,20 +602,22 @@
 
     <section id="panel-ayuda" class="panel">
       <div class="card help-card">
-        <h2>✨ Cómo usar el TPV</h2>
+        <h2>✨ Cómo usar el TPV (Fase 3)</h2>
         <ol class="help-steps">
-          <li>Usa la <strong>barra rápida</strong> arriba para atender, clínica, escaparate o médico.</li>
-          <li><strong>Clínica</strong>: mg/kg, fórmula magistral, tensión y glucemia.</li>
-          <li><strong>Médico de guardia</strong>: consulta dudas de dispensación (simulado).</li>
-          <li><strong>Escaparate</strong>: monta el planograma OTC del día.</li>
-          <li>Sigue la <strong>campaña estacional</strong> del banner en Venta.</li>
+          <li><strong>Clientes</strong> → atender. Si aparece una <strong>interrupción</strong>, elige atender o aplazar.</li>
+          <li><strong>e-Receta SNS</strong>: PIN (pista formativa), fase y dispensación electrónica.</li>
+          <li><strong>Lotes AEMPS</strong>: retira stock del lote afectado.</li>
+          <li><strong>Botiquines</strong>: prepara, firma y entrega pedidos de empresa/residencia.</li>
+          <li><strong>Checklist</strong>: valida mostrador, nevera y estantería.</li>
+          <li><strong>Guardia</strong>: menos clientes, más urgencias, recargo 15% y fatiga.</li>
+          <li><strong>Nota del día</strong>: mira tu puntuación (A–D).</li>
         </ol>
         <p><kbd>F2</kbd> buscar · <kbd>F4</kbd> cobrar · <kbd>Esc</kbd> cerrar</p>
-        <p class="warn-text">Simulador educativo. No es consejo médico real.</p>
+        <p class="warn-text">Simulador educativo. No es consejo médico real. Manuales PDF en /manuales.</p>
       </div>
     </section>
 
-    <footer class="disclaimer">Farmacia Álora · Fase 2 España · 45 categorías · clientes variados · manuales PDF en /manuales</footer>
+    <footer class="disclaimer">Farmacia Álora · Fase 3 · nota · interrupciones · lotes · botiquines · guardia · checklist · e-receta · PDF en /manuales</footer>
   </div>
 
   <!-- Modal receta -->
@@ -677,15 +764,16 @@
 
   <div id="toasts" aria-live="polite"></div>
 
-  <script src="js/catalog.js?v=11"></script>
-  <script src="js/clinical.js?v=11"></script>
-  <script src="js/clients.js?v=11"></script>
-  <script src="js/caja.js?v=11"></script>
-  <script src="js/sounds.js?v=11"></script>
-  <script src="js/minigames.js?v=11"></script>
-  <script src="js/extras.js?v=11"></script>
-  <script src="js/packshot.js?v=11"></script>
-  <script src="js/clinic-tools.js?v=11"></script>
-  <script src="js/app.js?v=11"></script>
+  <script src="js/catalog.js?v=12"></script>
+  <script src="js/clinical.js?v=12"></script>
+  <script src="js/clients.js?v=12"></script>
+  <script src="js/caja.js?v=12"></script>
+  <script src="js/sounds.js?v=12"></script>
+  <script src="js/minigames.js?v=12"></script>
+  <script src="js/extras.js?v=12"></script>
+  <script src="js/packshot.js?v=12"></script>
+  <script src="js/clinic-tools.js?v=12"></script>
+  <script src="js/practice-plus.js?v=12"></script>
+  <script src="js/app.js?v=12"></script>
 </body>
 </html>

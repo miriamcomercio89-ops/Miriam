@@ -5,7 +5,7 @@
 (function () {
   "use strict";
 
-  const STORAGE_KEY = "farmacia-alora-v9";
+  const STORAGE_KEY = "farmacia-alora-v10";
   const REAL_MS_PER_GAME_HOUR = 60 * 1000;
   const Clinica = window.FarmaciaClinica;
   const Caja = window.FarmaciaCaja;
@@ -15,6 +15,7 @@
   const Extras = window.FarmaciaExtras;
   const Pack = window.FarmaciaPackshot;
   const Clinic = window.FarmaciaClinicTools;
+  const Plus = window.FarmaciaPracticePlus;
 
   const MUTUAS = [
     { id: "particular", nombre: "Particular", cobertura: 0 },
@@ -144,6 +145,7 @@
       magistrales: [],
       chatMedico: [],
       planograma: null,
+      plus: Plus ? Plus.defaultPlus() : {},
       copagoMes: {},
       ofertasDia: makeOfertas(list),
       caja: Caja.defaultCaja(start.getTime()),
@@ -204,6 +206,7 @@
         magistrales: data.magistrales || [],
         chatMedico: data.chatMedico || [],
         planograma: data.planograma || null,
+        plus: { ...(Plus ? Plus.defaultPlus() : {}), ...(data.plus || {}) },
         copagoMes: data.copagoMes || {},
         stats: { tickets: 0, facturacion: 0, recetas: 0, minijuegosOk: 0, minijuegosFail: 0, sigre: 0, ...(data.stats || {}) },
       };
@@ -256,10 +259,32 @@
       state.gameTimeMs += (dt / REAL_MS_PER_GAME_HOUR) * 3600 * 1000;
       maybeSpawnCustomer();
       receiveWarehouse();
+      tickPracticePlus();
       if (Math.floor(now/5000) !== Math.floor((now-dt)/5000)) save();
     }
     renderClock();
     clockTimer = requestAnimationFrame(tick);
+  }
+
+  function tickPracticePlus() {
+    if (!Plus || !state.plus) return;
+    const enAtencion = !!(state.clienteActual && state.clienteActual.peticionTexto);
+    const enGuardia = !!state.settings.enGuardia;
+    const fuera = isOutsideNormal(state.gameTimeMs);
+    const int = Plus.maybeInterrupcion(state.plus, state.gameTimeMs, enAtencion, enGuardia && fuera);
+    if (int) renderInterruptBanner();
+    const alerta = Plus.maybeSpawnAlertaLote(state.plus, productos, state.gameTimeMs);
+    if (alerta) {
+      toast("🚨 Alerta AEMPS: " + alerta.nombre, "warn");
+      Sounds.beepWarn && Sounds.beepWarn();
+      renderStats();
+    }
+    // fatiga baja despacio fuera de guardia
+    if (!(enGuardia && fuera) && state.plus.fatiga > 0 && Math.random() < 0.02) {
+      state.plus.fatiga = Math.max(0, state.plus.fatiga - 1);
+    }
+    updateScoreHud();
+    updateFatigaBadge();
   }
 
   function renderClock() {
@@ -286,7 +311,12 @@
     state.cola.push(crearPedido());
     Sounds.beepCustomer();
     const r = rng(Math.floor(state.gameTimeMs) ^ state.cola.length);
-    state.nextCustomerAt = state.gameTimeMs + (7 + Math.floor(r()*22)) * 60 * 1000;
+    const enGuardia = state.settings.enGuardia && isOutsideNormal(state.gameTimeMs);
+    const fatiga = state.plus?.fatiga || 0;
+    state.nextCustomerAt = state.gameTimeMs + (Plus
+      ? Plus.nextCustomerDelayMs(!!state.settings.enGuardia, isOutsideNormal(state.gameTimeMs), fatiga, r)
+      : (7 + Math.floor(r()*22)) * 60 * 1000);
+    if (enGuardia) state.plus.fatiga = Math.min(100, (state.plus.fatiga || 0) + 2);
     renderCola();
     save();
   }
@@ -294,6 +324,20 @@
   function crearPedido() {
     const season = seasonInfo(state.gameTimeMs);
     const cli = Clientes.clienteAleatorio(productos, Math.floor(state.gameTimeMs), season.boost);
+    const enGuardia = state.settings.enGuardia && isOutsideNormal(state.gameTimeMs);
+    // Guardia: más urgencias / alarmas
+    if (enGuardia && Math.random() < 0.35 && Clientes.generarCliente) {
+      // forzar modo alarma a veces re-roll
+      const urg = Clientes.generarCliente(Math.floor(Math.random() * 1e7), productos, season.boost);
+      if (urg.modo === "alarma" || Math.random() < 0.5) {
+        Object.assign(cli, urg);
+        cli.urgencia = true;
+        cli.modo = cli.modo === "alarma" ? "alarma" : cli.modo;
+        cli.peticionTexto = (cli.peticionTexto || "") + " (llega en GUARDIA).";
+        if (state.plus?.guardiaStats) state.plus.guardiaStats.urgencias += 1;
+      }
+    }
+    if (enGuardia && cli.urgencia) cli.peticionTexto = "🚑 GUARDIA · " + cli.peticionTexto;
     let receta = null;
     if (cli.quiereReceta && cli.productosReceta?.length) {
       const r = rng(cli.seedId);
@@ -900,6 +944,7 @@
       basesIva: tot.basesIva, aportacionCliente: tot.aportacionCliente || 0,
       topeAplicado: !!tot.topeAplicado, topeInfo: tot.topeInfo || null,
       guardia: state.settings.enGuardia && isOutsideNormal(state.gameTimeMs),
+      recargoGuardia: 0,
       season: seasonInfo(state.gameTimeMs).id,
       receta: state.recetaActiva ? {
         numero: state.recetaActiva.numero, pacienteDni: state.recetaActiva.pacienteDni,
@@ -908,6 +953,28 @@
         visadoRef: state.recetaActiva.visadoRef || "",
       } : null,
     };
+
+    if (ticket.guardia && Plus) {
+      ticket.recargoGuardia = Plus.recargoGuardia(ticket.total);
+      ticket.total = Caja.round2(ticket.total + ticket.recargoGuardia);
+      pago.total = ticket.total;
+      if (state.plus.guardiaStats) {
+        state.plus.guardiaStats.ventasGuardia += 1;
+        state.plus.guardiaStats.recargo = Caja.round2((state.plus.guardiaStats.recargo || 0) + ticket.recargoGuardia);
+      }
+      state.plus.fatiga = Math.min(100, (state.plus.fatiga || 0) + 5);
+    }
+
+    if (Plus && state.plus) {
+      const urgOk = !(state.clienteActual.urgencia && lineas.some((l) => !l.requiereReceta));
+      if (state.clienteActual.urgencia) {
+        Plus.scoreEvent(state.plus, "alarma", urgOk,
+          urgOk ? "No se forzó OTC en alarma" : "Se vendió OTC en contexto de alarma", urgOk ? 10 : -8);
+      }
+      if (ticket.receta) Plus.scoreEvent(state.plus, "receta", true, "Dispensación con receta", 6);
+      else Plus.scoreEvent(state.plus, "venta", true, "Venta completada", 3);
+      if (lineas.some((l) => l.controlado)) Plus.scoreEvent(state.plus, "controlado", true, "Controlado dispensado", 8);
+    }
 
     if (tot.aportacionCliente > 0) {
       const k = mesCopagoKey();
@@ -956,7 +1023,8 @@
     refreshClinicalAlerts();
     lastTicket = ticket;
     mostrarTicket(ticket);
-    toast("Cobro TPV OK", "ok");
+    updateScoreHud();
+    toast(ticket.recargoGuardia ? `Cobro OK · recargo guardia ${euro(ticket.recargoGuardia)}` : "Cobro TPV OK", "ok");
   }
 
   function upsertPacienteFromCliente(cli, ticket) {
@@ -1248,6 +1316,9 @@
     const exp = productos.filter(expiresSoon).length;
     $("#stat-low").textContent = String(low);
     $("#stat-exp").textContent = String(exp);
+    const lotEl = $("#stat-lotes");
+    if (lotEl) lotEl.textContent = String((state.plus?.alertasLote || []).filter((a) => !a.resuelta).length);
+    updateScoreHud();
   }
 
   function renderMutuas() {
@@ -1519,6 +1590,7 @@
           <div class="ik"><span>Facturación</span><strong>${euro(r.facturacion)}</strong></div>
           <div class="ik"><span>Margen est.</span><strong>${euro(r.margen)}</strong></div>
           <div class="ik"><span>SIGRE</span><strong>${state.stats.sigre||0}</strong></div>
+          <div class="ik"><span>Nota</span><strong>${Plus ? Plus.notaDelDia(state.plus, state.stats).letra : "—"} · ${state.plus?.evaluacion?.puntos||0} pts</strong></div>
         </div>
         <div class="informe-grid">
           <div class="informe-card c-teal"><h3>📂 Categorías</h3>
@@ -1599,7 +1671,13 @@
     save();
     if (c.urgencia) toast(`⚠ ${c.nombre}: valorar derivación / alarma clínica`, "warn");
     else toast(`Atiende a ${c.nombre}`, "ok");
+    if (Plus && ped.receta?.tipo === "electronica") {
+      state.plus.erecetaSesion = Plus.crearSesionEreceta(c, ped.receta);
+    } else if (state.plus) {
+      state.plus.erecetaSesion = null;
+    }
     showTab("venta");
+    renderEreceta();
   }
 
   function bindClienteForm() {
@@ -1991,6 +2069,181 @@
       </div>`).join("");
   }
 
+  function updateScoreHud() {
+    if (!Plus || !state.plus) return;
+    const n = Plus.notaDelDia(state.plus, state.stats);
+    const letra = $("#score-letra");
+    const pts = $("#score-pts");
+    if (letra) letra.textContent = n.letra;
+    if (pts) pts.textContent = String(n.pts);
+  }
+
+  function updateFatigaBadge() {
+    const el = $("#fatiga-badge");
+    if (!el) return;
+    const f = Math.round(state.plus?.fatiga || 0);
+    const show = !!state.settings.enGuardia || f > 15;
+    el.classList.toggle("hidden", !show);
+    el.textContent = `😮‍💨 Fatiga ${f}`;
+  }
+
+  function renderInterruptBanner() {
+    const box = $("#interrupt-banner");
+    if (!box || !Plus) return;
+    const i = state.plus?.interrupcion;
+    if (!i) { box.classList.add("hidden"); box.innerHTML = ""; return; }
+    box.classList.remove("hidden");
+    box.classList.toggle("urgent", !!i.urgencia);
+    box.innerHTML = `
+      <div><strong>${i.icon} Interrupción · ${escapeHtml(i.titulo)}</strong>
+      <div>${escapeHtml(i.texto)}</div></div>
+      <div class="ib-actions">
+        <button type="button" class="btn btn-sm" id="btn-int-ok">Atender</button>
+        <button type="button" class="btn btn-sm" id="btn-int-later">Aplazar</button>
+      </div>`;
+    $("#btn-int-ok").onclick = () => {
+      const x = Plus.dismissInterrupcion(state.plus, "atender");
+      renderInterruptBanner(); updateScoreHud(); save();
+      if (x?.id === "lote") showTab("lotes");
+      else if (x?.id === "botiquin") showTab("botiquines");
+      else if (x?.id === "alarma_nevera") showTab("checklist");
+      else if (x?.id === "repartidor") showTab("almacen");
+      else toast("Interrupción atendida (+pts)", "ok");
+    };
+    $("#btn-int-later").onclick = () => {
+      Plus.dismissInterrupcion(state.plus, "aplazar");
+      renderInterruptBanner(); updateScoreHud(); save();
+      toast("Interrupción aplazada", "warn");
+    };
+  }
+
+  function renderNota() {
+    if (!Plus || !$("#nota-hero")) return;
+    const n = Plus.notaDelDia(state.plus, state.stats);
+    $("#nota-hero").innerHTML = `
+      <div class="letra">${escapeHtml(n.letra)}</div>
+      <div class="pts">${n.pts} puntos · ${n.ok} aciertos · ${n.fail} fallos</div>
+      <div class="fatiga-bar" title="Fatiga"><span style="width:${Math.min(100, state.plus.fatiga || 0)}%"></span></div>
+      <p style="margin-top:10px;opacity:.9">Guardia: ${state.plus.guardiaStats?.ventasGuardia || 0} ventas · recargo ${euro(state.plus.guardiaStats?.recargo || 0)} · urgencias ${state.plus.guardiaStats?.urgencias || 0}</p>
+      <ul>${n.consejos.map((c) => `<li>${escapeHtml(c)}</li>`).join("")}</ul>`;
+    const hist = state.plus.evaluacion?.historial || [];
+    $("#nota-historial").innerHTML = hist.slice(0, 20).map((h) =>
+      `<div class="${h.ok ? "hist-ok" : "hist-fail"}"><strong>${escapeHtml(h.tipo)}</strong> ${h.ok ? "+" : ""}${h.pts} · ${escapeHtml(h.detalle || "")}</div>`
+    ).join("") || `<div class="empty">Aún no hay eventos. Atiende clientes, lotes e interrupciones.</div>`;
+    updateScoreHud();
+  }
+
+  function renderLotes() {
+    const root = $("#lotes-list");
+    if (!root) return;
+    const list = state.plus?.alertasLote || [];
+    if (!list.length) {
+      root.innerHTML = `<div class="empty">Sin alertas. Pulsa “Simular alerta” o espera un aviso AEMPS.</div>`;
+      return;
+    }
+    root.innerHTML = list.map((a) => `
+      <article class="lote-card ${a.resuelta ? "resuelta" : ""}">
+        <header style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap">
+          <strong>🚨 ${escapeHtml(a.id)}</strong>
+          <span class="gravedad-${escapeHtml(a.gravedad)}">${escapeHtml(a.gravedad)}</span>
+        </header>
+        <p><strong>${escapeHtml(a.nombre)}</strong> · lote <code>${escapeHtml(a.lote)}</code></p>
+        <p class="muted">${escapeHtml(a.motivo)}</p>
+        <p class="muted tiny">Stock actual: ${state.stock[a.productId] || 0}${a.resuelta ? ` · retiradas ${a.unidadesRetiradas}` : ""}</p>
+        ${a.resuelta ? `<span class="badge badge-ok">Resuelta</span>` :
+          `<button type="button" class="btn btn-danger-soft" data-retirar-lote="${escapeHtml(a.id)}">Retirar lote del stock</button>`}
+      </article>`).join("");
+  }
+
+  function renderBotiquines() {
+    const root = $("#botiquines-list");
+    if (!root || !Plus) return;
+    const list = state.plus.botiquines || [];
+    if (!list.length) {
+      root.innerHTML = `<div class="empty">No hay pedidos. Crea uno de empresa o residencia.</div>`;
+      return;
+    }
+    root.innerHTML = list.map((b) => {
+      const total = Plus.totalBotiquin(b);
+      return `<article class="bot-card">
+        <header style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap">
+          <strong>${b.tipo === "empresa" ? "🏢" : "🏠"} ${escapeHtml(b.cliente)}</strong>
+          <span class="badge">${escapeHtml(b.estado)}</span>
+        </header>
+        <p class="muted tiny">${escapeHtml(b.albaran)} · NIF ${escapeHtml(b.nif)} · ${euro(total)}</p>
+        <ul>${b.items.map((i) => `<li>${escapeHtml(i.nombre)} ×${i.cantidad}</li>`).join("")}</ul>
+        <div class="actions-row">
+          ${b.estado === "pedido" ? `<button class="btn btn-primary btn-sm" data-bot-prep="${b.id}">Preparar</button>` : ""}
+          ${b.estado === "preparado" ? `<input class="bot-firma" data-bot-firma-in="${b.id}" placeholder="Firma responsable" style="max-width:200px" />
+            <button class="btn btn-accent btn-sm" data-bot-firmar="${b.id}">Registrar firma</button>` : ""}
+          ${b.estado === "firmado" ? `<button class="btn btn-primary btn-sm" data-bot-ent="${b.id}">Entregar / cobrar</button>` : ""}
+          ${b.estado === "entregado" ? `<span class="badge badge-ok">Entregado · ${escapeHtml(b.firmaResponsable || "")}</span>` : ""}
+        </div>
+      </article>`;
+    }).join("");
+  }
+
+  function renderChecklist() {
+    const root = $("#checklist-root");
+    if (!root || !Plus) return;
+    if (!state.plus.checklists) state.plus.checklists = {};
+    root.innerHTML = Plus.CHECKLISTS.map((c) => {
+      const saved = state.plus.checklists[c.id] || {};
+      const done = c.items.every((it) => saved[it.id]);
+      return `<article class="check-card ${done ? "check-done" : ""}" style="border-color:${c.color}">
+        ${Plus.svgEscena(c.escena, c.color)}
+        <h3>${escapeHtml(c.titulo)}</h3>
+        ${c.items.map((it) => `
+          <label class="check-item"><input type="checkbox" data-check="${c.id}" data-item="${it.id}" ${saved[it.id] ? "checked" : ""}/>
+          <span>${escapeHtml(it.txt)}</span></label>`).join("")}
+        ${done ? `<p class="muted">✅ Completo (+pts)</p>` : ""}
+      </article>`;
+    }).join("");
+  }
+
+  function renderEreceta() {
+    const root = $("#ereceta-module");
+    if (!root || !Plus) return;
+    const s = state.plus?.erecetaSesion;
+    if (!s) {
+      root.innerHTML = `<div class="ereceta-body"><p class="empty">Sin sesión. Atiende un cliente con e-receta o sincroniza.</p></div>`;
+      return;
+    }
+    root.innerHTML = `
+      <div class="ereceta-top">
+        <div><strong>SNS · Receta electrónica (simulación)</strong><div class="tiny">Nº ${escapeHtml(s.numero)} · fase ${escapeHtml(s.fase)}</div></div>
+        <div>CIP ${escapeHtml(s.cip)} · DNI ${escapeHtml(s.dni)}</div>
+      </div>
+      <div class="ereceta-body">
+        ${s.bloqueada ? `<div class="alert alert-grave">Sesión bloqueada</div>` : ""}
+        ${!s.pinOk ? `<div class="pin-row">
+          <div><label class="lbl">PIN (pista formativa en consola/toast)</label>
+          <input id="ereceta-pin" type="password" maxlength="6" placeholder="PIN" /></div>
+          <button type="button" class="btn btn-primary" id="btn-ereceta-pin">Entrar</button>
+          <button type="button" class="btn btn-sm" id="btn-ereceta-hint">Ver PIN (práctica)</button>
+        </div>` : `<p class="badge badge-ok">PIN OK · puedes dispensar</p>`}
+        ${(s.dispensaciones || []).map((d) => `
+          <div class="ereceta-line ${d.estado === "dispensada" ? "done" : ""}">
+            <span>${escapeHtml(d.nombre)} ×${d.cantidad} · <em>${escapeHtml(d.estado)}</em></span>
+            ${s.pinOk && d.estado !== "dispensada" ? `<button class="btn btn-sm btn-primary" data-ere-disp="${d.productId}">Marcar dispensado + añadir</button>` : ""}
+          </div>`).join("")}
+        <div class="ereceta-log">${(s.log || []).map((l) => escapeHtml(l)).join("<br/>")}</div>
+      </div>`;
+    $("#btn-ereceta-hint")?.addEventListener("click", () => toast("PIN de práctica: " + s.pinEsperado, "ok"));
+    $("#btn-ereceta-pin")?.addEventListener("click", () => {
+      const pin = $("#ereceta-pin")?.value || "";
+      const res = Plus.intentarPin(s, pin);
+      if (res.ok) {
+        Plus.scoreEvent(state.plus, "ereceta_pin", true, "PIN e-receta OK", 5);
+        toast(res.msg, "ok");
+      } else {
+        Plus.scoreEvent(state.plus, "ereceta_pin", false, res.msg, -2);
+        toast(res.msg, "err");
+      }
+      updateScoreHud(); renderEreceta(); save();
+    });
+  }
+
   function showTab(name) {
     $$(".tab").forEach((t) => t.classList.toggle("active", t.dataset.tab === name));
     $$(".panel").forEach((p) => p.classList.toggle("active", p.id === "panel-" + name));
@@ -2007,6 +2260,11 @@
     if (name === "clinica") renderVitals();
     if (name === "medico") renderMedicoChat();
     if (name === "escaparate") renderPlanograma();
+    if (name === "evaluacion") renderNota();
+    if (name === "lotes") renderLotes();
+    if (name === "botiquines") renderBotiquines();
+    if (name === "checklist") renderChecklist();
+    if (name === "ereceta") renderEreceta();
   }
 
   function bindEvents() {
@@ -2417,6 +2675,97 @@
       state.cola.push(crearPedido(), crearPedido(), crearPedido());
       bindClienteForm(); renderAll(); save(); toast("Reiniciado", "ok");
     };
+
+    // ——— Practice Plus ———
+    $("#btn-refresh-nota")?.addEventListener("click", renderNota);
+    $("#btn-simular-lote")?.addEventListener("click", () => {
+      if (!Plus) return;
+      const a = Plus.generarAlertaLote(productos, state.gameTimeMs);
+      state.plus.alertasLote = state.plus.alertasLote || [];
+      state.plus.alertasLote.unshift(a);
+      renderLotes(); renderStats(); save();
+      toast("Alerta AEMPS simulada", "warn");
+    });
+    $("#lotes-list")?.addEventListener("click", (e) => {
+      const b = e.target.closest("[data-retirar-lote]");
+      if (!b || !Plus) return;
+      const res = Plus.retirarLote(state.plus, state.stock, state.lotes, b.dataset.retirarLote);
+      if (!res.ok) { toast(res.msg, "err"); return; }
+      toast(`Lote retirado · ${res.qty} uds`, "ok");
+      renderLotes(); renderCatalog(); renderStats(); updateScoreHud(); save();
+    });
+    $("#btn-nuevo-botiquin")?.addEventListener("click", () => {
+      if (!Plus) return;
+      state.plus.botiquines = state.plus.botiquines || [];
+      state.plus.botiquines.unshift(Plus.crearBotiquin(Date.now(), productos));
+      renderBotiquines(); save(); toast("Pedido de botiquín creado", "ok");
+    });
+    $("#botiquines-list")?.addEventListener("click", (e) => {
+      const prep = e.target.closest("[data-bot-prep]");
+      const firmar = e.target.closest("[data-bot-firmar]");
+      const ent = e.target.closest("[data-bot-ent]");
+      const list = state.plus.botiquines || [];
+      if (prep) {
+        const b = list.find((x) => x.id === prep.dataset.botPrep);
+        if (b) { b.estado = "preparado"; Plus.scoreEvent(state.plus, "botiquin", true, "Botiquín preparado", 4); }
+      }
+      if (firmar) {
+        const b = list.find((x) => x.id === firmar.dataset.botFirmar);
+        const inp = $(`[data-bot-firma-in="${firmar.dataset.botFirmar}"]`);
+        if (b && inp?.value.trim()) {
+          b.firmaResponsable = inp.value.trim();
+          b.estado = "firmado";
+          Plus.scoreEvent(state.plus, "botiquin", true, "Firma botiquín", 6);
+        } else toast("Falta firma del responsable", "warn");
+      }
+      if (ent) {
+        const b = list.find((x) => x.id === ent.dataset.botEnt);
+        if (b) {
+          for (const it of b.items) {
+            state.stock[it.productId] = Math.max(0, (state.stock[it.productId] || 0) - it.cantidad);
+          }
+          b.estado = "entregado";
+          const total = Plus.totalBotiquin(b);
+          state.stats.tickets += 1;
+          state.stats.facturacion += total;
+          Plus.scoreEvent(state.plus, "botiquin", true, "Botiquín entregado", 8);
+          toast(`Botiquín entregado · ${euro(total)}`, "ok");
+        }
+      }
+      renderBotiquines(); renderStats(); renderCatalog(); updateScoreHud(); save();
+    });
+    $("#checklist-root")?.addEventListener("change", (e) => {
+      const inp = e.target.closest("input[data-check]");
+      if (!inp || !Plus) return;
+      const cid = inp.dataset.check, iid = inp.dataset.item;
+      state.plus.checklists = state.plus.checklists || {};
+      state.plus.checklists[cid] = state.plus.checklists[cid] || {};
+      state.plus.checklists[cid][iid] = !!inp.checked;
+      const def = Plus.CHECKLISTS.find((c) => c.id === cid);
+      if (def && def.items.every((it) => state.plus.checklists[cid][it.id])) {
+        Plus.scoreEvent(state.plus, "checklist", true, "Checklist " + def.titulo, 10);
+        toast("Checklist completo (+10)", "ok");
+      }
+      renderChecklist(); updateScoreHud(); save();
+    });
+    $("#btn-sync-ereceta")?.addEventListener("click", () => {
+      if (!Plus) return;
+      if (state.recetaActiva?.tipo === "electronica") {
+        state.plus.erecetaSesion = Plus.crearSesionEreceta(state.clienteActual, state.recetaActiva);
+        toast("Sesión e-receta sincronizada", "ok");
+      } else toast("El cliente actual no tiene e-receta activa", "warn");
+      renderEreceta(); save();
+    });
+    $("#ereceta-module")?.addEventListener("click", (e) => {
+      const b = e.target.closest("[data-ere-disp]");
+      if (!b || !Plus) return;
+      const ses = state.plus.erecetaSesion;
+      const res = Plus.marcarDispensadoEreceta(ses, Number(b.dataset.ereDisp));
+      if (!res.ok) { toast(res.msg, "err"); return; }
+      addToCart(Number(b.dataset.ereDisp), 1);
+      Plus.scoreEvent(state.plus, "ereceta_disp", true, "Dispensado en módulo SNS", 5);
+      renderEreceta(); updateScoreHud(); save();
+    });
     $("#btn-restock").onclick = ()=>{
       for (const p of productos) state.stock[p.id]=p.stockInicial;
       renderCatalog(); renderStats(); save(); toast("Stock repuesto", "ok");
@@ -2495,6 +2844,7 @@
     renderCampania(); renderVitals(); renderMedicoChat();
     if (!state.planograma) ensurePlanograma();
     renderSpeech(); refreshClinicalAlerts();
+    updateScoreHud(); updateFatigaBadge(); renderInterruptBanner();
   }
 
   function init() {

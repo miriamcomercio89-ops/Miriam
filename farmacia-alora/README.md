@@ -1,20 +1,27 @@
-# Farmacia Álora — TPV de práctica (España)
+# Farmacia Álora — TPV de práctica (España) · Fase 3
 
 ## Abrir
-Abre `index.html` en el navegador. Si no ves cambios: **Ctrl+Shift+R**.
+Abre `index.html` y pulsa **Ctrl+Shift+R**.
 
-## Fase 2
-- **~970 productos** · **45 categorías** · **24 ramas**
-- Procedimientos de mostrador **más detallados** por tipo de producto
-- **Clientes muy variados**: 26 tipos de petición (exacto, marca, síntomas, para otra persona, crónica, controlado, nevera, vet, óptica, alarma clínica, interacción, turista, SIGRE, constantes, magistral, snacks…)
-- Marcas reales España + EFG
+## Novedades Fase 3
+- **Nota del día** (A–D) con puntos por aciertos/fallos
+- **Interrupciones** mientras atiendes (teléfono, nevera, AEMPS…)
+- **Alertas de lote AEMPS** (retirar stock)
+- **Botiquines** empresa/residencia (preparar → firma → entregar)
+- **Guardia realista**: menos clientes, más urgencias, recargo 15%, fatiga
+- **Checklist visual** (mostrador, nevera, estantería)
+- **Módulo e-Receta SNS** simulado (PIN, CIP, fases)
+- UI más colorida e intuitiva · **manuales PDF rediseñados**
 
-## Manuales PDF
-Carpeta `manuales/`: un PDF por categoría, una página por producto.
+## Catálogo
+~971 productos · 45 categorías · clientes muy variados
+
+## Manuales
+`manuales/` — un PDF por categoría, una página por producto.
 
 ```bash
 python3 scripts/build_fase1.py
 ```
 
 ## Aviso
-Simulador educativo. No sustituye ficha AEMPS. Envases ilustrados (no fotos comerciales).
+Simulador educativo. No sustituye ficha AEMPS ni consejo médico.
