@@ -750,3 +750,16 @@ input:focus, select:focus, textarea:focus {
   .plano-layout { grid-template-columns: 1fr; }
   .catalog-cards { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
 }
+
+.cat-rama-label {
+  grid-column: 1 / -1; font-size: .72rem; font-weight: 800; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--muted); margin-top: 8px; padding: 4px 2px;
+}
+.proc-box {
+  margin-bottom: 12px; padding: 12px 14px; border-radius: 16px;
+  background: linear-gradient(120deg, #ecfeff, #f0fdf4); border: 1px solid #99f6e4;
+  animation: rise .25s ease;
+}
+.proc-box strong { display:block; color: var(--teal-deep); margin-bottom: 4px; }
+.proc-box p { margin: 0; color: var(--ink-soft); font-weight: 650; line-height: 1.4; }
+.cat-grid { max-height: 280px; overflow: auto; }

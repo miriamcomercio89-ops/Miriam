@@ -10,7 +10,7 @@
       icon: "💉",
       color: "#0ea5e9",
       script: "¿Ha pensado en la vacuna de la gripe este año? Puedo orientarle sobre prevención y productos de soporte (no sustituye consejo médico).",
-      categoriasBoost: ["Resfriado y gripe", "Vitaminas"],
+      categoriasBoost: ["Resfriado y gripe", "Vitaminas y minerales"],
     },
     {
       id: "solar",
@@ -19,7 +19,7 @@
       icon: "☀",
       color: "#f59e0b",
       script: "Con este sol, ¿lleva protector solar adecuado? Le ayudo a elegir FPS según piel y tiempo de exposición.",
-      categoriasBoost: ["Piel / Dermatología", "Viaje"],
+      categoriasBoost: ["Solar y fotoprotección", "Viaje y botiquín"],
     },
     {
       id: "alergia",
@@ -28,7 +28,7 @@
       icon: "🌸",
       color: "#ec4899",
       script: "Si tiene estornudos o picor de ojos, podemos revisar antihistamínicos OTC y lavados nasales.",
-      categoriasBoost: ["Resfriado y gripe", "Piel / Dermatología"],
+      categoriasBoost: ["Alergia / antihistamínicos", "Resfriado y gripe"],
     },
     {
       id: "hidratacion",
@@ -37,7 +37,7 @@
       icon: "💧",
       color: "#14b8a6",
       script: "Con el calor conviene beber agua y vigilar sueros de rehidratación si hay diarrea o mareo.",
-      categoriasBoost: ["Digestivo", "Bebidas", "Viaje"],
+      categoriasBoost: ["Digestivo OTC", "Bebidas", "Viaje y botiquín"],
     },
   ];
 
@@ -129,7 +129,7 @@
   }
 
   function defaultPlanograma(productos) {
-    const cats = ["Resfriado y gripe", "Digestivo", "Alivio del dolor", "Piel / Dermatología", "Vitaminas", "Viaje"];
+    const cats = ["Resfriado y gripe", "Digestivo OTC", "Dolor y fiebre", "Piel y dermatología", "Vitaminas y minerales", "Viaje y botiquín"];
     const shelves = cats.map((cat, i) => {
       const picks = productos.filter((p) => p.categoria === cat && !p.requiereReceta).slice(0, 4).map((p) => p.id);
       return { id: "est-" + i, nombre: cat, slots: picks };

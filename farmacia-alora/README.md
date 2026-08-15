@@ -1,31 +1,27 @@
-# Farmacia Álora — TPV de práctica
+# Farmacia Álora — TPV de práctica (España)
 
 ## Abrir
-Abre `index.html` en el navegador (PC).
+Abre `index.html` en el navegador (doble clic o servidor local). Si no ves el catálogo nuevo: **Ctrl+Shift+R**.
 
-## Catálogo (363 productos, 23 categorías)
-Botones grandes por categoría con color e icono.
+## Fase 1 — Catálogo España
+- **879 productos** · **45 categorías** · **24 ramas**
+- Marcas reales de oficina de farmacia en España + EFG (Cinfa, Normon, Kern…)
+- OTC, parafarmacia, Rx, controlados, frigorífico, ortopedia, óptica, vet, snacks…
+- Cada producto tiene **procedimiento de mostrador** (se muestra al añadir al carrito)
 
-**Sin receta:** resfriado/gripe, digestivo, dolor, piel, salud sexual, vitaminas, viaje, mascotas, revistas, snacks, bebidas.
+## Manuales PDF
+Carpeta `manuales/`: **un PDF por categoría**, **una página por producto** (ficha completa + procedimiento + envase ilustrado).
 
-**Con receta:** antibióticos, cardiovascular, controlados, diabetes, digestivo ℞, dispensario, hormonas, salud mental, neurología, frigorífico, respiratorio, corticoides.
+Regenerar:
+```bash
+python3 scripts/build_fase1.py
+```
 
 ## Clientes
-Pueden pedir:
-- un **producto exacto**
-- por **síntomas**
-- con **receta** (varios medicamentos)
-- o **ambas** cosas
-
-Si la receta no cuadra (DNI, caducada, producto distinto) → **rechazar**.
+Pueden pedir producto exacto, por síntomas, con receta, o ambas. Valida DNI, caducidad y producto.
 
 ## Extra
-- Sustitutos si no hay stock
-- Avisos de frigorífico, edad y controlados (doble comprobación)
-- Inventario por categoría + pedidos automáticos
-- Informe por categoría (imprimible/PDF)
-- TPV con billetes/monedas euro
-- Reloj: 1 min real = 1 h juego
+TPV euros, reloj 1 min = 1 h, genéricos, controlados, nevera, planograma, campañas, minijuegos, herramientas clínicas.
 
 ## Aviso
-Simulador educativo. No es consejo médico.
+Simulador educativo. No sustituye ficha AEMPS ni consejo médico. Envases ilustrados (no fotos comerciales).

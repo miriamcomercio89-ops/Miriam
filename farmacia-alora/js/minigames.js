@@ -394,7 +394,7 @@
   }
 
   function gameEstante(body, game, finish) {
-    const correct = game.product?.categoria || "Digestivo";
+    const correct = game.product?.categoria || "Digestivo OTC";
     const cats = (game.categorias || []).map((c) => c.nombre || c).filter(Boolean);
     let options = shuffle([correct, ...cats.filter((c) => c !== correct)], Math.random).slice(0, 4);
     if (!options.includes(correct)) options[0] = correct;

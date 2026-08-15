@@ -5,7 +5,7 @@
 (function () {
   "use strict";
 
-  const STORAGE_KEY = "farmacia-alora-v7";
+  const STORAGE_KEY = "farmacia-alora-v8";
   const REAL_MS_PER_GAME_HOUR = 60 * 1000;
   const Clinica = window.FarmaciaClinica;
   const Caja = window.FarmaciaCaja;
@@ -487,12 +487,12 @@
       if (isLow(p)) alerts.push({ tipo: "stock", nivel: "leve", msg: `Stock bajo de ${p.nombre}` });
       if (p.nevera) alerts.push({ tipo: "nevera", nivel: "moderada", msg: `❄ ${p.nombre} es de FRIGORÍFICO: mantén cadena de frío` });
       if (edad != null) {
-        if (p.categoria === "Salud sexual" && edad < 16) {
+        if (p.categoria === "Salud íntima y sexual" && edad < 16) {
           alerts.push({ tipo: "edad", nivel: "grave", msg: `Edad ${edad}: revisar venta de salud sexual (menor de 16)` });
-        } else if (p.categoria === "Salud sexual" && edad < 18) {
+        } else if (p.categoria === "Salud íntima y sexual" && edad < 18) {
           alerts.push({ tipo: "edad", nivel: "moderada", msg: `Edad ${edad}: precaución en salud sexual (menor de 18)` });
         }
-        if ((p.categoria === "Corticoides / Esteroides" || p.controlado) && edad < 12) {
+        if ((p.categoria === "Corticoides sistémicos" || p.controlado) && edad < 12) {
           alerts.push({ tipo: "edad", nivel: "grave", msg: `Edad ${edad}: no dispensar ${p.categoria} sin criterio pediátrico` });
         }
         if (p.controlado && edad < 18) {
@@ -601,9 +601,15 @@
     if (existing) existing.cantidad = newQty;
     else state.cart.push({ productId, cantidad: qty });
     if (p.nevera) toast("❄ Producto de frigorífico", "warn");
+    if (p.controlado) toast("🔒 Controlado: DNI + libro + firma", "warn");
     Sounds.beepCoin();
     renderCart(); refreshClinicalAlerts(); maybeAutoPedidoCategoria(p.categoria); save();
-    toast("Añadido al carrito", "ok");
+    toast("Añadido · " + (p.requiereReceta ? "con receta" : "OTC"), "ok");
+    const procBox = $("#proc-box");
+    if (procBox && p.procedimiento) {
+      procBox.hidden = false;
+      procBox.innerHTML = `<strong>Procedimiento · ${escapeHtml(p.nombre)}</strong><p>${escapeHtml(p.procedimiento)}</p>`;
+    }
   }
 
   function setCartQty(productId, qty) {
@@ -1002,14 +1008,24 @@
 
   function renderCatGrid() {
     const cats = catalogMeta.categoriasUI || window.FarmaciaCatalogo.CATEGORIAS_UI || [];
-    $("#cat-grid").innerHTML = `<button type="button" class="cat-btn ${!categoriaActiva ? "active" : ""}" data-cat="" style="background:linear-gradient(135deg,#334155,#0f172a)">
+    const ramas = {};
+    for (const c of cats) {
+      const r = c.rama || "Otros";
+      (ramas[r] = ramas[r] || []).push(c);
+    }
+    let html = `<button type="button" class="cat-btn ${!categoriaActiva ? "active" : ""}" data-cat="" style="background:linear-gradient(135deg,#334155,#0f172a)">
       <span class="cat-ico">🏪</span><span class="cat-name">Todas</span><span class="cat-count">${productos.length} prod.</span>
-    </button>` + cats.map((c) => `
+    </button>`;
+    for (const [rama, list] of Object.entries(ramas)) {
+      html += `<div class="cat-rama-label">${escapeHtml(rama)}</div>`;
+      html += list.map((c) => `
       <button type="button" class="cat-btn ${categoriaActiva === c.nombre ? "active" : ""}" data-cat="${escapeHtml(c.nombre)}" style="background:${c.color}">
         <span class="cat-ico">${c.icon}</span>
         <span class="cat-name">${escapeHtml(c.nombre)}</span>
         <span class="cat-count">${c.count}${c.requiereReceta ? " · ℞" : ""}</span>
       </button>`).join("");
+    }
+    $("#cat-grid").innerHTML = html;
   }
 
   function renderPedidoExacto() {
