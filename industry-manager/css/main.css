@@ -1,0 +1,104 @@
+/* Rise of Industry UI */
+:root {
+  --bg0: #071018;
+  --bg1: #0f1c2e;
+  --line: #2a4a62;
+  --text: #f1f5f9;
+  --muted: #94a3b8;
+  --accent: #fbbf24;
+  --ok: #34d399;
+  --danger: #fb7185;
+  --font-display: "Outfit", sans-serif;
+  --font-body: "DM Sans", sans-serif;
+  --shadow: 0 12px 40px rgba(0,0,0,.35);
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body {
+  font-family: var(--font-body);
+  color: var(--text);
+  background: radial-gradient(900px 480px at 10% -10%, rgba(251,191,36,.18), transparent 50%),
+    radial-gradient(800px 400px at 100% 0%, rgba(56,189,248,.12), transparent 50%),
+    linear-gradient(160deg, #071018, #12263f 50%, #0a1628);
+  overflow: hidden;
+}
+.shell, .roi-shell { height: 100%; display: flex; flex-direction: column; }
+.topbar {
+  display: flex; align-items: center; gap: 14px; padding: 10px 14px;
+  background: linear-gradient(90deg, rgba(20,40,60,.96), rgba(10,20,35,.94));
+  border-bottom: 1px solid var(--line); z-index: 5;
+}
+.brand { display: flex; gap: 10px; align-items: center; min-width: 220px; }
+.brand-mark {
+  width: 40px; height: 40px; display: grid; place-items: center; border-radius: 10px;
+  background: linear-gradient(135deg, #fbbf24, #f97316); color: #1a0a00; font-weight: 800;
+  font-family: var(--font-display);
+}
+.brand strong { display: block; font-size: 14px; text-transform: uppercase; letter-spacing: .04em; }
+.brand small { color: var(--muted); }
+.stat { display: flex; flex-direction: column; min-width: 100px; }
+.stat .label { font-size: 11px; color: var(--muted); text-transform: uppercase; }
+.season-stat { padding: 4px 8px; border: 1px solid; border-radius: 8px; }
+.speed-controls { margin-left: auto; display: flex; gap: 6px; flex-wrap: wrap; }
+.speed-btn, .btn, .nav-btn {
+  border: 1px solid var(--line); background: linear-gradient(180deg, #1e3a54, #122536);
+  color: var(--text); padding: 8px 12px; border-radius: 10px; cursor: pointer; font: inherit;
+}
+.speed-btn:hover, .btn:hover, .nav-btn:hover { border-color: var(--accent); }
+.speed-btn.active, .nav-btn.active, .btn.primary {
+  background: linear-gradient(180deg, #0d9488, #0f766e); border-color: #5eead4; color: #042f2e; font-weight: 700;
+}
+.skip-day-btn { background: linear-gradient(180deg, #e11d48, #9d174d) !important; border-color: #fda4af !important; color: #fff !important; }
+
+.roi-main { flex: 1; display: grid; grid-template-columns: 280px 1fr 260px; min-height: 0; }
+.sidebar, .inspector {
+  background: rgba(8, 18, 32, 0.92); border-right: 1px solid var(--line);
+  overflow: auto; padding: 10px;
+}
+.inspector { border-right: none; border-left: 1px solid var(--line); }
+.map-wrap { position: relative; min-width: 0; background: #020617; }
+#mapCanvas { width: 100%; height: 100%; display: block; cursor: crosshair; }
+.map-hint {
+  position: absolute; left: 10px; bottom: 10px; padding: 6px 10px; border-radius: 8px;
+  background: rgba(0,0,0,.65); font-size: 12px; color: #e2e8f0;
+}
+.side-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.side-body h3 { font-family: var(--font-display); font-size: 13px; margin: 14px 0 6px; color: var(--accent); }
+.muted { color: var(--muted); font-size: 13px; }
+.build-row {
+  width: 100%; display: grid; grid-template-columns: 14px 1fr auto; gap: 8px; align-items: center;
+  text-align: left; margin: 4px 0; padding: 8px; border-radius: 10px;
+  border: 1px solid var(--line); background: #0f2740; color: var(--text); cursor: pointer; font: inherit;
+}
+.build-row.active { border-color: var(--accent); background: #1a3a28; }
+.build-row.locked { opacity: .45; cursor: not-allowed; }
+.swatch { width: 12px; height: 12px; border-radius: 3px; }
+.contract-card {
+  padding: 10px; border-radius: 12px; border: 1px solid var(--line);
+  background: linear-gradient(160deg, #14304a, #0c1c2e); margin: 8px 0;
+}
+.tech-row { display: flex; justify-content: space-between; gap: 8px; align-items: center; padding: 8px 0; border-bottom: 1px solid #1e293b; }
+.kv { display: flex; justify-content: space-between; gap: 8px; padding: 4px 0; font-size: 13px; }
+.season-banner { padding: 10px; border-radius: 12px; border: 1px solid; margin-bottom: 10px; }
+.guide-year-list { display: flex; flex-wrap: wrap; gap: 5px; max-height: 160px; overflow: auto; }
+.guide-year-link {
+  padding: 3px 7px; border-radius: 6px; text-decoration: none; font-size: 11px; font-weight: 700;
+  background: linear-gradient(180deg, #38bdf8, #0284c7); color: #082f49;
+}
+.cheat-list { padding-left: 18px; color: #fde68a; }
+.toast-host { position: fixed; right: 16px; bottom: 16px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+.toast { padding: 10px 14px; border-radius: 10px; background: #0f172a; border: 1px solid var(--line); box-shadow: var(--shadow); }
+.toast.ok { border-color: var(--ok); }
+.toast.error, .toast.alert { border-color: var(--danger); }
+.log-line { font-size: 12px; padding: 3px 0; color: var(--muted); border-bottom: 1px solid #1e293b; }
+.log-line.alert { color: #fb7185; }
+.log-line.ok, .log-line.contract { color: #6ee7b7; }
+.log-line.cheat { color: #fde68a; }
+.log-line.season { color: #93c5fd; }
+.input { width: 100%; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--line); background: #0b1726; color: var(--text); font: inherit; }
+.toolbar { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+.ok { color: var(--ok); font-weight: 700; }
+@media (max-width: 1100px) {
+  .roi-main { grid-template-columns: 220px 1fr; }
+  .inspector { display: none; }
+}

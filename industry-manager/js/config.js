@@ -1,0 +1,25 @@
+/* Industry Manager — Rise of Industry (Málaga) */
+window.IM_CONFIG = {
+  name: 'Industry Manager',
+  version: '9.1.0-roi',
+  saveKey: 'industry_manager_save_roi_v91',
+  startingMoney: 250000,
+  tileSize: 36,
+  mapW: 52,
+  mapH: 36,
+  tickMs: 450,
+  speeds: [0, 1, 2, 4],
+  warehouseRadius: 6,
+  truckSpeed: 2.4,
+  roadBuildCost: 75,
+  daysPerSeason: 30,
+  daysPerYear: 120, // 4 estaciones × 30
+  startYear: 2000,
+  contractFailRep: 12,
+  contractWinRep: 6,
+  shopCloseDays: 10,
+  cheatMoneyCode: 'PASTA_GORDA',
+  cheatMoneyAmount: 500000,
+  cheatUnlockCode: 'INDUSTRIA_TOTAL',
+  guidesPath: 'guias',
+};
