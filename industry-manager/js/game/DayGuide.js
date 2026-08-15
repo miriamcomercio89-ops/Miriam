@@ -135,6 +135,7 @@ IM.DayGuide = {
     if (season.id === 'primavera') prod = rnd() > 0.5 ? 'pan' : 'zumo';
 
     const steps = [];
+    steps.push('Si aún no tienes Sede: constrúyela primero cerca de Málaga (casilla guía del día de Sede o ~X=20 Y=18).');
     if (focus.building === 'road') {
       steps.push(`PINTA CARRETERA en casilla (${x}, ${y}) hacia ${focus.near} — ${focus.note || 'conecta almacén y fábrica'}.`);
     } else {

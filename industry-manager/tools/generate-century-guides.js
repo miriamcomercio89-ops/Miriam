@@ -224,6 +224,7 @@ function streamFor(p, year, day) {
   add(55, 628, 16, `Edificio: ${p.build1.name}`, [1, 0.95, 0.6]);
   add(55, 605, 14, `Casilla EXACTA: X=${p.build1.x}  Y=${p.build1.y}`, [1, 1, 1]);
   add(55, 585, 12, `Ancla: pueblo ${p.build1.town}  ·  id interno: ${p.build1.id}`, [0.85, 0.9, 1]);
+  add(55, 568, 10, 'Si no hay Sede todavia: coloca Sede cerca de Malaga (aprox X=20 Y=18) antes de nada.', [1, 0.85, 0.7]);
 
   add(55, 510, 13, '2) SIGUIENTE PIEZA DE LA CADENA', [1, 1, 1]);
   add(55, 488, 15, `Edificio: ${p.build2.name}`, [0.7, 1, 0.85]);
