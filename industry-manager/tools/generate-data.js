@@ -2001,6 +2001,152 @@ for (let i = 1; i <= 800; i++) {
   addItem({ name: `Tejido técnico ESP-${i}`, category: 'textiles', tier: 3, unit: 'm²', basePrice: 4 + (i % 50) * 0.2 });
 }
 
+
+// ——— Nuevas familias de producto (v4) ———
+const newCats = [
+  ['naval', 'Buque mercante', 2.5e6, 'ud'],
+  ['naval', 'Buque petrolero', 4e6, 'ud'],
+  ['naval', 'Yate de lujo', 8e5, 'ud'],
+  ['naval', 'Motor marino', 120000, 'ud'],
+  ['naval', 'Hélice naval', 45000, 'ud'],
+  ['aeroespacial', 'Fuselaje sección', 2e6, 'ud'],
+  ['aeroespacial', 'Turbina aviación', 3.5e6, 'ud'],
+  ['aeroespacial', 'Aviónica módulo', 85000, 'ud'],
+  ['aeroespacial', 'Compuesto carbono aero', 120000, 't'],
+  ['mobiliario', 'Silla de oficina', 85, 'ud'],
+  ['mobiliario', 'Mesa industrial', 220, 'ud'],
+  ['mobiliario', 'Estantería metálica', 140, 'ud'],
+  ['mobiliario', 'Sofá tapizado', 450, 'ud'],
+  ['cosmetica', 'Crema hidratante', 12, 'kg'],
+  ['cosmetica', 'Champú industrial', 4, 'l'],
+  ['cosmetica', 'Perfume concentrado', 180, 'l'],
+  ['cosmetica', 'Jabón de glicerina', 3.5, 'kg'],
+  ['juguetes', 'Figura coleccionable', 6, 'ud'],
+  ['juguetes', 'Juego de mesa', 18, 'ud'],
+  ['juguetes', 'Drone juguete', 65, 'ud'],
+  ['deportes', 'Bicicleta de carretera', 900, 'ud'],
+  ['deportes', 'Raqueta', 75, 'ud'],
+  ['deportes', 'Balón oficial', 28, 'ud'],
+  ['joyeria', 'Anillo de plata', 45, 'ud'],
+  ['joyeria', 'Collar de oro', 650, 'ud'],
+  ['ceramica_arte', 'Azulejo decorativo', 12, 'm²'],
+  ['ceramica_arte', 'Vajilla de porcelana', 35, 'ud'],
+];
+newCats.forEach(([cat, name, price, unit]) => {
+  addItem({ name, category: cat, tier: 4, unit, basePrice: price, description: `${name} — catálogo ampliado v4.` });
+});
+
+// Variantes masivas por familia
+const sports = ['Botas de fútbol', 'Zapatillas running', 'Casco ciclista', 'Neopreno', 'Tabla paddle', 'Esquí alpino', 'Palo de golf', 'Guantes portero'];
+const sportGrades = ['iniciación', 'club', 'pro', 'élite', 'competición'];
+sports.forEach((s) => sportGrades.forEach((g, gi) => addItem({ name: `${s} ${g}`, category: 'deportes', tier: 3 + Math.floor(gi / 2), unit: 'ud', basePrice: 30 * (gi + 1) + s.length })));
+
+const cosmeticBases = ['Crema', 'Sérum', 'Mascarilla', 'Tónico', 'Aceite corporal', 'Desodorante', 'Protector solar', 'Maquillaje base'];
+const cosmeticNotes = ['aloe', 'argán', 'rosa mosqueta', 'vitamina C', 'retinol', 'ácido hialurónico', 'karité', 'oliva virgen', 'lavanda', 'cítricos'];
+cosmeticBases.forEach((b) => cosmeticNotes.forEach((n, ni) => addItem({ name: `${b} ${n}`, category: 'cosmetica', tier: 3, unit: ni % 2 ? 'l' : 'kg', basePrice: 8 + ni * 3 })));
+
+const furniture = ['Silla', 'Mesa', 'Armario', 'Estantería', 'Escritorio', 'Cama', 'Cómoda', 'Bancada'];
+const materials = ['roble', 'pino', 'metal', 'cristal', 'ratán', 'melamina', 'haya', 'nogal'];
+furniture.forEach((f) => materials.forEach((m, mi) => addItem({ name: `${f} ${m}`, category: 'mobiliario', tier: 3, unit: 'ud', basePrice: 50 + mi * 40 + f.length * 5 })));
+
+const navalParts = ['Casco sección', 'Cubierta módulo', 'Puente de mando', 'Grúa de cubierta', 'Ancla', 'Cabrestante', 'Radar marino', 'GPS náutico'];
+for (let i = 1; i <= 40; i++) {
+  navalParts.forEach((p) => addItem({ name: `${p} Mk${i}`, category: 'naval', tier: 4, unit: 'ud', basePrice: 2000 * i }));
+}
+
+const aero = ['Ala sección', 'Tren de aterrizaje', 'Asiento cabina', 'Galley módulo', 'APU', 'Sensor AOA', 'Harness eléctrico', 'Panel composites'];
+for (let i = 1; i <= 30; i++) {
+  aero.forEach((p) => addItem({ name: `${p} A-${i}`, category: 'aeroespacial', tier: 5, unit: 'ud', basePrice: 5000 * i }));
+}
+
+const toys = ['Puzzle', 'Peluche', 'Coche teledirigido', 'Set construcción', 'Instrumento juguete', 'Kitchenette'];
+const ages = ['3+', '6+', '8+', '12+', 'adulto'];
+toys.forEach((t) => ages.forEach((a, ai) => addItem({ name: `${t} ${a}`, category: 'juguetes', tier: 2, unit: 'ud', basePrice: 8 + ai * 6 })));
+
+const jewelry = [];
+['oro', 'plata', 'platino', 'acero', 'titanio'].forEach((m) => {
+  ['anillo', 'pendientes', 'pulsera', 'collar', 'broche'].forEach((p) => {
+    ['clásico', 'moderno', 'andaluz', 'minimal'].forEach((st) => {
+      jewelry.push([`${p} ${m} ${st}`, m === 'oro' || m === 'platino' ? 200 : 40]);
+    });
+  });
+});
+jewelry.forEach(([name, price]) => addItem({ name, category: 'joyeria', tier: 4, unit: 'ud', basePrice: price }));
+
+const ceramics = ['Azulejo', 'Baldosa', 'Jarrón', 'Plato', 'Cuenco', 'Figurita', 'Mosaico', 'Talavera', 'Loza', 'Porcelana fina'];
+const ceramicStyles = ['sevillano', 'triana', 'granadino', 'industrial', 'artesanal', 'esmalte azul', 'esmalte verde', 'dorado'];
+ceramics.forEach((c) =>
+  ceramicStyles.forEach((st, si) =>
+    addItem({
+      name: `${c} ${st}`,
+      category: 'ceramica_arte',
+      tier: 3,
+      unit: si % 3 === 0 ? 'm²' : 'ud',
+      basePrice: 15 + si * 12 + c.length,
+      description: 'Cerámica y arte decorativo.',
+    })
+  )
+);
+for (let i = 1; i <= 40; i++) {
+  addItem({ name: `Serie cerámica taller-${i}`, category: 'ceramica_arte', tier: 3, unit: 'ud', basePrice: 20 + i });
+}
+
+// Extra consumo / embalaje amigable
+const packKinds = ['Caja cartón', 'Film stretch', 'Palé EUR', 'Blíster', 'Bolsa kraft', 'Etiqueta adhesiva'];
+for (let i = 1; i <= 50; i++) {
+  packKinds.forEach((p) => addItem({ name: `${p} lote-${i}`, category: 'embalaje', tier: 2, unit: 'ud', basePrice: 0.5 + i * 0.02 }));
+}
+
+// Andalusian food expansion
+const andFood = ['Espeto de sardinas precocinado', 'Pescaíto mixto', 'Flamenquín industrial', 'Salchichón de jabugo granel', 'Pimentón de la Vera', 'Miel de azahar', 'Almendras marconas', 'Higos secos', 'Pasas de Málaga', 'Vino fino a granel', 'Manzanilla Sanlúcar', 'Brandy solera', 'Aceite AOVE picual', 'Aceite AOVE hojiblanca', 'Aceituna gordal aliñada', 'Gazpacho premium', 'Salmorejo cordobés', 'Rabo de toro guisado', 'Carrillada ibérica', 'Torta de aceite'];
+andFood.forEach((n, i) => addItem({ name: n, category: 'alimentacion', tier: 3, unit: i < 10 ? 't' : 'l', basePrice: 700 + i * 90, description: 'Producto español / andaluz.' }));
+
+// Recipes for new families (samples)
+addRecipe({
+  name: 'Ensamblar silla de oficina',
+  building: 'planta_consumo',
+  machine: 'linea_ensamblaje',
+  inputs: [{ item: ensure('Chapa de acero'), qty: 0.01 }, { item: ensure('ABS granza'), qty: 0.005 }],
+  outputs: [{ item: ensure('Silla de oficina'), qty: 1 }],
+  energyKwh: 5, timeMinutes: 30, pollution: 0.2, tech: 'bienes_consumo', qualityBase: 60,
+});
+addRecipe({
+  name: 'Formular crema hidratante',
+  building: 'planta_quimica',
+  machine: 'reactor_generico',
+  inputs: [{ item: ensure('Glicerina'), qty: 0.3 }, { item: ensure('Aceite de oliva'), qty: 0.2 }],
+  outputs: [{ item: ensure('Crema hidratante'), qty: 1 }],
+  energyKwh: 20, timeMinutes: 60, pollution: 0.5, tech: 'quimica_fina', qualityBase: 70,
+});
+addRecipe({
+  name: 'Montar bicicleta de carretera',
+  building: 'planta_consumo',
+  machine: 'linea_ensamblaje',
+  inputs: [{ item: ensure('Aluminio puro'), qty: 0.008 }, { item: ensure('Caucho SBR'), qty: 0.002 }],
+  outputs: [{ item: ensure('Bicicleta de carretera'), qty: 1 }],
+  energyKwh: 15, timeMinutes: 90, pollution: 0.3, tech: 'bienes_consumo', qualityBase: 65,
+});
+
+navalParts.forEach((p) => {
+  for (let i = 1; i <= 40; i++) {
+    const itemName = `${p} Mk${i}`;
+    if (!itemIndex.has(idify(itemName))) continue;
+    if (p !== 'Casco sección') continue;
+    addRecipe({
+      name: `Ensamblar ${itemName}`,
+      building: 'planta_automocion',
+      machine: 'linea_montaje',
+      inputs: [{ item: ensure('Chapa de acero'), qty: 0.5 }],
+      outputs: [{ item: idify(itemName), qty: 1 }],
+      energyKwh: 80, timeMinutes: 120, pollution: 2, tech: 'automocion', qualityBase: 55,
+    });
+  }
+});
+
+// remove old loop if present - handled above
+
+
+
 console.log('Auto-recipes added ~', autoRec);
 
 

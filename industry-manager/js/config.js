@@ -1,11 +1,11 @@
 /* Industry Manager v3 — campaña + mapa libre */
 window.IM_CONFIG = {
   name: 'Industry Manager',
-  version: '3.0.0',
+  version: '4.0.0',
   realMsPerGameMinute: 1000,
   speeds: [0, 1, 2, 5, 10, 30],
   startingMoney: 100000000,
-  saveKey: 'industry_manager_save_v3',
+  saveKey: 'industry_manager_save_v4',
   autosaveMinutesReal: 2,
   inflationYearly: 0.02,
   baseInterestRate: 0.055,

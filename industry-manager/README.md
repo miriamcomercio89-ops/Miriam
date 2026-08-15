@@ -1,31 +1,46 @@
-# Industry Manager v3 — Campaña
+# Industry Manager v4
 
-Tycoon industrial en el navegador. **Solo modo campaña.**
+Simulador industrial **solo campaña** en el navegador: mapa OpenStreetMap, ciudades reales al hacer clic, fábricas con huecos, cadenas de suministro, clima local, parcelas, bolsa con órdenes limitadas y **miles de misiones** con progresión.
 
-## Cómo jugar
+## Cómo jugar (escritorio)
 
-1. Abre `index.html`.
-2. Empiezas con **100.000.000 €** y **cero plantas**.
-3. **Haz click en el mapa**: el juego consulta OpenStreetMap (Nominatim), detecta la ciudad real y funda tu oficina.
-4. Busca ciudades con el cuadro de búsqueda del mapa.
-5. Sigue **Campaña**, **Cadenas** y misiones.
+1. Descarga el ZIP del juego y **descomprime** la carpeta.
+2. Abre `index.html` con doble clic (Chrome / Edge / Firefox).
+3. Elige rama: **Agro andaluz**, **Acero & metales** o **Chips & alta tech**.
+4. Haz clic en el mapa → se detecta la ciudad (Nominatim) → funda la oficina.
+5. Dibuja **parcelas** (panel Planta), mira el **clima** del sitio y construye.
+6. Cumple misiones en **Campaña** (hay miles, se van desbloqueando).
+7. En **Mercado**, abre la **bolsa** de un producto: gráfico + órdenes límite.
 
-## Cambios v3
+Truco: escribe `INDUSTRIA_TOTAL` para desbloquear todo (solo pruebas).
 
-- Construcción libre en el mapa (sin ciudades inventadas)
-- Nombres en **español de España** (p. ej. **aceituna**, no «oliva» como fruto)
-- Campaña por capítulos + cadenas mena→producto
-- Planificador de fábrica, B2B, blueprints, auto-expansión
-- Niebla industrial, divisas, políticas por país, estaciones
-- Mantenimiento de máquinas + auto-reparación
-- Semiconductores / baterías, **8.196 ítems**
-- Mercado/IA en Web Worker
-- Script de balance: `node tools/balance-sim.js`
+## Novedades v4
 
-## Truco I+D
+1. Briefings de capítulo + **~8100 misiones** de campaña con progresión por rama  
+2. Elección de rama al empezar  
+5. Parcelas industriales (polígono + capacidad de edificios)  
+7. Clima local (temperatura / lluvia según latitud)  
+13. Bolsa interactiva (histórico de precios + órdenes límite)  
++ UI a color, iconos por producto, más categorías (naval, aeroespacial, mobiliario, cosmética, juguetes, deporte, joyería, cerámica…)
 
-`INDUSTRIA_TOTAL`
+## Controles
 
-## Nota OSM
+| Acción | Resultado |
+|--------|-----------|
+| Clic mapa | Detectar ciudad OSM |
+| Panel Planta → Parcela | Dibujar suelo industrial |
+| Panel Campaña | Misiones activas + briefings |
+| Panel Mercado → Bolsa | Gráfico y órdenes límite |
+| Espacio | Pausa |
+| Ctrl+S | Guardar |
 
-La detección de ciudad requiere red (Nominatim, 1 petición/s). Si falla, se usa un paraje por coordenadas.
+## Datos
+
+- Generados con `node tools/generate-data.js` → `js/data/*.js`
+- Misiones de campaña: `js/data/campaign_v4.js`
+- Guardado: `localStorage` clave `industry_manager_save_v4`
+
+## Requisitos
+
+- Navegador de escritorio con JavaScript
+- Internet (mapa OSM + geocodificación Nominatim)

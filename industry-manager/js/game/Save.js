@@ -64,5 +64,9 @@ IM.Save = {
     localStorage.removeItem('industry_manager_save_v1_auto');
     localStorage.removeItem('industry_manager_save_v2');
     localStorage.removeItem('industry_manager_save_v2_auto');
+    localStorage.removeItem('industry_manager_save_v3');
+    localStorage.removeItem('industry_manager_save_v3_auto');
+    localStorage.removeItem('industry_manager_save_v4');
+    localStorage.removeItem('industry_manager_save_v4_auto');
   },
 };

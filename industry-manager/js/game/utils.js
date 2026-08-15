@@ -77,6 +77,14 @@ IM.categoryLabel = {
   papel: 'Papel',
   agroquimicos: 'Agroquímicos',
   consumo: 'Consumo',
+  naval: 'Naval',
+  aeroespacial: 'Aeroespacial',
+  mobiliario: 'Mobiliario',
+  cosmetica: 'Cosmética',
+  juguetes: 'Juguetes',
+  deportes: 'Deportes',
+  joyeria: 'Joyería',
+  ceramica_arte: 'Cerámica y arte',
 };
 
 IM.el = (tag, attrs = {}, children = []) => {
