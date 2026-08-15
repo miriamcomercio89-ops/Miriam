@@ -1,262 +1,146 @@
-/** UI Industry Manager v2 */
+/** UI principal mapa-first estilo Rise of Industry */
 window.IM = window.IM || {};
 
 IM.UI = class UI {
   constructor(game) {
     this.game = game;
-    this.map = null;
-    this.cluster = null;
-    this.routeLayer = null;
-    this.markers = {};
-    this.root = document.getElementById('app');
-    this._mapReady = false;
-    this._filter = 'all';
+    this.renderer = null;
+    this.root = null;
   }
 
   mount() {
-    this.root.innerHTML = '';
-    this.root.appendChild(this.renderShell());
-    this.initMap();
-    this.bindKeys();
-    this.game.onChange(() => this.refresh());
-    this.refresh();
-    this.showPanel(this.game.state.ui.panel || 'mapa');
-  }
-
-  renderShell() {
-    return IM.el('div', { class: 'shell' }, [
+    const app = document.getElementById('app');
+    app.innerHTML = '';
+    this.root = IM.el('div', { class: 'shell roi-shell' });
+    app.appendChild(this.root);
+    this.root.append(
       IM.el('header', { class: 'topbar', id: 'topbar' }),
-      IM.el('div', { class: 'main' }, [
-        IM.el('nav', { class: 'sidebar', id: 'sidebar' }, this.navButtons()),
-        IM.el('section', { class: 'content' }, [
-          IM.el('div', { class: 'map-wrap', id: 'mapWrap' }, [
-            IM.el('div', { id: 'map', class: 'map' }),
-            IM.el('div', { class: 'map-toolbar', id: 'mapToolbar' }),
-            IM.el('div', { class: 'map-overlay', id: 'mapOverlay' }),
-          ]),
-          IM.el('div', { class: 'panel-wrap hidden', id: 'panelWrap' }, [
-            IM.el('div', { class: 'panel-header', id: 'panelHeader' }),
-            IM.el('div', { class: 'panel-body', id: 'panelBody' }),
-          ]),
+      IM.el('div', { class: 'roi-main' }, [
+        IM.el('aside', { class: 'sidebar', id: 'sidebar' }),
+        IM.el('div', { class: 'map-wrap', id: 'mapWrap' }, [
+          IM.el('canvas', { id: 'mapCanvas' }),
+          IM.el('div', { class: 'map-hint', id: 'mapHint' }),
         ]),
         IM.el('aside', { class: 'inspector', id: 'inspector' }),
       ]),
-      IM.el('div', { class: 'toast-host', id: 'toasts' }),
-      IM.el('dialog', { id: 'modal' }, [IM.el('form', { method: 'dialog', class: 'modal-inner', id: 'modalInner' })]),
-    ]);
-  }
-
-  navButtons() {
-    const items = [
-      ['mapa', 'Mapa'],
-      ['industria', 'Industria'],
-      ['dashboard', 'Dashboard'],
-      ['automatizacion', 'Automación'],
-      ['almacen', 'Almacenes'],
-      ['mercado', 'Mercado'],
-      ['bolsa', 'Bolsa'],
-      ['logistica', 'Logística'],
-      ['investigacion', 'I+D'],
-      ['finanzas', 'Finanzas'],
-      ['misiones', 'Misiones'],
-      ['contratos', 'Contratos'],
-      ['enciclopedia', 'Enciclopedia'],
-      ['competencia', 'Competencia'],
-      ['eventos', 'Eventos'],
-      ['ajustes', 'Ajustes'],
-    ];
-    return items.map(([id, label]) =>
-      IM.el('button', {
-        class: 'nav-btn',
-        'data-panel': id,
-        type: 'button',
-        text: label,
-        onclick: () => this.showPanel(id),
-      })
+      IM.el('div', { id: 'toastHost', class: 'toast-host' })
     );
+
+    const canvas = document.getElementById('mapCanvas');
+    this.renderer = new IM.Renderer(canvas, this.game);
+    this.renderer.resize();
+    window.addEventListener('resize', () => this.renderer.resize());
+    this.bindMap(canvas);
+    this.game.onChange(() => this.refresh());
+    this.refresh();
+    this.loop();
   }
 
-  bindKeys() {
-    document.addEventListener('keydown', (e) => {
-      if (e.target.matches('input, textarea, select')) return;
-      const map = {
-        Space: () => this.game.setSpeed(this.game.state.paused ? this.game.state.speed || 1 : 0),
-        Digit1: () => this.game.setSpeed(1),
-        Digit2: () => this.game.setSpeed(2),
-        Digit3: () => this.game.setSpeed(5),
-        Digit4: () => this.game.setSpeed(10),
-        Digit5: () => this.game.setSpeed(30),
-        KeyM: () => this.showPanel('mapa'),
-        KeyI: () => this.showPanel('industria'),
-        KeyD: () => this.showPanel('dashboard'),
-        KeyA: () => this.showPanel('automatizacion'),
-        KeyE: () => this.showPanel('enciclopedia'),
-        KeyB: () => this.showPanel('bolsa'),
-        KeyL: () => this.showPanel('logistica'),
-        Escape: () => {
-          const modal = document.getElementById('modal');
-          if (modal?.open) modal.close();
-        },
-      };
-      const fn = map[e.code];
-      if (fn) {
-        e.preventDefault();
-        fn();
+  loop() {
+    let last = performance.now();
+    const frame = (now) => {
+      const dt = now - last;
+      last = now;
+      this.game.tick(dt);
+      this.renderer?.draw();
+      requestAnimationFrame(frame);
+    };
+    requestAnimationFrame(frame);
+  }
+
+  bindMap(canvas) {
+    let panning = false;
+    let last = null;
+    canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+    canvas.addEventListener('mousedown', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const tile = this.renderer.screenToTile(e.clientX - rect.left, e.clientY - rect.top);
+      if (e.button === 1 || e.button === 2 || this.game.state.ui.tool === 'pan') {
+        panning = true;
+        last = { x: e.clientX, y: e.clientY };
+        return;
+      }
+      this.onTileClick(tile.x, tile.y, e.shiftKey);
+    });
+    window.addEventListener('mouseup', () => { panning = false; });
+    canvas.addEventListener('mousemove', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const tile = this.renderer.screenToTile(e.clientX - rect.left, e.clientY - rect.top);
+      this.game.state.ui.hover = tile;
+      const hint = document.getElementById('mapHint');
+      const t = this.game.tile(tile.x, tile.y);
+      const terr = t ? IM_DATA.terrain[t.terrain]?.name : '—';
+      if (hint) hint.textContent = `(${tile.x},${tile.y}) · ${terr}${t?.road ? ' · carretera' : ''}`;
+      if (panning && last) {
+        const ts = IM_CONFIG.tileSize;
+        this.game.state.ui.camX -= (e.clientX - last.x) / ts;
+        this.game.state.ui.camY -= (e.clientY - last.y) / ts;
+        last = { x: e.clientX, y: e.clientY };
       }
     });
   }
 
-  initMap() {
-    const el = document.getElementById('map');
-    if (!el || typeof L === 'undefined') return;
-    this.map = L.map(el, { worldCopyJump: true, preferCanvas: true }).setView(IM_CONFIG.mapCenter, IM_CONFIG.mapDefaultZoom);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 18,
-      attribution: '&copy; OpenStreetMap',
-    }).addTo(this.map);
-    this.routeLayer = L.layerGroup().addTo(this.map);
-
-    const useCluster = typeof L.markerClusterGroup === 'function';
-    this.cluster = useCluster
-      ? L.markerClusterGroup({ chunkedLoading: true, maxClusterRadius: 45 })
-      : L.layerGroup();
-    this.map.addLayer(this.cluster);
-
-    this.renderMapToolbar();
-    this.rebuildMarkers();
-    this._mapReady = true;
-    setTimeout(() => this.map.invalidateSize(), 120);
-  }
-
-  renderMapToolbar() {
-    const bar = document.getElementById('mapToolbar');
-    if (!bar) return;
-    bar.innerHTML = '';
-    const types = ['all', 'hub', 'port', 'industrial', 'mining', 'energy', 'agro', 'electronics', 'logistics'];
-    types.forEach((t) => {
-      bar.append(
-        IM.el('button', {
-          type: 'button',
-          class: `map-filter${this._filter === t ? ' active' : ''}`,
-          text: t === 'all' ? 'Todas' : t,
-          onclick: () => {
-            this._filter = t;
-            this.game.state.ui.mapFilter = t;
-            this.rebuildMarkers();
-            this.renderMapToolbar();
-          },
-        })
-      );
-    });
-    bar.append(
-      IM.el('button', {
-        type: 'button',
-        class: 'map-filter',
-        text: 'Mis plantas',
-        onclick: () => {
-          this._filter = 'owned';
-          this.rebuildMarkers();
-          this.renderMapToolbar();
-        },
-      })
-    );
-  }
-
-  rebuildMarkers() {
-    if (!this.map || !this.cluster) return;
-    this.cluster.clearLayers();
-    this.markers = {};
-    const owned = new Set(this.game.state.sites.map((s) => s.locationId));
-    const aiLocs = new Set();
-    this.game.state.competitors.forEach((c) => (c.sites || []).forEach((s) => aiLocs.add(s.locationId)));
-    const filter = this._filter || 'all';
-
-    (IM_DATA.locations || []).forEach((loc) => {
-      if (filter === 'owned' && !owned.has(loc.id)) return;
-      if (filter !== 'all' && filter !== 'owned' && loc.type !== filter) return;
-
-      const color = owned.has(loc.id) ? '#7dffb3' : aiLocs.has(loc.id) ? '#ff8f6b' : '#c4a35a';
-      const marker = L.circleMarker([loc.lat, loc.lng], {
-        radius: owned.has(loc.id) ? 7 : 4,
-        color,
-        weight: 1.5,
-        fillColor: owned.has(loc.id) ? '#2d5a45' : '#1a2a32',
-        fillOpacity: 0.9,
-      });
-      marker.bindTooltip(`${loc.name} · ${loc.country} · ${loc.type}`);
-      marker.on('click', () => {
-        this.game.state.ui.selectedLocationId = loc.id;
-        this.showPanel('industria');
-        this.refresh();
-      });
-      this.markers[loc.id] = marker;
-      this.cluster.addLayer(marker);
-    });
-  }
-
-  drawRoutes() {
-    if (!this.routeLayer) return;
-    this.routeLayer.clearLayers();
-    this.game.state.shipments.forEach((sh) => {
-      if (!sh.path) return;
-      L.polyline(sh.path, { color: '#c4a35a', weight: 2, opacity: 0.75, dashArray: '6 8' }).addTo(this.routeLayer);
-    });
-  }
-
-  showPanel(id) {
-    this.game.state.ui.panel = id;
-    const mapWrap = document.getElementById('mapWrap');
-    const panelWrap = document.getElementById('panelWrap');
-    document.querySelectorAll('.nav-btn').forEach((b) => b.classList.toggle('active', b.dataset.panel === id));
-    if (id === 'mapa') {
-      mapWrap.classList.remove('hidden');
-      panelWrap.classList.add('hidden');
-      if (this.map) setTimeout(() => this.map.invalidateSize(), 50);
-      this.drawRoutes();
-    } else {
-      mapWrap.classList.add('hidden');
-      panelWrap.classList.remove('hidden');
-      this.renderPanel(id);
+  onTileClick(x, y, shift) {
+    const st = this.game.state;
+    const tool = st.ui.tool;
+    if (tool === 'road') {
+      const r = shift ? this.game.eraseRoad(x, y) : this.game.paintRoad(x, y);
+      if (r && r.error) this.toast(r.error, 'error');
+      return;
     }
-    this.refreshInspector();
+    if (tool === 'build' && st.ui.buildId) {
+      const r = this.game.placeBuilding(st.ui.buildId, x, y);
+      this.toast(r.ok ? 'Construido' : r.error, r.ok ? 'ok' : 'error');
+      return;
+    }
+    const b = this.game.buildingAt(x, y);
+    st.ui.selectedId = b?.id || null;
+    st.ui.tool = 'select';
+    this.refresh();
+  }
+
+  toast(msg, type = 'info') {
+    const host = document.getElementById('toastHost');
+    if (!host) return;
+    const el = IM.el('div', { class: `toast ${type}`, text: msg });
+    host.appendChild(el);
+    setTimeout(() => el.remove(), 2800);
   }
 
   refresh() {
     this.renderTopbar();
-    this.refreshInspector();
-    const panel = this.game.state.ui.panel;
-    if (panel && panel !== 'mapa') this.renderPanel(panel);
-    else this.drawRoutes();
-    this.updateOverlay();
-  }
-
-  updateOverlay() {
-    const overlay = document.getElementById('mapOverlay');
-    if (!overlay) return;
-    const s = IM_DATA.summary || {};
-    overlay.textContent = `${s.locations || 0} ciudades · ${s.items || 0} ítems · ${s.recipes || 0} recetas · envíos ${this.game.state.shipments.length}`;
+    this.renderSidebar();
+    this.renderInspector();
   }
 
   renderTopbar() {
     const st = this.game.state;
     const bar = document.getElementById('topbar');
     if (!bar) return;
+    const season = this.game.season();
     bar.innerHTML = '';
     bar.append(
       IM.el('div', { class: 'brand' }, [
         IM.el('span', { class: 'brand-mark', text: 'IM' }),
         IM.el('div', {}, [
           IM.el('strong', { text: 'Industry Manager' }),
-          IM.el('small', { text: st.companyName }),
+          IM.el('small', { text: `${st.companyName} · estilo Rise of Industry` }),
         ]),
       ]),
-      IM.el('div', { class: 'stat' }, [IM.el('span', { class: 'label', text: 'Tesorería' }), IM.el('strong', { text: IM.formatMoney(st.money) })]),
-      IM.el('div', { class: 'stat' }, [IM.el('span', { class: 'label', text: 'Tiempo' }), IM.el('strong', { text: IM.formatGameTime(st) })]),
-      IM.el('div', { class: 'stat' }, [IM.el('span', { class: 'label', text: 'Plantas' }), IM.el('strong', { text: String(st.sites.length) })]),
-      IM.el('div', { class: 'stat' }, [IM.el('span', { class: 'label', text: 'Empleados' }), IM.el('strong', { text: String(st.employees) })]),
-      IM.el('div', { class: 'stat' }, [IM.el('span', { class: 'label', text: 'Polución' }), IM.el('strong', { text: IM.formatNum(st.pollutionTotal, 2) })]),
+      IM.el('div', { class: 'stat' }, [IM.el('span', { class: 'label', text: 'Caja' }), IM.el('strong', { text: IM.formatMoney(st.money) })]),
+      IM.el('div', { class: 'stat' }, [IM.el('span', { class: 'label', text: 'Fecha' }), IM.el('strong', { text: IM.dateLabel(st.year, st.day) })]),
+      IM.el('div', { class: 'stat season-stat', style: `border-color:${season.color}` }, [
+        IM.el('span', { class: 'label', text: 'Estación' }),
+        IM.el('strong', { text: season.name }),
+      ]),
       IM.el('div', { class: 'speed-controls' }, [
-        ...[0, 1, 2, 5, 10, 30].map((s) =>
+        IM.el('button', {
+          class: 'speed-btn skip-day-btn',
+          type: 'button',
+          text: '▶▶ +1 día',
+          onclick: () => { this.game.skipOneDay(); this.toast(`Día: ${IM.dateLabel(st.year, st.day)}`); },
+        }),
+        ...IM_CONFIG.speeds.map((s) =>
           IM.el('button', {
             type: 'button',
             class: `speed-btn${(st.paused && s === 0) || (!st.paused && st.speed === s) ? ' active' : ''}`,
@@ -265,906 +149,292 @@ IM.UI = class UI {
           })
         ),
         IM.el('button', {
-          type: 'button',
           class: 'speed-btn',
+          type: 'button',
           text: 'Guardar',
-          onclick: () => {
-            IM.Save.save(st);
-            this.toast('Guardado');
-          },
+          onclick: () => { IM.Save.save(st); this.toast('Guardado'); },
         }),
       ])
     );
   }
 
-  refreshInspector() {
-    const box = document.getElementById('inspector');
-    if (!box) return;
+  renderSidebar() {
+    const side = document.getElementById('sidebar');
+    if (!side) return;
     const st = this.game.state;
-    const locId = st.ui.selectedLocationId;
-    const loc = IM.locationById(locId);
-    const site = st.sites.find((s) => s.locationId === locId);
-    box.innerHTML = '';
-    box.append(
-      IM.el('h2', { text: loc ? loc.name : 'Sin ciudad' }),
+    side.innerHTML = '';
+    const tabs = [
+      ['build', 'Construir'],
+      ['contracts', 'Contratos'],
+      ['research', 'I+D'],
+      ['guides', 'Guías'],
+      ['cheats', 'Trucos'],
+    ];
+    side.append(
+      IM.el(
+        'div',
+        { class: 'side-tabs' },
+        tabs.map(([id, label]) =>
+          IM.el('button', {
+            type: 'button',
+            class: `nav-btn${st.ui.panel === id ? ' active' : ''}`,
+            text: label,
+            onclick: () => { st.ui.panel = id; this.refresh(); },
+          })
+        )
+      )
+    );
+    const body = IM.el('div', { class: 'side-body' });
+    side.append(body);
+    if (st.ui.panel === 'build') this.panelBuild(body);
+    if (st.ui.panel === 'contracts') this.panelContracts(body);
+    if (st.ui.panel === 'research') this.panelResearch(body);
+    if (st.ui.panel === 'guides') this.panelGuides(body);
+    if (st.ui.panel === 'cheats') this.panelCheats(body);
+  }
+
+  panelBuild(body) {
+    const st = this.game.state;
+    body.append(IM.el('p', { class: 'muted', text: '1) Coloca la Sede cerca de Málaga. 2) Almacén. 3) Extractores/granjas en nodos. 4) Carreteras. 5) Fábricas. 6) Cumple contratos.' }));
+    body.append(
+      IM.el('div', { class: 'toolbar' }, [
+        IM.el('button', {
+          class: `btn${st.ui.tool === 'select' ? ' primary' : ''}`,
+          type: 'button',
+          text: 'Seleccionar',
+          onclick: () => { st.ui.tool = 'select'; st.ui.buildId = null; this.refresh(); },
+        }),
+        IM.el('button', {
+          class: `btn${st.ui.tool === 'road' ? ' primary' : ''}`,
+          type: 'button',
+          text: 'Carretera',
+          onclick: () => { st.ui.tool = 'road'; st.ui.buildId = null; this.refresh(); },
+        }),
+        IM.el('button', {
+          class: `btn${st.ui.tool === 'pan' ? ' primary' : ''}`,
+          type: 'button',
+          text: 'Mover mapa',
+          onclick: () => { st.ui.tool = 'pan'; this.refresh(); },
+        }),
+      ])
+    );
+    const groups = {
+      special: 'Especial',
+      logistics: 'Logística',
+      gather: 'Extracción',
+      farm: 'Granjas',
+      factory: 'Fábricas',
+    };
+    Object.entries(groups).forEach(([kind, label]) => {
+      const list = (IM_DATA.buildings || []).filter((b) => b.kind === kind);
+      if (!list.length) return;
+      body.append(IM.el('h3', { text: label }));
+      list.forEach((b) => {
+        const locked = !this.game.unlockedBuilding(b);
+        const row = IM.el('button', {
+          type: 'button',
+          class: `build-row${st.ui.buildId === b.id ? ' active' : ''}${locked ? ' locked' : ''}`,
+          disabled: locked ? 'disabled' : undefined,
+          onclick: () => {
+            st.ui.tool = 'build';
+            st.ui.buildId = b.id;
+            this.refresh();
+          },
+        });
+        row.append(
+          IM.el('span', { class: 'swatch', style: `background:${b.color}` }),
+          IM.el('span', { text: b.name }),
+          IM.el('small', { text: locked ? 'I+D' : IM.formatMoney(b.cost) })
+        );
+        body.append(row);
+      });
+    });
+  }
+
+  panelContracts(body) {
+    const st = this.game.state;
+    const season = this.game.season();
+    body.append(
       IM.el('p', {
         class: 'muted',
-        text: loc
-          ? `${loc.country} · ${loc.type} · arancel ${((loc.tariffs || 0) * 100).toFixed(1)}% · límite pol. ${loc.pollutionLimit || '—'}`
-          : 'Selecciona una ciudad en el mapa',
+        text: `Contratos semanales. Fallar baja reputación y puede cerrar tiendas ${IM_CONFIG.shopCloseDays} días. Estación: ${season.name} (turismo ×${season.tourism}).`,
       })
     );
-    if (!loc) return;
-
-    box.append(
-      IM.el('div', { class: 'kv' }, [IM.el('span', { text: 'Labor / Energía' }), IM.el('strong', { text: `×${loc.laborCost?.toFixed?.(2) || loc.laborCost} / ×${loc.energyCost?.toFixed?.(2) || loc.energyCost}` })]),
-      IM.el('div', { class: 'kv' }, [
-        IM.el('span', { text: 'Infra' }),
-        IM.el('strong', {
-          text: `${loc.hasPort ? 'Puerto ' : ''}${loc.hasRail ? 'Rail ' : ''}${loc.hasAirport ? 'Aerop.' : '—'}`,
-        }),
-      ]),
-      IM.el('div', { class: 'kv' }, [
-        IM.el('span', { text: 'Almacén' }),
-        IM.el('strong', {
-          text: site
-            ? `${IM.formatNum(this.game.usedStorage(locId), 0)}/${IM.formatNum(this.game.storageCap(locId), 0)}`
-            : '—',
-        }),
-      ])
-    );
-
-    box.append(IM.el('h3', { text: 'Recursos regionales' }));
-    (loc.resources || []).forEach((r) => {
-      const it = IM.itemById(r.item);
-      box.append(
-        IM.el('div', { class: 'kv' }, [
-          IM.el('span', { text: it?.name || r.item }),
-          IM.el('strong', { text: `×${r.richness}` }),
-        ])
-      );
-    });
-
-    if (!site) {
-      box.append(
+    const active = st.contracts.filter((c) => c.status === 'active');
+    if (!active.length) body.append(IM.el('p', { text: 'Sin contratos activos esta semana.' }));
+    active.forEach((c) => {
+      const prod = IM.product(c.productId);
+      const card = IM.el('div', { class: 'contract-card' });
+      card.append(
+        IM.el('strong', { text: `${c.townName} · ${c.shopName}` }),
+        IM.el('p', { text: `${prod?.icon || ''} ${prod?.name}: ${c.delivered}/${c.qty} · ${IM.formatMoney(c.unitPrice)}/u` }),
+        IM.el('small', { class: 'muted', text: `Plazo: día ${c.deadlineDay}` }),
         IM.el('button', {
           class: 'btn primary',
           type: 'button',
-          text: `Fundar oficina (${IM.formatMoney(IM_CONFIG.foundingOfficeCost)})`,
+          text: 'Entregar desde selección',
           onclick: () => {
-            const r = this.game.foundInCity(locId);
-            this.toast(r.ok ? 'Ciudad fundada' : r.error, r.ok ? 'ok' : 'error');
-            this.rebuildMarkers();
+            if (!st.ui.selectedId) return this.toast('Selecciona un almacén/fábrica', 'error');
+            const r = this.game.deliverToContract(c.id, st.ui.selectedId);
+            this.toast(r.ok ? `+${IM.formatMoney(r.money)}` : r.error, r.ok ? 'ok' : 'error');
             this.refresh();
           },
         })
       );
-    } else {
-      box.append(IM.el('p', { text: `${site.buildings.length} edificios · OEE ${(this.game.oeeForLocation(locId) * 100).toFixed(0)}%` }));
-      box.append(
-        IM.el('button', {
-          class: 'btn',
-          type: 'button',
-          text: 'Zoom a planta',
-          onclick: () => {
-            this.showPanel('mapa');
-            this.map?.setView([loc.lat, loc.lng], 8);
-          },
-        })
-      );
-    }
-
-    box.append(IM.el('h3', { text: 'Atajos' }));
-    box.append(IM.el('p', { class: 'muted', text: 'Espacio pausa · 1-5 velocidad · M mapa · I industria · D dashboard · A automación · B bolsa · E enciclopedia' }));
-
-    box.append(IM.el('h3', { text: 'Log' }));
-    const log = IM.el('div', { class: 'log-list' });
-    st.log.slice(0, 10).forEach((e) => log.append(IM.el('div', { class: `log-item ${e.type}`, text: e.msg })));
-    box.append(log);
-  }
-
-  renderPanel(id) {
-    const header = document.getElementById('panelHeader');
-    const body = document.getElementById('panelBody');
-    if (!header || !body) return;
-    const titles = {
-      industria: 'Industria y fábricas',
-      dashboard: 'Dashboard de planta',
-      automatizacion: 'Automatización',
-      almacen: 'Almacenes',
-      mercado: 'Mercado',
-      bolsa: 'Bolsa de materias primas',
-      logistica: 'Logística intermodal',
-      investigacion: 'I+D',
-      finanzas: 'Finanzas',
-      misiones: 'Misiones',
-      contratos: 'Contratos',
-      enciclopedia: 'Enciclopedia',
-      competencia: 'Competencia IA',
-      eventos: 'Eventos',
-      ajustes: 'Ajustes',
-    };
-    header.innerHTML = '';
-    header.append(IM.el('h1', { text: titles[id] || id }));
-    body.innerHTML = '';
-    const fn = {
-      industria: () => this.panelIndustria(body),
-      dashboard: () => this.panelDashboard(body),
-      automatizacion: () => this.panelAuto(body),
-      almacen: () => this.panelAlmacen(body),
-      mercado: () => this.panelMercado(body),
-      bolsa: () => this.panelBolsa(body),
-      logistica: () => this.panelLogistica(body),
-      investigacion: () => this.panelResearch(body),
-      finanzas: () => this.panelFinanzas(body),
-      misiones: () => this.panelMisiones(body),
-      contratos: () => this.panelContratos(body),
-      enciclopedia: () => this.panelEnciclopedia(body),
-      competencia: () => this.panelCompetencia(body),
-      eventos: () => this.panelEventos(body),
-      ajustes: () => this.panelAjustes(body),
-    }[id];
-    if (fn) fn();
-  }
-
-  locSelect(selected, onChange) {
-    const sel = IM.el('select', { class: 'input', onchange: (e) => onChange(e.target.value) });
-    const owned = new Set(this.game.state.sites.map((s) => s.locationId));
-    // Prioritize owned + selected, then sample
-    const locs = IM_DATA.locations || [];
-    const preferred = locs.filter((l) => owned.has(l.id) || l.id === selected);
-    const rest = locs.filter((l) => !owned.has(l.id) && l.id !== selected).slice(0, 400);
-    [...preferred, ...rest].forEach((l) => {
-      const opt = IM.el('option', {
-        value: l.id,
-        text: `${owned.has(l.id) ? '★ ' : ''}${l.name} (${l.country})`,
-      });
-      if (l.id === selected) opt.selected = true;
-      sel.append(opt);
+      body.append(card);
     });
-    return sel;
-  }
-
-  openModal(buildFn) {
-    const modal = document.getElementById('modal');
-    const inner = document.getElementById('modalInner');
-    inner.innerHTML = '';
-    this.game.pauseForModal(true);
-    buildFn(inner, modal);
-    modal.addEventListener(
-      'close',
-      () => {
-        this.game.pauseForModal(false);
-      },
-      { once: true }
-    );
-    modal.showModal();
-  }
-
-  panelIndustria(body) {
-    const st = this.game.state;
-    let locId = st.ui.selectedLocationId || IM_CONFIG.startingLocation;
-    body.append(
-      IM.el('div', { class: 'toolbar' }, [
-        IM.el('label', { text: 'Ciudad' }),
-        this.locSelect(locId, (v) => {
-          st.ui.selectedLocationId = v;
-          this.refresh();
-        }),
-      ])
-    );
-    locId = st.ui.selectedLocationId;
-    const site = st.sites.find((s) => s.locationId === locId);
-    if (!site) {
-      body.append(IM.el('p', { class: 'muted', text: 'Sin presencia. Funda una oficina desde el inspector o el mapa.' }));
+    body.append(IM.el('h3', { text: 'Pueblos' }));
+    st.world.towns.forEach((t) => {
       body.append(
-        IM.el('button', {
-          class: 'btn primary',
-          type: 'button',
-          text: 'Fundar aquí',
-          onclick: () => {
-            const r = this.game.foundInCity(locId);
-            this.toast(r.ok ? 'Fundada' : r.error, r.ok ? 'ok' : 'error');
-            this.rebuildMarkers();
-            this.refresh();
-          },
-        })
-      );
-      return;
-    }
-
-    body.append(IM.el('h2', { text: 'Construir / mejorar' }));
-    const grid = IM.el('div', { class: 'card-grid' });
-    (IM_DATA.buildings || []).forEach((b) => {
-      grid.append(
-        IM.el('div', { class: 'mini-card' }, [
-          IM.el('strong', { text: b.name }),
-          IM.el('p', { class: 'muted', text: `${b.slots} slots · +${b.storage} almacén` }),
-          IM.el('p', { text: IM.formatMoney(b.cost * st.inflationIndex) }),
-          IM.el('button', {
-            class: 'btn',
-            type: 'button',
-            text: 'Construir',
-            onclick: () => {
-              const r = this.game.buildBuilding(locId, b.id);
-              this.toast(r.ok ? 'OK' : r.error, r.ok ? 'ok' : 'error');
-              this.refresh();
-            },
+        IM.el('div', { class: 'kv' }, [
+          IM.el('span', { text: t.name }),
+          IM.el('strong', {
+            text: t.shopClosedUntil ? `CERRADO hasta d${t.shopClosedUntil}` : `Rep ${t.reputation}`,
           }),
         ])
       );
-    });
-    body.append(grid);
-
-    body.append(IM.el('h2', { text: 'Edificios' }));
-    site.buildings.forEach((building) => {
-      const def = IM.buildingById(building.type);
-      const block = IM.el('div', { class: 'building-block' });
-      block.append(
-        IM.el('div', { class: 'toolbar' }, [
-          IM.el('h3', { text: `${def?.name || building.type} · Nv.${building.level || 1} · Auto ${building.automation || 0}` }),
-          IM.el('button', {
-            class: 'btn',
-            type: 'button',
-            text: 'Mejorar nivel',
-            onclick: () => {
-              const r = this.game.upgradeBuilding(site.id, building.id);
-              this.toast(r.ok ? 'Mejorado' : r.error, r.ok ? 'ok' : 'error');
-              this.refresh();
-            },
-          }),
-        ])
-      );
-      building.slots.forEach((slot, idx) => {
-        const row = IM.el('div', { class: 'slot-row' });
-        if (!slot) {
-          row.append(
-            IM.el('span', { text: `Slot ${idx + 1}: vacío` }),
-            IM.el('button', {
-              class: 'btn',
-              type: 'button',
-              text: 'Instalar',
-              onclick: () => this.openInstallModal(site.id, building, idx),
-            })
-          );
-        } else {
-          const recipe = IM.recipeById(slot.recipeId);
-          const machine = IM.machineById(slot.machineId);
-          const need = (recipe?.timeMinutes || 60) / (machine?.speed || 1);
-          const pct = Math.min(100, ((slot.progress || 0) / need) * 100);
-          row.append(
-            IM.el('div', { class: 'slot-info' }, [
-              IM.el('strong', { text: `P${slot.priority} · ${machine?.name} → ${recipe?.name}` }),
-              IM.el('div', { class: 'bar' }, [IM.el('div', { class: 'bar-fill', style: `width:${pct}%` })]),
-              IM.el('small', {
-                text: `${pct.toFixed(0)}% · prod ${IM.formatNum(slot.produced, 1)} · ${slot.lastBlockReason || 'ok'} · maxStock ${slot.maxOutputStock > 1e11 ? '∞' : slot.maxOutputStock}`,
-              }),
-            ]),
-            IM.el('input', {
-              class: 'input',
-              type: 'number',
-              style: 'width:70px',
-              value: String(slot.priority),
-              title: 'Prioridad',
-              onchange: (e) => {
-                slot.priority = Number(e.target.value) || 5;
-              },
-            }),
-            IM.el('button', {
-              class: 'btn',
-              type: 'button',
-              text: slot.enabled ? 'Pausar' : 'On',
-              onclick: () => {
-                slot.enabled = !slot.enabled;
-                this.refresh();
-              },
-            })
-          );
-        }
-        block.append(row);
-      });
-      body.append(block);
-    });
-  }
-
-  openInstallModal(siteId, building, slotIndex) {
-    this.openModal((inner, modal) => {
-      const recipes = (IM_DATA.recipes || []).filter((r) => r.building === building.type);
-      inner.append(IM.el('h2', { text: `Instalar slot ${slotIndex + 1}` }));
-      const sel = IM.el('select', { class: 'input' });
-      recipes.forEach((r) => {
-        const locked = r.tech && !this.game.hasTech(r.tech);
-        sel.append(IM.el('option', { value: r.id, text: `${r.name}${locked ? ' 🔒' : ''}`, disabled: locked ? 'disabled' : undefined }));
-      });
-      const prio = IM.el('input', { class: 'input', type: 'number', value: '5', min: '1', max: '10' });
-      const maxStock = IM.el('input', { class: 'input', type: 'number', value: '0', title: '0 = sin límite' });
-      inner.append(IM.el('label', { text: 'Receta' }), sel, IM.el('label', { text: 'Prioridad 1-10' }), prio, IM.el('label', { text: 'Stock máx salida (0=∞)' }), maxStock);
-      inner.append(
-        IM.el('button', {
-          class: 'btn primary',
-          type: 'button',
-          text: 'Instalar',
-          onclick: () => {
-            const recipe = IM.recipeById(sel.value);
-            if (!recipe) return;
-            const max = Number(maxStock.value) || 0;
-            const r = this.game.installMachine(siteId, building.id, slotIndex, recipe.machine, recipe.id, {
-              priority: Number(prio.value) || 5,
-              maxOutputStock: max > 0 ? max : 1e12,
-            });
-            this.toast(r.ok ? 'Instalado' : r.error, r.ok ? 'ok' : 'error');
-            if (r.ok) {
-              modal.close();
-              this.refresh();
-            }
-          },
-        }),
-        IM.el('button', { class: 'btn', value: 'cancel', text: 'Cerrar' })
-      );
-    });
-  }
-
-  panelDashboard(body) {
-    const st = this.game.state;
-    const locId = st.ui.selectedLocationId;
-    body.append(this.locSelect(locId, (v) => { st.ui.selectedLocationId = v; this.refresh(); }));
-    const m = this.game.getPlantMetrics(st.ui.selectedLocationId);
-    const oee = this.game.oeeForLocation(st.ui.selectedLocationId);
-    body.append(
-      IM.el('div', { class: 'stat-grid' }, [
-        ['OEE', `${(oee * 100).toFixed(1)}%`],
-        ['Energía acumulada', `${IM.formatNum(m.energyKwh, 0)} kWh`],
-        ['Agua acumulada', `${IM.formatNum(m.waterM3, 1)} m³`],
-        ['Output', IM.formatNum(m.output, 1)],
-        ['Runtime', `${IM.formatNum(m.runtime, 0)} min`],
-        ['Downtime', `${IM.formatNum(m.downtime, 0)} min`],
-        ['Flete gastado', IM.formatMoney(st.stats.freightSpent)],
-        ['Salarios', IM.formatMoney(st.stats.wagesPaid)],
-        ['Multas', IM.formatMoney(st.finesPaid)],
-        ['Créditos verdes', IM.formatNum(st.greenCredits, 1)],
-        ['Rechazos calidad', String(st.rejectedLifetime)],
-      ].map(([k, v]) => IM.el('div', { class: 'stat-box' }, [IM.el('span', { text: k }), IM.el('strong', { text: v })])))
-    );
-    body.append(IM.el('h2', { text: 'Alertas' }));
-    if (!m.alerts?.length) body.append(IM.el('p', { class: 'muted', text: 'Sin alertas en este tick.' }));
-    [...new Set(m.alerts || [])].forEach((a) => body.append(IM.el('div', { class: 'mini-card', text: a })));
-  }
-
-  panelAuto(body) {
-    const a = this.game.state.automation;
-    const toggles = [
-      ['autoBuyInputs', 'Auto-comprar inputs / energía / agua'],
-      ['autoSellOutputs', 'Auto-vender salidas'],
-      ['autoExtract', 'Priorizar extracción regional'],
-      ['autoTransport', 'Auto-rutas logísticas'],
-      ['autoResearch', 'Cola automática de I+D'],
-      ['autoUpgrade', 'Auto-mejorar edificios'],
-      ['autoAcceptContracts', 'Contratos activos automáticos'],
-    ];
-    toggles.forEach(([key, label]) => {
-      const id = `auto_${key}`;
-      const row = IM.el('label', { class: 'check-row', for: id }, [
-        IM.el('input', {
-          id,
-          type: 'checkbox',
-          checked: a[key] ? 'checked' : undefined,
-          onchange: (e) => this.game.setAutomation({ [key]: e.target.checked }),
-        }),
-        IM.el('span', { text: label }),
-      ]);
-      body.append(row);
-    });
-    body.append(
-      IM.el('div', { class: 'toolbar' }, [
-        IM.el('label', { text: 'Calidad objetivo' }),
-        IM.el('input', {
-          class: 'input',
-          type: 'number',
-          value: String(a.targetQuality),
-          onchange: (e) => this.game.setAutomation({ targetQuality: Number(e.target.value) || 60 }),
-        }),
-        IM.el('label', { text: 'Vender si calidad ≥' }),
-        IM.el('input', {
-          class: 'input',
-          type: 'number',
-          value: String(a.sellAboveQuality),
-          onchange: (e) => this.game.setAutomation({ sellAboveQuality: Number(e.target.value) || 50 }),
-        }),
-      ])
-    );
-
-    body.append(IM.el('h2', { text: 'Reglas de stock' }));
-    const loc = IM.el('select', { class: 'input' });
-    this.game.state.sites.forEach((s) => {
-      const L = IM.locationById(s.locationId);
-      loc.append(IM.el('option', { value: s.locationId, text: L?.name || s.locationId }));
-    });
-    const item = IM.el('input', { class: 'input', placeholder: 'id ítem (ej. mena_de_hierro)' });
-    const min = IM.el('input', { class: 'input', type: 'number', value: '50' });
-    const action = IM.el('select', { class: 'input' }, [
-      IM.el('option', { value: 'buy', text: 'Comprar si bajo mínimo' }),
-      IM.el('option', { value: 'sell', text: 'Vender si sobre máximo' }),
-    ]);
-    body.append(
-      IM.el('div', { class: 'toolbar' }, [
-        loc,
-        item,
-        min,
-        action,
-        IM.el('button', {
-          class: 'btn primary',
-          type: 'button',
-          text: 'Añadir regla',
-          onclick: () => {
-            if (!loc.value || !item.value) return this.toast('Completa regla', 'error');
-            this.game.addAutomationRule({
-              locationId: loc.value,
-              itemId: item.value.trim(),
-              min: Number(min.value) || 0,
-              max: Number(min.value) || 0,
-              action: action.value,
-              batch: 20,
-            });
-            this.toast('Regla añadida');
-            this.refresh();
-          },
-        }),
-      ])
-    );
-    (a.rules || []).forEach((r) => {
-      body.append(IM.el('div', { class: 'mini-card', text: `${r.action} ${r.itemId} @ ${r.locationId} (${r.min || r.max})` }));
-    });
-
-    body.append(IM.el('h2', { text: 'Rutas automáticas' }));
-    const from = IM.el('select', { class: 'input' });
-    const to = IM.el('select', { class: 'input' });
-    this.game.state.sites.forEach((s) => {
-      const L = IM.locationById(s.locationId);
-      from.append(IM.el('option', { value: s.locationId, text: L?.name || s.locationId }));
-      to.append(IM.el('option', { value: s.locationId, text: L?.name || s.locationId }));
-    });
-    const rItem = IM.el('input', { class: 'input', placeholder: 'id ítem' });
-    const mode = IM.el('select', { class: 'input' });
-    (IM_DATA.transportModes || []).forEach((m) => mode.append(IM.el('option', { value: m.id, text: m.name })));
-    body.append(
-      IM.el('div', { class: 'toolbar' }, [
-        from,
-        to,
-        rItem,
-        mode,
-        IM.el('button', {
-          class: 'btn primary',
-          type: 'button',
-          text: 'Añadir ruta',
-          onclick: () => {
-            this.game.addAutomationRoute({
-              fromId: from.value,
-              toId: to.value,
-              itemId: rItem.value.trim(),
-              modeId: mode.value,
-              threshold: 30,
-              qty: 40,
-              keep: 10,
-            });
-            this.toast('Ruta añadida');
-            this.refresh();
-          },
-        }),
-      ])
-    );
-    (a.routes || []).forEach((r) => {
-      body.append(IM.el('div', { class: 'mini-card', text: `${r.fromId} → ${r.toId} · ${r.itemId} · ${r.modeId}` }));
-    });
-  }
-
-  panelAlmacen(body) {
-    const st = this.game.state;
-    body.append(this.locSelect(st.ui.selectedLocationId, (v) => { st.ui.selectedLocationId = v; this.refresh(); }));
-    const locId = st.ui.selectedLocationId;
-    if (!st.warehouses[locId] && !st.sites.some((s) => s.locationId === locId)) {
-      body.append(IM.el('p', { class: 'muted', text: 'Sin almacén. Funda una planta primero.' }));
-      return;
-    }
-    const wh = this.game.ensureWarehouse(locId);
-    body.append(IM.el('p', { text: `Uso ${IM.formatNum(this.game.usedStorage(locId), 1)} / ${IM.formatNum(this.game.storageCap(locId), 1)}` }));
-    const table = IM.el('table', { class: 'data-table' });
-    table.append(IM.el('thead', {}, [IM.el('tr', {}, ['Ítem', 'Cantidad', 'Calidad', 'Valor'].map((t) => IM.el('th', { text: t })))]));
-    const tb = IM.el('tbody');
-    Object.entries(wh.stock)
-      .sort((a, b) => b[1].qty - a[1].qty)
-      .forEach(([id, s]) => {
-        const it = IM.itemById(id);
-        if (!it) return;
-        tb.append(
-          IM.el('tr', {}, [
-            IM.el('td', { text: it.name }),
-            IM.el('td', { text: `${IM.formatNum(s.qty, 2)} ${it.unit}` }),
-            IM.el('td', { text: s.quality.toFixed(1) }),
-            IM.el('td', { text: IM.formatMoney(s.qty * this.game.priceOf(id)) }),
-          ])
-        );
-      });
-    table.append(tb);
-    body.append(table);
-  }
-
-  panelMercado(body) {
-    const st = this.game.state;
-    let locId = st.ui.selectedLocationId;
-    const q = IM.el('input', { class: 'input', placeholder: 'Buscar…' });
-    const cat = IM.el('select', { class: 'input' });
-    cat.append(IM.el('option', { value: 'all', text: 'Todas' }));
-    Object.entries(IM.categoryLabel).forEach(([k, v]) => cat.append(IM.el('option', { value: k, text: v })));
-    const qtyInput = IM.el('input', { class: 'input', type: 'number', value: '10' });
-    const renderList = () => {
-      body.querySelector('.market-list')?.remove();
-      const wrap = IM.el('div', { class: 'market-list' });
-      const query = (q.value || '').toLowerCase();
-      (IM_DATA.items || [])
-        .filter((it) => (cat.value === 'all' || it.category === cat.value) && (!query || it.name.toLowerCase().includes(query)))
-        .slice(0, 180)
-        .forEach((it) => {
-          wrap.append(
-            IM.el('div', { class: 'market-row' }, [
-              IM.el('div', {}, [IM.el('strong', { text: it.name }), IM.el('small', { class: 'muted', text: ` ${IM.categoryLabel[it.category] || it.category}` })]),
-              IM.el('strong', { text: `${IM.formatMoney(this.game.priceOf(it.id))}/${it.unit}` }),
-              IM.el('button', { class: 'btn', type: 'button', text: 'Comprar', onclick: () => {
-                const r = this.game.buyFromMarket(locId, it.id, Number(qtyInput.value) || 1);
-                this.toast(r.ok ? 'OK' : r.error, r.ok ? 'ok' : 'error');
-              }}),
-              IM.el('button', { class: 'btn', type: 'button', text: 'Vender', onclick: () => {
-                const r = this.game.sellToMarket(locId, it.id, Number(qtyInput.value) || 1);
-                this.toast(r.ok ? 'OK' : r.error, r.ok ? 'ok' : 'error');
-              }}),
-            ])
-          );
-        });
-      body.append(wrap);
-    };
-    body.append(IM.el('div', { class: 'toolbar' }, [
-      this.locSelect(locId, (v) => { st.ui.selectedLocationId = v; locId = v; }),
-      q, cat, qtyInput,
-    ]));
-    q.oninput = renderList;
-    cat.onchange = renderList;
-    renderList();
-  }
-
-  panelBolsa(body) {
-    const st = this.game.state;
-    body.append(IM.el('p', { class: 'muted', text: st.categoryCrisis ? `Crisis activa: ${st.categoryCrisis.category}` : 'Sin crisis de categoría.' }));
-    const item = IM.el('input', { class: 'input', placeholder: 'id ítem' , value: 'mena_de_hierro' });
-    const qty = IM.el('input', { class: 'input', type: 'number', value: '100' });
-    body.append(
-      IM.el('div', { class: 'toolbar' }, [
-        item,
-        qty,
-        IM.el('button', { class: 'btn primary', type: 'button', text: 'Futuro LONG', onclick: () => {
-          const r = this.game.openFuture(item.value.trim(), Number(qty.value) || 1, 'long');
-          this.toast(r.ok ? 'Abierto' : r.error, r.ok ? 'ok' : 'error');
-          this.refresh();
-        }}),
-        IM.el('button', { class: 'btn', type: 'button', text: 'Futuro SHORT', onclick: () => {
-          const r = this.game.openFuture(item.value.trim(), Number(qty.value) || 1, 'short');
-          this.toast(r.ok ? 'Abierto' : r.error, r.ok ? 'ok' : 'error');
-          this.refresh();
-        }}),
-      ])
-    );
-    body.append(IM.el('h2', { text: 'Futuros abiertos' }));
-    if (!st.futures.length) body.append(IM.el('p', { class: 'muted', text: 'Ninguno. Requiere tech Bolsa o truco.' }));
-    st.futures.forEach((f) => {
-      const it = IM.itemById(f.itemId);
-      const now = this.game.priceOf(f.itemId);
-      body.append(IM.el('div', { class: 'mini-card' }, [
-        IM.el('strong', { text: `${f.direction.toUpperCase()} ${it?.name || f.itemId}` }),
-        IM.el('p', { text: `Entrada ${IM.formatMoney(f.entry)} · Ahora ${IM.formatMoney(now)} · qty ${f.qty}` }),
-      ]));
-    });
-
-    body.append(IM.el('h2', { text: 'Histórico (muestra)' }));
-    const sample = Object.keys(st.priceHistory || {}).slice(0, 12);
-    sample.forEach((id) => {
-      const hist = st.priceHistory[id] || [];
-      const it = IM.itemById(id);
-      const spark = hist.map((v, i, arr) => {
-        const min = Math.min(...arr);
-        const max = Math.max(...arr);
-        const h = max === min ? 50 : ((v - min) / (max - min)) * 100;
-        return `<span class="spark" style="height:${Math.max(4, h)}%"></span>`;
-      }).join('');
-      body.append(IM.el('div', { class: 'spark-row' }, [
-        IM.el('span', { text: it?.name || id }),
-        IM.el('div', { class: 'sparkline', html: spark }),
-      ]));
-    });
-  }
-
-  panelLogistica(body) {
-    const st = this.game.state;
-    const from = IM.el('select', { class: 'input' });
-    const to = IM.el('select', { class: 'input' });
-    (IM_DATA.locations || []).slice(0, 500).forEach((l) => {
-      from.append(IM.el('option', { value: l.id, text: l.name }));
-      to.append(IM.el('option', { value: l.id, text: l.name }));
-    });
-    st.sites.forEach((s) => {
-      const L = IM.locationById(s.locationId);
-      if (L) {
-        from.append(IM.el('option', { value: L.id, text: `★ ${L.name}` }));
-        to.append(IM.el('option', { value: L.id, text: `★ ${L.name}` }));
-      }
-    });
-    from.value = st.ui.selectedLocationId;
-    const itemSel = IM.el('select', { class: 'input' });
-    const modeSel = IM.el('select', { class: 'input' });
-    (IM_DATA.transportModes || []).forEach((m) => {
-      const locked = m.unlock && !this.game.hasTech(m.unlock);
-      modeSel.append(IM.el('option', { value: m.id, text: `${m.name}${locked ? ' 🔒' : ''}`, disabled: locked ? 'disabled' : undefined }));
-    });
-    const qty = IM.el('input', { class: 'input', type: 'number', value: '20' });
-    const refreshItems = () => {
-      itemSel.innerHTML = '';
-      const wh = this.game.ensureWarehouse(from.value);
-      Object.keys(wh.stock).forEach((id) => {
-        const it = IM.itemById(id);
-        if (it) itemSel.append(IM.el('option', { value: id, text: `${it.name} (${IM.formatNum(wh.stock[id].qty, 1)})` }));
-      });
-    };
-    from.onchange = refreshItems;
-    refreshItems();
-    body.append(IM.el('div', { class: 'form-grid' }, [
-      IM.el('label', { text: 'Origen' }), from,
-      IM.el('label', { text: 'Destino' }), to,
-      IM.el('label', { text: 'Ítem' }), itemSel,
-      IM.el('label', { text: 'Cantidad' }), qty,
-      IM.el('label', { text: 'Modo' }), modeSel,
-      IM.el('button', { class: 'btn primary', type: 'button', text: 'Enviar', onclick: () => {
-        const r = this.game.startShipment(from.value, to.value, itemSel.value, Number(qty.value) || 1, modeSel.value);
-        this.toast(r.ok ? 'Enviado' : r.error, r.ok ? 'ok' : 'error');
-        this.refresh();
-      }}),
-    ]));
-    body.append(IM.el('h2', { text: 'En tránsito' }));
-    st.shipments.forEach((sh) => {
-      const it = IM.itemById(sh.itemId);
-      const a = IM.locationById(sh.fromId);
-      const b = IM.locationById(sh.toId);
-      const pct = 100 - (sh.remainingMinutes / sh.totalMinutes) * 100;
-      body.append(IM.el('div', { class: 'mini-card' }, [
-        IM.el('strong', { text: `${it?.name}: ${a?.name} → ${b?.name} (${sh.modeId})` }),
-        IM.el('div', { class: 'bar' }, [IM.el('div', { class: 'bar-fill', style: `width:${pct}%` })]),
-      ]));
     });
   }
 
   panelResearch(body) {
-    const st = this.game.state;
-    if (st.researchQueue) {
-      const t = IM.techById(st.researchQueue.techId);
-      const pct = 100 * (1 - st.researchQueue.remaining / st.researchQueue.total);
-      body.append(IM.el('div', { class: 'mini-card' }, [
-        IM.el('strong', { text: `En curso: ${t?.name}` }),
-        IM.el('div', { class: 'bar' }, [IM.el('div', { class: 'bar-fill', style: `width:${pct}%` })]),
-      ]));
-    }
-    const grid = IM.el('div', { class: 'card-grid' });
     (IM_DATA.techs || []).forEach((t) => {
       const done = this.game.hasTech(t.id);
-      const reqOk = (t.requires || []).every((r) => this.game.hasTech(r));
-      grid.append(IM.el('div', { class: `mini-card${done ? ' done' : ''}` }, [
-        IM.el('strong', { text: t.name }),
-        IM.el('p', { class: 'muted', text: t.desc }),
-        IM.el('p', { text: done ? 'Desbloqueada' : `${IM.formatMoney(t.cost)} · req ${(t.requires || []).join(', ') || '—'}` }),
-        done ? null : IM.el('div', { class: 'toolbar' }, [
-          IM.el('button', { class: 'btn', type: 'button', text: reqOk ? 'Investigar' : 'Bloqueada', disabled: reqOk ? undefined : 'disabled', onclick: () => {
-            const r = this.game.startResearch(t.id);
-            this.toast(r.ok ? 'OK' : r.error, r.ok ? 'ok' : 'error');
-            this.refresh();
-          }}),
-          IM.el('button', { class: 'btn', type: 'button', text: 'A cola auto', onclick: () => {
-            st.researchAutoQueue.push(t.id);
-            this.toast('Añadida a cola');
-          }}),
+      const row = IM.el('div', { class: 'tech-row' });
+      row.append(
+        IM.el('div', {}, [
+          IM.el('strong', { text: t.name }),
+          IM.el('p', { class: 'muted', text: t.desc }),
         ]),
-      ]));
-    });
-    body.append(grid);
-  }
-
-  panelFinanzas(body) {
-    const st = this.game.state;
-    body.append(IM.el('div', { class: 'stat-grid' }, [
-      ['Tesorería', IM.formatMoney(st.money)],
-      ['Beneficio', IM.formatMoney(st.profitLifetime)],
-      ['Energía €', IM.formatMoney(st.stats.energySpent)],
-      ['Agua €', IM.formatMoney(st.stats.waterSpent)],
-      ['Flete €', IM.formatMoney(st.stats.freightSpent)],
-      ['Salarios €', IM.formatMoney(st.stats.wagesPaid)],
-      ['Impuestos', IM.formatMoney(st.stats.taxesPaid)],
-      ['Rating', String(Math.round(st.creditRating))],
-    ].map(([k, v]) => IM.el('div', { class: 'stat-box' }, [IM.el('span', { text: k }), IM.el('strong', { text: v })]))));
-    const amount = IM.el('input', { class: 'input', type: 'number', value: '1000000' });
-    body.append(IM.el('div', { class: 'toolbar' }, [
-      amount,
-      IM.el('button', { class: 'btn primary', type: 'button', text: 'Préstamo 5 años', onclick: () => {
-        const r = this.game.takeLoan(Number(amount.value) || 0);
-        this.toast(r.ok ? 'OK' : r.error, r.ok ? 'ok' : 'error');
-        this.refresh();
-      }}),
-    ]));
-  }
-
-  panelMisiones(body) {
-    const st = this.game.state;
-    body.append(IM.el('p', { text: `Capítulo ${st.missionChapter} · XP ${st.xp} · Completadas ${Object.keys(st.missionsCompleted).length}` }));
-    st.activeMissionIds.forEach((id) => {
-      const m = this.game.missionById(id);
-      if (!m) return;
-      const p = this.game.missionProgress(m) * 100;
-      body.append(IM.el('div', { class: 'mini-card' }, [
-        IM.el('strong', { text: m.title }),
-        IM.el('p', { class: 'muted', text: m.description }),
-        IM.el('div', { class: 'bar' }, [IM.el('div', { class: 'bar-fill', style: `width:${p}%` })]),
-      ]));
-    });
-  }
-
-  panelContratos(body) {
-    const st = this.game.state;
-    if (!st.contracts.length) body.append(IM.el('p', { class: 'muted', text: 'Sin contratos. Aparecen con el tiempo.' }));
-    st.contracts.forEach((c) => {
-      const it = IM.itemById(c.itemId);
-      const loc = IM.locationById(c.locationId);
-      body.append(IM.el('div', { class: 'mini-card' }, [
-        IM.el('strong', { text: `${it?.name} × ${c.qty} → ${loc?.name}` }),
-        IM.el('p', { text: `Calidad mínima ${c.minQuality} · Precio ${IM.formatMoney(c.price)} · plazo día ${c.deadlineDay}` }),
-      ]));
-    });
-  }
-
-  panelEnciclopedia(body) {
-    const st = this.game.state;
-    const q = IM.el('input', { class: 'input', placeholder: 'Buscar…', value: st.ui.encyclopediaQuery || '' });
-    const cat = IM.el('select', { class: 'input' });
-    cat.append(IM.el('option', { value: 'all', text: 'Todas' }));
-    Object.entries(IM.categoryLabel).forEach(([k, v]) => cat.append(IM.el('option', { value: k, text: v })));
-    const detail = IM.el('div', { class: 'ency-detail' });
-    const list = IM.el('div', { class: 'ency-list' });
-
-    const showItem = (it) => {
-      st.ui.encyclopediaItem = it.id;
-      const producers = (IM_DATA.recipes || []).filter((r) => (r.outputs || []).some((o) => o.item === it.id));
-      const consumers = (IM_DATA.recipes || []).filter((r) => (r.inputs || []).some((i) => i.item === it.id));
-      detail.innerHTML = '';
-      detail.append(
-        IM.el('h2', { text: it.name }),
-        IM.el('p', { text: it.description }),
-        IM.el('p', { class: 'muted', text: `${IM.categoryLabel[it.category]} · tier ${it.tier} · ${IM.formatMoney(it.basePrice)}/${it.unit}` }),
-        IM.el('h3', { text: 'Se produce con' }),
+        done
+          ? IM.el('span', { class: 'ok', text: 'OK' })
+          : IM.el('button', {
+              class: 'btn',
+              type: 'button',
+              text: IM.formatMoney(t.cost),
+              onclick: () => {
+                const r = this.game.research(t.id);
+                this.toast(r.ok ? 'Investigado' : r.error, r.ok ? 'ok' : 'error');
+                this.refresh();
+              },
+            })
       );
-      if (!producers.length) detail.append(IM.el('p', { class: 'muted', text: 'Sin receta / materia prima o compra.' }));
-      producers.slice(0, 12).forEach((r) => {
-        detail.append(IM.el('div', { class: 'tree-node' }, [
-          IM.el('strong', { text: r.name }),
-          IM.el('div', { text: `Inputs: ${(r.inputs || []).map((i) => IM.itemById(i.item)?.name + '×' + i.qty).join(', ') || '—'}` }),
-          IM.el('div', { text: `Outputs: ${(r.outputs || []).map((o) => IM.itemById(o.item)?.name + '×' + o.qty).join(', ')}` }),
-        ]));
-      });
-      detail.append(IM.el('h3', { text: 'Se consume en' }));
-      if (!consumers.length) detail.append(IM.el('p', { class: 'muted', text: 'Ninguna receta aguas abajo.' }));
-      consumers.slice(0, 12).forEach((r) => {
-        detail.append(IM.el('div', { class: 'tree-node' }, [
-          IM.el('strong', { text: r.name }),
-          IM.el('button', { class: 'btn', type: 'button', text: 'Ver output', onclick: () => {
-            const out = IM.itemById(r.outputs?.[0]?.item);
-            if (out) showItem(out);
-          }}),
-        ]));
-      });
-    };
-
-    const render = () => {
-      st.ui.encyclopediaQuery = q.value;
-      list.innerHTML = '';
-      const query = q.value.toLowerCase();
-      (IM_DATA.items || [])
-        .filter((it) => (cat.value === 'all' || it.category === cat.value) && (!query || it.name.toLowerCase().includes(query)))
-        .slice(0, 200)
-        .forEach((it) => {
-          list.append(IM.el('button', {
-            class: 'ency-link',
-            type: 'button',
-            text: it.name,
-            onclick: () => showItem(it),
-          }));
-        });
-    };
-    q.oninput = render;
-    cat.onchange = render;
-    body.append(IM.el('div', { class: 'toolbar' }, [q, cat]));
-    body.append(IM.el('div', { class: 'ency-layout' }, [list, detail]));
-    render();
-    if (st.ui.encyclopediaItem) {
-      const it = IM.itemById(st.ui.encyclopediaItem);
-      if (it) showItem(it);
-    }
-  }
-
-  panelCompetencia(body) {
-    this.game.state.competitors.forEach((c) => {
-      body.append(IM.el('div', { class: 'mini-card' }, [
-        IM.el('strong', { text: c.name }),
-        IM.el('p', { text: `Foco ${IM.categoryLabel[c.focus] || c.focus} · cuota ${(c.marketShare * 100).toFixed(1)}% · capital ${IM.formatMoney(c.money)}` }),
-        IM.el('p', { class: 'muted', text: `Plantas IA: ${(c.sites || []).length} · ${c.lastAction || ''}` }),
-        IM.el('div', { class: 'bar' }, [IM.el('div', { class: 'bar-fill', style: `width:${c.marketShare * 100}%` })]),
-      ]));
+      body.append(row);
     });
   }
 
-  panelEventos(body) {
+  panelGuides(body) {
+    body.append(
+      IM.el('p', {
+        class: 'muted',
+        text: '100 PDFs a color (2000–2099) con qué construir y en qué coordenadas cada día. También en /guias/.',
+      })
+    );
+    const list = IM.el('div', { class: 'guide-year-list' });
+    for (let y = 2000; y <= 2099; y++) {
+      list.append(
+        IM.el('a', {
+          class: 'guide-year-link',
+          href: `guias/ano-${y}.pdf`,
+          target: '_blank',
+          text: String(y),
+        })
+      );
+    }
+    body.append(list);
+    const g = IM.DayGuide?.page(this.game.state.year, this.game.state.day);
+    if (g) {
+      body.append(IM.el('h3', { text: `Hoy: ${g.dateLabel}` }));
+      body.append(IM.el('p', { text: g.headline }));
+      body.append(IM.el('ol', {}, g.steps.map((s) => IM.el('li', { text: s }))));
+    }
+    body.append(
+      IM.el('p', {}, [
+        IM.el('a', {
+          href: 'https://github.com/miriamcomercio89-ops/Miriam/archive/refs/heads/cursor/industry-manager-b124.zip',
+          target: '_blank',
+          text: 'Descargar ZIP del juego + guías',
+        }),
+      ])
+    );
+  }
+
+  panelCheats(body) {
+    body.append(IM.el('h3', { text: 'Trucos de dinero' }));
+    body.append(
+      IM.el('ul', { class: 'cheat-list' }, [
+        IM.el('li', { text: 'PASTA_GORDA → +500.000 €' }),
+        IM.el('li', { text: 'MILLON_EXPRESS → +1.000.000 €' }),
+        IM.el('li', { text: 'SOCORRO_CAJA → mínimo 100.000 €' }),
+        IM.el('li', { text: 'INDUSTRIA_TOTAL → desbloquea todo el I+D' }),
+        IM.el('li', { text: 'REPUTACION_MAX → reputación 100 en todos los pueblos' }),
+      ])
+    );
+    const input = IM.el('input', { class: 'input', placeholder: 'Código truco…' });
+    body.append(
+      IM.el('div', { class: 'toolbar' }, [
+        input,
+        IM.el('button', {
+          class: 'btn primary',
+          type: 'button',
+          text: 'Activar',
+          onclick: () => {
+            const r = this.game.applyCheat(input.value);
+            this.toast(r.ok ? r.msg : r.error, r.ok ? 'ok' : 'error');
+            input.value = '';
+            this.refresh();
+          },
+        }),
+      ])
+    );
+  }
+
+  renderInspector() {
+    const box = document.getElementById('inspector');
+    if (!box) return;
     const st = this.game.state;
-    if (!st.events.length) body.append(IM.el('p', { class: 'muted', text: 'Sin eventos aún.' }));
-    st.events.forEach((e) => body.append(IM.el('div', { class: 'mini-card' }, [
-      IM.el('strong', { text: e.title }),
-      IM.el('p', { text: e.desc }),
-      IM.el('small', { class: 'muted', text: `${e.year} · día ${e.day}` }),
-    ])));
-  }
-
-  panelAjustes(body) {
-    const name = IM.el('input', { class: 'input', value: this.game.state.companyName });
-    body.append(IM.el('div', { class: 'toolbar' }, [
-      name,
-      IM.el('button', { class: 'btn', type: 'button', text: 'Renombrar', onclick: () => {
-        this.game.state.companyName = name.value || 'Tu Corporación Industrial';
-        this.refresh();
-      }}),
-    ]));
-    body.append(IM.el('div', { class: 'toolbar' }, [
-      IM.el('button', { class: 'btn primary', type: 'button', text: 'Guardar', onclick: () => { IM.Save.save(this.game.state); this.toast('OK'); }}),
-      IM.el('button', { class: 'btn', type: 'button', text: 'Exportar JSON', onclick: () => IM.Save.exportJson(this.game.state) }),
-      IM.el('button', { class: 'btn', type: 'button', text: 'Nueva partida', onclick: () => {
-        if (confirm('¿Empezar de cero? (100 M€, sin edificios)')) {
-          IM.Save.clear();
-          this.game.init(IM.createInitialState());
-          this.rebuildMarkers();
-          this.showPanel('mapa');
-        }
-      }}),
-    ]));
-    const cheat = IM.el('input', { class: 'input', placeholder: 'Código truco I+D' });
-    body.append(IM.el('div', { class: 'toolbar' }, [
-      cheat,
-      IM.el('button', { class: 'btn', type: 'button', text: 'Activar', onclick: () => {
-        if (cheat.value.trim().toUpperCase() === IM_CONFIG.cheatUnlockAllCode) {
-          this.game.unlockAllTechs();
-          this.toast('Tech total desbloqueada');
-        } else this.toast('Código incorrecto', 'error');
-      }}),
-    ]));
-    body.append(IM.el('p', { class: 'muted', text: `v${IM_CONFIG.version} · partida vacía con ${IM.formatMoney(IM_CONFIG.startingMoney)} · ${IM_DATA.locations?.length || 0} ciudades` }));
-    const importInput = IM.el('input', { type: 'file', accept: 'application/json' });
-    importInput.onchange = async () => {
-      const file = importInput.files?.[0];
-      if (!file) return;
-      try {
-        const data = await IM.Save.importJson(file);
-        this.game.init(data);
-        this.rebuildMarkers();
-        this.toast('Importado');
-      } catch {
-        this.toast('JSON inválido', 'error');
-      }
-    };
-    body.append(importInput);
-  }
-
-  toast(msg, type = 'ok') {
-    const host = document.getElementById('toasts');
-    if (!host) return;
-    const el = IM.el('div', { class: `toast ${type}`, text: msg });
-    host.append(el);
-    setTimeout(() => el.remove(), 3000);
+    box.innerHTML = '';
+    box.append(IM.el('h2', { text: 'Inspector' }));
+    const season = this.game.season();
+    box.append(
+      IM.el('div', { class: 'season-banner', style: `background:${season.color}33;border-color:${season.color}` }, [
+        IM.el('strong', { text: season.name }),
+        IM.el('p', {
+          text: `Olivar ×${season.oliveMul} · Trigo ×${season.wheatMul} · Cítricos ×${season.citrusMul} · Turismo ×${season.tourism}`,
+        }),
+      ])
+    );
+    const b = st.buildings.find((x) => x.id === st.ui.selectedId);
+    if (!b) {
+      box.append(IM.el('p', { class: 'muted', text: 'Click en un edificio o elige herramienta a la izquierda.' }));
+      box.append(IM.el('h3', { text: 'Registro' }));
+      st.log.slice(0, 12).forEach((l) => box.append(IM.el('div', { class: `log-line ${l.type}`, text: l.msg })));
+      return;
+    }
+    const def = IM.building(b.type);
+    box.append(IM.el('h3', { text: def?.name || b.type }));
+    box.append(IM.el('p', { class: 'muted', text: `Casilla (${b.x},${b.y}) · ${def?.desc || ''}` }));
+    box.append(IM.el('h3', { text: 'Stock' }));
+    const entries = Object.entries(b.stock).filter(([, q]) => q > 0);
+    if (!entries.length) box.append(IM.el('p', { class: 'muted', text: 'Vacío' }));
+    entries.forEach(([pid, q]) => {
+      const p = IM.product(pid);
+      box.append(IM.el('div', { class: 'kv' }, [IM.el('span', { text: `${p?.icon || ''} ${p?.name || pid}` }), IM.el('strong', { text: String(q) })]));
+    });
   }
 };
+
+// mini DOM helper (si no existe)
+if (!IM.el) {
+  IM.el = (tag, attrs = {}, children = []) => {
+    const el = document.createElement(tag);
+    Object.entries(attrs || {}).forEach(([k, v]) => {
+      if (v === undefined || v === null) return;
+      if (k === 'text') el.textContent = v;
+      else if (k === 'class') el.className = v;
+      else if (k.startsWith('on') && typeof v === 'function') el.addEventListener(k.slice(2).toLowerCase(), v);
+      else el.setAttribute(k, v);
+    });
+    (Array.isArray(children) ? children : [children]).filter(Boolean).forEach((c) => el.appendChild(typeof c === 'string' ? document.createTextNode(c) : c));
+    return el;
+  };
+}
