@@ -235,7 +235,27 @@ dialog::backdrop { background: rgba(0,0,0,0.55); }
 
 .leaflet-container { background: #0a1218; font: inherit; }
 
+.map-toolbar {
+  position: absolute; top: 10px; left: 10px; right: 10px; z-index: 500;
+  display: flex; flex-wrap: wrap; gap: 6px; pointer-events: none;
+}
+.map-toolbar > * { pointer-events: auto; }
+.map-filter {
+  border: 1px solid var(--line); background: rgba(18,28,34,0.92); color: var(--text);
+  padding: 5px 8px; border-radius: 3px; font: inherit; cursor: pointer; font-size: 12px;
+}
+.map-filter.active { border-color: var(--accent-2); color: #d9ffe9; }
+.check-row { display: flex; gap: 8px; align-items: center; margin: 8px 0; }
+.ency-layout { display: grid; grid-template-columns: 280px 1fr; gap: 16px; min-height: 420px; }
+.ency-link {
+  display: block; width: 100%; text-align: left; background: transparent; border: none;
+  border-bottom: 1px solid rgba(47,74,87,0.4); color: var(--text); padding: 8px 4px; cursor: pointer; font: inherit;
+}
+.ency-link:hover { color: var(--accent); }
+.tree-node { padding: 8px; margin: 6px 0; border: 1px solid var(--line); background: rgba(255,255,255,0.02); }
+.spark-row { display: grid; grid-template-columns: 180px 1fr; gap: 10px; align-items: end; margin: 8px 0; font-size: 12px; }
+.sparkline { display: flex; align-items: flex-end; gap: 2px; height: 36px; background: #0c1418; padding: 4px; border: 1px solid var(--line); }
+.spark { width: 4px; background: linear-gradient(180deg, #c4a35a, #3d9b7a); display: inline-block; }
 @media (max-width: 1100px) {
-  .main { grid-template-columns: 150px 1fr; }
-  .inspector { display: none; }
+  .ency-layout { grid-template-columns: 1fr; }
 }

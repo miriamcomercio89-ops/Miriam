@@ -1498,55 +1498,33 @@ const techs = [
   { id: 'calidad_six_sigma', name: 'Six Sigma industrial', cost: 450000, time: 400, requires: ['automatizacion'], desc: 'Calidad profunda.' },
   { id: 'finanzas_corporativas', name: 'Finanzas corporativas', cost: 100000, time: 120, requires: [], desc: 'Mejores préstamos y rating.' },
   { id: 'comercio_global', name: 'Comercio global', cost: 350000, time: 360, requires: ['logistica_avanzada'], desc: 'Aranceles reducidos.' },
+  { id: 'metalurgia_hidrometalurgia', name: 'Hidrometalurgia', cost: 700000, time: 520, requires: ['metalurgia_avanzada'], desc: 'Lixiviación y electroobtención.' },
+  { id: 'acero_verde', name: 'Acero verde', cost: 900000, time: 600, requires: ['aceros_especiales', 'energia_renovable'], desc: 'Reducción con hidrógeno.' },
+  { id: 'refino_avanzado', name: 'Refino avanzado', cost: 800000, time: 540, requires: ['refino_basico'], desc: 'FCC, hidrotratamiento e isomerización.' },
+  { id: 'petroquimica', name: 'Petroquímica', cost: 950000, time: 620, requires: ['refino_avanzado', 'polimeros'], desc: 'Cadenas olefínicas integradas.' },
+  { id: 'quimica_fina', name: 'Química fina', cost: 1100000, time: 700, requires: ['quimica_basica'], desc: 'Especialidades y catalizadores.' },
+  { id: 'baterias', name: 'Tecnología de baterías', cost: 1500000, time: 800, requires: ['quimica_fina', 'electronica_basica'], desc: 'Celdas Li-ion y BMS.' },
+  { id: 'semiconductores', name: 'Semiconductores', cost: 2500000, time: 900, requires: ['electronica_basica'], desc: 'Wafers y litografía básica.' },
+  { id: 'electronica_auto', name: 'Electrónica de automoción', cost: 1200000, time: 650, requires: ['electronica_basica', 'automocion'], desc: 'ECUs y sensores auto.' },
+  { id: 'farma_biotech', name: 'Biotecnología farma', cost: 2000000, time: 850, requires: ['farma_basica'], desc: 'Biológicos y vacunas.' },
+  { id: 'alimentos_avanzados', name: 'Alimentación avanzada', cost: 500000, time: 400, requires: [], desc: 'Procesado UHT y cold chain.' },
+  { id: 'construccion_prefab', name: 'Prefabricación', cost: 400000, time: 360, requires: ['cemento_basico'], desc: 'Elementos prefabricados.' },
+  { id: 'textil_tecnico', name: 'Textil técnico', cost: 450000, time: 380, requires: [], desc: 'Tejidos de alto rendimiento.' },
+  { id: 'automatizacion_avanzada', name: 'Automatización avanzada', cost: 1200000, time: 700, requires: ['automatizacion'], desc: 'Líneas autónomas y MES.' },
+  { id: 'robotica_industrial', name: 'Robótica industrial', cost: 1600000, time: 780, requires: ['automatizacion_avanzada'], desc: 'Celdas robóticas.' },
+  { id: 'intermodal', name: 'Logística intermodal', cost: 700000, time: 500, requires: ['logistica_avanzada'], desc: 'Camión-tren-barco integrados.' },
+  { id: 'hubs_globales', name: 'Hubs globales', cost: 900000, time: 560, requires: ['intermodal', 'comercio_global'], desc: 'Transbordos optimizados.' },
+  { id: 'bolsa_materias', name: 'Bolsa de materias primas', cost: 300000, time: 240, requires: ['finanzas_corporativas'], desc: 'Futuros y cobertura.' },
+  { id: 'compliance_ambiental', name: 'Compliance ambiental', cost: 550000, time: 420, requires: ['reciclaje'], desc: 'Límites y créditos verdes.' },
+  { id: 'calidad_metrologia', name: 'Metrología industrial', cost: 650000, time: 450, requires: ['calidad_six_sigma'], desc: 'Control estadístico avanzado.' },
+  { id: 'energia_almacenamiento', name: 'Almacenamiento energético', cost: 1000000, time: 640, requires: ['energia_renovable', 'baterias'], desc: 'BESS a escala de red.' },
+  { id: 'hidrogeno_verde', name: 'Hidrógeno verde', cost: 1400000, time: 760, requires: ['energia_renovable'], desc: 'Electrólisis a escala.' },
+  { id: 'economia_circular', name: 'Economía circular', cost: 800000, time: 520, requires: ['reciclaje', 'compliance_ambiental'], desc: 'Bucles cerrados de material.' },
 ];
 
-// ——— Locations (world industrial hubs) ———
-const locations = [
-  { id: 'madrid', name: 'Madrid', country: 'España', region: 'Europa', lat: 40.4168, lng: -3.7038, type: 'hub', tariffs: 0.05, laborCost: 1.0, energyCost: 1.0 },
-  { id: 'barcelona', name: 'Barcelona', country: 'España', region: 'Europa', lat: 41.3874, lng: 2.1686, type: 'port', tariffs: 0.05, laborCost: 1.05, energyCost: 1.05 },
-  { id: 'bilbao', name: 'Bilbao', country: 'España', region: 'Europa', lat: 43.263, lng: -2.935, type: 'industrial', tariffs: 0.05, laborCost: 1.02, energyCost: 0.95 },
-  { id: 'valencia', name: 'Valencia', country: 'España', region: 'Europa', lat: 39.4699, lng: -0.3763, type: 'port', tariffs: 0.05, laborCost: 0.95, energyCost: 1.0 },
-  { id: 'sevilla', name: 'Sevilla', country: 'España', region: 'Europa', lat: 37.3891, lng: -5.9845, type: 'agro', tariffs: 0.05, laborCost: 0.9, energyCost: 1.05 },
-  { id: 'huelva', name: 'Huelva', country: 'España', region: 'Europa', lat: 37.2614, lng: -6.9447, type: 'mining', tariffs: 0.05, laborCost: 0.88, energyCost: 0.9 },
-  { id: 'gijon', name: 'Gijón', country: 'España', region: 'Europa', lat: 43.5322, lng: -5.6611, type: 'industrial', tariffs: 0.05, laborCost: 0.92, energyCost: 0.85 },
-  { id: 'zaragoza', name: 'Zaragoza', country: 'España', region: 'Europa', lat: 41.6488, lng: -0.8891, type: 'logistics', tariffs: 0.05, laborCost: 0.93, energyCost: 1.0 },
-  { id: 'lisboa', name: 'Lisboa', country: 'Portugal', region: 'Europa', lat: 38.7223, lng: -9.1393, type: 'port', tariffs: 0.05, laborCost: 0.85, energyCost: 1.1 },
-  { id: 'paris', name: 'París', country: 'Francia', region: 'Europa', lat: 48.8566, lng: 2.3522, type: 'hub', tariffs: 0.06, laborCost: 1.25, energyCost: 1.15 },
-  { id: 'lyon', name: 'Lyon', country: 'Francia', region: 'Europa', lat: 45.764, lng: 4.8357, type: 'industrial', tariffs: 0.06, laborCost: 1.15, energyCost: 1.1 },
-  { id: 'ruhr', name: 'Cuenca del Ruhr', country: 'Alemania', region: 'Europa', lat: 51.4556, lng: 7.0116, type: 'industrial', tariffs: 0.06, laborCost: 1.3, energyCost: 1.2 },
-  { id: 'hamburgo', name: 'Hamburgo', country: 'Alemania', region: 'Europa', lat: 53.5511, lng: 9.9937, type: 'port', tariffs: 0.06, laborCost: 1.28, energyCost: 1.15 },
-  { id: 'rotterdam', name: 'Róterdam', country: 'Países Bajos', region: 'Europa', lat: 51.9244, lng: 4.4777, type: 'port', tariffs: 0.05, laborCost: 1.35, energyCost: 1.25 },
-  { id: 'amberes', name: 'Amberes', country: 'Bélgica', region: 'Europa', lat: 51.2194, lng: 4.4025, type: 'port', tariffs: 0.05, laborCost: 1.3, energyCost: 1.2 },
-  { id: 'milan', name: 'Milán', country: 'Italia', region: 'Europa', lat: 45.4642, lng: 9.19, type: 'industrial', tariffs: 0.07, laborCost: 1.15, energyCost: 1.3 },
-  { id: 'genova', name: 'Génova', country: 'Italia', region: 'Europa', lat: 44.4056, lng: 8.9463, type: 'port', tariffs: 0.07, laborCost: 1.1, energyCost: 1.25 },
-  { id: 'london', name: 'Londres', country: 'Reino Unido', region: 'Europa', lat: 51.5074, lng: -0.1278, type: 'hub', tariffs: 0.08, laborCost: 1.4, energyCost: 1.35 },
-  { id: 'gdansk', name: 'Gdansk', country: 'Polonia', region: 'Europa', lat: 54.352, lng: 18.6466, type: 'port', tariffs: 0.04, laborCost: 0.7, energyCost: 0.9 },
-  { id: 'katowice', name: 'Katowice', country: 'Polonia', region: 'Europa', lat: 50.2649, lng: 19.0238, type: 'industrial', tariffs: 0.04, laborCost: 0.68, energyCost: 0.85 },
-  { id: 'estambul', name: 'Estambul', country: 'Turquía', region: 'Europa', lat: 41.0082, lng: 28.9784, type: 'hub', tariffs: 0.1, laborCost: 0.55, energyCost: 0.8 },
-  { id: 'moscu', name: 'Moscú', country: 'Rusia', region: 'Europa', lat: 55.7558, lng: 37.6173, type: 'hub', tariffs: 0.12, laborCost: 0.5, energyCost: 0.6 },
-  { id: 'dubai', name: 'Dubái', country: 'EAU', region: 'Asia', lat: 25.2048, lng: 55.2708, type: 'port', tariffs: 0.03, laborCost: 0.9, energyCost: 0.5 },
-  { id: 'riyadh', name: 'Riad', country: 'Arabia Saudí', region: 'Asia', lat: 24.7136, lng: 46.6753, type: 'energy', tariffs: 0.04, laborCost: 0.7, energyCost: 0.35 },
-  { id: 'mumbai', name: 'Mumbai', country: 'India', region: 'Asia', lat: 19.076, lng: 72.8777, type: 'hub', tariffs: 0.11, laborCost: 0.35, energyCost: 0.7 },
-  { id: 'singapur', name: 'Singapur', country: 'Singapur', region: 'Asia', lat: 1.3521, lng: 103.8198, type: 'port', tariffs: 0.02, laborCost: 1.1, energyCost: 1.0 },
-  { id: 'shanghai', name: 'Shanghái', country: 'China', region: 'Asia', lat: 31.2304, lng: 121.4737, type: 'port', tariffs: 0.09, laborCost: 0.55, energyCost: 0.75 },
-  { id: 'shenzhen', name: 'Shenzhen', country: 'China', region: 'Asia', lat: 22.5431, lng: 114.0579, type: 'electronics', tariffs: 0.09, laborCost: 0.6, energyCost: 0.8 },
-  { id: 'tokio', name: 'Tokio', country: 'Japón', region: 'Asia', lat: 35.6762, lng: 139.6503, type: 'hub', tariffs: 0.07, laborCost: 1.45, energyCost: 1.4 },
-  { id: 'seul', name: 'Seúl', country: 'Corea del Sur', region: 'Asia', lat: 37.5665, lng: 126.978, type: 'electronics', tariffs: 0.07, laborCost: 1.2, energyCost: 1.15 },
-  { id: 'newyork', name: 'Nueva York', country: 'EE.UU.', region: 'América', lat: 40.7128, lng: -74.006, type: 'hub', tariffs: 0.08, laborCost: 1.5, energyCost: 1.2 },
-  { id: 'houston', name: 'Houston', country: 'EE.UU.', region: 'América', lat: 29.7604, lng: -95.3698, type: 'energy', tariffs: 0.08, laborCost: 1.3, energyCost: 0.7 },
-  { id: 'detroit', name: 'Detroit', country: 'EE.UU.', region: 'América', lat: 42.3314, lng: -83.0458, type: 'industrial', tariffs: 0.08, laborCost: 1.25, energyCost: 0.95 },
-  { id: 'chicago', name: 'Chicago', country: 'EE.UU.', region: 'América', lat: 41.8781, lng: -87.6298, type: 'logistics', tariffs: 0.08, laborCost: 1.28, energyCost: 1.0 },
-  { id: 'sao_paulo', name: 'São Paulo', country: 'Brasil', region: 'América', lat: 23.5558, lng: -46.6396, type: 'hub', tariffs: 0.12, laborCost: 0.6, energyCost: 0.85 },
-  { id: 'santos', name: 'Santos', country: 'Brasil', region: 'América', lat: -23.9608, lng: -46.3336, type: 'port', tariffs: 0.12, laborCost: 0.55, energyCost: 0.85 },
-  { id: 'buenos_aires', name: 'Buenos Aires', country: 'Argentina', region: 'América', lat: -34.6037, lng: -58.3816, type: 'agro', tariffs: 0.13, laborCost: 0.5, energyCost: 0.7 },
-  { id: 'santiago', name: 'Santiago', country: 'Chile', region: 'América', lat: -33.4489, lng: -70.6693, type: 'mining', tariffs: 0.1, laborCost: 0.65, energyCost: 0.9 },
-  { id: 'antofagasta', name: 'Antofagasta', country: 'Chile', region: 'América', lat: -23.6509, lng: -70.3975, type: 'mining', tariffs: 0.1, laborCost: 0.7, energyCost: 0.85 },
-  { id: 'johannesburgo', name: 'Johannesburgo', country: 'Sudáfrica', region: 'África', lat: -26.2041, lng: 28.0473, type: 'mining', tariffs: 0.11, laborCost: 0.45, energyCost: 0.75 },
-  { id: 'lagos', name: 'Lagos', country: 'Nigeria', region: 'África', lat: 6.5244, lng: 3.3792, type: 'energy', tariffs: 0.14, laborCost: 0.3, energyCost: 0.55 },
-  { id: 'casablanca', name: 'Casablanca', country: 'Marruecos', region: 'África', lat: 33.5731, lng: -7.5898, type: 'port', tariffs: 0.09, laborCost: 0.4, energyCost: 0.8 },
-  { id: 'sydney', name: 'Sídney', country: 'Australia', region: 'Oceanía', lat: -33.8688, lng: 151.2093, type: 'hub', tariffs: 0.07, laborCost: 1.35, energyCost: 1.1 },
-  { id: 'perth', name: 'Perth', country: 'Australia', region: 'Oceanía', lat: -31.9505, lng: 115.8605, type: 'mining', tariffs: 0.07, laborCost: 1.4, energyCost: 0.95 },
-];
+// ——— Locations (miles de ciudades) ———
+const { generateCities } = require('./generate-cities');
+const locations = generateCities();
 
 // ——— Missions (thousands via templates) ———
 const missionTemplates = [];
@@ -1634,22 +1612,27 @@ for (let chapter = 1; chapter <= 40; chapter++) {
 
 // Competitors
 const competitors = [
-  { id: 'ai_iberia_steel', name: 'Iberia Steel S.A.', focus: 'metales', aggressiveness: 0.6, capital: 5000000 },
-  { id: 'ai_eurochem', name: 'EuroChem Holdings', focus: 'quimicos', aggressiveness: 0.7, capital: 8000000 },
-  { id: 'ai_medagro', name: 'Mediterránea Agro', focus: 'agricolas', aggressiveness: 0.4, capital: 2000000 },
-  { id: 'ai_globalport', name: 'GlobalPort Logistics', focus: 'logistica', aggressiveness: 0.5, capital: 4000000 },
-  { id: 'ai_voltpower', name: 'VoltPower Energy', focus: 'energia', aggressiveness: 0.65, capital: 6000000 },
-  { id: 'ai_nexus_elec', name: 'Nexus Electronics', focus: 'electronica', aggressiveness: 0.8, capital: 7000000 },
-  { id: 'ai_autobahn', name: 'Autobahn Motors', focus: 'bienes_capital', aggressiveness: 0.55, capital: 9000000 },
-  { id: 'ai_greenloop', name: 'GreenLoop Recycling', focus: 'residuos', aggressiveness: 0.45, capital: 2500000 },
+  { id: 'ai_iberia_steel', name: 'Iberia Steel S.A.', focus: 'metales', aggressiveness: 0.6, capital: 25000000, home: 'bilbao' },
+  { id: 'ai_eurochem', name: 'EuroChem Holdings', focus: 'quimicos', aggressiveness: 0.7, capital: 40000000, home: 'rotterdam' },
+  { id: 'ai_medagro', name: 'Mediterránea Agro', focus: 'agricolas', aggressiveness: 0.45, capital: 12000000, home: 'sevilla' },
+  { id: 'ai_globalport', name: 'GlobalPort Logistics', focus: 'embalaje', aggressiveness: 0.55, capital: 22000000, home: 'singapur' },
+  { id: 'ai_voltpower', name: 'VoltPower Energy', focus: 'energia', aggressiveness: 0.65, capital: 35000000, home: 'houston' },
+  { id: 'ai_nexus_elec', name: 'Nexus Electronics', focus: 'electronica', aggressiveness: 0.85, capital: 50000000, home: 'shenzhen' },
+  { id: 'ai_autobahn', name: 'Autobahn Motors', focus: 'bienes_capital', aggressiveness: 0.6, capital: 60000000, home: 'ruhr' },
+  { id: 'ai_greenloop', name: 'GreenLoop Recycling', focus: 'residuos', aggressiveness: 0.5, capital: 15000000, home: 'hamburgo' },
+  { id: 'ai_pacific_ore', name: 'Pacific Ore Co.', focus: 'minerales', aggressiveness: 0.7, capital: 30000000, home: 'perth' },
+  { id: 'ai_androfarma', name: 'AndroFarma', focus: 'farmaceuticos', aggressiveness: 0.6, capital: 28000000, home: 'paris' },
+  { id: 'ai_silkroad', name: 'Silk Road Industrials', focus: 'construccion', aggressiveness: 0.55, capital: 33000000, home: 'shanghai' },
+  { id: 'ai_nordic_grid', name: 'Nordic Grid', focus: 'energia', aggressiveness: 0.5, capital: 27000000, home: 'london' },
 ];
 
 // Transport modes
 const transportModes = [
-  { id: 'camion', name: 'Camión', speedKmh: 70, costPerKmTon: 0.18, capacity: 24, unlock: null },
-  { id: 'tren', name: 'Tren', speedKmh: 90, costPerKmTon: 0.08, capacity: 1000, unlock: 'logistica_avanzada' },
-  { id: 'barco', name: 'Barco', speedKmh: 35, costPerKmTon: 0.03, capacity: 20000, unlock: 'logistica_avanzada' },
-  { id: 'avion', name: 'Avión', speedKmh: 750, costPerKmTon: 1.2, capacity: 50, unlock: 'comercio_global' },
+  { id: 'camion', name: 'Camión', speedKmh: 70, costPerKmTon: 0.18, capacity: 24, unlock: null, requiresPort: false, requiresRail: false, requiresAirport: false },
+  { id: 'tren', name: 'Tren', speedKmh: 90, costPerKmTon: 0.08, capacity: 1000, unlock: 'logistica_avanzada', requiresPort: false, requiresRail: true, requiresAirport: false },
+  { id: 'barco', name: 'Barco', speedKmh: 35, costPerKmTon: 0.03, capacity: 20000, unlock: 'logistica_avanzada', requiresPort: true, requiresRail: false, requiresAirport: false },
+  { id: 'avion', name: 'Avión', speedKmh: 750, costPerKmTon: 1.2, capacity: 50, unlock: 'comercio_global', requiresPort: false, requiresRail: false, requiresAirport: true },
+  { id: 'intermodal', name: 'Intermodal (camión+tren+barco)', speedKmh: 55, costPerKmTon: 0.05, capacity: 5000, unlock: 'intermodal', requiresPort: false, requiresRail: false, requiresAirport: false, legs: ['camion', 'tren', 'barco'] },
 ];
 
 function writeJs(filename, exportName, data) {
@@ -1658,6 +1641,215 @@ function writeJs(filename, exportName, data) {
   fs.writeFileSync(file, `/** Auto-generado — no editar a mano */\nwindow.IM_DATA = window.IM_DATA || {};\nwindow.IM_DATA.${exportName} = ${json};\n`);
   console.log('Wrote', filename, Array.isArray(data) ? data.length : typeof data);
 }
+
+
+// ——— Expansión masiva v2: ítems + recetas ———
+const moreMetals = ['Vanadio', 'Niobio', 'Tántalo', 'Hafnio', 'Renio', 'Indio', 'Galio', 'Germanio', 'Antimonio', 'Bismuto', 'Cadmio', 'Teluro', 'Selenio', 'Berilio', 'Circonio'];
+moreMetals.forEach((m, i) => {
+  ['mena', 'concentrado', 'óxido', 'metal', 'polvo', 'aleación', 'lingote', 'chapa'].forEach((st, si) => {
+    addItem({ name: `${m} ${st}`, category: 'metales', tier: 1 + si, unit: si < 4 ? 't' : 'kg', basePrice: 2000 * (i + 1) * (1 + si * 0.4) });
+  });
+});
+
+const chemOps = ['hidrogenado', 'oxidado', 'clorurado', 'sulfonado', 'nitrado', 'polimerizado', 'destilado', 'cristalizado'];
+['Benceno', 'Tolueno', 'Xileno', 'Etileno', 'Propileno', 'Butadieno', 'Metanol', 'Etanol industrial', 'Fenol', 'Acetona'].forEach((base) => {
+  chemOps.forEach((op, oi) => {
+    const name = `${base} ${op}`;
+    if (!itemIndex.has(idify(name))) {
+      addItem({ name, category: 'quimicos', tier: 3 + (oi % 3), unit: 't', basePrice: 900 + oi * 120 });
+    }
+  });
+});
+
+const elecFamilies = ['SoC', 'GPU embebida', 'PMIC', 'ADC', 'DAC', 'PHY Ethernet', 'WiFi módulo', 'Bluetooth módulo', 'CAN transceiver', 'Gate driver'];
+const elecNodes = ['90nm', '65nm', '40nm', '28nm', '16nm', '7nm', '5nm'];
+elecFamilies.forEach((f) => {
+  elecNodes.forEach((n, ni) => {
+    addItem({ name: `${f} ${n}`, category: 'electronica', tier: 5 + Math.floor(ni / 2), unit: 'ud', basePrice: 5 * (ni + 1) ** 2 });
+  });
+});
+
+const packForms = ['botella', 'brick', 'bolsa doypack', 'lata', 'tarro', 'blíster', 'ampolla', 'jeringa precargada'];
+const packVolumes = ['100ml', '250ml', '500ml', '1L', '2L', '5L', '10L', '20L'];
+packForms.forEach((f) => {
+  packVolumes.forEach((v) => {
+    addItem({ name: `Envase ${f} ${v}`, category: 'embalaje', tier: 3, unit: 'ud', basePrice: 0.05 + packVolumes.indexOf(v) * 0.04 });
+  });
+});
+
+const buildingMats = [];
+for (let mpa = 20; mpa <= 80; mpa += 5) {
+  for (const agg of ['árido calizo', 'árido silíceo', 'árido reciclado']) {
+    buildingMats.push([`Hormigón C${mpa} ${agg}`, 70 + mpa]);
+  }
+}
+buildingMats.forEach(([name, price]) => addItem({ name, category: 'construccion', tier: 3, unit: 't', basePrice: price }));
+
+// Auto-recipes: for every item that looks like processed form of another
+let autoRec = 0;
+items.filter((it) => it.category === 'quimicos' && it.tier >= 3).slice(0, 400).forEach((it, idx) => {
+  const feed = items.find((x) => x.category === 'quimicos' && x.tier === 2 && x.id !== it.id);
+  if (!feed) return;
+  addRecipe({
+    name: `Síntesis ${it.name}`,
+    building: 'planta_quimica',
+    machine: 'reactor_generico',
+    inputs: [{ item: feed.id, qty: 1.1 }],
+    outputs: [{ item: it.id, qty: 1 }],
+    byproducts: [{ item: ensure('CO₂ emitido'), qty: 10 }],
+    energyKwh: 80,
+    waterM3: 2,
+    timeMinutes: 55,
+    pollution: 2,
+    tech: idx % 2 === 0 ? 'quimica_fina' : 'quimica_basica',
+    qualityBase: 55,
+  });
+  autoRec++;
+});
+
+items.filter((it) => it.category === 'metales' && it.name.includes('chapa')).slice(0, 80).forEach((it) => {
+  const feed = items.find((x) => x.category === 'metales' && x.name.includes('lingote')) || itemIndex.get('acero_laminado');
+  if (!feed) return;
+  addRecipe({
+    name: `Laminar ${it.name}`,
+    building: 'laminacion',
+    machine: 'laminador',
+    inputs: [{ item: feed.id, qty: 1.05 }],
+    outputs: [{ item: it.id, qty: 1 }],
+    energyKwh: 90,
+    timeMinutes: 40,
+    pollution: 1.5,
+    tech: 'metalurgia_avanzada',
+    qualityBase: 60,
+  });
+});
+
+items.filter((it) => it.category === 'electronica' && it.name.includes('PCB')).slice(0, 120).forEach((it) => {
+  addRecipe({
+    name: `Fabricar ${it.name}`,
+    building: 'electronica',
+    machine: 'linea_smt',
+    inputs: [
+      { item: ensure('Cobre electrolítico'), qty: 0.001 },
+      { item: ensure('Resina epoxi'), qty: 0.0005 },
+    ],
+    outputs: [{ item: it.id, qty: 1 }],
+    energyKwh: 2,
+    timeMinutes: 20,
+    pollution: 0.2,
+    tech: 'electronica_basica',
+    qualityBase: 65,
+  });
+});
+
+items.filter((it) => it.category === 'farmaceuticos' && it.name.endsWith(' API')).slice(0, 80).forEach((it) => {
+  addRecipe({
+    name: `Sintetizar ${it.name}`,
+    building: 'planta_farmaceutica',
+    machine: 'reactor_farmaceutico',
+    inputs: [
+      { item: ensure('Fenol'), qty: 0.5 },
+      { item: ensure('Ácido acético'), qty: 0.3 },
+    ],
+    outputs: [{ item: it.id, qty: 1 }],
+    energyKwh: 100,
+    waterM3: 2,
+    timeMinutes: 150,
+    pollution: 1.5,
+    tech: 'farma_basica',
+    qualityBase: 80,
+  });
+});
+
+items.filter((it) => it.category === 'embalaje' && it.name.startsWith('Envase')).slice(0, 150).forEach((it) => {
+  addRecipe({
+    name: `Moldear ${it.name}`,
+    building: 'planta_polimeros',
+    machine: 'reactor_polimerizacion',
+    inputs: [{ item: ensure('PET granza'), qty: 0.02 }],
+    outputs: [{ item: it.id, qty: 1 }],
+    energyKwh: 1,
+    timeMinutes: 5,
+    pollution: 0.1,
+    tech: 'polimeros',
+    qualityBase: 55,
+  });
+});
+
+
+// Push toward 5k–8k SKUs
+const alloySeries = [];
+for (let c = 0.1; c <= 1.0; c += 0.1) {
+  for (let cr = 0; cr <= 18; cr += 3) {
+    for (let ni of [0, 8, 10, 12]) {
+      alloySeries.push(`Inox ${Math.round(cr)}-${ni} C${c.toFixed(1)}`);
+    }
+  }
+}
+alloySeries.forEach((name, i) => addItem({ name, category: 'metales', tier: 5, unit: 't', basePrice: 1800 + i * 15 }));
+
+const motorKW = [0.75, 1.5, 3, 5.5, 7.5, 11, 15, 22, 30, 37, 45, 55, 75, 90, 110, 132, 160, 200, 250, 315];
+const motorEff = ['IE2', 'IE3', 'IE4', 'IE5'];
+motorKW.forEach((kw) => {
+  motorEff.forEach((ef, ei) => {
+    addItem({ name: `Motor ${kw} kW ${ef}`, category: 'mecanicos', tier: 4 + ei, unit: 'ud', basePrice: 120 * kw * (1 + ei * 0.25) });
+  });
+});
+
+const pumpFlow = [5, 10, 20, 50, 100, 200, 500, 1000];
+const pumpHead = [10, 20, 40, 80, 120];
+pumpFlow.forEach((q) => {
+  pumpHead.forEach((h) => {
+    addItem({ name: `Bomba ${q} m³/h ${h} m.c.a.`, category: 'mecanicos', tier: 4, unit: 'ud', basePrice: 200 + q * 3 + h * 4 });
+  });
+});
+
+const cableKv = ['0.6/1kV', '3.6/6kV', '6/10kV', '8.7/15kV', '12/20kV', '18/30kV'];
+const cableSec = [1.5, 2.5, 4, 6, 10, 16, 25, 35, 50, 70, 95, 120, 150, 185, 240, 300];
+cableKv.forEach((kv) => {
+  cableSec.forEach((s) => {
+    addItem({ name: `Cable potencia ${kv} ${s} mm²`, category: 'mecanicos', tier: 4, unit: 'm', basePrice: 0.5 + s * 0.08 + cableKv.indexOf(kv) });
+  });
+});
+
+const foodSku = ['Yogur', 'Leche fermentada', 'Queso fresco', 'Queso semicurado', 'Mantequilla', 'Nata', 'Helado industrial', 'Postre lácteo'];
+const foodPack = ['granel', 'retail 4u', 'horeca', 'export'];
+foodSku.forEach((f) => foodPack.forEach((pk) => addItem({ name: `${f} ${pk}`, category: 'alimentacion', tier: 3, unit: 't', basePrice: 900 + f.length * 20 })));
+
+const solarW = [400, 450, 500, 550, 600, 650, 700];
+const solarTech = ['PERC', 'TOPCon', 'HJT', 'Ibc', 'CdTe'];
+solarW.forEach((w) => solarTech.forEach((t) => addItem({ name: `Módulo FV ${w}W ${t}`, category: 'bienes_capital', tier: 5, unit: 'ud', basePrice: w * 0.25 * (1 + solarTech.indexOf(t) * 0.1) })));
+
+
+
+// Final push past 5000+
+const valveDN = [15,20,25,32,40,50,65,80,100,125,150,200,250,300,350,400];
+const valveKind = ['globo', 'asiento', 'compuerta', 'mariposa', 'bola', 'retención', 'seguridad', 'reguladora'];
+const valveMat = ['AC', 'SS304', 'SS316', 'bronce', 'PVC', 'PVDF'];
+valveDN.forEach((dn) => {
+  valveKind.forEach((k) => {
+    valveMat.forEach((m) => {
+      addItem({ name: `Válvula ${k} DN${dn} ${m}`, category: 'mecanicos', tier: 4, unit: 'ud', basePrice: 25 + dn * 0.4 + valveMat.indexOf(m) * 12 });
+    });
+  });
+});
+
+const resinColors = ['natural', 'negro', 'blanco', 'rojo', 'azul', 'verde', 'gris', 'amarillo'];
+['PEAD', 'PP', 'ABS', 'PC', 'PA6'].forEach((r) => {
+  resinColors.forEach((c) => {
+    addItem({ name: `${r} masterbatch ${c}`, category: 'quimicos', tier: 3, unit: 't', basePrice: 1600 + resinColors.indexOf(c) * 40 });
+  });
+});
+
+
+
+for (let i = 1; i <= 200; i++) {
+  addItem({ name: `Catalizador specialty grade ${i}`, category: 'quimicos', tier: 4, unit: 'kg', basePrice: 40 + i });
+  addItem({ name: `Sensor industrial SKU-${1000+i}`, category: 'electronica', tier: 4, unit: 'ud', basePrice: 15 + i * 0.5 });
+}
+
+console.log('Auto-recipes added ~', autoRec);
+
 
 fs.mkdirSync(outDir, { recursive: true });
 writeJs('items.js', 'items', items);
