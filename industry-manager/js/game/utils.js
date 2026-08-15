@@ -20,14 +20,31 @@ IM.formatNum = (n, digits = 1) => {
   return v.toLocaleString('es-ES', { maximumFractionDigits: digits });
 };
 
+IM.daysInYear = (year) => {
+  const y = Number(year) || 2000;
+  return y % 4 === 0 && (y % 100 !== 0 || y % 400 === 0) ? 366 : 365;
+};
+
+IM.dateFromDayOfYear = (year, dayOfYear) => {
+  const months = [31, IM.daysInYear(year) === 366 ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  let d = Math.max(1, Number(dayOfYear) || 1);
+  for (let m = 0; m < 12; m++) {
+    if (d <= months[m]) return { year, month: m + 1, day: d };
+    d -= months[m];
+  }
+  return { year, month: 12, day: months[11] };
+};
+
+IM.formatGameDate = (state) => {
+  const dt = IM.dateFromDayOfYear(state.year, state.day);
+  const months = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+  return `${dt.day} ${months[dt.month - 1]} ${dt.year}`;
+};
+
 IM.formatGameTime = (state) => {
-  const d = state.day;
   const h = String(state.hour).padStart(2, '0');
   const m = String(Math.floor(state.minute)).padStart(2, '0');
-  const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
-  const month = months[(d - 1) % 12];
-  const year = state.year;
-  return `${year} ${month} · día ${((d - 1) % 30) + 1} · ${h}:${m}`;
+  return `${IM.formatGameDate(state)} · ${h}:${m}`;
 };
 
 IM.haversineKm = (lat1, lon1, lat2, lon2) => {

@@ -14,7 +14,7 @@ IM.createInitialState = function () {
     version: cfg.version,
     companyName: 'Tu Corporación Industrial',
     money: cfg.startingMoney,
-    year: 2026,
+    year: 2000,
     day: 1,
     hour: 8,
     minute: 0,
@@ -202,7 +202,8 @@ IM.Game = class Game {
       st.day += 1;
       this.onDay();
     }
-    if (st.day > 360) {
+    const daysInYear = IM.daysInYear(st.year);
+    if (st.day > daysInYear) {
       st.day = 1;
       st.year += 1;
       this.onYear();
@@ -244,8 +245,25 @@ IM.Game = class Game {
   }
 
   applySoftInflationDaily() {
-    const daily = Math.pow(1 + IM_CONFIG.inflationYearly, 1 / 360) - 1;
+    const days = IM.daysInYear(this.state.year) || 365;
+    const daily = Math.pow(1 + IM_CONFIG.inflationYearly, 1 / days) - 1;
     this.state.inflationIndex *= 1 + daily;
+  }
+
+  /** Avanza exactamente un día de juego (minutos restantes + día completo hasta el mismo punto). */
+  skipOneDay() {
+    if (!this.state || this._skippingDay) return { ok: false, error: 'Ocupado' };
+    this._skippingDay = true;
+    const startYear = this.state.year;
+    const startDay = this.state.day;
+    let guard = 0;
+    while (this.state.year === startYear && this.state.day === startDay && guard < 60 * 24 + 5) {
+      this.advanceOneGameMinute();
+      guard++;
+    }
+    this._skippingDay = false;
+    this.emit();
+    return { ok: true, year: this.state.year, day: this.state.day };
   }
 
   // ——— Inventario / storage ———

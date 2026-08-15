@@ -71,14 +71,15 @@ window.IM_DATA.politicalEvents = [
 ];
 
 window.IM_DATA.tutorialSteps = [
-  { id: 'welcome', title: 'Bienvenida', body: 'Industry Manager es una campaña industrial de décadas. Empiezas con 100 M€ y cero plantas. Este tutorial te guía la primera hora.', panel: null, action: null },
+  { id: 'welcome', title: 'Bienvenida', body: 'Industry Manager es una campaña industrial de 100 años. Empiezas el 1 de enero de 2000 en Málaga, con 100 M€ y cero plantas.', panel: null, action: null },
   { id: 'branch', title: 'Elige rama', body: 'Agro andaluz, Acero o Chips. Marca misiones y el tono de la campaña. Si ya elegiste, pulsa Siguiente.', panel: 'campana', check: (g) => !!g.state.campaignBranch },
-  { id: 'map', title: 'Fundá en el mapa', body: 'Ve a Mapa y haz click en una ciudad real (OSM). Andalucía para agro, costa para puerto, capital = suelo caro.', panel: 'mapa', check: (g) => g.state.sites.length > 0 },
+  { id: 'map', title: 'Fundá en el mapa', body: 'Ve a Mapa (centrado en Málaga) y haz click en una ciudad real (OSM). Empieza en Málaga o la Costa del Sol.', panel: 'mapa', check: (g) => g.state.sites.length > 0 },
   { id: 'filial', title: 'Filial especializada', body: 'En Filiales, crea o confirma la especialización de tu primera planta.', panel: 'filiales', check: (g) => Object.keys(g.state.subsidiaries || {}).length > 0 },
-  { id: 'build', title: 'Construye', body: 'En Industria, filtra por tipo y construye un edificio con logo. Hay cientos, ordenados por categoría.', panel: 'industria', check: (g) => g.state.sites.some((s) => s.buildings.length > 1) },
+  { id: 'build', title: 'Construye (pestañas)', body: 'En Industria, usa las pestañas de categoría. Solo tipologías únicas (sin Mk). Construye un edificio con logo.', panel: 'industria', check: (g) => g.state.sites.some((s) => s.buildings.length > 1) },
   { id: 'machine', title: 'Instala máquina', body: 'Abre un edificio, instala máquina + receta en un hueco. ¡Sin esto no produces!', panel: 'industria', check: (g) => g.state.sites.some((s) => s.buildings.some((b) => (b.slots || []).some(Boolean))) },
   { id: 'market', title: 'Mercado', body: 'Compra inputs o vende outputs. Cada producto tiene su logo. Prueba el Comparador.', panel: 'mercado', check: (g) => (g.state.stats?.revenue || 0) > 0 || Object.keys(g.state.soldLifetime || {}).length > 0 },
+  { id: 'day', title: 'Saltar un día', body: 'En la barra superior, ▶▶ +1 día avanza exactamente 24 h. Usa Guías siglo para el plan día a día.', panel: 'guias', check: (g) => (g.state.day > 1) || (g.state.year > 2000) },
   { id: 'coach', title: '¿Qué hago?', body: 'Si te pierdes, abre ¿Qué hago? o mira el dock inferior. El Consejo vota prioridades semanales.', panel: 'coach' },
   { id: 'cloud', title: 'Guardado nube', body: 'En Ajustes → Nube: crea cuenta local, sube/descarga partidas. También tienes códigos IM6.', panel: 'ajustes' },
-  { id: 'done', title: '¡Listo!', body: 'La campaña dura años (24 capítulos). Al llegar lejos desbloqueas escenarios sandbox. ¡Buena industria!', panel: 'campana' },
+  { id: 'done', title: 'Listo', body: 'Dashboard vibrante, DJ bioma y misiones de ciudad te acompañan. ¡A dominar el catálogo en 100 años!', panel: 'dashboard', action: 'finish' },
 ];

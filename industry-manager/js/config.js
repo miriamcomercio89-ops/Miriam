@@ -1,19 +1,21 @@
-/* Industry Manager v7 — tutorial, cloud, edificios, política */
+/* Industry Manager v8 — calendario 2000, Málaga, guías, DJ, edificios únicos */
 window.IM_CONFIG = {
   name: 'Industry Manager',
-  version: '7.0.0',
+  version: '8.0.0',
   realMsPerGameMinute: 1000,
   speeds: [0, 1, 2, 5, 10, 30],
   startingMoney: 100000000,
-  saveKey: 'industry_manager_save_v7',
+  saveKey: 'industry_manager_save_v8',
   autosaveMinutesReal: 2,
   inflationYearly: 0.02,
   baseInterestRate: 0.055,
   corporateTax: 0.22,
   maxQuality: 100,
   employeeBaseWageHourly: 18,
-  mapDefaultZoom: 5,
-  mapCenter: [40.4, -3.7],
+  mapDefaultZoom: 11,
+  mapCenter: [36.7213, -4.4214], // Málaga
+  startCityHint: 'Málaga',
+  campaignStartYear: 2000,
   cheatUnlockAllCode: 'INDUSTRIA_TOTAL',
   foundingOfficeCost: 250000,
   exploreCost: 15000,
@@ -24,4 +26,7 @@ window.IM_CONFIG = {
   campaignOnly: true,
   maintenanceWearPerHour: 0.002,
   seasonCycleDays: 90,
+  guidesPath: 'guias',
+  guidesYearStart: 2000,
+  guidesYearEnd: 2099,
 };

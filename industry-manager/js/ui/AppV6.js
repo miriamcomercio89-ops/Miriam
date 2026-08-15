@@ -15,6 +15,8 @@ window.IM = window.IM || {};
         ['coach', '¿Qué hago?'],
         ['filiales', 'Filiales'],
         ['export', 'Export hubs'],
+        ['misiones_locales', 'Misiones ciudad'],
+        ['guias', 'Guías siglo'],
       ],
     },
     {
@@ -55,6 +57,7 @@ window.IM = window.IM || {};
         ['enciclopedia', 'Enciclopedia'],
         ['competencia', 'Competencia'],
         ['eventos', 'Eventos'],
+        ['dj', 'DJ bioma'],
       ],
     },
     {
