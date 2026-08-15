@@ -282,6 +282,43 @@ dialog::backdrop { background: rgba(0,0,0,0.6); }
 .nav-btn { font-weight: 600; }
 .market-row { grid-template-columns: 40px 1.4fr auto auto auto auto; }
 
+.coach-dock {
+  position: fixed; left: 200px; bottom: 16px; z-index: 8000;
+  display: flex; align-items: center; gap: 10px; max-width: min(640px, calc(100vw - 360px));
+  padding: 10px 12px; border-radius: 14px;
+  background: linear-gradient(135deg, rgba(20, 60, 72, 0.95), rgba(10, 28, 36, 0.95));
+  border: 1px solid var(--line); box-shadow: var(--shadow);
+  font-size: 13px;
+}
+.coach-dock span { color: var(--muted); flex: 1; }
+.coach-card { display: flex; justify-content: space-between; gap: 12px; align-items: center; }
+.filial-card { margin-bottom: 10px; }
+.news-card { border-left: 4px solid var(--accent); }
+.alert-card { border-left: 4px solid var(--danger); }
+
+.layout-canvas {
+  position: relative; height: 280px; margin: 12px 0 20px;
+  border: 1px dashed var(--line); border-radius: 14px;
+  background:
+    linear-gradient(90deg, rgba(45,212,191,0.05) 1px, transparent 1px) 0 0 / 40px 40px,
+    linear-gradient(rgba(45,212,191,0.05) 1px, transparent 1px) 0 0 / 40px 40px,
+    rgba(7, 18, 26, 0.7);
+  overflow: hidden;
+}
+.layout-title {
+  position: absolute; left: 10px; top: 6px; font-size: 12px; color: var(--muted); z-index: 1;
+}
+.layout-node {
+  position: absolute; width: 140px; min-height: 44px; padding: 8px;
+  border-radius: 10px; border: 1px solid var(--accent-2);
+  background: linear-gradient(160deg, #1a4a52, #0f2a32);
+  cursor: grab; font-size: 12px; user-select: none; z-index: 2;
+}
+.layout-node.blocked { border-color: var(--danger); background: #3a1a22; }
+.layout-node.empty {
+  border-style: dashed; opacity: 0.55; cursor: default; color: var(--muted);
+}
+
 .leaflet-container { background: #071018; font: inherit; }
 
 @media (max-width: 1100px) {
@@ -289,4 +326,5 @@ dialog::backdrop { background: rgba(0,0,0,0.6); }
   .inspector { display: none; }
   .ency-layout { grid-template-columns: 1fr; }
   .market-row { grid-template-columns: 36px 1fr; }
+  .coach-dock { left: 12px; max-width: calc(100vw - 24px); }
 }

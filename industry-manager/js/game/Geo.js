@@ -181,6 +181,11 @@ IM.Geo = {
         source: 'nominatim',
         displayName: data.display_name || city,
       };
+      const land = this.inferLandZone(loc);
+      loc.zone = land.zone;
+      loc.landCost = land.landCost;
+      loc.hasPort = land.hasPort;
+      loc.hasAirport = land.hasAirport;
       this._cache[key] = loc;
       return loc;
     } catch (e) {
@@ -211,6 +216,11 @@ IM.Geo = {
         displayName: name,
         error: String(e.message || e),
       };
+      const land = this.inferLandZone(loc);
+      loc.zone = land.zone;
+      loc.landCost = land.landCost;
+      loc.hasPort = land.hasPort;
+      loc.hasAirport = land.hasAirport;
       this._cache[key] = loc;
       return loc;
     }
@@ -225,6 +235,53 @@ IM.Geo = {
     if (type === 'energy') return 'energia';
     if (type === 'agro') return 'agro';
     return type === 'industrial' ? 'industria' : 'general';
+  },
+
+  /** Zonas de coste de suelo + hubs (puerto / aeropuerto) */
+  inferLandZone(loc) {
+    const name = String(loc.name || loc.displayName || '').toLowerCase();
+    const lat = loc.lat || 0;
+    const lng = loc.lng || 0;
+    const capitals =
+      /madrid|barcelona|paris|berlin|london|roma|lisboa|lisbon|amsterdam|bruselas|varsovia|viena|atenas|dublin|estocolmo|oslo|helsinki|washington|tokio|beijing|se[uú]l|ciudad de m[eé]xico|buenos aires|santiago|lima|bogot/i;
+    const portWord = /puerto|port|harbour|hafen|porto|haven|mar[ií]timo/i;
+    const industrialWord = /pol[ií]gono|industrial|zona franca|parque tecnol|tecnol[oó]gico/i;
+    const nearCoastES =
+      lat > 35.5 && lat < 44 && lng > -10 && lng < 4 && (lat < 37.5 || lat > 41.5 || lng < -5.5 || lng > -0.5);
+
+    let hasPort = !!loc.hasPort || portWord.test(name) || loc.type === 'port' || nearCoastES;
+    let hasAirport = !!loc.hasAirport || loc.type === 'hub' || capitals.test(name);
+    let zone = 'rural';
+    let landCost = 0.75;
+
+    if (capitals.test(name)) {
+      zone = 'capital';
+      landCost = 1.85;
+      hasAirport = true;
+    } else if (industrialWord.test(name) || loc.type === 'industrial') {
+      zone = 'poligono';
+      landCost = 0.82;
+    } else if (hasPort || loc.type === 'port') {
+      zone = 'puerto';
+      landCost = 1.35;
+      hasPort = true;
+    } else if (loc.type === 'hub' || hasAirport) {
+      zone = 'hub';
+      landCost = 1.25;
+    } else if (nearCoastES) {
+      zone = 'costa';
+      landCost = 1.1;
+      hasPort = true;
+    } else {
+      zone = 'rural';
+      landCost = 0.72;
+    }
+
+    if ((loc.countryCode || '').toUpperCase() === 'ES' && lat < 39 && zone === 'rural') {
+      landCost = 0.68;
+    }
+
+    return { zone, landCost, hasPort, hasAirport };
   },
 
   async searchCity(query) {
