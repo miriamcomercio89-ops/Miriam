@@ -80,31 +80,67 @@ CATEGORIAS = [
 CAT_BY_NAME = {c["nombre"]: c for c in CATEGORIAS}
 
 PROCEDIMIENTOS = {
-  "otc": "1) Saludo y escucha · 2) Preguntas (quién, síntomas, alergias, otros fármacos, embarazo) · 3) Indicación / derivación · 4) Posología · 5) Cobro y consejo.",
-  "rx": "1) Identificar paciente · 2) Validar receta (papel/e-receta) · 3) Interacciones/alergias · 4) Dispensar · 5) Información al paciente · 6) Cobro SNS/mutua.",
-  "ctrl": "1) Receta válida · 2) DNI · 3) Visado si aplica · 4) Libro de estupefacientes · 5) Firma farmacéutico · 6) Dispensar cantidad exacta.",
-  "nevera": "1) Verificar cadena de frío · 2) Sacar de nevera al dispensar · 3) Bolsa isotérmica · 4) Explicar conservación 2–8 °C.",
-  "vet": "1) Confirmar especie/peso · 2) No usar medicamentos humanos sin criterio · 3) Consejo de dosificación veterinaria · 4) Cobro.",
-  "optica": "1) Tipo de lentilla/líquido · 2) Higiene de manos · 3) No compartir · 4) Revisar caducidad del bote.",
-  "orto": "1) Medir talla · 2) Probar ajuste · 3) Explicar uso/horas · 4) Cuándo derivar a ortopedia/traumatólogo.",
+  "otc": "1) Saludo y escucha · 2) Preguntas (quién, síntomas, alergias, otros fármacos, embarazo) · 3) Indicación / derivación · 4) Posología · 5) Cobro y consejo de seguimiento 48–72 h.",
+  "rx": "1) Identificar paciente (DNI) · 2) Validar receta papel/e-receta y fase · 3) Alergias e interacciones · 4) Dispensar cantidad correcta · 5) Información de uso y adherencia · 6) Cobro SNS/mutua/particular.",
+  "ctrl": "1) Receta válida y vigente · 2) DNI del paciente · 3) Visado si aplica · 4) Asiento en libro de estupefacientes · 5) Firma del farmacéutico · 6) Dispensar SOLO la cantidad prescrita · 7) Consejos de seguridad.",
+  "nevera": "1) Verificar cadena de frío (2–8 °C) · 2) No dispensar si ha roto frío · 3) Sacar de nevera al cobro · 4) Bolsa isotérmica + hielo gel · 5) Explicar conservación en domicilio y caducidad tras apertura.",
+  "vet": "1) Confirmar especie, peso y edad · 2) No sustituir por medicamento humano sin criterio veterinario · 3) Revisar dosis mg/kg · 4) Explicar administración · 5) Cobro.",
+  "optica": "1) Confirmar tipo de lentilla / líquido / pila · 2) Higiene de manos y no compartir · 3) Revisar caducidad del envase · 4) Consejo de uso diario/mensual · 5) Cobro.",
+  "orto": "1) Preguntar lesión y lateralidad · 2) Medir talla / elegir apósito · 3) Probar ajuste · 4) Explicar horas de uso y signos de alarma · 5) Derivar a urgencias/traumatólogo si grave.",
+  "solar": "1) Tipo de piel y exposición · 2) FPS y textura · 3) Cantidad y reaplicación · 4) Complementar con ropa/sombra · 5) Cobro.",
+  "infantil": "1) Edad y peso · 2) Calcular dosis mg/kg · 3) Forma farmacéutica adecuada · 4) Alarmas (fiebre <3 meses, letargo) → derivar · 5) Explicar a tutor.",
+  "embarazo": "1) Confirmar trimestre / lactancia · 2) Evitar AINE en 3.er trimestre salvo criterio médico · 3) Preferir opciones seguras documentadas · 4) Derivar si duda · 5) Registrar consejo.",
+  "antibiotico": "1) Validar receta · 2) Alergias (penicilina…) · 3) Cumplir pauta completa · 4) Interacciones · 5) Consejo de microbiota / efectos · 6) Cobro.",
+  "cardio": "1) Validar crónica / e-receta · 2) Adherencia y horarios · 3) Interacciones (AINE, zumo pomelo…) · 4) Consejos TA/síncope · 5) Cobro SNS.",
+  "diabetes": "1) Validar tratamiento · 2) Hipo/hiperglucemia: signos · 3) Conservación (si nevera) · 4) Material de punción si aplica · 5) Cobro.",
+  "mental": "1) Discreción y respeto · 2) Validar receta · 3) Inicio de efecto / no abandonar brusco · 4) Sueño, alcohol, conducción · 5) Cobro.",
+  "digestivo": "1) Distinguir acidez / diarrea / estreñimiento / gases · 2) Alarmas (sangre, pérdida peso) → médico · 3) Posología · 4) Dieta breve · 5) Cobro.",
+  "alergia": "1) Síntomas (rinitis, urticaria, ocular) · 2) Somnolencia de 1.ª generación · 3) Embarazo/lactancia · 4) Posología · 5) Cobro.",
+  "sigre_hint": "Recordar al paciente el punto SIGRE para envases vacíos o caducados.",
 }
 
 
 def proc_for(p):
+  cat = p.get("categoria", "")
+  bits = []
   if p.get("controlado"):
     return PROCEDIMIENTOS["ctrl"]
   if p.get("nevera"):
-    return PROCEDIMIENTOS["nevera"]
-  if p.get("categoria") == "Veterinaria":
+    bits.append(PROCEDIMIENTOS["nevera"])
+  if cat == "Veterinaria":
     return PROCEDIMIENTOS["vet"]
-  if p.get("categoria") in ("Óptica y lentillas", "Audición / pilas"):
+  if cat in ("Óptica y lentillas", "Audición / pilas"):
     return PROCEDIMIENTOS["optica"]
-  if p.get("categoria") in ("Ortopedia ligera", "Apósitos y primeros auxilios"):
+  if cat in ("Ortopedia ligera", "Apósitos y primeros auxilios"):
     return PROCEDIMIENTOS["orto"]
-  if p.get("requiereReceta"):
-    return PROCEDIMIENTOS["rx"]
-  return PROCEDIMIENTOS["otc"]
-
+  if cat == "Solar y fotoprotección":
+    return PROCEDIMIENTOS["solar"]
+  if cat == "Infantil / pediatría OTC":
+    return PROCEDIMIENTOS["infantil"]
+  if cat == "Embarazo y lactancia":
+    return PROCEDIMIENTOS["embarazo"]
+  if cat == "Antibióticos":
+    return PROCEDIMIENTOS["antibiotico"]
+  if cat in ("Cardiovascular", "Anticoagulantes"):
+    return PROCEDIMIENTOS["cardio"]
+  if cat == "Diabetes y endocrino":
+    return PROCEDIMIENTOS["diabetes"]
+  if cat == "Salud mental":
+    return PROCEDIMIENTOS["mental"]
+  if "Digestivo" in cat:
+    return PROCEDIMIENTOS["digestivo"]
+  if "Alergia" in cat:
+    return PROCEDIMIENTOS["alergia"]
+  base = PROCEDIMIENTOS["rx"] if p.get("requiereReceta") else PROCEDIMIENTOS["otc"]
+  # Añadir detalle de producto
+  extra = f" Producto: {p.get('nombre')} ({p.get('principioActivo')}). Presentación {p.get('presentacion')} · {p.get('dosis')}."
+  if p.get("esGenerico"):
+    extra += " Ofrecer equivalencia EFG si el paciente pregunta por precio."
+  if p.get("grupoInteraccion") == "nsaid":
+    extra += " Preguntar anticoagulación, úlcera, embarazo y asma."
+  if p.get("grupoInteraccion") == "analgesico":
+    extra += " No superar 3–4 g/día de paracetamol adulto; revisar otros productos con paracetamol."
+  return base + extra
 
 def P(nombre, marca, lab, pa, cat, sub, presentacion, dosis, uds, precio, iva=4, grupo="otro", icon="💊",
       sintomas=None, rx=None, ctrl=False, nevera=False, efg=False, **extra):
@@ -508,6 +544,166 @@ def build_products():
     if (nombre, marca) in seen:
       continue
     items.append(P(nombre, marca, lab, pa, cat, sub, presentacion, presentacion, 1, precio, iva=21 if cat.startswith("Solar") or cat.startswith("Piel") or cat.startswith("Vitaminas") else 4, icon="🧴"))
+    seen.add((nombre, marca))
+
+  # ——— FASE 2: rellenar categorías finas + más marcas España ———
+  fase2 = [
+    # Resfriado
+    ("Frenadol Descongestivo", "Frenadol", "J&J", "Paracetamol + fenilefrina", "Resfriado y gripe", "Gripe", "Comprimidos", "16 comp", 16, 8.95, 4, "analgesico", "🤧", ["fiebre", "congestión"]),
+    ("Bisolgrip sobres", "Bisolgrip", "Boehringer", "Paracetamol + fenilefrina + clorfenamina", "Resfriado y gripe", "Gripe", "Sobres", "10 sobres", 10, 9.10, 4, "analgesico", "🤒", ["fiebre", "congestión"]),
+    ("Couldina Instantánea", "Couldina", "Uriach", "AAS + clorfenamina + cafeína", "Resfriado y gripe", "Gripe", "Sobres", "10 sobres", 10, 8.40, 4, "nsaid", "🤧", ["fiebre"]),
+    ("Rinovin spray", "Rinovin", "Cinfa", "Oximetazolina", "Resfriado y gripe", "Descongestivo", "Spray 15 ml", "0,5 mg/ml", 1, 6.50, 4, "otro", "👃", ["congestión"]),
+    ("Physiomer Adultos", "Physiomer", "Laboratoires de la Mer", "Agua de mar", "Resfriado y gripe", "Lavado nasal", "Spray 135 ml", "Isotónica", 1, 9.20, 21, "otro", "🌊", ["congestión"]),
+    # Tos
+    ("Paxirasol pastillas", "Paxirasol", "Ferrer", "Dextrometorfano", "Tos y mucolíticos", "Antitusivo", "Pastillas", "20 uds", 20, 7.10, 4, "otro", "🍬", ["tos"]),
+    ("Bisolvon Mucolitico", "Bisolvon", "Boehringer", "Bromhexina", "Tos y mucolíticos", "Mucolítico", "Comprimidos", "8 mg × 20", 20, 6.80, 4, "otro", "🫁", ["tos"]),
+    ("Fluimucil Infantíl", "Fluimucil", "Zambon", "Acetilcisteína", "Tos y mucolíticos", "Pediátrico", "Sobres", "100 mg × 30", 30, 8.50, 4, "otro", "🧒", ["tos"]),
+    ("Cinfamucol acetilcisteína", "Cinfamucol", "Cinfa", "Acetilcisteína", "Tos y mucolíticos", "Mucolítico", "Sobres", "600 mg × 20", 20, 7.90, 4, "otro", "🫧", ["tos"]),
+    # Probióticos
+    ("Casenbiotic sobres", "Casenbiotic", "Casen", "Lactobacillus", "Probióticos y flora", "Flora", "Sobres", "10 sobres", 10, 12.50, 21, "otro", "🦠", ["diarrea"]),
+    ("Ultra Levura 250 mg", "Ultra-Levura", "Biocodex", "Saccharomyces boulardii", "Probióticos y flora", "Flora", "Cápsulas", "250 mg × 20", 20, 11.80, 4, "otro", "🦠", ["diarrea"]),
+    ("Lactophilus", "Lactophilus", "Sanofi", "Lactobacillus", "Probióticos y flora", "Flora", "Cápsulas", "30 cáps", 30, 10.90, 21, "otro", "🦠", ["diarrea"]),
+    ("Enterolactis Plus", "Enterolactis", "Sofar", "L. casei", "Probióticos y flora", "Flora", "Cápsulas", "30 cáps", 30, 13.50, 21, "otro", "🦠", []),
+    # Capilar
+    ("Priorin cápsulas", "Priorin", "Bayer", "Mijo + vitaminas", "Capilar", "Anticaída", "Cápsulas", "60 cáps", 60, 26.90, 21, "otro", "💇", []),
+    ("Pantene clínica — skip", "x", "x", "x", "Capilar", "x", "x", "x", 1, 1, 21, "otro", "💇", []),
+    ("Vichy Dercos Aminexil", "Vichy", "L'Oréal", "Aminexil", "Capilar", "Anticaída", "Ampollas", "12 amp", 12, 34.00, 21, "otro", "💇", []),
+    ("Ducray Anaphase champú", "Ducray", "Pierre Fabre", "Champú anticaída", "Capilar", "Champú", "400 ml", "400 ml", 1, 16.50, 21, "otro", "💇", []),
+    ("Pilopeptan Woman", "Pilopeptan", "Ferrer", "Complejo capilar", "Capilar", "Anticaída", "Comprimidos", "30 comp", 30, 29.90, 21, "otro", "💇", []),
+    # Salud íntima
+    ("Gynea Gine-canestén", "Gine-Canestén", "Bayer", "Clotrimazol", "Salud íntima y sexual", "Antifúngico", "Crema 20 g", "1%", 1, 9.80, 4, "otro", "❤️", []),
+    ("Durex Natural Plus", "Durex", "Reckitt", "Preservativo", "Salud íntima y sexual", "Preservativo", "Caja 12", "12 uds", 12, 9.50, 21, "otro", "❤️", []),
+    ("Control Nature", "Control", "Artsana", "Preservativo", "Salud íntima y sexual", "Preservativo", "Caja 12", "12 uds", 12, 7.90, 21, "otro", "❤️", []),
+    ("Gynosoft gel", "Gynosoft", "Isdin", "Lubricante", "Salud íntima y sexual", "Lubricante", "Gel 50 ml", "50 ml", 1, 11.20, 21, "otro", "❤️", []),
+    ("Fluomizin óvulos", "Fluomizin", "Pierre Fabre", "Cloruro de dequalinio", "Salud íntima y sexual", "Óvulos", "6 óvulos", "6", 6, 14.50, 4, "otro", "❤️", []),
+    # Infantil
+    ("Apiretal solución", "Apiretal", "Ern", "Paracetamol", "Infantil / pediatría OTC", "Analgésico", "Solución 60 ml", "100 mg/ml", 1, 5.20, 4, "analgesico", "🧒", ["fiebre", "dolor"]),
+    ("Dalsy suspensión", "Dalsy", "Abbott", "Ibuprofeno", "Infantil / pediatría OTC", "AINE", "Suspensión 200 ml", "20 mg/ml", 1, 6.80, 4, "nsaid", "🧒", ["fiebre", "dolor"]),
+    ("Blevit digest", "Blevit", "Ordesa", "Infusión", "Infantil / pediatría OTC", "Digestivo", "Bote 150 g", "150 g", 1, 8.90, 21, "otro", "🧒", ["gases"]),
+    ("Suero Oral Pedialyte", "Pedialyte", "Abbott", "Sales rehidratación", "Infantil / pediatría OTC", "Rehidratación", "Botella 500 ml", "500 ml", 1, 4.50, 4, "otro", "🧒", ["diarrea"]),
+    ("NasoFaes Fluid+", "NasoFaes", "Faes", "Suero fisiológico", "Infantil / pediatría OTC", "Nasal", "Monodosis", "30 uds", 30, 6.40, 4, "otro", "🧒", ["congestión"]),
+    ("Bactil infantil — skip", "x", "x", "x", "Infantil / pediatría OTC", "x", "x", "x", 1, 1, 4, "otro", "🧒", []),
+    # Embarazo
+    ("Supradyn Prenatal", "Supradyn", "Bayer", "Multivitamínico prenatal", "Embarazo y lactancia", "Vitaminas", "Comprimidos", "30 comp", 30, 14.90, 21, "otro", "🤰", ["vitaminas"]),
+    ("Natalben Supra", "Natalben", "Italfarmaco", "Ácido fólico + DHA", "Embarazo y lactancia", "Vitaminas", "Cápsulas", "30 cáps", 30, 16.50, 21, "otro", "🤰", ["vitaminas"]),
+    ("Cariban cápsulas", "Cariban", "Inibsa", "Doxilamina + piridoxina", "Embarazo y lactancia", "Náuseas", "Cápsulas", "24 cáps", 24, 9.80, 4, "otro", "🤰", ["náuseas"]),
+    ("Seidibion Mater", "Seidibion", "Seid", "Complejo prenatal", "Embarazo y lactancia", "Vitaminas", "Cápsulas", "30 cáps", 30, 15.20, 21, "otro", "🤰", ["vitaminas"]),
+    # Nutrición
+    ("Ensure Plus vainilla", "Ensure", "Abbott", "Nutrición oral", "Nutrición / dietética", "Complemento", "Botella 200 ml", "200 ml", 1, 3.80, 4, "otro", "🥗", []),
+    ("Meritene Force", "Meritene", "Nestlé", "Proteínas + vitaminas", "Nutrición / dietética", "Complemento", "Bote 400 g", "400 g", 1, 18.90, 21, "otro", "🥗", ["vitaminas"]),
+    ("Resource Diabet", "Resource", "Nestlé", "Nutrición diabetes", "Nutrición / dietética", "Complemento", "Brick 200 ml", "200 ml", 1, 3.50, 4, "otro", "🥗", []),
+    ("Optisource High Protein", "Optisource", "Nestlé", "Proteína", "Nutrición / dietética", "Complemento", "Brick", "200 ml", 1, 3.20, 4, "otro", "🥗", []),
+    # Deporte
+    ("Voltaren Dolorex — skip", "x", "x", "x", "Deporte y articulaciones", "x", "x", "x", 1, 1, 4, "otro", "🏃", []),
+    ("Fisiocrem gel", "Fisiocrem", "Laboratorios Viñas", "Árnica + Hypericum", "Deporte y articulaciones", "Tópico", "Gel 250 ml", "250 ml", 1, 14.90, 21, "otro", "🏃", ["dolor muscular"]),
+    ("Thrombocid Forte", "Thrombocid", "Lacer", "Pentosano polisulfato", "Deporte y articulaciones", "Tópico", "Gel 60 g", "60 g", 1, 12.50, 4, "otro", "🏃", ["dolor muscular"]),
+    ("Illasis rodillera", "Illasis", "Farmalastic", "Tejido elástico", "Deporte y articulaciones", "Soporte", "Talla M", "1 ud", 1, 11.90, 21, "otro", "🏃", ["dolor muscular"]),
+    ("Magnesio Sport Aquilea", "Aquilea", "Uriach", "Magnesio", "Deporte y articulaciones", "Mineral", "Comprimidos", "30 comp", 30, 9.50, 21, "otro", "🏃", []),
+    # Viaje
+    ("Biodramina 50 mg", "Biodramina", "Uriach", "Dimenhidrinato", "Viaje y botiquín", "Mareo", "Comprimidos", "50 mg × 12", 12, 6.20, 4, "otro", "✈️", ["mareo"]),
+    ("Cinfamar 50 mg", "Cinfamar", "Cinfa", "Difenhidramina", "Viaje y botiquín", "Mareo", "Comprimidos", "50 mg × 12", 12, 5.40, 4, "otro", "✈️", ["mareo"]),
+    ("Relec Familiar spray", "Relec", "Reckitt", "Icaridina", "Viaje y botiquín", "Insectos", "Spray 100 ml", "100 ml", 1, 10.50, 21, "otro", "✈️", ["picaduras"]),
+    ("After Bite clásico", "After Bite", "Tender", "Amoníaco", "Viaje y botiquín", "Picaduras", "Lápiz", "1 ud", 1, 5.90, 21, "otro", "✈️", ["picaduras"]),
+    # Apósitos
+    ("Hansaplast Universal", "Hansaplast", "Beiersdorf", "Apósito", "Apósitos y primeros auxilios", "Tiras", "Caja 40", "40 uds", 40, 4.50, 21, "otro", "🩹", ["heridas"]),
+    ("Compeed Ampollas medianas", "Compeed", "J&J", "Hidrocoloide", "Apósitos y primeros auxilios", "Ampollas", "Sobre", "5 uds", 5, 7.90, 21, "otro", "🩹", ["heridas"]),
+    ("Betadine solución", "Betadine", "Meda", "Povidona yodada", "Apósitos y primeros auxilios", "Antiséptico", "125 ml", "10%", 1, 6.80, 4, "otro", "🩹", ["heridas"]),
+    ("Cristalmina spray", "Cristalmina", "Salvat", "Clorhexidina", "Apósitos y primeros auxilios", "Antiséptico", "Spray 125 ml", "125 ml", 1, 7.20, 4, "otro", "🩹", ["heridas"]),
+    ("Suavinex gasas — skip", "x", "x", "x", "Apósitos y primeros auxilios", "x", "x", "x", 1, 1, 21, "otro", "🩹", []),
+    ("Steri-Strip 3M", "Steri-Strip", "3M", "Sutura cutánea", "Apósitos y primeros auxilios", "Cierre", "Sobre", "6 tiras", 6, 8.50, 21, "otro", "🩹", ["heridas"]),
+    # Ortopedia
+    ("Farmalastic tobillera", "Farmalastic", "Farmalastic", "Elástica", "Ortopedia ligera", "Tobillo", "Talla M", "1 ud", 1, 14.90, 21, "otro", "🦴", ["dolor muscular"]),
+    ("Farmalastic muñequera", "Farmalastic", "Farmalastic", "Elástica", "Ortopedia ligera", "Muñeca", "Talla Única", "1 ud", 1, 12.50, 21, "otro", "🦴", ["dolor muscular"]),
+    ("Cervical collar blando", "Orliman", "Orliman", "Collarín", "Ortopedia ligera", "Cuello", "Talla M", "1 ud", 1, 18.90, 21, "otro", "🦴", ["dolor"]),
+    ("Bastón aluminio regulable", "Forta", "Forta", "Ayuda marcha", "Ortopedia ligera", "Marcha", "1 ud", "1 ud", 1, 22.00, 21, "otro", "🦴", []),
+    # Óptica
+    ("Opti-Free Puremoist 300 ml", "Opti-Free", "Alcon", "Solución lentillas", "Óptica y lentillas", "Mantenimiento", "300 ml", "300 ml", 1, 12.90, 21, "otro", "👓", []),
+    ("Renu MultiPlus", "Renu", "Bausch+Lomb", "Solución lentillas", "Óptica y lentillas", "Mantenimiento", "360 ml", "360 ml", 1, 11.50, 21, "otro", "👓", []),
+    ("Acuvue lágrimas — Systane", "Systane", "Alcon", "Lágrimas artificiales", "Óptica y lentillas", "Ojo seco", "10 ml", "10 ml", 1, 9.80, 4, "otro", "👓", []),
+    ("Avizor Compleat", "Avizor", "Avizor", "Solución lentillas", "Óptica y lentillas", "Mantenimiento", "350 ml", "350 ml", 1, 10.90, 21, "otro", "👓", []),
+    # Audio
+    ("Pilas Audilo 312", "Audilo", "Audilo", "Zinc-aire", "Audición / pilas", "Pilas", "Blíster 6", "6 uds", 6, 5.50, 21, "otro", "👂", []),
+    ("Pilas Power One 13", "Power One", "Varta", "Zinc-aire", "Audición / pilas", "Pilas", "Blíster 6", "6 uds", 6, 6.20, 21, "otro", "👂", []),
+    ("Pilas Rayovac 675", "Rayovac", "Spectrum", "Zinc-aire", "Audición / pilas", "Pilas", "Blíster 6", "6 uds", 6, 5.90, 21, "otro", "👂", []),
+    # Vet
+    ("Frontline Spot-On perro", "Frontline", "Boehringer", "Fipronilo", "Veterinaria", "Antiparasitario", "Pipetas", "3 uds", 3, 24.90, 21, "otro", "🐾", []),
+    ("Advantix perro M", "Advantix", "Elanco", "Imidacloprid + permetrina", "Veterinaria", "Antiparasitario", "Pipetas", "4 uds", 4, 28.50, 21, "otro", "🐾", []),
+    ("Drontal gato", "Drontal", "Elanco", "Praziquantel + pirantel", "Veterinaria", "Desparasitante", "Comprimidos", "2 comp", 2, 9.80, 21, "otro", "🐾", []),
+    ("Saco arena Catsan", "Catsan", "Mars", "Arena", "Veterinaria", "Higiene", "Saco 10 L", "10 L", 1, 8.50, 21, "otro", "🐾", []),
+    # Snacks / bebidas / revistas
+    ("Chicles Trident menta", "Trident", "Mondelez", "Xilitol", "Snacks y chicles", "Chicles", "Paquete", "1 ud", 1, 1.80, 21, "otro", "🍫", []),
+    ("Chicles Smint", "Smint", "Perfetti", "Edulcorantes", "Snacks y chicles", "Pastillas", "Bote", "1 ud", 1, 2.20, 21, "otro", "🍫", []),
+    ("Chocolate Nestlé pequeño", "Nestlé", "Nestlé", "Cacao", "Snacks y chicles", "Snack", "Barrita", "1 ud", 1, 1.50, 21, "otro", "🍫", []),
+    ("Haribo Ositos", "Haribo", "Haribo", "Gominolas", "Snacks y chicles", "Snack", "Bolsa 90 g", "90 g", 1, 1.70, 21, "otro", "🍫", []),
+    ("Agua Lanjarón 50 cl", "Lanjarón", "Danone", "Agua mineral", "Bebidas", "Agua", "Botella", "50 cl", 1, 0.90, 10, "otro", "💧", []),
+    ("Aquarius naranja 50 cl", "Aquarius", "Coca-Cola", "Bebida isotónica", "Bebidas", "Isotónica", "Botella", "50 cl", 1, 1.60, 10, "otro", "💧", []),
+    ("Red Bull 25 cl", "Red Bull", "Red Bull", "Cafeína", "Bebidas", "Energética", "Lata", "25 cl", 1, 1.90, 10, "otro", "💧", []),
+    ("¡Hola! semanal", "¡Hola!", "Hola SA", "Prensa", "Revistas y prensa", "Revista", "Ejemplar", "1 ud", 1, 2.50, 4, "otro", "📰", []),
+    ("Pronto semanal", "Pronto", "Zinet Media", "Prensa", "Revistas y prensa", "Revista", "Ejemplar", "1 ud", 1, 1.80, 4, "otro", "📰", []),
+    ("Muy Interesante", "Muy Interesante", "Zinet", "Prensa", "Revistas y prensa", "Revista", "Ejemplar", "1 ud", 1, 3.50, 4, "otro", "📰", []),
+    # Vitaminas / fitoterapia extra
+    ("Supradyn Activo", "Supradyn", "Bayer", "Multivitamínico", "Vitaminas y minerales", "Energía", "Comprimidos", "30 comp", 30, 12.90, 21, "otro", "🍊", ["vitaminas"]),
+    ("Juvamine Vitamina C", "Juvamine", "Urgo", "Ácido ascórbico", "Vitaminas y minerales", "Vit C", "Comprimidos", "30 comp", 30, 6.50, 21, "otro", "🍊", ["vitaminas"]),
+    ("Cinfa Vitamina D3 1000 UI", "Cinfa", "Cinfa", "Colecalciferol", "Vitaminas y minerales", "Vit D", "Comprimidos", "30 comp", 30, 7.20, 21, "otro", "🍊", ["vitaminas"]),
+    ("Valerianorm", "Valerianorm", "Cinfa", "Valeriana", "Fitoterapia", "Sueño", "Comprimidos", "30 comp", 30, 8.40, 21, "otro", "🌿", ["estres", "insomnio"]),
+    ("Passiflora Arkocápsulas", "Arkocápsulas", "Arkopharma", "Passiflora", "Fitoterapia", "Ansiedad leve", "Cápsulas", "50 cáps", 50, 9.90, 21, "otro", "🌿", ["estres"]),
+    # Bucal
+    ("Lacer pasta con flúor", "Lacer", "Lacer", "Fluoruro", "Higiene bucal", "Pasta", "75 ml", "75 ml", 1, 4.80, 21, "otro", "😁", []),
+    ("Vitis encías colutorio", "Vitis", "Dentaid", "Clorhexidina baja", "Higiene bucal", "Colutorio", "500 ml", "500 ml", 1, 8.90, 21, "otro", "😁", []),
+    ("GUM hilo dental", "GUM", "Sunstar", "Hilo", "Higiene bucal", "Hilo", "1 ud", "1 ud", 1, 3.50, 21, "otro", "😁", []),
+    # Solar extra
+    ("Ladival niños SPF50+", "Ladival", "Stada", "Filtros", "Solar y fotoprotección", "Pediátrico", "200 ml", "200 ml", 1, 18.90, 21, "otro", "☀", ["solar"]),
+    ("Isdin Pediatrics Fusion Fluid", "Isdin", "Isdin", "Filtros", "Solar y fotoprotección", "Pediátrico", "50 ml", "50 ml", 1, 22.50, 21, "otro", "☀", ["solar"]),
+    ("Eucerin Oil Control SPF50+", "Eucerin", "Beiersdorf", "Filtros", "Solar y fotoprotección", "Facial", "50 ml", "50 ml", 1, 21.90, 21, "otro", "☀", ["solar"]),
+    # Anticoagulantes / oftalmo / gine / derma / frigo / dispensario
+    ("Sintrom 4 mg", "Sintrom", "Novartis", "Acenocumarol", "Anticoagulantes", "AVK", "Comprimidos", "4 mg × 20", 20, 3.20, 4, "otro", "🩸", []),
+    ("Aldocumar 5 mg", "Aldocumar", "Aldo-Unión", "Warfarina", "Anticoagulantes", "AVK", "Comprimidos", "5 mg × 50", 50, 4.10, 4, "otro", "🩸", []),
+    ("Eliquis 5 mg", "Eliquis", "BMS", "Apixabán", "Anticoagulantes", "ACOD", "Comprimidos", "5 mg × 60", 60, 85.00, 4, "otro", "🩸", []),
+    ("Xarelto 20 mg", "Xarelto", "Bayer", "Rivaroxabán", "Anticoagulantes", "ACOD", "Comprimidos", "20 mg × 28", 28, 78.00, 4, "otro", "🩸", []),
+    ("Colircusi Gentamicina", "Colircusi", "Alcon", "Gentamicina", "Oftalmología Rx", "Colirio", "5 ml", "5 ml", 1, 5.90, 4, "otro", "👁️", []),
+    ("Oftalmotrim UD", "Oftalmotrim", "Alcon", "Trimetoprima + polimixina", "Oftalmología Rx", "Colirio", "Monodosis", "20 uds", 20, 8.50, 4, "otro", "👁️", []),
+    ("Visine clásico OTC skip rx", "Visine", "J&J", "Tetrizolina", "Oftalmología Rx", "Colirio", "15 ml", "15 ml", 1, 7.20, 4, "otro", "👁️", []),
+    ("Zoely", "Zoely", "Theramex", "Nomegestrol + estradiol", "Anticonceptivos Rx", "Oral", "Comprimidos", "28 comp", 28, 14.50, 4, "otro", "圆环", []),
+    ("Seasonique", "Seasonique", "Teva", "Levonorgestrel + EE", "Anticonceptivos Rx", "Oral", "Comprimidos", "91 comp", 91, 22.00, 4, "otro", "圆环", []),
+    ("Mirena DIU (simulado)", "Mirena", "Bayer", "Levonorgestrel", "Ginecología Rx", "DIU", "Dispositivo", "1 ud", 1, 180.00, 4, "otro", "🎀", []),
+    ("Cyclogest 400 mg", "Cyclogest", "Gedeon", "Progesterona", "Ginecología Rx", "Óvulos", "Óvulos", "15 uds", 15, 28.00, 4, "otro", "🎀", []),
+    ("Differin gel 0,1%", "Differin", "Galderma", "Adapaleno", "Dermatología Rx", "Acné", "Gel 30 g", "0,1%", 1, 18.50, 4, "otro", "🩺", []),
+    ("Epiduo gel", "Epiduo", "Galderma", "Adapaleno + BPO", "Dermatología Rx", "Acné", "Gel 30 g", "30 g", 1, 32.00, 4, "otro", "🩺", []),
+    ("Protopic 0,03%", "Protopic", "Leo", "Tacrolimus", "Dermatología Rx", "Dermatitis", "Pomada 30 g", "0,03%", 1, 38.00, 4, "otro", "🩺", []),
+    ("Ozempic 1 mg", "Ozempic", "Novo Nordisk", "Semaglutida", "Frigorífico / biológicos", "GLP-1", "Pluma", "1 mg", 1, 120.00, 4, "otro", "❄️", []),
+    ("Tresiba 100 U/ml", "Tresiba", "Novo Nordisk", "Insulina degludec", "Frigorífico / biológicos", "Insulina", "Pluma", "3 ml", 1, 55.00, 4, "otro", "❄️", []),
+    ("Lantus SoloStar", "Lantus", "Sanofi", "Insulina glargina", "Frigorífico / biológicos", "Insulina", "Pluma", "3 ml", 1, 48.00, 4, "otro", "❄️", []),
+    ("Humalog KwikPen", "Humalog", "Lilly", "Insulina lispro", "Frigorífico / biológicos", "Insulina", "Pluma", "3 ml", 1, 42.00, 4, "otro", "❄️", []),
+    ("Clexane 60 mg", "Clexane", "Sanofi", "Enoxaparina", "Dispensario / hospitalarios", "Heparina", "Jeringa", "60 mg", 1, 9.80, 4, "otro", "🏥", []),
+    ("Fragmin 7500 UI", "Fragmin", "Pfizer", "Dalteparina", "Dispensario / hospitalarios", "Heparina", "Jeringa", "7500 UI", 1, 9.20, 4, "otro", "🏥", []),
+    ("Neulasta 6 mg", "Neulasta", "Amgen", "Pegfilgrastim", "Dispensario / hospitalarios", "Hematología", "Jeringa", "6 mg", 1, 950.00, 4, "otro", "🏥", []),
+    # Controlados extra
+    ("MST Continus 30 mg", "MST Continus", "Mundipharma", "Morfina", "Controlados / estupefacientes", "Opioide", "Comprimidos", "30 mg × 30", 30, 12.00, 4, "otro", "🔒", []),
+    ("Oxynorm 10 mg", "Oxynorm", "Mundipharma", "Oxicodona", "Controlados / estupefacientes", "Opioide", "Cápsulas", "10 mg × 28", 28, 14.50, 4, "otro", "🔒", []),
+    ("Fentanilo matriz 25 mcg", "Matrifen", "Takeda", "Fentanilo", "Controlados / estupefacientes", "Opioide", "Parches", "25 mcg × 5", 5, 28.00, 4, "otro", "🔒", []),
+  ]
+  for row in fase2:
+    if "skip" in row[0].lower():
+      continue
+    nombre, marca, lab, pa, cat, sub, presentacion, dosis, uds, precio, iva, grupo, icon, sintomas = row
+    if (nombre, marca) in seen:
+      continue
+    # nevera / controlado flags
+    nevera = cat.startswith("Frigorífico") or pa.lower().startswith("insulina") or "semaglutida" in pa.lower() or "pegfilgrastim" in pa.lower() or "filgrastim" in pa.lower()
+    if nombre.startswith(("Ozempic", "Tresiba", "Lantus", "Humalog", "Neulasta", "Humira", "Enbrel")):
+      nevera = True
+    ctrl = cat.startswith("Controlados")
+    rx = CAT_BY_NAME[cat]["rx"]
+    # Mark nevera products properly for insulin/GLP1 already in frigo cat
+    if cat.startswith("Frigorífico"):
+      nevera = True
+    items.append(P(
+      nombre, marca, lab, pa, cat, sub, presentacion, dosis, uds, precio,
+      iva=iva, grupo=grupo, icon=icon, sintomas=sintomas,
+      efg=("Cinfa" in marca or "Cinfa" in lab) and "EFG" not in nombre,
+      rx=rx, ctrl=ctrl, nevera=nevera,
+    ))
+    seen.add((nombre, marca))
 
   # Assign ids, sku, ean, stock, lote, caducidad, procedimiento
   for i, p in enumerate(items, start=1):
@@ -554,7 +750,7 @@ def write_catalog_js(products):
     ] if k in p})
 
   js = f"""/**
- * Catálogo Farmacia Álora — Fase 1 España ampliada
+ * Catálogo Farmacia Álora — Fase 2 España ampliada
  * Generado por scripts/build_fase1.py — {len(slim)} productos · {len(cats_ui)} categorías
  */
 (function (global) {{
@@ -570,7 +766,7 @@ def write_catalog_js(products):
       sintomas: SINTOMAS,
       ramas: RAMAS,
       total: PRODUCTOS.length,
-      version: "fase1-es",
+      version: "fase2-es",
     }};
   }}
 

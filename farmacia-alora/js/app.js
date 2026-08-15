@@ -5,7 +5,7 @@
 (function () {
   "use strict";
 
-  const STORAGE_KEY = "farmacia-alora-v8";
+  const STORAGE_KEY = "farmacia-alora-v9";
   const REAL_MS_PER_GAME_HOUR = 60 * 1000;
   const Clinica = window.FarmaciaClinica;
   const Caja = window.FarmaciaCaja;
@@ -1171,14 +1171,19 @@
     const box = $("#cliente-habla");
     if (!c.peticionTexto) { box.classList.add("hidden"); return; }
     box.classList.remove("hidden");
-    const modo = { exacto: "Pide producto", sintoma: "Por síntomas", receta: "Trae receta", ambas: "Producto + receta" }[c.modo] || "";
+    const modoMap = (Clientes && Clientes.MODOS_LABEL) || {};
+    const modo = c.modoLabel || modoMap[c.modo] || c.modo || "";
     const pagoTxt = c.metodoPago ? " · Paga: " + metodoNombre(c.metodoPago) : "";
     const perfilTxt = c.perfilId ? " · Perfil" : "";
     const tutorTxt = c.tutor ? ` · Tutor: ${c.tutor}` : "";
-    $("#speech-name").textContent = `${c.nombre || "Cliente"}${c.edad != null ? ` (${c.edad} años)` : ""}${modo ? " · " + modo : ""}${pagoTxt}${perfilTxt}${tutorTxt}`;
+    const urgTxt = c.urgencia ? " · ⚠ URGENTE" : "";
+    $("#speech-name").textContent = `${c.nombre || "Cliente"}${c.edad != null ? ` (${c.edad} años)` : ""}${modo ? " · " + modo : ""}${pagoTxt}${perfilTxt}${tutorTxt}${urgTxt}`;
     $("#speech-text").textContent = `«${c.peticionTexto}»`;
     const tags = (c.sintomas || []).map((s) => `<button type="button" class="chip" data-sintoma="${escapeHtml(s)}">${escapeHtml(s)}</button>`);
     if (c.metodoPago) tags.push(`<span class="chip chip-pago">💳 ${escapeHtml(metodoNombre(c.metodoPago))}</span>`);
+    if (c.urgencia) tags.push(`<span class="chip chip-warn">⚠ Valorar derivación</span>`);
+    if (c.pista) tags.push(`<span class="chip chip-pista">💡 ${escapeHtml(c.pista)}</span>`);
+    if (c.paraQuien) tags.push(`<span class="chip">Para: ${escapeHtml(c.paraQuien)}</span>`);
     if (state.recetaActiva) tags.push(`<span class="chip">${state.recetaActiva.tipo === "papel" ? "📄 Papel" : "💻 Electrónica"}</span>`);
     $("#speech-tags").innerHTML = tags.join("");
   }
@@ -1215,14 +1220,16 @@
     if (!state.cola.length) { $("#cola-list").innerHTML = `<div class="empty">💬 Nadie en cola</div>`; return; }
     $("#cola-list").innerHTML = state.cola.map((ped) => {
       const c = ped.cliente;
-      const modoLabel = { exacto: "Producto exacto", sintoma: "Por síntoma", receta: "Con receta", ambas: "Exacto + receta" }[c.modo] || c.modo;
-      return `<article class="pedido-card ${ped.guardia ? "guardia" : ""}">
+      const modoMap = (Clientes && Clientes.MODOS_LABEL) || {};
+      const modoLabel = c.modoLabel || modoMap[c.modo] || c.modo;
+      return `<article class="pedido-card ${ped.guardia ? "guardia" : ""} ${c.urgencia ? "urgencia" : ""}">
         <header><strong>${escapeHtml(c.nombre)}</strong><span class="muted">${formatShort(ped.llegada)}</span></header>
-        <div class="muted tiny">${escapeHtml(c.id)} · ${c.edad || "?"} años · ${escapeHtml(modoLabel)}</div>
+        <div class="muted tiny">${escapeHtml(c.id)} · ${c.edad || "?"} años · ${escapeHtml(modoLabel)}${c.urgencia ? " · ⚠" : ""}</div>
         <p class="quote">«${escapeHtml(c.peticionTexto)}»</p>
         <div>${(c.sintomas || []).map((s) => `<span class="chip">${escapeHtml(s)}</span>`).join("")}
           ${ped.receta ? `<span class="tag tag-rx">Receta ${ped.receta.tipo === "papel" ? "papel" : "e-"}×${ped.receta.productos.length}</span>` : ""}
           ${(c.quiereProductoIds || []).length ? '<span class="tag tag-offer">Pide exacto</span>' : ""}
+          ${c.urgencia ? '<span class="tag tag-ctrl">Alarma</span>' : ""}
           ${c.metodoPago ? `<span class="tag tag-otc">💳 ${escapeHtml(metodoNombre(c.metodoPago))}</span>` : ""}
         </div>
         <div class="pedido-actions" style="margin-top:10px">
@@ -1567,10 +1574,12 @@
       nombre: c.nombre, dni: c.dni, telefono: c.telefono, pacienteId: c.id, seedId: c.seedId,
       tramoSNS: c.tramoSNS, familiaNumerosa: !!c.familiaNumerosa,
       peticionTexto: c.peticionTexto, sintomas: c.sintomas || [],
-      quiereProductoIds: c.quiereProductoIds || [], modo: c.modo,
+      quiereProductoIds: c.quiereProductoIds || [], modo: c.modo, modoLabel: c.modoLabel || "",
       alergias: c.alergias || [], cronicos: c.cronicos || [],
       embarazo: !!c.embarazo, lactancia: !!c.lactancia, edad: c.edad,
       metodoPago: c.metodoPago || null,
+      urgencia: !!c.urgencia, pista: c.pista || "", paraQuien: c.paraQuien || null,
+      tutor: c.tutor || null, tono: c.tono || "normal",
     };
     state.mutuaId = c.mutuaId || "particular";
     state.tramoSNS = c.tramoSNS || "particular";
@@ -1588,7 +1597,8 @@
     renderCatGrid(); renderCatalog();
     renderCart(); renderReceta(); renderCola(); refreshClinicalAlerts();
     save();
-    toast(`Atiende a ${c.nombre}`, "ok");
+    if (c.urgencia) toast(`⚠ ${c.nombre}: valorar derivación / alarma clínica`, "warn");
+    else toast(`Atiende a ${c.nombre}`, "ok");
     showTab("venta");
   }
 

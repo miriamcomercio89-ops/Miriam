@@ -252,6 +252,8 @@ th {
   border:1px solid #c7efe0; box-shadow:0 8px 18px rgba(15,159,118,.08);
 }
 .pedido-card.guardia { border-color:#c4b5fd; background:linear-gradient(160deg,#fff,#f5f3ff); }
+.pedido-card.urgencia { border-color:#f87171; background:linear-gradient(160deg,#fff,#fef2f2); }
+.pedido-card.urgencia .quote { background:#fee2e2; color:#7f1d1d; }
 .pedido-card header { display:flex; justify-content:space-between; gap:8px; margin-bottom:6px; }
 .pedido-card .quote { font-weight:700; margin:8px 0; padding:8px 10px; border-radius:12px; background:#eff6ff; color:#1e3a8a; }
 .pedido-actions { display:flex; gap:6px; }
@@ -379,6 +381,8 @@ th {
 .metodo-btn.locked { opacity:.35; cursor:not-allowed; filter:grayscale(.4); }
 .metodo-cli { display:block; font-size:.7rem; font-style:normal; color:var(--teal-deep); margin-top:2px; }
 .chip-pago { background:#ecfdf5; border-color:#99f6e4; }
+.chip-warn { background:#fef2f2; border-color:#fecaca; color:#991b1b; }
+.chip-pista { background:#fffbeb; border-color:#fde68a; color:#92400e; max-width:100%; white-space:normal; }
 
 /* Minijuegos */
 .mini-train-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:10px; margin-top:12px; }
@@ -564,6 +568,7 @@ th {
   border-radius: 16px; padding: 12px 14px; box-shadow: 0 8px 18px rgba(0,0,0,.04);
 }
 .pedido-card.guardia { border-color: #c4b5fd; background: linear-gradient(160deg, #f5f3ff, #fff); }
+.pedido-card.urgencia { border-color: #f87171; background: linear-gradient(160deg, #fef2f2, #fff); }
 
 @media (max-width: 900px) {
   .doc-grid, .informe-grid, .abc-grid, .informe-kpis { grid-template-columns: 1fr 1fr; }
