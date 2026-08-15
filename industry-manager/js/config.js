@@ -1,11 +1,11 @@
-/* Industry Manager v6 — campaña profunda, índices, consejo, audio */
+/* Industry Manager v7 — tutorial, cloud, edificios, política */
 window.IM_CONFIG = {
   name: 'Industry Manager',
-  version: '6.0.0',
+  version: '7.0.0',
   realMsPerGameMinute: 1000,
   speeds: [0, 1, 2, 5, 10, 30],
   startingMoney: 100000000,
-  saveKey: 'industry_manager_save_v6',
+  saveKey: 'industry_manager_save_v7',
   autosaveMinutesReal: 2,
   inflationYearly: 0.02,
   baseInterestRate: 0.055,

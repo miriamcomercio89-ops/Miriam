@@ -1381,6 +1381,127 @@ const buildings = [
   { id: 'oficina', name: 'Sede corporativa', category: 'admin', cost: 500000, slots: 0, power: 50, water: 20, storage: 200, pollutionBase: 0, desc: 'Gestión y contratos.' },
 ];
 
+// ——— Cientos de edificios (variantes ordenadas por tipo) ———
+const buildingFamiliesExtra = [
+  { family: 'mina', category: 'extraccion', base: 'Mina', slots: 4, cost: 250000, power: 200, water: 50, storage: 5000, pollutionBase: 5 },
+  { family: 'granja', category: 'extraccion', base: 'Granja', slots: 6, cost: 120000, power: 80, water: 200, storage: 3000, pollutionBase: 1 },
+  { family: 'fundicion', category: 'procesado', base: 'Fundición', slots: 8, cost: 1200000, power: 2000, water: 300, storage: 6000, pollutionBase: 12 },
+  { family: 'laminacion', category: 'procesado', base: 'Laminación', slots: 6, cost: 900000, power: 1500, water: 200, storage: 5000, pollutionBase: 5 },
+  { family: 'planta_quimica', category: 'quimica', base: 'Química', slots: 10, cost: 2500000, power: 2500, water: 600, storage: 10000, pollutionBase: 10 },
+  { family: 'almazara', category: 'alimentacion', base: 'Almazara', slots: 3, cost: 180000, power: 80, water: 60, storage: 2000, pollutionBase: 1 },
+  { family: 'electronica', category: 'alta_tech', base: 'Electrónica', slots: 10, cost: 3500000, power: 1200, water: 300, storage: 2000, pollutionBase: 2 },
+  { family: 'almacen', category: 'logistica', base: 'Almacén', slots: 0, cost: 180000, power: 40, water: 10, storage: 25000, pollutionBase: 0 },
+  { family: 'parque_solar', category: 'energia', base: 'Solar', slots: 2, cost: 2200000, power: 0, water: 20, storage: 500, pollutionBase: 0 },
+  { family: 'planta_consumo', category: 'procesado', base: 'Consumo', slots: 8, cost: 1500000, power: 800, water: 200, storage: 4000, pollutionBase: 2 },
+  { family: 'reciclaje', category: 'reciclaje', base: 'Reciclaje', slots: 6, cost: 600000, power: 700, water: 250, storage: 5000, pollutionBase: 2 },
+  { family: 'refineria', category: 'energia', base: 'Refinería', slots: 10, cost: 5000000, power: 3000, water: 800, storage: 20000, pollutionBase: 15 },
+  { family: 'textil', category: 'procesado', base: 'Textil', slots: 6, cost: 450000, power: 400, water: 200, storage: 2500, pollutionBase: 2 },
+  { family: 'puerto', category: 'logistica', base: 'Puerto', slots: 2, cost: 2000000, power: 400, water: 100, storage: 50000, pollutionBase: 2 },
+  { family: 'centro_investigacion', category: 'investigacion', base: 'I+D', slots: 4, cost: 2500000, power: 300, water: 50, storage: 500, pollutionBase: 0 },
+];
+const sizeTiers = [
+  { id: 'micro', label: 'micro', mul: 0.55, slotMul: 0.5 },
+  { id: 'compacta', label: 'compacta', mul: 0.75, slotMul: 0.75 },
+  { id: 'estandar', label: 'estándar', mul: 1, slotMul: 1 },
+  { id: 'industrial', label: 'industrial', mul: 1.45, slotMul: 1.25 },
+  { id: 'mega', label: 'mega', mul: 2.2, slotMul: 1.6 },
+  { id: 'gigafactory', label: 'gigafactory', mul: 3.5, slotMul: 2.2 },
+];
+const techTiers = [
+  { id: 'mk1', label: 'Mk1', mul: 1, auto: 0 },
+  { id: 'mk2', label: 'Mk2', mul: 1.15, auto: 0 },
+  { id: 'mk3', label: 'Mk3', mul: 1.35, auto: 1 },
+  { id: 'mk4', label: 'Mk4', mul: 1.6, auto: 1 },
+  { id: 'eco', label: 'eco', mul: 1.25, auto: 0, pollutionMul: 0.5 },
+  { id: 'auto', label: 'auto', mul: 1.8, auto: 2 },
+];
+buildingFamiliesExtra.forEach((fam) => {
+  sizeTiers.forEach((sz) => {
+    techTiers.forEach((tk) => {
+      if (sz.id === 'estandar' && tk.id === 'mk1') return; // already have base
+      const id = `${fam.family}_${sz.id}_${tk.id}`;
+      if (buildings.some((b) => b.id === id)) return;
+      buildings.push({
+        id,
+        name: `${fam.base} ${sz.label} ${tk.label}`,
+        category: fam.category,
+        family: fam.family,
+        cost: Math.round(fam.cost * sz.mul * tk.mul),
+        slots: Math.max(0, Math.round(fam.slots * sz.slotMul) + (tk.auto || 0)),
+        power: Math.round(fam.power * sz.mul * (tk.id === 'eco' ? 0.85 : 1)),
+        water: Math.round(fam.water * sz.mul),
+        storage: Math.round(fam.storage * sz.mul),
+        pollutionBase: Math.round(fam.pollutionBase * (tk.pollutionMul || 1) * 10) / 10,
+        desc: `Variante ${sz.label}/${tk.label} de ${fam.base}. Compatible con recetas de ${fam.family}.`,
+        logoHint: fam.category,
+      });
+    });
+  });
+});
+
+// Edificios temáticos adicionales
+const thematicBuildings = [
+  ['bodega_vino', 'Bodega vinícola', 'alimentacion', 'almazara', 420000, 4],
+  ['bodega_jerez', 'Bodega de Jerez', 'alimentacion', 'almazara', 580000, 4],
+  ['secadero_iberico', 'Secadero ibérico', 'alimentacion', 'almazara', 350000, 3],
+  ['planta_corcho', 'Planta de corcho', 'procesado', 'planta_consumo', 280000, 4],
+  ['bioreactor', 'Bioreactor industrial', 'quimica', 'planta_quimica', 3200000, 6],
+  ['data_center', 'Centro de datos industrial', 'alta_tech', 'electronica', 4500000, 8],
+  ['planta_agua', 'ETAP industrial', 'procesado', 'planta_quimica', 1100000, 5],
+  ['taller_optica', 'Taller óptico', 'alta_tech', 'electronica', 900000, 5],
+  ['taller_ferroviario', 'Taller ferroviario', 'procesado', 'planta_automocion', 2800000, 8],
+  ['planta_seguridad', 'Planta EPI', 'procesado', 'planta_consumo', 400000, 5],
+  ['planta_smart', 'Planta hogar smart', 'alta_tech', 'electronica', 1600000, 7],
+  ['laboratorio_metrologia', 'Lab. metrología', 'investigacion', 'centro_investigacion', 1900000, 4],
+  ['astillero_seccion', 'Astillero (sección)', 'procesado', 'planta_automocion', 5500000, 10],
+  ['hangar_aero', 'Hangar aeroespacial', 'alta_tech', 'electronica', 7000000, 8],
+  ['camara_fria', 'Cámara frigorífica', 'logistica', 'almacen', 320000, 0],
+  ['silo_grano', 'Silo de grano', 'logistica', 'almacen', 150000, 0],
+  ['subestacion', 'Subestación eléctrica', 'energia', 'parque_solar', 800000, 1],
+  ['planta_hidrogeno', 'Planta de hidrógeno', 'energia', 'planta_quimica', 6000000, 6],
+  ['vivero_industrial', 'Vivero industrial', 'extraccion', 'granja', 90000, 4],
+  ['cantera', 'Cantera', 'extraccion', 'mina', 200000, 4],
+];
+thematicBuildings.forEach(([id, name, category, family, cost, slots], i) => {
+  buildings.push({
+    id,
+    name,
+    category,
+    family,
+    cost,
+    slots,
+    power: 100 + i * 40,
+    water: 40 + i * 10,
+    storage: 2000 + i * 500,
+    pollutionBase: Math.max(0, (i % 5) - 1),
+    desc: `${name}. Compatible con recetas de ${family}.`,
+    logoHint: category,
+  });
+  // 8 variants each
+  ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'].forEach((letter, li) => {
+    buildings.push({
+      id: `${id}_${letter.toLowerCase()}`,
+      name: `${name} línea ${letter}`,
+      category,
+      family,
+      cost: Math.round(cost * (0.9 + li * 0.08)),
+      slots: slots + (li % 3),
+      power: 100 + i * 40 + li * 20,
+      water: 40 + i * 10,
+      storage: 2000 + i * 500 + li * 200,
+      pollutionBase: Math.max(0, (i % 5) - 1),
+      desc: `Línea ${letter} de ${name}.`,
+      logoHint: category,
+    });
+  });
+});
+
+// Mark base buildings with family = id
+buildings.forEach((b) => {
+  if (!b.family) b.family = b.id;
+  if (!b.logoHint) b.logoHint = b.category;
+});
+
 const machines = [
   { id: 'trituradora', name: 'Trituradora', cost: 80000, power: 120, speed: 1, quality: 0 },
   { id: 'horno_arco', name: 'Horno de arco eléctrico', cost: 450000, power: 800, speed: 1.1, quality: 5 },
@@ -2261,6 +2382,40 @@ addRecipe({
   energyKwh: 25, timeMinutes: 60, pollution: 0.3, tech: 'electronica_basica', qualityBase: 72,
 });
 
+// ——— v7: más familias de producto ———
+[
+  ['educacion', 'Kit STEM escolar', 35, 'ud'],
+  ['educacion', 'Simulador industrial VR', 2200, 'ud'],
+  ['medios', 'Cámara broadcast', 4500, 'ud'],
+  ['medios', 'Micrófono estudio', 380, 'ud'],
+  ['medios', 'Servidor streaming', 12000, 'ud'],
+  ['turismo_ind', 'Pack visita fábrica', 45, 'ud'],
+  ['turismo_ind', 'Merchandising corporativo', 12, 'ud'],
+  ['impresion_3d', 'Filamento PLA industrial', 18, 'kg'],
+  ['impresion_3d', 'Polvo metal AM', 220, 'kg'],
+  ['impresion_3d', 'Pieza impresa titanio', 900, 'ud'],
+  ['baterias_estac', 'Celda LFP estacionaria', 120, 'ud'],
+  ['baterias_estac', 'Rack 1MWh', 180000, 'ud'],
+  ['hidrogeno', 'H2 verde comprimido', 8, 'kg'],
+  ['hidrogeno', 'Electrolizador 1MW', 950000, 'ud'],
+  ['hidrogeno', 'Pila combustible 100kW', 42000, 'ud'],
+  ['drones', 'Drone inspección', 3500, 'ud'],
+  ['drones', 'Drone carga 20kg', 12000, 'ud'],
+  ['robotica', 'Brazo cobot 5kg', 18000, 'ud'],
+  ['robotica', 'AGV almacén', 28000, 'ud'],
+  ['robotica', 'Robot soldadura', 65000, 'ud'],
+].forEach(([cat, name, price, unit]) => {
+  addItem({ name, category: cat, tier: 4, unit, basePrice: price, description: `${name} — catálogo v7.` });
+});
+for (let i = 1; i <= 40; i++) {
+  addItem({ name: `Filamento técnico FT-${i}`, category: 'impresion_3d', tier: 3, unit: 'kg', basePrice: 20 + i });
+  addItem({ name: `Módulo robot R-${i}`, category: 'robotica', tier: 5, unit: 'ud', basePrice: 5000 + i * 100 });
+  addItem({ name: `Drone serie D-${i}`, category: 'drones', tier: 4, unit: 'ud', basePrice: 800 + i * 40 });
+  addItem({ name: `Celda H2 C-${i}`, category: 'hidrogeno', tier: 5, unit: 'ud', basePrice: 2000 + i * 50 });
+  addItem({ name: `Curso industrial CU-${i}`, category: 'educacion', tier: 2, unit: 'ud', basePrice: 40 + i });
+  addItem({ name: `Contenido media M-${i}`, category: 'medios', tier: 2, unit: 'ud', basePrice: 15 + i });
+}
+
 console.log('Auto-recipes added ~', autoRec);
 
 
@@ -2285,6 +2440,7 @@ const summary = {
   missions: missionTemplates.length,
   competitors: competitors.length,
   categories: [...new Set(items.map((i) => i.category))],
+  buildingCategories: [...new Set(buildings.map((b) => b.category))],
 };
 fs.writeFileSync(path.join(outDir, 'summary.js'), `window.IM_DATA = window.IM_DATA || {};\nwindow.IM_DATA.summary = ${JSON.stringify(summary)};\n`);
 console.log('SUMMARY', summary);

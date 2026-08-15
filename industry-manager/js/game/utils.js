@@ -96,6 +96,14 @@ IM.categoryLabel = {
   seguridad_ind: 'Seguridad industrial',
   hogar_smart: 'Hogar inteligente',
   instrumentos: 'Instrumentación',
+  educacion: 'Educación',
+  medios: 'Medios',
+  turismo_ind: 'Turismo industrial',
+  impresion_3d: 'Impresión 3D',
+  baterias_estac: 'Baterías estacionarias',
+  hidrogeno: 'Hidrógeno',
+  drones: 'Drones',
+  robotica: 'Robótica',
 };
 
 IM.el = (tag, attrs = {}, children = []) => {

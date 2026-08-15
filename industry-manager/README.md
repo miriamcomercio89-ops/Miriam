@@ -1,26 +1,23 @@
-# Industry Manager v6
+# Industry Manager v7
 
-Campaña industrial **profunda (años)** en el navegador: filiales, hubs, índices, consejo, comparador, ambience y miles de misiones.
+Tutorial completo, cloud local, chat, política, escenarios, **742 edificios** con logo y catálogo ampliado.
 
-## Descarga / juego
+## Descarga
 
-1. Descomprime el ZIP y abre `index.html`.
-2. Elige rama → funda en el mapa (OSM).
-3. Menú lateral **agrupado**: Mundo · Producción · Mercado · Corporación · Sistema.
+Descomprime y abre `index.html`.
 
-Truco: `INDUSTRIA_TOTAL`
+## Novedades v7
 
-## Novedades v6
+1. **Tutorial** guiado (primera hora)  
+18. **Escenarios sandbox** al avanzar la campaña  
+23. **Eventos políticos** (subvenciones, aranceles…)  
+24. **Chat corporativo** (filiales / gobierno)  
+25. **Minimapa** de filiales con semáforo  
+29. **Nube** con cuenta y slots (Ajustes) + códigos IM6  
+- Construcción: **cientos de edificios** ordenados por tipo, cada uno con logo  
+- Productos con **logo/monograma** propio  
+- Más familias: educación, medios, 3D, H₂, drones, robótica…
 
-- **7** Comparador de productos (logos + métricas)
-- **9** Índices sectoriales con gráfico
-- **24** Consejo de administración semanal (mociones y votos)
-- **27** Códigos de partida `IM6.` / `IM6S.` (Ajustes)
-- **30** Soundtrack / ambience procedural por zona
-- **UI** más ordenada (navegación por grupos)
-- **Más clases**: vino, corcho/ibéricos, bio, renovables, software, agua, óptica, ferroviario, seguridad, hogar smart, instrumentación…
-- **Campaña multi-año**: 24 capítulos narrativos hasta ~25 años + **15.000 misiones**
+## Truco
 
-## Guardado
-
-`localStorage` → `industry_manager_save_v6`
+`INDUSTRIA_TOTAL`
