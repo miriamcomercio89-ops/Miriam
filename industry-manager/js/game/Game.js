@@ -115,6 +115,7 @@ IM.Game = class Game {
   }
 
   init(saved) {
+    IM.currentGame = this;
     this.state = saved || IM.createInitialState();
     // Migración / defaults
     const st = this.state;
@@ -1083,9 +1084,14 @@ IM.Game = class Game {
     if (this.state.contracts.length >= 8) return;
     const items = (IM_DATA.items || []).filter((i) => i.tier <= 4 && !i.isWaste && i.category !== 'energia');
     if (!items.length) return;
+    const locs = [
+      ...(this.state.discoveredLocations || []),
+      ...this.state.sites.map((s) => IM.locationById(s.locationId)).filter(Boolean),
+    ];
+    if (!locs.length) return;
     const it = items[Math.floor(Math.random() * Math.min(500, items.length))];
-    const locs = IM_DATA.locations || [];
     const loc = locs[Math.floor(Math.random() * locs.length)];
+    if (!loc) return;
     const qty = Math.round(20 + Math.random() * 80);
     const minQ = 45 + Math.floor(Math.random() * 30);
     const price = this.priceOf(it.id) * (1.1 + Math.random() * 0.35);
@@ -1101,9 +1107,6 @@ IM.Game = class Game {
       reward: price * qty * 0.15,
       status: 'open',
     });
-    if (this.state.automation.autoAcceptContracts) {
-      // nothing — already open for fulfillment
-    }
   }
 
   tickContracts() {

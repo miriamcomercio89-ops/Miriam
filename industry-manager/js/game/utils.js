@@ -46,8 +46,18 @@ IM.recipeById = (id) => (window.IM_DATA.recipes || []).find((r) => r.id === id);
 IM.buildingById = (id) => (window.IM_DATA.buildings || []).find((b) => b.id === id);
 IM.machineById = (id) => (window.IM_DATA.machines || []).find((m) => m.id === id);
 IM.techById = (id) => (window.IM_DATA.techs || []).find((t) => t.id === id);
-IM.locationById = (id) => (window.IM_DATA.locations || []).find((l) => l.id === id);
 IM.missionById = (id) => (window.IM_DATA.missions || []).find((m) => m.id === id);
+IM.locationById = (id) => {
+  const dyn = (window.IM?.currentGame?.state?.discoveredLocations) || [];
+  return dyn.find((l) => l.id === id) || (window.IM_DATA.locations || []).find((l) => l.id === id);
+};
+IM.allLocations = () => {
+  const dyn = window.IM?.currentGame?.state?.discoveredLocations || [];
+  const base = window.IM_DATA.locations || [];
+  const map = new Map();
+  [...base, ...dyn].forEach((l) => map.set(l.id, l));
+  return [...map.values()];
+};
 
 IM.categoryLabel = {
   minerales: 'Minerales',

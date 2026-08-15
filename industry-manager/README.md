@@ -1,39 +1,31 @@
-# Industry Manager v2
+# Industry Manager v3 — Campaña
 
-Tycoon industrial en el navegador (HTML/CSS/JS, sin build).
+Tycoon industrial en el navegador. **Solo modo campaña.**
 
 ## Cómo jugar
 
-1. Abre `index.html` en un navegador de escritorio.
-2. Empiezas con **100.000.000 €**, **sin edificios**.
-3. En el mapa (3.000+ ciudades) elige un hub → **Fundar oficina** → construye plantas.
-4. Activa automatización, contratos, bolsa e I+D.
+1. Abre `index.html`.
+2. Empiezas con **100.000.000 €** y **cero plantas**.
+3. **Haz click en el mapa**: el juego consulta OpenStreetMap (Nominatim), detecta la ciudad real y funda tu oficina.
+4. Busca ciudades con el cuadro de búsqueda del mapa.
+5. Sigue **Campaña**, **Cadenas** y misiones.
 
-## Novedades v2
+## Cambios v3
 
-- Miles de ciudades con recursos regionales
-- Automatización (auto-compra, auto-venta, rutas, cola I+D, upgrades)
-- Dashboard OEE / energía / alertas
-- Calidad con rechazos y primas
-- Contaminación con multas y créditos verdes
-- Bolsa (futuros) + crisis por categoría
-- IA competidora que construye en el mapa
-- Logística intermodal + rutas visibles
-- Enciclopedia con árbol de recetas
-- Edificios multinivel (slots/eficiencia)
-- Atajos de teclado (Espacio, 1-5, M/I/D/A/B/E…)
-- 5.000+ ítems, ~900 recetas, tech tree ampliado
-
-## Tiempo
-
-1 minuto real = 1 hora de juego. Velocidades: pausa, 1×, 2×, 5×, 10×, 30×.
+- Construcción libre en el mapa (sin ciudades inventadas)
+- Nombres en **español de España** (p. ej. **aceituna**, no «oliva» como fruto)
+- Campaña por capítulos + cadenas mena→producto
+- Planificador de fábrica, B2B, blueprints, auto-expansión
+- Niebla industrial, divisas, políticas por país, estaciones
+- Mantenimiento de máquinas + auto-reparación
+- Semiconductores / baterías, **8.196 ítems**
+- Mercado/IA en Web Worker
+- Script de balance: `node tools/balance-sim.js`
 
 ## Truco I+D
 
-Código: `INDUSTRIA_TOTAL`
+`INDUSTRIA_TOTAL`
 
-## Regenerar datos
+## Nota OSM
 
-```bash
-node tools/generate-data.js
-```
+La detección de ciudad requiere red (Nominatim, 1 petición/s). Si falla, se usa un paraje por coordenadas.

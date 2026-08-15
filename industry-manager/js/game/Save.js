@@ -62,5 +62,7 @@ IM.Save = {
     localStorage.removeItem(IM_CONFIG.saveKey + '_auto');
     localStorage.removeItem('industry_manager_save_v1');
     localStorage.removeItem('industry_manager_save_v1_auto');
+    localStorage.removeItem('industry_manager_save_v2');
+    localStorage.removeItem('industry_manager_save_v2_auto');
   },
 };

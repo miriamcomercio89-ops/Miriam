@@ -156,14 +156,14 @@ mineralDefs.forEach((m) => addItem({
 const crops = [
   ['Trigo', 220], ['Maíz', 195], ['Cebada', 180], ['Arroz', 310], ['Avena', 170],
   ['Soja', 420], ['Girasol', 380], ['Colza', 400], ['Algodón', 1450], ['Caña de azúcar', 55],
-  ['Remolacha azucarera', 48], ['Patata', 180], ['Tomate industrial', 210], ['Oliva', 890],
+  ['Remolacha azucarera', 48], ['Patata', 180], ['Tomate industrial', 210], ['Aceituna', 890],
   ['Uva vinífera', 650], ['Naranja', 320], ['Manzana industrial', 280], ['Café verde', 3200],
   ['Cacao en grano', 2800], ['Té hoja', 2100], ['Tabaco hoja', 4500], ['Lino fibra', 980],
   ['Cáñamo industrial', 720], ['Yute', 650], ['Sisal', 580], ['Caucho natural látex', 1600],
   ['Madera de pino', 95], ['Madera de eucalipto', 85], ['Madera de roble', 280],
   ['Madera tropical', 450], ['Corcho', 1200], ['Resina natural', 890], ['Lana', 4200],
   ['Algodón orgánico', 2100], ['Leche cruda', 0.42, 'l'], ['Huevos industriales', 1.8, 'ud'],
-  ['Carne de vacuno', 5200], ['Carne de cerdo', 2800], ['Carne de ave', 2100],
+  ['Carne de ternera', 5200], ['Carne de cerdo', 2800], ['Carne de pollo', 2100],
   ['Pescado industrial', 3200], ['Algas industriales', 680], ['Levadura industrial', 2400],
 ];
 
@@ -960,10 +960,10 @@ addRecipe({
   pollution: 2,
 });
 addRecipe({
-  name: 'Prensar aceite de oliva',
+  name: 'Prensar aceite de oliva (aceituna)',
   building: 'almazara',
   machine: 'prensa_aceite',
-  inputs: [{ item: ensure('Oliva'), qty: 5 }],
+  inputs: [{ item: ensure('Aceituna'), qty: 5 }],
   outputs: [{ item: ensure('Aceite de oliva'), qty: 1 }],
   energyKwh: 30,
   timeMinutes: 50,
@@ -1522,9 +1522,8 @@ const techs = [
   { id: 'economia_circular', name: 'Economía circular', cost: 800000, time: 520, requires: ['reciclaje', 'compliance_ambiental'], desc: 'Bucles cerrados de material.' },
 ];
 
-// ——— Locations (miles de ciudades) ———
-const { generateCities } = require('./generate-cities');
-const locations = generateCities();
+// ——— Locations: el jugador coloca plantas en el mapa (Nominatim) ———
+const locations = [];
 
 // ——— Missions (thousands via templates) ———
 const missionTemplates = [];
@@ -1592,9 +1591,8 @@ for (let chapter = 1; chapter <= 40; chapter++) {
       requirement = { type: 'employees', qty: emp };
       reward = { money: 3000 * chapter, xp: 80 * chapter };
     } else {
-      const loc = locations[n % locations.length];
-      title = `Cap. ${chapter}: Expandirse a ${loc.name}`;
-      requirement = { type: 'locations', location: loc.id };
+      title = `Cap. ${chapter}: Fundar ${1 + (n % 3)} planta(s) en el mapa`;
+      requirement = { type: 'site_count', qty: 1 + (n % 3) + Math.floor(chapter / 10) };
       reward = { money: 25000 * chapter, xp: 160 * chapter };
     }
     missionTemplates.push({
@@ -1846,6 +1844,161 @@ const resinColors = ['natural', 'negro', 'blanco', 'rojo', 'azul', 'verde', 'gri
 for (let i = 1; i <= 200; i++) {
   addItem({ name: `Catalizador specialty grade ${i}`, category: 'quimicos', tier: 4, unit: 'kg', basePrice: 40 + i });
   addItem({ name: `Sensor industrial SKU-${1000+i}`, category: 'electronica', tier: 4, unit: 'ud', basePrice: 15 + i * 0.5 });
+}
+
+
+// ——— Español de España / andaluz (renombres) ———
+const renameMap = {
+  oliva: 'Aceituna',
+  'uva vinifera': 'Uva de vinificación',
+  'computadora': 'Ordenador',
+  'celular': 'Móvil',
+  'patatas fritas': 'Patatas fritas',
+  'elote': 'Mazorca de maíz',
+  'durazno': 'Melocotón',
+  'palta': 'Aguacate',
+  'poroto': 'Judía',
+  'choclo': 'Maíz tierno',
+  'camión de carga': 'Camión de mercancías',
+};
+items.forEach((it) => {
+  const low = it.name.toLowerCase();
+  Object.entries(renameMap).forEach(([from, to]) => {
+    if (low === from || low.includes(from)) {
+      // only exact-ish
+    }
+  });
+  if (/^oliva$/i.test(it.name)) it.name = 'Aceituna';
+  if (/smartphone/i.test(it.name)) it.name = it.name.replace(/Smartphone/i, 'Móvil');
+  if (/Televisor/i.test(it.name)) it.name = it.name.replace(/Televisor/i, 'Televisor');
+  if (/Portátil/i.test(it.name)) {/* ok */}
+  if (/Furgoneta/i.test(it.name)) {/* ok España */}
+});
+
+// Ensure Aceituna exists and recipe uses it
+if (!itemIndex.has('aceituna')) {
+  addItem({ name: 'Aceituna', category: 'agricolas', tier: 1, unit: 't', basePrice: 890, description: 'Aceituna (andaluz/español de España; no «oliva» como fruto).' });
+}
+// Fix aceite recipe input if still pointing to oliva
+recipes.forEach((r) => {
+  (r.inputs || []).forEach((inp) => {
+    if (inp.item === 'oliva') inp.item = 'aceituna';
+  });
+  (r.outputs || []).forEach((out) => {
+    if (out.item === 'oliva') out.item = 'aceituna';
+  });
+});
+
+// ——— Semiconductores y baterías (cadenas profundas) ———
+[
+  ['Polisilicio solar', 18000, 't'],
+  ['Oblea 200mm', 120, 'ud'],
+  ['Oblea 300mm', 280, 'ud'],
+  ['Fotoresistencia litográfica', 45000, 'l'],
+  ['Gas silano', 12, 'm³'],
+  ['Chip lógico 28nm', 8, 'ud'],
+  ['Chip lógico 7nm', 45, 'ud'],
+  ['Chip de memoria NAND', 6, 'ud'],
+  ['Chip de potencia SiC', 22, 'ud'],
+  ['Cátodo NMC', 28000, 't'],
+  ['Ánodo grafito batería', 9000, 't'],
+  ['Electrolito LiPF6', 32000, 't'],
+  ['Separador de batería', 15000, 't'],
+  ['Celda Li-ion', 18, 'ud'],
+  ['Paquete batería EV', 8500, 'ud'],
+  ['Paquete batería estacionaria', 12000, 'ud'],
+  ['BMS avanzado', 420, 'ud'],
+].forEach(([name, price, unit]) => addItem({ name, category: name.includes('Chip') || name.includes('Oblea') || name.includes('Foto') || name.includes('Gas silano') || name.includes('Polisilicio') ? 'electronica' : 'quimicos', tier: 5, unit, basePrice: price }));
+
+// Force categories for battery pack items
+['celda_li_ion','paquete_bateria_ev','paquete_bateria_estacionaria','bms_avanzado'].forEach((id) => {
+  const it = itemIndex.get(id);
+  if (it) it.category = 'electronica';
+});
+['catodo_nmc','anodo_grafito_bateria','electrolito_lipf6','separador_de_bateria'].forEach((id) => {
+  const it = itemIndex.get(id);
+  if (it) it.category = 'quimicos';
+});
+
+addRecipe({
+  name: 'Oblea 200mm',
+  building: 'electronica',
+  machine: 'linea_smt',
+  inputs: [{ item: ensure('Silicio electrónico'), qty: 0.002 }, { item: ensure('Gas silano'), qty: 0.5 }],
+  outputs: [{ item: ensure('Oblea 200mm'), qty: 1 }],
+  energyKwh: 40, timeMinutes: 90, pollution: 1, tech: 'semiconductores', qualityBase: 80,
+});
+addRecipe({
+  name: 'Chip lógico 28nm',
+  building: 'electronica',
+  machine: 'linea_smt',
+  inputs: [{ item: ensure('Oblea 200mm'), qty: 0.01 }, { item: ensure('Fotoresistencia litográfica'), qty: 0.001 }],
+  outputs: [{ item: ensure('Chip lógico 28nm'), qty: 1 }],
+  energyKwh: 5, timeMinutes: 30, pollution: 0.5, tech: 'semiconductores', qualityBase: 85,
+});
+addRecipe({
+  name: 'Cátodo NMC',
+  building: 'planta_quimica',
+  machine: 'reactor_generico',
+  inputs: [{ item: ensure('Litio metal'), qty: 0.1 }, { item: ensure('Óxido de níquel'), qty: 0.4 }, { item: ensure('Óxido de cobalto'), qty: 0.2 }],
+  outputs: [{ item: ensure('Cátodo NMC'), qty: 1 }],
+  energyKwh: 200, timeMinutes: 120, pollution: 3, tech: 'baterias', qualityBase: 75,
+});
+addRecipe({
+  name: 'Celda Li-ion',
+  building: 'electronica',
+  machine: 'linea_ensamblaje',
+  inputs: [{ item: ensure('Cátodo NMC'), qty: 0.001 }, { item: ensure('Ánodo grafito batería'), qty: 0.001 }, { item: ensure('Electrolito LiPF6'), qty: 0.0005 }],
+  outputs: [{ item: ensure('Celda Li-ion'), qty: 1 }],
+  energyKwh: 2, timeMinutes: 20, pollution: 0.2, tech: 'baterias', qualityBase: 78,
+});
+addRecipe({
+  name: 'Paquete batería EV',
+  building: 'planta_automocion',
+  machine: 'linea_montaje',
+  inputs: [{ item: ensure('Celda Li-ion'), qty: 200 }, { item: ensure('BMS avanzado'), qty: 1 }],
+  outputs: [{ item: ensure('Paquete batería EV'), qty: 1 }],
+  energyKwh: 80, timeMinutes: 180, pollution: 1, tech: 'baterias', qualityBase: 80,
+});
+addRecipe({
+  name: 'Extraer aceituna',
+  building: 'granja',
+  machine: 'cosechadora',
+  inputs: [],
+  outputs: [{ item: ensure('Aceituna'), qty: 1 }],
+  energyKwh: 15, waterM3: 6, timeMinutes: 60, pollution: 0.4, qualityBase: 55,
+});
+
+// Push toward 8k–10k SKUs
+const andalusianFood = ['Gazpacho industrial', 'Salmorejo a granel', 'Aceituna aliñada', 'Aceituna de mesa Gordal', 'Aceituna Manzanilla', 'Pescaito frito precocinado', 'Berenjena a la miel industrial', 'Mostaza andaluza', 'Vinagre de Jerez a granel', 'Brandy de Jerez granel'];
+andalusianFood.forEach((n, i) => addItem({ name: n, category: 'alimentacion', tier: 3, unit: i < 6 ? 't' : 'l', basePrice: 600 + i * 80, description: 'Producto en español de España / tradición andaluza.' }));
+
+for (let i = 1; i <= 400; i++) {
+  addItem({ name: `Componente mecánico CNC-${i}`, category: 'mecanicos', tier: 4, unit: 'ud', basePrice: 12 + i * 0.4 });
+  addItem({ name: `Especialidad química ES-${i}`, category: 'quimicos', tier: 3, unit: 't', basePrice: 800 + i * 3 });
+}
+for (let i = 1; i <= 300; i++) {
+  addItem({ name: `Módulo electrónico EMB-${i}`, category: 'electronica', tier: 4, unit: 'ud', basePrice: 3 + i * 0.2 });
+}
+for (let i = 1; i <= 200; i++) {
+  addItem({ name: `Referencia farma ESP-API-${i}`, category: 'farmaceuticos', tier: 5, unit: 'kg', basePrice: 5000 + i * 20 });
+}
+for (let i = 1; i <= 150; i++) {
+  addRecipe({
+    name: `Mecanizar CNC-${i}`,
+    building: 'planta_consumo',
+    machine: 'linea_ensamblaje',
+    inputs: [{ item: ensure('Chapa de acero'), qty: 0.01 }],
+    outputs: [{ item: ensure(`Componente mecánico CNC-${i}`), qty: 1 }],
+    energyKwh: 3, timeMinutes: 15, pollution: 0.1, tech: 'automatizacion', qualityBase: 60,
+  });
+}
+
+
+
+for (let i = 1; i <= 800; i++) {
+  addItem({ name: `Perfil estructural HEB-ESP-${i}`, category: 'construccion', tier: 3, unit: 't', basePrice: 700 + i });
+  addItem({ name: `Tejido técnico ESP-${i}`, category: 'textiles', tier: 3, unit: 'm²', basePrice: 4 + (i % 50) * 0.2 });
 }
 
 console.log('Auto-recipes added ~', autoRec);

@@ -1,2 +1,2 @@
 window.IM_DATA = window.IM_DATA || {};
-window.IM_DATA.summary = {"items":5269,"recipes":894,"buildings":37,"machines":39,"techs":46,"locations":3367,"missions":3200,"competitors":12,"categories":["minerales","agricolas","energia","residuos","metales","quimicos","farmaceuticos","construccion","textiles","electronica","mecanicos","alimentacion","embalaje","bienes_capital","papel","agroquimicos","consumo"]};
+window.IM_DATA.summary = {"items":8196,"recipes":1050,"buildings":37,"machines":39,"techs":46,"locations":0,"missions":3200,"competitors":12,"categories":["minerales","agricolas","energia","residuos","metales","quimicos","farmaceuticos","construccion","textiles","electronica","mecanicos","alimentacion","embalaje","bienes_capital","papel","agroquimicos","consumo"]};

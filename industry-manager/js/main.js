@@ -12,8 +12,8 @@
     if (overlay) {
       const s = window.IM_DATA?.summary;
       overlay.textContent = s
-        ? `${s.items} ítems · ${s.recipes} recetas · ${s.missions} misiones · click en un nodo del mapa`
-        : 'Haz click en un hub industrial del mapa';
+        ? `Campaña · ${s.items} ítems · ${s.recipes} recetas · click en el mapa para detectar ciudad (OSM)`
+        : 'Click en el mapa para fundar en una ciudad real';
     }
 
     let last = performance.now();
