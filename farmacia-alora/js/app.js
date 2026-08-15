@@ -5,7 +5,7 @@
 (function () {
   "use strict";
 
-  const STORAGE_KEY = "farmacia-alora-v10";
+  const STORAGE_KEY = "farmacia-alora-v11";
   const REAL_MS_PER_GAME_HOUR = 60 * 1000;
   const Clinica = window.FarmaciaClinica;
   const Caja = window.FarmaciaCaja;
@@ -278,6 +278,12 @@
       toast("🚨 Alerta AEMPS: " + alerta.nombre, "warn");
       Sounds.beepWarn && Sounds.beepWarn();
       renderStats();
+    }
+    const cc = Plus.maybeSpawnClickCollect && Plus.maybeSpawnClickCollect(state.plus, productos, state.gameTimeMs);
+    if (cc) {
+      toast("🛍 Nuevo Click & Collect: " + cc.clienteNombre, "ok");
+      Sounds.beepCustomer && Sounds.beepCustomer();
+      renderClickCollect();
     }
     // fatiga baja despacio fuera de guardia
     if (!(enGuardia && fuera) && state.plus.fatiga > 0 && Math.random() < 0.02) {
@@ -679,6 +685,24 @@
     if (!state.cart.length) { toast("Carrito vacío: elige según lo que pide el cliente", "warn"); return; }
     if (!state.caja.abierta) { toast("Abre la caja primero", "warn"); showTab("caja"); return; }
     for (const l of state.cart) if ((state.stock[l.productId] || 0) < l.cantidad) { toast("Stock insuficiente", "warn"); return; }
+    const clinical = Clinica.analizarClinica(cartProducts(), {
+      alergias: state.clienteActual.alergias || [],
+      cronicos: state.clienteActual.cronicos || [],
+      embarazo: !!state.clienteActual.embarazo,
+      lactancia: !!state.clienteActual.lactancia,
+    });
+    const graves = clinical.filter((a) => a.nivel === "grave");
+    if (graves.length) {
+      const ok = confirm("Hay avisos GRAVES en el carrito:\n\n" + graves.map((a) => "• " + a.msg).join("\n") + "\n\n¿Cobrar igual? (en práctica real valorarías no dispensar)");
+      if (!ok) {
+        if (Plus) Plus.scoreEvent(state.plus, "interaccion", true, "No forzó cobro con interacción grave", 8);
+        updateScoreHud(); save();
+        return;
+      }
+      if (Plus) Plus.scoreEvent(state.plus, "interaccion", false, "Cobró con interacción grave", -6);
+    } else if (clinical.some((a) => a.tipo === "interaccion" || a.tipo === "duplicado_pa")) {
+      if (Plus) Plus.scoreEvent(state.plus, "interaccion", true, "Revisó avisos antes de cobrar", 3);
+    }
     const val = validarDispensacion();
     if (!val.ok && !val.needVisado) { toast(val.motivo, "err"); Sounds.beepWarn(); return; }
 
@@ -1202,7 +1226,7 @@
             ${packOf(p, "sm")}
             <div>
               <strong>${escapeHtml(p.nombre)}</strong>
-              <span class="muted">${euro(t.precio)}${t.oferta?" · oferta":""} · ${p.requiereReceta?"℞":"OTC"}</span>
+              <span class="muted">${euro(t.precio)}${t.oferta?" · oferta":""} · ${p.requiereReceta?"℞":"OTC"} · ${escapeHtml(p.principioActivo||"")}</span>
             </div>
           </div>
           <div class="cart-line-actions">
@@ -1220,6 +1244,60 @@
     $("#tot-mutua").textContent = euro(tot.cubierto) + (tot.topeAplicado ? " · tope" : "");
     $("#tot-pagar").textContent = euro(tot.aPagar);
     renderPacienteChips();
+    renderCartInteractions();
+    updateVentaSteps();
+  }
+
+  function renderCartInteractions() {
+    const box = $("#cart-interactions");
+    if (!box) return;
+    const pac = {
+      alergias: state.clienteActual.alergias || [],
+      cronicos: state.clienteActual.cronicos || [],
+      embarazo: !!state.clienteActual.embarazo,
+      lactancia: !!state.clienteActual.lactancia,
+    };
+    const relevant = Clinica.analizarClinica(cartProducts(), pac).filter((a) =>
+      a.tipo === "interaccion" || a.tipo === "duplicado_pa" || a.tipo === "alergia" || a.tipo === "embarazo"
+    );
+    if (!relevant.length || !state.cart.length) {
+      box.hidden = true;
+      box.innerHTML = "";
+      return;
+    }
+    box.hidden = false;
+    box.innerHTML = `<div class="cart-int-title">⚠ Avisos del carrito</div>` +
+      relevant.map((a) => `<div class="cart-int alert-${a.nivel}">${escapeHtml(a.msg)}</div>`).join("");
+  }
+
+  function updateVentaSteps() {
+    const hasCli = !!(state.clienteActual?.nombre || state.clienteActual?.peticionTexto);
+    const hasCart = state.cart.length > 0;
+    const pac = {
+      alergias: state.clienteActual.alergias || [],
+      cronicos: state.clienteActual.cronicos || [],
+      embarazo: !!state.clienteActual.embarazo,
+      lactancia: !!state.clienteActual.lactancia,
+    };
+    const clinical = Clinica.analizarClinica(cartProducts(), pac);
+    const hasWarn = clinical.some((a) => a.nivel === "grave" || a.nivel === "moderada");
+    const hasEti = (state.plus?.etiquetasHechas || []).some((id) => state.cart.some((l) => l.productId === id));
+    const steps = {
+      1: hasCli,
+      2: hasCart,
+      3: hasCart && !clinical.some((a) => a.nivel === "grave"),
+      4: hasEti,
+      5: false,
+    };
+    $$("#venta-steps .vstep").forEach((el) => {
+      const n = Number(el.dataset.step);
+      el.classList.toggle("done", !!steps[n]);
+      el.classList.toggle("warn", n === 3 && hasWarn && hasCart);
+      let active = 1;
+      if (hasCli) active = 2;
+      if (hasCart) active = hasWarn ? 3 : (hasEti ? 5 : 4);
+      el.classList.toggle("active", n === active);
+    });
   }
 
   function renderPacienteChips() {
@@ -2265,6 +2343,74 @@
     if (name === "botiquines") renderBotiquines();
     if (name === "checklist") renderChecklist();
     if (name === "ereceta") renderEreceta();
+    if (name === "clickcollect") renderClickCollect();
+  }
+
+  function openEtiquetaModal() {
+    if (!state.cart.length) { toast("Añade productos al carrito primero", "warn"); return; }
+    const sel = $("#eti-producto");
+    sel.innerHTML = state.cart.map((l) => {
+      const p = productos.find((x) => x.id === l.productId);
+      return p ? `<option value="${p.id}">${escapeHtml(p.nombre)}</option>` : "";
+    }).join("");
+    $("#modal-etiqueta").classList.add("open");
+    renderEtiquetaPreview();
+  }
+
+  function renderEtiquetaPreview() {
+    const id = Number($("#eti-producto")?.value);
+    const p = productos.find((x) => x.id === id);
+    if (!p || !Clinica.etiquetaPosologia) {
+      $("#eti-preview").innerHTML = `<p class="empty">Sin producto</p>`;
+      return;
+    }
+    const et = Clinica.etiquetaPosologia(p, {
+      pacienteNombre: state.clienteActual.nombre || "Paciente",
+      lote: state.lotes[p.id]?.lote || p.lote,
+      fechaTexto: formatShort(state.gameTimeMs),
+    });
+    $("#eti-preview").innerHTML = `
+      <div class="eti-brand">${escapeHtml(et.titulo)}</div>
+      <div class="eti-row"><span>Paciente</span><strong>${escapeHtml(et.paciente)}</strong></div>
+      <div class="eti-row"><span>Medicamento</span><strong>${escapeHtml(et.producto)}</strong></div>
+      <div class="eti-row"><span>PA</span>${escapeHtml(et.principioActivo)}</div>
+      <div class="eti-row"><span>Presentación</span>${escapeHtml(et.presentacion)}</div>
+      <div class="eti-row"><span>Lote</span>${escapeHtml(et.lote)}</div>
+      <div class="eti-poso"><strong>Cómo tomarlo</strong><p>${escapeHtml(et.posologia)}</p></div>
+      ${et.avisos.length ? `<div class="eti-avisos">${et.avisos.map((a) => `<span>${escapeHtml(a)}</span>`).join("")}</div>` : ""}
+      <div class="eti-foot">${escapeHtml(et.fecha)} · Simulación educativa</div>`;
+  }
+
+  function renderClickCollect() {
+    const root = $("#cc-list");
+    const pill = $("#cc-count");
+    if (!root || !Plus) return;
+    const list = state.plus.clickCollect || [];
+    const pending = list.filter((o) => o.estado === "pendiente" || o.estado === "preparado").length;
+    if (pill) pill.textContent = String(pending);
+    if (!list.length) {
+      root.innerHTML = `<div class="empty">Sin pedidos online. Llegarán solos o pulsa “Simular pedido web”.</div>`;
+      return;
+    }
+    root.innerHTML = list.map((o) => {
+      const total = Plus.totalClickCollect(o);
+      return `<article class="cc-card estado-${escapeHtml(o.estado)}">
+        <header style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap">
+          <strong>🛍 ${escapeHtml(o.clienteNombre)}</strong>
+          <span class="badge">${escapeHtml(o.canal)} · ${escapeHtml(o.estado)}</span>
+        </header>
+        <p class="muted tiny">Bolsa <code>${escapeHtml(o.codigoBolsa)}</code> · DNI pedido: ${escapeHtml(o.clienteDni)} · ${euro(total)}</p>
+        <ul>${o.items.map((i) => `<li>${escapeHtml(i.nombre)} ×${i.cantidad}</li>`).join("")}</ul>
+        <div class="actions-row">
+          ${o.estado === "pendiente" ? `<button class="btn btn-primary btn-sm" data-cc-prep="${o.id}">Preparar bolsa</button>` : ""}
+          ${o.estado === "preparado" ? `
+            <input class="cc-dni" data-cc-dni="${o.id}" placeholder="DNI al recoger" style="max-width:160px" />
+            <button class="btn btn-accent btn-sm" data-cc-ent="${o.id}">Verificar DNI y entregar</button>` : ""}
+          ${o.estado === "entregado" ? `<span class="badge badge-ok">Entregado${o.dniVerificado ? " · DNI OK" : ""}</span>` : ""}
+          ${o.estado === "pendiente" || o.estado === "preparado" ? `<button class="btn btn-sm btn-danger-soft" data-cc-cancel="${o.id}">Cancelar</button>` : ""}
+        </div>
+      </article>`;
+    }).join("");
   }
 
   function bindEvents() {
@@ -2765,6 +2911,86 @@
       addToCart(Number(b.dataset.ereDisp), 1);
       Plus.scoreEvent(state.plus, "ereceta_disp", true, "Dispensado en módulo SNS", 5);
       renderEreceta(); updateScoreHud(); save();
+    });
+
+    $("#btn-etiquetar")?.addEventListener("click", openEtiquetaModal);
+    $("#eti-producto")?.addEventListener("change", renderEtiquetaPreview);
+    $("#btn-eti-cancel")?.addEventListener("click", () => $("#modal-etiqueta").classList.remove("open"));
+    $("#btn-eti-print")?.addEventListener("click", () => {
+      renderEtiquetaPreview();
+      const html = $("#eti-preview")?.innerHTML || "";
+      const w = window.open("", "_blank");
+      if (!w) return;
+      w.document.write(`<html><head><title>Etiqueta</title><style>
+        body{font-family:sans-serif;padding:24px;background:#f8fafc}
+        .etiqueta-sheet,.eti-brand,.eti-row,.eti-poso,.eti-avisos,.eti-foot{display:block}
+        .eti-brand{font-weight:800;font-size:1.2rem;margin-bottom:12px;color:#0f766e}
+        .eti-row{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px solid #e2e8f0}
+        .eti-poso{margin-top:14px;padding:12px;background:#ecfeff;border-radius:12px}
+        .eti-avisos span{display:inline-block;margin:4px 6px 0 0;padding:4px 8px;background:#fef3c7;border-radius:8px;font-size:12px}
+      </style></head><body><div class="etiqueta-sheet">${html}</div></body></html>`);
+      w.document.close();
+      w.print();
+    });
+    $("#btn-eti-ok")?.addEventListener("click", () => {
+      const id = Number($("#eti-producto")?.value);
+      if (!id) return;
+      state.plus.etiquetasHechas = state.plus.etiquetasHechas || [];
+      if (!state.plus.etiquetasHechas.includes(id)) state.plus.etiquetasHechas.push(id);
+      if (Plus) Plus.scoreEvent(state.plus, "etiqueta", true, "Etiqueta al paciente", 5);
+      toast("Etiqueta marcada · buen consejo", "ok");
+      $("#modal-etiqueta").classList.remove("open");
+      updateVentaSteps(); updateScoreHud(); save();
+    });
+
+    $("#btn-nuevo-cc")?.addEventListener("click", () => {
+      if (!Plus) return;
+      state.plus.clickCollect = state.plus.clickCollect || [];
+      state.plus.clickCollect.unshift(Plus.crearClickCollect(productos, Date.now()));
+      renderClickCollect(); save();
+      toast("Pedido web simulado", "ok");
+    });
+    $("#cc-list")?.addEventListener("click", (e) => {
+      const prep = e.target.closest("[data-cc-prep]");
+      const ent = e.target.closest("[data-cc-ent]");
+      const cancel = e.target.closest("[data-cc-cancel]");
+      const list = state.plus.clickCollect || [];
+      if (prep) {
+        const o = list.find((x) => x.id === prep.dataset.ccPrep);
+        if (o) {
+          o.estado = "preparado";
+          Plus.scoreEvent(state.plus, "clickcollect", true, "Bolsa preparada", 4);
+          toast("Bolsa " + o.codigoBolsa + " preparada", "ok");
+        }
+      }
+      if (ent) {
+        const o = list.find((x) => x.id === ent.dataset.ccEnt);
+        const inp = $(`[data-cc-dni="${ent.dataset.ccEnt}"]`);
+        const dni = (inp?.value || "").trim().toUpperCase();
+        if (!o) return;
+        if (dni !== String(o.clienteDni).toUpperCase()) {
+          Plus.scoreEvent(state.plus, "clickcollect", false, "DNI incorrecto en C&C", -4);
+          toast("DNI no coincide con el pedido — no entregar", "err");
+          renderClickCollect(); updateScoreHud(); save();
+          return;
+        }
+        for (const it of o.items) {
+          state.stock[it.productId] = Math.max(0, (state.stock[it.productId] || 0) - it.cantidad);
+        }
+        o.estado = "entregado";
+        o.dniVerificado = true;
+        const total = Plus.totalClickCollect(o);
+        state.stats.tickets += 1;
+        state.stats.facturacion += total;
+        Plus.scoreEvent(state.plus, "clickcollect", true, "C&C entregado con DNI", 8);
+        toast(`Entregado · ${euro(total)}`, "ok");
+        renderCatalog(); renderStats();
+      }
+      if (cancel) {
+        const o = list.find((x) => x.id === cancel.dataset.ccCancel);
+        if (o) o.estado = "cancelado";
+      }
+      renderClickCollect(); updateScoreHud(); save();
     });
     $("#btn-restock").onclick = ()=>{
       for (const p of productos) state.stock[p.id]=p.stockInicial;

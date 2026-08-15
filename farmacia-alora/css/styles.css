@@ -919,3 +919,76 @@ input:focus, select:focus, textarea:focus {
   .topbar-v3 { grid-template-columns: 1fr; }
   .stats-v3 { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* ——— Venta v4 · interacciones · etiqueta · C&C ——— */
+.q-lime { background: linear-gradient(120deg,#65a30d,#a3e635); color:#14532d; }
+.strip-lime { background: linear-gradient(120deg,#f7fee7,#d9f99d); border-color:#a3e635; }
+
+.venta-steps {
+  display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;
+  padding: 10px 12px; border-radius: 16px;
+  background: linear-gradient(90deg, rgba(255,255,255,.9), rgba(224,242,254,.85));
+  border: 1px solid #bae6fd;
+}
+.vstep {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 10px; border-radius: 999px; font-weight: 800; font-size: .82rem;
+  background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0;
+}
+.vstep em {
+  width: 1.35rem; height: 1.35rem; border-radius: 50%; display: grid; place-items: center;
+  background: #cbd5e1; color: #0f172a; font-style: normal; font-size: .75rem;
+}
+.vstep.active { background: linear-gradient(120deg,#0891b2,#22d3ee); color: #fff; border-color: transparent; }
+.vstep.active em { background: #fff; color: #0e7490; }
+.vstep.done { background: #ecfdf5; color: #047857; border-color: #6ee7b7; }
+.vstep.done em { background: #10b981; color: #fff; }
+.vstep.warn { background: #fef2f2; color: #b91c1c; border-color: #fecaca; animation: pulsebar 1.6s ease-in-out infinite; }
+
+.layout-venta-v4 { align-items: start; }
+.venta-side { position: sticky; top: 8px; }
+.card-cart-v4 {
+  border-top: 5px solid #f59e0b;
+  background: linear-gradient(165deg, rgba(255,251,235,.95), rgba(255,255,255,.92));
+}
+.cart-interactions {
+  margin-bottom: 10px; padding: 10px; border-radius: 14px;
+  background: linear-gradient(120deg, #fff7ed, #fef2f2);
+  border: 1px solid #fdba74;
+}
+.cart-int-title { font-weight: 800; color: #9a3412; margin-bottom: 6px; font-size: .85rem; }
+.cart-int { font-size: .86rem; font-weight: 650; padding: 6px 8px; border-radius: 10px; margin: 4px 0; }
+.cart-int.alert-grave { background: #fee2e2; color: #7f1d1d; }
+.cart-int.alert-moderada { background: #ffedd5; color: #9a3412; }
+.cart-int.alert-leve { background: #fef9c3; color: #854d0e; }
+
+.totals-v4 { background: rgba(255,255,255,.7); border-radius: 12px; padding: 8px 10px; }
+.venta-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.venta-actions .btn-lg { flex: 1 1 160px; }
+
+.etiqueta-sheet {
+  margin-top: 12px; padding: 16px; border-radius: 16px;
+  background: linear-gradient(160deg, #fff, #ecfeff);
+  border: 2px dashed #14b8a6; box-shadow: inset 0 0 0 4px #fff;
+}
+.eti-brand { font-family: var(--display); font-weight: 800; font-size: 1.15rem; color: #0f766e; margin-bottom: 10px; }
+.eti-row { display: flex; justify-content: space-between; gap: 10px; padding: 6px 0; border-bottom: 1px solid #e2e8f0; font-size: .92rem; }
+.eti-poso { margin-top: 12px; padding: 12px; border-radius: 12px; background: #ccfbf1; }
+.eti-poso p { margin: 6px 0 0; font-weight: 650; line-height: 1.4; }
+.eti-avisos { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; }
+.eti-avisos span { background: #fef3c7; border-radius: 8px; padding: 4px 8px; font-size: .8rem; font-weight: 700; }
+.eti-foot { margin-top: 12px; font-size: .75rem; color: #64748b; }
+.modal-etiqueta-card { max-width: 560px; }
+
+.cc-card {
+  background: rgba(255,255,255,.94); border-radius: 18px; padding: 14px 16px;
+  border-left: 6px solid #65a30d; box-shadow: var(--shadow);
+}
+.cc-card.estado-preparado { border-left-color: #0891b2; background: linear-gradient(120deg,#ecfeff,#fff); }
+.cc-card.estado-entregado { border-left-color: #16a34a; opacity: .9; }
+.cc-card.estado-cancelado { border-left-color: #94a3b8; opacity: .7; }
+
+@media (max-width: 980px) {
+  .venta-side { position: static; }
+  .layout-venta-v4 { grid-template-columns: 1fr; }
+}

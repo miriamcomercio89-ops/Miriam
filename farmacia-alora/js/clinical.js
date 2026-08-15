@@ -1,5 +1,5 @@
 /**
- * Lógica clínica de práctica: interacciones, alergias, genéricos, síntomas.
+ * Lógica clínica de práctica: interacciones, alergias, genéricos, síntomas, etiquetas.
  * Simulación educativa — no es consejo médico.
  */
 (function (global) {
@@ -32,21 +32,53 @@
 
   const EMBARAZO_EVITAR = /isotretinoína|warfarina|metotrexato|ace|ieca|enalapril|ramipril|estatina|atorvastatina|simvastatina|doxiciclina|ciprofloxacino|metamizol/i;
 
+  const SINTOMAS_UI = [
+    "dolor de cabeza", "fiebre", "tos", "alergia", "acidez", "diarrea",
+    "estreñimiento", "congestión", "dolor muscular", "piel irritada",
+    "insomnio", "estres", "vitaminas", "higiene bucal", "solar",
+  ];
+
   function gruposDeProducto(p) {
     return [p.grupoInteraccion].filter(Boolean);
+  }
+
+  function inferGrupoDesdeTexto(txt) {
+    const t = String(txt || "").toLowerCase();
+    if (/ibuprofeno|naproxeno|diclofenaco|aines|aas|aspirina|dexketoprofeno/.test(t)) return "nsaid";
+    if (/warfarina|apixabán|rivaroxabán|anticoag|sintrom|eliquis|xarelto|acenocumarol/.test(t)) return "anticoagulante";
+    if (/sertralina|escitalopram|fluoxetina|isrs|antidepres/.test(t)) return "isrs";
+    if (/alprazolam|lorazepam|diazepam|benzo|orfidal|trankimazin/.test(t)) return "benzo";
+    if (/tramadol|fentanilo|morfina|opioide|adolonta|durogesic/.test(t)) return "tramadol_opioide";
+    if (/atorvastatina|simvastatina|estatina/.test(t)) return "estatina";
+    if (/enalapril|ramipril|ieca|losartán/.test(t)) return "ieca";
+    if (/furosemida|diurético/.test(t)) return "diuretico";
+    if (/azitromicina|claritromicina|macrólido/.test(t)) return "antibiotico_macrolido";
+    if (/amoxicilina|ciprofloxacino|antibiótico|antibiotico/.test(t)) return "antibiotico";
+    if (/omeprazol|pantoprazol|ibp|ipp/.test(t)) return "ipp";
+    if (/metformina/.test(t)) return "metformina";
+    if (/loratadina|cetirizina|antihist/.test(t)) return "antihistaminico";
+    if (/zolpidem|stilnox/.test(t)) return "zolpidem";
+    if (/paracetamol/.test(t)) return "analgesico";
+    return "otro";
   }
 
   function analizarInteracciones(productosSeleccionados, cronicosNombres) {
     const alerts = [];
     const grupos = [];
-    for (const p of productosSeleccionados) {
+    for (const p of productosSeleccionados || []) {
       for (const g of gruposDeProducto(p)) grupos.push({ g, nombre: p.nombre });
+      // también inferir del PA
+      const inferred = inferGrupoDesdeTexto(p.principioActivo || p.nombre);
+      if (inferred && inferred !== "otro" && !gruposDeProducto(p).includes(inferred)) {
+        grupos.push({ g: inferred, nombre: p.nombre });
+      }
     }
     for (const c of cronicosNombres || []) {
       grupos.push({ g: inferGrupoDesdeTexto(c), nombre: "Crónico: " + c });
     }
     for (let i = 0; i < grupos.length; i++) {
       for (let j = i + 1; j < grupos.length; j++) {
+        if (grupos[i].nombre === grupos[j].nombre && grupos[i].g === grupos[j].g) continue;
         const hit = INTERACCIONES.find(
           (x) =>
             (x.a === grupos[i].g && x.b === grupos[j].g) ||
@@ -64,29 +96,10 @@
     return alerts;
   }
 
-  function inferGrupoDesdeTexto(txt) {
-    const t = String(txt || "").toLowerCase();
-    if (/ibuprofeno|naproxeno|diclofenaco|aines|aas|aspirina|dexketoprofeno/.test(t)) return "nsaid";
-    if (/warfarina|apixabán|rivaroxabán|anticoag|sintrom|eliquis|xarelto/.test(t)) return "anticoagulante";
-    if (/sertralina|escitalopram|fluoxetina|isrs|antidepres/.test(t)) return "isrs";
-    if (/alprazolam|lorazepam|diazepam|benzo|orfidal|trankimazin/.test(t)) return "benzo";
-    if (/tramadol|fentanilo|morfina|opioide|adolonta|durogesic/.test(t)) return "tramadol_opioide";
-    if (/atorvastatina|simvastatina|estatina/.test(t)) return "estatina";
-    if (/enalapril|ramipril|ieca|losartán/.test(t)) return "ieca";
-    if (/furosemida|diurético/.test(t)) return "diuretico";
-    if (/azitromicina|claritromicina|macrólido/.test(t)) return "antibiotico_macrolido";
-    if (/amoxicilina|ciprofloxacino|antibiótico|antibiotico/.test(t)) return "antibiotico";
-    if (/omeprazol|pantoprazol|ibp|ipp/.test(t)) return "ipp";
-    if (/metformina/.test(t)) return "metformina";
-    if (/loratadina|cetirizina|antihist/.test(t)) return "antihistaminico";
-    if (/zolpidem|stilnox/.test(t)) return "zolpidem";
-    return "otro";
-  }
-
   function analizarAlergias(productosSeleccionados, alergias) {
     const alerts = [];
     const list = (alergias || []).map((a) => String(a).toLowerCase());
-    for (const p of productosSeleccionados) {
+    for (const p of productosSeleccionados || []) {
       const blob = `${p.nombre} ${p.principioActivo} ${p.marca}`;
       for (const a of list) {
         if (a && blob.toLowerCase().includes(a)) {
@@ -107,7 +120,7 @@
     const alerts = [];
     if (!paciente) return alerts;
     if (paciente.embarazo) {
-      for (const p of productosSeleccionados) {
+      for (const p of productosSeleccionados || []) {
         const blob = `${p.nombre} ${p.principioActivo}`;
         if (EMBARAZO_EVITAR.test(blob) || p.controlado) {
           alerts.push({
@@ -119,7 +132,7 @@
       }
     }
     if (paciente.lactancia) {
-      for (const p of productosSeleccionados) {
+      for (const p of productosSeleccionados || []) {
         if (/metamizol|codeína|tramadol|doxiciclina/i.test(`${p.nombre} ${p.principioActivo}`)) {
           alerts.push({
             tipo: "lactancia",
@@ -132,11 +145,60 @@
     return alerts;
   }
 
+  function normalizarPA(pa) {
+    return String(pa || "")
+      .toLowerCase()
+      .replace(/\+/g, " ")
+      .replace(/[^a-záéíóúñ0-9\s]/gi, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  function esParacetamol(pa) {
+    return /paracetamol|acetaminofen|acetaminofén/.test(normalizarPA(pa));
+  }
+
+  function analizarDuplicadosPrincipio(productosSeleccionados) {
+    const alerts = [];
+    const byPa = {};
+    let paraCount = 0;
+    const paraNombres = [];
+    for (const p of productosSeleccionados || []) {
+      const pa = normalizarPA(p.principioActivo);
+      if (!pa || pa === "—") continue;
+      const parts = pa.split(/\s+/).filter(Boolean);
+      const key = parts.includes("paracetamol") ? "paracetamol" : pa.split(" ")[0];
+      if (esParacetamol(p.principioActivo) || parts.includes("paracetamol")) {
+        paraCount += 1;
+        paraNombres.push(p.nombre);
+      }
+      byPa[key] = byPa[key] || [];
+      byPa[key].push(p.nombre);
+    }
+    if (paraCount >= 2) {
+      alerts.push({
+        tipo: "duplicado_pa",
+        nivel: "grave",
+        msg: `Varios productos con PARACETAMOL: ${paraNombres.join(" + ")}. Riesgo de superar 3–4 g/día.`,
+      });
+    }
+    for (const [pa, nombres] of Object.entries(byPa)) {
+      if (nombres.length < 2 || pa === "paracetamol") continue;
+      alerts.push({
+        tipo: "duplicado_pa",
+        nivel: "moderada",
+        msg: `Mismo principio «${pa}» en: ${nombres.join(" + ")}. Revisa si es necesario.`,
+      });
+    }
+    return alerts;
+  }
+
   function analizarClinica(productosSeleccionados, paciente) {
     const all = [
       ...analizarAlergias(productosSeleccionados, paciente?.alergias),
       ...analizarEmbarazoLactancia(productosSeleccionados, paciente),
       ...analizarInteracciones(productosSeleccionados, paciente?.cronicos),
+      ...analizarDuplicadosPrincipio(productosSeleccionados),
     ];
     const seen = new Set();
     return all.filter((a) => {
@@ -155,8 +217,7 @@
       .filter((p) => {
         if (p.id === producto.id) return false;
         if ((p.principioActivo || "").toLowerCase() !== pa) return false;
-        if (dosis && p.dosis && p.dosis.toLowerCase() !== dosis && !String(p.nombre).includes(producto.dosis)) {
-          // allow loose match if dosis empty on either
+        if (dosis && p.dosis && p.dosis.toLowerCase() !== dosis) {
           if (p.dosis && producto.dosis) return p.dosis.toLowerCase() === dosis;
         }
         if ((stockMap[p.id] || 0) <= 0) return false;
@@ -182,18 +243,59 @@
     }).filter((p) => (stockMap[p.id] || 0) > 0).slice(0, 60);
   }
 
-  const SINTOMAS_UI = [
-    "dolor de cabeza", "fiebre", "tos", "alergia", "acidez", "diarrea",
-    "estreñimiento", "congestión", "dolor muscular", "piel irritada",
-    "insomnio", "estres", "vitaminas", "higiene bucal", "solar",
-  ];
+  function etiquetaPosologia(producto, opts) {
+    const p = producto || {};
+    const nombre = opts?.pacienteNombre || "Paciente";
+    const pa = p.principioActivo || "medicamento";
+    const rx = !!p.requiereReceta;
+    let como = "Según indicación del farmacéutico / médico.";
+    const blob = `${p.nombre} ${pa} ${p.presentacion || ""}`.toLowerCase();
+    if (/paracetamol|gelocatil|termalgin/.test(blob)) {
+      como = "1 comprimido cada 6–8 horas si hay dolor o fiebre. No superar 3 g/día (adulto) salvo criterio médico.";
+    } else if (/ibuprofeno|espidifen|enantyum|dexketoprofeno/.test(blob)) {
+      como = "1 comprimido cada 8 horas con comida si duele. No usar muchos días seguidos sin consejo.";
+    } else if (/omeprazol|pantoprazol|ibp|ipp/.test(blob)) {
+      como = "1 cápsula al día, por la mañana en ayunas, tragar entera con agua.";
+    } else if (/amoxicilina|azitromicina|antibiótico|antibiotico/.test(blob)) {
+      como = "Tomar exactamente como indica la receta. Completar todo el tratamiento aunque se encuentre mejor.";
+    } else if (/loratadina|cetirizina|desloratadina|antihist/.test(blob)) {
+      como = "1 comprimido al día. Puede producir sueño (según el tipo): no conduzca si se encuentra somnoliento.";
+    } else if (p.nevera) {
+      como = "Conservar en nevera (2–8 °C). No congelar. Usar según receta.";
+    } else if (rx) {
+      como = `Tomar según receta médica. Principio: ${pa}. Si tiene dudas, pregunte en farmacia.`;
+    } else {
+      como = `Usar según el prospecto. Principio: ${pa}. Si no mejora en 2–3 días, consulte.`;
+    }
+    const avisos = [];
+    if (p.nevera) avisos.push("❄ Cadena de frío");
+    if (p.controlado) avisos.push("🔒 Uso controlado");
+    if (/nsaid|ibuprofeno|aine|diclofenaco/.test(blob)) avisos.push("No combinar con anticoagulantes sin consejo");
+    if (/paracetamol/.test(blob)) avisos.push("No acumular con otros productos que lleven paracetamol");
+    return {
+      titulo: "Farmacia Álora · Etiqueta al paciente",
+      paciente: nombre,
+      producto: p.nombre,
+      principioActivo: pa,
+      presentacion: p.presentacion || p.dosis || "",
+      lote: opts?.lote || p.lote || "—",
+      posologia: como,
+      avisos,
+      fecha: opts?.fechaTexto || new Date().toLocaleDateString("es-ES"),
+    };
+  }
 
   global.FarmaciaClinica = {
+    INTERACCIONES,
+    SINTOMAS_UI,
+    analizarInteracciones,
+    analizarAlergias,
+    analizarEmbarazoLactancia,
+    analizarDuplicadosPrincipio,
     analizarClinica,
     buscarGenericos,
     filtrarPorSintoma,
     inferGrupoDesdeTexto,
-    SINTOMAS_UI,
-    INTERACCIONES,
+    etiquetaPosologia,
   };
 })(typeof window !== "undefined" ? window : globalThis);

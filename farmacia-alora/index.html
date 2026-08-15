@@ -73,6 +73,7 @@
       <button type="button" class="quick-btn q-rose" data-goto="lotes">🚨 Lotes</button>
       <button type="button" class="quick-btn q-cyan" data-goto="checklist">📷 Checklist</button>
       <button type="button" class="quick-btn q-orange" data-goto="botiquines">🏢 Botiquines</button>
+      <button type="button" class="quick-btn q-lime" data-goto="clickcollect">🛍 Click &amp; Collect</button>
     </div>
 
     <nav class="tabs tabs-v3" aria-label="Secciones">
@@ -86,6 +87,7 @@
       <button type="button" class="tab" data-tab="evaluacion"><span>⭐</span> Nota</button>
       <button type="button" class="tab" data-tab="lotes"><span>🚨</span> Lotes</button>
       <button type="button" class="tab" data-tab="botiquines"><span>🏢</span> Botiquines</button>
+      <button type="button" class="tab" data-tab="clickcollect"><span>🛍</span> C&amp;C <span id="cc-count" class="count-pill">0</span></button>
       <button type="button" class="tab" data-tab="checklist"><span>📷</span> Checklist</button>
       <button type="button" class="tab" data-tab="clinica"><span>🩺</span> Clínica</button>
       <button type="button" class="tab" data-tab="medico"><span>👨‍⚕️</span> Médico</button>
@@ -103,6 +105,13 @@
 
     <!-- VENTA -->
     <section id="panel-venta" class="panel active">
+      <div class="venta-steps" id="venta-steps" aria-label="Pasos de venta">
+        <span class="vstep" data-step="1"><em>1</em> Cliente</span>
+        <span class="vstep" data-step="2"><em>2</em> Productos</span>
+        <span class="vstep" data-step="3"><em>3</em> Revisar avisos</span>
+        <span class="vstep" data-step="4"><em>4</em> Etiquetar</span>
+        <span class="vstep" data-step="5"><em>5</em> Cobrar</span>
+      </div>
       <div id="campania-banner" class="campania-banner" hidden></div>
       <div id="proc-box" class="proc-box" hidden></div>
       <div id="cliente-habla" class="speech-card hidden">
@@ -114,7 +123,7 @@
         </div>
       </div>
 
-      <div class="layout-venta">
+      <div class="layout-venta layout-venta-v4">
         <div class="card card-catalog">
           <div class="card-head">
             <h2><span class="h-ico">🏪</span> Catálogo</h2>
@@ -151,7 +160,7 @@
           <div id="catalog-cards" class="catalog-cards"></div>
         </div>
 
-        <div class="stack">
+        <div class="stack venta-side">
           <div class="card card-patient">
             <div class="card-head">
               <h3><span class="h-ico">👤</span> Cliente</h3>
@@ -181,21 +190,23 @@
             <div id="paciente-chips" class="paciente-chips"></div>
           </div>
 
-          <div class="card card-cart">
+          <div class="card card-cart card-cart-v4">
             <div class="card-head">
               <h3><span class="h-ico">🧺</span> Carrito</h3>
               <button type="button" class="btn btn-sm" id="btn-vaciar">Vaciar</button>
             </div>
+            <div id="cart-interactions" class="cart-interactions" hidden></div>
             <div id="cart-body"></div>
-            <div class="totals">
+            <div class="totals totals-v4">
               <div><span>PVP + IVA</span><span id="tot-bruto">0 €</span></div>
               <div><span>Descuentos</span><span id="tot-desc">0 €</span></div>
               <div><span>SNS / mutua cubre</span><span id="tot-mutua">0 €</span></div>
               <div class="grand"><span>Cliente paga</span><span id="tot-pagar">0 €</span></div>
             </div>
-            <div class="actions-row">
-              <button type="button" class="btn btn-primary btn-lg" id="btn-cobrar">Cobrar TPV <kbd>F4</kbd></button>
+            <div class="actions-row venta-actions">
+              <button type="button" class="btn btn-soft" id="btn-etiquetar" title="Etiqueta al paciente">🏷 Etiqueta</button>
               <button type="button" class="btn btn-soft" id="btn-sugerir-generico">♻ Genérico</button>
+              <button type="button" class="btn btn-primary btn-lg" id="btn-cobrar">Cobrar TPV <kbd>F4</kbd></button>
             </div>
           </div>
 
@@ -476,6 +487,18 @@
       <div id="botiquines-list" class="stack"></div>
     </section>
 
+    <!-- CLICK & COLLECT -->
+    <section id="panel-clickcollect" class="panel">
+      <div class="welcome-strip strip-lime">
+        <div>
+          <h2>🛍 Click &amp; Collect / pedidos online</h2>
+          <p class="muted">Prepara la bolsa, verifica DNI y entrega. Llegan solos con el tiempo de juego.</p>
+        </div>
+        <button type="button" class="btn btn-primary" id="btn-nuevo-cc">+ Simular pedido web</button>
+      </div>
+      <div id="cc-list" class="stack"></div>
+    </section>
+
     <!-- CHECKLIST VISUAL -->
     <section id="panel-checklist" class="panel">
       <div class="welcome-strip strip-cyan">
@@ -610,6 +633,9 @@
           <li><strong>Botiquines</strong>: prepara, firma y entrega pedidos de empresa/residencia.</li>
           <li><strong>Checklist</strong>: valida mostrador, nevera y estantería.</li>
           <li><strong>Guardia</strong>: menos clientes, más urgencias, recargo 15% y fatiga.</li>
+          <li><strong>Carrito</strong>: avisos automáticos de interacciones y paracetamol duplicado.</li>
+          <li><strong>Etiqueta</strong>: posología sencilla antes de cobrar.</li>
+          <li><strong>Click &amp; Collect</strong>: preparar bolsa y verificar DNI.</li>
           <li><strong>Nota del día</strong>: mira tu puntuación (A–D).</li>
         </ol>
         <p><kbd>F2</kbd> buscar · <kbd>F4</kbd> cobrar · <kbd>Esc</kbd> cerrar</p>
@@ -617,7 +643,7 @@
       </div>
     </section>
 
-    <footer class="disclaimer">Farmacia Álora · Fase 3 · nota · interrupciones · lotes · botiquines · guardia · checklist · e-receta · PDF en /manuales</footer>
+    <footer class="disclaimer">Farmacia Álora · Fase 4 · interacciones · etiquetas · click&amp;collect · venta guiada · PDF en /manuales</footer>
   </div>
 
   <!-- Modal receta -->
@@ -762,18 +788,32 @@
     </div>
   </div></div>
 
+  <div class="modal" id="modal-etiqueta"><div class="modal-card modal-etiqueta-card">
+    <h2>🏷 Etiqueta al paciente</h2>
+    <p class="muted">Posología en lenguaje sencillo. Elige producto del carrito.</p>
+    <div class="form-grid">
+      <div class="full"><label class="lbl" for="eti-producto">Producto</label><select id="eti-producto"></select></div>
+    </div>
+    <div id="eti-preview" class="etiqueta-sheet"></div>
+    <div class="actions-row">
+      <button type="button" class="btn btn-primary" id="btn-eti-print">🖨 Imprimir / PDF</button>
+      <button type="button" class="btn btn-accent" id="btn-eti-ok">Marcar como entregada</button>
+      <button type="button" class="btn" id="btn-eti-cancel">Cerrar</button>
+    </div>
+  </div></div>
+
   <div id="toasts" aria-live="polite"></div>
 
-  <script src="js/catalog.js?v=12"></script>
-  <script src="js/clinical.js?v=12"></script>
-  <script src="js/clients.js?v=12"></script>
-  <script src="js/caja.js?v=12"></script>
-  <script src="js/sounds.js?v=12"></script>
-  <script src="js/minigames.js?v=12"></script>
-  <script src="js/extras.js?v=12"></script>
-  <script src="js/packshot.js?v=12"></script>
-  <script src="js/clinic-tools.js?v=12"></script>
-  <script src="js/practice-plus.js?v=12"></script>
-  <script src="js/app.js?v=12"></script>
+  <script src="js/catalog.js?v=13"></script>
+  <script src="js/clinical.js?v=13"></script>
+  <script src="js/clients.js?v=13"></script>
+  <script src="js/caja.js?v=13"></script>
+  <script src="js/sounds.js?v=13"></script>
+  <script src="js/minigames.js?v=13"></script>
+  <script src="js/extras.js?v=13"></script>
+  <script src="js/packshot.js?v=13"></script>
+  <script src="js/clinic-tools.js?v=13"></script>
+  <script src="js/practice-plus.js?v=13"></script>
+  <script src="js/app.js?v=13"></script>
 </body>
 </html>

@@ -79,6 +79,9 @@
       checklists: {},
       erecetaSesion: null,
       guardiaStats: { ventasGuardia: 0, urgencias: 0, recargo: 0 },
+      clickCollect: [],
+      nextClickCollectAt: 0,
+      etiquetasHechas: [],
     };
   }
 
@@ -335,6 +338,54 @@
     return { ok: true };
   }
 
+  function crearClickCollect(productos, seed) {
+    const r = mulberry32(seed || Date.now());
+    const otc = productos.filter((p) => !p.requiereReceta);
+    const pool = otc.length ? otc : productos;
+    const n = 1 + Math.floor(r() * 3);
+    const items = [];
+    const used = new Set();
+    for (let i = 0; i < n; i++) {
+      const p = pick(r, pool);
+      if (!p || used.has(p.id)) continue;
+      used.add(p.id);
+      items.push({ productId: p.id, nombre: p.nombre, cantidad: 1 + (r() < 0.25 ? 1 : 0), precio: p.precio });
+    }
+    const nombres = ["María López", "Carlos Ruiz", "Ana Martín", "Pedro Gómez", "Lucía Fernández", "John Smith"];
+    const nombre = pick(r, nombres);
+    const dni = String(10000000 + Math.floor(r() * 89999999)) + "TRWAGMYFPDXBNJZSQVHLCKE"[Math.floor(r() * 23)];
+    return {
+      id: "CC-" + Date.now().toString(36).toUpperCase(),
+      canal: pick(r, ["web", "app", "whatsapp"]),
+      clienteNombre: nombre,
+      clienteDni: dni,
+      codigoBolsa: "B-" + Math.floor(1000 + r() * 9000),
+      items,
+      estado: "pendiente", // pendiente | preparado | entregado | cancelado
+      dniVerificado: false,
+      creado: Date.now(),
+    };
+  }
+
+  function totalClickCollect(o) {
+    return (o.items || []).reduce((s, i) => s + i.cantidad * (i.precio || 0), 0);
+  }
+
+  function maybeSpawnClickCollect(plus, productos, gameTimeMs) {
+    if (!plus.clickCollect) plus.clickCollect = [];
+    const pending = plus.clickCollect.filter((o) => o.estado === "pendiente" || o.estado === "preparado").length;
+    if (pending >= 4) return null;
+    if (!plus.nextClickCollectAt) plus.nextClickCollectAt = gameTimeMs + 40 * 60 * 1000;
+    if (gameTimeMs < plus.nextClickCollectAt) return null;
+    const r = mulberry32(Math.floor(gameTimeMs) ^ 9191);
+    plus.nextClickCollectAt = gameTimeMs + (35 + Math.floor(r() * 55)) * 60 * 1000;
+    if (r() > 0.55) return null;
+    const order = crearClickCollect(productos, Math.floor(gameTimeMs));
+    plus.clickCollect.unshift(order);
+    plus.clickCollect = plus.clickCollect.slice(0, 25);
+    return order;
+  }
+
   global.FarmaciaPracticePlus = {
     INTERRUPCIONES,
     CHECKLISTS,
@@ -354,5 +405,8 @@
     crearSesionEreceta,
     intentarPin,
     marcarDispensadoEreceta,
+    crearClickCollect,
+    totalClickCollect,
+    maybeSpawnClickCollect,
   };
 })(typeof window !== "undefined" ? window : globalThis);
