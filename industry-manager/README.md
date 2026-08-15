@@ -1,33 +1,26 @@
-# Industry Manager v5
+# Industry Manager v6
 
-Simulador industrial **solo campaña** en el navegador: mapa OSM, filiales especializadas, hubs de export, turnos, noticias, crédito con covenants y miles de misiones.
+Campaña industrial **profunda (años)** en el navegador: filiales, hubs, índices, consejo, comparador, ambience y miles de misiones.
 
-## Cómo jugar
+## Descarga / juego
 
-1. Descarga el ZIP y descomprime.
-2. Abre `index.html` (Chrome / Edge / Firefox).
-3. Elige rama → briefing → click en el mapa para fundar.
-4. Crea **filiales** con especialización (panel Filiales).
-5. Usa **¿Qué hago?** si te pierdes; exporta informe PDF desde ahí o Finanzas.
+1. Descomprime el ZIP y abre `index.html`.
+2. Elige rama → funda en el mapa (OSM).
+3. Menú lateral **agrupado**: Mundo · Producción · Mercado · Corporación · Sistema.
 
-Truco I+D: `INDUSTRIA_TOTAL`
+Truco: `INDUSTRIA_TOTAL`
 
-## Novedades v5
+## Novedades v6
 
-- **Filiales** especializadas (bonus/penalización por foco)
-- **7** Zonas de coste de suelo (capital / polígono / puerto / rural)
-- **8** Puertos y aeropuertos como hubs de export (prima marítima/aérea)
-- **9** Layout visual de fábrica (arrastrar máquinas en Planificador)
-- **10** Sugerencias automáticas de cuellos de botella
-- **11** Turnicidad (estándar / 2 turnos / 3 turnos 24h)
-- **13** Noticias de mercado que mueven precios
-- **16** Crédito bancario con covenants
-- **20** Panel «¿qué hago ahora?» + atajos + dock
-- **24** Franquicias / grandes clientes B2B
-- **27** Balance automático de precios tras jugar un rato
-- **28** Informe corporativo imprimible / PDF
+- **7** Comparador de productos (logos + métricas)
+- **9** Índices sectoriales con gráfico
+- **24** Consejo de administración semanal (mociones y votos)
+- **27** Códigos de partida `IM6.` / `IM6S.` (Ajustes)
+- **30** Soundtrack / ambience procedural por zona
+- **UI** más ordenada (navegación por grupos)
+- **Más clases**: vino, corcho/ibéricos, bio, renovables, software, agua, óptica, ferroviario, seguridad, hogar smart, instrumentación…
+- **Campaña multi-año**: 24 capítulos narrativos hasta ~25 años + **15.000 misiones**
 
-## Requisitos
+## Guardado
 
-- Navegador de escritorio con JavaScript
-- Internet (mapa OSM + Nominatim)
+`localStorage` → `industry_manager_save_v6`

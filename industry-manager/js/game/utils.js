@@ -85,6 +85,17 @@ IM.categoryLabel = {
   deportes: 'Deportes',
   joyeria: 'Joyería',
   ceramica_arte: 'Cerámica y arte',
+  vitivinicultura: 'Vitivinicultura',
+  corcho_iberico: 'Corcho e ibéricos',
+  biotecnologia: 'Biotecnología',
+  renovables_eq: 'Equipos renovables',
+  software_ind: 'Software industrial',
+  agua_tratamiento: 'Agua y tratamiento',
+  optica_iluminacion: 'Óptica e iluminación',
+  ferroviario: 'Ferroviario',
+  seguridad_ind: 'Seguridad industrial',
+  hogar_smart: 'Hogar inteligente',
+  instrumentos: 'Instrumentación',
 };
 
 IM.el = (tag, attrs = {}, children = []) => {

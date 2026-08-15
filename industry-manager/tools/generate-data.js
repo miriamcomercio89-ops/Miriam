@@ -2145,7 +2145,121 @@ navalParts.forEach((p) => {
 
 // remove old loop if present - handled above
 
+// ——— v6: muchas más clases de producto ———
+const v6Families = [
+  ['vitivinicultura', 'Mosto blanco', 400, 'l'],
+  ['vitivinicultura', 'Mosto tinto', 420, 'l'],
+  ['vitivinicultura', 'Vino joven', 900, 'l'],
+  ['vitivinicultura', 'Vino crianza', 1800, 'l'],
+  ['vitivinicultura', 'Jerez oloroso', 2200, 'l'],
+  ['vitivinicultura', 'Barrica de roble', 350, 'ud'],
+  ['corcho_iberico', 'Corcho natural', 1200, 't'],
+  ['corcho_iberico', 'Tapón de corcho', 0.08, 'ud'],
+  ['corcho_iberico', 'Jamón ibérico granel', 18000, 't'],
+  ['corcho_iberico', 'Paleta ibérica', 12000, 't'],
+  ['corcho_iberico', 'Lomo embuchado', 9000, 't'],
+  ['biotecnologia', 'Enzima industrial', 4500, 'kg'],
+  ['biotecnologia', 'Cultivo celular', 8000, 'l'],
+  ['biotecnologia', 'Bioplástico PHA', 3200, 't'],
+  ['biotecnologia', 'Kit diagnóstico', 25, 'ud'],
+  ['renovables_eq', 'Inversor solar 5kW', 650, 'ud'],
+  ['renovables_eq', 'Aerogenerador 2MW nacelle', 1.2e6, 'ud'],
+  ['renovables_eq', 'Batería estacionaria 100kWh', 28000, 'ud'],
+  ['renovables_eq', 'Tracker solar', 420, 'ud'],
+  ['software_ind', 'SCADA licencia', 12000, 'ud'],
+  ['software_ind', 'MES módulo', 8000, 'ud'],
+  ['software_ind', 'Gemelo digital planta', 45000, 'ud'],
+  ['software_ind', 'Sensor IoT industrial', 85, 'ud'],
+  ['agua_tratamiento', 'Membrana ósmosis', 220, 'ud'],
+  ['agua_tratamiento', 'Floculante', 1.8, 'kg'],
+  ['agua_tratamiento', 'Agua ultrapura', 3.5, 'm³'],
+  ['agua_tratamiento', 'Reactor UV', 1800, 'ud'],
+  ['optica_iluminacion', 'LED industrial 200W', 45, 'ud'],
+  ['optica_iluminacion', 'Lente óptica', 12, 'ud'],
+  ['optica_iluminacion', 'Fibra óptica km', 400, 'km'],
+  ['optica_iluminacion', 'Sensor LiDAR', 950, 'ud'],
+  ['ferroviario', 'Carril UIC60', 900, 't'],
+  ['ferroviario', 'Traviesa hormigón', 85, 'ud'],
+  ['ferroviario', 'Bogie de mercancias', 28000, 'ud'],
+  ['ferroviario', 'Señalización ERTMS', 15000, 'ud'],
+  ['seguridad_ind', 'EPI completo', 120, 'ud'],
+  ['seguridad_ind', 'Extintor industrial', 45, 'ud'],
+  ['seguridad_ind', 'Detector de gases', 380, 'ud'],
+  ['seguridad_ind', 'Válvula de seguridad', 220, 'ud'],
+  ['hogar_smart', 'Termostato inteligente', 95, 'ud'],
+  ['hogar_smart', 'Enchufe IoT', 28, 'ud'],
+  ['hogar_smart', 'Cámara seguridad', 110, 'ud'],
+  ['hogar_smart', 'Hub domótica', 160, 'ud'],
+  ['instrumentos', 'Caudalímetro', 420, 'ud'],
+  ['instrumentos', 'Analizador de gases', 3200, 'ud'],
+  ['instrumentos', 'Balanza industrial', 900, 'ud'],
+  ['instrumentos', 'PLC compacto', 650, 'ud'],
+];
+v6Families.forEach(([cat, name, price, unit]) => {
+  addItem({ name, category: cat, tier: 4, unit, basePrice: price, description: `${name} — catálogo v6.` });
+});
 
+// Variantes masivas v6
+const wineStyles = ['blanco', 'tinto', 'rosado', 'espumoso', 'dulce'];
+const wineRegions = ['Jerez', 'Rioja', 'Ribera', 'Rueda', 'Priorat', 'Rías Baixas', 'Montilla', 'Condado'];
+wineStyles.forEach((s) => wineRegions.forEach((r, ri) => addItem({ name: `Vino ${s} ${r}`, category: 'vitivinicultura', tier: 3, unit: 'l', basePrice: 800 + ri * 120 })));
+
+const bioBases = ['Enzima', 'Proteína recombinante', 'Biofiltro', 'Biocatalizador'];
+for (let i = 1; i <= 40; i++) bioBases.forEach((b) => addItem({ name: `${b} B-${i}`, category: 'biotecnologia', tier: 5, unit: i % 2 ? 'kg' : 'l', basePrice: 2000 + i * 40 }));
+
+const softMods = ['Planificación', 'Calidad', 'Mantenimiento', 'Energía', 'Logística', 'Seguridad'];
+for (let i = 1; i <= 25; i++) softMods.forEach((m) => addItem({ name: `Módulo ${m} v${i}`, category: 'software_ind', tier: 4, unit: 'ud', basePrice: 5000 + i * 200 }));
+
+const waterKit = ['Filtro', 'Bomba dosificadora', 'Sensor pH', 'Tanque PE', 'Resina intercambio'];
+for (let i = 1; i <= 30; i++) waterKit.forEach((w) => addItem({ name: `${w} WT-${i}`, category: 'agua_tratamiento', tier: 3, unit: 'ud', basePrice: 50 + i * 8 }));
+
+const railParts = ['Eje', 'Rueda', 'Freno', 'Acoplador', 'Catenaria tramo'];
+for (let i = 1; i <= 35; i++) railParts.forEach((p) => addItem({ name: `${p} RF-${i}`, category: 'ferroviario', tier: 4, unit: 'ud', basePrice: 800 * i }));
+
+const smartHome = ['Sensor puerta', 'Sensor humo', 'Bombilla smart', 'Persiana motorizada', 'Cerradura digital'];
+const rooms = ['salón', 'cocina', 'oficina', 'almacén', 'planta'];
+smartHome.forEach((s) => rooms.forEach((r, ri) => addItem({ name: `${s} ${r}`, category: 'hogar_smart', tier: 2, unit: 'ud', basePrice: 20 + ri * 15 })));
+
+const corkVar = ['Tapón natural', 'Tapón microgranulado', 'Panel corcho', 'Suela corcho'];
+for (let i = 1; i <= 20; i++) corkVar.forEach((c) => addItem({ name: `${c} lote-${i}`, category: 'corcho_iberico', tier: 3, unit: i > 2 ? 'm²' : 'ud', basePrice: 0.1 + i * 0.5 }));
+
+const optica = ['Lente asférica', 'Reflector', 'Driver LED', 'Colimador'];
+for (let i = 1; i <= 30; i++) optica.forEach((o) => addItem({ name: `${o} OP-${i}`, category: 'optica_iluminacion', tier: 3, unit: 'ud', basePrice: 8 + i }));
+
+const safety = ['Casco', 'Guante anticorte', 'Arnés', 'Máscara filtrante', 'Calzado S3'];
+const safetyGrades = ['básico', 'pro', 'élite'];
+safety.forEach((s) => safetyGrades.forEach((g, gi) => addItem({ name: `${s} ${g}`, category: 'seguridad_ind', tier: 2 + gi, unit: 'ud', basePrice: 15 * (gi + 1) })));
+
+const instruments = ['Transmisor presión', 'Termopar', 'Célula carga', 'Encoder', 'Variador frecuencia'];
+for (let i = 1; i <= 40; i++) instruments.forEach((ins) => addItem({ name: `${ins} IN-${i}`, category: 'instrumentos', tier: 4, unit: 'ud', basePrice: 100 + i * 12 }));
+
+const renew = ['Panel bifacial', 'Microinversor', 'BMS batería', 'Pitch control', 'Yaw drive'];
+for (let i = 1; i <= 25; i++) renew.forEach((r) => addItem({ name: `${r} RE-${i}`, category: 'renovables_eq', tier: 4, unit: 'ud', basePrice: 200 + i * 30 }));
+
+addRecipe({
+  name: 'Embotellar vino crianza',
+  building: 'almazara',
+  machine: 'linea_ensamblaje',
+  inputs: [{ item: itemIndex.has('uva_vinifera') ? 'uva_vinifera' : ensure('Uva'), qty: 1.2 }, { item: ensure('Barrica de roble'), qty: 0.01 }],
+  outputs: [{ item: ensure('Vino crianza'), qty: 0.7 }],
+  energyKwh: 15, timeMinutes: 90, pollution: 0.2, tech: 'bienes_consumo', qualityBase: 75,
+});
+addRecipe({
+  name: 'Fabricar tapón de corcho',
+  building: 'planta_consumo',
+  machine: 'linea_ensamblaje',
+  inputs: [{ item: ensure('Corcho natural'), qty: 0.001 }],
+  outputs: [{ item: ensure('Tapón de corcho'), qty: 1 }],
+  energyKwh: 0.5, timeMinutes: 5, pollution: 0.05, tech: 'bienes_consumo', qualityBase: 70,
+});
+addRecipe({
+  name: 'Montar inversor solar 5kW',
+  building: 'electronica',
+  machine: 'linea_smt',
+  inputs: [{ item: ensure('PCB ensamblada comercial'), qty: 1 }, { item: ensure('Aluminio puro'), qty: 0.002 }],
+  outputs: [{ item: ensure('Inversor solar 5kW'), qty: 1 }],
+  energyKwh: 25, timeMinutes: 60, pollution: 0.3, tech: 'electronica_basica', qualityBase: 72,
+});
 
 console.log('Auto-recipes added ~', autoRec);
 
