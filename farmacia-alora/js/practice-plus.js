@@ -82,7 +82,173 @@
       clickCollect: [],
       nextClickCollectAt: 0,
       etiquetasHechas: [],
+      mail: [],
+      mailLastTickHour: -1,
     };
+  }
+
+  function pushMail(plus, mail, gameTimeMs) {
+    if (!plus.mail) plus.mail = [];
+    const item = {
+      id: "MAIL-" + Date.now().toString(36) + Math.floor(Math.random() * 999),
+      leido: false,
+      fecha: gameTimeMs || Date.now(),
+      tipo: mail.tipo || "info",
+      de: mail.de || "Sistema Álora",
+      asunto: mail.asunto || "Aviso",
+      cuerpo: mail.cuerpo || "",
+      accion: mail.accion || null,
+      prioridad: mail.prioridad || "normal",
+    };
+    plus.mail.unshift(item);
+    plus.mail = plus.mail.slice(0, 80);
+    return item;
+  }
+
+  function unreadMail(plus) {
+    return (plus.mail || []).filter((m) => !m.leido).length;
+  }
+
+  function markMailRead(plus, id) {
+    const m = (plus.mail || []).find((x) => x.id === id);
+    if (m) m.leido = true;
+  }
+
+  function markAllMailRead(plus) {
+    (plus.mail || []).forEach((m) => { m.leido = true; });
+  }
+
+  /** Genera correos de tareas pendientes según el estado del juego */
+  function tickMailInbox(plus, ctx) {
+    if (!plus.mail) plus.mail = [];
+    const hourKey = Math.floor((ctx.gameTimeMs || 0) / (60 * 60 * 1000));
+    // Evitar spam: como máximo un digest por hora de juego (+ eventos puntuales aparte)
+    const due = [];
+    if (ctx.colaCount > 3) {
+      due.push({
+        key: "cola-" + hourKey,
+        mail: {
+          tipo: "cliente", de: "Mostrador",
+          asunto: `Cola cargada (${ctx.colaCount} personas)`,
+          cuerpo: "Hay varios clientes esperando. Prioriza atención en la pestaña Clientes.",
+          accion: "pedidos", prioridad: "alta",
+        },
+      });
+    }
+    if (ctx.lotesPendientes > 0) {
+      due.push({
+        key: "lote-" + hourKey,
+        mail: {
+          tipo: "alerta", de: "AEMPS / Calidad",
+          asunto: `${ctx.lotesPendientes} alerta(s) de lote pendiente(s)`,
+          cuerpo: "Retira el stock afectado en Lotes AEMPS antes de seguir dispensando esos productos.",
+          accion: "lotes", prioridad: "alta",
+        },
+      });
+    }
+    if (ctx.ccPendientes > 0) {
+      due.push({
+        key: "cc-" + hourKey,
+        mail: {
+          tipo: "pedido", de: "Click & Collect",
+          asunto: `${ctx.ccPendientes} pedido(s) online por preparar/entregar`,
+          cuerpo: "Prepara las bolsas y verifica el DNI al entregar.",
+          accion: "clickcollect", prioridad: "normal",
+        },
+      });
+    }
+    if (ctx.albaranesPendientes > 0) {
+      due.push({
+        key: "alb-" + hourKey,
+        mail: {
+          tipo: "almacen", de: "Almacén / muelle",
+          asunto: `${ctx.albaranesPendientes} albarán(es) en muelle`,
+          cuerpo: "Recepciona cantidad, lote y caducidad en Almacén.",
+          accion: "almacen", prioridad: "normal",
+        },
+      });
+    }
+    if (ctx.stockBajo > 8) {
+      due.push({
+        key: "stock-" + hourKey,
+        mail: {
+          tipo: "stock", de: "Inventario",
+          asunto: `Stock bajo en ${ctx.stockBajo} productos`,
+          cuerpo: "Revisa Inventario y lanza pedidos a almacén.",
+          accion: "inventario", prioridad: "normal",
+        },
+      });
+    }
+    if (ctx.caducanPronto > 5) {
+      due.push({
+        key: "cad-" + hourKey,
+        mail: {
+          tipo: "caducidad", de: "Caducidades",
+          asunto: `${ctx.caducanPronto} productos caducan pronto`,
+          cuerpo: "Prioriza FEFO y revisa estantería / nevera.",
+          accion: "inventario", prioridad: "normal",
+        },
+      });
+    }
+    if (ctx.botiquinesPendientes > 0) {
+      due.push({
+        key: "bot-" + hourKey,
+        mail: {
+          tipo: "botiquin", de: "Botiquines",
+          asunto: "Pedidos de botiquín pendientes de firma/entrega",
+          cuerpo: "Prepara, registra firma del responsable y entrega.",
+          accion: "botiquines", prioridad: "normal",
+        },
+      });
+    }
+    if (ctx.cerrada) {
+      due.push({
+        key: "cierre-" + hourKey,
+        mail: {
+          tipo: "horario", de: "Horario",
+          asunto: "Farmacia cerrada ahora",
+          cuerpo: "Fuera de horario. Activa Guardia para atender urgencias, o espera a la apertura (el reloj saltará clientes al abrir).",
+          accion: "ayuda", prioridad: "leve",
+        },
+      });
+    }
+    if (ctx.enGuardia) {
+      due.push({
+        key: "guardia-" + hourKey,
+        mail: {
+          tipo: "guardia", de: "Guardia",
+          asunto: "Turno de guardia activo",
+          cuerpo: `Fatiga ${Math.round(ctx.fatiga || 0)}%. Menos clientes, más urgencias. Recargo 15% en ventas.`,
+          accion: "evaluacion", prioridad: "normal",
+        },
+      });
+    }
+    // checklist incomplete morning reminder
+    if (ctx.hora >= 9 && ctx.hora < 11 && ctx.checklistIncompleto) {
+      due.push({
+        key: "check-" + hourKey,
+        mail: {
+          tipo: "checklist", de: "Calidad / SOP",
+          asunto: "Checklist visual pendiente",
+          cuerpo: "Revisa mostrador, nevera y estantería (pestaña Checklist).",
+          accion: "checklist", prioridad: "leve",
+        },
+      });
+    }
+
+    plus._mailKeys = plus._mailKeys || {};
+    let added = [];
+    for (const d of due) {
+      if (plus._mailKeys[d.key]) continue;
+      plus._mailKeys[d.key] = true;
+      added.push(pushMail(plus, d.mail, ctx.gameTimeMs));
+    }
+    // limpiar keys viejas
+    const keys = Object.keys(plus._mailKeys);
+    if (keys.length > 120) {
+      plus._mailKeys = {};
+    }
+    return added;
   }
 
   /** Registrar evento de evaluación */
@@ -408,5 +574,10 @@
     crearClickCollect,
     totalClickCollect,
     maybeSpawnClickCollect,
+    pushMail,
+    unreadMail,
+    markMailRead,
+    markAllMailRead,
+    tickMailInbox,
   };
 })(typeof window !== "undefined" ? window : globalThis);

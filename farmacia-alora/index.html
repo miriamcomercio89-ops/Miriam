@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Farmacia Álora — TPV de práctica</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="css/styles.css?v=12" />
+  <link rel="stylesheet" href="css/styles.css?v=14" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 </head>
@@ -36,6 +36,7 @@
           <span id="season-badge" class="badge badge-blue">—</span>
           <span id="guardia-badge" class="badge badge-purple hidden">🚑 Guardia</span>
           <span id="fatiga-badge" class="badge badge-amber hidden">😮‍💨 Fatiga 0</span>
+          <span id="closed-hint" class="chip-soft hidden" style="background:#fee2e2;color:#991b1b">Cerrada</span>
           <span class="chip-soft">⏱ 1 min = 1 h</span>
           <button type="button" class="btn btn-ghost btn-sm" id="pause-btn">Pausar</button>
           <button type="button" class="btn btn-accent btn-sm" id="btn-guardia">Guardia</button>
@@ -74,6 +75,7 @@
       <button type="button" class="quick-btn q-cyan" data-goto="checklist">📷 Checklist</button>
       <button type="button" class="quick-btn q-orange" data-goto="botiquines">🏢 Botiquines</button>
       <button type="button" class="quick-btn q-lime" data-goto="clickcollect">🛍 Click &amp; Collect</button>
+      <button type="button" class="quick-btn q-indigo" data-goto="correo">📧 Correo <span id="mail-count" class="count-pill hidden">0</span></button>
     </div>
 
     <nav class="tabs tabs-v3" aria-label="Secciones">
@@ -88,6 +90,7 @@
       <button type="button" class="tab" data-tab="lotes"><span>🚨</span> Lotes</button>
       <button type="button" class="tab" data-tab="botiquines"><span>🏢</span> Botiquines</button>
       <button type="button" class="tab" data-tab="clickcollect"><span>🛍</span> C&amp;C <span id="cc-count" class="count-pill">0</span></button>
+      <button type="button" class="tab" data-tab="correo"><span>📧</span> Correo <span id="mail-count-tab" class="count-pill hidden">0</span></button>
       <button type="button" class="tab" data-tab="checklist"><span>📷</span> Checklist</button>
       <button type="button" class="tab" data-tab="clinica"><span>🩺</span> Clínica</button>
       <button type="button" class="tab" data-tab="medico"><span>👨‍⚕️</span> Médico</button>
@@ -499,6 +502,18 @@
       <div id="cc-list" class="stack"></div>
     </section>
 
+    <!-- CORREO -->
+    <section id="panel-correo" class="panel">
+      <div class="welcome-strip strip-indigo">
+        <div>
+          <h2>📧 Correo de la farmacia</h2>
+          <p class="muted">Avisos de clientes, lotes, almacén, stock, guardia y tareas pendientes según avanza el tiempo.</p>
+        </div>
+        <button type="button" class="btn btn-sm" id="btn-mail-all-read">Marcar todo leído</button>
+      </div>
+      <div id="correo-list" class="stack"></div>
+    </section>
+
     <!-- CHECKLIST VISUAL -->
     <section id="panel-checklist" class="panel">
       <div class="welcome-strip strip-cyan">
@@ -636,6 +651,8 @@
           <li><strong>Carrito</strong>: avisos automáticos de interacciones y paracetamol duplicado.</li>
           <li><strong>Etiqueta</strong>: posología sencilla antes de cobrar.</li>
           <li><strong>Click &amp; Collect</strong>: preparar bolsa y verificar DNI.</li>
+          <li><strong>Correo</strong>: avisos de tareas (cola, AEMPS, almacén, stock, checklist…) según avanza el tiempo.</li>
+          <li><strong>Horario</strong>: domingos y fuera de turno la farmacia está cerrada; el reloj salta solo a la próxima apertura (o activa Guardia).</li>
           <li><strong>Nota del día</strong>: mira tu puntuación (A–D).</li>
         </ol>
         <p><kbd>F2</kbd> buscar · <kbd>F4</kbd> cobrar · <kbd>Esc</kbd> cerrar</p>
@@ -643,7 +660,7 @@
       </div>
     </section>
 
-    <footer class="disclaimer">Farmacia Álora · Fase 4 · interacciones · etiquetas · click&amp;collect · venta guiada · PDF en /manuales</footer>
+    <footer class="disclaimer">Farmacia Álora · clientes + correo de tareas · 1 min real = 1 h · PDF en /manuales</footer>
   </div>
 
   <!-- Modal receta -->
@@ -804,16 +821,16 @@
 
   <div id="toasts" aria-live="polite"></div>
 
-  <script src="js/catalog.js?v=13"></script>
-  <script src="js/clinical.js?v=13"></script>
-  <script src="js/clients.js?v=13"></script>
-  <script src="js/caja.js?v=13"></script>
-  <script src="js/sounds.js?v=13"></script>
-  <script src="js/minigames.js?v=13"></script>
-  <script src="js/extras.js?v=13"></script>
-  <script src="js/packshot.js?v=13"></script>
-  <script src="js/clinic-tools.js?v=13"></script>
-  <script src="js/practice-plus.js?v=13"></script>
-  <script src="js/app.js?v=13"></script>
+  <script src="js/catalog.js?v=14"></script>
+  <script src="js/clinical.js?v=14"></script>
+  <script src="js/clients.js?v=14"></script>
+  <script src="js/caja.js?v=14"></script>
+  <script src="js/sounds.js?v=14"></script>
+  <script src="js/minigames.js?v=14"></script>
+  <script src="js/extras.js?v=14"></script>
+  <script src="js/packshot.js?v=14"></script>
+  <script src="js/clinic-tools.js?v=14"></script>
+  <script src="js/practice-plus.js?v=14"></script>
+  <script src="js/app.js?v=14"></script>
 </body>
 </html>

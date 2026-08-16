@@ -5,7 +5,7 @@
 (function () {
   "use strict";
 
-  const STORAGE_KEY = "farmacia-alora-v11";
+  const STORAGE_KEY = "farmacia-alora-v13";
   const REAL_MS_PER_GAME_HOUR = 60 * 1000;
   const Clinica = window.FarmaciaClinica;
   const Caja = window.FarmaciaCaja;
@@ -111,15 +111,41 @@
     return [...new Set(ids)];
   }
 
+  function startOfGameDay() {
+    // Empieza un lunes laborable a las 9:00 (nunca domingo cerrado)
+    const d = new Date();
+    d.setHours(9, 0, 0, 0);
+    const day = d.getDay(); // 0=domingo
+    if (day === 0) d.setDate(d.getDate() + 1);
+    else if (day === 6) d.setDate(d.getDate() + 2);
+    // Si ya es tarde un día laborable, igual arrancamos a las 9 de hoy
+    return d;
+  }
+
+  function nextOpenTimeMs(fromMs) {
+    let t = fromMs;
+    for (let i = 0; i < 48 * 6; i++) { // hasta ~2 días en pasos de 10 min
+      if (isOpenAt(t)) return t;
+      t += 10 * 60 * 1000;
+    }
+    // fallback: lunes 9:00
+    const d = new Date(fromMs);
+    const day = d.getDay();
+    const add = day === 0 ? 1 : day === 6 ? 2 : (day === 5 && d.getHours() >= 21 ? 3 : 1);
+    d.setDate(d.getDate() + add);
+    d.setHours(9, 0, 0, 0);
+    return d.getTime();
+  }
+
   function defaultState(list) {
     const stock = {}, lotes = {};
     for (const p of list) {
       stock[p.id] = p.stockInicial ?? p.stock;
       lotes[p.id] = { lote: p.lote, caducidadMs: p.caducidadMs, stockMinimo: p.stockMinimo || 10 };
     }
-    const start = new Date(); start.setHours(9,0,0,0);
+    const start = startOfGameDay();
     return {
-      version: 7,
+      version: 8,
       gameTimeMs: start.getTime(),
       paused: false,
       stock, lotes,
@@ -150,7 +176,7 @@
       ofertasDia: makeOfertas(list),
       caja: Caja.defaultCaja(start.getTime()),
       stats: { tickets: 0, facturacion: 0, recetas: 0, minijuegosOk: 0, minijuegosFail: 0, sigre: 0 },
-      nextCustomerAt: start.getTime() + 15 * 60 * 1000,
+      nextCustomerAt: start.getTime() + 2 * 60 * 1000, // primer cliente en ~2 min de juego (~2 s reales)
       settings: { horarioManana:[9,14], horarioTarde:[17,20.5], abiertoSabadoManana:true, enGuardia:false },
     };
   }
@@ -278,13 +304,49 @@
       toast("🚨 Alerta AEMPS: " + alerta.nombre, "warn");
       Sounds.beepWarn && Sounds.beepWarn();
       renderStats();
+      Plus.pushMail(state.plus, {
+        tipo: "alerta", de: "AEMPS / Calidad",
+        asunto: "Retirada de lote: " + alerta.nombre,
+        cuerpo: `Lote ${alerta.lote}. ${alerta.motivo}. Abre Lotes y retira stock.`,
+        accion: "lotes", prioridad: "alta",
+      }, state.gameTimeMs);
+      renderMailBadge();
     }
     const cc = Plus.maybeSpawnClickCollect && Plus.maybeSpawnClickCollect(state.plus, productos, state.gameTimeMs);
     if (cc) {
       toast("🛍 Nuevo Click & Collect: " + cc.clienteNombre, "ok");
       Sounds.beepCustomer && Sounds.beepCustomer();
+      Plus.pushMail(state.plus, {
+        tipo: "pedido", de: "Click & Collect",
+        asunto: "Pedido online de " + cc.clienteNombre,
+        cuerpo: `Bolsa ${cc.codigoBolsa}. Prepara y verifica DNI al entregar.`,
+        accion: "clickcollect", prioridad: "normal",
+      }, state.gameTimeMs);
       renderClickCollect();
+      renderMailBadge();
     }
+    // Digest de tareas por correo
+    const d = new Date(state.gameTimeMs);
+    const checklistIncompleto = (Plus.CHECKLISTS || []).some((c) => {
+      const saved = state.plus.checklists?.[c.id] || {};
+      return !c.items.every((it) => saved[it.id]);
+    });
+    const mails = Plus.tickMailInbox(state.plus, {
+      gameTimeMs: state.gameTimeMs,
+      hora: d.getHours(),
+      colaCount: state.cola.length,
+      lotesPendientes: (state.plus.alertasLote || []).filter((a) => !a.resuelta).length,
+      ccPendientes: (state.plus.clickCollect || []).filter((o) => o.estado === "pendiente" || o.estado === "preparado").length,
+      albaranesPendientes: (state.pedidosAlmacen || []).filter((p) => p.llegado && !p.recibido).length,
+      stockBajo: productos.filter(isLow).length,
+      caducanPronto: productos.filter(expiresSoon).length,
+      botiquinesPendientes: (state.plus.botiquines || []).filter((b) => b.estado !== "entregado" && b.estado !== "cancelado").length,
+      cerrada: !isOpenAt(state.gameTimeMs),
+      enGuardia: !!(state.settings.enGuardia && isOutsideNormal(state.gameTimeMs)),
+      fatiga: state.plus.fatiga || 0,
+      checklistIncompleto,
+    });
+    if (mails.length) renderMailBadge();
     // fatiga baja despacio fuera de guardia
     if (!(enGuardia && fuera) && state.plus.fatiga > 0 && Math.random() < 0.02) {
       state.plus.fatiga = Math.max(0, state.plus.fatiga - 1);
@@ -308,21 +370,68 @@
     $("#guardia-badge").classList.toggle("hidden", !state.settings.enGuardia);
     $("#btn-guardia").textContent = state.settings.enGuardia ? "Quitar guardia" : "Guardia";
     $("#pause-btn").textContent = state.paused ? "▶ Reanudar" : "⏸ Pausar";
+    const closedHint = $("#closed-hint");
+    if (closedHint) {
+      closedHint.classList.toggle("hidden", open);
+      if (!open) {
+        const next = nextOpenTimeMs(state.gameTimeMs + 60 * 1000);
+        closedHint.textContent = `Cerrada ahora · próxima apertura ~ ${formatShort(next)} (o activa Guardia)`;
+      }
+    }
+  }
+
+  function ensurePharmacyOpenForPractice() {
+    if (state.settings.enGuardia || isOpenAt(state.gameTimeMs)) return false;
+    const openAt = nextOpenTimeMs(state.gameTimeMs + 60 * 1000);
+    if (openAt <= state.gameTimeMs) return false;
+    state.gameTimeMs = openAt;
+    state.nextCustomerAt = openAt + 90 * 1000; // ~1.5 s reales
+    return true;
   }
 
   function maybeSpawnCustomer() {
+    // Fuera de horario (domingo, noche, mediodía): salta el reloj a la próxima apertura
+    if (ensurePharmacyOpenForPractice()) {
+      toast("Cerrada → reloj avanzado a apertura " + formatShort(state.gameTimeMs) + ". Llegarán clientes ya.", "ok");
+      renderClock();
+      return;
+    }
+
+    // Si nextCustomerAt quedó en el pasado lejano o inválido, reprograma
+    if (!state.nextCustomerAt || state.nextCustomerAt < state.gameTimeMs - 60 * 60 * 1000) {
+      state.nextCustomerAt = state.gameTimeMs + 60 * 1000;
+    }
     if (state.gameTimeMs < state.nextCustomerAt) return;
-    if (!isOpenAt(state.gameTimeMs)) { state.nextCustomerAt = state.gameTimeMs + 30*60*1000; return; }
-    if (state.cola.length >= 12) { state.nextCustomerAt = state.gameTimeMs + 10*60*1000; return; }
-    state.cola.push(crearPedido());
-    Sounds.beepCustomer();
-    const r = rng(Math.floor(state.gameTimeMs) ^ state.cola.length);
+
+    if (!isOpenAt(state.gameTimeMs)) {
+      const openAt = nextOpenTimeMs(state.gameTimeMs);
+      state.nextCustomerAt = openAt + 2 * 60 * 1000;
+      return;
+    }
+    if (state.cola.length >= 12) {
+      state.nextCustomerAt = state.gameTimeMs + 5 * 60 * 1000;
+      return;
+    }
+    try {
+      state.cola.push(crearPedido());
+      Sounds.beepCustomer && Sounds.beepCustomer();
+    } catch (err) {
+      console.warn("crearPedido falló", err);
+      state.nextCustomerAt = state.gameTimeMs + 3 * 60 * 1000;
+      return;
+    }
+    const r = rng(Math.floor(state.gameTimeMs) ^ state.cola.length ^ Date.now());
     const enGuardia = state.settings.enGuardia && isOutsideNormal(state.gameTimeMs);
     const fatiga = state.plus?.fatiga || 0;
-    state.nextCustomerAt = state.gameTimeMs + (Plus
-      ? Plus.nextCustomerDelayMs(!!state.settings.enGuardia, isOutsideNormal(state.gameTimeMs), fatiga, r)
-      : (7 + Math.floor(r()*22)) * 60 * 1000);
-    if (enGuardia) state.plus.fatiga = Math.min(100, (state.plus.fatiga || 0) + 2);
+    // Intervalos ágiles: 2–8 min juego (~2–8 s reales)
+    let delay;
+    if (Plus && enGuardia) {
+      delay = Plus.nextCustomerDelayMs(true, true, fatiga, r);
+    } else {
+      delay = (2 + Math.floor(r() * 7)) * 60 * 1000;
+    }
+    state.nextCustomerAt = state.gameTimeMs + delay;
+    if (enGuardia && state.plus) state.plus.fatiga = Math.min(100, (state.plus.fatiga || 0) + 2);
     renderCola();
     save();
   }
@@ -2344,6 +2453,64 @@
     if (name === "checklist") renderChecklist();
     if (name === "ereceta") renderEreceta();
     if (name === "clickcollect") renderClickCollect();
+    if (name === "correo") renderCorreo();
+  }
+
+  function renderMailBadge() {
+    const n = Plus && state.plus ? Plus.unreadMail(state.plus) : 0;
+    ["#mail-count", "#mail-count-tab"].forEach((sel) => {
+      const el = $(sel);
+      if (!el) return;
+      el.textContent = String(n);
+      el.classList.toggle("hidden", n === 0);
+    });
+  }
+
+  function goMailAction(accion, mailId) {
+    if (mailId && Plus) Plus.markMailRead(state.plus, mailId);
+    const map = {
+      pedidos: "pedidos",
+      cola: "pedidos",
+      lotes: "lotes",
+      aemps: "lotes",
+      clickcollect: "clickcollect",
+      botiquines: "botiquines",
+      almacen: "almacen",
+      inventario: "inventario",
+      checklist: "checklist",
+      evaluacion: "evaluacion",
+      guardia: "evaluacion",
+      ayuda: "ayuda",
+      ereceta: "ereceta",
+      caja: "caja",
+    };
+    showTab(map[accion] || "pedidos");
+    renderCorreo();
+    save();
+  }
+
+  function renderCorreo() {
+    const root = $("#correo-list");
+    if (!root || !Plus) return;
+    renderMailBadge();
+    const list = state.plus.mail || [];
+    if (!list.length) {
+      root.innerHTML = `<div class="empty">📭 Buzón vacío. Irán llegando avisos según avance el tiempo.</div>`;
+      return;
+    }
+    root.innerHTML = list.map((m) => `
+      <article class="mail-card ${m.leido ? "leido" : "nuevo"} prioridad-${escapeHtml(m.prioridad)}">
+        <header>
+          <strong>${m.leido ? "" : "● "}${escapeHtml(m.asunto)}</strong>
+          <span class="muted tiny">${formatShort(m.fecha)}</span>
+        </header>
+        <div class="muted tiny">De: ${escapeHtml(m.de)} · ${escapeHtml(m.tipo)}</div>
+        <p>${escapeHtml(m.cuerpo)}</p>
+        <div class="actions-row">
+          ${m.accion ? `<button type="button" class="btn btn-primary btn-sm" data-mail-go="${escapeHtml(m.accion)}" data-mail-id="${m.id}">Ir a la tarea</button>` : ""}
+          ${!m.leido ? `<button type="button" class="btn btn-sm" data-mail-read="${m.id}">Marcar leído</button>` : ""}
+        </div>
+      </article>`).join("");
   }
 
   function openEtiquetaModal() {
@@ -2430,6 +2597,27 @@
 
     $("#quick-bar")?.addEventListener("click", (e) => {
       const b = e.target.closest("[data-goto]"); if (b) showTab(b.dataset.goto);
+    });
+
+    $("#btn-mail-all-read")?.addEventListener("click", () => {
+      if (!Plus) return;
+      Plus.markAllMailRead(state.plus);
+      renderCorreo();
+      save();
+      toast("Correo marcado como leído", "ok");
+    });
+    $("#correo-list")?.addEventListener("click", (e) => {
+      const go = e.target.closest("[data-mail-go]");
+      const read = e.target.closest("[data-mail-read]");
+      if (go) {
+        goMailAction(go.dataset.mailGo, go.dataset.mailId);
+        return;
+      }
+      if (read && Plus) {
+        Plus.markMailRead(state.plus, read.dataset.mailRead);
+        renderCorreo();
+        save();
+      }
     });
     $("#btn-view-cards")?.addEventListener("click", () => { catalogView = "cards"; renderCatalog(); });
     $("#btn-view-table")?.addEventListener("click", () => { catalogView = "table"; renderCatalog(); });
@@ -3077,16 +3265,51 @@
     catalogMeta = window.FarmaciaCatalogo.getCatalogo();
     productos = catalogMeta.productos;
     state = load(productos);
-    if (!state.cola.length && isOpenAt(state.gameTimeMs)) {
-      state.cola.push(crearPedido(), crearPedido(), crearPedido());
+    if (!state.plus) state.plus = Plus ? Plus.defaultPlus() : {};
+    if (!Array.isArray(state.plus.mail)) state.plus.mail = [];
+
+    // Domingos / fuera de horario: no dejar la partida colgada sin clientes
+    if (!state.settings.enGuardia && !isOpenAt(state.gameTimeMs)) {
+      state.gameTimeMs = nextOpenTimeMs(state.gameTimeMs) || startOfGameDay().getTime();
     }
+    if (!state.nextCustomerAt || state.nextCustomerAt > state.gameTimeMs + 30 * 60 * 1000) {
+      state.nextCustomerAt = state.gameTimeMs + 90 * 1000;
+    }
+
+    if (!state.cola.length && isOpenAt(state.gameTimeMs)) {
+      try {
+        state.cola.push(crearPedido(), crearPedido(), crearPedido());
+      } catch (err) {
+        console.warn("No se pudo sembrar la cola", err);
+      }
+    }
+
+    if (!state.plus.mail.length && Plus) {
+      Plus.pushMail(state.plus, {
+        tipo: "sistema",
+        de: "Farmacia Álora",
+        asunto: "Bienvenida · buzón de tareas",
+        cuerpo: "Aquí te avisaremos de cola, AEMPS, Click & Collect, almacén, stock, caducidades, botiquines y checklist según avance el tiempo (1 min real = 1 h de juego).",
+        accion: "pedidos",
+        prioridad: "leve",
+      }, state.gameTimeMs);
+    }
+
     Sounds.setEnabled(true);
     bindEvents();
     bindClienteForm();
     renderMutuas();
     renderAll();
+    renderMailBadge();
     save();
     clockTimer = requestAnimationFrame(tick);
+    const open = isOpenAt(state.gameTimeMs);
+    toast(
+      open
+        ? "Farmacia abierta. Clientes en cola y más en camino · mira Correo."
+        : "Fuera de horario: activa Guardia o el reloj saltará a la apertura.",
+      open ? "ok" : "warn"
+    );
     console.info(`Farmacia Álora TPV · ${productos.length} productos · ${Clientes.TOTAL} clientes posibles`);
   }
 
