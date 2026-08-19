@@ -76,7 +76,7 @@ STOPS = {
         "district": "Centro",
     },
     "anillo_norte": {
-        "name": "Anillo Norte",
+        "name": "Plaza del Anillo Norte",
         "zone": "A",
         "hub": True,
         "tram": True,
@@ -106,7 +106,7 @@ STOPS = {
         "district": "Centro",
     },
     "teatro_anillo": {
-        "name": "Teatro del Anillo",
+        "name": "Teatro Cervantes",
         "zone": "A",
         "hub": True,
         "tram": True,
@@ -156,7 +156,7 @@ STOPS = {
         "district": "Centro",
     },
     "castillo_tramau": {
-        "name": "Alcázar de Tramau",
+        "name": "Alcázar del Sol",
         "zone": "A",
         "hub": True,
         "tram": True,
@@ -420,7 +420,7 @@ STOPS = {
         "district": "Norte",
     },
     "calle_bara": {
-        "name": "Avenida Barawitzka",
+        "name": "Avenida del Mirador",
         "zone": "B",
         "hub": False,
         "tram": False,
@@ -430,7 +430,7 @@ STOPS = {
         "district": "Norte",
     },
     "calle_gunold": {
-        "name": "Calle Gunold",
+        "name": "Calle del Olivo",
         "zone": "B",
         "hub": False,
         "tram": False,
@@ -462,7 +462,7 @@ STOPS = {
         "district": "Sur",
     },
     "plaza_gellert": {
-        "name": "Plaza Gellert",
+        "name": "Plaza del Laurel",
         "zone": "B",
         "hub": False,
         "tram": True,
@@ -472,7 +472,7 @@ STOPS = {
         "district": "Sur",
     },
     "calle_braun": {
-        "name": "Calle Braunhuber",
+        "name": "Calle de la Cantera",
         "zone": "B",
         "hub": False,
         "tram": True,
@@ -482,7 +482,7 @@ STOPS = {
         "district": "Sur",
     },
     "plaza_enk": {
-        "name": "Plaza Enk",
+        "name": "Plaza del Coso",
         "zone": "B",
         "hub": False,
         "tram": True,
@@ -492,7 +492,7 @@ STOPS = {
         "district": "Sur",
     },
     "deposito_favoriten": {
-        "name": "Depósito Sur – Favorita",
+        "name": "Depósito Sur",
         "zone": "B",
         "hub": True,
         "tram": True,
@@ -512,7 +512,7 @@ STOPS = {
         "district": "Este",
     },
     "calle_laxen": {
-        "name": "Avenida Gudrun",
+        "name": "Avenida de la Caleta",
         "zone": "B",
         "hub": False,
         "tram": True,
@@ -522,7 +522,7 @@ STOPS = {
         "district": "Sur",
     },
     "calle_rax": {
-        "name": "Calle Rax",
+        "name": "Calle del Peñón",
         "zone": "C",
         "hub": True,
         "tram": True,
@@ -542,7 +542,7 @@ STOPS = {
         "district": "Este",
     },
     "plaza_koessler": {
-        "name": "Plaza Ludwig",
+        "name": "Plaza del Farolillo",
         "zone": "B",
         "hub": False,
         "tram": True,
@@ -552,7 +552,7 @@ STOPS = {
         "district": "Este",
     },
     "calle_natterer": {
-        "name": "Calle Natterer",
+        "name": "Calle de la Higuera",
         "zone": "B",
         "hub": False,
         "tram": True,
@@ -582,7 +582,7 @@ STOPS = {
         "district": "Este",
     },
     "calle_svetel": {
-        "name": "Calle Svetelsky",
+        "name": "Calle del Embarcadero",
         "zone": "C",
         "hub": False,
         "tram": True,
@@ -592,7 +592,7 @@ STOPS = {
         "district": "Este",
     },
     "avenida_marek": {
-        "name": "Avenida Bruno Marek",
+        "name": "Avenida de los Cedros",
         "zone": "B",
         "hub": False,
         "tram": True,
@@ -614,7 +614,7 @@ STOPS = {
 
     # === BUS-ONLY / BARRIOS ===
     "nussdorfer": {
-        "name": "Plaza Nußdorfer",
+        "name": "Plaza del Almendral",
         "zone": "B",
         "hub": True,
         "tram": False,
@@ -624,7 +624,7 @@ STOPS = {
         "district": "Sur",
     },
     "meidling": {
-        "name": "Intercambiador Meidling",
+        "name": "Intercambiador El Perchel",
         "zone": "B",
         "hub": True,
         "tram": False,
@@ -634,7 +634,7 @@ STOPS = {
         "district": "Sur",
     },
     "calle_popper": {
-        "name": "Calle Popper",
+        "name": "Calle de la Esperanza",
         "zone": "B",
         "hub": False,
         "tram": False,
@@ -644,7 +644,7 @@ STOPS = {
         "district": "Sur",
     },
     "calle_huetten": {
-        "name": "Calle Hüttenbrenner",
+        "name": "Calle de los Hornos",
         "zone": "B",
         "hub": False,
         "tram": False,
@@ -654,7 +654,7 @@ STOPS = {
         "district": "Sur",
     },
     "plaza_kress": {
-        "name": "Plaza Wilhelm Kreß",
+        "name": "Plaza de la Victoria",
         "zone": "B",
         "hub": False,
         "tram": False,
@@ -664,7 +664,7 @@ STOPS = {
         "district": "Sur",
     },
     "calle_karmarsch": {
-        "name": "Calle Karmarsch",
+        "name": "Calle del Taller",
         "zone": "B",
         "hub": False,
         "tram": False,
@@ -674,7 +674,7 @@ STOPS = {
         "district": "Sur",
     },
     "plaza_kepler": {
-        "name": "Plaza Kepler",
+        "name": "Plaza de la Rosa",
         "zone": "B",
         "hub": False,
         "tram": False,
@@ -694,7 +694,7 @@ STOPS = {
         "district": "Sur",
     },
     "calle_doerfel": {
-        "name": "Calle Dörfel",
+        "name": "Calle del Carmen",
         "zone": "A",
         "hub": False,
         "tram": False,
@@ -704,7 +704,7 @@ STOPS = {
         "district": "Centro",
     },
     "niederhof": {
-        "name": "Calle Niederhof",
+        "name": "Calle Baja del Río",
         "zone": "B",
         "hub": True,
         "tram": False,
@@ -724,7 +724,7 @@ STOPS = {
         "district": "Sur",
     },
     "wolfgang_matz": {
-        "name": "Wolfgang – Jardines",
+        "name": "Pasaje de los Jardines",
         "zone": "B",
         "hub": False,
         "tram": False,
@@ -734,7 +734,7 @@ STOPS = {
         "district": "Sur",
     },
     "wolfgang_stein": {
-        "name": "Wolfgang – Canteros",
+        "name": "Pasaje de los Canteros",
         "zone": "B",
         "hub": False,
         "tram": False,
@@ -744,7 +744,7 @@ STOPS = {
         "district": "Sur",
     },
     "reinprecht": {
-        "name": "Calle Reinprecht",
+        "name": "Calle de la Huerta",
         "zone": "B",
         "hub": False,
         "tram": False,
@@ -754,7 +754,7 @@ STOPS = {
         "district": "Sur",
     },
     "spenger": {
-        "name": "Calle Spenger",
+        "name": "Calle del Tinte",
         "zone": "B",
         "hub": False,
         "tram": False,
@@ -784,7 +784,7 @@ STOPS = {
         "district": "Este",
     },
     "calle_mona": {
-        "name": "Sendero Mona Lisa",
+        "name": "Sendero de los Cipreses",
         "zone": "C",
         "hub": False,
         "tram": False,
@@ -794,7 +794,7 @@ STOPS = {
         "district": "Este",
     },
     "escuela_mandl": {
-        "name": "Escuela Profesional Mandl",
+        "name": "Escuela Profesional Costa",
         "zone": "B",
         "hub": False,
         "tram": False,
@@ -804,7 +804,7 @@ STOPS = {
         "district": "Sur",
     },
     "pohlgasse": {
-        "name": "Calle Pohl",
+        "name": "Calle del Pino",
         "zone": "B",
         "hub": False,
         "tram": False,
@@ -824,7 +824,7 @@ STOPS = {
         "district": "Este",
     },
     "florian_hed": {
-        "name": "Calle Florian Hedorfer",
+        "name": "Calle del Farallón Sur",
         "zone": "C",
         "hub": False,
         "tram": False,
