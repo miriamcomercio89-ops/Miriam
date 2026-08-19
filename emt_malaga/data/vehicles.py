@@ -308,9 +308,9 @@ VEHICLES = {
 DEPOTS = {
     "dep_tram_sur": {
         "name": "Depósito de Tranvías Sur",
-        "stop": "deposito_favoriten",
+        "stop": "depot_sued",
         "modes": ["tram"],
-        "note": "Cabecera y mantenimiento T / DLC Depot",
+        "note": "Depot Süd in-game + Jakob-de-Zoet",
     },
     "dep_tram_sur_ext": {
         "name": "Cocheras Sur (DLC)",
@@ -320,14 +320,14 @@ DEPOTS = {
     },
     "dep_bus_oeste": {
         "name": "Cocheras Oeste",
-        "stop": "colinas_oeste",
+        "stop": "schmiedegasse",
         "modes": ["bus"],
-        "note": "Salidas hacia oeste y anillo",
+        "note": "Schmiedegasse / Colinas del Oeste",
     },
     "dep_bus_norte": {
         "name": "Cocheras Norte",
-        "stop": "plaza_engels",
+        "stop": "freimutplatz",
         "modes": ["bus"],
-        "note": "Cubierta norte y nocturnos",
+        "note": "Freimutplatz / Nuevo Norte",
     },
 }

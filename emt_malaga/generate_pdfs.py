@@ -27,6 +27,7 @@ sys.path.insert(0, str(ROOT))
 
 from data import (
     STOPS, VEHICLES, DEPOTS, LINES, ZONES, FARES, BRAND, lines_by_mode, stop_name,
+    game_name, dual_name, HUBS,
     CALENDAR, EVENT_REINFORCEMENTS, LINE_VALIDATION, MAP_XY, DISTRICTS, VALIDATION_NOTES,
     day_templates, segment_times_min, apply_calendar_factor,
 )
@@ -291,18 +292,21 @@ def build_guia():
     story.append(Paragraph("7. Documentos de este pack", S["H1"]))
     docs = [
         "01_guia_sistema.pdf — esta guía",
-        "02_paradas.pdf — listado maestro de paradas (100 % español)",
+        "02_paradas.pdf — CTS (mapa) ↔ EMT Málaga (español)",
+        "02b_renombrado.pdf — checklist renombrado parada a parada",
         "03_plano_diurno.pdf — esquema de red diurna (mapa Netz)",
         "03b_planos_distrito.pdf — planos por distrito",
         "04_plano_nocturno.pdf — esquema de red nocturna",
         "05_fichas_tranvia.pdf — una página por línea T / TP",
-        "06_fichas_autobus.pdf — buses + alimentadoras A1–A4",
+        "06_fichas_autobus.pdf — buses + A* + U1/U2 escolar",
         "07_fichas_nocturno.pdf — una página por línea N",
         "08_flota.pdf — catálogo de vehículos y asignación",
         "09_checklist_cts.pdf — checklist + validación jugable",
         "10_calendario_operativo.pdf — verano / feria / navidad",
         "11_refuerzos_estadio.pdf — plan R-EST",
+        "11b_refuerzos_feria.pdf — plan R-FERIA",
         "12_horarios_line_editor.pdf — plantillas de intervalo CTS",
+        "13_fichas_hubs.pdf — correspondencias por intercambiador",
     ]
     for d in docs:
         story.append(Paragraph(f"• {d}", S["Body"]))
@@ -321,8 +325,8 @@ def build_paradas():
     story = []
     story.append(Paragraph("Listado maestro de paradas", S["H1"]))
     story.append(Paragraph(
-        "Nombres inventados en español (ambientación Málaga). La columna «ancla» es solo referencia "
-        "interna de topología del mapa CTS; no hace falta usarla en el juego.",
+        "Columna <b>CTS (mapa)</b> = nombre que ves ahora en el juego. "
+        "Columna <b>EMT Málaga</b> = nombre nuevo en español para renombrar en CTS.",
         S["Body"]))
 
     # group by district
@@ -333,28 +337,27 @@ def build_paradas():
     for dist in sorted(by_dist.keys()):
         story.append(Paragraph(dist, S["H2"]))
         rows = [[
-            Paragraph("<b>Nombre</b>", S["Tiny"]),
+            Paragraph("<b>CTS (mapa)</b>", S["Tiny"]),
+            Paragraph("<b>EMT Málaga</b>", S["Tiny"]),
             Paragraph("<b>Z</b>", S["Tiny"]),
             Paragraph("<b>T/B</b>", S["Tiny"]),
             Paragraph("<b>Hub</b>", S["Tiny"]),
-            Paragraph("<b>Iconos</b>", S["Tiny"]),
             Paragraph("<b>Líneas</b>", S["Tiny"]),
         ]]
-        for sid, st in sorted(by_dist[dist], key=lambda x: x[1]["name"]):
-            icons = " ".join(ICON_LABELS.get(i, i) for i in st["icons"]) or "—"
+        for sid, st in sorted(by_dist[dist], key=lambda x: x[1]["game_name"]):
             modes = ("T" if st["tram"] else "") + ("B" if st["bus"] else "")
-            corr = ", ".join(correspondences(sid)[:12])
-            if len(correspondences(sid)) > 12:
+            corr = ", ".join(correspondences(sid)[:10])
+            if len(correspondences(sid)) > 10:
                 corr += "…"
             rows.append([
-                Paragraph(st["name"], S["Tiny"]),
+                Paragraph(st["game_name"], S["Tiny"]),
+                Paragraph(f"<b>{st['name']}</b>", S["Tiny"]),
                 Paragraph(st["zone"], S["Tiny"]),
                 Paragraph(modes, S["Tiny"]),
                 Paragraph("sí" if st["hub"] else "—", S["Tiny"]),
-                Paragraph(icons, S["Tiny"]),
                 Paragraph(corr, S["Tiny"]),
             ])
-        tbl = Table(rows, colWidths=[48 * mm, 8 * mm, 10 * mm, 10 * mm, 28 * mm, 66 * mm])
+        tbl = Table(rows, colWidths=[42 * mm, 42 * mm, 8 * mm, 10 * mm, 10 * mm, 58 * mm])
         tbl.setStyle(TableStyle([
             ("BACKGROUND", (0, 0), (-1, 0), hex_color(BRAND["primary"])),
             ("TEXTCOLOR", (0, 0), (-1, 0), white),
@@ -509,6 +512,7 @@ def build_line_sheet(L: dict) -> list:
         Paragraph(
             f"<font color='{L.get('text_color', '#FFFFFF')}'><b>{L['name']}</b><br/>"
             f"{stop_name(L['from'])}  →  {stop_name(L['to'])}<br/>"
+            f"<font size='8'>{game_name(L['from'])}  →  {game_name(L['to'])}</font><br/>"
             f"{L['mode'].upper()} · {L['kind']} · color {L['color']}</font>",
             S["White"]),
     ]]
@@ -598,7 +602,7 @@ def build_line_sheet(L: dict) -> list:
         zcol = ZONES[st["zone"]]["color"]
         rows.append([
             Paragraph(str(i), S["Tiny"]),
-            Paragraph(st["name"], style),
+            Paragraph(f"{st['name']}<br/><font size=\"6\" color=\"#5C6670\">{st['game_name']}</font>", style),
             Paragraph(f"<font color='{zcol}'><b>{st['zone']}</b></font>", S["Tiny"]),
             Paragraph(dmin, S["Tiny"]),
             Paragraph(corr_txt or "—", S["Tiny"]),
@@ -825,8 +829,8 @@ def build_planos_distrito():
         for sid, st in stops[:40]:
             hub = " ★" if st["hub"] else ""
             story.append(Paragraph(
-                f"• <b>{st['name']}</b>{hub} · Zona {st['zone']} · "
-                f"{', '.join(correspondences(sid)[:8]) or '—'}",
+                f"• <b>{st['name']}</b>{hub} ← <font color=\"#5C6670\">{st['game_name']}</font> · "
+                f"Zona {st['zone']} · {', '.join(correspondences(sid)[:8]) or '—'}",
                 S["Tiny"]))
         story.append(PageBreak())
 
@@ -919,7 +923,9 @@ def build_refuerzos():
     story.append(Paragraph(plan["name"], S["H1"]))
     story.append(Paragraph(f"<b>Activación:</b> {plan['trigger']}", S["Body"]))
     story.append(Paragraph(
-        "Paradas clave: " + ", ".join(stop_name(s) for s in plan["special_stops"]),
+        "Paradas clave: " + ", ".join(
+            f"{stop_name(s)} ({game_name(s)})" for s in plan["special_stops"]
+        ),
         S["Body"]))
     story.append(Spacer(1, 6))
 
@@ -1014,35 +1020,191 @@ def build_horarios():
     return path
 
 
+def build_renombrado():
+    """Checklist CTS (mapa) → español."""
+    path = PDF_DIR / "02b_renombrado.pdf"
+    doc = make_doc(path, "Renombrado CTS→ES")
+    story = []
+    story.append(Paragraph("Checklist de renombrado de paradas", S["H1"]))
+    story.append(Paragraph(
+        "Marca ☐ al renombrar en CTS. Izquierda = nombre del mapa del juego · "
+        "Derecha = nuevo nombre EMT Málaga (español).",
+        S["Body"]))
+    rows = [[
+        Paragraph("<b>☐</b>", S["Tiny"]),
+        Paragraph("<b>Nombre en el mapa CTS</b>", S["Tiny"]),
+        Paragraph("<b>Nuevo nombre (español)</b>", S["Tiny"]),
+        Paragraph("<b>Distrito</b>", S["Tiny"]),
+        Paragraph("<b>Z</b>", S["Tiny"]),
+    ]]
+    for sid, st in sorted(STOPS.items(), key=lambda x: x[1]["game_name"].lower()):
+        rows.append([
+            Paragraph("☐", S["Tiny"]),
+            Paragraph(st["game_name"], S["Tiny"]),
+            Paragraph(f"<b>{st['name']}</b>", S["Tiny"]),
+            Paragraph(st["district"], S["Tiny"]),
+            Paragraph(st["zone"], S["Tiny"]),
+        ])
+    tbl = Table(rows, colWidths=[8 * mm, 55 * mm, 55 * mm, 32 * mm, 10 * mm])
+    tbl.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (-1, 0), hex_color(BRAND["primary"])),
+        ("TEXTCOLOR", (0, 0), (-1, 0), white),
+        ("ROWBACKGROUNDS", (0, 1), (-1, -1), [white, hex_color("#EEF3F7")]),
+        ("VALIGN", (0, 0), (-1, -1), "TOP"),
+        ("LEFTPADDING", (0, 0), (-1, -1), 2),
+        ("TOPPADDING", (0, 0), (-1, -1), 1.5),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 1.5),
+        ("BOX", (0, 0), (-1, -1), 0.3, hex_color(BRAND["primary"])),
+    ]))
+    story.append(tbl)
+    doc.build(story, onFirstPage=on_page("Renombrado"), onLaterPages=on_page("Renombrado"))
+    return path
+
+
+def build_hubs():
+    """Fichas por hub con correspondencias (mejora 7)."""
+    path = PDF_DIR / "13_fichas_hubs.pdf"
+    doc = make_doc(path, "Fichas hubs")
+    story = []
+    story.append(Paragraph("Intercambiadores principales", S["H1"]))
+    story.append(Paragraph(
+        "Una ficha por hub. Incluye nombre CTS (mapa) y nombre EMT Málaga, "
+        "líneas que paran y correspondencias recomendadas.",
+        S["Body"]))
+    story.append(PageBreak())
+
+    for sid in HUBS:
+        st = STOPS[sid]
+        lines = correspondences(sid)
+        story.append(ColorBar(BRAND["primary"], height=6))
+        story.append(Spacer(1, 4))
+        story.append(Paragraph(st["name"], S["CoverTitle"]))
+        story.append(Paragraph(f"En el mapa CTS: <b>{st['game_name']}</b>", S["CoverSub"]))
+        story.append(Paragraph(
+            f"Distrito {st['district']} · Zona {st['zone']} · "
+            f"{'Tranvía+Bus' if st['tram'] and st['bus'] else ('Tranvía' if st['tram'] else 'Bus')}",
+            S["Body"]))
+        story.append(Spacer(1, 4))
+
+        # lines table
+        rows = [[
+            Paragraph("<b>Línea</b>", S["Tiny"]),
+            Paragraph("<b>Nombre</b>", S["Tiny"]),
+            Paragraph("<b>Modo</b>", S["Tiny"]),
+            Paragraph("<b>Hacia</b>", S["Tiny"]),
+        ]]
+        for code in lines:
+            L = next(v for v in LINES.values() if v["code"] == code)
+            # destination from this hub
+            stops = L["stops"]
+            if sid == stops[0]:
+                dest = stop_name(L["to"])
+                dest_g = game_name(L["to"])
+            elif sid == stops[-1]:
+                dest = stop_name(L["from"])
+                dest_g = game_name(L["from"])
+            else:
+                # both directions
+                dest = f"{stop_name(L['from'])} / {stop_name(L['to'])}"
+                dest_g = f"{game_name(L['from'])} / {game_name(L['to'])}"
+            rows.append([
+                LineBadge(L["code"], L["color"], L.get("text_color", "#FFFFFF"), 22, 12),
+                Paragraph(L["name"], S["Tiny"]),
+                Paragraph(L["mode"], S["Tiny"]),
+                Paragraph(f"{dest}<br/><font size=\"6\" color=\"#5C6670\">{dest_g}</font>", S["Tiny"]),
+            ])
+        tbl = Table(rows, colWidths=[18 * mm, 48 * mm, 18 * mm, 86 * mm])
+        tbl.setStyle(TableStyle([
+            ("BACKGROUND", (0, 0), (-1, 0), hex_color(BRAND["secondary"])),
+            ("TEXTCOLOR", (0, 0), (-1, 0), white),
+            ("ROWBACKGROUNDS", (0, 1), (-1, -1), [white, hex_color("#F0FAFA")]),
+            ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+            ("LEFTPADDING", (0, 0), (-1, -1), 3),
+            ("TOPPADDING", (0, 0), (-1, -1), 3),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 3),
+            ("BOX", (0, 0), (-1, -1), 0.3, hex_color(BRAND["secondary"])),
+        ]))
+        story.append(tbl)
+        story.append(Spacer(1, 6))
+        story.append(Paragraph(
+            f"<b>Correspondencias:</b> {', '.join(lines)}",
+            S["Body"]))
+        story.append(Paragraph(
+            "☐ Renombrar parada en CTS · ☐ Revisar andenes · ☐ Anunciar hub en destinos",
+            S["Tiny"]))
+        story.append(PageBreak())
+
+    if story and isinstance(story[-1], PageBreak):
+        story.pop()
+    doc.build(story, onFirstPage=on_page("Hubs"), onLaterPages=on_page("Hubs"))
+    return path
+
+
+def build_feria():
+    path = PDF_DIR / "11b_refuerzos_feria.pdf"
+    doc = make_doc(path, "Plan Feria")
+    story = []
+    plan = EVENT_REINFORCEMENTS["R-FERIA"]
+    story.append(Paragraph(plan["name"], S["H1"]))
+    story.append(Paragraph(f"<b>Activación:</b> {plan['trigger']}", S["Body"]))
+    story.append(Paragraph(plan.get("notes", ""), S["Body"]))
+    story.append(Paragraph(
+        "Paradas clave: " + ", ".join(
+            f"{stop_name(s)} ({game_name(s)})" for s in plan["special_stops"]
+        ),
+        S["Small"]))
+    story.append(Spacer(1, 6))
+    for code, info in plan["lines"].items():
+        L = LINES[code]
+        story.append(ColorBar(L["color"], height=4))
+        story.append(Spacer(1, 2))
+        story.append(Paragraph(f"<b>{code} — {L['name']}</b>", S["H2"]))
+        story.append(Paragraph(
+            f"Intervalo Feria: <b>cada {info['headway_peak_min']} min</b> "
+            f"(base {L['headway_peak_min']} min) · +{info['extra_units']} coches · {info['note']}",
+            S["Body"]))
+        story.append(Paragraph(
+            f"Cabeceras: {dual_name(L['from'])} → {dual_name(L['to'])}",
+            S["Tiny"]))
+        story.append(Spacer(1, 4))
+    story.append(Paragraph("Checklist Feria", S["H2"]))
+    for s in [
+        "Suspender U1 y U2 (no lectivo de Feria)",
+        "Ampliar TP 09:00–00:00 con E1/GT6",
+        "Andenes extras en Ópera (Engelsbrunnen) y Colinas (Schmiedegasse)",
+        "N8 cada 10 min toda la Feria",
+        "Cartelería bilingüe CTS→ES en hubs",
+        "Desactivar R-FERIA el día después del cierre oficial",
+    ]:
+        story.append(Paragraph(f"☐  {s}", S["Body"]))
+    doc.build(story, onFirstPage=on_page("Plan Feria"), onLaterPages=on_page("Plan Feria"))
+    return path
+
+
 def main():
     PDF_DIR.mkdir(parents=True, exist_ok=True)
     paths = []
-    print("Generando 01 guía…")
-    paths.append(build_guia())
-    print("Generando 02 paradas…")
-    paths.append(build_paradas())
-    print("Generando 03 plano diurno…")
-    paths.append(build_plano({"tram", "bus"}, "03_plano_diurno.pdf", "Plano red diurna"))
-    print("Generando 03b planos distrito…")
-    paths.append(build_planos_distrito())
-    print("Generando 04 plano nocturno…")
-    paths.append(build_plano({"night"}, "04_plano_nocturno.pdf", "Plano red nocturna"))
-    print("Generando 05 fichas tranvía…")
-    paths.append(build_fichas("tram", "05_fichas_tranvia.pdf", "Fichas tranvía"))
-    print("Generando 06 fichas autobús…")
-    paths.append(build_fichas("bus", "06_fichas_autobus.pdf", "Fichas autobús"))
-    print("Generando 07 fichas nocturno…")
-    paths.append(build_fichas("night", "07_fichas_nocturno.pdf", "Fichas nocturno"))
-    print("Generando 08 flota…")
-    paths.append(build_flota())
-    print("Generando 09 checklist…")
-    paths.append(build_checklist())
-    print("Generando 10 calendario…")
-    paths.append(build_calendario())
-    print("Generando 11 refuerzos…")
-    paths.append(build_refuerzos())
-    print("Generando 12 horarios…")
-    paths.append(build_horarios())
+    steps = [
+        ("01 guía", build_guia),
+        ("02 paradas", build_paradas),
+        ("02b renombrado", build_renombrado),
+        ("03 plano diurno", lambda: build_plano({"tram", "bus"}, "03_plano_diurno.pdf", "Plano red diurna")),
+        ("03b planos distrito", build_planos_distrito),
+        ("04 plano nocturno", lambda: build_plano({"night"}, "04_plano_nocturno.pdf", "Plano red nocturna")),
+        ("05 fichas tranvía", lambda: build_fichas("tram", "05_fichas_tranvia.pdf", "Fichas tranvía")),
+        ("06 fichas autobús", lambda: build_fichas("bus", "06_fichas_autobus.pdf", "Fichas autobús")),
+        ("07 fichas nocturno", lambda: build_fichas("night", "07_fichas_nocturno.pdf", "Fichas nocturno")),
+        ("08 flota", build_flota),
+        ("09 checklist", build_checklist),
+        ("10 calendario", build_calendario),
+        ("11 refuerzos estadio", build_refuerzos),
+        ("11b refuerzos feria", build_feria),
+        ("12 horarios", build_horarios),
+        ("13 hubs", build_hubs),
+    ]
+    for label, fn in steps:
+        print(f"Generando {label}…")
+        paths.append(fn())
     print("OK:")
     for pth in paths:
         print(" ", pth, f"({pth.stat().st_size // 1024} KB)")
