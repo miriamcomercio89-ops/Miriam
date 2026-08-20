@@ -1,0 +1,748 @@
+# -*- coding: utf-8 -*-
+"""
+Paradas CTS 2026 (mapa base) — nombre IN-GAME (alemán/ficción) + nombre EMT Málaga (español).
+Fuente: capturas Netz completo / Tram / Bus del juego.
+"""
+
+# sid: datos de parada
+# game_name = exactamente como aparece (o debe renombrarse DESDE) en CTS
+# name = nuevo nombre español ambientación Málaga
+
+STOPS = {
+    # ===== NORTE =====
+    "industriestrasse": {
+        "game_name": "Industriestraße",
+        "name": "Polígono Norte",
+        "zone": "C", "hub": True, "tram": False, "bus": True,
+        "icons": ["correspondencia"], "district": "Norte",
+        "xy": (0.42, 0.94),
+    },
+    "friedrich_schneider": {
+        "game_name": "Friedrich-Schneider-Straße",
+        "name": "Calle de la Memoria",
+        "zone": "B", "hub": True, "tram": True, "bus": True,
+        "icons": ["correspondencia"], "district": "Norte",
+        "xy": (0.36, 0.88),
+    },
+    "helene_weber": {
+        "game_name": "Helene-Weber-Straße",
+        "name": "Palacio de Deportes",
+        "zone": "B", "hub": False, "tram": True, "bus": True,
+        "icons": ["deporte"], "district": "Norte",
+        "xy": (0.40, 0.84),
+    },
+    "ahorn_fried": {
+        "game_name": "Ahorn-Fried-Platz",
+        "name": "Plaza del Olivo",
+        "zone": "B", "hub": False, "tram": False, "bus": True,
+        "icons": [], "district": "Norte",
+        "xy": (0.48, 0.90),
+    },
+    "krankenhaus_nord": {
+        "game_name": "Krankenhaus Nord",
+        "name": "Hospital Norte",
+        "zone": "B", "hub": False, "tram": True, "bus": True,
+        "icons": ["hospital", "accesible"], "district": "Norte",
+        "xy": (0.44, 0.80),
+    },
+    "viktoriya": {
+        "game_name": "Viktoriya Allee",
+        "name": "Avenida Victoria",
+        "zone": "B", "hub": False, "tram": False, "bus": True,
+        "icons": [], "district": "Norte",
+        "xy": (0.52, 0.86),
+    },
+    "steingasse": {
+        "game_name": "Steingasse",
+        "name": "Calle del Portillo",
+        "zone": "B", "hub": False, "tram": False, "bus": True,
+        "icons": [], "district": "Norte",
+        "xy": (0.56, 0.82),
+    },
+    "lichterallee": {
+        "game_name": "Lichterallee",
+        "name": "Alameda de las Luces",
+        "zone": "C", "hub": True, "tram": True, "bus": True,
+        "icons": ["correspondencia", "parque"], "district": "Norte",
+        "xy": (0.62, 0.90),
+    },
+    "panagiotis": {
+        "game_name": "Panagiotisstraße",
+        "name": "Calle del Parque Norte",
+        "zone": "C", "hub": False, "tram": False, "bus": True,
+        "icons": [], "district": "Norte",
+        "xy": (0.66, 0.86),
+    },
+    "spielplatz": {
+        "game_name": "Spielplatz",
+        "name": "Parque Infantil Norte",
+        "zone": "C", "hub": False, "tram": False, "bus": True,
+        "icons": ["parque"], "district": "Norte",
+        "xy": (0.70, 0.84),
+    },
+    "magnolienweg": {
+        "game_name": "Magnolienweg",
+        "name": "Sendero de las Magnolias",
+        "zone": "C", "hub": False, "tram": False, "bus": True,
+        "icons": [], "district": "Norte",
+        "xy": (0.74, 0.80),
+    },
+    "am_brunnen": {
+        "game_name": "Am Brunnen",
+        "name": "Centro de Salud Norte",
+        "zone": "C", "hub": False, "tram": False, "bus": True,
+        "icons": ["hospital", "accesible"], "district": "Norte",
+        "xy": (0.34, 0.78),
+    },
+    "freimutplatz": {
+        "game_name": "Freimutplatz",
+        "name": "Plaza del Nuevo Norte",
+        "zone": "C", "hub": True, "tram": True, "bus": True,
+        "icons": ["correspondencia"], "district": "Norte",
+        "xy": (0.38, 0.74),
+        # alias mapa: Baumfreimutplatz
+    },
+    "baumann": {
+        "game_name": "Baumannstraße",
+        "name": "Plaza Alta Norte",
+        "zone": "B", "hub": False, "tram": True, "bus": True,
+        "icons": [], "district": "Norte",
+        "xy": (0.42, 0.72),
+    },
+    "danielsplatz": {
+        "game_name": "Danielsplatz",
+        "name": "Plaza de la Palmera",
+        "zone": "A", "hub": False, "tram": True, "bus": True,
+        "icons": [], "district": "Norte",
+        "xy": (0.50, 0.76),
+    },
+
+    # ===== UNIVERSIDAD / NORTE-CENTRO =====
+    "universitaet": {
+        "game_name": "Universität",
+        "name": "Plaza Universidad",
+        "zone": "A", "hub": True, "tram": True, "bus": True,
+        "icons": ["correspondencia", "universidad", "accesible"], "district": "Centro",
+        "xy": (0.48, 0.70),
+    },
+    "bernhardsdom": {
+        "game_name": "Bernhardsdom",
+        "name": "Catedral de San Bernardo",
+        "zone": "A", "hub": True, "tram": True, "bus": True,
+        "icons": ["correspondencia", "cultura"], "district": "Centro",
+        "xy": (0.50, 0.68),
+    },
+    "humboldtplatz": {
+        "game_name": "Humboldtplatz",
+        "name": "Plaza del Mercado Norte",
+        "zone": "A", "hub": True, "tram": True, "bus": True,
+        "icons": ["correspondencia"], "district": "Centro",
+        "xy": (0.46, 0.66),
+    },
+    "gabriele_muenter": {
+        "game_name": "Gabriele-Münter-Straße",
+        "name": "Plaza Colón",
+        "zone": "B", "hub": False, "tram": True, "bus": True,
+        "icons": [], "district": "Este",
+        "xy": (0.58, 0.72),
+    },
+    "gabriele_friedhof": {
+        "game_name": "Gabriele-Münter-Friedhof",
+        "name": "Cementerio Colón",
+        "zone": "C", "hub": False, "tram": False, "bus": True,
+        "icons": [], "district": "Norte",
+        "xy": (0.64, 0.74),
+    },
+    "pinakothek": {
+        "game_name": "Pinakothek",
+        "name": "Pinacoteca",
+        "zone": "B", "hub": False, "tram": False, "bus": True,
+        "icons": ["cultura"], "district": "Oeste",
+        "xy": (0.30, 0.70),
+    },
+    "kaiserpark": {
+        "game_name": "Kaiserpark",
+        "name": "Plaza del Puerto",
+        "zone": "A", "hub": True, "tram": True, "bus": True,
+        "icons": ["correspondencia", "turismo", "accesible"], "district": "Centro",
+        "xy": (0.56, 0.64),
+    },
+    "bernhardsplatz": {
+        "game_name": "Bernhardsplatz",
+        "name": "Plaza del Mediodía",
+        "zone": "A", "hub": False, "tram": True, "bus": True,
+        "icons": [], "district": "Centro",
+        "xy": (0.54, 0.62),
+    },
+    "museumspark": {
+        "game_name": "Museumspark",
+        "name": "Parque de los Museos",
+        "zone": "B", "hub": False, "tram": False, "bus": True,
+        "icons": ["cultura", "parque"], "district": "Centro",
+        "xy": (0.52, 0.66),
+    },
+    "josefshof": {
+        "game_name": "Josefshof",
+        "name": "Muelle de la Sal",
+        "zone": "A", "hub": False, "tram": True, "bus": True,
+        "icons": [], "district": "Centro",
+        "xy": (0.52, 0.60),
+    },
+
+    # ===== OESTE =====
+    "enziangasse": {
+        "game_name": "Enziangasse",
+        "name": "Calle de los Almendros",
+        "zone": "C", "hub": False, "tram": False, "bus": True,
+        "icons": [], "district": "Oeste",
+        "xy": (0.22, 0.68),
+    },
+    "amtsstrasse": {
+        "game_name": "Amtsstraße",
+        "name": "Junta del Oeste",
+        "zone": "B", "hub": False, "tram": True, "bus": True,
+        "icons": [], "district": "Oeste",
+        "xy": (0.20, 0.60),
+    },
+    "friedland": {
+        "game_name": "Friedlandstraße",
+        "name": "Plaza de las Artes",
+        "zone": "A", "hub": False, "tram": True, "bus": True,
+        "icons": ["cultura"], "district": "Oeste",
+        "xy": (0.28, 0.58),
+    },
+    "schullergasse": {
+        "game_name": "Schullergasse",
+        "name": "Barrio del Olivar",
+        "zone": "B", "hub": False, "tram": True, "bus": True,
+        "icons": [], "district": "Oeste",
+        "xy": (0.18, 0.56),
+    },
+    "schmiedegasse": {
+        "game_name": "Schmiedegasse",
+        "name": "Colinas del Oeste",
+        "zone": "C", "hub": True, "tram": True, "bus": True,
+        "icons": ["correspondencia", "accesible"], "district": "Oeste",
+        "xy": (0.12, 0.54),
+    },
+
+    # ===== CENTRO =====
+    "heimatmuseum": {
+        "game_name": "Heimatmuseum",
+        "name": "Museo del Barrio",
+        "zone": "B", "hub": False, "tram": True, "bus": True,
+        "icons": ["cultura"], "district": "Centro",
+        "xy": (0.40, 0.56),
+    },
+    "lenkstrasse": {
+        "game_name": "Lenkstraße",
+        "name": "Sendero de los Cipreses",
+        "zone": "B", "hub": False, "tram": False, "bus": True,
+        "icons": [], "district": "Centro",
+        "xy": (0.44, 0.54),
+    },
+    "gruener_huegel": {
+        "game_name": "Grüner Hügel",
+        "name": "Avenida de los Cedros",
+        "zone": "B", "hub": True, "tram": True, "bus": True,
+        "icons": ["correspondencia"], "district": "Este",
+        "xy": (0.68, 0.58),
+    },
+    "puls_center": {
+        "game_name": "Puls Center",
+        "name": "Plaza del Anillo Norte",
+        "zone": "A", "hub": True, "tram": True, "bus": True,
+        "icons": ["correspondencia", "accesible"], "district": "Centro",
+        "xy": (0.48, 0.58),
+    },
+    "olaf_meier": {
+        "game_name": "Olaf-Meier-Platz",
+        "name": "Anillo Norte Lateral",
+        "zone": "A", "hub": False, "tram": True, "bus": True,
+        "icons": ["correspondencia"], "district": "Centro",
+        "xy": (0.50, 0.56),
+    },
+    "postplatz": {
+        "game_name": "Postplatz",
+        "name": "Plaza de Correos",
+        "zone": "A", "hub": False, "tram": False, "bus": True,
+        "icons": [], "district": "Centro",
+        "xy": (0.46, 0.52),
+    },
+    "biedermann": {
+        "game_name": "Biedermannstraße",
+        "name": "Escuela Profesional Costa",
+        "zone": "B", "hub": False, "tram": False, "bus": True,
+        "icons": ["universidad"], "district": "Centro",
+        "xy": (0.42, 0.50),
+    },
+    "feldgasse": {
+        "game_name": "Feldgasse",
+        "name": "Calle del Campo",
+        "zone": "B", "hub": False, "tram": False, "bus": True,
+        "icons": [], "district": "Centro",
+        "xy": (0.38, 0.48),
+    },
+    "schoenberg": {
+        "game_name": "Schönberg",
+        "name": "Calle Baja del Río",
+        "zone": "B", "hub": True, "tram": False, "bus": True,
+        "icons": ["correspondencia"], "district": "Sur",
+        "xy": (0.36, 0.46),
+    },
+    "busbahnhof": {
+        "game_name": "Busbahnhof",
+        "name": "Intercambiador El Perchel",
+        "zone": "B", "hub": True, "tram": False, "bus": True,
+        "icons": ["correspondencia", "accesible"], "district": "Sur",
+        "xy": (0.40, 0.44),
+    },
+    "johann_friedrich": {
+        "game_name": "Johann-Friedrich-Gasse",
+        "name": "Calle del Peñón",
+        "zone": "C", "hub": True, "tram": True, "bus": True,
+        "icons": ["correspondencia"], "district": "Sur",
+        "xy": (0.44, 0.38),
+    },
+    "marcoplatz": {
+        "game_name": "Marcoplatz",
+        "name": "Plaza de la Prensa",
+        "zone": "B", "hub": False, "tram": False, "bus": True,
+        "icons": [], "district": "Sur",
+        "xy": (0.38, 0.42),
+    },
+    "hauptbahnhof": {
+        "game_name": "Hauptbahnhof",
+        "name": "Estación María del Mar",
+        "zone": "A", "hub": True, "tram": True, "bus": True,
+        "icons": ["correspondencia", "accesible"], "district": "Centro",
+        "xy": (0.48, 0.48),
+    },
+    "hauptbahnhof_west": {
+        "game_name": "Hauptbahnhof West",
+        "name": "Estación Norte",
+        "zone": "A", "hub": True, "tram": True, "bus": True,
+        "icons": ["correspondencia", "accesible"], "district": "Centro",
+        "xy": (0.50, 0.50),
+    },
+    "webertheater": {
+        "game_name": "Webertheater",
+        "name": "Teatro Cervantes",
+        "zone": "A", "hub": True, "tram": True, "bus": True,
+        "icons": ["correspondencia", "cultura"], "district": "Centro",
+        "xy": (0.44, 0.54),
+    },
+    "theaterpark": {
+        "game_name": "Theaterpark",
+        "name": "Parque del Teatro",
+        "zone": "A", "hub": False, "tram": True, "bus": True,
+        "icons": ["cultura"], "district": "Centro",
+        "xy": (0.46, 0.52),
+    },
+    "iwatapark": {
+        "game_name": "Iwatapark",
+        "name": "Plaza de los Labradores",
+        "zone": "A", "hub": False, "tram": True, "bus": True,
+        "icons": [], "district": "Centro",
+        "xy": (0.46, 0.46),
+    },
+    "goethestrasse": {
+        "game_name": "Goethestraße",
+        "name": "Avenida de la Caleta",
+        "zone": "B", "hub": False, "tram": True, "bus": True,
+        "icons": [], "district": "Sur",
+        "xy": (0.48, 0.42),
+    },
+    "schillerstrasse": {
+        "game_name": "Schillerstraße",
+        "name": "Calle de la Esperanza",
+        "zone": "B", "hub": False, "tram": False, "bus": True,
+        "icons": [], "district": "Sur",
+        "xy": (0.46, 0.40),
+    },
+    "konstanzgasse": {
+        "game_name": "Konstanzgasse",
+        "name": "Plaza del Coso",
+        "zone": "B", "hub": False, "tram": True, "bus": True,
+        "icons": [], "district": "Sur",
+        "xy": (0.52, 0.44),
+    },
+    "ringenstein": {
+        "game_name": "Ringensteinstraße",
+        "name": "Cinturón Obrero",
+        "zone": "B", "hub": False, "tram": True, "bus": True,
+        "icons": [], "district": "Sur",
+        "xy": (0.50, 0.46),
+    },
+    "sommerfeld": {
+        "game_name": "Sommerfeldgarten",
+        "name": "Calle del Tablero",
+        "zone": "B", "hub": False, "tram": True, "bus": True,
+        "icons": [], "district": "Sur",
+        "xy": (0.42, 0.48),
+    },
+    "igor_yurkevic": {
+        "game_name": "Igor-Yurkevic-Platz",
+        "name": "Paseo de los Naranjos",
+        "zone": "A", "hub": True, "tram": True, "bus": True,
+        "icons": ["correspondencia"], "district": "Centro",
+        "xy": (0.42, 0.52),
+    },
+
+    # ===== ESTE =====
+    "phillipgasse": {
+        "game_name": "Phillipgasse",
+        "name": "Pasaje de los Jardines",
+        "zone": "B", "hub": True, "tram": True, "bus": True,
+        "icons": ["correspondencia"], "district": "Este",
+        "xy": (0.58, 0.48),
+    },
+    "am_schloss": {
+        "game_name": "Am Schlosspark",
+        "name": "Alcázar del Sol",
+        "zone": "A", "hub": True, "tram": True, "bus": True,
+        "icons": ["correspondencia", "turismo", "cultura"], "district": "Centro",
+        "xy": (0.54, 0.50),
+    },
+    "sternengasse": {
+        "game_name": "Sternengasse",
+        "name": "Plaza de los Jardines",
+        "zone": "A", "hub": True, "tram": True, "bus": True,
+        "icons": ["correspondencia"], "district": "Este",
+        "xy": (0.56, 0.46),
+    },
+    "marienplatz": {
+        "game_name": "Marienplatz",
+        "name": "Pasaje de los Canteros",
+        "zone": "B", "hub": False, "tram": False, "bus": True,
+        "icons": [], "district": "Este",
+        "xy": (0.60, 0.44),
+    },
+    "florianstrasse": {
+        "game_name": "Florianstraße",
+        "name": "Calle de la Huerta",
+        "zone": "B", "hub": False, "tram": True, "bus": True,
+        "icons": [], "district": "Este",
+        "xy": (0.64, 0.42),
+    },
+    "falkenberg": {
+        "game_name": "Falkenberg",
+        "name": "Calle del Tinte",
+        "zone": "B", "hub": False, "tram": False, "bus": True,
+        "icons": [], "district": "Este",
+        "xy": (0.72, 0.40),
+    },
+    "lise_meitner": {
+        "game_name": "Lisa-Meitner-Platz",
+        "name": "Plaza del Faro",
+        "zone": "B", "hub": True, "tram": True, "bus": True,
+        "icons": ["correspondencia", "accesible"], "district": "Este",
+        "xy": (0.70, 0.52),
+    },
+
+    # ===== SUR-CENTRO / RING =====
+    "engelsbrunnen": {
+        "game_name": "Engelsbrunnen",
+        "name": "Plaza de la Ópera",
+        "zone": "A", "hub": True, "tram": True, "bus": True,
+        "icons": ["correspondencia", "accesible", "cultura"], "district": "Centro",
+        "xy": (0.44, 0.50),
+    },
+    "rathaus_nord": {
+        "game_name": "Rathaus Nord",
+        "name": "Ayuntamiento – Lateral",
+        "zone": "A", "hub": False, "tram": True, "bus": True,
+        "icons": ["correspondencia"], "district": "Centro",
+        "xy": (0.46, 0.44),
+    },
+    "ringbibliothek": {
+        "game_name": "Ringbibliothek",
+        "name": "Calle del Violinista",
+        "zone": "A", "hub": False, "tram": True, "bus": True,
+        "icons": [], "district": "Centro",
+        "xy": (0.48, 0.42),
+    },
+    "unterer_ring": {
+        "game_name": "Unterer Ring",
+        "name": "Juzgados – Ayuntamiento",
+        "zone": "A", "hub": False, "tram": True, "bus": True,
+        "icons": [], "district": "Centro",
+        "xy": (0.50, 0.40),
+    },
+    "wasserturm": {
+        "game_name": "Wasserturm",
+        "name": "Fuente Blanca",
+        "zone": "A", "hub": False, "tram": True, "bus": True,
+        "icons": [], "district": "Centro",
+        "xy": (0.48, 0.44),
+    },
+    "fakultaet": {
+        "game_name": "Fakultätsstraße",
+        "name": "Camino de las Dunas",
+        "zone": "B", "hub": False, "tram": True, "bus": True,
+        "icons": [], "district": "Oeste",
+        "xy": (0.34, 0.52),
+    },
+    "rathausplatz": {
+        "game_name": "Rathausplatz",
+        "name": "Plaza del Ayuntamiento",
+        "zone": "A", "hub": True, "tram": True, "bus": True,
+        "icons": ["correspondencia", "accesible"], "district": "Centro",
+        "xy": (0.46, 0.46),
+    },
+    "hauptwache": {
+        "game_name": "Hauptwache",
+        "name": "Calle de los Hornos",
+        "zone": "B", "hub": False, "tram": False, "bus": True,
+        "icons": [], "district": "Sur",
+        "xy": (0.50, 0.36),
+    },
+    "davidsweg": {
+        "game_name": "Davidsweg",
+        "name": "Calle de la Cantera",
+        "zone": "B", "hub": False, "tram": True, "bus": True,
+        "icons": [], "district": "Sur",
+        "xy": (0.54, 0.36),
+    },
+    "clemensstrasse": {
+        "game_name": "Clemensstraße",
+        "name": "Plaza de la Victoria",
+        "zone": "B", "hub": False, "tram": False, "bus": True,
+        "icons": [], "district": "Sur",
+        "xy": (0.52, 0.34),
+    },
+    "depot_sued": {
+        "game_name": "Depot Süd",
+        "name": "Depósito Sur",
+        "zone": "B", "hub": True, "tram": True, "bus": True,
+        "icons": ["deposito", "correspondencia"], "district": "Sur",
+        "xy": (0.54, 0.30),
+    },
+    "lilienstrasse": {
+        "game_name": "Lilienstraße",
+        "name": "Plaza de los Cipreses",
+        "zone": "A", "hub": False, "tram": True, "bus": True,
+        "icons": [], "district": "Centro",
+        "xy": (0.42, 0.40),
+    },
+    "blumenmarkt": {
+        "game_name": "Am Blumenmarkt",
+        "name": "Plaza del Almendral",
+        "zone": "B", "hub": True, "tram": True, "bus": True,
+        "icons": ["correspondencia"], "district": "Sur",
+        "xy": (0.44, 0.36),
+    },
+    "am_spitz": {
+        "game_name": "Am Spitz",
+        "name": "Calle de los Tilos",
+        "zone": "C", "hub": False, "tram": False, "bus": True,
+        "icons": [], "district": "Este",
+        "xy": (0.70, 0.34),
+    },
+    "stadtgraben": {
+        "game_name": "Stadtgraben",
+        "name": "Calle del Embarcadero",
+        "zone": "C", "hub": False, "tram": True, "bus": True,
+        "icons": [], "district": "Este",
+        "xy": (0.66, 0.32),
+    },
+    "otto_nord": {
+        "game_name": "Otto-Nord-Straße",
+        "name": "Calle del Farallón Sur",
+        "zone": "C", "hub": False, "tram": False, "bus": True,
+        "icons": [], "district": "Este",
+        "xy": (0.68, 0.28),
+    },
+    "eichenweg": {
+        "game_name": "Eichenweg",
+        "name": "Muelle del Comercio",
+        "zone": "B", "hub": False, "tram": True, "bus": True,
+        "icons": [], "district": "Este",
+        "xy": (0.72, 0.36),
+    },
+    "am_weidensee": {
+        "game_name": "Am Weidensee",
+        "name": "Estadio Costa del Sol",
+        "zone": "C", "hub": True, "tram": True, "bus": True,
+        "icons": ["correspondencia", "deporte", "accesible"], "district": "Este",
+        "xy": (0.78, 0.38),
+    },
+    "laurito": {
+        "game_name": "Lauritostraße",
+        "name": "Calle de la Higuera",
+        "zone": "B", "hub": False, "tram": True, "bus": True,
+        "icons": [], "district": "Este",
+        "xy": (0.74, 0.32),
+    },
+    "loewenstrasse": {
+        "game_name": "Löwenstraße",
+        "name": "Antiguo Matadero",
+        "zone": "B", "hub": False, "tram": True, "bus": True,
+        "icons": [], "district": "Este",
+        "xy": (0.66, 0.38),
+    },
+    "sonnengasse": {
+        "game_name": "Sonnengasse",
+        "name": "Plaza del Farolillo",
+        "zone": "B", "hub": False, "tram": True, "bus": True,
+        "icons": [], "district": "Este",
+        "xy": (0.70, 0.30),
+    },
+
+    # ===== SUR PROFUNDO =====
+    "toriyama": {
+        "game_name": "Toriyama Allee",
+        "name": "Plaza del Laurel",
+        "zone": "B", "hub": False, "tram": True, "bus": True,
+        "icons": [], "district": "Sur",
+        "xy": (0.56, 0.26),
+    },
+    "jakob_de_zoet": {
+        "game_name": "Jakob-de-Zoet-Straße",
+        "name": "Cocheras Favorita",
+        "zone": "B", "hub": True, "tram": True, "bus": True,
+        "icons": ["deposito", "correspondencia"], "district": "Sur",
+        "xy": (0.58, 0.24),
+    },
+    "shuji_nakamura": {
+        "game_name": "Shuji-Nakamura-Platz",
+        "name": "Plaza de la Concordia",
+        "zone": "B", "hub": True, "tram": True, "bus": True,
+        "icons": ["correspondencia", "accesible"], "district": "Sur",
+        "xy": (0.54, 0.20),
+    },
+    "eglundsdorf": {
+        "game_name": "Eglundsdorf",
+        "name": "Barrio del Farallón",
+        "zone": "C", "hub": True, "tram": True, "bus": True,
+        "icons": ["correspondencia", "accesible"], "district": "Sur",
+        "xy": (0.62, 0.18),
+    },
+    "boersenstrasse": {
+        "game_name": "Börsenstraße",
+        "name": "Calle del Molino",
+        "zone": "B", "hub": False, "tram": False, "bus": True,
+        "icons": [], "district": "Sur",
+        "xy": (0.58, 0.16),
+    },
+    "bleichstrasse": {
+        "game_name": "Bleichstraße",
+        "name": "Calle del Taller",
+        "zone": "B", "hub": False, "tram": False, "bus": True,
+        "icons": [], "district": "Sur",
+        "xy": (0.56, 0.14),
+    },
+    "rossmarkt": {
+        "game_name": "Roßmarkt",
+        "name": "Plaza de la Rosa",
+        "zone": "B", "hub": False, "tram": False, "bus": True,
+        "icons": [], "district": "Sur",
+        "xy": (0.54, 0.10),
+    },
+    "hauptfriedhof": {
+        "game_name": "Hauptfriedhof",
+        "name": "Cementerio San Miguel – Puerta 1",
+        "zone": "C", "hub": True, "tram": False, "bus": True,
+        "icons": ["correspondencia"], "district": "Este",
+        "xy": (0.82, 0.55),
+    },
+    "oberer_ring": {
+        "game_name": "Oberer Ring",
+        "name": "Arco del Este",
+        "zone": "A", "hub": True, "tram": True, "bus": True,
+        "icons": ["correspondencia"], "district": "Centro",
+        "xy": (0.54, 0.54),
+    },
+
+    # ===== DLC SUR (extensión) =====
+    "torres_sur": {
+        "game_name": "Torres del Sur (DLC)",
+        "name": "Torres del Sur",
+        "zone": "C", "hub": True, "tram": False, "bus": True,
+        "icons": ["correspondencia", "accesible"], "district": "Extensión Sur",
+        "xy": (0.30, 0.12),
+    },
+    "mirador_levante": {
+        "game_name": "Mirador Levante (DLC)",
+        "name": "Mirador Levante",
+        "zone": "C", "hub": False, "tram": False, "bus": True,
+        "icons": [], "district": "Extensión Sur",
+        "xy": (0.32, 0.14),
+    },
+    "paseo_calima": {
+        "game_name": "Paseo Calima (DLC)",
+        "name": "Paseo de la Calima",
+        "zone": "C", "hub": False, "tram": False, "bus": True,
+        "icons": [], "district": "Extensión Sur",
+        "xy": (0.34, 0.16),
+    },
+    "plaza_biznaga": {
+        "game_name": "Plaza Biznaga (DLC)",
+        "name": "Plaza de la Biznaga",
+        "zone": "C", "hub": False, "tram": False, "bus": True,
+        "icons": [], "district": "Extensión Sur",
+        "xy": (0.36, 0.14),
+    },
+    "avenida_boqueron": {
+        "game_name": "Av. Boquerón (DLC)",
+        "name": "Avenida del Boquerón",
+        "zone": "C", "hub": False, "tram": False, "bus": True,
+        "icons": [], "district": "Extensión Sur",
+        "xy": (0.38, 0.16),
+    },
+    "jardines_malagueta": {
+        "game_name": "Jardines Malagueta (DLC)",
+        "name": "Jardines Malagueta",
+        "zone": "C", "hub": False, "tram": False, "bus": True,
+        "icons": ["parque"], "district": "Extensión Sur",
+        "xy": (0.40, 0.14),
+    },
+    "polideportivo_sur": {
+        "game_name": "Polideportivo Sur (DLC)",
+        "name": "Polideportivo Sur",
+        "zone": "C", "hub": False, "tram": False, "bus": True,
+        "icons": ["deporte"], "district": "Extensión Sur",
+        "xy": (0.42, 0.16),
+    },
+    "deposito_sur_bus": {
+        "game_name": "Cocheras Sur (DLC)",
+        "name": "Cocheras Sur",
+        "zone": "C", "hub": True, "tram": True, "bus": True,
+        "icons": ["deposito", "correspondencia"], "district": "Extensión Sur",
+        "xy": (0.34, 0.18),
+    },
+}
+
+
+def stop_name(sid: str) -> str:
+    return STOPS[sid]["name"]
+
+
+def game_name(sid: str) -> str:
+    return STOPS[sid]["game_name"]
+
+
+def dual_name(sid: str) -> str:
+    st = STOPS[sid]
+    return f"{st['name']}  ←  {st['game_name']}"
+
+
+def all_stop_ids():
+    return list(STOPS.keys())
+
+
+# Hubs principales para fichas (mejora 7)
+HUBS = [
+    "hauptbahnhof",
+    "busbahnhof",
+    "engelsbrunnen",
+    "rathausplatz",
+    "universitaet",
+    "puls_center",
+    "kaiserpark",
+    "shuji_nakamura",
+    "depot_sued",
+    "schmiedegasse",
+    "am_weidensee",
+    "freimutplatz",
+]
