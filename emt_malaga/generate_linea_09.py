@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-PDF completo — Línea E de tranvía (documento: «62», semi-exprés).
-Código EMT: E · Código original: 62.
+PDF completo — Línea 9 de tranvía (documento: «62», semi-exprés).
+Código EMT: 9 · Código original: 62.
 """
 
 from pathlib import Path
@@ -19,11 +19,11 @@ from reportlab.platypus import (
 from reportlab.pdfgen import canvas
 import os
 
-OUT = Path(__file__).resolve().parent / "lineas" / "linea_E_tranvia.pdf"
+OUT = Path(__file__).resolve().parent / "lineas" / "linea_09_tranvia.pdf"
 OUT.parent.mkdir(parents=True, exist_ok=True)
 
 LINE = {
-    "code": "E",
+    "code": "9",
     "code_doc": "62",
     "mode": "Tranvía",
     "name": "Ópera – Concordia Exprés",
@@ -47,7 +47,7 @@ LINE = {
     "depot": "Depot Süd / Depósito Sur",
     "zones": ["A", "B"],
     "notes": (
-        "Documento «62» → EMT Línea E (letra por ser semi-exprés). Solo 5 paradas: "
+        "Documento «62» → EMT Línea 9 (semi-exprés Ópera–Concordia). Solo 5 paradas: "
         "Ópera → Naranjos → Cantera → Laurel → Concordia. Alternativa rápida a L3 "
         "en el tramo sur. En CTS: comprobar si puedes saltar andenes o si hay que "
         "parar en todas; SRT encaja bien."
@@ -304,7 +304,7 @@ def build():
     brows = [[Paragraph("<b>Franja</b>", STY["Tiny"]),
               Paragraph("<b>Ventana</b>", STY["Tiny"]),
               Paragraph("<b>Intervalo</b>", STY["Tiny"]),
-              Paragraph("<b>Ej. salidas cabecera Ópera (E)</b>", STY["Tiny"])]]
+              Paragraph("<b>Ej. salidas cabecera Ópera</b>", STY["Tiny"])]]
     for name, win, hw in bands:
         # sample departures
         samples = []
@@ -397,7 +397,7 @@ def build():
 
     story.append(Paragraph("7. Checklist CTS para esta línea", STY["H2"]))
     checks = [
-        f"Crear línea código «{LINE['code']}» (o «{LINE['code_doc']}» del documento) · HEX {LINE['color']}",
+        f"Crear línea código «9» (o «62» del documento) · HEX {LINE['color']}",
         "Renombrar las 5 paradas (todas ya usadas en L1/L3/C)",
         "Cabeceras: Plaza de la Ópera ↔ Plaza de la Concordia",
         "Asignar StadtRegioTram (principal) + Flexity punta",
@@ -414,7 +414,7 @@ def build():
     story.append(Bar(BRAND["secondary"], 3))
     story.append(Spacer(1, 4))
     story.append(Paragraph(
-        "Siguiente del documento: suele ser la 71 → Línea 8.",
+        "Siguiente del documento: 71 → Línea 10.",
         STY["Small"]))
 
     doc.build(story, onFirstPage=lambda c, d: (header(c, d), footer(c, d)),

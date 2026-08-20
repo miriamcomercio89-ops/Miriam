@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-PDF completo — Línea C de tranvía (documento: «46», circular).
-Código EMT: C · Código original: 46.
+PDF completo — Línea 8 de tranvía (documento: «46», circular).
+Código EMT: 8 · Código original: 46.
 """
 
 from pathlib import Path
@@ -19,11 +19,11 @@ from reportlab.platypus import (
 from reportlab.pdfgen import canvas
 import os
 
-OUT = Path(__file__).resolve().parent / "lineas" / "linea_C_tranvia.pdf"
+OUT = Path(__file__).resolve().parent / "lineas" / "linea_08_tranvia.pdf"
 OUT.parent.mkdir(parents=True, exist_ok=True)
 
 LINE = {
-    "code": "C",
+    "code": "8",
     "code_doc": "46",
     "mode": "Tranvía",
     "name": "Circular Ópera (oeste)",
@@ -47,7 +47,7 @@ LINE = {
     "depot": "Depot Süd / Depósito Sur",
     "zones": ["A", "B"],
     "notes": (
-        "Documento «46» → EMT Línea C (letra por ser circular). Bucle horario: "
+        "Documento «46» → EMT Línea 8 (circular Ópera–oeste). Bucle horario: "
         "Plaza de la Ópera → Naranjos → Dunas → Olivar → Junta del Oeste → "
         "Teatro Cervantes → Plaza de las Artes → vuelve a Ópera. "
         "REVISAR en CTS que la vía permita el círculo completo sin callejón sin salida."
@@ -401,7 +401,7 @@ def build():
 
     story.append(Paragraph("7. Checklist CTS para esta línea", STY["H2"]))
     checks = [
-        f"Crear línea código «{LINE['code']}» (o «{LINE['code_doc']}» del documento) · HEX {LINE['color']}",
+        f"Crear línea código «8» (o «46» del documento) · HEX {LINE['color']}",
         "Renombrar las 8 paradas del bucle (Ópera aparece 2 veces = misma parada)",
         "Cabecera única: Plaza de la Ópera (circular)",
         "Asignar R2.2b + ULF A1",
@@ -418,7 +418,7 @@ def build():
     story.append(Bar(BRAND["secondary"], 3))
     story.append(Spacer(1, 4))
     story.append(Paragraph(
-        "Siguiente del documento: suele ser la 62 → Línea 8 (o E exprés).",
+        "Siguiente del documento: 71 → Línea 10.",
         STY["Small"]))
 
     doc.build(story, onFirstPage=lambda c, d: (header(c, d), footer(c, d)),
