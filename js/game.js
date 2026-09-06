@@ -1,51 +1,231 @@
 (() => {
   "use strict";
 
-  const W = 160;
-  const H = 100;
-  const MAX_FLOORS = 40;
-  const FLOOR_COST_BASE = 12000;
-  const START_MONEY = 350000;
-  const SAVE_KEY = "costa-aurora-save-v1";
+  const CHUNK = 32;
+  const MAX_FLOORS = 60;
+  const TILE_M = 2;
+  const START_MONEY = 500000;
+  const SAVE_KEY = "costa-aurora-save-v2";
+  const MAX_W = 4000;
+  const MAX_H = 2800;
 
-  const T = [
-    { id: 0,  key: "grass",      name: "Césped",         cat: "terreno",  cost: 0,     color: "#3f8f4e", color2: "#2f6e3c", room: 0, rate: 0,   amenity: 0, outdoor: 1 },
-    { id: 1,  key: "sand",       name: "Arena",          cat: "terreno",  cost: 0,     color: "#e6d09a", color2: "#cbb37a", room: 0, rate: 0,   amenity: 0, outdoor: 1 },
-    { id: 2,  key: "ocean",      name: "Mar",            cat: "terreno",  cost: 0,     color: "#1b7fa8", color2: "#125e80", room: 0, rate: 0,   amenity: 0, blocked: 1 },
-    { id: 3,  key: "path",       name: "Paseo",          cat: "terreno",  cost: 40,    color: "#c9b79a", color2: "#a89474", room: 0, rate: 0,   amenity: 0 },
-    { id: 4,  key: "palm",       name: "Palmeras",       cat: "exterior", cost: 180,   color: "#2d6b38", color2: "#1e4d28", room: 0, rate: 0,   amenity: 1, outdoor: 1 },
-    { id: 5,  key: "garden",     name: "Jardín",         cat: "exterior", cost: 220,   color: "#5fa84a", color2: "#3d7a32", room: 0, rate: 0,   amenity: 1, outdoor: 1 },
-    { id: 6,  key: "pool",       name: "Piscina",        cat: "exterior", cost: 420,   color: "#3ec6d4", color2: "#1e8fa0", room: 0, rate: 0,   amenity: 2 },
-    { id: 7,  key: "beachclub",  name: "Chiringuito",    cat: "exterior", cost: 3500,  color: "#e09b4a", color2: "#b87528", room: 0, rate: 0,   amenity: 2, outdoor: 1 },
-    { id: 8,  key: "lobby",      name: "Recepción",      cat: "servicios",cost: 6000,  color: "#d4af37", color2: "#a88420", room: 0, rate: 0,   amenity: 3 },
-    { id: 9,  key: "elevator",   name: "Ascensor",       cat: "infra",    cost: 4500,  color: "#8ea0b5", color2: "#5d6e82", room: 0, rate: 0,   amenity: 0, shaft: 1 },
-    { id: 10, key: "stairs",     name: "Escalera",       cat: "infra",    cost: 1800,  color: "#9a7b5a", color2: "#6e5740", room: 0, rate: 0,   amenity: 0, shaft: 1 },
-    { id: 11, key: "room_std",   name: "Habitación",     cat: "hab",      cost: 850,   color: "#5b8def", color2: "#3a68c4", room: 1, rate: 95,  amenity: 0 },
-    { id: 12, key: "room_dlx",   name: "Deluxe",         cat: "hab",      cost: 1900,  color: "#7b5cff", color2: "#5539c7", room: 1, rate: 175, amenity: 0 },
-    { id: 13, key: "room_suite", name: "Suite",          cat: "hab",      cost: 4800,  color: "#d45ca8", color2: "#a3387c", room: 1, rate: 390, amenity: 0 },
-    { id: 14, key: "room_pres",  name: "Presidencial",   cat: "hab",      cost: 14000, color: "#f0c44c", color2: "#c49218", room: 1, rate: 980, amenity: 0 },
-    { id: 15, key: "restaurant", name: "Restaurante",    cat: "servicios",cost: 9000,  color: "#e07a3d", color2: "#b35520", room: 0, rate: 0,   amenity: 3 },
-    { id: 16, key: "bar",        name: "Bar",            cat: "servicios",cost: 5500,  color: "#8b2942", color2: "#5e1528", room: 0, rate: 0,   amenity: 2 },
-    { id: 17, key: "spa",        name: "Spa",            cat: "servicios",cost: 12000, color: "#f0a6ca", color2: "#c46d98", room: 0, rate: 0,   amenity: 4 },
-    { id: 18, key: "gym",        name: "Gimnasio",       cat: "servicios",cost: 7000,  color: "#6b7280", color2: "#4b5563", room: 0, rate: 0,   amenity: 2 },
-    { id: 19, key: "shop",       name: "Boutique",       cat: "servicios",cost: 4000,  color: "#c45c6a", color2: "#933e4a", room: 0, rate: 0,   amenity: 1 },
-    { id: 20, key: "disco",      name: "Discoteca",      cat: "servicios",cost: 16000, color: "#6d28d9", color2: "#4c1d95", room: 0, rate: 0,   amenity: 4 },
-    { id: 21, key: "kitchen",    name: "Cocina",         cat: "servicios",cost: 3500,  color: "#78716c", color2: "#57534e", room: 0, rate: 0,   amenity: 1 },
-    { id: 22, key: "carpet",     name: "Pasillo",        cat: "infra",    cost: 60,    color: "#8b6914", color2: "#6b4f10", room: 0, rate: 0,   amenity: 0 },
-    { id: 23, key: "fountain",   name: "Fuente",         cat: "exterior", cost: 2500,  color: "#67e8f9", color2: "#22d3ee", room: 0, rate: 0,   amenity: 2, outdoor: 1 },
-    { id: 24, key: "parking",    name: "Parking",        cat: "exterior", cost: 90,    color: "#475569", color2: "#334155", room: 0, rate: 0,   amenity: 0, outdoor: 1 },
-    { id: 25, key: "pier",       name: "Muelle",         cat: "exterior", cost: 280,   color: "#92400e", color2: "#78350f", room: 0, rate: 0,   amenity: 1 },
-    { id: 26, key: "interior",   name: "Forjado",        cat: "terreno",  cost: 15,    color: "#2a3340", color2: "#1f2732", room: 0, rate: 0,   amenity: 0 },
+  const ZONES = [
+    { id: 0, name: "Ninguna", tint: null },
+    { id: 1, name: "Familiar", tint: "rgba(80,180,80,.28)" },
+    { id: 2, name: "Adultos", tint: "rgba(160,60,90,.28)" },
+    { id: 3, name: "Lujo", tint: "rgba(212,175,55,.32)" },
+    { id: 4, name: "Todo incl.", tint: "rgba(60,160,200,.28)" },
+    { id: 5, name: "Spa", tint: "rgba(220,140,190,.28)" },
   ];
 
-  const BY_KEY = Object.fromEntries(T.map((t) => [t.key, t]));
   const CATS = [
     { id: "hab", name: "Habitaciones" },
-    { id: "servicios", name: "Servicios" },
-    { id: "exterior", name: "Exterior" },
+    { id: "serv", name: "Servicios" },
+    { id: "ocio", name: "Ocio" },
+    { id: "ext", name: "Exterior" },
     { id: "infra", name: "Infra" },
-    { id: "terreno", name: "Suelo" },
   ];
+
+  const SUBS = [
+    { id: "all", name: "Todas" },
+    { id: "eco", name: "Económica" },
+    { id: "std", name: "Estándar" },
+    { id: "sup", name: "Superior" },
+    { id: "fam", name: "Familiar" },
+    { id: "suite", name: "Suites" },
+    { id: "lujo", name: "Lujo" },
+  ];
+
+  const T = [];
+  const BY_KEY = {};
+
+  function col(h, l) {
+    return "hsl(" + h + " 58% " + l + "%)";
+  }
+
+  function add(o) {
+    o.id = T.length;
+    o.minW = o.minW || 1;
+    o.minH = o.minH || 1;
+    o.maxW = o.maxW || 20;
+    o.maxH = o.maxH || 16;
+    o.base = o.base || 0;
+    o.tile = o.tile || 0;
+    o.rate = o.rate || 0;
+    o.rt = o.rt || 0;
+    o.amenity = o.amenity || 0;
+    o.room = o.room || 0;
+    o.color2 = o.color2 || col(0, 30);
+    T.push(o);
+    BY_KEY[o.key] = o;
+    return o;
+  }
+
+  const SUB_E = {
+    eco: { base: 380, tile: 130, rate: 36, rt: 15, minW: 2, minH: 2, maxW: 4, maxH: 3 },
+    std: { base: 720, tile: 165, rate: 72, rt: 20, minW: 3, minH: 2, maxW: 5, maxH: 4 },
+    sup: { base: 1500, tile: 220, rate: 135, rt: 28, minW: 3, minH: 2, maxW: 6, maxH: 4 },
+    fam: { base: 1700, tile: 195, rate: 145, rt: 24, minW: 4, minH: 3, maxW: 8, maxH: 6 },
+    suite: { base: 3800, tile: 270, rate: 290, rt: 40, minW: 4, minH: 3, maxW: 10, maxH: 7 },
+    lujo: { base: 8500, tile: 350, rate: 540, rt: 55, minW: 5, minH: 4, maxW: 14, maxH: 10 },
+  };
+
+  [
+    ["ind", "Individual", "eco", 205],
+    ["ind_eco", "Individual económica", "eco", 200],
+    ["camarote", "Camarote", "eco", 192],
+    ["interior", "Habitación interior", "eco", 188],
+    ["comp", "Compartida", "eco", 182],
+    ["literas", "Literas", "eco", 176],
+    ["doble", "Doble", "std", 212],
+    ["twin", "Twin", "std", 218],
+    ["matrimonio", "Matrimonial", "std", 328],
+    ["estandar", "Estándar", "std", 208],
+    ["est_jard", "Estándar jardín", "std", 142],
+    ["triple", "Triple", "std", 28],
+    ["cuadruple", "Cuádruple", "std", 32],
+    ["balcon", "Con balcón", "std", 214],
+    ["patio", "Patio interior", "std", 148],
+    ["accesible", "Accesible", "std", 165],
+    ["longstay", "Estancia larga", "std", 172],
+    ["superior", "Superior", "sup", 196],
+    ["sup_mar", "Superior vista mar", "sup", 199],
+    ["deluxe", "Deluxe", "sup", 268],
+    ["dlx_mar", "Deluxe vista mar", "sup", 274],
+    ["premium", "Premium", "sup", 282],
+    ["exec", "Executive", "sup", 228],
+    ["club", "Habitación Club", "sup", 234],
+    ["business", "Business", "sup", 222],
+    ["terraza", "Con terraza", "sup", 216],
+    ["panoramica", "Panorámica", "sup", 202],
+    ["familiar", "Familiar", "fam", 38],
+    ["fam_g", "Familiar grande", "fam", 44],
+    ["conectadas", "Conectadas", "fam", 50],
+    ["kids_suite", "Kids suite", "fam", 55],
+    ["bung_fam", "Bungalow familiar", "fam", 88],
+    ["apt1", "Apartamento 1 hab", "fam", 92],
+    ["apt2", "Apartamento 2 hab", "fam", 98],
+    ["estudio", "Estudio", "fam", 302],
+    ["junior", "Junior suite", "suite", 308],
+    ["suite", "Suite", "suite", 318],
+    ["suite_dlx", "Suite deluxe", "suite", 324],
+    ["nupcial", "Suite nupcial", "suite", 338],
+    ["suite_fam", "Suite familiar", "suite", 346],
+    ["suite_exec", "Suite ejecutiva", "suite", 248],
+    ["romantica", "Romántica", "suite", 334],
+    ["suite_spa", "Suite spa", "suite", 312],
+    ["loft", "Loft", "suite", 258],
+    ["duplex", "Dúplex", "suite", 262],
+    ["real", "Suite real", "suite", 46],
+    ["presidencial", "Presidencial", "lujo", 48],
+    ["penthouse", "Penthouse", "lujo", 52],
+    ["atico", "Ático", "lujo", 58],
+    ["villa", "Villa", "lujo", 72],
+    ["villa_pisc", "Villa con piscina", "lujo", 78],
+    ["villa_playa", "Villa playa", "lujo", 82],
+    ["cabana", "Cabaña", "lujo", 94],
+    ["andaluza", "Casa andaluza", "lujo", 14],
+    ["riad", "Riad", "lujo", 20],
+    ["tatami", "Japonesa tatami", "lujo", 352],
+    ["onyx", "Suite ónix", "lujo", 0],
+    ["imperial", "Suite imperial", "lujo", 6],
+    ["royal_pent", "Royal penthouse", "lujo", 10],
+    ["residencia", "Residencia", "lujo", 198],
+    ["infinity", "Infinity suite", "lujo", 188],
+    ["glamping", "Glamping", "lujo", 105],
+    ["yate", "Suite yate", "lujo", 210],
+    ["torre", "Torre deluxe", "lujo", 224],
+  ].forEach((r) => {
+    const e = SUB_E[r[2]];
+    const sea = /mar|playa|yate|infinity|panor/i.test(r[1]);
+    add({
+      key: r[0],
+      name: r[1],
+      cat: "hab",
+      sub: r[2],
+      color: col(r[3], 48),
+      color2: col(r[3], 36),
+      base: e.base * (sea ? 1.12 : 1),
+      tile: e.tile,
+      rate: e.rate * (sea ? 1.2 : 1),
+      rt: e.rt * (sea ? 1.15 : 1),
+      minW: e.minW,
+      minH: e.minH,
+      maxW: e.maxW,
+      maxH: e.maxH,
+      room: 1,
+    });
+  });
+
+  [
+    ["lobby", "Recepción", "serv", 46, 5000, 220, 0, 0, 4, 3, 10, 6, 3, 0],
+    ["rest", "Restaurante", "serv", 24, 6000, 180, 0, 0, 5, 4, 14, 10, 3, 0],
+    ["bufe", "Bufé", "serv", 30, 4500, 160, 0, 0, 5, 4, 12, 8, 3, 0],
+    ["cafe", "Cafetería", "serv", 28, 2200, 140, 0, 0, 3, 3, 8, 6, 2, 0],
+    ["sushi", "Sushi", "serv", 350, 2800, 150, 0, 0, 4, 3, 8, 6, 2, 0],
+    ["helado", "Heladería", "serv", 190, 1200, 120, 0, 0, 3, 2, 6, 5, 1, 0],
+    ["roomsvc", "Room service", "serv", 20, 1800, 100, 0, 0, 3, 2, 6, 4, 1, 0],
+    ["bar", "Bar", "serv", 350, 3500, 140, 0, 0, 3, 3, 10, 6, 2, 0],
+    ["kitchen", "Cocina", "serv", 25, 2500, 110, 0, 0, 4, 3, 10, 8, 1, 0],
+    ["spa", "Spa", "serv", 330, 8000, 200, 0, 0, 6, 4, 16, 12, 4, 0],
+    ["gym", "Gimnasio", "serv", 0, 4000, 130, 0, 0, 4, 4, 12, 8, 2, 0],
+    ["shop", "Boutique", "serv", 350, 2500, 120, 0, 0, 3, 3, 8, 6, 1, 0],
+    ["disco", "Discoteca", "serv", 280, 9000, 160, 0, 0, 6, 5, 16, 12, 4, 0],
+    ["clinic", "Clínica", "serv", 155, 3500, 140, 0, 0, 4, 3, 8, 6, 2, 0],
+    ["security", "Seguridad", "serv", 220, 1800, 90, 0, 0, 2, 2, 5, 4, 1, 0],
+    ["guarderia", "Guardería", "ocio", 45, 3200, 130, 0, 0, 4, 4, 10, 8, 2, 0],
+    ["miniclub", "Miniclub", "ocio", 52, 3800, 140, 0, 0, 5, 4, 12, 8, 2, 0],
+    ["tobo", "Toboganes", "ocio", 195, 5000, 150, 0, 0, 6, 4, 16, 10, 2, 1],
+    ["golf", "Campo de golf", "ocio", 120, 12000, 80, 0, 0, 14, 10, 40, 28, 3, 1],
+    ["tenis", "Pista de tenis", "ocio", 90, 2800, 70, 0, 0, 6, 4, 12, 8, 1, 1],
+    ["padel", "Pádel", "ocio", 95, 2200, 70, 0, 0, 4, 4, 8, 6, 1, 1],
+    ["yoga", "Yoga", "ocio", 160, 1500, 90, 0, 0, 4, 3, 10, 8, 1, 0],
+    ["casino", "Casino", "ocio", 48, 14000, 180, 0, 0, 8, 6, 18, 12, 4, 0],
+    ["teatro", "Teatro", "ocio", 300, 10000, 160, 0, 0, 8, 6, 16, 12, 3, 0],
+    ["cine", "Cine", "ocio", 265, 7000, 150, 0, 0, 6, 5, 14, 10, 2, 0],
+    ["congreso", "Sala congresos", "ocio", 210, 8000, 140, 0, 0, 8, 5, 18, 12, 2, 0],
+    ["bodas", "Salón de bodas", "ocio", 330, 9000, 150, 0, 0, 8, 6, 16, 12, 3, 0],
+    ["pool", "Piscina", "ext", 188, 400, 90, 0, 0, 4, 3, 30, 20, 2, 1],
+    ["pool_inf", "Piscina infinita", "ext", 186, 900, 110, 0, 0, 8, 4, 28, 12, 3, 1],
+    ["pool_kid", "Piscina infantil", "ext", 184, 500, 85, 0, 0, 4, 4, 12, 10, 2, 1],
+    ["jacuzzi", "Jacuzzi", "ext", 200, 1800, 140, 0, 0, 3, 3, 8, 6, 2, 0],
+    ["sauna", "Sauna", "ext", 25, 2200, 130, 0, 0, 3, 2, 6, 5, 2, 0],
+    ["hammam", "Hammam", "ext", 175, 3500, 140, 0, 0, 4, 3, 10, 8, 2, 0],
+    ["palm", "Palmeras", "ext", 140, 80, 40, 0, 0, 1, 1, 6, 6, 1, 1],
+    ["garden", "Jardín", "ext", 125, 60, 35, 0, 0, 2, 2, 20, 20, 1, 1],
+    ["fountain", "Fuente", "ext", 190, 1800, 80, 0, 0, 2, 2, 6, 6, 2, 1],
+    ["beach", "Chiringuito", "ext", 32, 2800, 120, 0, 0, 3, 3, 8, 6, 2, 1],
+    ["pier", "Muelle", "ext", 28, 200, 70, 0, 0, 2, 1, 20, 4, 1, 1],
+    ["parking", "Parking", "ext", 220, 40, 25, 0, 0, 2, 2, 40, 20, 0, 1],
+    ["paseo", "Paseo", "infra", 40, 10, 18, 0, 0, 1, 1, 80, 8, 0, 1],
+    ["pasillo", "Pasillo", "infra", 38, 12, 16, 0, 0, 1, 1, 80, 8, 0, 0],
+    ["elevator", "Ascensor", "infra", 210, 4000, 200, 0, 0, 2, 2, 3, 3, 0, 0],
+    ["stairs", "Escalera", "infra", 30, 1500, 120, 0, 0, 2, 2, 4, 3, 0, 0],
+    ["laundry", "Lavandería", "infra", 210, 2200, 90, 0, 0, 4, 3, 10, 8, 1, 0],
+    ["storage", "Almacén", "infra", 30, 800, 50, 0, 0, 3, 3, 12, 10, 0, 0],
+    ["trash", "Cuarto de basuras", "infra", 20, 400, 40, 0, 0, 2, 2, 5, 4, 0, 0],
+    ["machine", "Cuarto de máquinas", "infra", 0, 2500, 80, 0, 0, 4, 3, 10, 8, 0, 0],
+  ].forEach((r) => {
+    add({
+      key: r[0],
+      name: r[1],
+      cat: r[2],
+      color: col(r[3], 48),
+      color2: col(r[3], 34),
+      base: r[4],
+      tile: r[5],
+      rate: r[6],
+      rt: r[7],
+      minW: r[8],
+      minH: r[9],
+      maxW: r[10],
+      maxH: r[11],
+      amenity: r[12],
+      outdoor: r[13],
+      shaft: r[0] === "elevator" || r[0] === "stairs" ? 1 : 0,
+      pier: r[0] === "pier" ? 1 : 0,
+    });
+  });
 
   const canvas = document.getElementById("world");
   const ctx = canvas.getContext("2d", { alpha: false });
@@ -60,129 +240,44 @@
     speed: 1,
     floors: 1,
     floor: 0,
-    grids: [],
-    occ: [],
-    camera: { x: 48, y: 40, z: 1 },
-    tool: "paint",
-    brush: 11,
+    mapW: 720,
+    mapH: 440,
+    buildings: [],
+    rooms: [],
+    chunks: new Map(),
+    nextId: 1,
+    numSeq: [],
+    occupied: 0,
+    incomeSum: 0,
+    amenityTypes: 0,
+    amenityScore: 0,
+    lobby: 0,
+    elev: 0,
+    stars: 1,
+    reputation: 55,
+    camera: { x: 120, y: 180, z: 0.7 },
+    tool: "piece",
+    brush: BY_KEY.doble.id,
     cat: "hab",
+    sub: "all",
+    search: "",
+    zone: 1,
+    pieceW: 3,
+    pieceH: 2,
     drag: null,
     panning: false,
     panLast: null,
-    guests: [],
-    stats: { rooms: 0, occupied: 0, capacity: 0 },
-    stars: 1,
-    reputation: 55,
-    lastIncome: 0,
+    sel: [],
+    clip: null,
     undo: [],
-    seenHelp: false,
+    guests: [],
+    keys: new Set(),
     simAcc: 0,
     lastTs: 0,
-    keys: new Set(),
+    miniDirty: true,
+    fillCursor: 0,
+    pending: null,
   };
-
-  function idx(x, y) {
-    return y * W + x;
-  }
-  function inMap(x, y) {
-    return x >= 0 && y >= 0 && x < W && y < H;
-  }
-  function tileAt(f, x, y) {
-    return T[state.grids[f][idx(x, y)]];
-  }
-
-  function makeFloor(kind) {
-    const g = new Uint8Array(W * H);
-    if (kind === "ground") {
-      for (let y = 0; y < H; y++) {
-        for (let x = 0; x < W; x++) {
-          if (y > H - 8) g[idx(x, y)] = 2;
-          else if (y > H - 14) g[idx(x, y)] = 1;
-          else g[idx(x, y)] = 0;
-        }
-      }
-      for (let i = 0; i < 90; i++) {
-        const x = 4 + ((i * 37) % (W - 8));
-        const y = 6 + ((i * 53) % (H - 28));
-        if (g[idx(x, y)] === 0) g[idx(x, y)] = 4;
-      }
-    } else {
-      g.fill(26);
-    }
-    return g;
-  }
-
-  function newGame() {
-    state.name = "Costa Aurora";
-    state.money = START_MONEY;
-    state.day = 1;
-    state.minute = 8 * 60;
-    state.speed = 1;
-    state.floors = 1;
-    state.floor = 0;
-    state.grids = [makeFloor("ground")];
-    state.occ = [new Uint8Array(W * H)];
-    state.camera = { x: 70, y: 55, z: 0.85 };
-    state.guests = [];
-    state.reputation = 55;
-    state.lastIncome = 0;
-    state.undo = [];
-    state.brush = 11;
-    state.tool = "paint";
-    document.getElementById("resort-name").value = state.name;
-    recount();
-    save();
-  }
-
-  function serialize() {
-    return {
-      name: state.name,
-      money: state.money,
-      day: state.day,
-      minute: state.minute,
-      floors: state.floors,
-      floor: state.floor,
-      grids: state.grids.map((g) => Array.from(g)),
-      occ: state.occ.map((g) => Array.from(g)),
-      reputation: state.reputation,
-      camera: state.camera,
-      seenHelp: true,
-    };
-  }
-
-  function hydrate(data) {
-    state.name = data.name || "Costa Aurora";
-    state.money = data.money;
-    state.day = data.day;
-    state.minute = data.minute;
-    state.floors = data.floors;
-    state.floor = data.floor || 0;
-    state.grids = data.grids.map((g) => Uint8Array.from(g));
-    state.occ = data.occ.map((g) => Uint8Array.from(g));
-    state.reputation = data.reputation ?? 55;
-    state.camera = data.camera || state.camera;
-    state.guests = [];
-    state.undo = [];
-    document.getElementById("resort-name").value = state.name;
-    recount();
-  }
-
-  function save() {
-    try {
-      localStorage.setItem(SAVE_KEY, JSON.stringify(serialize()));
-    } catch (_) {}
-  }
-
-  function load() {
-    try {
-      const raw = localStorage.getItem(SAVE_KEY);
-      if (!raw) return false;
-      hydrate(JSON.parse(raw));
-      return true;
-    } catch (_) {
-      return false;
-    }
-  }
 
   function moneyFmt(n) {
     const neg = n < 0;
@@ -196,349 +291,432 @@
     msg.className = "msg";
     msg.textContent = text;
     el.appendChild(msg);
-    setTimeout(() => msg.remove(), 4200);
+    setTimeout(() => msg.remove(), 4500);
   }
 
-  function floorCost() {
-    return FLOOR_COST_BASE + state.floors * 4000;
+  function chunkKeys(x, y, w, h) {
+    const x0 = Math.floor(x / CHUNK);
+    const y0 = Math.floor(y / CHUNK);
+    const x1 = Math.floor((x + w - 1) / CHUNK);
+    const y1 = Math.floor((y + h - 1) / CHUNK);
+    const out = [];
+    for (let cy = y0; cy <= y1; cy++) for (let cx = x0; cx <= x1; cx++) out.push(cx + ":" + cy);
+    return out;
   }
 
-  function canBuild(id, floor, x, y) {
-    const t = T[id];
-    if (!inMap(x, y)) return false;
-    const cur = tileAt(floor, x, y);
-    if (cur.blocked && t.key !== "pier") return false;
-    if (floor > 0 && t.outdoor) return false;
-    if (floor > 0 && (t.key === "grass" || t.key === "sand" || t.key === "ocean")) return false;
-    return true;
-  }
-
-  function placeOne(floor, x, y, id, bill) {
-    if (!canBuild(id, floor, x, y)) return false;
-    const i = idx(x, y);
-    const prev = state.grids[floor][i];
-    if (prev === id) return false;
-    const t = T[id];
-    if (t.cost > 0) {
-      if (state.money < t.cost) return false;
-      state.money -= t.cost;
-      bill.spent += t.cost;
+  function addToChunks(b) {
+    for (const k of chunkKeys(b.x, b.y, b.w, b.h)) {
+      const key = b.floor + ":" + k;
+      let arr = state.chunks.get(key);
+      if (!arr) {
+        arr = [];
+        state.chunks.set(key, arr);
+      }
+      arr.push(b);
     }
-    bill.changes.push({ f: floor, i, prev, occ: state.occ[floor][i] });
-    state.grids[floor][i] = id;
-    state.occ[floor][i] = 0;
-    if (t.shaft && floor === 0) {
-      for (let f = 1; f < state.floors; f++) {
-        const p2 = state.grids[f][i];
-        bill.changes.push({ f, i, prev: p2, occ: state.occ[f][i] });
-        state.grids[f][i] = id;
-        state.occ[f][i] = 0;
+  }
+
+  function removeFromChunks(b) {
+    for (const k of chunkKeys(b.x, b.y, b.w, b.h)) {
+      const key = b.floor + ":" + k;
+      const arr = state.chunks.get(key);
+      if (!arr) continue;
+      const i = arr.indexOf(b);
+      if (i >= 0) arr.splice(i, 1);
+    }
+  }
+
+  function overlaps(b, x, y, w, h) {
+    return b.x < x + w && x < b.x + b.w && b.y < y + h && y < b.y + b.h;
+  }
+
+  function queryRect(floor, x, y, w, h) {
+    const seen = new Set();
+    const out = [];
+    for (const k of chunkKeys(x, y, w, h)) {
+      const arr = state.chunks.get(floor + ":" + k);
+      if (!arr) continue;
+      for (const b of arr) {
+        if (seen.has(b.id) || !overlaps(b, x, y, w, h)) continue;
+        seen.add(b.id);
+        out.push(b);
       }
     }
-    bill.n++;
+    return out;
+  }
+
+  function oceanY() {
+    return state.mapH - 10;
+  }
+
+  function sandY() {
+    return state.mapH - 18;
+  }
+
+  function terrainAt(x, y) {
+    if (y >= oceanY()) return "ocean";
+    if (y >= sandY()) return "sand";
+    return "grass";
+  }
+
+  function seaView(b) {
+    return b.y + b.h >= sandY() - 2;
+  }
+
+  function hitsOcean(x, y, w, h) {
+    return y + h - 1 >= oceanY();
+  }
+
+  function inMap(x, y, w, h) {
+    return x >= 0 && y >= 0 && x + w <= state.mapW && y + h <= state.mapH;
+  }
+
+  function canPlace(type, floor, x, y, w, h) {
+    const t = T[type];
+    if (!t || !inMap(x, y, w, h)) return false;
+    if (w < t.minW || h < t.minH || w > t.maxW || h > t.maxH) return false;
+    if (floor > 0 && t.outdoor && !t.shaft) return false;
+    if (hitsOcean(x, y, w, h) && !t.pier) return false;
+    if (queryRect(floor, x, y, w, h).length) return false;
     return true;
   }
 
-  function eraseOne(floor, x, y, bill) {
-    if (!inMap(x, y)) return;
-    const i = idx(x, y);
-    const prev = state.grids[floor][i];
-    const t = T[prev];
-    if (t.blocked) return;
-    if (floor === 0 && (t.key === "grass" || t.key === "sand")) return;
-    const restore = floor === 0 ? (y > H - 14 && y <= H - 8 ? 1 : 0) : 26;
-    if (prev === restore) return;
-    bill.changes.push({ f: floor, i, prev, occ: state.occ[floor][i] });
-    state.grids[floor][i] = restore;
-    state.occ[floor][i] = 0;
-    bill.n++;
+  function costOf(type, w, h) {
+    const t = T[type];
+    return Math.round(t.base + t.tile * w * h);
   }
 
-  function pushUndo(bill) {
-    if (!bill.changes.length) return;
-    state.undo.push(bill);
-    if (state.undo.length > 25) state.undo.shift();
+  function rateOf(b) {
+    const t = T[b.type];
+    if (!t.room) return 0;
+    let r = t.rate + t.rt * b.w * b.h;
+    if (seaView(b)) r *= 1.22;
+    if (b.zone === 1) r *= 1.05;
+    if (b.zone === 2) r *= 1.08;
+    if (b.zone === 3) r *= 1.18;
+    if (b.zone === 4) r *= 1.42;
+    if (b.zone === 5) r *= 1.12;
+    return Math.round(r);
+  }
+
+  function nextNum(floor) {
+    state.numSeq[floor] = (state.numSeq[floor] || 0) + 1;
+    const n = state.numSeq[floor];
+    if (floor === 0) return "J-" + String(n).padStart(3, "0");
+    return String(floor * 100 + n);
+  }
+
+  function insertB(raw) {
+    const t = T[raw.type];
+    const b = {
+      id: state.nextId++,
+      type: raw.type,
+      floor: raw.floor,
+      x: raw.x,
+      y: raw.y,
+      w: raw.w,
+      h: raw.h,
+      zone: raw.zone || 0,
+      occ: 0,
+      num: t.room ? raw.num || nextNum(raw.floor) : "",
+    };
+    state.buildings.push(b);
+    if (t.room) state.rooms.push(b);
+    addToChunks(b);
+    if (t.shaft && raw.floor === 0) {
+      for (let f = 1; f < state.floors; f++) {
+        if (canPlace(raw.type, f, raw.x, raw.y, raw.w, raw.h)) {
+          insertB({ type: raw.type, floor: f, x: raw.x, y: raw.y, w: raw.w, h: raw.h, zone: 0 });
+        }
+      }
+    }
+    state.miniDirty = true;
+    return b;
+  }
+
+  function removeB(b) {
+    removeFromChunks(b);
+    const i = state.buildings.indexOf(b);
+    if (i >= 0) state.buildings.splice(i, 1);
+    const r = state.rooms.indexOf(b);
+    if (r >= 0) {
+      if (b.occ) {
+        state.occupied--;
+        state.incomeSum -= rateOf(b);
+      }
+      state.rooms.splice(r, 1);
+    }
+    state.miniDirty = true;
+  }
+
+  function recount() {
+    let lobby = 0;
+    let elev = 0;
+    let score = 0;
+    const types = new Set();
+    for (const b of state.buildings) {
+      const t = T[b.type];
+      if (t.key === "lobby") lobby++;
+      if (t.key === "elevator") elev++;
+      if (t.amenity) {
+        score += t.amenity;
+        types.add(t.key);
+      }
+    }
+    state.lobby = lobby;
+    state.elev = elev;
+    state.amenityScore = score;
+    state.amenityTypes = types.size;
+    let stars = 1;
+    const rooms = state.rooms.length;
+    if (lobby && rooms >= 8) stars = 1;
+    if (lobby && rooms >= 25 && types.size >= 3) stars = 2;
+    if (lobby && rooms >= 80 && types.size >= 6) stars = 3;
+    if (lobby && rooms >= 250 && types.size >= 10) stars = 4;
+    if (lobby && rooms >= 800 && types.size >= 14 && elev) stars = 5;
+    state.stars = stars;
+  }
+
+  function occupancyTarget() {
+    if (!state.lobby) return 0;
+    let d = 0.36 + state.stars * 0.1 + state.amenityTypes * 0.015 + state.reputation / 500;
+    return Math.max(0.25, Math.min(0.97, d));
+  }
+
+  function clampSize(t) {
+    state.pieceW = Math.max(t.minW, Math.min(t.maxW, state.pieceW));
+    state.pieceH = Math.max(t.minH, Math.min(t.maxH, state.pieceH));
+  }
+
+  function rect(a, b) {
+    const x0 = Math.max(0, Math.min(a.x, b.x));
+    const y0 = Math.max(0, Math.min(a.y, b.y));
+    const x1 = Math.min(state.mapW - 1, Math.max(a.x, b.x));
+    const y1 = Math.min(state.mapH - 1, Math.max(a.y, b.y));
+    return { x0, y0, x1, y1, w: x1 - x0 + 1, h: y1 - y0 + 1 };
+  }
+
+  function planPiece(R) {
+    const t = T[state.brush];
+    let w = Math.max(t.minW, Math.min(t.maxW, R.w));
+    let h = Math.max(t.minH, Math.min(t.maxH, R.h));
+    let x = R.x0;
+    let y = R.y0;
+    if (x + w > state.mapW) x = state.mapW - w;
+    if (y + h > state.mapH) y = state.mapH - h;
+    return [{ type: t.id, x, y, w, h, floor: state.floor, zone: 0 }];
+  }
+
+  function planFill(R, withHall) {
+    const t = T[state.brush];
+    clampSize(t);
+    const rw = state.pieceW;
+    const rh = state.pieceH;
+    const gap = withHall ? 1 : 0;
+    const pathId = state.floor === 0 ? BY_KEY.paseo.id : BY_KEY.pasillo.id;
+    const items = [];
+    for (let y = R.y0; y + rh - 1 <= R.y1; y += rh + gap) {
+      if (withHall && y > R.y0) {
+        items.push({ type: pathId, x: R.x0, y: y - gap, w: R.w, h: 1, floor: state.floor, zone: 0 });
+      }
+      for (let x = R.x0; x + rw - 1 <= R.x1; x += rw) {
+        items.push({ type: t.id, x, y, w: rw, h: rh, floor: state.floor, zone: 0 });
+      }
+    }
+    return items;
+  }
+
+  function planWing(R) {
+    const t = T[state.brush].room ? T[state.brush] : BY_KEY.doble;
+    clampSize(t);
+    const rw = state.pieceW;
+    const rh = state.pieceH;
+    const pathId = state.floor === 0 ? BY_KEY.paseo.id : BY_KEY.pasillo.id;
+    const items = [];
+    const wide = R.w >= R.h;
+    if (wide) {
+      const mid = (R.y0 + R.y1) >> 1;
+      items.push({ type: pathId, x: R.x0, y: mid, w: R.w, h: 1, floor: state.floor, zone: 0 });
+      for (let y = mid - rh; y >= R.y0; y -= rh) {
+        for (let x = R.x0; x + rw - 1 <= R.x1; x += rw) items.push({ type: t.id, x, y, w: rw, h: rh, floor: state.floor, zone: 0 });
+      }
+      for (let y = mid + 1; y + rh - 1 <= R.y1; y += rh) {
+        for (let x = R.x0; x + rw - 1 <= R.x1; x += rw) items.push({ type: t.id, x, y, w: rw, h: rh, floor: state.floor, zone: 0 });
+      }
+    } else {
+      const mid = (R.x0 + R.x1) >> 1;
+      items.push({ type: pathId, x: mid, y: R.y0, w: 1, h: R.h, floor: state.floor, zone: 0 });
+      for (let x = mid - rw; x >= R.x0; x -= rw) {
+        for (let y = R.y0; y + rh - 1 <= R.y1; y += rh) items.push({ type: t.id, x, y, w: rw, h: rh, floor: state.floor, zone: 0 });
+      }
+      for (let x = mid + 1; x + rw - 1 <= R.x1; x += rw) {
+        for (let y = R.y0; y + rh - 1 <= R.y1; y += rh) items.push({ type: t.id, x, y, w: rw, h: rh, floor: state.floor, zone: 0 });
+      }
+    }
+    return items;
+  }
+
+  function summarize(items) {
+    let cost = 0;
+    let n = 0;
+    let rooms = 0;
+    let day = 0;
+    let ok = 0;
+    const valid = [];
+    for (const it of items) {
+      if (!canPlace(it.type, it.floor, it.x, it.y, it.w, it.h)) continue;
+      const c = costOf(it.type, it.w, it.h);
+      cost += c;
+      ok++;
+      valid.push(it);
+      if (T[it.type].room) {
+        rooms++;
+        day += rateOf(it);
+      }
+      n++;
+    }
+    return { cost, n, rooms, day, valid };
+  }
+
+  function applyItems(items) {
+    const bill = { added: [], money: 0 };
+    let spent = 0;
+    for (const it of items) {
+      if (!canPlace(it.type, it.floor, it.x, it.y, it.w, it.h)) continue;
+      const c = costOf(it.type, it.w, it.h);
+      if (state.money < c) break;
+      state.money -= c;
+      spent += c;
+      bill.added.push(insertB(it));
+    }
+    bill.money = spent;
+    if (bill.added.length) {
+      state.undo.push(bill);
+      if (state.undo.length > 20) state.undo.shift();
+    }
+    recount();
+    return bill;
   }
 
   function undo() {
     const bill = state.undo.pop();
     if (!bill) return;
-    state.money += bill.spent || 0;
-    for (let k = bill.changes.length - 1; k >= 0; k--) {
-      const c = bill.changes[k];
-      state.grids[c.f][c.i] = c.prev;
-      state.occ[c.f][c.i] = c.occ;
+    if (bill.kind === "erase") {
+      state.money -= bill.money;
+      for (const snap of bill.removed) insertB(snap);
+    } else if (bill.kind === "zone") {
+      for (const z of bill.prev) {
+        const b = state.buildings.find((x) => x.id === z.id);
+        if (b) b.zone = z.zone;
+      }
+    } else {
+      state.money += bill.money;
+      for (const b of bill.added) removeB(b);
     }
     recount();
     toast("Deshecho");
+    refreshInspector();
   }
 
-  function rectBounds(a, b) {
-    const x0 = Math.max(0, Math.min(a.x, b.x));
-    const y0 = Math.max(0, Math.min(a.y, b.y));
-    const x1 = Math.min(W - 1, Math.max(a.x, b.x));
-    const y1 = Math.min(H - 1, Math.max(a.y, b.y));
-    return { x0, y0, x1, y1 };
-  }
-
-  function applyRect(a, b, mode) {
-    const { x0, y0, x1, y1 } = rectBounds(a, b);
-    const bill = { changes: [], spent: 0, n: 0 };
-    const f = state.floor;
-    if (mode === "erase") {
-      for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) eraseOne(f, x, y, bill);
-    } else if (mode === "wing") {
-      fillWing(f, x0, y0, x1, y1, bill);
-    } else {
-      for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) placeOne(f, x, y, state.brush, bill);
+  function demolish(list) {
+    const bill = { kind: "erase", removed: [], money: 0 };
+    for (const b of list) {
+      const refund = Math.round(costOf(b.type, b.w, b.h) * 0.4);
+      bill.removed.push({ type: b.type, floor: b.floor, x: b.x, y: b.y, w: b.w, h: b.h, zone: b.zone, num: b.num });
+      state.money += refund;
+      bill.money += refund;
+      removeB(b);
     }
-    pushUndo(bill);
+    if (bill.removed.length) {
+      state.undo.push(bill);
+      if (state.undo.length > 20) state.undo.shift();
+    }
     recount();
-    if (bill.n) toast(bill.n + " casillas · " + moneyFmt(bill.spent));
-    else if (bill.spent === 0 && mode !== "erase") toast("No hay dinero suficiente o el terreno no admite eso.");
+    state.sel = [];
+    refreshInspector();
   }
 
-  function fillWing(f, x0, y0, x1, y1, bill) {
-    const w = x1 - x0 + 1;
-    const h = y1 - y0 + 1;
-    if (w < 3 && h < 3) {
-      for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) placeOne(f, x, y, state.brush, bill);
+  function copySel() {
+    if (!state.sel.length) {
+      toast("Selecciona antes un ala o unas habitaciones.");
       return;
     }
-    const hall = f === 0 ? BY_KEY.path.id : BY_KEY.carpet.id;
-    const room = T[state.brush].room ? state.brush : BY_KEY.room_std.id;
-    if (w >= h) {
-      const mid = (y0 + y1) >> 1;
-      for (let y = y0; y <= y1; y++) {
-        for (let x = x0; x <= x1; x++) {
-          const id = y === mid ? hall : room;
-          placeOne(f, x, y, id, bill);
-        }
-      }
-    } else {
-      const mid = (x0 + x1) >> 1;
-      for (let y = y0; y <= y1; y++) {
-        for (let x = x0; x <= x1; x++) {
-          const id = x === mid ? hall : room;
-          placeOne(f, x, y, id, bill);
-        }
-      }
-    }
+    const bs = state.sel;
+    const x0 = Math.min(...bs.map((b) => b.x));
+    const y0 = Math.min(...bs.map((b) => b.y));
+    const x1 = Math.max(...bs.map((b) => b.x + b.w));
+    const y1 = Math.max(...bs.map((b) => b.y + b.h));
+    state.clip = {
+      w: x1 - x0,
+      h: y1 - y0,
+      items: bs.map((b) => ({ type: b.type, dx: b.x - x0, dy: b.y - y0, w: b.w, h: b.h, zone: b.zone })),
+    };
+    toast("Copiado: " + bs.length + " piezas. Cambia de planta y usa Pegar.");
+    state.tool = "paste";
+    syncTools();
   }
 
-  function previewCost(a, b, mode) {
-    const { x0, y0, x1, y1 } = rectBounds(a, b);
-    let n = 0;
-    let cost = 0;
-    const f = state.floor;
-    const hall = f === 0 ? BY_KEY.path.id : BY_KEY.carpet.id;
-    const room = T[state.brush].room ? state.brush : BY_KEY.room_std.id;
-    const w = x1 - x0 + 1;
-    const h = y1 - y0 + 1;
-    for (let y = y0; y <= y1; y++) {
-      for (let x = x0; x <= x1; x++) {
-        let id = state.brush;
-        if (mode === "erase") {
-          n++;
-          continue;
-        }
-        if (mode === "wing") {
-          if (w >= h) id = y === ((y0 + y1) >> 1) ? hall : room;
-          else id = x === ((x0 + x1) >> 1) ? hall : room;
-        }
-        if (!canBuild(id, f, x, y)) continue;
-        if (state.grids[f][idx(x, y)] === id) continue;
-        n++;
-        cost += T[id].cost;
-      }
-    }
-    return { n, cost, x0, y0, x1, y1 };
+  function planPaste(x, y) {
+    if (!state.clip) return [];
+    return state.clip.items.map((it) => ({
+      type: it.type,
+      x: x + it.dx,
+      y: y + it.dy,
+      w: it.w,
+      h: it.h,
+      floor: state.floor,
+      zone: it.zone,
+    }));
   }
 
-  function recount() {
-    let rooms = 0;
-    let occupied = 0;
-    let capacity = 0;
-    let amenityScore = 0;
-    let lobby = 0;
-    let elev = 0;
-    let suites = 0;
-    let pres = 0;
-    const amenityTypes = new Set();
-    for (let f = 0; f < state.floors; f++) {
-      const g = state.grids[f];
-      const o = state.occ[f];
-      for (let i = 0; i < g.length; i++) {
-        const t = T[g[i]];
-        if (t.room) {
-          rooms++;
-          capacity++;
-          if (o[i]) occupied++;
-          if (t.key === "room_suite") suites++;
-          if (t.key === "room_pres") pres++;
-        }
-        if (t.amenity) {
-          amenityScore += t.amenity;
-          amenityTypes.add(t.key);
-        }
-        if (t.key === "lobby") lobby++;
-        if (t.key === "elevator") elev++;
-      }
-    }
-    state.stats = { rooms, occupied, capacity, amenityScore, lobby, elev, suites, pres, amenityTypes: amenityTypes.size };
-    let stars = 1;
-    if (lobby && rooms >= 8) stars = 1;
-    if (lobby && rooms >= 25 && amenityTypes.size >= 2) stars = 2;
-    if (lobby && rooms >= 80 && amenityTypes.size >= 4) stars = 3;
-    if (lobby && rooms >= 200 && amenityTypes.size >= 6 && suites >= 12) stars = 4;
-    if (lobby && rooms >= 500 && amenityTypes.size >= 8 && pres >= 8 && elev) stars = 5;
-    if (!lobby) stars = Math.min(stars, 1);
-    state.stars = stars;
-  }
-
-  function hasVerticalAccess() {
-    return state.stats.elev > 0;
-  }
-
-  function occupancyTarget() {
-    const s = state.stats;
-    if (!s.lobby) return 0;
-    let demand = 0.38 + state.stars * 0.1 + s.amenityTypes * 0.03 + state.reputation / 500;
-    if (s.rooms > 0 && s.amenityScore / Math.max(1, s.rooms) < 0.02 && s.rooms > 40) demand *= 0.8;
-    return Math.max(0.28, Math.min(0.97, demand));
-  }
-
-  function sim(dt) {
-    const k = state.keys;
-    const pan = 14 * dt / Math.max(0.25, state.camera.z);
-    if (k.has("KeyW") || k.has("ArrowUp")) state.camera.y -= pan;
-    if (k.has("KeyS") || k.has("ArrowDown")) state.camera.y += pan;
-    if (k.has("KeyA") || k.has("ArrowLeft")) state.camera.x -= pan;
-    if (k.has("KeyD") || k.has("ArrowRight")) state.camera.x += pan;
-    if (state.speed === 0) return;
-    state.simAcc += dt * state.speed;
-    const step = 0.25;
-    while (state.simAcc >= step) {
-      state.simAcc -= step;
-      tick(step);
-    }
-  }
-
-  function tick() {
-    state.minute += 3;
-    if (state.minute >= 24 * 60) {
-      state.minute -= 24 * 60;
-      state.day++;
-      endOfDay();
-    }
-    const hour = (state.minute / 60) | 0;
-    const target = occupancyTarget();
-    const s = state.stats;
-    if (!s.capacity) return;
-    const want = Math.floor(s.capacity * target);
-    if (s.occupied < want) {
-      const burst = hour >= 13 && hour <= 22 ? 28 : 10;
-      fillRooms(Math.min(burst + ((s.capacity / 40) | 0), want - s.occupied), true);
-    } else if (s.occupied > want) {
-      fillRooms(Math.min(10, s.occupied - want), false);
-    }
-    spawnWalkers();
-  }
-
-  function fillRooms(n, occupy) {
-    let left = n;
-    const startF = hasVerticalAccess() ? 0 : 0;
-    const maxF = hasVerticalAccess() ? state.floors : 1;
-    for (let f = startF; f < maxF && left > 0; f++) {
-      const g = state.grids[f];
-      const o = state.occ[f];
-      for (let i = 0; i < g.length && left > 0; i++) {
-        if (!T[g[i]].room) continue;
-        if (occupy && !o[i]) {
-          o[i] = 1;
-          left--;
-          state.stats.occupied++;
-        } else if (!occupy && o[i]) {
-          o[i] = 0;
-          left--;
-          state.stats.occupied--;
-        }
-      }
-    }
-  }
-
-  function endOfDay() {
-    const g = state.grids;
-    let income = 0;
-    for (let f = 0; f < state.floors; f++) {
-      const grid = g[f];
-      const o = state.occ[f];
-      for (let i = 0; i < grid.length; i++) {
-        const t = T[grid[i]];
-        if (t.room && o[i]) income += t.rate;
-      }
-    }
-    income = Math.round(income * (0.85 + state.stars * 0.06));
-    const staff = Math.round(state.stats.rooms * 9 + state.stats.amenityScore * 4 + state.floors * 40);
-    const net = income - staff;
-    state.money += net;
-    state.lastIncome = net;
-    if (net > 0) state.reputation = Math.min(100, state.reputation + 0.4);
-    else state.reputation = Math.max(10, state.reputation - 0.8);
+  function paintZone(list, zone) {
+    const bill = { kind: "zone", prev: list.map((b) => ({ id: b.id, zone: b.zone })) };
+    for (const b of list) b.zone = zone;
+    state.undo.push(bill);
     recount();
-    const sign = net >= 0 ? "+" : "";
-    toast("Cierre del día " + state.day + ": " + sign + moneyFmt(net) + " (ingresos " + moneyFmt(income) + " − personal " + moneyFmt(staff) + ")");
-    if (state.day % 2 === 0) save();
-    maybeEvent();
+    toast("Zona " + ZONES[zone].name + " · " + list.length + " piezas");
   }
 
-  function maybeEvent() {
-    const r = Math.random();
-    if (r < 0.08 && state.stats.rooms > 20) {
-      const bonus = 2000 + state.stars * 1500;
-      state.money += bonus;
-      toast("Un grupo de bodas reserva el resort: +" + moneyFmt(bonus));
-    } else if (r < 0.12) {
-      const loss = 800 + ((Math.random() * 1200) | 0);
-      state.money -= loss;
-      toast("Tormenta tropical: reparaciones −" + moneyFmt(loss));
-    } else if (r < 0.16 && state.stars >= 3) {
-      toast("Una revista de viajes destaca Costa Aurora. Sube la demanda.");
-      state.reputation = Math.min(100, state.reputation + 6);
+  function expandMap(dir, amt) {
+    const addW = dir === "e" || dir === "w" ? amt : 0;
+    const addH = dir === "n" || dir === "s" ? amt : 0;
+    if (state.mapW + addW > MAX_W || state.mapH + addH > MAX_H) {
+      toast("El mapa ya es enorme (máximo " + MAX_W + " × " + MAX_H + ").");
+      return;
     }
-  }
-
-  function spawnWalkers() {
-    const need = Math.min(70, 8 + (state.stats.occupied / 40) | 0);
-    while (state.guests.length < need) {
-      state.guests.push({
-        x: 20 + Math.random() * (W - 40),
-        y: 20 + Math.random() * (H - 30),
-        vx: (Math.random() - 0.5) * 1.5,
-        vy: (Math.random() - 0.5) * 1.5,
-        hue: (Math.random() * 360) | 0,
-        floor: Math.random() < 0.7 ? state.floor : ((Math.random() * state.floors) | 0),
-      });
+    const area = dir === "e" || dir === "w" ? amt * state.mapH : amt * state.mapW;
+    const cost = 6000 + area * 2;
+    if (state.money < cost) {
+      toast("Necesitas " + moneyFmt(cost) + " para ampliar.");
+      return;
     }
-    if (state.guests.length > need) state.guests.length = need;
-    for (const g of state.guests) {
-      g.x += g.vx * 0.15;
-      g.y += g.vy * 0.15;
-      if (g.x < 2 || g.x > W - 3) g.vx *= -1;
-      if (g.y < 2 || g.y > H - 10) g.vy *= -1;
-    }
+    state.money -= cost;
+    if (dir === "w") {
+      for (const b of state.buildings) b.x += amt;
+      state.chunks = new Map();
+      for (const b of state.buildings) addToChunks(b);
+      state.camera.x += amt;
+      state.mapW += amt;
+    } else if (dir === "e") state.mapW += amt;
+    else if (dir === "n") {
+      for (const b of state.buildings) b.y += amt;
+      state.chunks = new Map();
+      for (const b of state.buildings) addToChunks(b);
+      state.camera.y += amt;
+      state.mapH += amt;
+    } else state.mapH += amt;
+    state.miniDirty = true;
+    toast("Solar " + state.mapW + " × " + state.mapH + " · " + moneyFmt(cost));
+    document.getElementById("expand").hidden = true;
   }
 
   function cellSize() {
-    return 22 * state.camera.z;
+    return 18 * state.camera.z;
   }
 
   function worldToScreen(x, y) {
     const s = cellSize();
-    return {
-      x: (x - state.camera.x) * s + canvas.width / 2,
-      y: (y - state.camera.y) * s + canvas.height / 2,
-    };
+    return { x: (x - state.camera.x) * s + canvas.width / 2, y: (y - state.camera.y) * s + canvas.height / 2 };
   }
 
   function screenToWorld(px, py) {
@@ -549,94 +727,129 @@
     };
   }
 
-  function resize() {
-    canvas.width = innerWidth;
-    canvas.height = innerHeight;
+  function previewItems() {
+    if (!state.drag || state.drag.painting === false && !state.drag.start) return [];
+    if (state.tool === "paste" && state.clip && state.drag) return planPaste(state.drag.cur.x, state.drag.cur.y);
+    if (!state.drag || !state.drag.start) return [];
+    const R = rect(state.drag.start, state.drag.cur);
+    if (state.tool === "piece") return planPiece(R);
+    if (state.tool === "fill") return planFill(R, true);
+    if (state.tool === "wing") return planWing(R);
+    return [];
   }
 
   function draw() {
-    const s = cellSize();
     const w = canvas.width;
     const h = canvas.height;
+    const s = cellSize();
     const hour = (state.minute / 60) % 24;
     const night = hour < 6 || hour >= 21;
-    ctx.fillStyle = night ? "#061018" : "#12384a";
+    ctx.fillStyle = state.floor === 0 ? (night ? "#061018" : "#12384a") : "#121820";
     ctx.fillRect(0, 0, w, h);
 
-    const topLeft = screenToWorld(0, 0);
-    const botRight = screenToWorld(w, h);
-    const x0 = Math.max(0, topLeft.x - 1);
-    const y0 = Math.max(0, topLeft.y - 1);
-    const x1 = Math.min(W - 1, botRight.x + 1);
-    const y1 = Math.min(H - 1, botRight.y + 1);
-    const f = state.floor;
-    const g = state.grids[f];
-    const o = state.occ[f];
-    const showIcon = s >= 16;
-    const show3d = s >= 10;
+    const tl = screenToWorld(0, 0);
+    const br = screenToWorld(w, h);
+    const x0 = Math.max(0, tl.x - 1);
+    const y0 = Math.max(0, tl.y - 1);
+    const x1 = Math.min(state.mapW - 1, br.x + 1);
+    const y1 = Math.min(state.mapH - 1, br.y + 1);
 
-    for (let y = y0; y <= y1; y++) {
-      for (let x = x0; x <= x1; x++) {
-        const t = T[g[idx(x, y)]];
-        const p = worldToScreen(x, y);
-        ctx.fillStyle = ((x + y) & 1) === 0 ? t.color : t.color2;
-        ctx.fillRect(p.x, p.y, s + 0.6, s + 0.6);
-        if (show3d) {
-          ctx.fillStyle = "rgba(255,255,255,0.12)";
-          ctx.fillRect(p.x, p.y, s, Math.max(1, s * 0.12));
-        }
-        if (t.room && o[idx(x, y)]) {
-          ctx.fillStyle = "rgba(255,255,255,0.22)";
-          ctx.fillRect(p.x + s * 0.2, p.y + s * 0.2, s * 0.25, s * 0.25);
-        }
-        if (showIcon && t.room) {
-          ctx.fillStyle = "rgba(0,0,0,0.18)";
-          ctx.fillRect(p.x + s * 0.25, p.y + s * 0.45, s * 0.5, s * 0.28);
-        }
-        if (t.key === "pool") {
-          ctx.fillStyle = "rgba(255,255,255,0.18)";
-          ctx.fillRect(p.x + s * 0.15, p.y + s * 0.2, s * 0.7, s * 0.18);
-        }
-        if (t.key === "palm" && showIcon) {
-          ctx.fillStyle = "#1a4a24";
-          ctx.beginPath();
-          ctx.arc(p.x + s * 0.5, p.y + s * 0.4, s * 0.28, 0, 6.3);
-          ctx.fill();
-        }
-        if (t.key === "lobby") {
-          ctx.fillStyle = "#fff3c4";
-          ctx.fillRect(p.x + s * 0.35, p.y + s * 0.2, s * 0.3, s * 0.6);
-        }
+    if (state.floor === 0) {
+      for (let y = y0; y <= y1; y++) {
+        const terr = terrainAt(0, y);
+        ctx.fillStyle = terr === "ocean" ? ((y & 1) ? "#1b7fa8" : "#125e80") : terr === "sand" ? ((y & 1) ? "#e6d09a" : "#cbb37a") : ((y & 1) ? "#3f8f4e" : "#2f6e3c");
+        const p = worldToScreen(x0, y);
+        ctx.fillRect(p.x, p.y, (x1 - x0 + 1) * s + 1, s + 0.7);
+      }
+    } else {
+      ctx.fillStyle = "#1a222c";
+      const p = worldToScreen(x0, y0);
+      ctx.fillRect(p.x, p.y, (x1 - x0 + 1) * s + 1, (y1 - y0 + 1) * s + 1);
+    }
+
+    const vis = queryRect(state.floor, x0, y0, x1 - x0 + 1, y1 - y0 + 1);
+    const showNum = s >= 12;
+    const selIds = new Set(state.sel.map((b) => b.id));
+    for (const b of vis) {
+      const t = T[b.type];
+      const p = worldToScreen(b.x, b.y);
+      ctx.fillStyle = t.color;
+      ctx.fillRect(p.x, p.y, b.w * s - 0.6, b.h * s - 0.6);
+      ctx.fillStyle = "rgba(255,255,255,0.12)";
+      ctx.fillRect(p.x, p.y, b.w * s - 0.6, Math.max(1, s * 0.12));
+      if (b.zone) {
+        ctx.fillStyle = ZONES[b.zone].tint;
+        ctx.fillRect(p.x, p.y, b.w * s - 0.6, b.h * s - 0.6);
+      }
+      if (t.room && b.occ) {
+        ctx.fillStyle = "rgba(255,255,255,0.28)";
+        ctx.fillRect(p.x + 2, p.y + 2, 5, 5);
+      }
+      if (selIds.has(b.id)) {
+        ctx.strokeStyle = "#e0c070";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(p.x, p.y, b.w * s - 0.6, b.h * s - 0.6);
+      }
+      if (showNum && t.room && b.num) {
+        ctx.fillStyle = "#fff";
+        ctx.font = Math.max(8, Math.min(13, s * 0.42)) + "px Segoe UI,sans-serif";
+        ctx.fillText(b.num, p.x + 3, p.y + Math.min(b.h * s - 2, s * 0.55));
       }
     }
 
-    if (state.drag && (state.tool === "rect" || state.tool === "wing" || (state.tool === "erase" && state.drag.moved))) {
-      const pr = previewCost(state.drag.start, state.drag.cur, state.tool === "paint" ? "rect" : state.tool);
-      const a = worldToScreen(pr.x0, pr.y0);
-      const b = worldToScreen(pr.x1 + 1, pr.y1 + 1);
-      ctx.strokeStyle = state.money >= pr.cost ? "#e0c070" : "#ef4444";
-      ctx.lineWidth = 2;
-      ctx.globalAlpha = 0.9;
-      ctx.strokeRect(a.x, a.y, b.x - a.x, b.y - a.y);
-      ctx.fillStyle = state.money >= pr.cost ? "rgba(224,192,112,0.18)" : "rgba(239,68,68,0.18)";
-      ctx.fillRect(a.x, a.y, b.x - a.x, b.y - a.y);
+    let ghost = [];
+    if (state.tool === "paste" && state.clip) {
+      const cur = state.drag ? state.drag.cur : null;
+      if (cur) ghost = planPaste(cur.x, cur.y);
+    } else if (state.drag && state.drag.start && (state.tool === "piece" || state.tool === "fill" || state.tool === "wing")) {
+      ghost = previewItems();
+    }
+    if (ghost.length) {
+      const cap = ghost.length > 800 ? ghost.slice(0, 800) : ghost;
+      ctx.globalAlpha = 0.45;
+      for (const it of cap) {
+        const t = T[it.type];
+        const p = worldToScreen(it.x, it.y);
+        ctx.fillStyle = t.color;
+        ctx.fillRect(p.x, p.y, it.w * s, it.h * s);
+      }
       ctx.globalAlpha = 1;
-      const box = document.getElementById("cost-preview");
+      const sum = summarize(ghost);
+        const box = document.getElementById("cost-preview");
       box.hidden = false;
-      box.textContent = pr.n + " casillas · " + moneyFmt(pr.cost);
-      box.style.left = Math.min(innerWidth - 180, state.drag.px + 16) + "px";
-      box.style.top = state.drag.py + 16 + "px";
+      const lines = [];
+      if (state.tool === "piece" && ghost[0]) {
+        lines.push(T[ghost[0].type].name);
+        lines.push(ghost[0].w + " × " + ghost[0].h + "  ·  " + ghost[0].w * TILE_M + " × " + ghost[0].h * TILE_M + " m  ·  " + ghost[0].w * ghost[0].h * TILE_M * TILE_M + " m²");
+      } else {
+        lines.push(sum.rooms ? sum.rooms + " habitaciones · " + sum.n + " piezas" : sum.n + " piezas");
+        if (ghost[0] && T[state.brush].room) lines.push("Cada una " + state.pieceW + " × " + state.pieceH + "  ·  " + state.pieceW * TILE_M + " × " + state.pieceH * TILE_M + " m");
+      }
+      lines.push("Coste " + moneyFmt(sum.cost));
+      if (sum.day) lines.push("Si se llenan: +" + moneyFmt(sum.day) + "/día");
+      if (state.money < sum.cost) lines.push("No alcanza el dinero");
+      box.textContent = lines.join("\n");
+      if (state.drag) {
+        box.style.left = Math.min(innerWidth - 260, (state.drag.px || 40) + 16) + "px";
+        box.style.top = (state.drag.py || 80) + 16 + "px";
+      }
+    } else if (state.drag && (state.tool === "erase" || state.tool === "select" || state.tool === "zone") && state.drag.start) {
+      const R = rect(state.drag.start, state.drag.cur);
+      const a = worldToScreen(R.x0, R.y0);
+      ctx.strokeStyle = "#e0c070";
+      ctx.strokeRect(a.x, a.y, R.w * s, R.h * s);
+      document.getElementById("cost-preview").hidden = true;
     } else {
       document.getElementById("cost-preview").hidden = true;
     }
 
-    for (const guest of state.guests) {
-      if (guest.floor !== f) continue;
-      const p = worldToScreen(guest.x, guest.y);
-      if (p.x < -10 || p.y < -10 || p.x > w || p.y > h) continue;
-      ctx.fillStyle = "hsl(" + guest.hue + " 70% 70%)";
+    for (const g of state.guests) {
+      if (g.floor !== state.floor) continue;
+      const p = worldToScreen(g.x, g.y);
+      if (p.x < -8 || p.y < -8 || p.x > w || p.y > h) continue;
+      ctx.fillStyle = "hsl(" + g.hue + " 70% 70%)";
       ctx.beginPath();
-      ctx.arc(p.x, p.y, Math.max(2, s * 0.18), 0, 6.3);
+      ctx.arc(p.x, p.y, Math.max(2, s * 0.16), 0, 6.3);
       ctx.fill();
     }
 
@@ -644,43 +857,39 @@
       ctx.fillStyle = "rgba(4,10,24,0.28)";
       ctx.fillRect(0, 0, w, h);
     }
-
-    drawMinimap();
+    if (state.miniDirty) drawMinimap();
     drawHud();
   }
 
   function drawMinimap() {
-    const f = state.floor;
-    const g = state.grids[f];
-    const img = mctx.createImageData(200, 124);
-    const d = img.data;
-    for (let py = 0; py < 124; py++) {
-      for (let px = 0; px < 200; px++) {
-        const x = Math.min(W - 1, (px * W / 200) | 0);
-        const y = Math.min(H - 1, (py * H / 124) | 0);
-        const c = T[g[idx(x, y)]].color;
-        const r = parseInt(c.slice(1, 3), 16);
-        const gr = parseInt(c.slice(3, 5), 16);
-        const b = parseInt(c.slice(5, 7), 16);
-        const i = (py * 200 + px) * 4;
-        d[i] = r;
-        d[i + 1] = gr;
-        d[i + 2] = b;
-        d[i + 3] = 255;
-      }
+    state.miniDirty = false;
+    const mw = mini.width;
+    const mh = mini.height;
+    mctx.fillStyle = "#0a1824";
+    mctx.fillRect(0, 0, mw, mh);
+    const sx = mw / state.mapW;
+    const sy = mh / state.mapH;
+    if (state.floor === 0) {
+      mctx.fillStyle = "#2f6e3c";
+      mctx.fillRect(0, 0, mw, sandY() * sy);
+      mctx.fillStyle = "#cbb37a";
+      mctx.fillRect(0, sandY() * sy, mw, (oceanY() - sandY()) * sy);
+      mctx.fillStyle = "#125e80";
+      mctx.fillRect(0, oceanY() * sy, mw, mh);
     }
-    mctx.putImageData(img, 0, 0);
+    const n = state.buildings.length;
+    const step = n > 25000 ? Math.ceil(n / 12000) : 1;
+    for (let i = 0; i < n; i += step) {
+      const b = state.buildings[i];
+      if (b.floor !== state.floor) continue;
+      mctx.fillStyle = T[b.type].color;
+      mctx.fillRect(b.x * sx, b.y * sy, Math.max(1, b.w * sx), Math.max(1, b.h * sy));
+    }
     const s = cellSize();
     const vw = canvas.width / s;
     const vh = canvas.height / s;
-    const mx = (state.camera.x - vw / 2) * (200 / W);
-    const my = (state.camera.y - vh / 2) * (124 / H);
     mctx.strokeStyle = "#e0c070";
-    mctx.strokeRect(mx, my, vw * (200 / W), vh * (124 / H));
-  }
-
-  function starString(n) {
-    return "★★★★★".slice(0, n) + "☆☆☆☆☆".slice(0, 5 - n);
+    mctx.strokeRect((state.camera.x - vw / 2) * sx, (state.camera.y - vh / 2) * sy, vw * sx, vh * sy);
   }
 
   function clock() {
@@ -692,43 +901,246 @@
   function drawHud() {
     document.getElementById("ui-money").textContent = moneyFmt(state.money);
     document.getElementById("ui-day").textContent = clock();
-    document.getElementById("ui-guests").textContent = state.stats.occupied + " / " + state.stats.capacity;
-    document.getElementById("ui-rooms").textContent = String(state.stats.rooms);
-    const occ = state.stats.capacity ? Math.round((100 * state.stats.occupied) / state.stats.capacity) : 0;
-    document.getElementById("ui-occ").textContent = occ + "%";
-    if (!state.stats.lobby && state.stats.rooms) {
-      document.getElementById("ui-occ").textContent = "Sin recepción";
-    }
+    document.getElementById("ui-guests").textContent = state.occupied + " / " + state.rooms.length;
+    document.getElementById("ui-rooms").textContent = String(state.rooms.length);
+    const occ = state.rooms.length ? Math.round((100 * state.occupied) / state.rooms.length) : 0;
+    document.getElementById("ui-occ").textContent = !state.lobby && state.rooms.length ? "Sin recepción" : occ + "%";
     document.getElementById("stars").innerHTML =
       "<span>" + "★".repeat(state.stars) + '</span><span style="opacity:.22">' + "★".repeat(5 - state.stars) + "</span>";
     const fl = state.floor === 0 ? "Jardín · Planta 0" : "Planta " + state.floor;
-    document.getElementById("floor-label").textContent = fl + " / " + (state.floors - 1);
+    document.getElementById("floor-label").textContent = fl + " / " + (state.floors - 1) + " · " + state.mapW + "×" + state.mapH;
+    document.getElementById("size-label").textContent = state.pieceW + " × " + state.pieceH;
   }
 
-  function loop(ts) {
-    if (!state.lastTs) state.lastTs = ts;
-    const dt = Math.min(0.05, (ts - state.lastTs) / 1000);
-    state.lastTs = ts;
-    sim(dt);
-    draw();
-    requestAnimationFrame(loop);
+  function fillRooms(n, occupy) {
+    const rooms = state.rooms;
+    if (!rooms.length) return;
+    let i = state.fillCursor % rooms.length;
+    let seen = 0;
+    while (n > 0 && seen < rooms.length) {
+      const b = rooms[i];
+      const elevOk = b.floor === 0 || state.elev;
+      if (occupy && !b.occ && elevOk) {
+        b.occ = 1;
+        state.occupied++;
+        state.incomeSum += rateOf(b);
+        n--;
+      } else if (!occupy && b.occ) {
+        b.occ = 0;
+        state.occupied--;
+        state.incomeSum -= rateOf(b);
+        n--;
+      }
+      i = (i + 1) % rooms.length;
+      seen++;
+    }
+    state.fillCursor = i;
   }
 
-  function renderPalette() {
-    const pal = document.getElementById("palette");
-    pal.innerHTML = "";
-    T.filter((t) => t.cat === state.cat && t.key !== "ocean").forEach((t) => {
-      const b = document.createElement("button");
-      if (t.id === state.brush) b.classList.add("on");
-      b.innerHTML = '<span class="swatch" style="background:' + t.color + '"></span><span class="name">' + t.name + '</span><span class="price">' + (t.cost ? moneyFmt(t.cost) : "—") + "</span>";
-      b.onclick = () => {
-        state.brush = t.id;
-        if (state.tool === "erase") state.tool = "paint";
-        syncTools();
-        renderPalette();
+  function sim(dt) {
+    const k = state.keys;
+    const pan = 22 * dt / Math.max(0.2, state.camera.z);
+    if (k.has("KeyW") || k.has("ArrowUp")) state.camera.y -= pan;
+    if (k.has("KeyS") || k.has("ArrowDown")) state.camera.y += pan;
+    if (k.has("KeyA") || k.has("ArrowLeft")) state.camera.x -= pan;
+    if (k.has("KeyD") || k.has("ArrowRight")) state.camera.x += pan;
+    if (state.speed === 0) return;
+    state.simAcc += dt * state.speed;
+    while (state.simAcc >= 0.25) {
+      state.simAcc -= 0.25;
+      tick();
+    }
+  }
+
+  function tick() {
+    state.minute += 3;
+    if (state.minute >= 24 * 60) {
+      state.minute -= 24 * 60;
+      state.day++;
+      endOfDay();
+    }
+    const cap = state.rooms.length;
+    if (!cap) return;
+    const want = Math.floor(cap * occupancyTarget());
+    if (state.occupied < want) fillRooms(Math.min(40 + ((cap / 80) | 0), want - state.occupied), true);
+    else if (state.occupied > want) fillRooms(Math.min(20, state.occupied - want), false);
+    const need = Math.min(80, 8 + ((state.occupied / 80) | 0));
+    while (state.guests.length < need) {
+      state.guests.push({
+        x: 10 + Math.random() * (state.mapW - 20),
+        y: 10 + Math.random() * (state.mapH - 20),
+        vx: (Math.random() - 0.5) * 1.5,
+        vy: (Math.random() - 0.5) * 1.5,
+        hue: (Math.random() * 360) | 0,
+        floor: state.floor,
+      });
+    }
+    if (state.guests.length > need) state.guests.length = need;
+    for (const g of state.guests) {
+      g.x += g.vx * 0.2;
+      g.y += g.vy * 0.2;
+      if (g.x < 2 || g.x > state.mapW - 3) g.vx *= -1;
+      if (g.y < 2 || g.y > state.mapH - 12) g.vy *= -1;
+    }
+  }
+
+  function endOfDay() {
+    const income = Math.round(state.incomeSum * (0.85 + state.stars * 0.06));
+    const staff = Math.round(state.rooms.length * 8 + state.amenityScore * 6 + state.floors * 50 + (state.buildings.filter((b) => b.zone === 4).length ? state.occupied * 4 : 0));
+    const net = income - staff;
+    state.money += net;
+    if (net > 0) state.reputation = Math.min(100, state.reputation + 0.4);
+    else state.reputation = Math.max(10, state.reputation - 0.8);
+    recount();
+    toast("Cierre del día " + state.day + ": " + (net >= 0 ? "+" : "") + moneyFmt(net) + " (ingresos " + moneyFmt(income) + " − personal " + moneyFmt(staff) + ")");
+    if (state.day % 2 === 0) save();
+  }
+
+  function serialize() {
+    return {
+      v: 2,
+      name: state.name,
+      money: state.money,
+      day: state.day,
+      minute: state.minute,
+      floors: state.floors,
+      floor: state.floor,
+      mapW: state.mapW,
+      mapH: state.mapH,
+      nextId: state.nextId,
+      numSeq: state.numSeq,
+      reputation: state.reputation,
+      camera: state.camera,
+      b: state.buildings.map((b) => [b.type, b.floor, b.x, b.y, b.w, b.h, b.num || "", b.zone || 0, b.occ || 0]),
+    };
+  }
+
+  function hydrate(data) {
+    state.name = data.name || "Costa Aurora";
+    state.money = data.money;
+    state.day = data.day;
+    state.minute = data.minute;
+    state.floors = data.floors;
+    state.floor = data.floor || 0;
+    state.mapW = data.mapW || 720;
+    state.mapH = data.mapH || 440;
+    state.nextId = data.nextId || 1;
+    state.numSeq = data.numSeq || [];
+    state.reputation = data.reputation ?? 55;
+    state.camera = data.camera || state.camera;
+    state.buildings = [];
+    state.rooms = [];
+    state.chunks = new Map();
+    state.occupied = 0;
+    state.incomeSum = 0;
+    state.guests = [];
+    state.undo = [];
+    state.sel = [];
+    for (const row of data.b || []) {
+      const b = {
+        id: state.nextId++,
+        type: row[0],
+        floor: row[1],
+        x: row[2],
+        y: row[3],
+        w: row[4],
+        h: row[5],
+        num: row[6] || "",
+        zone: row[7] || 0,
+        occ: row[8] || 0,
       };
-      pal.appendChild(b);
-    });
+      state.buildings.push(b);
+      if (T[b.type] && T[b.type].room) {
+        state.rooms.push(b);
+        if (b.occ) {
+          state.occupied++;
+          state.incomeSum += rateOf(b);
+        }
+      }
+      addToChunks(b);
+    }
+    document.getElementById("resort-name").value = state.name;
+    recount();
+    state.miniDirty = true;
+  }
+
+  function save() {
+    try {
+      const json = JSON.stringify(serialize());
+      if (json.length > 4000000) {
+        toast("La partida es enorme: usa Descargar (⬇) para no perderla.");
+        return;
+      }
+      localStorage.setItem(SAVE_KEY, json);
+    } catch (_) {
+      toast("No cupo en el navegador. Descarga la partida con ⬇.");
+    }
+  }
+
+  function load() {
+    try {
+      const raw = localStorage.getItem(SAVE_KEY);
+      if (!raw) return false;
+      const data = JSON.parse(raw);
+      if (data.v !== 2) return false;
+      hydrate(data);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function newGame() {
+    state.name = "Costa Aurora";
+    state.money = START_MONEY;
+    state.day = 1;
+    state.minute = 8 * 60;
+    state.speed = 1;
+    state.floors = 1;
+    state.floor = 0;
+    state.mapW = 720;
+    state.mapH = 440;
+    state.buildings = [];
+    state.rooms = [];
+    state.chunks = new Map();
+    state.nextId = 1;
+    state.numSeq = [];
+    state.occupied = 0;
+    state.incomeSum = 0;
+    state.camera = { x: 140, y: 200, z: 0.65 };
+    state.guests = [];
+    state.undo = [];
+    state.sel = [];
+    state.clip = null;
+    state.brush = BY_KEY.doble.id;
+    state.pieceW = 3;
+    state.pieceH = 2;
+    document.getElementById("resort-name").value = state.name;
+    recount();
+    save();
+  }
+
+  function addFloor() {
+    if (state.floors >= MAX_FLOORS) {
+      toast("Máximo " + MAX_FLOORS + " plantas.");
+      return;
+    }
+    const c = 14000 + state.floors * 3500;
+    if (state.money < c) {
+      toast("Necesitas " + moneyFmt(c) + ".");
+      return;
+    }
+    state.money -= c;
+    const f = state.floors;
+    state.floors++;
+    for (const b of state.buildings.slice()) {
+      if (b.floor === 0 && T[b.type].shaft) {
+        insertB({ type: b.type, floor: f, x: b.x, y: b.y, w: b.w, h: b.h, zone: 0 });
+      }
+    }
+    state.floor = f;
+    recount();
+    toast("Planta " + f + " lista. Pega un ala copiada o construye.");
   }
 
   function renderCats() {
@@ -741,45 +1153,83 @@
       b.onclick = () => {
         state.cat = c.id;
         renderCats();
+        renderSubs();
         renderPalette();
       };
       el.appendChild(b);
     });
   }
 
+  function renderSubs() {
+    const el = document.getElementById("subcats");
+    el.innerHTML = "";
+    if (state.cat !== "hab") return;
+    SUBS.forEach((c) => {
+      const b = document.createElement("button");
+      b.textContent = c.name;
+      if (c.id === state.sub) b.classList.add("on");
+      b.onclick = () => {
+        state.sub = c.id;
+        renderSubs();
+        renderPalette();
+      };
+      el.appendChild(b);
+    });
+  }
+
+  function renderPalette() {
+    const pal = document.getElementById("palette");
+    pal.innerHTML = "";
+    const q = state.search.toLowerCase();
+    T.filter((t) => {
+      if (t.cat !== state.cat) return false;
+      if (state.cat === "hab" && state.sub !== "all" && t.sub !== state.sub) return false;
+      if (q && t.name.toLowerCase().indexOf(q) < 0) return false;
+      return true;
+    }).forEach((t) => {
+      const b = document.createElement("button");
+      if (t.id === state.brush) b.classList.add("on");
+      b.innerHTML = '<span class="swatch" style="background:' + t.color + '"></span><span class="name">' + t.name + '</span><span class="price">' + moneyFmt(costOf(t.id, t.minW, t.minH)) + "</span>";
+      b.onclick = () => {
+        state.brush = t.id;
+        clampSize(t);
+        if (state.tool === "erase" || state.tool === "pan") state.tool = "piece";
+        syncTools();
+        renderPalette();
+        drawHud();
+      };
+      pal.appendChild(b);
+    });
+  }
+
   function syncTools() {
-    document.querySelectorAll(".tool").forEach((b) => {
-      b.classList.toggle("on", b.dataset.tool === state.tool);
-    });
-    document.querySelectorAll(".speed button").forEach((b) => {
-      b.classList.toggle("on", Number(b.dataset.speed) === state.speed);
-    });
+    document.querySelectorAll(".tool").forEach((b) => b.classList.toggle("on", b.dataset.tool === state.tool));
+    document.querySelectorAll(".speed button").forEach((b) => b.classList.toggle("on", Number(b.dataset.speed) === state.speed));
+    document.querySelectorAll("#zone-bar button").forEach((b) => b.classList.toggle("on", Number(b.dataset.zone) === state.zone));
     if (!state.panning) canvas.style.cursor = state.tool === "pan" ? "grab" : "crosshair";
   }
 
-  function addFloor() {
-    if (state.floors >= MAX_FLOORS) {
-      toast("Has llegado al máximo de " + MAX_FLOORS + " plantas.");
+  function hitBuilding(cell) {
+    const list = queryRect(state.floor, cell.x, cell.y, 1, 1);
+    return list[0] || null;
+  }
+
+  function refreshInspector() {
+    const box = document.getElementById("inspector");
+    if (!state.sel.length) {
+      box.hidden = true;
       return;
     }
-    const c = floorCost();
-    if (state.money < c) {
-      toast("Necesitas " + moneyFmt(c) + " para una planta nueva.");
-      return;
-    }
-    state.money -= c;
-    const nf = makeFloor("sky");
-    for (let i = 0; i < nf.length; i++) {
-      const t = T[state.grids[0][i]];
-      if (t.shaft) nf[i] = t.id;
-    }
-    state.grids.push(nf);
-    state.occ.push(new Uint8Array(W * H));
-    state.floors++;
-    state.floor = state.floors - 1;
-    recount();
-    toast("Nueva planta " + (state.floors - 1) + " · " + moneyFmt(c) + ". Coloca habitaciones y un ascensor en el jardín.");
-    save();
+    box.hidden = false;
+    const b = state.sel[0];
+    const t = T[b.type];
+    document.getElementById("ins-type").textContent = t.name + (state.sel.length > 1 ? " +" + (state.sel.length - 1) : "");
+    document.getElementById("ins-meta").textContent =
+      b.w + " × " + b.h + " · " + b.w * TILE_M + " × " + b.h * TILE_M + " m · " + (t.room ? moneyFmt(rateOf(b)) + "/día" : moneyFmt(costOf(b.type, b.w, b.h)));
+    const num = document.getElementById("ins-num");
+    num.value = state.sel.length === 1 && t.room ? b.num : "";
+    num.disabled = !(state.sel.length === 1 && t.room);
+    document.getElementById("ins-count").textContent = state.sel.length + " seleccionadas · planta " + b.floor;
   }
 
   function pointerCell(ev) {
@@ -787,8 +1237,64 @@
     return screenToWorld(ev.clientX - r.left, ev.clientY - r.top);
   }
 
+  function finishDrag() {
+    const d = state.drag;
+    if (!d) return;
+    const tool = state.tool;
+    if (tool === "paste" && state.clip) {
+      const items = planPaste(d.cur.x, d.cur.y);
+      const sum = summarize(items);
+      const go = () => {
+        const bill = applyItems(sum.valid);
+        toast("Pegado " + bill.added.length + " · " + moneyFmt(bill.money));
+      };
+      if (sum.rooms > 2500) askConfirm("Vas a pegar " + sum.rooms + " habitaciones por " + moneyFmt(sum.cost) + ".", go);
+      else go();
+    } else if (tool === "piece" || tool === "fill" || tool === "wing") {
+      if (!d.start) return;
+      const R = rect(d.start, d.cur);
+      if (tool === "piece") {
+        state.pieceW = Math.max(T[state.brush].minW, Math.min(T[state.brush].maxW, R.w));
+        state.pieceH = Math.max(T[state.brush].minH, Math.min(T[state.brush].maxH, R.h));
+      }
+      const items = tool === "piece" ? planPiece(R) : tool === "fill" ? planFill(R, true) : planWing(R);
+      const sum = summarize(items);
+      if (!sum.valid.length) {
+        toast("No cabe ahí (solapa otra cosa, el mar, o el tamaño mínimo).");
+      } else {
+        const go = () => {
+          const bill = applyItems(sum.valid);
+          toast((sum.rooms ? sum.rooms + " hab. · " : "") + bill.added.length + " piezas · " + moneyFmt(bill.money));
+        };
+        if (sum.rooms > 2500) askConfirm("Esto coloca " + sum.rooms + " habitaciones (" + sum.n + " piezas) por " + moneyFmt(sum.cost) + ". ¿Seguro?", go);
+        else go();
+      }
+    } else if (tool === "erase" && d.start) {
+      const R = rect(d.start, d.cur);
+      demolish(queryRect(state.floor, R.x0, R.y0, R.w, R.h));
+      toast("Demolido");
+    } else if (tool === "select" && d.start) {
+      const R = rect(d.start, d.cur);
+      if (R.w <= 1 && R.h <= 1) {
+        const hit = hitBuilding(d.start);
+        state.sel = hit ? [hit] : [];
+      } else state.sel = queryRect(state.floor, R.x0, R.y0, R.w, R.h);
+      refreshInspector();
+    } else if (tool === "zone" && d.start) {
+      const R = rect(d.start, d.cur);
+      paintZone(queryRect(state.floor, R.x0, R.y0, R.w, R.h), state.zone);
+    }
+    state.drag = null;
+  }
+
+  function askConfirm(text, fn) {
+    document.getElementById("confirm-text").textContent = text;
+    document.getElementById("confirm").hidden = false;
+    state.pending = fn;
+  }
+
   function onDown(ev) {
-    if (state.tool === "pan" || ev.button === 1 || ev.button === 2 || ev.shiftKey) {
+    if (ev.button === 1 || ev.button === 2 || ev.shiftKey || state.tool === "pan") {
       state.panning = true;
       state.panLast = { x: ev.clientX, y: ev.clientY };
       canvas.style.cursor = "grabbing";
@@ -797,15 +1303,13 @@
     }
     if (ev.button !== 0) return;
     const c = pointerCell(ev);
-    state.drag = { start: c, cur: c, px: ev.clientX, py: ev.clientY, moved: false, painting: state.tool === "paint" || state.tool === "erase" };
-    if (state.tool === "paint") {
-      const bill = { changes: [], spent: 0, n: 0 };
-      placeOne(state.floor, c.x, c.y, state.brush, bill);
-      state.drag.bill = bill;
-    } else if (state.tool === "erase") {
-      const bill = { changes: [], spent: 0, n: 0 };
-      eraseOne(state.floor, c.x, c.y, bill);
-      state.drag.bill = bill;
+    state.drag = { start: c, cur: c, px: ev.clientX, py: ev.clientY };
+    if (state.tool === "select" && !ev.shiftKey) {
+      const hit = hitBuilding(c);
+      if (hit) {
+        state.sel = [hit];
+        refreshInspector();
+      }
     }
   }
 
@@ -815,36 +1319,43 @@
       state.camera.x -= (ev.clientX - state.panLast.x) / s;
       state.camera.y -= (ev.clientY - state.panLast.y) / s;
       state.panLast = { x: ev.clientX, y: ev.clientY };
+      state.miniDirty = true;
       return;
     }
-    if (!state.drag) return;
     const c = pointerCell(ev);
-    if (c.x !== state.drag.cur.x || c.y !== state.drag.cur.y) state.drag.moved = true;
+    if (!state.drag) {
+      if (state.tool === "paste" && state.clip) state.drag = { start: null, cur: c, px: ev.clientX, py: ev.clientY, hover: true };
+      return;
+    }
     state.drag.cur = c;
     state.drag.px = ev.clientX;
     state.drag.py = ev.clientY;
-    if (state.drag.painting) {
-      const bill = state.drag.bill;
-      if (state.tool === "paint") placeOne(state.floor, c.x, c.y, state.brush, bill);
-      else eraseOne(state.floor, c.x, c.y, bill);
-    }
   }
 
-  function onUp() {
+  function onUp(ev) {
     if (state.panning) {
       state.panning = false;
       state.panLast = null;
       canvas.style.cursor = state.tool === "pan" ? "grab" : "crosshair";
       return;
     }
-    if (!state.drag) return;
-    if (state.drag.painting) {
-      pushUndo(state.drag.bill);
-      recount();
-    } else if (state.tool === "rect" || state.tool === "wing" || state.tool === "erase") {
-      applyRect(state.drag.start, state.drag.cur, state.tool);
-    }
-    state.drag = null;
+    if (state.drag && !state.drag.hover) finishDrag();
+    else if (state.tool !== "paste") state.drag = null;
+  }
+
+  function resize() {
+    canvas.width = innerWidth;
+    canvas.height = innerHeight;
+    state.miniDirty = true;
+  }
+
+  function loop(ts) {
+    if (!state.lastTs) state.lastTs = ts;
+    const dt = Math.min(0.05, (ts - state.lastTs) / 1000);
+    state.lastTs = ts;
+    sim(dt);
+    draw();
+    requestAnimationFrame(loop);
   }
 
   function bind() {
@@ -856,45 +1367,55 @@
       "wheel",
       (e) => {
         e.preventDefault();
-        const old = state.camera.z;
-        state.camera.z = Math.max(0.18, Math.min(2.4, state.camera.z * (e.deltaY > 0 ? 0.9 : 1.1)));
-        if (state.camera.z === old) return;
+        state.camera.z = Math.max(0.12, Math.min(2.6, state.camera.z * (e.deltaY > 0 ? 0.9 : 1.11)));
+        state.miniDirty = true;
       },
       { passive: false }
     );
     mini.addEventListener("mousedown", (e) => {
       const r = mini.getBoundingClientRect();
-      const x = ((e.clientX - r.left) / r.width) * W;
-      const y = ((e.clientY - r.top) / r.height) * H;
-      state.camera.x = x;
-      state.camera.y = y;
+      state.camera.x = ((e.clientX - r.left) / r.width) * state.mapW;
+      state.camera.y = ((e.clientY - r.top) / r.height) * state.mapH;
     });
     window.addEventListener("keydown", (e) => {
-      if (e.target && e.target.tagName === "INPUT") return;
+      if (e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA")) return;
       state.keys.add(e.code);
-      if (e.code === "KeyZ" && (e.ctrlKey || e.metaKey)) {
+      if ((e.ctrlKey || e.metaKey) && e.code === "KeyZ") {
         e.preventDefault();
         undo();
       }
-      if (e.key === "1") state.tool = "paint";
-      if (e.key === "2") state.tool = "rect";
+      if ((e.ctrlKey || e.metaKey) && e.code === "KeyC") {
+        e.preventDefault();
+        copySel();
+      }
+      if ((e.ctrlKey || e.metaKey) && e.code === "KeyV") {
+        e.preventDefault();
+        if (state.clip) {
+          state.tool = "paste";
+          syncTools();
+        }
+      }
+      if (e.code === "Delete" || e.code === "Backspace") {
+        if (state.sel.length) demolish(state.sel.slice());
+      }
+      if (e.key === "1") state.tool = "piece";
+      if (e.key === "2") state.tool = "fill";
       if (e.key === "3") state.tool = "wing";
-      if (e.key === "4") state.tool = "erase";
-      if (e.key === "5" || e.key === "h" || e.key === "H") state.tool = "pan";
-      if (e.key === "PageUp" || e.key === "]") state.floor = Math.min(state.floors - 1, state.floor + 1);
-      if (e.key === "PageDown" || e.key === "[") state.floor = Math.max(0, state.floor - 1);
-      if (e.key === " " || e.key === "p" || e.key === "P") {
+      if (e.key === "4") state.tool = "select";
+      if (e.key === " ") {
         e.preventDefault();
         state.speed = state.speed === 0 ? 1 : 0;
       }
+      if (e.key === "PageUp" || e.key === "]") state.floor = Math.min(state.floors - 1, state.floor + 1);
+      if (e.key === "PageDown" || e.key === "[") state.floor = Math.max(0, state.floor - 1);
       syncTools();
     });
-    window.addEventListener("keyup", (e) => {
-      state.keys.delete(e.code);
-    });
+    window.addEventListener("keyup", (e) => state.keys.delete(e.code));
     document.querySelectorAll(".tool").forEach((b) => {
       b.onclick = () => {
         state.tool = b.dataset.tool;
+        state.drag = null;
+        if (state.tool === "paste" && !state.clip) toast("Primero selecciona y copia (Ctrl+C).");
         syncTools();
       };
     });
@@ -906,22 +1427,37 @@
     });
     document.getElementById("btn-floor-up").onclick = () => {
       state.floor = Math.min(state.floors - 1, state.floor + 1);
+      state.miniDirty = true;
     };
     document.getElementById("btn-floor-down").onclick = () => {
       state.floor = Math.max(0, state.floor - 1);
+      state.miniDirty = true;
     };
     document.getElementById("btn-add-floor").onclick = addFloor;
+    document.getElementById("btn-expand").onclick = () => (document.getElementById("expand").hidden = false);
+    document.getElementById("expand-close").onclick = () => (document.getElementById("expand").hidden = true);
+    document.querySelectorAll("#expand [data-dir]").forEach((b) => {
+      b.onclick = () => expandMap(b.dataset.dir, Number(b.dataset.amt));
+    });
     document.getElementById("btn-undo").onclick = undo;
     document.getElementById("btn-help").onclick = () => (document.getElementById("help").hidden = false);
     document.getElementById("btn-close-help").onclick = () => (document.getElementById("help").hidden = true);
+    document.getElementById("confirm-ok").onclick = () => {
+      document.getElementById("confirm").hidden = true;
+      if (state.pending) state.pending();
+      state.pending = null;
+    };
+    document.getElementById("confirm-no").onclick = () => {
+      document.getElementById("confirm").hidden = true;
+      state.pending = null;
+    };
     document.getElementById("btn-save").onclick = () => {
       save();
-      toast("Partida guardada en este navegador.");
+      toast("Guardado.");
     };
     document.getElementById("btn-export").onclick = () => {
-      const blob = new Blob([JSON.stringify(serialize())], { type: "application/json" });
       const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
+      a.href = URL.createObjectURL(new Blob([JSON.stringify(serialize())], { type: "application/json" }));
       a.download = (state.name || "costa-aurora") + ".json";
       a.click();
     };
@@ -935,7 +1471,7 @@
           save();
           toast("Partida cargada.");
         } catch (_) {
-          toast("Ese archivo no es una partida válida.");
+          toast("Archivo no válido.");
         }
       };
       reader.readAsText(file);
@@ -943,6 +1479,44 @@
     document.getElementById("resort-name").onchange = (e) => {
       state.name = e.target.value.slice(0, 28) || "Costa Aurora";
     };
+    document.getElementById("search").oninput = (e) => {
+      state.search = e.target.value;
+      renderPalette();
+    };
+    document.getElementById("w-minus").onclick = () => {
+      state.pieceW = Math.max(1, state.pieceW - 1);
+      clampSize(T[state.brush]);
+    };
+    document.getElementById("w-plus").onclick = () => {
+      state.pieceW++;
+      clampSize(T[state.brush]);
+    };
+    document.getElementById("h-minus").onclick = () => {
+      state.pieceH = Math.max(1, state.pieceH - 1);
+      clampSize(T[state.brush]);
+    };
+    document.getElementById("h-plus").onclick = () => {
+      state.pieceH++;
+      clampSize(T[state.brush]);
+    };
+    document.getElementById("ins-num").oninput = (e) => {
+      if (state.sel.length === 1 && T[state.sel[0].type].room) state.sel[0].num = e.target.value.slice(0, 12);
+    };
+    document.getElementById("ins-copy").onclick = copySel;
+    document.getElementById("ins-delete").onclick = () => demolish(state.sel.slice());
+    const zb = document.getElementById("zone-bar");
+    ZONES.forEach((z) => {
+      const b = document.createElement("button");
+      b.textContent = z.name;
+      b.dataset.zone = String(z.id);
+      if (z.id === state.zone) b.classList.add("on");
+      b.onclick = () => {
+        state.zone = z.id;
+        state.tool = "zone";
+        syncTools();
+      };
+      zb.appendChild(b);
+    });
     window.addEventListener("resize", resize);
   }
 
@@ -951,12 +1525,10 @@
     document.getElementById("game").hidden = false;
     resize();
     renderCats();
+    renderSubs();
     renderPalette();
     syncTools();
-    if (!state.seenHelp) {
-      document.getElementById("help").hidden = false;
-      state.seenHelp = true;
-    }
+    document.getElementById("help").hidden = false;
     requestAnimationFrame(loop);
   }
 

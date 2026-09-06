@@ -141,9 +141,9 @@ button, input { font-family: inherit; }
 #minimap {
   position: absolute;
   right: 16px;
-  bottom: 86px;
-  width: 200px;
-  height: 124px;
+  bottom: 108px;
+  width: 220px;
+  height: 140px;
   border-radius: 10px;
   border: 1px solid var(--line);
   background: #061018;
@@ -202,8 +202,8 @@ button, input { font-family: inherit; }
   position: absolute;
   top: 78px;
   left: 12px;
-  width: 228px;
-  bottom: 86px;
+  width: 250px;
+  bottom: 108px;
   background: var(--glass);
   border: 1px solid var(--line);
   border-radius: 16px;
@@ -249,7 +249,7 @@ button, input { font-family: inherit; }
 .floor-bar {
   position: absolute;
   left: 50%;
-  bottom: 18px;
+  bottom: 52px;
   transform: translateX(-50%);
   display: flex;
   align-items: center;
@@ -275,13 +275,13 @@ button, input { font-family: inherit; }
 
 .tool-bar {
   position: absolute;
-  left: 250px;
-  bottom: 18px;
+  left: 268px;
+  bottom: 52px;
   display: flex;
-  gap: 6px;
+  gap: 4px;
   z-index: 6;
   flex-wrap: wrap;
-  max-width: calc(100vw - 480px);
+  max-width: calc(100vw - 520px);
 }
 .tool-bar .tool.on, .floor-bar button.on {
   background: var(--gold-2);
@@ -352,6 +352,9 @@ button, input { font-family: inherit; }
 #title-screen[hidden],
 #game[hidden],
 #help[hidden],
+#confirm[hidden],
+#expand[hidden],
+#inspector[hidden],
 #cost-preview[hidden] {
   display: none !important;
 }
@@ -374,6 +377,147 @@ button, input { font-family: inherit; }
 .help-card h2 { font-family: Georgia, serif; color: var(--gold); margin-bottom: 12px; }
 .help-card li { margin: 8px 0; line-height: 1.4; color: #e8dcc4; }
 .muted { color: #9aa7b5; margin: 14px 0; font-size: 13px; }
+
+#confirm, #expand {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,.55);
+  z-index: 21;
+  display: grid;
+  place-items: center;
+}
+
+#search {
+  margin: 6px 8px 0;
+  background: #0e2236;
+  border: 1px solid var(--line);
+  color: var(--cream);
+  border-radius: 8px;
+  padding: 6px 8px;
+  font-size: 12px;
+}
+
+.subcats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 6px 8px 0;
+}
+.subcats button {
+  border: 1px solid var(--line);
+  background: #102338;
+  color: #d8c9a8;
+  border-radius: 999px;
+  padding: 3px 8px;
+  font-size: 10px;
+  cursor: pointer;
+}
+.subcats button.on { border-color: var(--gold); color: var(--gold); }
+
+.size-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px;
+  font-size: 12px;
+  color: #d8c9a8;
+}
+.size-row button {
+  width: 26px;
+  height: 24px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: #102338;
+  color: var(--cream);
+  cursor: pointer;
+}
+.size-row strong { min-width: 52px; text-align: center; color: var(--gold); }
+
+.zone-bar {
+  position: absolute;
+  left: 268px;
+  bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  z-index: 6;
+  background: var(--glass);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 12px;
+}
+.zone-bar button {
+  border: 1px solid var(--line);
+  background: #102338;
+  color: var(--cream);
+  border-radius: 999px;
+  padding: 4px 9px;
+  cursor: pointer;
+  font-size: 11px;
+}
+.zone-bar button.on { border-color: var(--gold); color: var(--gold); }
+
+#inspector {
+  position: absolute;
+  top: 78px;
+  right: 64px;
+  width: 210px;
+  background: var(--glass);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 12px;
+  z-index: 6;
+  backdrop-filter: blur(12px);
+}
+#inspector label { display: block; font-size: 12px; margin: 8px 0; color: #c9b894; }
+#inspector input {
+  width: 100%;
+  margin-top: 4px;
+  background: #0e2236;
+  border: 1px solid var(--line);
+  color: var(--cream);
+  border-radius: 8px;
+  padding: 6px 8px;
+}
+#inspector button {
+  width: 100%;
+  margin-top: 6px;
+  border-radius: 8px;
+  padding: 7px;
+  cursor: pointer;
+  border: 1px solid var(--line);
+  background: #102338;
+  color: var(--cream);
+}
+#ins-delete { background: #3b1520; border-color: #8b2942; }
+
+.expand-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 14px 0;
+}
+.expand-grid button {
+  border: 1px solid var(--line);
+  background: #102338;
+  color: var(--cream);
+  border-radius: 10px;
+  padding: 10px;
+  cursor: pointer;
+}
+
+#minimap {
+  bottom: 108px;
+}
+
+#cost-preview {
+  white-space: pre-line;
+  max-width: 280px;
+  line-height: 1.35;
+}
+
+.palette .name { font-size: 12px; }
 
 ::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-thumb { background: #345; border-radius: 8px; }
