@@ -92,6 +92,14 @@ button { cursor: pointer; }
   font-size: 18px; font-weight: 650; color: var(--teal-deep);
   padding: 6px 12px; background: #e7f4ef; border-radius: 12px;
 }
+button.cash {
+  display: inline-flex; flex-direction: column; align-items: flex-end; justify-content: center;
+  gap: 1px; border: 0; line-height: 1.1; min-width: 118px;
+}
+button.cash #debt {
+  font-size: 10px; font-weight: 650; color: #9b2226; letter-spacing: 0.02em;
+}
+button.cash:hover { filter: brightness(0.97); }
 .cash.neg { color: #9b2226; background: #fde8e6; }
 
 .clock {
@@ -419,6 +427,7 @@ table.data tr:hover td { background: #fff6e8; }
 }
 .book-card label { display: flex; justify-content: space-between; gap: 8px; align-items: center; margin: 8px 0; font-size: 13px; }
 .book-card input[type="range"] { width: 140px; }
+.book-card input[type="number"], .book-card select { min-width: 140px; padding: 6px 8px; border-radius: 8px; border: 1px solid var(--line); }
 .format-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 12px 0; }
 .size-tile small { display: block; color: var(--muted); font-size: 11px; margin-top: 2px; }
 .place-flags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }

@@ -97,6 +97,7 @@
           return;
         }
         game.state = s;
+        if (SIM.ensureLoans) SIM.ensureLoans(s);
         boot();
       })
       .catch(function (err) {
@@ -161,6 +162,9 @@
       if (yb && force) UI.toast("Anuario " + yb.year + " listo en Prensa.");
     } catch (_) {}
     SIM.driftCompetition(s, gameMs / 3600000);
+    try {
+      SIM.tickLoans(s, from, to);
+    } catch (_) {}
     if (s.cash < 0) s.cash -= ((-s.cash) * 0.08 * gameMs) / (365 * 86400000);
     if (!s.cashHistory) s.cashHistory = [];
     if (!s.cashHistory.length || to - s.cashHistory[s.cashHistory.length - 1].t > 12 * 3600000) {

@@ -265,60 +265,207 @@
     return inRange(localH, day.a, day.b);
   }
 
+  function managerSkill(r) {
+    const mgrs = (r.staff || []).filter((s) => s.role === "gerente");
+    if (!mgrs.length) return 0;
+    return Math.max(...mgrs.map((s) => s.skill || 0));
+  }
+
+  function spendOps(state, cost, urgent) {
+    if (cost <= 0) return true;
+    const reserve = urgent ? 0 : 35000;
+    if (state.cash < cost + reserve) return false;
+    state.cash -= cost;
+    return true;
+  }
+
   function runManager(state, r, brand, gameMs) {
     if (r.managerAI === false) return;
     ensureBooks(state);
+    const skill = managerSkill(r);
+    const mgrs = (r.staff || []).filter((s) => s.role === "gerente");
+    const mgrName = mgrs[0] ? mgrs[0].name : "sin gerente";
+    const acts = [];
+    if (skill < 1) {
+      r.managerNote = "No hay gerente. El local no se gestiona solo: contrata gerencia.";
+      r.lastManagerRun = gameMs;
+      return;
+    }
+
     const year = SIM.yearOf(gameMs);
     const pl = WORLD.priceLevel(r.country, year);
     const fair = 8 * BRAND.tiers[brand.tier].ticket * Math.sqrt(Math.max(0.2, pl));
     const taste = tasteFit(brand, r.country);
     const pol = alcoholPolicy(r.country);
+    const book = (state.books && state.books[brand.id]) || defaultBook(brand);
+    const sz = SIM.sizeOf(r.size);
+    const miss = SIM.understaffed(brand, r.size, r.staff);
+    const st = SIM.staffStats(r.staff);
+    const need = sz.staff;
+    const noiseAmp = U.clamp(1 - skill / 100, 0.04, 0.55);
+
+    /* Personal: un gerente hábil cubre huecos; uno flojo se retrasa o contrata mal. */
+    if (miss.length && skill >= 28) {
+      const mapMiss = { gerencia: "gerente", cocina: "cocinero", barra: "bartender" };
+      for (const m of miss) {
+        const role = mapMiss[m];
+        if (!role) continue;
+        if (role !== "gerente" && skill < 42 && Math.random() > skill / 85) continue;
+        SIM.hireRole(r, role, gameMs, skill);
+        acts.push("contrató " + SIM.ROLES[role].name.toLowerCase());
+        break;
+      }
+    }
+    if (skill >= 52 && r.cleanliness < 48 && (st.by.limpieza.length || 0) < Math.max(1, need.limpieza || 1)) {
+      SIM.hireRole(r, "limpieza", gameMs, skill);
+      acts.push("contrató limpieza");
+    }
+    if (skill >= 58 && brand.tier !== "food_truck" && (st.by.camarero.length || 0) < Math.ceil((need.camarero || 0) * 0.6)) {
+      SIM.hireRole(r, "camarero", gameMs, skill);
+      acts.push("contrató sala");
+    }
+    if (skill >= 72) {
+      for (const [role, arr] of Object.entries(st.by)) {
+        const cap = Math.ceil((need[role] || 0) * 1.35) + (role === "gerente" ? 0 : 1);
+        if (arr.length > cap && role !== "gerente") {
+          const extra = arr.slice().sort((a, b) => a.skill - b.skill)[0];
+          r.staff = r.staff.filter((s) => s.id !== extra.id);
+          acts.push("ajustó plantilla");
+          break;
+        }
+      }
+    }
+    if (skill >= 68 && state.cash > 80000) {
+      const pupil = r.staff.filter((s) => s.skill < 88).sort((a, b) => a.skill - b.skill)[0];
+      if (pupil && Math.random() < skill / 140) {
+        const cost = 400 * pl;
+        if (spendOps(state, cost, false)) {
+          pupil.skill = Math.min(99, pupil.skill + 6);
+          pupil.wage = +(pupil.wage * 1.04).toFixed(2);
+          acts.push("formó a " + pupil.name.split(" ")[0]);
+        }
+      }
+    }
+
+    /* Género y stock */
+    r.autoRestock = skill >= 32;
+    const stockFloor = skill >= 70 ? 48 : skill >= 45 ? 28 : 12;
+    if (r.stock < stockFloor) {
+      const needSt = 100 - r.stock;
+      const restock = needSt * 2.2 * pl * (sz.seats / 20) * (1 + (r.ingQ || 1) * 0.25);
+      if (spendOps(state, restock, r.stock < 10)) {
+        r.stock = 100;
+        r.finance.costTotal += restock;
+        acts.push("repuso género");
+      }
+    }
+    let wantQ = 1;
+    if (brand.tier === "luxury" && skill >= 62) wantQ = 2;
+    else if (skill < 38) wantQ = 0;
+    else if (skill >= 78 && brand.tier !== "fast_food" && brand.tier !== "food_truck") wantQ = 2;
+    r.ingQ = U.clamp(wantQ, book.minIngQ, book.maxIngQ);
+
+    /* Licencia, delivery, terraza */
+    const alcWanted = book.allowAlc && pol.mode !== "dry" && (brand.tier === "bar" || brand.dishes.some((d) => d.alc));
+    if (alcWanted && pol.mode === "license" && !r.alcoholLicense && skill >= 55) {
+      const lic = pol.license * WORLD.inflationFactor(r.country, year);
+      if (spendOps(state, lic, brand.tier === "bar")) {
+        r.alcoholLicense = true;
+        r.finance.costTotal += lic;
+        acts.push("sacó licencia de alcohol");
+      }
+    }
     const alcOk = pol.mode !== "dry" && (pol.mode === "free" || r.alcoholLicense);
+    if (!r.delivery && r.size !== "ghost" && skill >= 58 && (sz.ghost || (r.popK || 0) > 140 && brand.tier !== "luxury")) {
+      const c = r.rentMonthly * 0.15;
+      if (spendOps(state, c, false)) {
+        r.delivery = true;
+        r.finance.costTotal += c;
+        acts.push("activó delivery");
+      }
+    }
+    if (r.size === "ghost") r.delivery = true;
+    if (!r.terrace && r.size !== "ghost" && skill >= 60 && (r.poi === "playa" || r.poi === "turistico" || r.pedestrian)) {
+      const c = r.rentMonthly * 0.12;
+      if (spendOps(state, c, false)) {
+        r.terrace = true;
+        r.finance.costTotal += c;
+        acts.push("montó terraza");
+      }
+    }
+    if (r.cleanliness < 42 && skill >= 48) {
+      const c = 220 * pl * (sz.m2 / 80);
+      if (spendOps(state, c, r.cleanliness < 22)) {
+        r.cleanliness = Math.min(100, r.cleanliness + 28);
+        acts.push("mandó limpiar");
+      }
+    }
+
+    /* Carta y precios: el error baja con la habilidad */
     const avgBase = brand.dishes.reduce((a, d) => a + d.price, 0) / brand.dishes.length;
     let nOn = 0;
     brand.dishes.forEach((d, i) => {
       if (!r.menu[i]) r.menu[i] = { on: true, price: d.price };
       let on = true;
       if (d.alc && !alcOk) on = false;
-      if (!d.sig && d.price > avgBase * 1.6 && pl < 0.55) on = false;
+      if (!d.sig && d.price > avgBase * 1.6 && pl < 0.55) on = skill < 50 ? Math.random() < 0.4 : false;
       if (d.sig) on = !(d.alc && !alcOk);
-      const target = fair * (d.price / avgBase) * (taste > 1 ? 1.08 : 0.92);
+      if (skill < 35 && !d.sig && Math.random() < 0.18) on = !on;
+      const tasteMul = taste > 1 ? 1.08 : 0.92;
+      const noise = (Math.random() * 2 - 1) * noiseAmp * 0.35;
+      const target = fair * (d.price / avgBase) * tasteMul * (1 + noise);
       r.menu[i].price = Math.round(target * 10) / 10;
       r.menu[i].on = on;
       if (on) nOn++;
     });
     if (nOn === 0 && r.menu[0]) r.menu[0].on = true;
-    const book = applyBook(state, r, brand);
-    if (!r.hoursCustom) {
-      const hrs = r.hours || defaultHours(brand);
-      const poi = r.poi || "urbano";
-      if (poi === "aeropuerto") {
-        hrs.forEach((h) => {
-          h.open = true;
-          h.a = 6;
-          h.b = 23;
-          h.c = 0;
-          h.d = 0;
-        });
-      } else if (poi === "playa") {
-        hrs.forEach((h, i) => {
-          h.open = i !== 1 || brand.tier !== "luxury";
-          h.a = 11;
-          h.b = 23;
-        });
-      }
-      r.hours = hrs;
+    applyBook(state, r, brand);
+
+    /* Horario: el gerente lo lleva siempre; un crack adapta al sitio */
+    const hrs = r.hours || defaultHours(brand);
+    const poi = r.poi || "urbano";
+    if (skill < 40) {
+      hrs.forEach((h, i) => {
+        h.open = i !== 1;
+        h.a = 13;
+        h.b = 16;
+        h.c = skill >= 28 ? 20 : 0;
+        h.d = skill >= 28 ? 23 : 0;
+      });
+    } else if (poi === "aeropuerto" && skill >= 55) {
+      hrs.forEach((h) => {
+        h.open = true;
+        h.a = skill >= 75 ? 0 : 6;
+        h.b = skill >= 75 ? 24 : 23;
+        h.c = 0;
+        h.d = 0;
+      });
+    } else if (poi === "playa" && skill >= 50) {
+      hrs.forEach((h, i) => {
+        h.open = i !== 1 || brand.tier !== "luxury";
+        h.a = 11;
+        h.b = 24;
+      });
+    } else if (skill >= 80 && brand.tier === "fast_food") {
+      hrs.forEach((h) => {
+        h.open = true;
+        h.a = 10;
+        h.b = 24;
+      });
+    } else if (skill < 48 && Math.random() < 0.18) {
+      hrs.forEach((h, i) => {
+        if (i === 2) h.open = false;
+      });
     }
-    if (!r.delivery && (r.popK || 0) > 180 && brand.tier !== "luxury") {
-      /* el gerente propone, no compra solo */
-    }
+    r.hours = hrs;
+    r.hoursCustom = false;
+
+    const grade = skill >= 80 ? "excelente" : skill >= 62 ? "sólida" : skill >= 45 ? "correcta" : "justita";
     r.managerNote =
-      (book.enforceSig ? "Libro de marca: plato firma obligatorio. " : "") +
-      (taste > 1.2
-        ? "El gerente ajusta precios al gusto local: aquí esta cocina encaja."
-        : taste < 0.85
-          ? "Gusto local flojo para esta cocina: carta más corta y precios contenidos."
-          : "Carta y precios alineados al poder adquisitivo y a la competencia oculta.");
+      `${mgrName} (hab. ${Math.round(skill)}, gestión ${grade}) lleva carta, precios, horario, género y plantilla. ` +
+      (acts.length ? "Ahora: " + acts.join(", ") + ". " : "") +
+      (book.enforceSig ? "Libro de marca: firma obligatoria. " : "") +
+      (taste > 1.2 ? "La cocina encaja aquí." : taste < 0.85 ? "Gusto local flojo: carta contenida." : "Precios al poder adquisitivo local.");
     r.lastManagerRun = gameMs;
   }
 
@@ -327,13 +474,17 @@
     if (!state) return list;
     if (state.cash < 0) list.push({ k: "cash", bad: true, t: "Caja negativa. Intereses de descubierto." });
     if (state.cash < 80000 && state.cash >= 0) list.push({ k: "low", bad: true, t: "Caja baja: menos de 80.000 €." });
+    const debt = SIM.debtTotal ? SIM.debtTotal(state) : 0;
+    if (debt > 0) list.push({ k: "debt", bad: false, t: "Deuda bancaria: " + Math.round(debt).toLocaleString("es-ES") + " €." });
     let noStock = 0,
       loss = 0,
+      noMgr = 0,
       insp = 0;
     const now = state.gameTime;
     for (const r of state.restaurants) {
       if (r.status === "abierto" && r.stock < 8) noStock++;
       if (r.finance.revTotal < r.finance.costTotal && r.status === "abierto") loss++;
+      if (r.status === "abierto" && r.managerAI !== false && !(r.staff || []).some((s) => s.role === "gerente")) noMgr++;
     }
     for (const ev of state.events || []) {
       if (ev.kind === "inspeccion" && now >= ev.start - 2 * 86400000 && now <= ev.end) {
@@ -342,6 +493,7 @@
       }
     }
     if (noStock) list.push({ k: "stock", bad: true, t: noStock + " local(es) sin género." });
+    if (noMgr) list.push({ k: "mgr", bad: true, t: noMgr + " local(es) sin gerente: no se gestionan solos." });
     if (loss) list.push({ k: "loss", bad: false, t: loss + " local(es) en pérdidas acumuladas." });
     if (state.yearbookNew) {
       list.unshift({ k: "year", bad: false, t: "Anuario " + state.yearbookNew + " listo. Ábrelo en Prensa." });
@@ -585,6 +737,7 @@
     applyHoursPreset,
     isOpenAt,
     runManager,
+    managerSkill,
     alerts,
     sfx,
     muted: () => muted,

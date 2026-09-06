@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="vendor/leaflet.css" />
-  <link rel="stylesheet" href="css/game.css?v=mapc2" />
+  <link rel="stylesheet" href="css/game.css?v=mgr2" />
 </head>
 <body>
   <a class="skip" href="#search">Ir al buscador</a>
@@ -76,7 +76,10 @@
           <small>Restaurant Group</small>
         </div>
       </div>
-      <div class="cash" id="cash">0 €</div>
+      <button type="button" class="cash" id="cash-box" title="Caja, préstamos y trucos">
+        <span id="cash">0 €</span>
+        <small id="debt" hidden></small>
+      </button>
       <div class="clock">
         <span class="d" id="gdate">1 ene 2000</span>
         <span class="h" id="gtime">08:00 UTC · 1× = 1 min/hora</span>
@@ -106,7 +109,7 @@
     <div class="splash-inner">
       <div class="mark" style="width:52px;height:52px;border-radius:16px;font-size:26px;margin-bottom:14px;">H</div>
       <h1>Horizon Restaurant Group</h1>
-      <p>La matriz y sus 50 marcas, de la comida rápida a la alta cocina. Empiezas el 1 de enero de 2000. Un gerente IA en cada local lleva carta y precios.</p>
+      <p>La matriz y sus 50 marcas. Empiezas el 1 de enero de 2000. El gerente de cada local gestiona el sitio según su habilidad. En Matriz: préstamos y trucos de caja.</p>
       <div class="actions">
         <input id="new-name" value="Horizon 2000" style="padding:12px;border-radius:14px;border:0;font-weight:600" />
         <button type="button" class="btn primary" id="new-game" onclick="window.startMeridiano('new')">Nueva partida</button>
@@ -138,13 +141,13 @@
   <script src="js/brands.js?v=hz1"></script>
   <script src="js/horizon.js?v=lg2"></script>
   <script src="js/menu-extra.js?v=hz1"></script>
-  <script src="js/saborama.js?v=geo2"></script>
+  <script src="js/saborama.js?v=mgr2"></script>
   <script src="js/geo.js?v=geo2"></script>
-  <script src="js/sim.js?v=geo2"></script>
-  <script src="js/store.js?v=photo2"></script>
+  <script src="js/sim.js?v=mgr2"></script>
+  <script src="js/store.js?v=mgr2"></script>
   <script src="js/map.js?v=mapc2"></script>
-  <script src="js/ui.js?v=geo2"></script>
-  <script src="js/app.js?v=hz1"></script>
+  <script src="js/ui.js?v=mgr2"></script>
+  <script src="js/app.js?v=mgr2"></script>
   <script>
     setTimeout(function () {
       if (window.GAME) return;

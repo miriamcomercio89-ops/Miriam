@@ -672,7 +672,7 @@
       closedReason: "",
       sellValue: quote.total * 0.62,
       managerAI: true,
-      managerNote: "El gerente de Horizon tomará carta y precios al abrir.",
+      managerNote: "El gerente de este local llevará carta, precios, horario, género y plantilla según su habilidad.",
       lastManagerRun: 0,
       hours: SABOR.defaultHours(brand),
       hoursCustom: false,
@@ -689,6 +689,118 @@
       description: String(opts.description || "").slice(0, 800),
     };
     return r;
+  }
+
+  function hireRole(r, role, gameMs, mgrSkill) {
+    const year = yearOf(gameMs);
+    const ctry = WORLD.country(r.country);
+    const infl = WORLD.inflationFactor(r.country, year);
+    const wageH = ctry.wage * infl;
+    const skill = Math.round(U.clamp(30 + (mgrSkill || 50) * 0.32 + Math.random() * 22, 28, 96));
+    r.staff = r.staff || [];
+    r.staff.push({
+      id: U.uid("st"),
+      role,
+      name: personName(Math.random),
+      skill,
+      wage: +(wageH * ROLES[role].wage * (0.7 + skill / 200)).toFixed(2),
+    });
+  }
+
+  function managerSkill(r) {
+    const mgrs = (r.staff || []).filter((s) => s.role === "gerente");
+    if (!mgrs.length) return 0;
+    return Math.max(...mgrs.map((s) => +s.skill || 0));
+  }
+
+  function ensureLoans(state) {
+    if (!state.loans) state.loans = [];
+    return state.loans;
+  }
+
+  function debtTotal(state) {
+    return ensureLoans(state).reduce((a, l) => a + (l.remaining || 0), 0);
+  }
+
+  function creditLimit(state) {
+    const n = (state.restaurants || []).length;
+    const rev = (state.restaurants || []).reduce((a, r) => a + (r.finance && r.finance.revTotal ? r.finance.revTotal : 0), 0);
+    const base = 500000 + n * 140000 + Math.min(rev * 0.12, 12000000) + Math.max(0, state.cash || 0) * 0.2;
+    return Math.max(0, Math.round(base - debtTotal(state)));
+  }
+
+  function takeLoan(state, amount, months) {
+    amount = Math.round(+amount || 0);
+    months = +months || 24;
+    if (![12, 24, 36, 48].includes(months)) months = 24;
+    if (amount < 25000) return { ok: false, err: "El banco pide un mínimo de 25.000 €." };
+    const room = creditLimit(state);
+    if (amount > room) return { ok: false, err: "Crédito disponible: " + Math.round(room).toLocaleString("es-ES") + " €." };
+    const rate = (state.cash || 0) < 0 ? 0.145 : nRestaurants(state) >= 10 ? 0.072 : 0.096;
+    const i = rate / 12;
+    const monthly = Math.round((amount * i) / (1 - Math.pow(1 + i, -months)));
+    const loan = {
+      id: U.uid("ln"),
+      principal: amount,
+      remaining: amount,
+      rate,
+      months,
+      leftMonths: months,
+      monthly,
+      started: state.gameTime,
+      paid: 0,
+    };
+    ensureLoans(state).push(loan);
+    state.cash += amount;
+    pushNews(state, state.gameTime, `Préstamo bancario de ${Math.round(amount).toLocaleString("es-ES")} € a ${months} meses (${(rate * 100).toFixed(1)}% TAE).`);
+    return { ok: true, loan };
+  }
+
+  function nRestaurants(state) {
+    return (state.restaurants || []).length;
+  }
+
+  function tickLoans(state, fromMs, toMs) {
+    const loans = ensureLoans(state);
+    if (!loans.length || toMs <= fromMs) return 0;
+    const fromM = new Date(fromMs).getUTCFullYear() * 12 + new Date(fromMs).getUTCMonth();
+    const toM = new Date(toMs).getUTCFullYear() * 12 + new Date(toMs).getUTCMonth();
+    const steps = Math.min(48, Math.max(0, toM - fromM));
+    let paid = 0;
+    for (let s = 0; s < steps; s++) {
+      for (const ln of loans) {
+        if (ln.remaining <= 0) continue;
+        const interest = ln.remaining * ln.rate / 12;
+        const pay = Math.min(ln.monthly, ln.remaining + interest);
+        const prin = Math.min(ln.remaining, Math.max(0, pay - interest));
+        ln.remaining = Math.max(0, +(ln.remaining - prin).toFixed(2));
+        ln.leftMonths = Math.max(0, (ln.leftMonths || ln.months) - 1);
+        ln.paid = (ln.paid || 0) + pay;
+        state.cash -= pay;
+        paid += pay;
+      }
+    }
+    state.loans = loans.filter((l) => l.remaining > 1);
+    return paid;
+  }
+
+  function payoffLoan(state, id) {
+    const loans = ensureLoans(state);
+    const ln = loans.find((l) => l.id === id);
+    if (!ln) return { ok: false, err: "Préstamo no encontrado." };
+    if (state.cash < ln.remaining) return { ok: false, err: "No hay caja para cancelar." };
+    state.cash -= ln.remaining;
+    ln.remaining = 0;
+    state.loans = loans.filter((l) => l.remaining > 1);
+    pushNews(state, state.gameTime, "Has cancelado un préstamo.");
+    return { ok: true };
+  }
+
+  function cheatCash(state, amount) {
+    amount = Math.round(+amount || 0);
+    if (!amount) return;
+    state.cash += amount;
+    pushNews(state, state.gameTime, (amount > 0 ? "Truco de caja +" : "Truco de caja ") + Math.round(amount).toLocaleString("es-ES") + " €.");
   }
 
   function sellValue(r, gameMs) {
@@ -722,5 +834,14 @@
     sellValue,
     competingShare,
     personName,
+    hireRole,
+    managerSkill,
+    ensureLoans,
+    debtTotal,
+    creditLimit,
+    takeLoan,
+    tickLoans,
+    payoffLoan,
+    cheatCash,
   };
 })(window);

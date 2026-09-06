@@ -2,7 +2,7 @@
 
 Videojuego de gestión en el navegador: la matriz **Horizon Restaurant Group** y **50 marcas** independientes (de la comida rápida a la alta cocina) sobre el mapa real. Empiezas el **1 de enero de 2000** con 2.000.000 €.
 
-Cada local tiene un **gerente IA** que fija carta y precios. Mapa a color: **satélite** al alejar y **OpenStreetMap** al acercar (sin API key). Logos en `img/filiales/`.
+Cada local tiene un **gerente IA** que gestiona el sitio entero (carta, precios, horario, género, plantilla, ampliaciones) según su habilidad. Mapa a color: **satélite** al alejar y **OpenStreetMap** al acercar (sin API key). Logos en `img/filiales/`.
 
 No hace falta servidor ni build. **Descomprime el ZIP**, entra en la carpeta (deben verse `index.html`, `js/`, `css/` y `vendor/`) y abre `index.html` en Chrome o Edge. No lo abras desde el visor de ZIP de Windows. El mapa necesita internet.
 
@@ -15,7 +15,7 @@ No hace falta servidor ni build. **Descomprime el ZIP**, entra en la carpeta (de
 5. Elige marca y formato: kiosco, local, **cocina fantasma**, flagship, **food hall** o estadio.
 6. El tiempo corre: **1 minuto real = 1 hora de juego** (a 1×). Pausa, 2×–16× y **saltar día**.
 7. Ficha del local: foto y descripción, carta, personal, inventario, finanzas, **comprar el bajo**, reformar, marca, cerrar o vender.
-8. Pestaña **Matriz**: libro de marca. **Prensa**: periódico de la década y **anuario** el 31 de diciembre.
+8. Pestaña **Matriz**: libro de marca, **préstamos** y **trucos de caja**. **Prensa**: periódico de la década y **anuario** el 31 de diciembre.
 
 No se puede construir en océano, costas de agua, parques ni reservas. Metro o calle peatonal (OSM) suben la demanda.
 

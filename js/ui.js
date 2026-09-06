@@ -163,6 +163,12 @@
         renderPanel();
       })
     );
+    const cashBoxBtn = U.$("#cash-box");
+    if (cashBoxBtn)
+      cashBoxBtn.addEventListener("click", () => {
+        const tab = U.$('.panel-tabs button[data-tab="matriz"]');
+        if (tab) tab.click();
+      });
     ["f-brand", "f-cuisine", "f-country", "f-status", "f-profit", "f-sort"].forEach((id) => {
       U.$("#" + id).addEventListener("change", () => {
         game.filters.brand = U.$("#f-brand").value;
@@ -296,15 +302,27 @@
     const cash = U.$("#cash");
     cash.textContent = U.formatMoney(s.cash, 0);
     cash.classList.toggle("neg", s.cash < 0);
+    const debtEl = U.$("#debt");
+    const debt = SIM.debtTotal ? SIM.debtTotal(s) : 0;
+    if (debtEl) {
+      if (debt > 0) {
+        debtEl.hidden = false;
+        debtEl.textContent = "Deuda " + U.formatMoney(debt, 0);
+      } else {
+        debtEl.hidden = true;
+      }
+    }
+    const cashBox = U.$("#cash-box");
+    if (cashBox) cashBox.classList.toggle("neg", s.cash < 0);
     const p = U.gameParts(s.gameTime);
     const months = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
     U.$("#gdate").textContent = `${p.day} ${months[p.m]} ${p.y}`;
     const sp = s.paused || s.speed === 0 ? "pausa" : s.speed + "×";
     U.$("#gtime").textContent = `${U.pad2(p.h)}:${U.pad2(p.min)} UTC · ${sp} · 1 min real = 1 h juego`;
-    const box = U.$("#alerts");
-    if (box) {
+    const alertsBox = U.$("#alerts");
+    if (alertsBox) {
       const als = SABOR.alerts(s);
-      box.innerHTML = als.map((a) => `<div class="al ${a.bad ? "bad" : ""}">${a.t}</div>`).join("");
+      alertsBox.innerHTML = als.map((a) => `<div class="al ${a.bad ? "bad" : ""}">${a.t}</div>`).join("");
     }
     const leg = U.$("#legend");
     if (leg) {
@@ -447,14 +465,59 @@
 
   function renderMatriz(body) {
     SABOR.ensureBooks(game.state);
+    SIM.ensureLoans(game.state);
     const books = game.state.books;
     let brandId = game._bookBrand || BRAND.list[0].id;
     const paint = () => {
       game._bookBrand = brandId;
       const brand = BRAND.get(brandId);
       const bk = books[brandId] || SABOR.defaultBook(brand);
+      const loans = game.state.loans || [];
+      const debt = SIM.debtTotal(game.state);
+      const room = SIM.creditLimit(game.state);
       body.innerHTML = `
-        <p class="muted">Libro de marca: normas que el gerente IA debe cumplir en todos los locales de esa filial.</p>
+        <h3>Caja y banco</h3>
+        <div class="kpis">
+          <div class="kpi teal"><b>${U.formatMoney(game.state.cash, 0)}</b><span>Caja</span></div>
+          <div class="kpi coral"><b>${U.formatMoney(debt, 0)}</b><span>Deuda viva</span></div>
+          <div class="kpi gold"><b>${U.formatMoney(room, 0)}</b><span>Crédito disponible</span></div>
+        </div>
+        <div class="book-card">
+          <p class="muted">Pide un préstamo a la banca de Horizon. La cuota se cobra cada mes de juego. Interés más alto si la caja está en descubierto.</p>
+          <label><span>Importe (€)</span><input type="number" id="ln-amt" min="25000" step="25000" value="${Math.min(500000, Math.max(25000, Math.round(room / 4 / 25000) * 25000 || 25000))}"/></label>
+          <label><span>Plazo</span>
+            <select id="ln-term">
+              <option value="12">12 meses</option>
+              <option value="24" selected>24 meses</option>
+              <option value="36">36 meses</option>
+              <option value="48">48 meses</option>
+            </select>
+          </label>
+          <button type="button" class="btn primary" id="ln-go">Pedir préstamo</button>
+          ${
+            loans.length
+              ? `<h4>Préstamos abiertos</h4>` +
+                loans
+                  .map(
+                    (l) => `<div class="rank-row"><div>Restan ${U.formatMoney(l.remaining)} · cuota ${U.formatMoney(l.monthly)}/mes · ${(l.rate * 100).toFixed(1)}% · ${l.leftMonths || l.months} m</div>
+                    <button type="button" class="btn sm ghost" data-pay="${l.id}">Saldar</button></div>`
+                  )
+                  .join("")
+              : `<p class="muted">Sin préstamos abiertos.</p>`
+          }
+        </div>
+        <div class="book-card">
+          <p><b>Trucos de dinero</b> <span class="muted">solo caja. No afectan a la simulación de locales.</span></p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button type="button" class="btn ghost sm" data-cheat="100000">+100.000 €</button>
+            <button type="button" class="btn ghost sm" data-cheat="1000000">+1.000.000 €</button>
+            <button type="button" class="btn ghost sm" data-cheat="10000000">+10.000.000 €</button>
+            <button type="button" class="btn ghost sm" data-cheat="50000000">+50.000.000 €</button>
+            <button type="button" class="btn danger sm" data-cheat="-1">Vaciar caja</button>
+          </div>
+        </div>
+        <h3>Libro de marca</h3>
+        <p class="muted">Normas que el gerente de cada local de esa filial debe cumplir (firma, alcohol, rango de precios, género).</p>
         <label class="muted">Filial
           <select id="bk-brand">${BRAND.list.map((b) => `<option value="${b.id}" ${b.id === brandId ? "selected" : ""}>${b.name}</option>`).join("")}</select>
         </label>
@@ -496,9 +559,44 @@
         game.state.restaurants
           .filter((r) => r.brandId === brandId && r.managerAI !== false)
           .forEach((r) => SABOR.runManager(game.state, r, b, game.state.gameTime));
-        toast("Gerentes de " + b.name + " actualizan carta al libro de marca.");
+        toast("Gerentes de " + b.name + " actualizan el local al libro de marca.");
         game.dirty();
       };
+      U.$("#ln-go").onclick = () => {
+        const res = SIM.takeLoan(game.state, +U.$("#ln-amt").value, +U.$("#ln-term").value);
+        if (!res.ok) return toast(res.err, true);
+        toast("El banco ingresa " + U.formatMoney(res.loan.principal) + ". Cuota " + U.formatMoney(res.loan.monthly) + "/mes.");
+        try {
+          SABOR.sfx.cash();
+        } catch (_) {}
+        game.dirty(true);
+        paint();
+        renderHud();
+      };
+      body.querySelectorAll("[data-pay]").forEach((btn) => {
+        btn.onclick = () => {
+          const res = SIM.payoffLoan(game.state, btn.dataset.pay);
+          if (!res.ok) return toast(res.err, true);
+          toast("Préstamo saldado.");
+          game.dirty(true);
+          paint();
+          renderHud();
+        };
+      });
+      body.querySelectorAll("[data-cheat]").forEach((btn) => {
+        btn.onclick = () => {
+          let amt = +btn.dataset.cheat;
+          if (amt === -1) amt = -game.state.cash;
+          SIM.cheatCash(game.state, amt);
+          toast(amt >= 0 ? "Truco: +" + U.formatMoney(amt) : "Caja a cero.");
+          try {
+            if (amt > 0) SABOR.sfx.cash();
+          } catch (_) {}
+          game.dirty(true);
+          paint();
+          renderHud();
+        };
+      });
     };
     paint();
   }
@@ -842,11 +940,12 @@
           ${venueMetaHtml(REST_META)}
           ${(() => {
             const mgrs = r.staff.filter((s) => s.role === "gerente");
+            const sk = SIM.managerSkill(r);
             return mgrs.length
-              ? `<p>Gerente en sala: <b>${mgrs.map((s) => s.name).join(", ")}</b> (IA de carta y precios ${r.managerAI !== false ? "activa" : "apagada"})</p>`
-              : `<p class="loss">Este local no tiene gerente. Contrata uno en Personal.</p>`;
+              ? `<p>Gerente: <b>${mgrs.map((s) => s.name).join(", ")}</b> · habilidad ${Math.round(sk)}/100. ${r.managerAI !== false ? "Lleva el local entero (carta, horario, género, plantilla, ampliaciones) según esa habilidad." : "IA apagada: tú gestionas a mano."}</p>`
+              : `<p class="loss">Este local no tiene gerente. Sin gerencia el local no se gestiona solo.</p>`;
           })()}
-          <label><input type="checkbox" id="mgr" ${r.managerAI !== false ? "checked" : ""}/> Gerente IA (establece carta y precios)</label>
+          <label><input type="checkbox" id="mgr" ${r.managerAI !== false ? "checked" : ""}/> Gerente IA (gestiona todo el local según su habilidad)</label>
           <p class="muted">${r.managerNote || ""}</p>
           ${miss.length ? `<p class="loss">Falta personal: ${miss.join(", ")}. El local no atiende.</p>` : ""}
           <h3>Reseñas</h3>
@@ -862,13 +961,14 @@
             paint();
           };
       } else if (tab === "carta") {
-        body.innerHTML = `<p class="muted">${r.managerAI !== false ? "El gerente IA fija carta y precios dentro del libro de marca. Desactívalo en Resumen para editar a mano." : "Tú fijas carta y precios. El libro de marca de la matriz sigue limitando firma, alcohol y rango."}</p>
+        body.innerHTML = `<p class="muted">${r.managerAI !== false ? "El gerente fija carta, precios y género del local según su habilidad y el libro de marca. Desactívalo en Resumen para editar a mano." : "Tú fijas carta y precios. El libro de marca de la matriz sigue limitando firma, alcohol y rango."}</p>
           <p class="muted">${brand.dishes.length} platos en esta filial.</p>
           <label class="muted">Género del local
             <select id="ingq"><option value="0">Económico</option><option value="1">Estándar</option><option value="2">Premium</option></select>
           </label>
           <div id="dishes"></div>`;
         U.$("#ingq").value = String(r.ingQ ?? 1);
+        U.$("#ingq").disabled = r.managerAI !== false;
         U.$("#ingq").onchange = () => {
           r.ingQ = +U.$("#ingq").value;
           game.dirty();
@@ -897,7 +997,7 @@
           box.append(row);
         });
       } else if (tab === "personal") {
-        body.innerHTML = `<p class="muted">Salarios ligados al mínimo del país (inflado desde 2000). Entrenar cuesta y sube habilidad.</p>
+        body.innerHTML = `<p class="muted">${r.managerAI !== false ? "El gerente cubre huecos, forma y ajusta plantilla según su habilidad. Puedes intervenir; en el próximo ciclo la IA vuelve a decidir." : "Salarios ligados al mínimo del país (inflado desde 2000). Entrenar cuesta y sube habilidad."}</p>
           <div id="staff"></div>
           <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap" id="hire"></div>`;
         const box = U.$("#staff");
@@ -951,7 +1051,7 @@
           <p>Stock operativo</p>
           <div class="bar"><i style="width:${r.stock}%"></i></div>
           <p class="muted">${r.stock.toFixed(0)} / 100 · cada local compra en su mercado (autónomo).</p>
-          <label><input type="checkbox" id="auto" ${r.autoRestock ? "checked" : ""}/> Reposición automática</label>
+          <label><input type="checkbox" id="auto" ${r.autoRestock ? "checked" : ""} ${r.managerAI !== false ? "disabled" : ""}/> Reposición automática ${r.managerAI !== false ? "(la lleva el gerente)" : ""}</label>
           <div style="margin-top:10px"><button class="btn primary" id="restock">Repostar ahora</button></div>
           <h3>Género de la carta</h3>
           <table class="data"><thead><tr><th>Ingrediente</th><th>Grupo</th><th>Caduca (días)</th></tr></thead><tbody id="ings"></tbody></table>`;
@@ -1001,19 +1101,19 @@
           <p>Limpieza</p>
           <div class="bar"><i style="width:${r.cleanliness}%"></i></div>
           <h3>Horario local (hora del sitio)</h3>
-          <p class="muted">Siete días, dos franjas (comida y cena). 24 = medianoche, 26 = 02:00. El gerente IA no pisa un horario que tú edites.</p>
+          <p class="muted">Siete días, dos franjas (comida y cena). 24 = medianoche, 26 = 02:00. ${r.managerAI !== false ? "El gerente fija el horario según su habilidad. Desactiva la IA en Resumen para editarlo a mano." : "Tú fijas el horario. El gerente no lo pisa."}</p>
           <div class="hours-presets" id="hpre">
-            <button type="button" class="btn ghost sm" data-hp="marca">Marca</button>
-            <button type="button" class="btn ghost sm" data-hp="24h">24 h</button>
-            <button type="button" class="btn ghost sm" data-hp="lunoff">Cerrado lunes</button>
-            <button type="button" class="btn ghost sm" data-hp="finde">Finde largo</button>
-            <button type="button" class="btn ghost sm" data-hp="split">Comida+cena</button>
-            <button type="button" class="btn ghost sm" data-hp="copylun">Lun → semana</button>
+            <button type="button" class="btn ghost sm" data-hp="marca" ${r.managerAI !== false ? "disabled" : ""}>Marca</button>
+            <button type="button" class="btn ghost sm" data-hp="24h" ${r.managerAI !== false ? "disabled" : ""}>24 h</button>
+            <button type="button" class="btn ghost sm" data-hp="lunoff" ${r.managerAI !== false ? "disabled" : ""}>Cerrado lunes</button>
+            <button type="button" class="btn ghost sm" data-hp="finde" ${r.managerAI !== false ? "disabled" : ""}>Finde largo</button>
+            <button type="button" class="btn ghost sm" data-hp="split" ${r.managerAI !== false ? "disabled" : ""}>Comida+cena</button>
+            <button type="button" class="btn ghost sm" data-hp="copylun" ${r.managerAI !== false ? "disabled" : ""}>Lun → semana</button>
           </div>
           <div class="hours-grid" id="hours"></div>
           <h3>Ampliaciones</h3>
-          <label><input type="checkbox" id="deliv" ${r.delivery ? "checked" : ""} ${r.size === "ghost" ? "disabled" : ""}/> Delivery (${r.size === "ghost" ? "incluido" : U.formatMoney(r.rentMonthly * 0.15) + " alta"})</label><br>
-          <label><input type="checkbox" id="terr" ${r.terrace ? "checked" : ""} ${r.size === "ghost" ? "disabled" : ""}/> Terraza (${U.formatMoney(r.rentMonthly * 0.12)} alta)</label>
+          <label><input type="checkbox" id="deliv" ${r.delivery ? "checked" : ""} ${r.size === "ghost" || r.managerAI !== false ? "disabled" : ""}/> Delivery (${r.size === "ghost" ? "incluido" : U.formatMoney(r.rentMonthly * 0.15) + " alta"})${r.managerAI !== false ? " · lo decide el gerente" : ""}</label><br>
+          <label><input type="checkbox" id="terr" ${r.terrace ? "checked" : ""} ${r.size === "ghost" || r.managerAI !== false ? "disabled" : ""}/> Terraza (${U.formatMoney(r.rentMonthly * 0.12)} alta)${r.managerAI !== false ? " · lo decide el gerente" : ""}</label>
           <h3>El bajo</h3>
           <p>${r.owned ? `Propiedad · valor ${U.formatMoney(r.propertyValue || 0)} · comunidad ~${U.formatMoney((r.communityMonthly || r.rentMonthly * 0.08))}/mes` : `Alquiler ${U.formatMoney(r.rentMonthly)}/mes · comprar el bajo ${U.formatMoney(r.propertyValue || r.rentMonthly * 108)}`}</p>
           <div class="place-flags">
@@ -1021,8 +1121,8 @@
             ${r.pedestrian ? `<span class="chip ok">Calle peatonal</span>` : ""}
           </div>
           ${r.owned ? `<button type="button" class="btn ghost" id="sell-brick">Vender solo el ladrillo</button>` : `<button type="button" class="btn primary" id="buy-brick">Comprar el bajo</button>`}
-          <p class="muted">Alcohol: ${pol.mode === "dry" ? "país seco — no se puede servir" : pol.mode === "license" ? "requiere licencia" : "libre con tasa"} · ${r.alcoholLicense ? "licencia activa" : "sin licencia"}</p>
-          ${pol.mode !== "dry" && !r.alcoholLicense ? `<button class="btn ghost" id="lic">Comprar licencia (${U.formatMoney(pol.license * WORLD.inflationFactor(r.country, SIM.yearOf(game.state.gameTime)))})</button>` : ""}
+          <p class="muted">Alcohol: ${pol.mode === "dry" ? "país seco — no se puede servir" : pol.mode === "license" ? "requiere licencia" : "libre con tasa"} · ${r.alcoholLicense ? "licencia activa" : "sin licencia"}${r.managerAI !== false && !r.alcoholLicense ? " · el gerente la gestiona" : ""}</p>
+          ${pol.mode !== "dry" && !r.alcoholLicense && r.managerAI === false ? `<button class="btn ghost" id="lic">Comprar licencia (${U.formatMoney(pol.license * WORLD.inflationFactor(r.country, SIM.yearOf(game.state.gameTime)))})</button>` : ""}
           <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">
             <button class="btn ghost" id="clean">Brigada de limpieza</button>
             <button class="btn warn" id="reno">Reformar</button>
@@ -1032,6 +1132,7 @@
           </div>
           <div id="rebrand-box"></div>`;
         bindRestaurantPhotoDesc(r);
+        const lockOps = r.managerAI !== false;
         const hg = U.$("#hours");
         const daysN = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
         const paintHours = () => {
@@ -1040,11 +1141,11 @@
             const row = document.createElement("div");
             row.style.display = "contents";
             row.innerHTML = `<span class="hd">${daysN[i]}</span>
-              <input type="checkbox" title="Abre" ${h.open ? "checked" : ""}/>
-              <input type="number" min="0" max="27" value="${h.a}" title="Apertura 1"/>
-              <input type="number" min="0" max="27" value="${h.b}" title="Cierre 1"/>
-              <input type="number" min="0" max="27" value="${h.c || 0}" title="Apertura 2 (0 = no)"/>
-              <input type="number" min="0" max="27" value="${h.d || 0}" title="Cierre 2"/>`;
+              <input type="checkbox" title="Abre" ${h.open ? "checked" : ""} ${lockOps ? "disabled" : ""}/>
+              <input type="number" min="0" max="27" value="${h.a}" title="Apertura 1" ${lockOps ? "disabled" : ""}/>
+              <input type="number" min="0" max="27" value="${h.b}" title="Cierre 1" ${lockOps ? "disabled" : ""}/>
+              <input type="number" min="0" max="27" value="${h.c || 0}" title="Apertura 2 (0 = no)" ${lockOps ? "disabled" : ""}/>
+              <input type="number" min="0" max="27" value="${h.d || 0}" title="Cierre 2" ${lockOps ? "disabled" : ""}/>`;
             const [ck, a, b, c, d] = [row.children[1], row.children[2], row.children[3], row.children[4], row.children[5]];
             const touch = () => {
               r.hoursCustom = true;
@@ -1075,6 +1176,7 @@
         };
         paintHours();
         U.$("#hpre").onclick = (ev) => {
+          if (lockOps) return;
           const btn = ev.target.closest("button[data-hp]");
           if (!btn) return;
           const k = btn.dataset.hp;
@@ -1110,6 +1212,7 @@
             paint();
           };
         U.$("#deliv").onchange = () => {
+          if (lockOps) return;
           if (U.$("#deliv").checked && !r.delivery) {
             const c = r.rentMonthly * 0.15;
             if (game.state.cash < c) {
@@ -1123,6 +1226,7 @@
           game.dirty();
         };
         U.$("#terr").onchange = () => {
+          if (lockOps) return;
           if (U.$("#terr").checked && !r.terrace) {
             const c = r.rentMonthly * 0.12;
             if (game.state.cash < c) {

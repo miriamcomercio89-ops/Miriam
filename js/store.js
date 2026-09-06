@@ -120,6 +120,7 @@
       speed: 1,
       paused: false,
       cash: 2000000,
+      loans: [],
       restaurants: [],
       events: [],
       news: [
@@ -248,6 +249,7 @@
     if (!data || !data.gameTime || !Array.isArray(data.restaurants)) throw new Error("Archivo no válido");
     data.id = data.id || U.uid("slot");
     data.savedAt = Date.now();
+    if (!Array.isArray(data.loans)) data.loans = [];
     return data;
   }
 
