@@ -15,8 +15,20 @@
     heatmap: false,
   };
 
-  function dirty() {
+  function dirty(immediate) {
     game._dirty = true;
+    if (immediate) saveNow();
+  }
+
+  function saveNow() {
+    const s = game.state;
+    if (!s) return;
+    game._dirty = false;
+    game._lastSave = performance.now();
+    try {
+      s.thumb = MAP.dotsThumb();
+    } catch (_) {}
+    STORE.save(s).catch(function () {});
   }
 
   function ensureMap() {
@@ -208,7 +220,7 @@
     UI.renderHud();
     UI.renderPanel();
     MAP.refresh();
-    dirty();
+    saveNow();
     return true;
   }
 
@@ -264,12 +276,7 @@
       if (game.uiTab === "locales" || game.uiTab === "ranking") UI.renderPanel();
     }
     if (game._dirty && ts - game._lastSave > 20000) {
-      game._lastSave = ts;
-      game._dirty = false;
-      try {
-        s.thumb = MAP.dotsThumb();
-      } catch (_) {}
-      STORE.save(s);
+      saveNow();
     }
   }
 
@@ -286,6 +293,7 @@
   game.continueGame = continueGame;
   game.loadSlot = loadSlot;
   game.dirty = dirty;
+  game.saveNow = saveNow;
 
   window.GAME = game;
   try {

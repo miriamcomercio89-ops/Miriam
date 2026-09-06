@@ -105,13 +105,17 @@
       () => r.photo,
       (v) => {
         r.photo = v;
-        game.dirty();
+        game.dirty(true);
         renderPanel();
       },
       () => r.description || "",
       (v) => {
         r.description = v;
         game.dirty();
+        clearTimeout(bindRestaurantPhotoDesc._t);
+        bindRestaurantPhotoDesc._t = setTimeout(() => {
+          if (game.saveNow) game.saveNow();
+        }, 700);
       },
       REST_META
     );

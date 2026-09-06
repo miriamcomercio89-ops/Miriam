@@ -186,7 +186,11 @@
       localStorage.setItem(lsSaveKey(state.id), json);
     } catch (_) {
       try {
-        localStorage.setItem("meridiano-fallback-" + state.id, json);
+        const slim = JSON.parse(json);
+        (slim.restaurants || []).forEach((r) => {
+          r.photo = "";
+        });
+        localStorage.setItem(lsSaveKey(state.id), JSON.stringify(slim));
       } catch (e2) {
         console.warn("No se pudo guardar en localStorage", e2);
       }
@@ -204,12 +208,14 @@
   }
 
   async function load(id) {
-    let s = readLocal(id);
-    if (!s) {
-      try {
-        s = await idbGet(id);
-      } catch (_) {}
-    }
+    let local = readLocal(id);
+    let idb = null;
+    try {
+      idb = await idbGet(id);
+    } catch (_) {}
+    let s = null;
+    if (local && idb) s = (idb.savedAt || 0) >= (local.savedAt || 0) ? idb : local;
+    else s = local || idb;
     if (s) {
       const m = meta();
       m.current = id;
