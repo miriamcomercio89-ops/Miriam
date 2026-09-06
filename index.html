@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Meridiano — Imperio Gastronómico</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="css/game.css" />
+</head>
+<body>
+  <div id="map"></div>
+  <div id="hud">
+    <aside id="panel">
+      <div class="panel-tabs">
+        <button data-tab="locales" class="active">Locales</button>
+        <button data-tab="ranking">Ranking</button>
+        <button data-tab="noticias">Noticias</button>
+      </div>
+      <div class="search-row">
+        <span class="ico">⌕</span>
+        <input id="search" placeholder="Ciudad, dirección o lat, lon" autocomplete="off" />
+        <div id="suggest" class="suggest"></div>
+      </div>
+      <div style="padding:8px 12px 0; display:flex; gap:6px;">
+        <button class="btn ghost sm" id="btn-geo">Mi ubicación</button>
+        <button class="btn ghost sm" id="btn-table">Tabla</button>
+        <button class="btn ghost sm" id="btn-saves">Partidas</button>
+      </div>
+      <div class="filters">
+        <select id="f-brand"><option value="">Todas las marcas</option></select>
+        <select id="f-cuisine"><option value="">Todas las cocinas</option></select>
+        <select id="f-country"><option value="">Todos los países</option></select>
+        <select id="f-status">
+          <option value="">Cualquier estado</option>
+          <option value="abierto">Abierto</option>
+          <option value="permisos">Permisos</option>
+          <option value="obras">En obras</option>
+          <option value="cerrado">Cerrado</option>
+        </select>
+        <select id="f-profit">
+          <option value="">Rentabilidad</option>
+          <option value="gain">En ganancias</option>
+          <option value="loss">En pérdidas</option>
+        </select>
+        <select id="f-sort">
+          <option value="new">Más recientes</option>
+          <option value="rev">Más facturan</option>
+          <option value="stars">Mejor nota</option>
+          <option value="name">Nombre</option>
+        </select>
+      </div>
+      <div class="panel-body" id="panel-body"></div>
+    </aside>
+
+    <header id="topbar">
+      <div class="wordmark">
+        <div class="mark">M</div>
+        <div>
+          <h1>Meridiano</h1>
+          <small>Imperio gastronómico</small>
+        </div>
+      </div>
+      <div class="cash" id="cash">0 €</div>
+      <div class="clock">
+        <span class="d" id="gdate">1 ene 2000</span>
+        <span class="h" id="gtime">08:00 UTC · 1× = 1 min/hora</span>
+      </div>
+      <div class="spacer"></div>
+      <div class="seg" id="speeds">
+        <button data-sp="0">Ⅱ</button>
+        <button data-sp="1" class="active">1×</button>
+        <button data-sp="2">2×</button>
+        <button data-sp="4">4×</button>
+        <button data-sp="8">8×</button>
+        <button data-sp="16">16×</button>
+      </div>
+      <button class="btn ghost" id="btn-day">Saltar día</button>
+      <button class="icon-btn" id="btn-export" title="Exportar">⤓</button>
+      <button class="icon-btn" id="btn-import" title="Importar">⤒</button>
+      <input type="file" id="import-file" accept="application/json" hidden />
+    </header>
+    <div id="toasts"></div>
+  </div>
+
+  <div class="overlay" id="sheet"></div>
+  <div class="modal-center" id="modal"></div>
+
+  <div class="splash" id="splash">
+    <div class="splash-inner">
+      <div class="mark" style="width:52px;height:52px;border-radius:16px;font-size:26px;margin-bottom:14px;">M</div>
+      <h1>Meridiano</h1>
+      <p>Una cadena, cincuenta marcas, el mapa real. Empiezas el 1 de enero de 2000. El mundo no se conquista en un día — salvo que pulses «saltar día».</p>
+      <div class="actions">
+        <button class="btn primary" id="new-game">Nueva partida</button>
+        <button class="btn" id="continue-game" style="background:#fff;">Continuar</button>
+      </div>
+      <div id="slot-list"></div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="js/util.js"></script>
+  <script src="js/world.js"></script>
+  <script src="js/brands.js"></script>
+  <script src="js/geo.js"></script>
+  <script src="js/sim.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/map.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

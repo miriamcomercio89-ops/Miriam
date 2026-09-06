@@ -1,21 +1,38 @@
-# Miriam — Administración de Loterías (proyecto)
+# Meridiano — Imperio Gastronómico
 
-Proyecto: videojuego/simulador de gestión de una administración de loterías ubicado en Álora.
+Videojuego de gestión en el navegador: una sola cadena, **50 marcas** (cocina, food truck, lujo y bares) y el **mapa real de OpenStreetMap**. Empiezas el **1 de enero de 2000** con 2.000.000 € y el objetivo, infinito, de cubrir el mundo.
 
-Este repositorio contiene el scaffold inicial del proyecto: una aplicación en HTML/CSS/JS que corre totalmente en el navegador (sin servidor), usa localStorage para persistencia y permite exportar/importar el estado en JSON.
+No hace falta servidor ni build. Abre `index.html` en un navegador moderno con internet (teselas del mapa y geocodificación).
 
-Características del scaffold inicial:
-- Reloj de juego con escala temporal: el tiempo del juego va 4× más lento que el real (gameTime = start + elapsed * 0.25).
-- Lógica de apertura de oficina: 09:00–14:00 y 17:00–22:00 (hora del juego). Cerrado sábados y domingos. Festivos habilitables manualmente.
-- Funciones básicas de exportar/importar JSON del estado del juego.
-- Estructura básica para añadir los juegos, ventas, contabilidad, clientes, etc.
+## Cómo jugar
 
-Cómo usar:
-1. Clona el repo o descarga los archivos.
-2. Abre `index.html` en un navegador moderno.
-3. Usa los botones "Exportar" / "Importar" para guardar o restaurar el estado.
+1. Abre `index.html` (o sirve la carpeta: `python3 -m http.server 8080`).
+2. **Nueva partida**.
+3. Busca una ciudad, usa **Mi ubicación**, o navega el mapa.
+4. Clic en tierra edificable: el juego consulta OSM (Photon/Nominatim) y rellena datos reales del lugar (dirección, país, población estimada, salarios, IVA, alquiler, zona horaria, competencia oculta).
+5. Elige marca y tamaño (kiosco, local, flagship, estadio). Pagas permisos + obra.
+6. El tiempo corre: **1 minuto real = 1 hora de juego** (a 1×). Pausa, 2×–16× y **saltar día**.
+7. Entra en la ficha del local: carta, personal, inventario, finanzas, reformar, cambiar marca, cerrar o vender.
 
-Siguiente paso:
-- Crear la rama `feature/lottery-full` desde la rama por defecto y continuar con la implementación completa de juegos, contabilidad y UI.
+No se puede construir en océano, costas de agua, parques, reservas ni aeropuertos. La zonificación residencial alarga los permisos.
 
-Commit inicial: scaffold con reloj escalado y export/import JSON.
+## Marcas
+
+Cincuenta marcas al estilo de un juego de cocina de gestión: hamburguesas, tacos, ramen, kaiseki, vermú, absenta, asador, ceviche, jerk, dim sum, etc. Todas disponibles desde el minuto uno, en cualquier país. Un local = una marca. Recetas y menús se gestionan (platos on/off, precio, género económico/estándar/premium). Incluye bares y alcohol.
+
+## Simulación
+
+- Ingresos en tiempo real según hora **local** del restaurante, población, riqueza del país (PIB 2000 inflado), calidad, limpieza, estrellas, precios y **competencia oculta** (no aparece en el mapa).
+- Personal, alquiler, IVA, salarios mínimos e inflación por país.
+- Eventos: inspecciones, ferias, inflación, apagones, críticos, huelgas, temporal.
+- A zoom lejano el mapa agrega por **país** y **ciudad**; al acercar, **clusters con el logo de la marca** dominante. La simulación detallada se concentra en lo activo; con muchos miles de locales se agrega para no tumbar el navegador.
+
+## Guardado
+
+- Varias partidas (IndexedDB).
+- Autoguardado.
+- Exportar / importar JSON.
+
+## Créditos de mapa
+
+© [OpenStreetMap](https://www.openstreetmap.org/copyright) · teselas [CARTO Voyager](https://carto.com/attributions) · geocodificación [Photon](https://photon.komoot.io/) (datos OSM). Respeta su política de uso: el juego limita las peticiones a ~1/s.
