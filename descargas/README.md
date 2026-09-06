@@ -1,5 +1,9 @@
-# Atlas Saborama (descarga)
+# Atlas Saborama (un solo ZIP)
 
-El archivo **[saborama_atlas_completo.zip](./saborama_atlas_completo.zip)** (67 MB) incluye los 177 países, 9.848 provincias y las 50 filiales de cada zona.
+**[saborama_atlas_completo.zip](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/saborama_atlas_completo.zip)**
 
-En GitHub: abre el ZIP y pulsa **Download** (o **View raw**).
+Por **ciudad** (no un PDF por estado). Ejemplo: California tiene cientos de ciudades (Los Angeles, San Diego, San Jose...).
+
+Cada ficha incluye dirección, metro/peatonal, alquiler o compra, horario domingo–sábado, food hall con marcas invitadas y leyenda.
+
+`País / región o CCAA / ciudad / Saborama_<ciudad>.pdf`
