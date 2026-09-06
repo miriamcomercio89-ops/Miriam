@@ -28,7 +28,8 @@
   }
 
   async function newGame() {
-    const name = prompt("Nombre de la partida", "Meridiano " + new Date().getFullYear()) || "Meridiano";
+    const input = U.$("#new-name");
+    const name = ((input && input.value) || "Meridiano 2000").trim() || "Meridiano 2000";
     game.state = STORE.blankState(name);
     await STORE.save(game.state);
     boot();

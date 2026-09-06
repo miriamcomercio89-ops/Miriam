@@ -186,9 +186,11 @@
         const profit = r.finance.revTotal - r.finance.costTotal;
         const btn = document.createElement("button");
         btn.className = "list-item";
+        const leftH = r.statusUntil && (r.status === "permisos" || r.status === "obras") ? Math.max(0, (r.statusUntil - game.state.gameTime) / 3600000) : 0;
+        const statusTxt = leftH ? `${STATUS_L[r.status]} · ${leftH >= 24 ? (leftH / 24).toFixed(1) + " d" : Math.ceil(leftH) + " h"}` : STATUS_L[r.status];
         btn.innerHTML = `
           <div class="logo">${brand.logo}</div>
-          <div class="meta"><b>${r.name}</b><small>${STATUS_L[r.status]} · ${r.city || r.countryName}</small></div>
+          <div class="meta"><b>${r.name}</b><small>${statusTxt} · ${r.city || r.countryName}</small></div>
           <div class="right"><div class="${profit >= 0 ? "gain" : "loss"}">${U.formatMoney(profit)}</div><div class="stars">${"★".repeat(Math.round(r.stars))}</div></div>`;
         btn.onclick = () => game.openRestaurant(r.id);
         frag.append(btn);

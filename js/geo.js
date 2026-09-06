@@ -102,7 +102,7 @@
   }
 
   async function reversePhoton(lat, lon) {
-    const url = `${PHOTON}/reverse?lat=${lat}&lon=${lon}&lang=es`;
+        const url = `${PHOTON}/reverse?lat=${lat}&lon=${lon}`;
     const res = await fetch(url);
     if (!res.ok) throw new Error("Photon HTTP " + res.status);
     const json = await res.json();
@@ -182,7 +182,7 @@
     }
     return queue(async () => {
       try {
-        const url = `${PHOTON}/api/?q=${encodeURIComponent(query)}&limit=6&lang=es`;
+        const url = `${PHOTON}/api/?q=${encodeURIComponent(query)}&limit=6`;
         const res = await fetch(url);
         const json = await res.json();
         return (json.features || []).map((f) => {

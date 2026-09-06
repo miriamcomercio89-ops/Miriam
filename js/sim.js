@@ -1,10 +1,10 @@
 /* Meridiano — reglas de simulación, tamaños, personal, economía */
 (function (global) {
   const SIZES = [
-    { id: "kiosco", name: "Kiosco", seats: 8, m2: 22, permitH: 48, buildH: 72, cost: 22000, staff: { gerente: 0, cocinero: 1, camarero: 1, limpieza: 0, bartender: 0 } },
-    { id: "local", name: "Local", seats: 42, m2: 140, permitH: 168, buildH: 336, cost: 165000, staff: { gerente: 1, cocinero: 2, camarero: 2, limpieza: 1, bartender: 0 } },
-    { id: "flagship", name: "Flagship", seats: 140, m2: 480, permitH: 480, buildH: 1080, cost: 920000, staff: { gerente: 2, cocinero: 6, camarero: 6, limpieza: 2, bartender: 1 } },
-    { id: "estadio", name: "Estadio", seats: 480, m2: 2800, permitH: 960, buildH: 2880, cost: 4800000, staff: { gerente: 4, cocinero: 16, camarero: 20, limpieza: 6, bartender: 4 } },
+    { id: "kiosco", name: "Kiosco", seats: 8, m2: 22, permitH: 12, buildH: 24, cost: 22000, staff: { gerente: 0, cocinero: 1, camarero: 1, limpieza: 0, bartender: 0 } },
+    { id: "local", name: "Local", seats: 42, m2: 140, permitH: 24, buildH: 48, cost: 165000, staff: { gerente: 1, cocinero: 2, camarero: 2, limpieza: 1, bartender: 0 } },
+    { id: "flagship", name: "Flagship", seats: 140, m2: 480, permitH: 72, buildH: 192, cost: 920000, staff: { gerente: 2, cocinero: 6, camarero: 6, limpieza: 2, bartender: 1 } },
+    { id: "estadio", name: "Estadio", seats: 480, m2: 2800, permitH: 168, buildH: 480, cost: 4800000, staff: { gerente: 4, cocinero: 16, camarero: 20, limpieza: 6, bartender: 4 } },
   ];
   const SIZE_BY = Object.fromEntries(SIZES.map((s) => [s.id, s]));
 
