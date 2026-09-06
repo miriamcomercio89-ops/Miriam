@@ -432,19 +432,15 @@
       endOfDay();
     }
     const hour = (state.minute / 60) | 0;
-    const arriving = hour >= 13 && hour <= 22;
-    const leaving = hour >= 9 && hour <= 11;
     const target = occupancyTarget();
     const s = state.stats;
     if (!s.capacity) return;
     const want = Math.floor(s.capacity * target);
-    if (arriving && s.occupied < want) {
-      const n = Math.min(12 + (s.capacity / 80) | 0, want - s.occupied);
-      fillRooms(n, true);
-    }
-    if (leaving && s.occupied > want) {
-      const n = Math.min(8 + (s.capacity / 100) | 0, s.occupied - want);
-      fillRooms(n, false);
+    if (s.occupied < want) {
+      const burst = hour >= 13 && hour <= 22 ? 28 : 10;
+      fillRooms(Math.min(burst + ((s.capacity / 40) | 0), want - s.occupied), true);
+    } else if (s.occupied > want) {
+      fillRooms(Math.min(10, s.occupied - want), false);
     }
     spawnWalkers();
   }
@@ -703,7 +699,8 @@
     if (!state.stats.lobby && state.stats.rooms) {
       document.getElementById("ui-occ").textContent = "Sin recepción";
     }
-    document.getElementById("stars").textContent = starString(state.stars);
+    document.getElementById("stars").innerHTML =
+      "<span>" + "★".repeat(state.stars) + '</span><span style="opacity:.22">' + "★".repeat(5 - state.stars) + "</span>";
     const fl = state.floor === 0 ? "Jardín · Planta 0" : "Planta " + state.floor;
     document.getElementById("floor-label").textContent = fl + " / " + (state.floors - 1);
   }
