@@ -123,7 +123,9 @@
   }
 
   function classifyPoi(place) {
-    const blob = [place.osmKey, place.osmValue, place.type, place.name, place.display, place.city]
+    const kind = (place.settlementKind || "").toLowerCase();
+    if (kind === "village" || kind === "hamlet" || kind === "isolated_dwelling" || kind === "farm") return "rural";
+    const blob = [place.osmKey, place.osmValue, place.type, place.name, place.display, place.city, kind]
       .join(" ")
       .toLowerCase();
     if (/beach|playa|coast|bay|playa/.test(blob)) return "playa";
@@ -406,21 +408,22 @@
   }
 
   function estimateHover(lat, lon, gameMs) {
-    const city = WORLD.nearestCity(lat, lon, 120);
-    const cc = city ? city.cc : null;
+    const city = WORLD.nearestCity(lat, lon, 18);
+    const far = WORLD.nearestCity(lat, lon, 120);
+    const cc = (city || far) ? (city || far).cc : null;
     const ctry = cc ? WORLD.country(cc) : WORLD.DEFAULT;
-    const popK = city ? city.popK : 8;
+    const popK = city ? city.popK : 2.2;
     const dummy = { countryCode: ctry.iso || "XX", popK, residential: false, commercial: true };
     const q = SIM.buildQuote(BRAND.list[0], "local", dummy, gameMs || Date.UTC(2000, 0, 1));
-    const ocean = !city && Math.abs(lat) < 60;
     return {
-      city: city ? city.name : "Zona poco poblada",
+      city: city ? city.name : "Pueblo / zona rural",
       country: ctry.name,
       cc: ctry.iso,
       popK,
       rentMonthly: q.rentMonthly,
-      likelyLand: !!city || Math.abs(lat) > 5,
-      distKm: city ? city.distKm : 999,
+      likelyLand: !!far || Math.abs(lat) > 5,
+      distKm: far ? far.distKm : 999,
+      hint: city ? "" : far ? `Cerca de ${far.name} (${Math.round(far.distKm)} km)` : "Clic para identificar el núcleo",
     };
   }
 

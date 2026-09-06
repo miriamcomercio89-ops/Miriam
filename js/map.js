@@ -44,20 +44,38 @@
       game.onMapClick(e.latlng.lat, e.latlng.lng);
     });
     map.on("moveend zoomend", () => refresh());
+    let hoverTimer = 0;
+    let hoverSeq = 0;
     map.on("mousemove", (e) => {
       if (!game || !game.state) return;
       const tip = document.getElementById("map-tip");
       if (!tip) return;
-      const est = SABOR.estimateHover(e.latlng.lat, e.latlng.lng, game.state.gameTime);
+      const lat = e.latlng.lat;
+      const lon = e.latlng.lng;
+      const est = SABOR.estimateHover(lat, lon, game.state.gameTime);
       const land = est.distKm < 180;
       tip.style.display = "block";
       tip.style.left = e.originalEvent.clientX + 14 + "px";
       tip.style.top = e.originalEvent.clientY + 14 + "px";
-      tip.innerHTML = `<b>${est.city}</b><div>${est.country}</div><div>Alquiler est. local ${U.formatMoney(est.rentMonthly)}/mes</div><div>${land ? "Probablemente edificable — clic para OSM" : "Lejos de ciudades: posible agua o desierto"}</div>`;
+      tip.innerHTML = `<b>${est.city}</b><div>${est.country}${est.hint ? " · " + est.hint : ""}</div><div>Alquiler est. local ${U.formatMoney(est.rentMonthly)}/mes</div><div>${land ? "Identificando núcleo OSM…" : "Lejos de ciudades: posible agua o desierto"}</div>`;
+      const seq = ++hoverSeq;
+      clearTimeout(hoverTimer);
+      hoverTimer = setTimeout(() => {
+        GEO.reverseFast(lat, lon)
+          .then((raw) => {
+            if (seq !== hoverSeq) return;
+            const p = GEO.enrich(raw);
+            const sett = GEO.formatSettlement(p);
+            const where = p.city ? sett.title : est.city;
+            tip.innerHTML = `<b>${where}</b><div>${sett.subtitle || est.country}</div><div>${p.settlementLabel ? p.settlementLabel + " · " : ""}Pob. est. ${U.formatInt((p.popK || 0) * 1000)}</div><div>Alquiler est. local ${U.formatMoney(est.rentMonthly)}/mes</div><div>${p.ok === false ? p.reason : "Clic para abrir ficha de construcción"}</div>`;
+          })
+          .catch(() => {});
+      }, 320);
     });
     map.on("mouseout", () => {
       const tip = document.getElementById("map-tip");
       if (tip) tip.style.display = "none";
+      clearTimeout(hoverTimer);
     });
     return map;
   }

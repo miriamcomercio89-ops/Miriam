@@ -418,14 +418,19 @@
   }
 
   function estimatePopK(place) {
-    const type = (place.type || place.osmValue || "").toLowerCase();
-    const city = findCityByName(place.city, place.countryCode) || nearestCity(place.lat, place.lon, 60);
-    if (city) return city.popK;
-    if (type.includes("city") || type === "administrative") return 180;
+    const type = (place.settlementKind || place.type || place.osmValue || "").toLowerCase();
+    const named = findCityByName(place.city, place.countryCode);
+    if (named) return named.popK;
+    if (type.includes("city") || type === "administrative") {
+      const metro = nearestCity(place.lat, place.lon, 18);
+      return metro ? metro.popK : 180;
+    }
     if (type.includes("town")) return 28;
     if (type.includes("suburb") || type.includes("neighbourhood") || type.includes("quarter")) return 40;
     if (type.includes("village")) return 2.4;
-    if (type.includes("hamlet") || type.includes("isolated")) return 0.4;
+    if (type.includes("hamlet") || type.includes("isolated") || type.includes("farm")) return 0.4;
+    const nearby = nearestCity(place.lat, place.lon, 10);
+    if (nearby) return nearby.popK;
     return 8;
   }
 

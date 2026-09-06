@@ -646,17 +646,28 @@
       if (prevDesc) draftDesc = prevDesc.value.slice(0, DESC_MAX);
       const q = quote();
       const brand = BRAND.get(brandId);
+      const sett = GEO.formatSettlement(place);
+      const settChipClass =
+        place.settlementKind === "city" ? "sky" : place.settlementKind === "town" ? "ok" : place.settlementKind === "village" || place.settlementKind === "hamlet" ? "pueblo" : "";
       modal.innerHTML = `<div class="card" id="build-card">
         <h2>Nuevo local</h2>
         <div class="place-box">
-          <b>${place.display || place.city || ctry.name}</b>
-          <div>${place.cityMatch || place.city || "—"} · ${ctry.name}</div>
+          <b class="settlement-title">${U.escapeHtml(sett.title)}</b>
+          <div class="settlement-sub">${U.escapeHtml(sett.subtitle || ctry.name)}</div>
           <div class="place-flags">
+            <span class="chip ${settChipClass}">${U.escapeHtml(sett.label)}</span>
             <span class="chip">${SABOR.POI_L[place.poi] || "Urbano"}</span>
             ${place.metro ? `<span class="chip sky">Metro / estación</span>` : ""}
             ${place.pedestrian ? `<span class="chip ok">Peatonal</span>` : ""}
           </div>
-          <div class="muted">${place.street || ""} ${place.osmKey ? " · OSM " + place.osmKey + "/" + place.osmValue : ""}</div>
+          <div class="muted">${U.escapeHtml(place.street || "")}${place.postcode ? " · CP " + U.escapeHtml(place.postcode) : ""}</div>
+          ${
+            place.metroName
+              ? `<div class="metro-hint">Ciudad de referencia (no es este núcleo): ${U.escapeHtml(place.metroName)}${
+                  place.metroKm != null ? " a " + Math.round(place.metroKm) + " km" : ""
+                }</div>`
+              : ""
+          }
           <div style="margin-top:8px" class="grid2">
             <div>Población est. <b>${U.formatInt((place.popK || 0) * 1000)}</b></div>
             <div>PIB/cap (2000×infl) <b>${U.formatMoney(ctry.gdppc * infl)}</b></div>
@@ -818,7 +829,7 @@
           </div>
           <p>${brand.tagline}</p>
           <p class="muted">Filial de ${SABOR.HOLDING} · ${brand.name} · ${brand.cuisines.join(", ")} · ${SIM.sizeOf(r.size).name} · ${brand.dishes.length} platos</p>
-          <p class="muted">${r.city}, ${r.countryName} · ${SABOR.POI_L[r.poi] || r.poi} · gusto ×${SABOR.tasteFit(brand, r.country).toFixed(2)}</p>
+          <p class="muted">${r.settlementKind === "village" || r.settlementKind === "hamlet" ? "Pueblo de " : r.settlementKind === "city" ? "Ciudad de " : ""}${r.city}${r.municipality && r.municipality !== r.city ? " · " + r.municipality : ""}, ${r.countryName} · ${SABOR.POI_L[r.poi] || r.poi} · gusto ×${SABOR.tasteFit(brand, r.country).toFixed(2)}</p>
           <div class="place-flags">
             ${r.size === "ghost" ? `<span class="chip violet">Cocina fantasma</span>` : ""}
             ${r.size === "food_hall" ? `<span class="chip warn">Food hall</span>` : ""}

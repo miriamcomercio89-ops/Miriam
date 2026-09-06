@@ -625,7 +625,7 @@
     const quote = opts.quote;
     const r = {
       id: U.uid("r"),
-      name: `${brand.name} · ${opts.place.cityMatch || opts.place.city || opts.place.countryName}`,
+      name: `${brand.name} · ${opts.place.city || opts.place.municipality || opts.place.countryName}`,
       brandId: brand.id,
       size: opts.size,
       lat: opts.place.lat,
@@ -633,8 +633,10 @@
       gh: U.geohash(opts.place.lat, opts.place.lon, 5),
       country: opts.place.countryCode,
       countryName: opts.place.countryName,
-      city: opts.place.cityMatch || opts.place.city || "",
-      region: opts.place.region || "",
+      city: opts.place.city || opts.place.municipality || "",
+      municipality: opts.place.municipality || "",
+      settlementKind: opts.place.settlementKind || "",
+      region: opts.place.region || opts.place.province || "",
       address: opts.place.display,
       street: opts.place.street || "",
       osmKey: opts.place.osmKey,

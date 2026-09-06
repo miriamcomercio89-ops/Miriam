@@ -242,9 +242,13 @@ button { cursor: pointer; }
   background: var(--sand); border-radius: 14px; padding: 12px; font-size: 13px; margin: 10px 0;
 }
 .place-box b { font-family: var(--display); font-size: 16px; display: block; margin-bottom: 4px; }
+.place-box .settlement-title { font-size: 20px; margin-bottom: 2px; }
+.place-box .settlement-sub { color: var(--muted); margin: 0 0 8px; font-size: 13px; }
+.place-box .metro-hint { font-size: 12px; color: var(--muted); margin: 6px 0 0; }
+.chip.pueblo { background: #ead9b2; color: #5c3d12; }
 
 .brand-grid {
-  display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; max-height: 280px; overflow: auto;
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; max-height: 340px; overflow: auto;
   padding: 4px;
 }
 .brand-tile {
@@ -362,7 +366,7 @@ table.data tr:hover td { background: #fff6e8; }
 .pin-loss { box-shadow: 0 0 0 3px #e85d4c !important; }
 .logo img { width: 100%; height: 100%; max-width: 64px; max-height: 64px; object-fit: cover; display: block; }
 .brand-tile img {
-  width: 44px !important; height: 44px !important; max-width: 44px; max-height: 44px;
+  width: 64px !important; height: 64px !important; max-width: 64px; max-height: 64px;
   object-fit: cover; display: block; border-radius: 12px;
 }
 .hours-presets { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }

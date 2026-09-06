@@ -306,7 +306,7 @@
     b.holding = HOLDING;
     b.tierInfo = BRAND.tiers[b.tier];
     if (h.dishes) b.dishes = h.dishes;
-    b.logoFile = "img/filiales/" + b.id + ".png";
+    b.logoFile = "img/filiales/" + b.id + ".png?v=lg1";
     b.logo = `<img src="${b.logoFile}" alt="${b.name}" width="64" height="64">`;
   }
 
