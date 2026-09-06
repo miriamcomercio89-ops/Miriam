@@ -172,8 +172,9 @@ button { cursor: pointer; }
   padding: 8px; margin-bottom: 7px; cursor: pointer; text-align: left; width: 100%;
 }
 .list-item:hover { border-color: var(--teal); }
-.list-item img, .list-item .logo {
-  width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0; overflow: hidden;
+.list-item img, .list-item .logo, .list-item .logo img {
+  width: 40px !important; height: 40px !important; max-width: 40px; max-height: 40px;
+  border-radius: 10px; flex-shrink: 0; overflow: hidden; object-fit: cover;
 }
 .list-item .logo svg { width: 40px; height: 40px; display: block; }
 .list-item .meta { flex: 1; min-width: 0; }
@@ -290,12 +291,30 @@ table.data tr:hover td { background: #fff6e8; }
 }
 .slot:hover { background: rgba(255,255,255,.16); }
 
-.brand-pin, .agg-pin, .city-pin { background: none !important; border: 0 !important; }
-.pin-wrap {
-  width: 42px; height: 42px; border-radius: 14px; overflow: hidden;
-  box-shadow: 0 8px 18px rgba(0,0,0,.25); position: relative; border: 2px solid #fff;
+.brand-pin, .agg-pin, .city-pin {
+  background: none !important;
+  border: 0 !important;
+  overflow: visible !important;
 }
-.pin-wrap svg { display: block; width: 100%; height: 100%; }
+.leaflet-div-icon.brand-pin,
+.leaflet-div-icon.city-pin,
+.leaflet-div-icon.agg-pin {
+  background: transparent !important;
+  border: none !important;
+}
+.pin-wrap {
+  width: 36px; height: 36px; border-radius: 12px; overflow: hidden;
+  box-shadow: 0 8px 18px rgba(0,0,0,.25); position: relative; border: 2px solid #fff;
+  flex-shrink: 0;
+}
+.pin-wrap img, .pin-wrap svg {
+  display: block; width: 100% !important; height: 100% !important;
+  max-width: 40px !important; max-height: 40px !important; object-fit: cover;
+}
+.leaflet-marker-pane img {
+  max-width: 40px !important;
+  max-height: 40px !important;
+}
 .pin-badge {
   position: absolute; right: -6px; top: -6px; background: var(--ink); color: #fff;
   font-size: 10px; padding: 1px 5px; border-radius: 8px; font-weight: 700;
@@ -304,10 +323,19 @@ table.data tr:hover td { background: #fff6e8; }
   background: var(--paper-solid); border-radius: 16px; padding: 6px 10px;
   box-shadow: 0 10px 22px rgba(0,0,0,.2); border: 2px solid #fff;
   display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--ink);
+  max-width: 160px;
 }
 .agg-bubble strong, .city-bubble strong { display: block; font-size: 14px; }
 .agg-bubble span, .city-bubble span { color: var(--muted); white-space: nowrap; max-width: 90px; overflow: hidden; text-overflow: ellipsis; }
-.city-bubble svg { width: 28px; height: 28px; border-radius: 8px; }
+.city-bubble img, .city-bubble svg {
+  width: 28px !important; height: 28px !important;
+  max-width: 28px !important; max-height: 28px !important;
+  border-radius: 8px; object-fit: cover; flex-shrink: 0; display: block;
+}
+.leaflet-marker-pane .city-bubble img {
+  max-width: 28px !important;
+  max-height: 28px !important;
+}
 
 .bar {
   height: 8px; background: #efe6d4; border-radius: 99px; overflow: hidden;
@@ -319,7 +347,7 @@ table.data tr:hover td { background: #fff6e8; }
 .alerts .al.bad { background: #fde8e6; color: #9b2226; }
 .legend { padding: 8px 12px 4px; display: flex; flex-wrap: wrap; gap: 6px; max-height: 88px; overflow: auto; border-top: 1px solid var(--line); }
 .legend span { display: flex; align-items: center; gap: 4px; font-size: 10px; background: #fff; border-radius: 999px; padding: 2px 6px 2px 2px; }
-.legend img { width: 18px; height: 18px; border-radius: 6px; }
+.legend img { width: 18px !important; height: 18px !important; max-width: 18px; max-height: 18px; border-radius: 6px; object-fit: cover; }
 .jump-row { display: flex; gap: 6px; padding: 8px 12px 12px; }
 .map-tip {
   position: fixed; z-index: 850; display: none; pointer-events: none;
@@ -328,7 +356,11 @@ table.data tr:hover td { background: #fff6e8; }
 }
 .pin-gain { box-shadow: 0 0 0 3px #2a9d8f !important; }
 .pin-loss { box-shadow: 0 0 0 3px #e85d4c !important; }
-.pin-wrap img, .logo img, .brand-tile img, .city-bubble img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.logo img { width: 100%; height: 100%; max-width: 64px; max-height: 64px; object-fit: cover; display: block; }
+.brand-tile img {
+  width: 44px !important; height: 44px !important; max-width: 44px; max-height: 44px;
+  object-fit: cover; display: block; border-radius: 12px;
+}
 .hours-presets { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
 .hours-presets .btn { white-space: nowrap; }
 .hours-grid { display: grid; grid-template-columns: 40px 36px 64px 64px 64px 64px; gap: 4px; align-items: center; font-size: 12px; }

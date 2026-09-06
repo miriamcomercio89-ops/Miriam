@@ -62,13 +62,18 @@
     return map;
   }
 
-  function brandIcon(brand, extra, size = 40) {
+  function pinLogo(brand, px) {
+    const src = (brand && brand.logoFile) || "";
+    return `<img class="pin-logo" src="${src}" alt="" width="${px}" height="${px}" decoding="async">`;
+  }
+
+  function brandIcon(brand, extra, size = 36) {
     const badge = extra
       ? `<span class="pin-badge">${extra > 999 ? "999+" : extra}</span>`
       : "";
     return L.divIcon({
       className: "brand-pin",
-      html: `<div class="pin-wrap" style="--c:${brand.color};--c2:${brand.color2}">${brand.logo}${badge}</div>`,
+      html: `<div class="pin-wrap" style="width:${size}px;height:${size}px;--c:${brand.color};--c2:${brand.color2}">${pinLogo(brand, size)}${badge}</div>`,
       iconSize: [size, size],
       iconAnchor: [size / 2, size / 2],
     });
@@ -84,12 +89,12 @@
   }
 
   function cityIcon(count, name, brand) {
-    const logo = brand ? brand.logo : "";
+    const logo = brand ? pinLogo(brand, 28) : "";
     return L.divIcon({
       className: "city-pin",
       html: `<div class="city-bubble" style="--c:${brand ? brand.color : "#2a9d8f"}">${logo}<div><strong>${U.formatInt(count)}</strong><span>${name}</span></div></div>`,
-      iconSize: [120, 44],
-      iconAnchor: [60, 22],
+      iconSize: [132, 44],
+      iconAnchor: [66, 22],
     });
   }
 
@@ -184,7 +189,7 @@
         if (g.n === 1) {
           addRest(g.sample);
         } else {
-          const m = L.marker([lat, lon], { icon: brandIcon(brand, g.n, 46), keyboard: false });
+          const m = L.marker([lat, lon], { icon: brandIcon(brand, g.n, 36), keyboard: false });
           m.on("click", (ev) => {
             L.DomEvent.stop(ev);
             map.setView([lat, lon], Math.min(19, z + 2));
@@ -202,7 +207,7 @@
     const profit = (r.finance.revTotal || 0) - (r.finance.costTotal || 0);
     const heat = game.heatmap ? (profit >= 0 ? " pin-gain" : " pin-loss") : "";
     const extra = r.size === "food_hall" ? 1 + (r.hallBrands || []).length : r.size === "ghost" ? "CF" : 0;
-    const m = L.marker([r.lat, r.lon], { icon: brandIcon(brand, extra, r.size === "food_hall" ? 48 : 42), keyboard: false });
+    const m = L.marker([r.lat, r.lon], { icon: brandIcon(brand, extra, r.size === "food_hall" ? 40 : 36), keyboard: false });
     if (heat || r.size === "ghost" || r.size === "food_hall") {
       const ic = m.options.icon;
       let cls = "pin-wrap" + heat;
