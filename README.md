@@ -1,21 +1,22 @@
-# Miriam — Administración de Loterías (proyecto)
+# Costa Aurora — Constructor de Resorts
 
-Proyecto: videojuego/simulador de gestión de una administración de loterías ubicado en Álora.
+Juego de construcción hotelera en el navegador. **No hay que instalar nada.**
 
-Este repositorio contiene el scaffold inicial del proyecto: una aplicación en HTML/CSS/JS que corre totalmente en el navegador (sin servidor), usa localStorage para persistencia y permite exportar/importar el estado en JSON.
+## Cómo jugar
 
-Características del scaffold inicial:
-- Reloj de juego con escala temporal: el tiempo del juego va 4× más lento que el real (gameTime = start + elapsed * 0.25).
-- Lógica de apertura de oficina: 09:00–14:00 y 17:00–22:00 (hora del juego). Cerrado sábados y domingos. Festivos habilitables manualmente.
-- Funciones básicas de exportar/importar JSON del estado del juego.
-- Estructura básica para añadir los juegos, ventas, contabilidad, clientes, etc.
+1. Descarga la carpeta o el ZIP.
+2. Haz **doble clic** en `index.html`.
+3. Pulsa **Nueva partida**.
 
-Cómo usar:
-1. Clona el repo o descarga los archivos.
-2. Abre `index.html` en un navegador moderno.
-3. Usa los botones "Exportar" / "Importar" para guardar o restaurar el estado.
+## Construcción nueva
 
-Siguiente paso:
-- Crear la rama `feature/lottery-full` desde la rama por defecto y continuar con la implementación completa de juegos, contabilidad y UI.
+- **Pieza**: arrastra para elegir el **tamaño** de esa habitación o instalación.
+- **Relleno**: llena un área enorme con muchas piezas del tamaño elegido (cientos de miles de habitaciones).
+- **Ala**: pasillo y habitaciones a los dos lados.
+- **Seleccionar**: cambia el número de una habitación, o copia un ala (Ctrl+C) y pégala en otra planta (Ctrl+V).
+- **Zona**: Familiar, Adultos, Lujo, Todo incluido, Spa.
+- **Ampliar mapa**: el solar empieza en 720×440 y se puede hacer mucho más grande (hasta 4000×2800).
 
-Commit inicial: scaffold con reloj escalado y export/import JSON.
+Hay **más de 60 tipos de habitación** y muchas instalaciones (guardería, golf, casino, bufé, clínica, lavandería, jacuzzi, hammam…).
+
+El juego se guarda en el navegador. Si el resort es gigantesco, usa el botón de **descargar partida**.

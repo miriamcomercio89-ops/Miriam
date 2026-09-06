@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Costa Aurora — Constructor de Resorts</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏨</text></svg>" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div id="title-screen">
+    <div class="sky"></div>
+    <div class="sun"></div>
+    <div class="ocean-bg"></div>
+    <div class="title-card">
+      <p class="eyebrow">Simulador de construcción hotelera</p>
+      <h1>Costa Aurora</h1>
+      <p class="tagline">Arrastra para elegir el tamaño de cada habitación. Mapa enorme, cientos de miles de habitaciones y copiar alas entre plantas.</p>
+      <div class="title-actions">
+        <button id="btn-new" class="btn-gold">Nueva partida</button>
+        <button id="btn-continue" class="btn-ghost" hidden>Continuar</button>
+      </div>
+      <p class="hint-title">No hace falta instalar nada. Se guarda solo en este navegador.</p>
+    </div>
+  </div>
+
+  <div id="game" hidden>
+    <canvas id="world"></canvas>
+    <canvas id="minimap" width="220" height="140"></canvas>
+
+    <header class="hud-top">
+      <div class="brand">
+        <span class="logo">🏨</span>
+        <div>
+          <input id="resort-name" maxlength="28" spellcheck="false" value="Costa Aurora" />
+          <div class="stars" id="stars">★★☆☆☆</div>
+        </div>
+      </div>
+      <div class="stat"><span class="k">Caja</span><strong id="ui-money">350.000 €</strong></div>
+      <div class="stat"><span class="k">Día</span><strong id="ui-day">Día 1 · 08:00</strong></div>
+      <div class="stat"><span class="k">Huéspedes</span><strong id="ui-guests">0 / 0</strong></div>
+      <div class="stat"><span class="k">Habitaciones</span><strong id="ui-rooms">0</strong></div>
+      <div class="stat"><span class="k">Ocupación</span><strong id="ui-occ">0%</strong></div>
+      <div class="speed">
+        <button data-speed="0" title="Pausa">❚❚</button>
+        <button data-speed="1" class="on" title="Normal">▶</button>
+        <button data-speed="2" title="Rápido">▶▶</button>
+        <button data-speed="4" title="Muy rápido">▶▶▶</button>
+      </div>
+    </header>
+
+    <aside class="build-panel">
+      <div class="cats" id="cats"></div>
+      <div class="subcats" id="subcats"></div>
+      <input id="search" type="search" placeholder="Buscar pieza…" />
+      <div class="size-row">
+        <span>Tamaño</span>
+        <button id="w-minus">−</button>
+        <strong id="size-label">3 × 2</strong>
+        <button id="w-plus">+</button>
+        <button id="h-minus" title="Alto −">↕−</button>
+        <button id="h-plus" title="Alto +">↕+</button>
+      </div>
+      <div class="palette" id="palette"></div>
+    </aside>
+
+    <div id="inspector" hidden>
+      <p class="k">Selección</p>
+      <strong id="ins-type">—</strong>
+      <p id="ins-meta" class="muted"></p>
+      <label>Número de habitación
+        <input id="ins-num" maxlength="12" placeholder="101" />
+      </label>
+      <p id="ins-count" class="muted"></p>
+      <button id="ins-copy" class="btn-ghost">Copiar</button>
+      <button id="ins-delete">Demoler</button>
+    </div>
+
+    <div class="floor-bar">
+      <button id="btn-floor-down">−</button>
+      <div id="floor-label">Jardín · Planta 0</div>
+      <button id="btn-floor-up">+</button>
+      <button id="btn-add-floor" class="add-floor">Nueva planta</button>
+      <button id="btn-expand" class="add-floor">Ampliar mapa</button>
+    </div>
+
+    <div class="tool-bar">
+      <button class="tool on" data-tool="piece" title="Arrastra para el tamaño de UNA pieza">Pieza</button>
+      <button class="tool" data-tool="fill" title="Rellena el área con muchas piezas del tamaño elegido">Relleno</button>
+      <button class="tool" data-tool="wing" title="Pasillo y habitaciones a ambos lados">Ala</button>
+      <button class="tool" data-tool="select" title="Seleccionar, copiar y cambiar número">Seleccionar</button>
+      <button class="tool" data-tool="paste" title="Pegar ala copiada">Pegar</button>
+      <button class="tool" data-tool="zone" title="Pintar zona temática">Zona</button>
+      <button class="tool" data-tool="erase" title="Borrar">Borrar</button>
+      <button class="tool" data-tool="pan" title="Mover el mapa">Mover</button>
+      <button id="btn-undo">Deshacer</button>
+    </div>
+
+    <div class="zone-bar" id="zone-bar">
+      <span>Zona:</span>
+    </div>
+
+    <div id="cost-preview" hidden></div>
+    <div id="toast"></div>
+    <div id="help" hidden>
+      <div class="help-card">
+        <h2>Cómo construir</h2>
+        <ul>
+          <li><b>Pieza</b> — arrastra: esa caja ES una habitación o instalación (tú eliges el tamaño).</li>
+          <li><b>Relleno</b> — arrastra un área enorme y se llena de piezas del tamaño elegido. Así se hacen cientos de miles de habitaciones.</li>
+          <li><b>Ala</b> — pasillo central y habitaciones a los dos lados.</li>
+          <li><b>Seleccionar</b> — clica una habitación para cambiar su número, o arrastra para copiar un ala (Ctrl+C / Ctrl+V) y pegarla en otra planta.</li>
+          <li><b>Zona</b> — pinta Familiar, Adultos, Lujo, Todo incluido o Spa.</li>
+          <li><b>Ampliar mapa</b> — el solar empieza enorme y se puede hacer todavía más grande.</li>
+          <li>Sin <b>recepción</b> no entran huéspedes. Las plantas altas necesitan <b>ascensor</b>.</li>
+        </ul>
+        <button id="btn-close-help" class="btn-gold">Entendido</button>
+      </div>
+    </div>
+    <div id="confirm" hidden>
+      <div class="help-card">
+        <p id="confirm-text"></p>
+        <div class="title-actions">
+          <button id="confirm-ok" class="btn-gold">Construir</button>
+          <button id="confirm-no" class="btn-ghost">Cancelar</button>
+        </div>
+      </div>
+    </div>
+    <div id="expand" hidden>
+      <div class="help-card">
+        <h2>Ampliar el solar</h2>
+        <p class="muted">Más terreno hacia un lado. Cuesta dinero.</p>
+        <div class="expand-grid">
+          <button data-dir="n" data-amt="150">Norte +150</button>
+          <button data-dir="s" data-amt="150">Sur (playa) +150</button>
+          <button data-dir="w" data-amt="150">Oeste +150</button>
+          <button data-dir="e" data-amt="150">Este +150</button>
+          <button data-dir="n" data-amt="400">Norte +400</button>
+          <button data-dir="e" data-amt="400">Este +400</button>
+        </div>
+        <button id="expand-close" class="btn-ghost">Cerrar</button>
+      </div>
+    </div>
+
+    <div class="hud-right">
+      <button id="btn-help" class="icon-btn" title="Ayuda">?</button>
+      <button id="btn-save" class="icon-btn" title="Guardar">💾</button>
+      <button id="btn-export" class="icon-btn" title="Descargar partida">⬇</button>
+      <label class="icon-btn" title="Cargar partida">⬆<input id="import-file" type="file" accept="application/json" hidden /></label>
+    </div>
+  </div>
+
+  <script src="js/game.js"></script>
+</body>
+</html>
