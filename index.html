@@ -3,17 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Saborama — Imperio Gastronómico</title>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230f7a6c'/%3E%3Ctext x='32' y='44' text-anchor='middle' font-size='36' fill='white' font-family='Georgia'%3ES%3C/text%3E%3C/svg%3E" />
+  <title>Horizon Restaurant Group</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%231d3557'/%3E%3Ctext x='32' y='44' text-anchor='middle' font-size='34' fill='white' font-family='Georgia'%3EH%3C/text%3E%3C/svg%3E" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="vendor/leaflet.css" />
-  <link rel="stylesheet" href="css/game.css?v=photo3" />
+  <link rel="stylesheet" href="css/game.css?v=hz1" />
 </head>
 <body>
   <a class="skip" href="#search">Ir al buscador</a>
-  <div id="map" role="application" aria-label="Mapa mundial Saborama"></div>
+  <div id="map" role="application" aria-label="Mapa mundial Horizon Restaurant Group"></div>
   <div id="hud">
     <aside id="panel" aria-label="Panel de gestión">
       <div class="panel-tabs" role="tablist">
@@ -70,10 +70,10 @@
 
     <header id="topbar">
       <div class="wordmark">
-        <div class="mark">S</div>
+        <div class="mark">H</div>
         <div>
-          <h1>Saborama</h1>
-          <small>Matriz gastronómica</small>
+          <h1>Horizon</h1>
+          <small>Restaurant Group</small>
         </div>
       </div>
       <div class="cash" id="cash">0 €</div>
@@ -104,11 +104,11 @@
 
   <div class="splash" id="splash">
     <div class="splash-inner">
-      <div class="mark" style="width:52px;height:52px;border-radius:16px;font-size:26px;margin-bottom:14px;">S</div>
-      <h1>Saborama</h1>
-      <p>La matriz Saborama y sus 50 filiales. Empiezas el 1 de enero de 2000. Un gerente IA en cada local lleva carta y precios.</p>
+      <div class="mark" style="width:52px;height:52px;border-radius:16px;font-size:26px;margin-bottom:14px;">H</div>
+      <h1>Horizon Restaurant Group</h1>
+      <p>La matriz y sus 50 marcas, de la comida rápida a la alta cocina. Empiezas el 1 de enero de 2000. Un gerente IA en cada local lleva carta y precios.</p>
       <div class="actions">
-        <input id="new-name" value="Saborama 2000" style="padding:12px;border-radius:14px;border:0;font-weight:600" />
+        <input id="new-name" value="Horizon 2000" style="padding:12px;border-radius:14px;border:0;font-weight:600" />
         <button type="button" class="btn primary" id="new-game" onclick="window.startMeridiano('new')">Nueva partida</button>
         <button type="button" class="btn" id="continue-game" style="background:#fff;" onclick="window.startMeridiano('continue')">Continuar</button>
       </div>
@@ -135,15 +135,16 @@
   <script src="vendor/leaflet.js"></script>
   <script src="js/util.js?v=photo2"></script>
   <script src="js/world.js"></script>
-  <script src="js/brands.js"></script>
-  <script src="js/menu-extra.js"></script>
-  <script src="js/saborama.js"></script>
+  <script src="js/brands.js?v=hz1"></script>
+  <script src="js/horizon.js?v=hz1"></script>
+  <script src="js/menu-extra.js?v=hz1"></script>
+  <script src="js/saborama.js?v=hz1"></script>
   <script src="js/geo.js"></script>
   <script src="js/sim.js?v=photo2"></script>
   <script src="js/store.js?v=photo2"></script>
   <script src="js/map.js?v=pin3"></script>
-  <script src="js/ui.js?v=photo3"></script>
-  <script src="js/app.js?v=photo2"></script>
+  <script src="js/ui.js?v=hz1"></script>
+  <script src="js/app.js?v=hz1"></script>
   <script>
     setTimeout(function () {
       if (window.GAME) return;

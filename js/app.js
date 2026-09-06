@@ -52,14 +52,14 @@
   function newGame() {
     try {
       const input = U.$("#new-name");
-      const name = ((input && input.value) || "Saborama 2000").trim() || "Saborama 2000";
+      const name = ((input && input.value) || "Horizon 2000").trim() || "Horizon 2000";
       game.state = STORE.blankState(name);
       try {
         SABOR.ensureBooks(game.state);
       } catch (_) {}
       boot();
       STORE.save(game.state).catch(function () {});
-      UI.toast("Saborama abre libros. Caja: 2.000.000 €. 1 de enero de 2000.");
+      UI.toast("Horizon abre libros. Caja: 2.000.000 €. 1 de enero de 2000.");
     } catch (err) {
       console.error(err);
       alert("No se pudo empezar la partida: " + (err && err.message ? err.message : err));

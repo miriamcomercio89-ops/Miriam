@@ -1,4 +1,4 @@
-/* Saborama — packs extra de carta por cocina y tramo */
+/* Horizon Restaurant Group — packs extra de carta por cocina y tramo */
 (function () {
   const D = BRAND.D;
   const PACKS = {
@@ -456,6 +456,64 @@
       D("Absenta drip", ["absenta", "azucar", "agua"], 2.8, 9.5, "a*"),
       D("Corpse #2", ["ginebra", "licor", "absenta", "limon"], 2.6, 10, "a"),
       D("Chocolate & sal", ["chocolate", "sal"], 0.9, 4.6, "v"),
+    ],
+    wok: [
+      D("Chow mein", ["noodles", "verdura", "soja"], 1.4, 6.8, "v"),
+      D("Ternera wok", ["ternera", "pimiento", "soja"], 2.0, 8.6, "s"),
+    ],
+    pasta: [
+      D("Aglio e olio", ["pasta", "ajo", "aceite"], 1.1, 6.2, "v"),
+      D("Arrabbiata", ["pasta", "tomate", "chile"], 1.3, 6.8, "vs"),
+    ],
+    cubana: [
+      D("Ropa vieja", ["ternera", "tomate", "pimiento"], 2.0, 9.4, ""),
+      D("Moros y cristianos", ["arroz", "judias"], 1.0, 5.2, "v"),
+      D("Mojito", ["ron", "menta", "lima", "azucar"], 1.6, 7.2, "a"),
+    ],
+    diner: [
+      D("Patty melt", ["pan", "carne_picada", "cebolla", "cheddar"], 1.8, 8.2, ""),
+      D("Root beer float", ["soda", "leche"], 0.6, 3.8, "v"),
+    ],
+    vegetariana: [
+      D("Hamburguesa vegetal", ["pan_burger", "tofu", "lechuga"], 1.4, 7.2, "v"),
+      D("Lasaña verdura", ["pasta", "verdura", "ricotta"], 1.7, 8.8, "v"),
+    ],
+    ensaladas: [
+      D("Bowl garbanzo", ["garbanzo", "lechuga", "tomate"], 1.2, 6.4, "v"),
+      D("Wrap falafel", ["pita", "garbanzo", "tahini"], 1.3, 6.6, "v"),
+    ],
+    brunch: [
+      D("Shakshuka", ["huevo", "tomate", "pimiento"], 1.4, 8.2, "v"),
+      D("Banana bread", ["platano", "masa", "azucar"], 0.8, 4.4, "v"),
+    ],
+    desayunos: [
+      D("Tostada mantequilla", ["pan", "mantequilla", "mermelada"], 0.5, 3.2, "v"),
+      D("Café con leche", ["cafe", "leche"], 0.4, 2.6, "v"),
+    ],
+    postres: [
+      D("Coulant", ["chocolate", "huevo", "azucar"], 1.1, 5.8, "v"),
+      D("Tarta queso", ["queso", "azucar", "galleta"], 1.0, 5.4, "v"),
+      D("Helado 2 bolas", ["leche", "azucar"], 0.7, 3.8, "v"),
+    ],
+    chocolate: [
+      D("Fondue chocolate", ["chocolate", "fruta"], 1.6, 7.2, "v"),
+      D("Chocolate 70%", ["chocolate"], 0.8, 4.4, "v"),
+    ],
+    heladería: [
+      D("Coppa mista", ["leche", "azucar", "fruta"], 1.1, 5.2, "v"),
+      D("Granita limón", ["limon", "azucar", "hielo"], 0.5, 3.4, "v"),
+    ],
+    banquetes: [
+      D("Mesa de quesos", ["queso", "pan", "miel"], 2.4, 9.8, "v"),
+      D("Solomillo banquetes", ["ternera", "sal"], 4.2, 18, ""),
+    ],
+    "food hall": [
+      D("Street bao", ["bao", "cerdo"], 1.4, 6.5, ""),
+      D("Street ramen", ["fideos", "caldo"], 1.8, 8.2, ""),
+    ],
+    internacional: [
+      D("Steak frites", ["ternera", "patata"], 3.4, 16, ""),
+      D("Ceviche copa", ["pescado", "lima", "cebolla"], 2.2, 11, ""),
     ],
   };
 

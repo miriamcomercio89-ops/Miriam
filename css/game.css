@@ -72,7 +72,7 @@ button { cursor: pointer; }
 }
 .mark {
   width: 34px; height: 34px; border-radius: 10px;
-  background: linear-gradient(135deg, #0f7a6c, #e85d4c);
+  background: linear-gradient(135deg, #1d3557, #0b7a68);
   color: #fff; display: grid; place-items: center;
   font-family: var(--display); font-weight: 600; font-size: 18px;
 }
@@ -275,7 +275,7 @@ table.data tr:hover td { background: #fff6e8; }
 
 .splash {
   position: absolute; inset: 0; z-index: 900;
-  background: linear-gradient(160deg, #0b5348 0%, #1d3557 42%, #e85d4c 160%);
+  background: linear-gradient(160deg, #1d3557 0%, #0b5348 48%, #c9a227 160%);
   color: #fff; display: flex; align-items: center; justify-content: center;
 }
 .splash.hidden, .hidden { display: none !important; }

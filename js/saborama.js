@@ -1,24 +1,24 @@
 /* Saborama — gerente IA, horarios, turismo, gusto, alcohol, clima, alertas, sonido */
 (function (global) {
-  const HOLDING = "Saborama";
+  const HOLDING = "Horizon Restaurant Group";
 
   const DRY = new Set(["SA", "KW", "IR", "LY", "SD", "YE", "AF", "SO", "BN", "PK", "MR", "MV", "QA"]);
   const LICENSE = new Set(["US", "NO", "SE", "FI", "CA", "IS", "GB", "IE", "AU", "NZ"]);
   const STRICT_H = new Set(["NO", "SE", "FI", "IS", "RU"]);
 
   const TASTE = {
-    ES: ["española", "tapas", "mediterránea"],
+    ES: ["española", "tapas", "mediterránea", "brunch"],
     PT: ["portuguesa", "mediterránea", "pescado"],
-    FR: ["francesa", "alta cocina", "mediterránea"],
-    IT: ["italiana", "pizza", "alta cocina"],
+    FR: ["francesa", "alta cocina", "mediterránea", "brunch"],
+    IT: ["italiana", "pizza", "alta cocina", "pasta", "postres"],
     GR: ["griega", "mediterránea"],
     TR: ["turca", "kebab"],
     DE: ["alemana", "hot dog", "cerveza"],
-    GB: ["británica", "pescado", "pub"],
+    GB: ["británica", "pescado", "pub", "brunch", "café"],
     IE: ["británica", "pub"],
     PL: ["polaca", "del este"],
     RU: ["del este"],
-    US: ["americana", "hamburguesas", "barbacoa"],
+    US: ["americana", "hamburguesas", "barbacoa", "diner"],
     MX: ["mexicana", "tex-mex", "tequila"],
     AR: ["argentina", "empanadas", "parrilla"],
     BR: ["brasileña", "parrilla"],
@@ -27,7 +27,7 @@
     CO: ["empanadas"],
     JP: ["japonesa", "sushi", "ramen", "izakaya", "kaiseki"],
     KR: ["coreana"],
-    CN: ["china", "bao", "dim sum", "cantonesa"],
+    CN: ["china", "bao", "dim sum", "cantonesa", "wok"],
     TW: ["china", "dim sum"],
     HK: ["china", "dim sum", "cantonesa"],
     TH: ["tailandesa"],
@@ -48,7 +48,7 @@
     AE: ["levantina", "india"],
     SA: ["levantina"],
     JM: ["caribeña"],
-    CU: ["caribeña"],
+    CU: ["caribeña", "cubana"],
     DO: ["caribeña"],
     TT: ["caribeña"],
     AU: ["americana", "poké", "hawaiana"],
@@ -476,7 +476,7 @@
     if (d >= 2020)
       return {
         y: 2020,
-        title: "Saborama Live",
+        title: "Horizon Live",
         kicker: "Era delivery y reels",
         tone: "Titulares cortos, emojis de relleno y apps de comida.",
         ink: "#0b5348",
@@ -486,7 +486,7 @@
     if (d >= 2010)
       return {
         y: 2010,
-        title: "Saborama 24h",
+        title: "Horizon 24h",
         kicker: "Food trucks y estrellas",
         tone: "Crónicas de expansión, street food y críticas con foto.",
         ink: "#1d3557",
@@ -495,7 +495,7 @@
       };
     return {
       y: 2000,
-      title: "Diario Saborama",
+      title: "Diario Horizon",
       kicker: "El nuevo milenio",
       tone: "Editorial de papel, euro a la vista y carta de siempre.",
       ink: "#3d2b1f",
@@ -561,7 +561,7 @@
         t: Date.UTC(y + 1, 0, 1, 0, 5, 0),
         kind: "yearbook",
         decade: Math.floor(y / 10) * 10,
-        text: "Anuario " + y + " de Saborama. La filial estrella y el local que más sangra, en Prensa.",
+        text: "Anuario " + y + " de Horizon. La filial estrella y el local que más sangra, en Prensa.",
       });
       last = book;
     }

@@ -159,6 +159,20 @@
     perejil: { n: "Perejil", d: 5, c: 0.15, g: "verde" },
     pepinillo: { n: "Pepinillo", d: 180, c: 0.25, g: "seco" },
     remolacha: { n: "Remolacha", d: 14, c: 0.22, g: "verde" },
+    avena: { n: "Avena", d: 365, c: 0.18, g: "seco" },
+    calabaza: { n: "Calabaza", d: 20, c: 0.22, g: "verde" },
+    fruta: { n: "Fruta", d: 5, c: 0.4, g: "verde" },
+    galleta: { n: "Galleta", d: 40, c: 0.3, g: "seco" },
+    mermelada: { n: "Mermelada", d: 180, c: 0.35, g: "seco" },
+    repollo: { n: "Repollo", d: 12, c: 0.18, g: "verde" },
+    ricotta: { n: "Ricotta", d: 10, c: 0.9, g: "frio" },
+    verdura: { n: "Verdura", d: 5, c: 0.25, g: "verde" },
+    sal: { n: "Sal", d: 2000, c: 0.02, g: "seco" },
+    yema: { n: "Yema", d: 10, c: 0.2, g: "frio" },
+    zanahoria: { n: "Zanahoria", d: 20, c: 0.18, g: "verde" },
+    hierbas: { n: "Hierbas", d: 8, c: 0.3, g: "verde" },
+    hinojo: { n: "Hinojo", d: 8, c: 0.35, g: "verde" },
+    avellana: { n: "Avellana", d: 180, c: 0.7, g: "seco" },
   };
 
   const TIERS = {
@@ -1221,7 +1235,7 @@
   const VALID = new Set(Object.keys(ING));
   const FALLBACK_ING = "aceite";
   for (const b of BRANDS) {
-    b.holding = "Saborama";
+    b.holding = "Horizon Restaurant Group";
     b.logoFile = "img/filiales/" + b.id + ".png";
     b.logo = `<img src="${b.logoFile}" alt="${b.name}" width="64" height="64">`;
     b.tierInfo = TIERS[b.tier];
@@ -1247,7 +1261,7 @@
     cuisines: CUISINES,
     get: brand,
     logoSVG,
-    HOLDING: "Saborama",
+    HOLDING: "Horizon Restaurant Group",
     D,
     normalizeMenus,
   };

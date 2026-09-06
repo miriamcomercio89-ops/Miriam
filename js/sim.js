@@ -670,7 +670,7 @@
       closedReason: "",
       sellValue: quote.total * 0.62,
       managerAI: true,
-      managerNote: "El gerente de Saborama tomará carta y precios al abrir.",
+      managerNote: "El gerente de Horizon tomará carta y precios al abrir.",
       lastManagerRun: 0,
       hours: SABOR.defaultHours(brand),
       hoursCustom: false,

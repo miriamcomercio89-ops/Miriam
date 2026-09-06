@@ -127,7 +127,7 @@
           t: Date.UTC(2000, 0, 1, 8, 0, 0),
           kind: "editorial",
           decade: 2000,
-          text: "1 de enero de 2000. Saborama abre libros. El mundo es una carta en blanco.",
+          text: "1 de enero de 2000. Horizon Restaurant Group abre libros. El mundo es una carta en blanco.",
         },
       ],
       competitors,

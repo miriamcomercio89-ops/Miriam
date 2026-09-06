@@ -555,7 +555,7 @@
     const modal = U.$("#modal");
     modal.innerHTML = `<div class="card" style="width:min(720px,96%);background:${dec.paper};color:${dec.ink}">
       <div class="kicker" style="color:${dec.accent}">${dec.title} · anuario</div>
-      <h2>Saborama ${yb.year}</h2>
+      <h2>Horizon ${yb.year}</h2>
       <p class="muted">${dec.tone}</p>
       <div class="kpis">
         <div class="kpi teal"><b>${U.formatMoney(yb.yRev)}</b><span>Ingresos del año</span></div>
@@ -1271,7 +1271,7 @@
         const desc = String(r.description || "").replace(/[\r\n;]+/g, " ").trim();
         lines.push([r.name, b.name, r.city, r.countryName, r.status, r.stars, p.toFixed(2), desc].join(";"));
       });
-      U.download("saborama-locales.csv", lines.join("\n"));
+      U.download("horizon-locales.csv", lines.join("\n"));
     };
     U.$("#ct").onclick = closeModal;
     paintRows();
