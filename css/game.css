@@ -23,7 +23,7 @@ html, body { height: 100%; margin: 0; }
 body {
   font-family: var(--font);
   color: var(--ink);
-  background: #d9e4d4;
+  background: #5ec4ea;
   overflow: hidden;
 }
 
@@ -41,7 +41,11 @@ button { cursor: pointer; }
 }
 
 #map { position: absolute; inset: 0; z-index: 0; }
-.leaflet-container { font-family: var(--font); background: #cddfc8; }
+.leaflet-container { font-family: var(--font); background: #4eb6e8; }
+/* Saturate the basemap only (tile pane), not pins or HUD. */
+.leaflet-tile-pane {
+  filter: saturate(1.85) contrast(1.14) brightness(1.04);
+}
 
 #hud {
   position: absolute;
@@ -330,8 +334,9 @@ table.data tr:hover td { background: #fff6e8; }
   font-size: 10px; padding: 1px 5px; border-radius: 8px; font-weight: 700;
 }
 .agg-bubble, .city-bubble {
-  background: var(--paper-solid); border-radius: 16px; padding: 6px 10px;
-  box-shadow: 0 10px 22px rgba(0,0,0,.2); border: 2px solid #fff;
+  background: linear-gradient(180deg, #fffef8, #e7f7ef);
+  border-radius: 16px; padding: 6px 10px;
+  box-shadow: 0 10px 22px rgba(0,0,0,.2); border: 2px solid #7fd3b0;
   display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--ink);
   max-width: 160px;
   overflow: hidden;

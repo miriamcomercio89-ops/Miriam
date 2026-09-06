@@ -12,22 +12,25 @@
       maxZoom: 19,
     }).setView([22, 12], 3);
 
-    /* Esri World Street Map: sin API key. Carto Voyager marca cada tesela con "API Key Required". */
-    const esri = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}", {
-      attribution: 'Teselas &copy; <a href="https://www.esri.com/">Esri</a> · datos &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-      maxZoom: 19,
+    /* OSM Carto: parques verdes, mar azul, calles en color. Sin API key.
+       Esri Street Map es beige; Carto Voyager marca "API Key Required". */
+    const vividOpts = { maxZoom: 19, className: "basemap-vivid" };
+    const osm = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      ...vividOpts,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
     }).addTo(map);
-    let osmFallback = false;
+    const esriTopo = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}", {
+      ...vividOpts,
+      attribution: 'Teselas &copy; <a href="https://www.esri.com/">Esri</a> · &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    });
+    let swapped = false;
     let tileErrs = 0;
-    esri.on("tileerror", () => {
-      if (osmFallback) return;
-      if (++tileErrs < 10) return;
-      osmFallback = true;
-      map.removeLayer(esri);
-      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-        maxZoom: 19,
-      }).addTo(map);
+    osm.on("tileerror", () => {
+      if (swapped) return;
+      if (++tileErrs < 8) return;
+      swapped = true;
+      map.removeLayer(osm);
+      esriTopo.addTo(map);
     });
 
     L.control.zoom({ position: "bottomright" }).addTo(map);
@@ -267,9 +270,11 @@
     c.width = 200;
     c.height = 110;
     const g = c.getContext("2d");
-    g.fillStyle = "#d5e4d0";
+    g.fillStyle = "#7ec8e8";
     g.fillRect(0, 0, 200, 110);
-    g.fillStyle = "#0f7a6c";
+    g.fillStyle = "#1a9b4a";
+    g.fillRect(0, 28, 200, 62);
+    g.fillStyle = "#e85d04";
     const list = (game.state && game.state.restaurants) || [];
     for (const r of list.slice(0, 2000)) {
       const x = ((r.lon + 180) / 360) * 200;
