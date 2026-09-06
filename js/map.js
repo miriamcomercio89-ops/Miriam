@@ -12,16 +12,26 @@
       maxZoom: 19,
     }).setView([22, 12], 3);
 
-    /* OSM Carto: parques verdes, mar azul, calles en color. Sin API key.
-       Esri Street Map es beige; Carto Voyager marca "API Key Required". */
-    const vividOpts = { maxZoom: 19, className: "basemap-vivid" };
+    /* Mundo: satélite Esri (océanos y continentes de color).
+       Ciudad: OSM Carto (parques, agua, calles). Sin API key.
+       Carto Voyager marca "API Key Required" en cada tesela. */
+    const sat = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
+      maxZoom: 6,
+      maxNativeZoom: 19,
+      className: "basemap-sat",
+      attribution: 'Imágenes &copy; <a href="https://www.esri.com/">Esri</a>',
+    }).addTo(map);
     const osm = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      ...vividOpts,
+      minZoom: 7,
+      maxZoom: 19,
+      className: "basemap-vivid",
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
     }).addTo(map);
     const esriTopo = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}", {
-      ...vividOpts,
-      attribution: 'Teselas &copy; <a href="https://www.esri.com/">Esri</a> · &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      minZoom: 7,
+      maxZoom: 19,
+      className: "basemap-vivid",
+      attribution: 'Teselas &copy; <a href="https://www.esri.com/">Esri</a>',
     });
     let swapped = false;
     let tileErrs = 0;

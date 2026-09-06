@@ -2,7 +2,7 @@
 
 Videojuego de gestión en el navegador: la matriz **Horizon Restaurant Group** y **50 marcas** independientes (de la comida rápida a la alta cocina) sobre el mapa real. Empiezas el **1 de enero de 2000** con 2.000.000 €.
 
-Cada local tiene un **gerente IA** que fija carta y precios. Teselas **OpenStreetMap** a color (sin API key; Esri Topo de reserva). Logos en `img/filiales/`.
+Cada local tiene un **gerente IA** que fija carta y precios. Mapa a color: **satélite** al alejar y **OpenStreetMap** al acercar (sin API key). Logos en `img/filiales/`.
 
 No hace falta servidor ni build. **Descomprime el ZIP**, entra en la carpeta (deben verse `index.html`, `js/`, `css/` y `vendor/`) y abre `index.html` en Chrome o Edge. No lo abras desde el visor de ZIP de Windows. El mapa necesita internet.
 
@@ -37,4 +37,4 @@ Cincuenta filiales con identidad propia (carta, tramo y colores). Un local = una
 
 ## Créditos de mapa
 
-© [OpenStreetMap](https://www.openstreetmap.org/copyright) · teselas OSM Carto (sin API key; reserva [Esri World Topo](https://www.esri.com/)) · geocodificación [Photon](https://photon.komoot.io/) (datos OSM).
+© [OpenStreetMap](https://www.openstreetmap.org/copyright) · teselas OSM Carto en ciudad · imágenes [Esri World Imagery](https://www.esri.com/) al alejar · geocodificación [Photon](https://photon.komoot.io/).

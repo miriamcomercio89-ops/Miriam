@@ -41,10 +41,12 @@ button { cursor: pointer; }
 }
 
 #map { position: absolute; inset: 0; z-index: 0; }
-.leaflet-container { font-family: var(--font); background: #4eb6e8; }
-/* Saturate the basemap only (tile pane), not pins or HUD. */
-.leaflet-tile-pane {
-  filter: saturate(1.85) contrast(1.14) brightness(1.04);
+.leaflet-container { font-family: var(--font); background: #1e7eb8; }
+.leaflet-layer.basemap-sat {
+  filter: saturate(1.45) contrast(1.12) brightness(1.08);
+}
+.leaflet-layer.basemap-vivid {
+  filter: saturate(1.9) contrast(1.16) brightness(1.05);
 }
 
 #hud {
