@@ -189,7 +189,15 @@
       return false;
     }
     s.cash -= quote.total;
-    const r = SIM.createRestaurant(s, { brandId, size: sizeId, place, quote, hallBrands: (extra && extra.hallBrands) || [] });
+    const r = SIM.createRestaurant(s, {
+      brandId,
+      size: sizeId,
+      place,
+      quote,
+      hallBrands: (extra && extra.hallBrands) || [],
+      photo: extra && extra.photo,
+      description: extra && extra.description,
+    });
     s.restaurants.push(r);
     try {
       SABOR.sfx.cash();

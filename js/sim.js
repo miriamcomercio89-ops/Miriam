@@ -683,6 +683,8 @@
       propertyValue: Math.round(quote.rentMonthly * 108),
       hallBrands: opts.hallBrands || [],
       delivery: sizeOf(opts.size).ghost ? true : false,
+      photo: U.safePhoto(opts.photo) || "",
+      description: String(opts.description || "").slice(0, 800),
     };
     return r;
   }

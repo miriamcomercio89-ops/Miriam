@@ -417,6 +417,34 @@ table.data tr:hover td { background: #fff6e8; }
 .kpi.sky { background: #e7f2ff; border-color: #b9d4f5; }
 .list-item .chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 3px; }
 
+.venue-meta { margin: 12px 0 16px; }
+.venue-photo {
+  display: flex; gap: 14px; align-items: flex-start; flex-wrap: wrap;
+  background: var(--sand); border-radius: 16px; padding: 12px;
+}
+.venue-photo-frame {
+  width: 220px; height: 140px; border-radius: 14px; overflow: hidden;
+  background: #1d3557; flex-shrink: 0; position: relative;
+  box-shadow: 0 8px 20px rgba(12, 28, 22, 0.12);
+}
+.venue-photo-frame img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+.venue-photo-ph {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  color: #dce7f5; font-size: 13px; font-weight: 600; letter-spacing: 0.04em;
+  text-align: center; padding: 12px;
+}
+.venue-photo-actions { flex: 1; min-width: 180px; display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
+.venue-desc { display: block; margin-top: 12px; font-size: 13px; color: var(--muted); }
+.venue-desc span { display: block; margin-bottom: 6px; font-weight: 650; color: var(--ink); }
+.venue-desc textarea {
+  width: 100%; min-height: 96px; resize: vertical; border: 1px solid var(--line);
+  border-radius: 12px; padding: 10px 12px; background: #fff; color: var(--ink); font-size: 14px; line-height: 1.4;
+}
+.venue-desc .count { display: block; text-align: right; margin-top: 4px; font-size: 11px; }
+.list-item .meta .snip { display: block; color: var(--muted); font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
+
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; }
 }

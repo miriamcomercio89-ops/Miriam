@@ -3,6 +3,119 @@
   let game;
 
   const STATUS_L = { permisos: "Permisos", obras: "En obras", abierto: "Abierto", cerrado: "Cerrado" };
+  const DESC_MAX = 800;
+  const REST_META = {
+    photoBtn: "r-photo-btn",
+    photoFile: "r-photo-file",
+    photoImg: "r-photo-img",
+    photoPh: "r-photo-ph",
+    photoClear: "r-photo-clear",
+    desc: "r-desc",
+    descN: "r-desc-n",
+  };
+
+  function venueMetaHtml(ids) {
+    const pBtn = ids.photoBtn;
+    const pFile = ids.photoFile;
+    const pImg = ids.photoImg;
+    const pPh = ids.photoPh;
+    const pClear = ids.photoClear;
+    const dTa = ids.desc;
+    const dN = ids.descN;
+    return `<div class="venue-meta">
+      <div class="venue-photo">
+        <div class="venue-photo-frame">
+          <img id="${pImg}" alt="Foto del local" hidden />
+          <div class="venue-photo-ph" id="${pPh}">Sin foto de este local</div>
+        </div>
+        <div class="venue-photo-actions">
+          <input type="file" id="${pFile}" accept="image/jpeg,image/png,image/webp,image/gif" hidden />
+          <button type="button" class="btn primary" id="${pBtn}">Cambiar imagen</button>
+          <button type="button" class="btn ghost" id="${pClear}">Quitar foto</button>
+          <p class="muted">Foto de este local (no el logo de la marca). Se comprime y se guarda en la partida.</p>
+        </div>
+      </div>
+      <label class="venue-desc"><span>Descripción del local</span>
+        <textarea id="${dTa}" maxlength="${DESC_MAX}" rows="4" placeholder="Ambiente, historia, notas de este local…"></textarea>
+        <span class="count" id="${dN}">0 / ${DESC_MAX}</span>
+      </label>
+    </div>`;
+  }
+
+  function applyPhotoFrame(photo, imgId, phId) {
+    const img = U.$(imgId.startsWith("#") ? imgId : "#" + imgId);
+    const ph = U.$(phId.startsWith("#") ? phId : "#" + phId);
+    const url = U.safePhoto(photo);
+    if (!img) return;
+    if (url) {
+      img.src = url;
+      img.hidden = false;
+      if (ph) ph.hidden = true;
+    } else {
+      img.removeAttribute("src");
+      img.hidden = true;
+      if (ph) ph.hidden = false;
+    }
+  }
+
+  function bindVenueMeta(getPhoto, setPhoto, getDesc, setDesc, ids, onPhotoChange) {
+    const ta = U.$("#" + ids.desc);
+    const count = U.$("#" + ids.descN);
+    const file = U.$("#" + ids.photoFile);
+    const btn = U.$("#" + ids.photoBtn);
+    const clear = U.$("#" + ids.photoClear);
+    const paintCount = () => {
+      if (count) count.textContent = `${(getDesc() || "").length} / ${DESC_MAX}`;
+    };
+    applyPhotoFrame(getPhoto(), ids.photoImg, ids.photoPh);
+    if (ta) {
+      ta.value = getDesc() || "";
+      paintCount();
+      ta.oninput = () => {
+        setDesc(ta.value.slice(0, DESC_MAX));
+        if (ta.value.length > DESC_MAX) ta.value = ta.value.slice(0, DESC_MAX);
+        paintCount();
+      };
+    }
+    if (btn && file) {
+      btn.onclick = () => file.click();
+      file.onchange = () => {
+        const f = file.files && file.files[0];
+        file.value = "";
+        if (!f) return;
+        U.compressPhoto(f)
+          .then((url) => {
+            setPhoto(url);
+            applyPhotoFrame(url, ids.photoImg, ids.photoPh);
+            if (onPhotoChange) onPhotoChange();
+          })
+          .catch(() => toast("No se pudo leer la imagen.", true));
+      };
+    }
+    if (clear)
+      clear.onclick = () => {
+        setPhoto("");
+        applyPhotoFrame("", ids.photoImg, ids.photoPh);
+        if (onPhotoChange) onPhotoChange();
+      };
+  }
+
+  function bindRestaurantPhotoDesc(r) {
+    bindVenueMeta(
+      () => r.photo,
+      (v) => {
+        r.photo = v;
+        game.dirty();
+        renderPanel();
+      },
+      () => r.description || "",
+      (v) => {
+        r.description = v;
+        game.dirty();
+      },
+      REST_META
+    );
+  }
 
   function mount(g) {
     game = g;
@@ -262,9 +375,11 @@
           r.metro ? `<span class="chip sky">Metro</span>` : "",
           r.pedestrian ? `<span class="chip">Peatonal</span>` : "",
         ].join("");
+        const photo = U.safePhoto(r.photo);
+        const snip = (r.description || "").trim();
         btn.innerHTML = `
-          <div class="logo">${brand.logo}</div>
-          <div class="meta"><b>${r.name}</b><small>${statusTxt} · ${r.city || r.countryName}</small><div class="chips">${chips}</div></div>
+          ${photo ? `<img class="logo" src="${photo}" alt="">` : `<div class="logo">${brand.logo}</div>`}
+          <div class="meta"><b>${U.escapeHtml(r.name)}</b><small>${statusTxt} · ${U.escapeHtml(r.city || r.countryName)}</small>${snip ? `<span class="snip">${U.escapeHtml(snip)}</span>` : ""}<div class="chips">${chips}</div></div>
           <div class="right"><div class="${profit >= 0 ? "gain" : "loss"}">${U.formatMoney(profit)}</div><div class="stars">${"★".repeat(Math.round(r.stars))}</div></div>`;
         btn.onclick = () => game.openRestaurant(r.id);
         frag.append(btn);
@@ -501,6 +616,17 @@
     let brandId = BRAND.list[0].id;
     let sizeId = "local";
     let hallBrands = [];
+    let draftPhoto = "";
+    let draftDesc = "";
+    const BUILD_META = {
+      photoBtn: "b-photo-btn",
+      photoFile: "b-photo-file",
+      photoImg: "b-photo-img",
+      photoPh: "b-photo-ph",
+      photoClear: "b-photo-clear",
+      desc: "b-desc",
+      descN: "b-desc-n",
+    };
     const flags = SABOR.streetFlags(place);
     place.metro = place.metro || flags.metro;
     place.pedestrian = place.pedestrian || flags.pedestrian;
@@ -509,6 +635,8 @@
       return SIM.buildQuote(BRAND.get(brandId), sizeId, place, game.state.gameTime);
     }
     function paint() {
+      const prevDesc = U.$("#b-desc");
+      if (prevDesc) draftDesc = prevDesc.value.slice(0, DESC_MAX);
       const q = quote();
       const brand = BRAND.get(brandId);
       modal.innerHTML = `<div class="card" id="build-card">
@@ -552,6 +680,9 @@
           <div><b>Inversión ${U.formatMoney(q.total)}</b> · Alquiler ${U.formatMoney(q.rentMonthly)}/mes</div>
           <div class="muted">${SIM.sizeOf(sizeId).ghost ? "Sin terraza. Delivery de serie." : SIM.sizeOf(sizeId).hall ? "Varias filiales, un edificio." : "Puedes comprar el bajo más tarde."} · Permisos ~${Math.round(q.permitH / 24)} d · Obra ~${Math.round(q.buildH / 24)} d</div>
         </div>
+        <h3>Foto y descripción</h3>
+        <p class="muted">Opcional. También puedes añadirlas después, en la ficha del local.</p>
+        ${venueMetaHtml(BUILD_META)}
         <div style="display:flex;gap:8px;justify-content:flex-end">
           <button class="btn ghost" id="cancel-b">Cancelar</button>
           <button class="btn primary" id="ok-b">Tramitar y construir</button>
@@ -599,8 +730,25 @@
         });
       }
       U.$("#cancel-b").onclick = closeModal;
+      bindVenueMeta(
+        () => draftPhoto,
+        (v) => {
+          draftPhoto = v;
+        },
+        () => draftDesc,
+        (v) => {
+          draftDesc = v;
+        },
+        BUILD_META
+      );
       U.$("#ok-b").onclick = () => {
-        const ok = game.confirmBuild(brandId, sizeId, place, quote(), { hallBrands });
+        const ta = U.$("#b-desc");
+        if (ta) draftDesc = ta.value.slice(0, DESC_MAX);
+        const ok = game.confirmBuild(brandId, sizeId, place, quote(), {
+          hallBrands,
+          photo: draftPhoto,
+          description: draftDesc,
+        });
         if (ok) closeModal();
       };
     }
@@ -672,6 +820,8 @@
             ${r.pedestrian ? `<span class="chip">Peatonal</span>` : ""}
             ${(r.hallBrands || []).map((id) => { const bb = BRAND.get(id); return bb ? `<span class="chip">${bb.name}</span>` : ""; }).join("")}
           </div>
+          <h3>Foto y descripción</h3>
+          ${venueMetaHtml(REST_META)}
           ${(() => {
             const mgrs = r.staff.filter((s) => s.role === "gerente");
             return mgrs.length
@@ -682,8 +832,9 @@
           <p class="muted">${r.managerNote || ""}</p>
           ${miss.length ? `<p class="loss">Falta personal: ${miss.join(", ")}. El local no atiende.</p>` : ""}
           <h3>Reseñas</h3>
-          ${(r.reviews || []).map((rv) => `<div class="news-item">${rv.stars}★ · ${rv.text}</div>`).join("") || "<p class='muted'>Aún no hay reseñas.</p>"}
+          ${(r.reviews || []).map((rv) => `<div class="news-item">${rv.stars}★ · ${U.escapeHtml(rv.text)}</div>`).join("") || "<p class='muted'>Aún no hay reseñas.</p>"}
         `;
+        bindRestaurantPhotoDesc(r);
         const mgr = U.$("#mgr");
         if (mgr)
           mgr.onchange = () => {
@@ -826,6 +977,8 @@
         const pol = SABOR.alcoholPolicy(r.country);
         if (!r.hours) r.hours = SABOR.defaultHours(brand);
         body.innerHTML = `
+          <h3>Foto y descripción</h3>
+          ${venueMetaHtml(REST_META)}
           <p>Superficie ${SIM.sizeOf(r.size).m2} m² · ${SIM.sizeOf(r.size).seats} cubiertos · ${SABOR.POI_L[r.poi] || r.poi}</p>
           <p>Limpieza</p>
           <div class="bar"><i style="width:${r.cleanliness}%"></i></div>
@@ -860,6 +1013,7 @@
             <button class="btn danger" id="sell">Vender negocio${r.owned ? " + bajo" : ""} (${U.formatMoney(val)})</button>
           </div>
           <div id="rebrand-box"></div>`;
+        bindRestaurantPhotoDesc(r);
         const hg = U.$("#hours");
         const daysN = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
         const paintHours = () => {
@@ -1068,7 +1222,7 @@
       list = listRestaurants().filter((r) => {
         if (!q) return true;
         const b = BRAND.get(r.brandId);
-        return (r.name + r.city + r.countryName + (b && b.name)).toLowerCase().includes(q);
+        return (r.name + r.city + r.countryName + (r.description || "") + (b && b.name)).toLowerCase().includes(q);
       });
       U.$("#tabn").textContent = U.formatInt(list.length) + " en vista";
       paintRows();
@@ -1103,11 +1257,12 @@
     U.$("#vt").addEventListener("scroll", paintRows);
     U.$("#qtab").addEventListener("input", apply);
     U.$("#csv").onclick = () => {
-      const lines = [["nombre", "marca", "ciudad", "pais", "estado", "estrellas", "resultado"].join(";")];
+      const lines = [["nombre", "marca", "ciudad", "pais", "estado", "estrellas", "resultado", "descripcion"].join(";")];
       list.forEach((r) => {
         const b = BRAND.get(r.brandId);
         const p = r.finance.revTotal - r.finance.costTotal;
-        lines.push([r.name, b.name, r.city, r.countryName, r.status, r.stars, p.toFixed(2)].join(";"));
+        const desc = String(r.description || "").replace(/[\r\n;]+/g, " ").trim();
+        lines.push([r.name, b.name, r.city, r.countryName, r.status, r.stars, p.toFixed(2), desc].join(";"));
       });
       U.download("saborama-locales.csv", lines.join("\n"));
     };

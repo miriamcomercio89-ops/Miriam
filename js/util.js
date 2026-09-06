@@ -154,6 +154,60 @@
     return hash;
   }
 
+  function escapeHtml(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  function safePhoto(url) {
+    if (typeof url !== "string") return "";
+    if (!url.startsWith("data:image/")) return "";
+    if (url.length > 900000) return "";
+    return url;
+  }
+
+  function compressPhoto(file, maxPx = 480, quality = 0.72) {
+    return new Promise((resolve, reject) => {
+      if (!file || !String(file.type || "").startsWith("image/")) {
+        reject(new Error("no image"));
+        return;
+      }
+      const reader = new FileReader();
+      reader.onerror = () => reject(new Error("read"));
+      reader.onload = () => {
+        const img = new Image();
+        img.onload = () => {
+          let w = img.naturalWidth || img.width;
+          let h = img.naturalHeight || img.height;
+          if (!w || !h) {
+            reject(new Error("size"));
+            return;
+          }
+          const scale = Math.min(1, maxPx / Math.max(w, h));
+          w = Math.max(1, Math.round(w * scale));
+          h = Math.max(1, Math.round(h * scale));
+          const c = document.createElement("canvas");
+          c.width = w;
+          c.height = h;
+          const ctx = c.getContext("2d");
+          ctx.fillStyle = "#f3ead4";
+          ctx.fillRect(0, 0, w, h);
+          ctx.drawImage(img, 0, 0, w, h);
+          let out = c.toDataURL("image/jpeg", quality);
+          if (out.length > 700000) out = c.toDataURL("image/jpeg", 0.52);
+          resolve(out);
+        };
+        img.onerror = () => reject(new Error("img"));
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
   function haversineKm(aLat, aLon, bLat, bLon) {
     const R = 6371;
     const dLat = ((bLat - aLat) * Math.PI) / 180;
@@ -217,5 +271,8 @@
     download,
     svgToDataUri,
     el,
+    escapeHtml,
+    safePhoto,
+    compressPhoto,
   };
 })(window);
