@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Costa Aurora — Constructor de Resorts</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏨</text></svg>" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div id="title-screen">
+    <div class="sky"></div>
+    <div class="sun"></div>
+    <div class="ocean-bg"></div>
+    <div class="title-card">
+      <p class="eyebrow">Simulador de construcción hotelera</p>
+      <h1>Costa Aurora</h1>
+      <p class="tagline">Construye el resort de tus sueños. Varias plantas, miles de habitaciones y huéspedes al atardecer.</p>
+      <div class="title-actions">
+        <button id="btn-new" class="btn-gold">Nueva partida</button>
+        <button id="btn-continue" class="btn-ghost" hidden>Continuar</button>
+      </div>
+      <p class="hint-title">No hace falta instalar nada. Se guarda solo en este navegador.</p>
+    </div>
+  </div>
+
+  <div id="game" hidden>
+    <canvas id="world"></canvas>
+    <canvas id="minimap" width="200" height="124"></canvas>
+
+    <header class="hud-top">
+      <div class="brand">
+        <span class="logo">🏨</span>
+        <div>
+          <input id="resort-name" maxlength="28" spellcheck="false" value="Costa Aurora" />
+          <div class="stars" id="stars">★★☆☆☆</div>
+        </div>
+      </div>
+      <div class="stat" title="Dinero disponible">
+        <span class="k">Caja</span>
+        <strong id="ui-money">80.000 €</strong>
+      </div>
+      <div class="stat">
+        <span class="k">Día</span>
+        <strong id="ui-day">1 · 08:00</strong>
+      </div>
+      <div class="stat">
+        <span class="k">Huéspedes</span>
+        <strong id="ui-guests">0 / 0</strong>
+      </div>
+      <div class="stat">
+        <span class="k">Habitaciones</span>
+        <strong id="ui-rooms">0</strong>
+      </div>
+      <div class="stat">
+        <span class="k">Ocupación</span>
+        <strong id="ui-occ">0%</strong>
+      </div>
+      <div class="speed">
+        <button data-speed="0" title="Pausa">❚❚</button>
+        <button data-speed="1" class="on" title="Normal">▶</button>
+        <button data-speed="2" title="Rápido">▶▶</button>
+        <button data-speed="4" title="Muy rápido">▶▶▶</button>
+      </div>
+    </header>
+
+    <aside class="build-panel">
+      <div class="cats" id="cats"></div>
+      <div class="palette" id="palette"></div>
+    </aside>
+
+    <div class="floor-bar">
+      <button id="btn-floor-down" title="Planta inferior">−</button>
+      <div id="floor-label">Jardín · Planta 0</div>
+      <button id="btn-floor-up" title="Planta superior">+</button>
+      <button id="btn-add-floor" class="add-floor">Nueva planta</button>
+    </div>
+
+    <div class="tool-bar">
+      <button class="tool on" data-tool="paint" title="Pincel: pinta casilla a casilla">Pincel</button>
+      <button class="tool" data-tool="rect" title="Rectángulo: arrastra para llenar un bloque entero">Rectángulo</button>
+      <button class="tool" data-tool="wing" title="Ala hotelera: pasillo central y habitaciones a ambos lados">Ala hotelera</button>
+      <button class="tool" data-tool="erase" title="Borrar construcciones">Borrar</button>
+      <button id="btn-undo" title="Deshacer (Ctrl+Z)">Deshacer</button>
+    </div>
+
+    <div id="cost-preview" hidden></div>
+    <div id="toast"></div>
+    <div id="help" hidden>
+      <div class="help-card">
+        <h2>Cómo construir tu resort</h2>
+        <ul>
+          <li><b>Pincel</b> — coloca una pieza. Mantén pulsado y arrastra.</li>
+          <li><b>Rectángulo</b> — arrastra un bloque. Ideal para piscinas, jardines o cientos de habitaciones.</li>
+          <li><b>Ala hotelera</b> — arrastra un rectángulo ancho: se crea un pasillo y habitaciones a los dos lados. Así se levantan miles de habitaciones.</li>
+          <li><b>Plantas</b> — en la barra inferior añade pisos. Pon <b>ascensores</b> o las plantas altas no reciben huéspedes.</li>
+          <li><b>Recepción</b> — sin ella no entra nadie. Ponla en el jardín (planta 0).</li>
+          <li>Rueda del ratón: zoom. Botón derecho o WASD: mover el mapa. Clic en el minimapa: saltar. P o el botón de pausa: parar el tiempo.</li>
+        </ul>
+        <p class="muted">El juego se guarda solo. También puedes exportar un archivo para guardarlo en tu ordenador.</p>
+        <button id="btn-close-help" class="btn-gold">Entendido</button>
+      </div>
+    </div>
+
+    <div class="hud-right">
+      <button id="btn-help" class="icon-btn" title="Ayuda">?</button>
+      <button id="btn-save" class="icon-btn" title="Guardar ahora">💾</button>
+      <button id="btn-export" class="icon-btn" title="Descargar partida">⬇</button>
+      <label class="icon-btn" title="Cargar partida">⬆<input id="import-file" type="file" accept="application/json" hidden /></label>
+    </div>
+  </div>
+
+  <script src="js/game.js"></script>
+</body>
+</html>

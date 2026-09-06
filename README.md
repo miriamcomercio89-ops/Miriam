@@ -1,21 +1,38 @@
-# Miriam — Administración de Loterías (proyecto)
+# Costa Aurora — Constructor de Resorts
 
-Proyecto: videojuego/simulador de gestión de una administración de loterías ubicado en Álora.
+Juego de construcción hotelera que se juega en el navegador. **No hay que instalar nada ni saber programar.**
 
-Este repositorio contiene el scaffold inicial del proyecto: una aplicación en HTML/CSS/JS que corre totalmente en el navegador (sin servidor), usa localStorage para persistencia y permite exportar/importar el estado en JSON.
+## Cómo jugar
 
-Características del scaffold inicial:
-- Reloj de juego con escala temporal: el tiempo del juego va 4× más lento que el real (gameTime = start + elapsed * 0.25).
-- Lógica de apertura de oficina: 09:00–14:00 y 17:00–22:00 (hora del juego). Cerrado sábados y domingos. Festivos habilitables manualmente.
-- Funciones básicas de exportar/importar JSON del estado del juego.
-- Estructura básica para añadir los juegos, ventas, contabilidad, clientes, etc.
+1. Descarga esta carpeta (o el repositorio).
+2. Haz **doble clic** en `index.html`.
+3. Se abre el juego. Pulsa **Nueva partida**.
 
-Cómo usar:
-1. Clona el repo o descarga los archivos.
-2. Abre `index.html` en un navegador moderno.
-3. Usa los botones "Exportar" / "Importar" para guardar o restaurar el estado.
+Se guarda solo en tu navegador. Si quieres una copia en el ordenador, usa el botón de descarga (flecha hacia abajo).
 
-Siguiente paso:
-- Crear la rama `feature/lottery-full` desde la rama por defecto y continuar con la implementación completa de juegos, contabilidad y UI.
+## Qué puedes hacer
 
-Commit inicial: scaffold con reloj escalado y export/import JSON.
+- Construir **resorts enormes**: el solar tiene 160 × 100 casillas y hasta **40 plantas**.
+- Levantar **miles de habitaciones** con la herramienta **Ala hotelera** (pasillo central y habitaciones a ambos lados) o con **Rectángulo**.
+- Poner recepción, piscinas, spa, restaurantes, discoteca, jardines y playa.
+- Subir de estrellas, recibir huéspedes y ganar dinero cada día.
+
+## Controles
+
+| Acción | Cómo |
+| --- | --- |
+| Construir | Elige una pieza a la izquierda y usa Pincel, Rectángulo o Ala hotelera |
+| Borrar | Herramienta Borrar |
+| Mover el mapa | Botón derecho, o mantén Espacio y arrastra |
+| Zoom | Rueda del ratón |
+| Cambiar de planta | Botones − / + abajo |
+| Nueva planta | Botón «Nueva planta» (cuesta dinero) |
+| Deshacer | Ctrl+Z |
+| Pausar | Espacio (si no estás arrastrando el mapa) |
+
+Sin **recepción** en el jardín (planta 0) no entran huéspedes. Las plantas altas necesitan **ascensor**.
+
+## Archivos
+
+- `index.html` — ábrelo para jugar
+- `css/style.css` y `js/game.js` — el juego (no hace falta tocarlos)
