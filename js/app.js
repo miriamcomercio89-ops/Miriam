@@ -42,6 +42,9 @@
       const input = U.$("#new-name");
       const name = ((input && input.value) || "Saborama 2000").trim() || "Saborama 2000";
       game.state = STORE.blankState(name);
+      try {
+        SABOR.ensureBooks(game.state);
+      } catch (_) {}
       boot();
       STORE.save(game.state).catch(function () {});
       UI.toast("Saborama abre libros. Caja: 2.000.000 €. 1 de enero de 2000.");
@@ -141,6 +144,10 @@
       SIM.settleAll(s, to);
     }
     SIM.maybeEvents(s, from, to);
+    try {
+      const yb = SABOR.maybeYearbook(s, from, to);
+      if (yb && force) UI.toast("Anuario " + yb.year + " listo en Prensa.");
+    } catch (_) {}
     SIM.driftCompetition(s, gameMs / 3600000);
     if (s.cash < 0) s.cash -= ((-s.cash) * 0.08 * gameMs) / (365 * 86400000);
     if (!s.cashHistory) s.cashHistory = [];
@@ -175,20 +182,20 @@
     }
   }
 
-  function confirmBuild(brandId, sizeId, place, quote) {
+  function confirmBuild(brandId, sizeId, place, quote, extra) {
     const s = game.state;
     if (s.cash < quote.total) {
       UI.toast("No hay caja para esta inversión.", true);
       return false;
     }
     s.cash -= quote.total;
-    const r = SIM.createRestaurant(s, { brandId, size: sizeId, place, quote });
+    const r = SIM.createRestaurant(s, { brandId, size: sizeId, place, quote, hallBrands: (extra && extra.hallBrands) || [] });
     s.restaurants.push(r);
     try {
       SABOR.sfx.cash();
     } catch (_) {}
     if (!s.competitors[r.country]) s.competitors[r.country] = { strength: WORLD.competitorBase(r.country) };
-    SIM.pushNews(s, s.gameTime, `Solicitud de permisos: ${r.name} (${U.formatMoney(quote.total)}).`);
+    SIM.pushNews(s, s.gameTime, `Solicitud de permisos: ${r.name} (${U.formatMoney(quote.total)})${r.size === "food_hall" ? " · food hall" : r.size === "ghost" ? " · cocina fantasma" : ""}.`);
     UI.toast("Permisos en marcha. El tiempo de juego hace el resto.");
     UI.renderHud();
     UI.renderPanel();

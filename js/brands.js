@@ -148,6 +148,17 @@
     kobe: { n: "Kobe", d: 3, c: 16, g: "carne" },
     ibérico: { n: "Ibérico", d: 20, c: 6, g: "carne" },
     percebe: { n: "Percebes", d: 2, c: 7, g: "pescado" },
+    aceituna: { n: "Aceitunas", d: 90, c: 0.5, g: "seco" },
+    manzana: { n: "Manzana", d: 20, c: 0.25, g: "verde" },
+    berenjena: { n: "Berenjena", d: 7, c: 0.3, g: "verde" },
+    espinaca: { n: "Espinaca", d: 4, c: 0.25, g: "verde" },
+    sake: { n: "Sake", d: 400, c: 1.8, g: "bar", alc: true },
+    pato: { n: "Pato", d: 3, c: 2.6, g: "carne" },
+    datil: { n: "Dátiles", d: 120, c: 0.5, g: "seco" },
+    oregano: { n: "Orégano", d: 400, c: 0.2, g: "seco" },
+    perejil: { n: "Perejil", d: 5, c: 0.15, g: "verde" },
+    pepinillo: { n: "Pepinillo", d: 180, c: 0.25, g: "seco" },
+    remolacha: { n: "Remolacha", d: 14, c: 0.22, g: "verde" },
   };
 
   const TIERS = {
@@ -1237,5 +1248,23 @@
     get: brand,
     logoSVG,
     HOLDING: "Saborama",
+    D,
+    normalizeMenus,
   };
+
+  function normalizeMenus() {
+    const valid = new Set(Object.keys(ING));
+    for (const b of BRANDS) {
+      const seen = new Set();
+      b.dishes = b.dishes.filter((d) => {
+        if (seen.has(d.name)) return false;
+        seen.add(d.name);
+        return true;
+      });
+      for (const d of b.dishes) {
+        d.ings = (d.ings || []).map((x) => (valid.has(x) ? x : "aceite"));
+        d.id = U.hash32(b.id + d.name).toString(36);
+      }
+    }
+  }
 })(window);

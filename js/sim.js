@@ -3,7 +3,9 @@
   const SIZES = [
     { id: "kiosco", name: "Kiosco", seats: 8, m2: 22, permitH: 12, buildH: 24, cost: 22000, staff: { gerente: 1, cocinero: 1, camarero: 1, limpieza: 0, bartender: 0 } },
     { id: "local", name: "Local", seats: 42, m2: 140, permitH: 24, buildH: 48, cost: 165000, staff: { gerente: 1, cocinero: 2, camarero: 2, limpieza: 1, bartender: 0 } },
+    { id: "ghost", name: "Cocina fantasma", seats: 6, m2: 38, permitH: 8, buildH: 16, cost: 42000, staff: { gerente: 1, cocinero: 2, camarero: 0, limpieza: 0, bartender: 0 }, ghost: true },
     { id: "flagship", name: "Flagship", seats: 140, m2: 480, permitH: 72, buildH: 192, cost: 920000, staff: { gerente: 2, cocinero: 6, camarero: 6, limpieza: 2, bartender: 1 } },
+    { id: "food_hall", name: "Food hall", seats: 168, m2: 640, permitH: 96, buildH: 240, cost: 1480000, staff: { gerente: 2, cocinero: 8, camarero: 8, limpieza: 3, bartender: 2 }, hall: true },
     { id: "estadio", name: "Estadio", seats: 480, m2: 2800, permitH: 168, buildH: 480, cost: 4800000, staff: { gerente: 4, cocinero: 16, camarero: 20, limpieza: 6, bartender: 4 } },
   ];
   const SIZE_BY = Object.fromEntries(SIZES.map((s) => [s.id, s]));
@@ -95,7 +97,7 @@
     const works = base;
     const fitout = sz.m2 * 180 * infl * (ctry.rent / 72);
     const total = Math.round(permits + works + fitout);
-    const rentMonthly = sz.m2 * 9 * infl * rentIdx;
+    const rentMonthly = sz.m2 * 9 * infl * rentIdx * (sz.ghost ? 0.55 : sz.hall ? 1.35 : 1);
     return {
       total,
       permits: Math.round(permits),
@@ -246,13 +248,19 @@
     const curve = demandCurve(loc.h, brand.tier);
     const pop = Math.log10(placePop + 8);
     const cal = SABOR.calendarMod(r.country, brand, r.poi || "urbano", gameMs);
-    const seatsCap = sz.seats * 0.55 * (r.delivery ? 1.25 : 1);
+    const seatsCap = sz.seats * 0.55 * (r.delivery || sz.ghost ? 1.35 : 1);
     const alcPen = brand.tier === "bar" && SABOR.alcoholPolicy(r.country).mode === "dry" ? 0.22 : 1;
+    const hallN = r.size === "food_hall" ? 1 + (r.hallBrands || []).length : 1;
+    const street =
+      (r.metro ? 1.22 : 1) *
+      (r.pedestrian ? (brand.tier === "fast_food" ? 1.08 : 1.18) : 1);
+    const ghostMul = sz.ghost ? 0.92 : 1;
+    const walkCurve = sz.ghost ? 0.22 + (r.delivery ? 1.05 : 0.4) : curve;
     const raw =
       pop *
       1.15 *
       wealth *
-      curve *
+      walkCurve *
       (0.45 + q) *
       priceFit *
       (0.55 + stars * 0.7) *
@@ -262,9 +270,12 @@
       SABOR.tasteFit(brand, r.country) *
       SABOR.poiDemand(r.poi || "urbano", brand) *
       cal.demand *
-      (r.delivery ? 1.16 : 1) *
-      (r.terrace ? 1.06 * cal.terrace : 1) *
+      (r.delivery || sz.ghost ? 1.16 : 1) *
+      (r.terrace && !sz.ghost ? 1.06 * cal.terrace : 1) *
       alcPen *
+      street *
+      ghostMul *
+      (0.82 + hallN * 0.18) *
       (sz.seats / 42);
     return U.clamp(raw, 0, seatsCap);
   }
@@ -278,6 +289,10 @@
     if (r.managerAI == null) r.managerAI = true;
     if (!r.poi) r.poi = "urbano";
     if (!r.finance.months) r.finance.months = {};
+    SABOR.ensureBooks(state);
+    brand.dishes.forEach((d, i) => {
+      if (!r.menu[i]) r.menu[i] = { on: true, price: d.price };
+    });
     const year = yearOf(toMs);
     const pl = WORLD.priceLevel(r.country, year);
     const ctry = WORLD.country(r.country);
@@ -320,7 +335,8 @@
     let cust = 0;
     const st = staffStats(r.staff);
     const wageHour = st.wageDay / 8;
-    const rentHour = r.rentMonthly / 30 / 24;
+    const rentMonth = r.owned ? (r.communityMonthly || r.rentMonthly * 0.08) : r.rentMonthly;
+    const rentHour = rentMonth / 30 / 24;
     const utilHour = sizeOf(r.size).m2 * 0.035 * pl;
     const ticket = avgTicket(r, brand);
     const cogs = avgCogs(r, brand, pl);
@@ -351,6 +367,9 @@
       r.stock = 100;
     }
 
+    if (r.owned && r.propertyValue) {
+      r.propertyValue *= 1 + 0.000035 * hours;
+    }
     const profit = rev - cost;
     SABOR.addPnl(r, state, rev, cost, toMs);
     if (!r.lastManagerRun || toMs - r.lastManagerRun > 20 * 3600000) {
@@ -426,7 +445,7 @@
     if (days <= 0) return;
     const p = Math.min(0.45, days * 0.12);
     if (Math.random() > p) return;
-    const types = ["inspeccion", "feria", "inflacion", "apagon", "critico", "huelga", "clima", "boom"];
+    const types = ["inspeccion", "feria", "inflacion", "apagon", "critico", "huelga", "clima", "boom", "metro", "peatonal"];
     const kind = U.pick(types);
     const r = state.restaurants.filter((x) => x.status === "abierto");
     const target = r.length ? U.pick(r) : null;
@@ -538,6 +557,36 @@
         demand: 1.2,
         news: `Vacío de competencia en ${WORLD.country(cc).name}. Ventana de expansión.`,
       });
+    } else if (kind === "metro" && target) {
+      const mates = state.restaurants.filter((x) => x.city && x.city === target.city);
+      mates.forEach((x) => {
+        x.metro = true;
+      });
+      mk({
+        id: U.uid("ev"),
+        kind,
+        cc,
+        city: target.city,
+        start,
+        end: start + 365 * 86400000,
+        demand: 1.12,
+        news: `Nueva estación de metro cerca de ${target.city || WORLD.country(cc).name}. La demanda del barrio sube.`,
+      });
+    } else if (kind === "peatonal" && target) {
+      const mates = state.restaurants.filter((x) => x.city && x.city === target.city);
+      mates.forEach((x) => {
+        x.pedestrian = true;
+      });
+      mk({
+        id: U.uid("ev"),
+        kind,
+        cc,
+        city: target.city,
+        start,
+        end: start + 400 * 86400000,
+        demand: 1.1,
+        news: `Peatonalizan el centro de ${target.city || WORLD.country(cc).name}. Más paseo, menos coche.`,
+      });
     }
   }
 
@@ -626,9 +675,14 @@
       hours: SABOR.defaultHours(brand),
       hoursCustom: false,
       poi: opts.place.poi || "urbano",
-      delivery: false,
       terrace: false,
       alcoholLicense: SABOR.alcoholPolicy(opts.place.countryCode).mode === "free",
+      metro: !!opts.place.metro,
+      pedestrian: !!opts.place.pedestrian,
+      owned: false,
+      propertyValue: Math.round(quote.rentMonthly * 108),
+      hallBrands: opts.hallBrands || [],
+      delivery: sizeOf(opts.size).ghost ? true : false,
     };
     return r;
   }
@@ -636,7 +690,8 @@
   function sellValue(r, gameMs) {
     const ageY = Math.max(0.05, (gameMs - r.builtAt) / (365 * 86400000));
     const profit = r.finance.revTotal - r.finance.costTotal;
-    return Math.max(8000, r.sellValue * Math.pow(0.97, ageY) + profit * 0.12 + r.stars * 4000);
+    const biz = Math.max(8000, r.sellValue * Math.pow(0.97, ageY) + profit * 0.12 + r.stars * 4000);
+    return biz + (r.owned ? r.propertyValue || 0 : 0);
   }
 
   global.SIM = {

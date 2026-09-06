@@ -265,6 +265,7 @@
 
   function runManager(state, r, brand, gameMs) {
     if (r.managerAI === false) return;
+    ensureBooks(state);
     const year = SIM.yearOf(gameMs);
     const pl = WORLD.priceLevel(r.country, year);
     const fair = 8 * BRAND.tiers[brand.tier].ticket * Math.sqrt(Math.max(0.2, pl));
@@ -285,6 +286,7 @@
       if (on) nOn++;
     });
     if (nOn === 0 && r.menu[0]) r.menu[0].on = true;
+    const book = applyBook(state, r, brand);
     if (!r.hoursCustom) {
       const hrs = r.hours || defaultHours(brand);
       const poi = r.poi || "urbano";
@@ -309,11 +311,12 @@
       /* el gerente propone, no compra solo */
     }
     r.managerNote =
-      taste > 1.2
+      (book.enforceSig ? "Libro de marca: plato firma obligatorio. " : "") +
+      (taste > 1.2
         ? "El gerente ajusta precios al gusto local: aquí esta cocina encaja."
         : taste < 0.85
           ? "Gusto local flojo para esta cocina: carta más corta y precios contenidos."
-          : "Carta y precios alineados al poder adquisitivo y a la competencia oculta.";
+          : "Carta y precios alineados al poder adquisitivo y a la competencia oculta.");
     r.lastManagerRun = gameMs;
   }
 
@@ -338,6 +341,9 @@
     }
     if (noStock) list.push({ k: "stock", bad: true, t: noStock + " local(es) sin género." });
     if (loss) list.push({ k: "loss", bad: false, t: loss + " local(es) en pérdidas acumuladas." });
+    if (state.yearbookNew) {
+      list.unshift({ k: "year", bad: false, t: "Anuario " + state.yearbookNew + " listo. Ábrelo en Prensa." });
+    }
     return list.slice(0, 8);
   }
 
@@ -418,6 +424,150 @@
     };
   }
 
+  function streetFlags(place) {
+    const blob = [place.osmKey, place.osmValue, place.type, place.name, place.display, place.street]
+      .join(" ")
+      .toLowerCase();
+    return {
+      metro: /subway|station|railway|metro|tram|light.rail|public_transport|train/.test(blob),
+      pedestrian: /pedestrian|footway|living_street|plaza|square|old.?town|casco|promenade/.test(blob),
+    };
+  }
+
+  function defaultBook(brand) {
+    const hasAlc = brand.tier === "bar" || brand.dishes.some((d) => d.alc);
+    return {
+      enforceSig: true,
+      minMul: brand.tier === "luxury" ? 0.95 : 0.78,
+      maxMul: brand.tier === "fast_food" ? 1.25 : 1.45,
+      allowAlc: hasAlc,
+      minIngQ: brand.tier === "luxury" ? 1 : 0,
+      maxIngQ: 2,
+    };
+  }
+
+  function ensureBooks(state) {
+    state.books = state.books || {};
+    for (const b of BRAND.list) {
+      if (!state.books[b.id]) state.books[b.id] = defaultBook(b);
+    }
+    return state.books;
+  }
+
+  function applyBook(state, r, brand) {
+    const book = (state.books && state.books[brand.id]) || defaultBook(brand);
+    const pol = alcoholPolicy(r.country);
+    const alcOk = book.allowAlc && pol.mode !== "dry" && (pol.mode === "free" || r.alcoholLicense);
+    if (r.ingQ == null) r.ingQ = 1;
+    r.ingQ = U.clamp(r.ingQ, book.minIngQ, book.maxIngQ);
+    brand.dishes.forEach((d, i) => {
+      if (!r.menu[i]) r.menu[i] = { on: true, price: d.price };
+      const lo = +(d.price * book.minMul).toFixed(1);
+      const hi = +(d.price * book.maxMul).toFixed(1);
+      r.menu[i].price = U.clamp(r.menu[i].price, lo, hi);
+      if (d.alc && !alcOk) r.menu[i].on = false;
+      if (book.enforceSig && d.sig && !(d.alc && !alcOk)) r.menu[i].on = true;
+    });
+    return book;
+  }
+
+  function decadeMeta(year) {
+    const d = Math.floor(year / 10) * 10;
+    if (d >= 2020)
+      return {
+        y: 2020,
+        title: "Saborama Live",
+        kicker: "Era delivery y reels",
+        tone: "Titulares cortos, emojis de relleno y apps de comida.",
+        ink: "#0b5348",
+        paper: "#f4fff8",
+        accent: "#e85d4c",
+      };
+    if (d >= 2010)
+      return {
+        y: 2010,
+        title: "Saborama 24h",
+        kicker: "Food trucks y estrellas",
+        tone: "Crónicas de expansión, street food y críticas con foto.",
+        ink: "#1d3557",
+        paper: "#eef4ff",
+        accent: "#c9a227",
+      };
+    return {
+      y: 2000,
+      title: "Diario Saborama",
+      kicker: "El nuevo milenio",
+      tone: "Editorial de papel, euro a la vista y carta de siempre.",
+      ink: "#3d2b1f",
+      paper: "#fff6e4",
+      accent: "#9b2226",
+    };
+  }
+
+  function compileYearbook(state, year) {
+    const prefix = String(year);
+    const byBrand = {};
+    let best = null;
+    let worst = null;
+    let yRev = 0;
+    let yCost = 0;
+    for (const r of state.restaurants) {
+      const months = Object.entries(r.finance.months || {}).filter(([k]) => k.startsWith(prefix));
+      const rev = months.reduce((a, [, v]) => a + (v.rev || 0), 0);
+      const cost = months.reduce((a, [, v]) => a + (v.cost || 0), 0);
+      const ebitda = rev - cost;
+      yRev += rev;
+      yCost += cost;
+      byBrand[r.brandId] = (byBrand[r.brandId] || 0) + rev;
+      if (!best || ebitda > best.ebitda) best = { id: r.id, name: r.name, brandId: r.brandId, ebitda, city: r.city };
+      if (!worst || ebitda < worst.ebitda) worst = { id: r.id, name: r.name, brandId: r.brandId, ebitda, city: r.city };
+    }
+    const star = Object.entries(byBrand).sort((a, b) => b[1] - a[1])[0];
+    const headlines = (state.news || [])
+      .filter((n) => new Date(n.t).getUTCFullYear() === year)
+      .slice(0, 8)
+      .map((n) => n.text);
+    const countries = new Set(state.restaurants.map((r) => r.country)).size;
+    return {
+      year,
+      decade: decadeMeta(year),
+      yRev,
+      yCost,
+      cash: state.cash,
+      n: state.restaurants.length,
+      open: state.restaurants.filter((r) => r.status === "abierto").length,
+      countries,
+      starBrandId: star ? star[0] : null,
+      starRev: star ? star[1] : 0,
+      best,
+      worst,
+      headlines,
+    };
+  }
+
+  function maybeYearbook(state, fromMs, toMs) {
+    const y0 = new Date(fromMs).getUTCFullYear();
+    const y1 = new Date(toMs).getUTCFullYear();
+    if (y1 <= y0) return null;
+    state.yearbooks = state.yearbooks || [];
+    let last = null;
+    for (let y = y0; y < y1; y++) {
+      if (state.yearbooks.some((x) => x.year === y)) continue;
+      const book = compileYearbook(state, y);
+      state.yearbooks.push(book);
+      state.yearbookNew = y;
+      state.news = state.news || [];
+      state.news.unshift({
+        t: Date.UTC(y + 1, 0, 1, 0, 5, 0),
+        kind: "yearbook",
+        decade: Math.floor(y / 10) * 10,
+        text: "Anuario " + y + " de Saborama. La filial estrella y el local que más sangra, en Prensa.",
+      });
+      last = book;
+    }
+    return last;
+  }
+
   global.SABOR = {
     HOLDING,
     DRY,
@@ -439,5 +589,12 @@
     addPnl,
     monthKey,
     estimateHover,
+    streetFlags,
+    defaultBook,
+    ensureBooks,
+    applyBook,
+    decadeMeta,
+    compileYearbook,
+    maybeYearbook,
   };
 })(window);

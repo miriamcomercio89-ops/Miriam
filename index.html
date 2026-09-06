@@ -12,25 +12,29 @@
   <link rel="stylesheet" href="css/game.css" />
 </head>
 <body>
-  <div id="map"></div>
+  <a class="skip" href="#search">Ir al buscador</a>
+  <div id="map" role="application" aria-label="Mapa mundial Saborama"></div>
   <div id="hud">
-    <aside id="panel">
-      <div class="panel-tabs">
-        <button data-tab="locales" class="active">Locales</button>
-        <button data-tab="ranking">Ranking</button>
-        <button data-tab="noticias">Noticias</button>
+    <aside id="panel" aria-label="Panel de gestión">
+      <div class="panel-tabs" role="tablist">
+        <button type="button" role="tab" data-tab="locales" class="active" aria-selected="true">Locales</button>
+        <button type="button" role="tab" data-tab="matriz" aria-selected="false">Matriz</button>
+        <button type="button" role="tab" data-tab="ranking" aria-selected="false">Ranking</button>
+        <button type="button" role="tab" data-tab="noticias" aria-selected="false">Prensa</button>
       </div>
       <div class="search-row">
         <span class="ico">⌕</span>
+        <label class="sr-only" for="search">Buscar ciudad o dirección</label>
         <input id="search" placeholder="Ciudad, dirección o lat, lon" autocomplete="off" />
         <div id="suggest" class="suggest"></div>
       </div>
-      <div style="padding:8px 12px 0; display:flex; gap:6px;">
-        <button class="btn ghost sm" id="btn-geo">Mi ubicación</button>
-        <button class="btn ghost sm" id="btn-table">Tabla</button>
-        <button class="btn ghost sm" id="btn-saves">Partidas</button>
-        <button class="btn ghost sm" id="btn-heat">Mapa P&amp;L</button>
-        <button class="btn ghost sm" id="btn-sfx" title="Sonido (apagado por defecto)">Sonido</button>
+      <div class="tool-row">
+        <button type="button" class="btn ghost sm" id="btn-geo">Mi ubicación</button>
+        <button type="button" class="btn ghost sm" id="btn-table">Tabla</button>
+        <button type="button" class="btn ghost sm" id="btn-saves">Partidas</button>
+        <button type="button" class="btn ghost sm" id="btn-heat">Mapa P&amp;L</button>
+        <button type="button" class="btn ghost sm" id="btn-year">Anuario</button>
+        <button type="button" class="btn ghost sm" id="btn-sfx" title="Sonido apagado por defecto" aria-pressed="false">Sonido</button>
       </div>
       <div class="filters">
         <select id="f-brand"><option value="">Todas las marcas</option></select>
@@ -78,17 +82,17 @@
         <span class="h" id="gtime">08:00 UTC · 1× = 1 min/hora</span>
       </div>
       <div class="spacer"></div>
-      <div class="seg" id="speeds">
-        <button data-sp="0">Ⅱ</button>
-        <button data-sp="1" class="active">1×</button>
-        <button data-sp="2">2×</button>
-        <button data-sp="4">4×</button>
-        <button data-sp="8">8×</button>
-        <button data-sp="16">16×</button>
+      <div class="seg" id="speeds" role="group" aria-label="Velocidad de juego">
+        <button type="button" data-sp="0" aria-label="Pausa">Ⅱ</button>
+        <button type="button" data-sp="1" class="active">1×</button>
+        <button type="button" data-sp="2">2×</button>
+        <button type="button" data-sp="4">4×</button>
+        <button type="button" data-sp="8">8×</button>
+        <button type="button" data-sp="16">16×</button>
       </div>
-      <button class="btn ghost" id="btn-day">Saltar día</button>
-      <button class="icon-btn" id="btn-export" title="Exportar">⤓</button>
-      <button class="icon-btn" id="btn-import" title="Importar">⤒</button>
+      <button type="button" class="btn ghost" id="btn-day">Saltar día</button>
+      <button type="button" class="icon-btn" id="btn-export" title="Exportar partida" aria-label="Exportar partida">⤓</button>
+      <button type="button" class="icon-btn" id="btn-import" title="Importar partida" aria-label="Importar partida">⤒</button>
       <input type="file" id="import-file" accept="application/json" hidden />
     </header>
     <div id="toasts"></div>
@@ -132,6 +136,7 @@
   <script src="js/util.js"></script>
   <script src="js/world.js"></script>
   <script src="js/brands.js"></script>
+  <script src="js/menu-extra.js"></script>
   <script src="js/saborama.js"></script>
   <script src="js/geo.js"></script>
   <script src="js/sim.js"></script>

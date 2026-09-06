@@ -201,10 +201,14 @@
     const brand = BRAND.get(r.brandId);
     const profit = (r.finance.revTotal || 0) - (r.finance.costTotal || 0);
     const heat = game.heatmap ? (profit >= 0 ? " pin-gain" : " pin-loss") : "";
-    const m = L.marker([r.lat, r.lon], { icon: brandIcon(brand, 0, 42), keyboard: false });
-    if (heat) {
+    const extra = r.size === "food_hall" ? 1 + (r.hallBrands || []).length : r.size === "ghost" ? "CF" : 0;
+    const m = L.marker([r.lat, r.lon], { icon: brandIcon(brand, extra, r.size === "food_hall" ? 48 : 42), keyboard: false });
+    if (heat || r.size === "ghost" || r.size === "food_hall") {
       const ic = m.options.icon;
-      ic.options.html = ic.options.html.replace('class="pin-wrap"', 'class="pin-wrap' + heat + '"');
+      let cls = "pin-wrap" + heat;
+      if (r.size === "ghost") cls += " pin-ghost";
+      if (r.size === "food_hall") cls += " pin-hall";
+      ic.options.html = ic.options.html.replace('class="pin-wrap"', 'class="' + cls + '"');
     }
     m.on("click", (ev) => {
       L.DomEvent.stop(ev);

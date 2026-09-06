@@ -31,8 +31,14 @@
   function bind() {
     U.$$(".panel-tabs button").forEach((b) =>
       b.addEventListener("click", () => {
-        U.$$(".panel-tabs button").forEach((x) => x.classList.remove("active"));
         b.classList.add("active");
+        b.setAttribute("aria-selected", "true");
+        U.$$(".panel-tabs button").forEach((x) => {
+          if (x !== b) {
+            x.classList.remove("active");
+            x.setAttribute("aria-selected", "false");
+          }
+        });
         game.uiTab = b.dataset.tab;
         renderPanel();
       })
@@ -68,11 +74,22 @@
         heat.classList.toggle("primary", game.heatmap);
         MAP.refresh();
       };
+    const yr = U.$("#btn-year");
+    if (yr)
+      yr.onclick = () => {
+        const list = (game.state && game.state.yearbooks) || [];
+        if (!list.length) {
+          toast("Aún no hay anuario. Salta hasta el 31 de diciembre.");
+          return;
+        }
+        showYearbook(list[list.length - 1]);
+      };
     const sfx = U.$("#btn-sfx");
     if (sfx)
       sfx.onclick = () => {
         SABOR.setMuted(!SABOR.muted());
         sfx.textContent = SABOR.muted() ? "Sonido" : "Sonido on";
+        sfx.setAttribute("aria-pressed", SABOR.muted() ? "false" : "true");
         if (!SABOR.muted()) SABOR.sfx.cash();
       };
     const bb = U.$("#btn-best");
@@ -138,7 +155,7 @@
         U.$("#search").focus();
       }
       if (e.key === "t" || e.key === "T") showTable();
-      if (["1", "2", "3", "4"].includes(e.key) && U.$("#sz")) {
+      if (["1", "2", "3", "4", "5", "6"].includes(e.key) && U.$("#sz")) {
         const btn = U.$("#sz").children[+e.key - 1];
         if (btn) btn.click();
       }
@@ -238,9 +255,16 @@
         btn.className = "list-item";
         const leftH = r.statusUntil && (r.status === "permisos" || r.status === "obras") ? Math.max(0, (r.statusUntil - game.state.gameTime) / 3600000) : 0;
         const statusTxt = leftH ? `${STATUS_L[r.status]} · ${leftH >= 24 ? (leftH / 24).toFixed(1) + " d" : Math.ceil(leftH) + " h"}` : STATUS_L[r.status];
+        const chips = [
+          r.size === "ghost" ? `<span class="chip violet">Fantasma</span>` : "",
+          r.size === "food_hall" ? `<span class="chip warn">Food hall</span>` : "",
+          r.owned ? `<span class="chip ok">Propiedad</span>` : "",
+          r.metro ? `<span class="chip sky">Metro</span>` : "",
+          r.pedestrian ? `<span class="chip">Peatonal</span>` : "",
+        ].join("");
         btn.innerHTML = `
           <div class="logo">${brand.logo}</div>
-          <div class="meta"><b>${r.name}</b><small>${statusTxt} · ${r.city || r.countryName}</small></div>
+          <div class="meta"><b>${r.name}</b><small>${statusTxt} · ${r.city || r.countryName}</small><div class="chips">${chips}</div></div>
           <div class="right"><div class="${profit >= 0 ? "gain" : "loss"}">${U.formatMoney(profit)}</div><div class="stars">${"★".repeat(Math.round(r.stars))}</div></div>`;
         btn.onclick = () => game.openRestaurant(r.id);
         frag.append(btn);
@@ -252,6 +276,8 @@
         frag.append(more);
       }
       root.append(frag);
+    } else if (tab === "matriz") {
+      renderMatriz(body);
     } else if (tab === "ranking") {
       const byC = {};
       for (const r of game.state.restaurants) {
@@ -293,11 +319,146 @@
           })
           .join("") || "<p class='muted'>Todavía no hay ranking.</p>"}`;
     } else {
-      const news = game.state.news || [];
-      body.innerHTML = news
-        .slice(0, 40)
-        .map((n) => `<div class="news-item"><time>${U.formatDateTime(n.t)}</time>${n.text}</div>`)
-        .join("") || "<p class='muted'>Sin noticias.</p>";
+      renderPrensa(body);
+    }
+  }
+
+  function renderMatriz(body) {
+    SABOR.ensureBooks(game.state);
+    const books = game.state.books;
+    let brandId = game._bookBrand || BRAND.list[0].id;
+    const paint = () => {
+      game._bookBrand = brandId;
+      const brand = BRAND.get(brandId);
+      const bk = books[brandId] || SABOR.defaultBook(brand);
+      body.innerHTML = `
+        <p class="muted">Libro de marca: normas que el gerente IA debe cumplir en todos los locales de esa filial.</p>
+        <label class="muted">Filial
+          <select id="bk-brand">${BRAND.list.map((b) => `<option value="${b.id}" ${b.id === brandId ? "selected" : ""}>${b.name}</option>`).join("")}</select>
+        </label>
+        <div class="book-card">
+          <div style="display:flex;gap:10px;align-items:center">${brand.logo}<div><b>${brand.name}</b><div class="muted">${brand.dishes.length} platos · ${brand.cuisines.join(", ")}</div></div></div>
+          <label><span>Plato firma obligatorio</span><input type="checkbox" id="bk-sig" ${bk.enforceSig ? "checked" : ""}/></label>
+          <label><span>Permitir alcohol</span><input type="checkbox" id="bk-alc" ${bk.allowAlc ? "checked" : ""}/></label>
+          <label><span>Precio mín. ×${bk.minMul.toFixed(2)}</span><input type="range" id="bk-min" min="50" max="100" value="${Math.round(bk.minMul * 100)}"/></label>
+          <label><span>Precio máx. ×${bk.maxMul.toFixed(2)}</span><input type="range" id="bk-max" min="100" max="180" value="${Math.round(bk.maxMul * 100)}"/></label>
+          <label><span>Género mínimo</span>
+            <select id="bk-inq">${[0, 1, 2].map((n) => `<option value="${n}" ${bk.minIngQ === n ? "selected" : ""}>${["Económico", "Estándar", "Premium"][n]}</option>`).join("")}</select>
+          </label>
+          <button type="button" class="btn primary" id="bk-apply">Aplicar a gerentes de esta marca</button>
+        </div>`;
+      U.$("#bk-brand").onchange = () => {
+        brandId = U.$("#bk-brand").value;
+        paint();
+      };
+      const save = () => {
+        books[brandId] = {
+          enforceSig: U.$("#bk-sig").checked,
+          allowAlc: U.$("#bk-alc").checked,
+          minMul: +U.$("#bk-min").value / 100,
+          maxMul: Math.max(+U.$("#bk-min").value / 100 + 0.05, +U.$("#bk-max").value / 100),
+          minIngQ: +U.$("#bk-inq").value,
+          maxIngQ: 2,
+        };
+        game.dirty();
+      };
+      ["bk-sig", "bk-alc", "bk-min", "bk-max", "bk-inq"].forEach((id) => {
+        U.$("#" + id).onchange = () => {
+          save();
+          paint();
+        };
+      });
+      U.$("#bk-apply").onclick = () => {
+        save();
+        const b = BRAND.get(brandId);
+        game.state.restaurants
+          .filter((r) => r.brandId === brandId && r.managerAI !== false)
+          .forEach((r) => SABOR.runManager(game.state, r, b, game.state.gameTime));
+        toast("Gerentes de " + b.name + " actualizan carta al libro de marca.");
+        game.dirty();
+      };
+    };
+    paint();
+  }
+
+  function renderPrensa(body) {
+    const year = SIM.yearOf(game.state.gameTime);
+    const dec = SABOR.decadeMeta(year);
+    const news = game.state.news || [];
+    const ybs = game.state.yearbooks || [];
+    body.innerHTML = `
+      <article class="paper" style="background:${dec.paper};color:${dec.ink};border-color:${dec.accent}">
+        <div class="kicker" style="color:${dec.accent}">${dec.kicker} · ${dec.y}s</div>
+        <h3>${dec.title}</h3>
+        <p class="lede">${dec.tone}</p>
+      </article>
+      <h3>Anuarios</h3>
+      ${
+        ybs.length
+          ? ybs
+              .slice()
+              .reverse()
+              .map(
+                (y) => `<button type="button" class="year-card" data-y="${y.year}">
+            <header><b>Anuario ${y.year}</b><span class="chip">${y.n} locales</span></header>
+            <div class="muted">${y.best ? "Estrella: " + y.best.name : "Sin locales"} · ${y.worst ? "Sangra: " + y.worst.name : ""}</div>
+          </button>`
+              )
+              .join("")
+          : `<p class="muted">El primer anuario se imprime el 31 de diciembre de ${year}.</p>`
+      }
+      <h3>Teletipo</h3>
+      ${
+        news
+          .slice(0, 36)
+          .map((n) => {
+            const d = SABOR.decadeMeta(new Date(n.t).getUTCFullYear());
+            return `<div class="news-item" style="border-left:4px solid ${d.accent};padding-left:8px"><time>${U.formatDateTime(n.t)} · ${d.title}</time>${n.text}</div>`;
+          })
+          .join("") || "<p class='muted'>Sin noticias.</p>"
+      }`;
+    body.querySelectorAll("[data-y]").forEach((btn) => {
+      btn.onclick = () => {
+        const y = ybs.find((x) => x.year === +btn.dataset.y);
+        if (y) showYearbook(y);
+      };
+    });
+  }
+
+  function showYearbook(yb) {
+    if (!yb) return;
+    if (game.state && game.state.yearbookNew === yb.year) game.state.yearbookNew = 0;
+    const dec = yb.decade || SABOR.decadeMeta(yb.year);
+    const star = yb.starBrandId ? BRAND.get(yb.starBrandId) : null;
+    const modal = U.$("#modal");
+    modal.innerHTML = `<div class="card" style="width:min(720px,96%);background:${dec.paper};color:${dec.ink}">
+      <div class="kicker" style="color:${dec.accent}">${dec.title} · anuario</div>
+      <h2>Saborama ${yb.year}</h2>
+      <p class="muted">${dec.tone}</p>
+      <div class="kpis">
+        <div class="kpi teal"><b>${U.formatMoney(yb.yRev)}</b><span>Ingresos del año</span></div>
+        <div class="kpi coral"><b>${U.formatMoney(yb.yCost)}</b><span>Costes</span></div>
+        <div class="kpi gold"><b>${yb.open}/${yb.n}</b><span>Abiertos / total</span></div>
+        <div class="kpi sky"><b>${yb.countries}</b><span>Países</span></div>
+      </div>
+      <p>Filial estrella: <b>${star ? star.name : "—"}</b> ${star ? star.logo : ""}</p>
+      <p>Local del año: <b>${yb.best ? yb.best.name : "—"}</b> ${yb.best ? U.formatMoney(yb.best.ebitda) : ""}</p>
+      <p>El que más sangra: <b>${yb.worst ? yb.worst.name : "—"}</b> ${yb.worst ? U.formatMoney(yb.worst.ebitda) : ""}</p>
+      <h3>Titulares</h3>
+      ${(yb.headlines || []).map((h) => `<div class="news-item">${h}</div>`).join("") || "<p class='muted'>Año tranquilo.</p>"}
+      <div style="text-align:right;margin-top:12px"><button type="button" class="btn primary" id="yb-ok">Cerrar</button></div>
+    </div>`;
+    modal.classList.add("show");
+    U.$("#yb-ok").onclick = closeModal;
+    if (yb.best) {
+      const go = document.createElement("button");
+      go.className = "btn ghost";
+      go.textContent = "Ir al local estrella";
+      go.onclick = () => {
+        closeModal();
+        if (yb.best && yb.best.id) game.openRestaurant(yb.best.id);
+      };
+      U.$("#yb-ok").parentNode.prepend(go);
     }
   }
 
@@ -339,6 +500,10 @@
     const ctry = WORLD.country(place.countryCode);
     let brandId = BRAND.list[0].id;
     let sizeId = "local";
+    let hallBrands = [];
+    const flags = SABOR.streetFlags(place);
+    place.metro = place.metro || flags.metro;
+    place.pedestrian = place.pedestrian || flags.pedestrian;
     const modal = U.$("#modal");
     function quote() {
       return SIM.buildQuote(BRAND.get(brandId), sizeId, place, game.state.gameTime);
@@ -351,6 +516,11 @@
         <div class="place-box">
           <b>${place.display || place.city || ctry.name}</b>
           <div>${place.cityMatch || place.city || "—"} · ${ctry.name}</div>
+          <div class="place-flags">
+            <span class="chip">${SABOR.POI_L[place.poi] || "Urbano"}</span>
+            ${place.metro ? `<span class="chip sky">Metro / estación</span>` : ""}
+            ${place.pedestrian ? `<span class="chip ok">Peatonal</span>` : ""}
+          </div>
           <div class="muted">${place.street || ""} ${place.osmKey ? " · OSM " + place.osmKey + "/" + place.osmValue : ""}</div>
           <div style="margin-top:8px" class="grid2">
             <div>Población est. <b>${U.formatInt((place.popK || 0) * 1000)}</b></div>
@@ -366,13 +536,21 @@
             <div>Alcohol <b>${SABOR.alcoholPolicy(place.countryCode).mode === "dry" ? "país seco" : SABOR.alcoholPolicy(place.countryCode).mode === "license" ? "licencia" : "libre"}</b></div>
           </div>
         </div>
-        <p class="muted">Marca · ${brand.cuisines.join(", ")} · ${BRAND.tiers[brand.tier].name}</p>
+        <p class="muted">Filial · ${brand.cuisines.join(", ")} · ${BRAND.tiers[brand.tier].name} · ${brand.dishes.length} platos</p>
         <div class="brand-grid" id="bg"></div>
-        <div class="grid2" id="sz" style="margin:12px 0"></div>
+        <p class="muted">Formato (teclas 1–6)</p>
+        <div class="format-grid" id="sz"></div>
+        ${
+          sizeId === "food_hall"
+            ? `<p class="muted">Food hall: elige hasta 3 filiales invitadas además de la principal.</p><div class="brand-grid" id="hallg"></div>`
+            : sizeId === "ghost"
+              ? `<p class="muted">Cocina fantasma: sin sala, delivery incluido, inversión y alquiler más bajos.</p>`
+              : ""
+        }
         <div class="place-box">
           <div>Permisos ${U.formatMoney(q.permits)} · Obra ${U.formatMoney(q.works + q.fitout)}</div>
           <div><b>Inversión ${U.formatMoney(q.total)}</b> · Alquiler ${U.formatMoney(q.rentMonthly)}/mes</div>
-          <div class="muted">Permisos ~${Math.round(q.permitH / 24)} d · Obra ~${Math.round(q.buildH / 24)} d (tiempo de juego)</div>
+          <div class="muted">${SIM.sizeOf(sizeId).ghost ? "Sin terraza. Delivery de serie." : SIM.sizeOf(sizeId).hall ? "Varias filiales, un edificio." : "Puedes comprar el bajo más tarde."} · Permisos ~${Math.round(q.permitH / 24)} d · Obra ~${Math.round(q.buildH / 24)} d</div>
         </div>
         <div style="display:flex;gap:8px;justify-content:flex-end">
           <button class="btn ghost" id="cancel-b">Cancelar</button>
@@ -394,17 +572,35 @@
       const sz = U.$("#sz");
       SIM.SIZES.forEach((s) => {
         const t = document.createElement("button");
+        t.type = "button";
         t.className = "size-tile" + (s.id === sizeId ? " on" : "");
-        t.innerHTML = `<b>${s.name}</b><span class="muted">${s.seats} cubiertos · ${s.m2} m²</span>`;
+        t.innerHTML = `<b>${s.name}</b><small>${s.seats} cubiertos · ${s.m2} m²${s.ghost ? " · delivery" : ""}${s.hall ? " · multi-marca" : ""}</small>`;
         t.onclick = () => {
           sizeId = s.id;
+          if (s.id !== "food_hall") hallBrands = [];
           paint();
         };
         sz.append(t);
       });
+      const hg = U.$("#hallg");
+      if (hg) {
+        BRAND.list.forEach((b) => {
+          if (b.id === brandId) return;
+          const t = document.createElement("button");
+          t.type = "button";
+          t.className = "brand-tile" + (hallBrands.includes(b.id) ? " on" : "");
+          t.innerHTML = `${b.logo}<span>${b.name}</span>`;
+          t.onclick = () => {
+            if (hallBrands.includes(b.id)) hallBrands = hallBrands.filter((x) => x !== b.id);
+            else if (hallBrands.length < 3) hallBrands = hallBrands.concat(b.id);
+            paint();
+          };
+          hg.append(t);
+        });
+      }
       U.$("#cancel-b").onclick = closeModal;
       U.$("#ok-b").onclick = () => {
-        const ok = game.confirmBuild(brandId, sizeId, place, quote());
+        const ok = game.confirmBuild(brandId, sizeId, place, quote(), { hallBrands });
         if (ok) closeModal();
       };
     }
@@ -466,8 +662,16 @@
             <div class="kpi"><b class="${profit >= 0 ? "gain" : "loss"}">${U.formatMoney(profit)}</b><span>Resultado</span></div>
           </div>
           <p>${brand.tagline}</p>
-          <p class="muted">Filial de ${SABOR.HOLDING} · ${brand.name} · ${brand.cuisines.join(", ")} · ${SIM.sizeOf(r.size).name}</p>
-          <p class="muted">${r.city}, ${r.countryName} · ${SABOR.POI_L[r.poi] || r.poi} · gusto local ×${SABOR.tasteFit(brand, r.country).toFixed(2)}</p>
+          <p class="muted">Filial de ${SABOR.HOLDING} · ${brand.name} · ${brand.cuisines.join(", ")} · ${SIM.sizeOf(r.size).name} · ${brand.dishes.length} platos</p>
+          <p class="muted">${r.city}, ${r.countryName} · ${SABOR.POI_L[r.poi] || r.poi} · gusto ×${SABOR.tasteFit(brand, r.country).toFixed(2)}</p>
+          <div class="place-flags">
+            ${r.size === "ghost" ? `<span class="chip violet">Cocina fantasma</span>` : ""}
+            ${r.size === "food_hall" ? `<span class="chip warn">Food hall</span>` : ""}
+            ${r.owned ? `<span class="chip ok">Bajo en propiedad</span>` : `<span class="chip">Alquiler</span>`}
+            ${r.metro ? `<span class="chip sky">Metro</span>` : ""}
+            ${r.pedestrian ? `<span class="chip">Peatonal</span>` : ""}
+            ${(r.hallBrands || []).map((id) => { const bb = BRAND.get(id); return bb ? `<span class="chip">${bb.name}</span>` : ""; }).join("")}
+          </div>
           ${(() => {
             const mgrs = r.staff.filter((s) => s.role === "gerente");
             return mgrs.length
@@ -489,7 +693,8 @@
             paint();
           };
       } else if (tab === "carta") {
-        body.innerHTML = `<p class="muted">${r.managerAI !== false ? "El gerente IA fija carta y precios. Desactívalo en Resumen para editar a mano." : "Tú fijas carta y precios."}</p>
+        body.innerHTML = `<p class="muted">${r.managerAI !== false ? "El gerente IA fija carta y precios dentro del libro de marca. Desactívalo en Resumen para editar a mano." : "Tú fijas carta y precios. El libro de marca de la matriz sigue limitando firma, alcohol y rango."}</p>
+          <p class="muted">${brand.dishes.length} platos en esta filial.</p>
           <label class="muted">Género del local
             <select id="ingq"><option value="0">Económico</option><option value="1">Estándar</option><option value="2">Premium</option></select>
           </label>
@@ -636,8 +841,15 @@
           </div>
           <div class="hours-grid" id="hours"></div>
           <h3>Ampliaciones</h3>
-          <label><input type="checkbox" id="deliv" ${r.delivery ? "checked" : ""}/> Delivery (${U.formatMoney(r.rentMonthly * 0.15)} alta)</label><br>
-          <label><input type="checkbox" id="terr" ${r.terrace ? "checked" : ""}/> Terraza (${U.formatMoney(r.rentMonthly * 0.12)} alta)</label>
+          <label><input type="checkbox" id="deliv" ${r.delivery ? "checked" : ""} ${r.size === "ghost" ? "disabled" : ""}/> Delivery (${r.size === "ghost" ? "incluido" : U.formatMoney(r.rentMonthly * 0.15) + " alta"})</label><br>
+          <label><input type="checkbox" id="terr" ${r.terrace ? "checked" : ""} ${r.size === "ghost" ? "disabled" : ""}/> Terraza (${U.formatMoney(r.rentMonthly * 0.12)} alta)</label>
+          <h3>El bajo</h3>
+          <p>${r.owned ? `Propiedad · valor ${U.formatMoney(r.propertyValue || 0)} · comunidad ~${U.formatMoney((r.communityMonthly || r.rentMonthly * 0.08))}/mes` : `Alquiler ${U.formatMoney(r.rentMonthly)}/mes · comprar el bajo ${U.formatMoney(r.propertyValue || r.rentMonthly * 108)}`}</p>
+          <div class="place-flags">
+            ${r.metro ? `<span class="chip sky">Metro cerca</span>` : `<span class="chip">Sin metro</span>`}
+            ${r.pedestrian ? `<span class="chip ok">Calle peatonal</span>` : ""}
+          </div>
+          ${r.owned ? `<button type="button" class="btn ghost" id="sell-brick">Vender solo el ladrillo</button>` : `<button type="button" class="btn primary" id="buy-brick">Comprar el bajo</button>`}
           <p class="muted">Alcohol: ${pol.mode === "dry" ? "país seco — no se puede servir" : pol.mode === "license" ? "requiere licencia" : "libre con tasa"} · ${r.alcoholLicense ? "licencia activa" : "sin licencia"}</p>
           ${pol.mode !== "dry" && !r.alcoholLicense ? `<button class="btn ghost" id="lic">Comprar licencia (${U.formatMoney(pol.license * WORLD.inflationFactor(r.country, SIM.yearOf(game.state.gameTime)))})</button>` : ""}
           <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">
@@ -645,7 +857,7 @@
             <button class="btn warn" id="reno">Reformar</button>
             <button class="btn ghost" id="rebrand">Cambiar marca</button>
             <button class="btn ghost" id="toggle">${r.status === "cerrado" ? "Reabrir" : "Cerrar temporalmente"}</button>
-            <button class="btn danger" id="sell">Vender (${U.formatMoney(val)})</button>
+            <button class="btn danger" id="sell">Vender negocio${r.owned ? " + bajo" : ""} (${U.formatMoney(val)})</button>
           </div>
           <div id="rebrand-box"></div>`;
         const hg = U.$("#hours");
@@ -703,6 +915,28 @@
           game.dirty();
           paintHours();
         };
+        const buyB = U.$("#buy-brick");
+        if (buyB)
+          buyB.onclick = () => {
+            const price = r.propertyValue || r.rentMonthly * 108;
+            if (game.state.cash < price) return toast("No alcanza el bajo.", true);
+            game.state.cash -= price;
+            r.owned = true;
+            r.communityMonthly = r.rentMonthly * 0.08;
+            toast("Has comprado el bajo. El alquiler pasa a comunidad.");
+            game.dirty();
+            paint();
+          };
+        const sellB = U.$("#sell-brick");
+        if (sellB)
+          sellB.onclick = () => {
+            const price = r.propertyValue || 0;
+            game.state.cash += price;
+            r.owned = false;
+            toast("Has vendido el ladrillo. Vuelves al alquiler.");
+            game.dirty();
+            paint();
+          };
         U.$("#deliv").onchange = () => {
           if (U.$("#deliv").checked && !r.delivery) {
             const c = r.rentMonthly * 0.15;
@@ -934,6 +1168,7 @@
     showRestaurant,
     showTable,
     showSaves,
+    showYearbook,
     closeModal,
     closeSheet,
     refreshOpen() {

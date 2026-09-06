@@ -12,15 +12,16 @@ No hace falta servidor ni build. **Descomprime el ZIP**, entra en la carpeta (de
 2. **Nueva partida**.
 3. Busca una ciudad, usa **Mi ubicación**, o navega el mapa.
 4. Clic en tierra edificable: el juego consulta OSM (Photon/Nominatim) y rellena datos reales del lugar (dirección, país, población estimada, salarios, IVA, alquiler, zona horaria, competencia oculta).
-5. Elige marca y tamaño (kiosco, local, flagship, estadio). Pagas permisos + obra.
+5. Elige filial y formato: kiosco, local, **cocina fantasma**, flagship, **food hall** o estadio.
 6. El tiempo corre: **1 minuto real = 1 hora de juego** (a 1×). Pausa, 2×–16× y **saltar día**.
-7. Entra en la ficha del local: carta, personal, inventario, finanzas, reformar, cambiar marca, cerrar o vender.
+7. Ficha del local: carta, personal, inventario, finanzas, **comprar el bajo**, reformar, marca, cerrar o vender.
+8. Pestaña **Matriz**: libro de marca (firma, precios, alcohol). **Prensa**: periódico de la década y **anuario** el 31 de diciembre.
 
-No se puede construir en océano, costas de agua, parques, reservas ni aeropuertos. La zonificación residencial alarga los permisos.
+No se puede construir en océano, costas de agua, parques, reservas ni aeropuertos. La zonificación residencial alarga los permisos. Metro o calle peatonal (OSM) suben la demanda.
 
 ## Marcas
 
-Cincuenta marcas al estilo de un juego de cocina de gestión: hamburguesas, tacos, ramen, kaiseki, vermú, absenta, asador, ceviche, jerk, dim sum, etc. Todas disponibles desde el minuto uno, en cualquier país. Un local = una marca. Recetas y menús se gestionan (platos on/off, precio, género económico/estándar/premium). Incluye bares y alcohol.
+Cincuenta filiales con **carta larga** (packs extra por cocina). Un local = una marca, salvo food hall (hasta 3 invitadas). Incluye bares y alcohol.
 
 ## Simulación
 
