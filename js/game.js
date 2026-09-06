@@ -4,8 +4,8 @@
   const W = 160;
   const H = 100;
   const MAX_FLOORS = 40;
-  const FLOOR_COST_BASE = 25000;
-  const START_MONEY = 90000;
+  const FLOOR_COST_BASE = 12000;
+  const START_MONEY = 350000;
   const SAVE_KEY = "costa-aurora-save-v1";
 
   const T = [
@@ -200,7 +200,7 @@
   }
 
   function floorCost() {
-    return FLOOR_COST_BASE + state.floors * 8000;
+    return FLOOR_COST_BASE + state.floors * 4000;
   }
 
   function canBuild(id, floor, x, y) {
@@ -403,10 +403,9 @@
   function occupancyTarget() {
     const s = state.stats;
     if (!s.lobby) return 0;
-    let demand = 0.18 + state.stars * 0.12 + s.amenityTypes * 0.03 + state.reputation / 400;
-    if (state.floor > 0 && !hasVerticalAccess()) demand *= 0.15;
-    if (s.rooms > 0 && s.amenityScore / s.rooms < 0.02 && s.rooms > 40) demand *= 0.7;
-    return Math.max(0.05, Math.min(0.97, demand));
+    let demand = 0.38 + state.stars * 0.1 + s.amenityTypes * 0.03 + state.reputation / 500;
+    if (s.rooms > 0 && s.amenityScore / Math.max(1, s.rooms) < 0.02 && s.rooms > 40) demand *= 0.8;
+    return Math.max(0.28, Math.min(0.97, demand));
   }
 
   function sim(dt) {
@@ -426,15 +425,15 @@
   }
 
   function tick() {
-    state.minute += 8;
+    state.minute += 3;
     if (state.minute >= 24 * 60) {
       state.minute -= 24 * 60;
       state.day++;
       endOfDay();
     }
     const hour = (state.minute / 60) | 0;
-    const arriving = hour >= 14 && hour <= 22;
-    const leaving = hour >= 8 && hour <= 11;
+    const arriving = hour >= 13 && hour <= 22;
+    const leaving = hour >= 9 && hour <= 11;
     const target = occupancyTarget();
     const s = state.stats;
     if (!s.capacity) return;
@@ -691,7 +690,7 @@
   function clock() {
     const hh = String((state.minute / 60) | 0).padStart(2, "0");
     const mm = String(state.minute % 60).padStart(2, "0");
-    return state.day + " · " + hh + ":" + mm;
+    return "Día " + state.day + " · " + hh + ":" + mm;
   }
 
   function drawHud() {
@@ -701,6 +700,9 @@
     document.getElementById("ui-rooms").textContent = String(state.stats.rooms);
     const occ = state.stats.capacity ? Math.round((100 * state.stats.occupied) / state.stats.capacity) : 0;
     document.getElementById("ui-occ").textContent = occ + "%";
+    if (!state.stats.lobby && state.stats.rooms) {
+      document.getElementById("ui-occ").textContent = "Sin recepción";
+    }
     document.getElementById("stars").textContent = starString(state.stars);
     const fl = state.floor === 0 ? "Jardín · Planta 0" : "Planta " + state.floor;
     document.getElementById("floor-label").textContent = fl + " / " + (state.floors - 1);
@@ -755,6 +757,7 @@
     document.querySelectorAll(".speed button").forEach((b) => {
       b.classList.toggle("on", Number(b.dataset.speed) === state.speed);
     });
+    if (!state.panning) canvas.style.cursor = state.tool === "pan" ? "grab" : "crosshair";
   }
 
   function addFloor() {
@@ -788,9 +791,10 @@
   }
 
   function onDown(ev) {
-    if (ev.button === 1 || ev.button === 2 || ev.shiftKey) {
+    if (state.tool === "pan" || ev.button === 1 || ev.button === 2 || ev.shiftKey) {
       state.panning = true;
       state.panLast = { x: ev.clientX, y: ev.clientY };
+      canvas.style.cursor = "grabbing";
       ev.preventDefault();
       return;
     }
@@ -833,6 +837,7 @@
     if (state.panning) {
       state.panning = false;
       state.panLast = null;
+      canvas.style.cursor = state.tool === "pan" ? "grab" : "crosshair";
       return;
     }
     if (!state.drag) return;
@@ -878,6 +883,7 @@
       if (e.key === "2") state.tool = "rect";
       if (e.key === "3") state.tool = "wing";
       if (e.key === "4") state.tool = "erase";
+      if (e.key === "5" || e.key === "h" || e.key === "H") state.tool = "pan";
       if (e.key === "PageUp" || e.key === "]") state.floor = Math.min(state.floors - 1, state.floor + 1);
       if (e.key === "PageDown" || e.key === "[") state.floor = Math.max(0, state.floor - 1);
       if (e.key === " " || e.key === "p" || e.key === "P") {

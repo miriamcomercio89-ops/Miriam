@@ -280,6 +280,8 @@ button, input { font-family: inherit; }
   display: flex;
   gap: 6px;
   z-index: 6;
+  flex-wrap: wrap;
+  max-width: calc(100vw - 480px);
 }
 .tool-bar .tool.on, .floor-bar button.on {
   background: var(--gold-2);
