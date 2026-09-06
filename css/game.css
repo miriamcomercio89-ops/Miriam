@@ -264,6 +264,7 @@ table.data tr:hover td { background: #fff6e8; }
   background: linear-gradient(160deg, #0b5348 0%, #1d3557 42%, #e85d4c 160%);
   color: #fff; display: flex; align-items: center; justify-content: center;
 }
+.splash.hidden, .hidden { display: none !important; }
 .splash-inner { width: min(520px, calc(100% - 40px)); }
 .splash h1 { font-family: var(--display); font-size: 42px; margin: 0 0 6px; font-weight: 600; }
 .splash p { opacity: .86; }
