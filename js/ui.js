@@ -45,6 +45,7 @@
         game.filters.status = U.$("#f-status").value;
         game.filters.profit = U.$("#f-profit").value;
         game.filters.sort = U.$("#f-sort").value;
+        renderPanel();
         try {
           MAP.refresh();
         } catch (_) {}
@@ -60,6 +61,24 @@
     U.$("#btn-geo").addEventListener("click", () => game.goMyLocation());
     U.$("#btn-table").addEventListener("click", () => showTable());
     U.$("#btn-saves").addEventListener("click", () => showSaves(true));
+    const heat = U.$("#btn-heat");
+    if (heat)
+      heat.onclick = () => {
+        game.heatmap = !game.heatmap;
+        heat.classList.toggle("primary", game.heatmap);
+        MAP.refresh();
+      };
+    const sfx = U.$("#btn-sfx");
+    if (sfx)
+      sfx.onclick = () => {
+        SABOR.setMuted(!SABOR.muted());
+        sfx.textContent = SABOR.muted() ? "Sonido" : "Sonido on";
+        if (!SABOR.muted()) SABOR.sfx.cash();
+      };
+    const bb = U.$("#btn-best");
+    if (bb) bb.onclick = () => MAP.jumpProfit(true);
+    const bw = U.$("#btn-worst");
+    if (bw) bw.onclick = () => MAP.jumpProfit(false);
     U.$("#btn-export").addEventListener("click", () => game.exportSave());
     U.$("#btn-import").addEventListener("click", () => U.$("#import-file").click());
     U.$("#import-file").addEventListener("change", async (e) => {
@@ -111,6 +130,18 @@
         closeSheet();
         closeModal();
       }
+      if (e.key === "n" || e.key === "N") {
+        UI.toast("Clic en el mapa para un local nuevo. 1–4 eligen tamaño en el modal.");
+      }
+      if (e.key === "f" || e.key === "F") {
+        e.preventDefault();
+        U.$("#search").focus();
+      }
+      if (e.key === "t" || e.key === "T") showTable();
+      if (["1", "2", "3", "4"].includes(e.key) && U.$("#sz")) {
+        const btn = U.$("#sz").children[+e.key - 1];
+        if (btn) btn.click();
+      }
     });
   }
 
@@ -133,6 +164,23 @@
     U.$("#gdate").textContent = `${p.day} ${months[p.m]} ${p.y}`;
     const sp = s.paused || s.speed === 0 ? "pausa" : s.speed + "×";
     U.$("#gtime").textContent = `${U.pad2(p.h)}:${U.pad2(p.min)} UTC · ${sp} · 1 min real = 1 h juego`;
+    const box = U.$("#alerts");
+    if (box) {
+      const als = SABOR.alerts(s);
+      box.innerHTML = als.map((a) => `<div class="al ${a.bad ? "bad" : ""}">${a.t}</div>`).join("");
+    }
+    const leg = U.$("#legend");
+    if (leg) {
+      const used = new Map();
+      for (const r of s.restaurants) used.set(r.brandId, (used.get(r.brandId) || 0) + 1);
+      leg.innerHTML = [...used.entries()]
+        .slice(0, 24)
+        .map(([id, n]) => {
+          const b = BRAND.get(id);
+          return `<span>${b.logo}${b.name} · ${n}</span>`;
+        })
+        .join("");
+    }
   }
 
   function listRestaurants() {
@@ -217,16 +265,32 @@
         .sort((a, b) => b.rev - a.rev)
         .slice(0, 16);
       const totalC = Object.keys(WORLD.COUNTRIES).length;
+      const pnl = Object.entries(game.state.pnl || {})
+        .sort((a, b) => b[0].localeCompare(a[0]))
+        .slice(0, 8);
       body.innerHTML = `
         <div class="kpis">
           <div class="kpi"><b>${Object.keys(byC).length}/${totalC}</b><span>Cobertura países</span></div>
-          <div class="kpi"><b>${U.formatMoney(game.state.restaurants.reduce((a, r) => a + r.finance.revTotal, 0))}</b><span>Facturación acumulada</span></div>
+          <div class="kpi"><b>${U.formatMoney(game.state.restaurants.reduce((a, r) => a + r.finance.revTotal, 0))}</b><span>Facturación</span></div>
         </div>
-        <p class="muted">La competencia existe, pero no se pinta en el mapa. La cuota es tuya frente a cadenas ocultas.</p>
+        <h3>P&amp;L mensual (EBITDA operativo)</h3>
+        ${
+          pnl
+            .map(([k, v]) => {
+              const e = v.rev - v.cost;
+              return `<div class="rank-row"><div>${k}<div class="muted">Ing. ${U.formatMoney(v.rev)} · Coste ${U.formatMoney(v.cost)}</div></div><div class="${e >= 0 ? "gain" : "loss"}">${U.formatMoney(e)}</div></div>`;
+            })
+            .join("") || "<p class='muted'>Aún no hay meses cerrados.</p>"
+        }
+        <h3>Competencia oculta</h3>
+        <p class="muted">No se pinta en el mapa. La barra es tu cuota frente a otras cadenas.</p>
         ${rows
-          .map(
-            (r) => `<div class="rank-row"><div><b>${WORLD.country(r.cc).name}</b><div class="muted">${r.n} locales · cuota ${(r.share * 100).toFixed(0)}%</div></div><div>${U.formatMoney(r.rev)}</div></div>`
-          )
+          .map((r) => {
+            const pct = Math.round(r.share * 100);
+            return `<div class="rank-row"><div style="flex:1"><b>${WORLD.country(r.cc).name}</b>
+              <div class="comp-bar"><i style="width:${pct}%"></i></div>
+              <div class="muted">${r.n} locales · tuya ${pct}% · ajena ${100 - pct}%</div></div><div>${U.formatMoney(r.rev)}</div></div>`;
+          })
           .join("") || "<p class='muted'>Todavía no hay ranking.</p>"}`;
     } else {
       const news = game.state.news || [];
@@ -297,6 +361,9 @@
             <div>Zona horaria <b>UTC${place.tz >= 0 ? "+" : ""}${place.tz}</b></div>
             <div>Competencia <b>${place.competitor > 0.6 ? "alta" : place.competitor > 0.35 ? "media" : "baja"}</b></div>
             <div>Año juego <b>${year}</b></div>
+            <div>Sitio <b>${SABOR.POI_L[place.poi] || "Urbano"}</b></div>
+            <div>Gusto vs marca <b>×${SABOR.tasteFit(brand, place.countryCode).toFixed(2)}</b></div>
+            <div>Alcohol <b>${SABOR.alcoholPolicy(place.countryCode).mode === "dry" ? "país seco" : SABOR.alcoholPolicy(place.countryCode).mode === "license" ? "licencia" : "libre"}</b></div>
           </div>
         </div>
         <p class="muted">Marca · ${brand.cuisines.join(", ")} · ${BRAND.tiers[brand.tier].name}</p>
@@ -399,13 +466,30 @@
             <div class="kpi"><b class="${profit >= 0 ? "gain" : "loss"}">${U.formatMoney(profit)}</b><span>Resultado</span></div>
           </div>
           <p>${brand.tagline}</p>
-          <p class="muted">${brand.name} · ${brand.cuisines.join(", ")} · ${SIM.sizeOf(r.size).name} · ${r.city}, ${r.countryName}</p>
+          <p class="muted">Filial de ${SABOR.HOLDING} · ${brand.name} · ${brand.cuisines.join(", ")} · ${SIM.sizeOf(r.size).name}</p>
+          <p class="muted">${r.city}, ${r.countryName} · ${SABOR.POI_L[r.poi] || r.poi} · gusto local ×${SABOR.tasteFit(brand, r.country).toFixed(2)}</p>
+          ${(() => {
+            const mgrs = r.staff.filter((s) => s.role === "gerente");
+            return mgrs.length
+              ? `<p>Gerente en sala: <b>${mgrs.map((s) => s.name).join(", ")}</b> (IA de carta y precios ${r.managerAI !== false ? "activa" : "apagada"})</p>`
+              : `<p class="loss">Este local no tiene gerente. Contrata uno en Personal.</p>`;
+          })()}
+          <label><input type="checkbox" id="mgr" ${r.managerAI !== false ? "checked" : ""}/> Gerente IA (establece carta y precios)</label>
+          <p class="muted">${r.managerNote || ""}</p>
           ${miss.length ? `<p class="loss">Falta personal: ${miss.join(", ")}. El local no atiende.</p>` : ""}
           <h3>Reseñas</h3>
           ${(r.reviews || []).map((rv) => `<div class="news-item">${rv.stars}★ · ${rv.text}</div>`).join("") || "<p class='muted'>Aún no hay reseñas.</p>"}
         `;
+        const mgr = U.$("#mgr");
+        if (mgr)
+          mgr.onchange = () => {
+            r.managerAI = mgr.checked;
+            if (r.managerAI) SABOR.runManager(game.state, r, brand, game.state.gameTime);
+            game.dirty();
+            paint();
+          };
       } else if (tab === "carta") {
-        body.innerHTML = `<p class="muted">Activa platos, pon precio en euros y calidad de género. Como en una cocina de gestión: la carta es el juego.</p>
+        body.innerHTML = `<p class="muted">${r.managerAI !== false ? "El gerente IA fija carta y precios. Desactívalo en Resumen para editar a mano." : "Tú fijas carta y precios."}</p>
           <label class="muted">Género del local
             <select id="ingq"><option value="0">Económico</option><option value="1">Estándar</option><option value="2">Premium</option></select>
           </label>
@@ -425,6 +509,9 @@
             <input type="number" step="0.1" min="0" value="${m.price}" />
             <span class="muted">coste ~${U.formatMoney(d.cost, 2)}</span>`;
           const [ck, , price] = [row.children[0], row.children[1], row.children[2]];
+          const lock = r.managerAI !== false;
+          ck.disabled = lock;
+          price.disabled = lock;
           ck.onchange = () => {
             r.menu[i].on = ck.checked;
             game.dirty();
@@ -516,21 +603,43 @@
           .join("");
       } else if (tab === "finanzas") {
         const dayP = r.finance.revToday - r.finance.costToday;
+        const months = Object.entries(r.finance.months || {})
+          .sort((a, b) => b[0].localeCompare(a[0]))
+          .slice(0, 10);
         body.innerHTML = `
           <div class="kpis">
             <div class="kpi"><b>${U.formatMoney(r.finance.revTotal)}</b><span>Ingresos</span></div>
             <div class="kpi"><b>${U.formatMoney(r.finance.costTotal)}</b><span>Costes</span></div>
-            <div class="kpi"><b class="${profit >= 0 ? "gain" : "loss"}">${U.formatMoney(profit)}</b><span>Acumulado</span></div>
+            <div class="kpi"><b class="${profit >= 0 ? "gain" : "loss"}">${U.formatMoney(profit)}</b><span>EBITDA acum.</span></div>
             <div class="kpi"><b>${U.formatMoney(dayP)}</b><span>Hoy (juego)</span></div>
           </div>
           <p>Alquiler mensual ${U.formatMoney(r.rentMonthly)} · masa salarial ~${U.formatMoney(st.wageDay)}/día laboral</p>
-          <p class="muted">Impuestos locales aplicados en cada ticket (IVA) y costes de personal según salario mínimo del país.</p>`;
+          <h3>Mensual</h3>
+          ${months.map(([k, v]) => `<div class="rank-row"><div>${k}</div><div class="${v.rev - v.cost >= 0 ? "gain" : "loss"}">${U.formatMoney(v.rev - v.cost)}</div></div>`).join("") || "<p class='muted'>Sin meses aún.</p>"}`;
       } else {
         const val = SIM.sellValue(r, game.state.gameTime);
+        const pol = SABOR.alcoholPolicy(r.country);
+        if (!r.hours) r.hours = SABOR.defaultHours(brand);
         body.innerHTML = `
-          <p>Superficie ${SIM.sizeOf(r.size).m2} m² · ${SIM.sizeOf(r.size).seats} cubiertos</p>
+          <p>Superficie ${SIM.sizeOf(r.size).m2} m² · ${SIM.sizeOf(r.size).seats} cubiertos · ${SABOR.POI_L[r.poi] || r.poi}</p>
           <p>Limpieza</p>
           <div class="bar"><i style="width:${r.cleanliness}%"></i></div>
+          <h3>Horario local (hora del sitio)</h3>
+          <p class="muted">Siete días, dos franjas (comida y cena). 24 = medianoche, 26 = 02:00. El gerente IA no pisa un horario que tú edites.</p>
+          <div class="hours-presets" id="hpre">
+            <button type="button" class="btn ghost sm" data-hp="marca">Marca</button>
+            <button type="button" class="btn ghost sm" data-hp="24h">24 h</button>
+            <button type="button" class="btn ghost sm" data-hp="lunoff">Cerrado lunes</button>
+            <button type="button" class="btn ghost sm" data-hp="finde">Finde largo</button>
+            <button type="button" class="btn ghost sm" data-hp="split">Comida+cena</button>
+            <button type="button" class="btn ghost sm" data-hp="copylun">Lun → semana</button>
+          </div>
+          <div class="hours-grid" id="hours"></div>
+          <h3>Ampliaciones</h3>
+          <label><input type="checkbox" id="deliv" ${r.delivery ? "checked" : ""}/> Delivery (${U.formatMoney(r.rentMonthly * 0.15)} alta)</label><br>
+          <label><input type="checkbox" id="terr" ${r.terrace ? "checked" : ""}/> Terraza (${U.formatMoney(r.rentMonthly * 0.12)} alta)</label>
+          <p class="muted">Alcohol: ${pol.mode === "dry" ? "país seco — no se puede servir" : pol.mode === "license" ? "requiere licencia" : "libre con tasa"} · ${r.alcoholLicense ? "licencia activa" : "sin licencia"}</p>
+          ${pol.mode !== "dry" && !r.alcoholLicense ? `<button class="btn ghost" id="lic">Comprar licencia (${U.formatMoney(pol.license * WORLD.inflationFactor(r.country, SIM.yearOf(game.state.gameTime)))})</button>` : ""}
           <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">
             <button class="btn ghost" id="clean">Brigada de limpieza</button>
             <button class="btn warn" id="reno">Reformar</button>
@@ -539,6 +648,97 @@
             <button class="btn danger" id="sell">Vender (${U.formatMoney(val)})</button>
           </div>
           <div id="rebrand-box"></div>`;
+        const hg = U.$("#hours");
+        const daysN = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
+        const paintHours = () => {
+          hg.innerHTML = `<span class="hh"></span><span class="hh">Abre</span><span class="hh">Franja 1</span><span class="hh">a</span><span class="hh">Franja 2</span><span class="hh">a</span>`;
+          r.hours.forEach((h, i) => {
+            const row = document.createElement("div");
+            row.style.display = "contents";
+            row.innerHTML = `<span class="hd">${daysN[i]}</span>
+              <input type="checkbox" title="Abre" ${h.open ? "checked" : ""}/>
+              <input type="number" min="0" max="27" value="${h.a}" title="Apertura 1"/>
+              <input type="number" min="0" max="27" value="${h.b}" title="Cierre 1"/>
+              <input type="number" min="0" max="27" value="${h.c || 0}" title="Apertura 2 (0 = no)"/>
+              <input type="number" min="0" max="27" value="${h.d || 0}" title="Cierre 2"/>`;
+            const [ck, a, b, c, d] = [row.children[1], row.children[2], row.children[3], row.children[4], row.children[5]];
+            const touch = () => {
+              r.hoursCustom = true;
+              game.dirty();
+            };
+            ck.onchange = () => {
+              h.open = ck.checked;
+              touch();
+            };
+            a.onchange = () => {
+              h.a = +a.value;
+              touch();
+            };
+            b.onchange = () => {
+              h.b = +b.value;
+              touch();
+            };
+            c.onchange = () => {
+              h.c = +c.value;
+              touch();
+            };
+            d.onchange = () => {
+              h.d = +d.value;
+              touch();
+            };
+            hg.append(row);
+          });
+        };
+        paintHours();
+        U.$("#hpre").onclick = (ev) => {
+          const btn = ev.target.closest("button[data-hp]");
+          if (!btn) return;
+          const k = btn.dataset.hp;
+          if (k === "copylun") {
+            const src = { ...r.hours[1] };
+            r.hours = r.hours.map(() => ({ ...src }));
+          } else if (k === "marca") r.hours = SABOR.defaultHours(brand);
+          else r.hours = SABOR.applyHoursPreset(brand, k);
+          r.hoursCustom = true;
+          game.dirty();
+          paintHours();
+        };
+        U.$("#deliv").onchange = () => {
+          if (U.$("#deliv").checked && !r.delivery) {
+            const c = r.rentMonthly * 0.15;
+            if (game.state.cash < c) {
+              U.$("#deliv").checked = false;
+              return toast("No alcanza el delivery.", true);
+            }
+            game.state.cash -= c;
+            r.delivery = true;
+            toast("Delivery activado.");
+          } else r.delivery = U.$("#deliv").checked;
+          game.dirty();
+        };
+        U.$("#terr").onchange = () => {
+          if (U.$("#terr").checked && !r.terrace) {
+            const c = r.rentMonthly * 0.12;
+            if (game.state.cash < c) {
+              U.$("#terr").checked = false;
+              return toast("No alcanza la terraza.", true);
+            }
+            game.state.cash -= c;
+            r.terrace = true;
+          } else r.terrace = U.$("#terr").checked;
+          game.dirty();
+        };
+        const lic = U.$("#lic");
+        if (lic)
+          lic.onclick = () => {
+            const c = pol.license * WORLD.inflationFactor(r.country, SIM.yearOf(game.state.gameTime));
+            if (game.state.cash < c) return toast("Sin caja para la licencia.", true);
+            game.state.cash -= c;
+            r.alcoholLicense = true;
+            toast("Licencia de alcohol concedida.");
+            game.dirty();
+            paint();
+          };
         U.$("#clean").onclick = () => {
           const c = 250 * WORLD.priceLevel(r.country, SIM.yearOf(game.state.gameTime));
           game.state.cash -= c;
@@ -610,47 +810,83 @@
   }
 
   function showTable() {
-    const list = listRestaurants();
+    let list = listRestaurants();
     const modal = U.$("#modal");
+    const rowH = 32;
     modal.innerHTML = `<div class="card" style="width:min(980px,96%)">
-      <div style="display:flex;justify-content:space-between;align-items:center">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
         <h2>Tabla de locales</h2>
+        <input id="qtab" placeholder="Buscar nombre, ciudad, marca" style="flex:1;min-width:160px;padding:8px;border-radius:10px;border:1px solid var(--line)"/>
+        <button class="btn ghost" id="csv">CSV</button>
         <button class="btn ghost" id="ct">Cerrar</button>
       </div>
-      <p class="muted">${U.formatInt(list.length)} en vista filtrada</p>
-      <div style="overflow:auto;max-height:70vh">
-        <table class="data">
-          <thead><tr><th>Local</th><th>Marca</th><th>Ciudad</th><th>País</th><th>Estado</th><th>★</th><th>Resultado</th></tr></thead>
-          <tbody>
-            ${list
-              .slice(0, 400)
-              .map((r) => {
-                const b = BRAND.get(r.brandId);
-                const p = r.finance.revTotal - r.finance.costTotal;
-                return `<tr data-id="${r.id}"><td>${r.name}</td><td>${b.name}</td><td>${r.city}</td><td>${r.countryName}</td><td>${STATUS_L[r.status]}</td><td>${r.stars.toFixed(1)}</td><td class="${p >= 0 ? "gain" : "loss"}">${U.formatMoney(p)}</td></tr>`;
-              })
-              .join("")}
-          </tbody>
-        </table>
+      <p class="muted" id="tabn">${U.formatInt(list.length)} en vista</p>
+      <div class="vt-wrap" id="vt">
+        <div id="vt-spacer" style="position:relative">
+          <table class="data" style="position:sticky;top:0;background:#fffaf2;z-index:1"><thead><tr><th>Local</th><th>Marca</th><th>Ciudad</th><th>País</th><th>Estado</th><th>★</th><th>Resultado</th></tr></thead></table>
+          <div id="vt-rows"></div>
+        </div>
       </div>
     </div>`;
     modal.classList.add("show");
+    const apply = () => {
+      const q = (U.$("#qtab").value || "").toLowerCase();
+      list = listRestaurants().filter((r) => {
+        if (!q) return true;
+        const b = BRAND.get(r.brandId);
+        return (r.name + r.city + r.countryName + (b && b.name)).toLowerCase().includes(q);
+      });
+      U.$("#tabn").textContent = U.formatInt(list.length) + " en vista";
+      paintRows();
+    };
+    const paintRows = () => {
+      const wrap = U.$("#vt");
+      const vis = Math.ceil(wrap.clientHeight / rowH) + 8;
+      const start = Math.max(0, Math.floor(wrap.scrollTop / rowH) - 2);
+      const end = Math.min(list.length, start + vis);
+      U.$("#vt-spacer").style.height = list.length * rowH + 36 + "px";
+      const rows = U.$("#vt-rows");
+      rows.style.position = "absolute";
+      rows.style.top = 36 + start * rowH + "px";
+      rows.style.left = 0;
+      rows.style.right = 0;
+      rows.innerHTML = `<table class="data"><tbody>${list
+        .slice(start, end)
+        .map((r) => {
+          const b = BRAND.get(r.brandId);
+          const p = r.finance.revTotal - r.finance.costTotal;
+          return `<tr data-id="${r.id}"><td>${r.name}</td><td>${b.name}</td><td>${r.city}</td><td>${r.countryName}</td><td>${STATUS_L[r.status]}</td><td>${(r.stars || 0).toFixed(1)}</td><td class="${p >= 0 ? "gain" : "loss"}">${U.formatMoney(p)}</td></tr>`;
+        })
+        .join("")}</tbody></table>`;
+      rows.querySelectorAll("tr").forEach((tr) => {
+        tr.style.cursor = "pointer";
+        tr.onclick = () => {
+          closeModal();
+          game.openRestaurant(tr.dataset.id);
+        };
+      });
+    };
+    U.$("#vt").addEventListener("scroll", paintRows);
+    U.$("#qtab").addEventListener("input", apply);
+    U.$("#csv").onclick = () => {
+      const lines = [["nombre", "marca", "ciudad", "pais", "estado", "estrellas", "resultado"].join(";")];
+      list.forEach((r) => {
+        const b = BRAND.get(r.brandId);
+        const p = r.finance.revTotal - r.finance.costTotal;
+        lines.push([r.name, b.name, r.city, r.countryName, r.status, r.stars, p.toFixed(2)].join(";"));
+      });
+      U.download("saborama-locales.csv", lines.join("\n"));
+    };
     U.$("#ct").onclick = closeModal;
-    modal.querySelectorAll("tbody tr").forEach((tr) => {
-      tr.style.cursor = "pointer";
-      tr.onclick = () => {
-        closeModal();
-        game.openRestaurant(tr.dataset.id);
-      };
-    });
+    paintRows();
   }
 
   async function showSaves(fromGame) {
     const slots = await STORE.listSlots();
     const modal = U.$("#modal");
     modal.innerHTML = `<div class="card">
-      <h2>Partidas</h2>
-      <p class="muted">Varias ranuras, autoguardado y exportar JSON.</p>
+      <h2>8 ranuras — ${SABOR.HOLDING}</h2>
+      <p class="muted">Miniatura del mapa de locales, fecha de juego y última vez real.</p>
       <div id="sv"></div>
       <div style="display:flex;gap:8px;margin-top:12px">
         <button class="btn primary" id="sv-new">Nueva</button>
@@ -658,22 +894,29 @@
       </div>
     </div>`;
     const sv = U.$("#sv");
-    slots.forEach((s) => {
+    for (let i = 0; i < 8; i++) {
+      const s = slots[i];
       const row = document.createElement("div");
       row.className = "rank-row";
-      row.innerHTML = `<div><b>${s.name}</b><div class="muted">${U.formatDate(s.gameTime)} · ${s.n} locales</div></div>
-        <div style="display:flex;gap:6px">
-          <button class="btn sm ghost">Cargar</button>
-          <button class="btn sm danger">Borrar</button>
-        </div>`;
-      row.querySelector(".ghost").onclick = () => game.loadSlot(s.id);
-      row.querySelector(".danger").onclick = async () => {
-        if (!confirm("¿Borrar partida?")) return;
-        await STORE.remove(s.id);
-        showSaves(fromGame);
-      };
+      if (!s) {
+        row.innerHTML = `<div class="slot-card"><div style="width:88px;height:48px;border-radius:8px;background:#efe6d4"></div><div><b>Ranura ${i + 1}</b><div class="muted">Vacía</div></div></div>`;
+      } else {
+        row.innerHTML = `<div class="slot-card">${s.thumb ? `<img src="${s.thumb}" alt="">` : `<div style="width:88px;height:48px;border-radius:8px;background:#d5e4d0"></div>`}
+          <div><b>${s.name}</b><div class="muted">Juego ${U.formatDate(s.gameTime)} · ${s.n} locales · ${U.formatMoney(s.cash)}</div>
+          <div class="muted">Guardado ${s.savedAt ? new Date(s.savedAt).toLocaleString("es-ES") : "—"}</div></div></div>
+          <div style="display:flex;gap:6px">
+            <button class="btn sm ghost">Cargar</button>
+            <button class="btn sm danger">Borrar</button>
+          </div>`;
+        row.querySelector(".ghost").onclick = () => game.loadSlot(s.id);
+        row.querySelector(".danger").onclick = async () => {
+          if (!confirm("¿Borrar partida?")) return;
+          await STORE.remove(s.id);
+          showSaves(fromGame);
+        };
+      }
       sv.append(row);
-    });
+    }
     U.$("#sv-new").onclick = () => game.newGame();
     U.$("#sv-x").onclick = closeModal;
     modal.classList.add("show");

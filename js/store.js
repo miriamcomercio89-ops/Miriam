@@ -125,7 +125,7 @@
       news: [
         {
           t: Date.UTC(2000, 0, 1, 8, 0, 0),
-          text: "1 de enero de 2000. Grupo Meridiano abre libros. El mundo es una carta en blanco.",
+          text: "1 de enero de 2000. Saborama abre libros. El mundo es una carta en blanco.",
         },
       ],
       competitors,
@@ -143,6 +143,7 @@
       cash: state.cash,
       n: (state.restaurants || []).length,
       countries: new Set((state.restaurants || []).map((r) => r.country)).size,
+      thumb: state.thumb || null,
     };
   }
 

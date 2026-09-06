@@ -12,11 +12,23 @@
       maxZoom: 19,
     }).setView([22, 12], 3);
 
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> · <a href="https://carto.com/attributions">CARTO</a>',
-      subdomains: "abcd",
+    /* Esri World Street Map: sin API key. Carto Voyager marca cada tesela con "API Key Required". */
+    const esri = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}", {
+      attribution: 'Teselas &copy; <a href="https://www.esri.com/">Esri</a> · datos &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
       maxZoom: 19,
     }).addTo(map);
+    let osmFallback = false;
+    let tileErrs = 0;
+    esri.on("tileerror", () => {
+      if (osmFallback) return;
+      if (++tileErrs < 10) return;
+      osmFallback = true;
+      map.removeLayer(esri);
+      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        maxZoom: 19,
+      }).addTo(map);
+    });
 
     L.control.zoom({ position: "bottomright" }).addTo(map);
     layer = L.layerGroup().addTo(map);
@@ -32,6 +44,21 @@
       game.onMapClick(e.latlng.lat, e.latlng.lng);
     });
     map.on("moveend zoomend", () => refresh());
+    map.on("mousemove", (e) => {
+      if (!game || !game.state) return;
+      const tip = document.getElementById("map-tip");
+      if (!tip) return;
+      const est = SABOR.estimateHover(e.latlng.lat, e.latlng.lng, game.state.gameTime);
+      const land = est.distKm < 180;
+      tip.style.display = "block";
+      tip.style.left = e.originalEvent.clientX + 14 + "px";
+      tip.style.top = e.originalEvent.clientY + 14 + "px";
+      tip.innerHTML = `<b>${est.city}</b><div>${est.country}</div><div>Alquiler est. local ${U.formatMoney(est.rentMonthly)}/mes</div><div>${land ? "Probablemente edificable — clic para OSM" : "Lejos de ciudades: posible agua o desierto"}</div>`;
+    });
+    map.on("mouseout", () => {
+      const tip = document.getElementById("map-tip");
+      if (tip) tip.style.display = "none";
+    });
     return map;
   }
 
@@ -133,7 +160,11 @@
     }
 
     const vis = list.filter((r) => b.contains([r.lat, r.lon]));
-    const maxPins = z >= 14 ? 350 : 180;
+    if (game.state) {
+      game.state._vp = new Set(vis.map((r) => r.id));
+      if (game.openId) game.state._openId = game.openId;
+    }
+    const maxPins = z >= 14 ? 220 : 120;
     if (vis.length > maxPins || z < 12) {
       const prec = z >= 12 ? 6 : z >= 10 ? 5 : 4;
       const groups = {};
@@ -168,7 +199,13 @@
 
   function addRest(r) {
     const brand = BRAND.get(r.brandId);
+    const profit = (r.finance.revTotal || 0) - (r.finance.costTotal || 0);
+    const heat = game.heatmap ? (profit >= 0 ? " pin-gain" : " pin-loss") : "";
     const m = L.marker([r.lat, r.lon], { icon: brandIcon(brand, 0, 42), keyboard: false });
+    if (heat) {
+      const ic = m.options.icon;
+      ic.options.html = ic.options.html.replace('class="pin-wrap"', 'class="pin-wrap' + heat + '"');
+    }
     m.on("click", (ev) => {
       L.DomEvent.stop(ev);
       game.openRestaurant(r.id);
@@ -184,5 +221,35 @@
     setTimeout(() => map && map.invalidateSize(), 60);
   }
 
-  global.MAP = { init, refresh, fly, invalidate, get: () => map };
+  function jumpProfit(best) {
+    const list = game.state.restaurants.filter((r) => r.status === "abierto");
+    if (!list.length) return;
+    list.sort((a, b) => {
+      const pa = a.finance.revTotal - a.finance.costTotal;
+      const pb = b.finance.revTotal - b.finance.costTotal;
+      return best ? pb - pa : pa - pb;
+    });
+    const r = list[0];
+    fly(r.lat, r.lon, 15);
+    game.openRestaurant(r.id);
+  }
+
+  function dotsThumb() {
+    const c = document.createElement("canvas");
+    c.width = 200;
+    c.height = 110;
+    const g = c.getContext("2d");
+    g.fillStyle = "#d5e4d0";
+    g.fillRect(0, 0, 200, 110);
+    g.fillStyle = "#0f7a6c";
+    const list = (game.state && game.state.restaurants) || [];
+    for (const r of list.slice(0, 2000)) {
+      const x = ((r.lon + 180) / 360) * 200;
+      const y = ((90 - r.lat) / 180) * 110;
+      g.fillRect(x, y, 2, 2);
+    }
+    return c.toDataURL("image/png");
+  }
+
+  global.MAP = { init, refresh, fly, invalidate, get: () => map, jumpProfit, dotsThumb };
 })(window);

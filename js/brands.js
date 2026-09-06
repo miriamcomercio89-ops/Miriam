@@ -206,7 +206,7 @@
   const BRANDS = [
     {
       id: "bufalo",
-      name: "Búfalo Relámpago",
+      name: "Sabor Burger",
       short: "BR",
       cuisines: ["americana", "hamburguesas"],
       tier: "fast_food",
@@ -226,7 +226,7 @@
     },
     {
       id: "pollo",
-      name: "Pollo Rayo",
+      name: "Rama Pollo",
       short: "PR",
       cuisines: ["americana", "pollo frito"],
       tier: "fast_food",
@@ -246,7 +246,7 @@
     },
     {
       id: "taco",
-      name: "Taco Reloj",
+      name: "Sabo Tacos",
       short: "TR",
       cuisines: ["mexicana", "tex-mex"],
       tier: "fast_food",
@@ -266,7 +266,7 @@
     },
     {
       id: "pizza",
-      name: "Pizza Kilómetro",
+      name: "Orama Pizza",
       short: "PK",
       cuisines: ["italiana", "pizza"],
       tier: "fast_food",
@@ -286,7 +286,7 @@
     },
     {
       id: "doner",
-      name: "Döner Brújula",
+      name: "Sabor Döner",
       short: "DB",
       cuisines: ["turca", "kebab"],
       tier: "fast_food",
@@ -306,7 +306,7 @@
     },
     {
       id: "bao",
-      name: "Bao Minúsculo",
+      name: "Rama Bao",
       short: "BM",
       cuisines: ["china", "bao"],
       tier: "food_truck",
@@ -326,7 +326,7 @@
     },
     {
       id: "falafel",
-      name: "Falafel Norte",
+      name: "Sabo Falafel",
       short: "FN",
       cuisines: ["levantina", "callejera"],
       tier: "food_truck",
@@ -346,7 +346,7 @@
     },
     {
       id: "frankfurt",
-      name: "Frankfurt Polar",
+      name: "Orama Frankfurt",
       short: "FP",
       cuisines: ["alemana", "hot dog"],
       tier: "food_truck",
@@ -366,7 +366,7 @@
     },
     {
       id: "empanada",
-      name: "Empanada Sur",
+      name: "Sabor Empanada",
       short: "ES",
       cuisines: ["argentina", "empanadas"],
       tier: "food_truck",
@@ -386,7 +386,7 @@
     },
     {
       id: "cinta",
-      name: "Sushi Cinta",
+      name: "Rama Sushi",
       short: "SC",
       cuisines: ["japonesa", "sushi"],
       tier: "fast_food",
@@ -406,7 +406,7 @@
     },
     {
       id: "vesubio",
-      name: "Trattoria Vesubio",
+      name: "Sabora Pasta",
       short: "TV",
       cuisines: ["italiana"],
       tier: "casual",
@@ -426,7 +426,7 @@
     },
     {
       id: "olivo",
-      name: "Taberna Olivo",
+      name: "Sabor Tapas",
       short: "TO",
       cuisines: ["española", "tapas"],
       tier: "casual",
@@ -446,7 +446,7 @@
     },
     {
       id: "linterna",
-      name: "Bistró Linterna",
+      name: "Rama Bistró",
       short: "BL",
       cuisines: ["francesa"],
       tier: "casual",
@@ -466,7 +466,7 @@
     },
     {
       id: "monzon",
-      name: "Curry Monzón",
+      name: "Sabo Curry",
       short: "CM",
       cuisines: ["india"],
       tier: "casual",
@@ -486,7 +486,7 @@
     },
     {
       id: "wok",
-      name: "Wok Dragón",
+      name: "Orama Wok",
       short: "WD",
       cuisines: ["china"],
       tier: "casual",
@@ -506,7 +506,7 @@
     },
     {
       id: "seul",
-      name: "Seúl Parrilla",
+      name: "Sabor Seúl",
       short: "SP",
       cuisines: ["coreana"],
       tier: "casual",
@@ -526,7 +526,7 @@
     },
     {
       id: "thai",
-      name: "Thai Mango",
+      name: "Rama Thai",
       short: "TM",
       cuisines: ["tailandesa"],
       tier: "casual",
@@ -546,7 +546,7 @@
     },
     {
       id: "nudo",
-      name: "Ramen Nudo",
+      name: "Sabo Ramen",
       short: "RN",
       cuisines: ["japonesa", "ramen"],
       tier: "casual",
@@ -566,7 +566,7 @@
     },
     {
       id: "mezze",
-      name: "Mezze Luna",
+      name: "Orama Mezze",
       short: "ML",
       cuisines: ["libanesa", "mediterránea"],
       tier: "casual",
@@ -586,7 +586,7 @@
     },
     {
       id: "gyros",
-      name: "Gyros Mármol",
+      name: "Sabor Gyros",
       short: "GM",
       cuisines: ["griega"],
       tier: "casual",
@@ -606,7 +606,7 @@
     },
     {
       id: "pho",
-      name: "Pho Río",
+      name: "Rama Phở",
       short: "PH",
       cuisines: ["vietnamita"],
       tier: "casual",
@@ -626,7 +626,7 @@
     },
     {
       id: "pampa",
-      name: "Churrasco Pampa",
+      name: "Sabo Churrasco",
       short: "CP",
       cuisines: ["brasileña", "parrilla"],
       tier: "casual",
@@ -646,7 +646,7 @@
     },
     {
       id: "ola",
-      name: "Ceviche Ola",
+      name: "Orama Ceviche",
       short: "CO",
       cuisines: ["peruana"],
       tier: "casual",
@@ -666,7 +666,7 @@
     },
     {
       id: "farol",
-      name: "Izakaya Farol",
+      name: "Sabor Izakaya",
       short: "IF",
       cuisines: ["japonesa", "izakaya"],
       tier: "casual",
@@ -686,7 +686,7 @@
     },
     {
       id: "marea",
-      name: "Fish & Marea",
+      name: "Rama Fish",
       short: "FM",
       cuisines: ["británica", "pescado"],
       tier: "casual",
@@ -706,7 +706,7 @@
     },
     {
       id: "carbon",
-      name: "BBQ Carbón",
+      name: "Sabo BBQ",
       short: "BC",
       cuisines: ["americana", "barbacoa"],
       tier: "casual",
@@ -726,7 +726,7 @@
     },
     {
       id: "alpina",
-      name: "Fondue Alpina",
+      name: "Orama Fondue",
       short: "FA",
       cuisines: ["suiza", "alpina"],
       tier: "casual",
@@ -746,7 +746,7 @@
     },
     {
       id: "nieve",
-      name: "Pierogi Nieve",
+      name: "Sabor Pierogi",
       short: "PN",
       cuisines: ["polaca", "del este"],
       tier: "casual",
@@ -766,7 +766,7 @@
     },
     {
       id: "arena",
-      name: "Tagine Arena",
+      name: "Rama Tagine",
       short: "TA",
       cuisines: ["marroquí", "magrebí"],
       tier: "casual",
@@ -786,7 +786,7 @@
     },
     {
       id: "jerk",
-      name: "Jerk Coco",
+      name: "Sabo Jerk",
       short: "JC",
       cuisines: ["caribeña"],
       tier: "casual",
@@ -806,7 +806,7 @@
     },
     {
       id: "dumpling",
-      name: "Dumpling Té",
+      name: "Orama Dumpling",
       short: "DT",
       cuisines: ["china", "dim sum"],
       tier: "casual",
@@ -826,7 +826,7 @@
     },
     {
       id: "poke",
-      name: "Poké Volcán",
+      name: "Sabor Poké",
       short: "PV",
       cuisines: ["hawaiana", "poké"],
       tier: "casual",
@@ -846,7 +846,7 @@
     },
     {
       id: "etoile",
-      name: "Maison Étoile",
+      name: "Rama Étoile",
       short: "MÉ",
       cuisines: ["francesa", "alta cocina"],
       tier: "luxury",
@@ -866,7 +866,7 @@
     },
     {
       id: "sakura",
-      name: "Sakura Imperial",
+      name: "Sabo Sakura",
       short: "SI",
       cuisines: ["japonesa", "kaiseki"],
       tier: "luxury",
@@ -886,7 +886,7 @@
     },
     {
       id: "palazzo",
-      name: "Palazzo Oro",
+      name: "Orama Palazzo",
       short: "PO",
       cuisines: ["italiana", "alta cocina"],
       tier: "luxury",
@@ -906,7 +906,7 @@
     },
     {
       id: "nord",
-      name: "Nord Helada",
+      name: "Sabor Nord",
       short: "NH",
       cuisines: ["nórdica"],
       tier: "luxury",
@@ -926,7 +926,7 @@
     },
     {
       id: "rubi",
-      name: "Terraza Rubí",
+      name: "Rama Mediterráneo",
       short: "TRB",
       cuisines: ["mediterránea", "alta cocina"],
       tier: "luxury",
@@ -946,7 +946,7 @@
     },
     {
       id: "mar",
-      name: "Corte del Mar",
+      name: "Sabo Mar",
       short: "CDM",
       cuisines: ["mariscos", "alta cocina"],
       tier: "luxury",
@@ -966,7 +966,7 @@
     },
     {
       id: "seda",
-      name: "Mandarín Seda",
+      name: "Orama Seda",
       short: "MS",
       cuisines: ["china", "cantonesa"],
       tier: "luxury",
@@ -986,7 +986,7 @@
     },
     {
       id: "roble",
-      name: "Asador Roble",
+      name: "Sabor Asador",
       short: "AR",
       cuisines: ["asador", "carnes"],
       tier: "luxury",
@@ -1006,7 +1006,7 @@
     },
     {
       id: "latitud",
-      name: "Copa Latitud",
+      name: "Rama Cóctel",
       short: "CL",
       cuisines: ["cócteles"],
       tier: "bar",
@@ -1026,7 +1026,7 @@
     },
     {
       id: "bodega",
-      name: "Bodega Meridiano",
+      name: "Sabo Bodega",
       short: "BME",
       cuisines: ["vinos"],
       tier: "bar",
@@ -1046,7 +1046,7 @@
     },
     {
       id: "cerveza",
-      name: "Cerveza Brújula",
+      name: "Orama Cerveza",
       short: "CB",
       cuisines: ["cerveza", "pub"],
       tier: "bar",
@@ -1066,7 +1066,7 @@
     },
     {
       id: "whisky",
-      name: "Whisky Sesenta",
+      name: "Sabor Whisky",
       short: "WS",
       cuisines: ["whisky"],
       tier: "bar",
@@ -1086,7 +1086,7 @@
     },
     {
       id: "eclipse",
-      name: "Café Eclipse",
+      name: "Rama Café",
       short: "CE",
       cuisines: ["café", "licores"],
       tier: "bar",
@@ -1106,7 +1106,7 @@
     },
     {
       id: "tequila",
-      name: "Tequila Sol",
+      name: "Sabo Tequila",
       short: "TS",
       cuisines: ["tequila", "mezcal"],
       tier: "bar",
@@ -1126,7 +1126,7 @@
     },
     {
       id: "polar",
-      name: "Champagne Polar",
+      name: "Orama Champagne",
       short: "CHP",
       cuisines: ["champán"],
       tier: "bar",
@@ -1146,7 +1146,7 @@
     },
     {
       id: "tropico",
-      name: "Ron Trópico",
+      name: "Sabor Ron",
       short: "RT",
       cuisines: ["ron", "tiki"],
       tier: "bar",
@@ -1166,7 +1166,7 @@
     },
     {
       id: "vermu",
-      name: "Vermú Plaza",
+      name: "Rama Vermú",
       short: "VP",
       cuisines: ["vermutería"],
       tier: "bar",
@@ -1186,7 +1186,7 @@
     },
     {
       id: "absenta",
-      name: "Absenta Luna",
+      name: "Sabo Absenta",
       short: "AL",
       cuisines: ["absenta", "cócteles"],
       tier: "bar",
@@ -1210,7 +1210,9 @@
   const VALID = new Set(Object.keys(ING));
   const FALLBACK_ING = "aceite";
   for (const b of BRANDS) {
-    b.logo = logoSVG(b, 64);
+    b.holding = "Saborama";
+    b.logoFile = "img/filiales/" + b.id + ".png";
+    b.logo = `<img src="${b.logoFile}" alt="${b.name}" width="64" height="64">`;
     b.tierInfo = TIERS[b.tier];
     for (const d of b.dishes) {
       d.ings = d.ings.map((x) => (VALID.has(x) ? x : FALLBACK_ING));
@@ -1234,5 +1236,6 @@
     cuisines: CUISINES,
     get: brand,
     logoSVG,
+    HOLDING: "Saborama",
   };
 })(window);

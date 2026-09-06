@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Meridiano — Imperio Gastronómico</title>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230f7a6c'/%3E%3Ctext x='32' y='44' text-anchor='middle' font-size='36' fill='white' font-family='Georgia'%3EM%3C/text%3E%3C/svg%3E" />
+  <title>Saborama — Imperio Gastronómico</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230f7a6c'/%3E%3Ctext x='32' y='44' text-anchor='middle' font-size='36' fill='white' font-family='Georgia'%3ES%3C/text%3E%3C/svg%3E" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -29,6 +29,8 @@
         <button class="btn ghost sm" id="btn-geo">Mi ubicación</button>
         <button class="btn ghost sm" id="btn-table">Tabla</button>
         <button class="btn ghost sm" id="btn-saves">Partidas</button>
+        <button class="btn ghost sm" id="btn-heat">Mapa P&amp;L</button>
+        <button class="btn ghost sm" id="btn-sfx" title="Sonido (apagado por defecto)">Sonido</button>
       </div>
       <div class="filters">
         <select id="f-brand"><option value="">Todas las marcas</option></select>
@@ -53,15 +55,21 @@
           <option value="name">Nombre</option>
         </select>
       </div>
+      <div id="alerts" class="alerts"></div>
       <div class="panel-body" id="panel-body"></div>
+      <div id="legend" class="legend"></div>
+      <div class="jump-row">
+        <button class="btn ghost sm" id="btn-best">Más rentable</button>
+        <button class="btn ghost sm" id="btn-worst">En pérdidas</button>
+      </div>
     </aside>
 
     <header id="topbar">
       <div class="wordmark">
-        <div class="mark">M</div>
+        <div class="mark">S</div>
         <div>
-          <h1>Meridiano</h1>
-          <small>Imperio gastronómico</small>
+          <h1>Saborama</h1>
+          <small>Matriz gastronómica</small>
         </div>
       </div>
       <div class="cash" id="cash">0 €</div>
@@ -84,6 +92,7 @@
       <input type="file" id="import-file" accept="application/json" hidden />
     </header>
     <div id="toasts"></div>
+    <div id="map-tip" class="map-tip"></div>
   </div>
 
   <div class="overlay" id="sheet"></div>
@@ -91,11 +100,11 @@
 
   <div class="splash" id="splash">
     <div class="splash-inner">
-      <div class="mark" style="width:52px;height:52px;border-radius:16px;font-size:26px;margin-bottom:14px;">M</div>
-      <h1>Meridiano</h1>
-      <p>Una cadena, cincuenta marcas, el mapa real. Empiezas el 1 de enero de 2000. El mundo no se conquista en un día — salvo que pulses «saltar día».</p>
+      <div class="mark" style="width:52px;height:52px;border-radius:16px;font-size:26px;margin-bottom:14px;">S</div>
+      <h1>Saborama</h1>
+      <p>La matriz Saborama y sus 50 filiales. Empiezas el 1 de enero de 2000. Un gerente IA en cada local lleva carta y precios.</p>
       <div class="actions">
-        <input id="new-name" value="Meridiano 2000" style="padding:12px;border-radius:14px;border:0;font-weight:600" />
+        <input id="new-name" value="Saborama 2000" style="padding:12px;border-radius:14px;border:0;font-weight:600" />
         <button type="button" class="btn primary" id="new-game" onclick="window.startMeridiano('new')">Nueva partida</button>
         <button type="button" class="btn" id="continue-game" style="background:#fff;" onclick="window.startMeridiano('continue')">Continuar</button>
       </div>
@@ -123,6 +132,7 @@
   <script src="js/util.js"></script>
   <script src="js/world.js"></script>
   <script src="js/brands.js"></script>
+  <script src="js/saborama.js"></script>
   <script src="js/geo.js"></script>
   <script src="js/sim.js"></script>
   <script src="js/store.js"></script>

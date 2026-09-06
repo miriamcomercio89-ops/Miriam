@@ -220,6 +220,7 @@
       tax: ctry.tax,
       vat: ctry.vat,
       competitor: WORLD.competitorBase(cc),
+      poi: typeof SABOR !== "undefined" ? SABOR.classifyPoi(place) : "urbano",
     };
   }
 

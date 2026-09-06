@@ -1,6 +1,8 @@
-# Meridiano — Imperio Gastronómico
+# Saborama — Imperio Gastronómico
 
-Videojuego de gestión en el navegador: una sola cadena, **50 marcas** (cocina, food truck, lujo y bares) y el **mapa real de OpenStreetMap**. Empiezas el **1 de enero de 2000** con 2.000.000 € y el objetivo, infinito, de cubrir el mundo.
+Videojuego de gestión en el navegador: la matriz **Saborama** y **50 filiales** (parte del nombre + especialidad) sobre el mapa real. Empiezas el **1 de enero de 2000** con 2.000.000 €.
+
+Cada local tiene un **gerente IA** que fija carta y precios. Teselas **Esri/OSM** (sin API key). Logos en `img/filiales/`.
 
 No hace falta servidor ni build. **Descomprime el ZIP**, entra en la carpeta (deben verse `index.html`, `js/`, `css/` y `vendor/`) y abre `index.html` en Chrome o Edge. No lo abras desde el visor de ZIP de Windows. El mapa necesita internet.
 
@@ -35,4 +37,4 @@ Cincuenta marcas al estilo de un juego de cocina de gestión: hamburguesas, taco
 
 ## Créditos de mapa
 
-© [OpenStreetMap](https://www.openstreetmap.org/copyright) · teselas [CARTO Voyager](https://carto.com/attributions) · geocodificación [Photon](https://photon.komoot.io/) (datos OSM). Respeta su política de uso: el juego limita las peticiones a ~1/s.
+© [OpenStreetMap](https://www.openstreetmap.org/copyright) · teselas [Esri World Street Map](https://www.esri.com/) (sin API key) · geocodificación [Photon](https://photon.komoot.io/) (datos OSM). Respeta su política de uso: el juego limita las peticiones a ~1/s.

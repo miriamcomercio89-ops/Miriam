@@ -1,7 +1,7 @@
 /* Meridiano — reglas de simulación, tamaños, personal, economía */
 (function (global) {
   const SIZES = [
-    { id: "kiosco", name: "Kiosco", seats: 8, m2: 22, permitH: 12, buildH: 24, cost: 22000, staff: { gerente: 0, cocinero: 1, camarero: 1, limpieza: 0, bartender: 0 } },
+    { id: "kiosco", name: "Kiosco", seats: 8, m2: 22, permitH: 12, buildH: 24, cost: 22000, staff: { gerente: 1, cocinero: 1, camarero: 1, limpieza: 0, bartender: 0 } },
     { id: "local", name: "Local", seats: 42, m2: 140, permitH: 24, buildH: 48, cost: 165000, staff: { gerente: 1, cocinero: 2, camarero: 2, limpieza: 1, bartender: 0 } },
     { id: "flagship", name: "Flagship", seats: 140, m2: 480, permitH: 72, buildH: 192, cost: 920000, staff: { gerente: 2, cocinero: 6, camarero: 6, limpieza: 2, bartender: 1 } },
     { id: "estadio", name: "Estadio", seats: 480, m2: 2800, permitH: 168, buildH: 480, cost: 4800000, staff: { gerente: 4, cocinero: 16, camarero: 20, limpieza: 6, bartender: 4 } },
@@ -119,10 +119,7 @@
     if (brand.tier === "bar") {
       need.bartender = Math.max(need.bartender, size === "kiosco" ? 1 : need.bartender || 1);
     }
-    if (brand.tier === "food_truck") {
-      need.gerente = 0;
-      need.limpieza = 0;
-    }
+    need.gerente = Math.max(1, need.gerente || 0);
     const quote = buildQuote(brand, size, place, gameMs);
     const staff = [];
     for (const [role, n] of Object.entries(need)) {
@@ -171,7 +168,7 @@
     const miss = [];
     if ((st.by.cocinero.length || 0) < Math.max(1, Math.ceil(need.cocinero * 0.5))) miss.push("cocina");
     if (brand.tier === "bar" && (st.by.bartender.length || 0) < 1) miss.push("barra");
-    if (size !== "kiosco" && brand.tier !== "food_truck" && (st.by.gerente.length || 0) < 1 && size !== "kiosco") miss.push("gerencia");
+    if ((st.by.gerente.length || 0) < 1) miss.push("gerencia");
     return miss;
   }
 
@@ -228,7 +225,11 @@
     if (miss.length) return 0;
     if (r.stock < 4) return 0;
     const loc = localHour(gameMs, r.tz);
-    if (!isOpenHour(brand, loc.h, new Date(gameMs).getUTCDay())) return 0;
+    const dow = new Date(gameMs).getUTCDay();
+    if (!SABOR.isOpenAt(r, brand, loc.h, dow)) return 0;
+    if (brand.dishes.some((d) => d.alc) && avgTicket(r, brand) > 0) {
+      /* alcohol hours: if only alc dishes on and can't serve, zero */
+    }
     const placePop = r.popK || 10;
     const year = yearOf(gameMs);
     const pl = WORLD.priceLevel(r.country, year);
@@ -244,7 +245,9 @@
     const compFit = 1 - share * 0.55 + q * 0.25;
     const curve = demandCurve(loc.h, brand.tier);
     const pop = Math.log10(placePop + 8);
-    const seatsCap = sz.seats * 0.55;
+    const cal = SABOR.calendarMod(r.country, brand, r.poi || "urbano", gameMs);
+    const seatsCap = sz.seats * 0.55 * (r.delivery ? 1.25 : 1);
+    const alcPen = brand.tier === "bar" && SABOR.alcoholPolicy(r.country).mode === "dry" ? 0.22 : 1;
     const raw =
       pop *
       1.15 *
@@ -256,6 +259,12 @@
       (0.5 + clean * 0.6) *
       compFit *
       eventMod(state, r, gameMs) *
+      SABOR.tasteFit(brand, r.country) *
+      SABOR.poiDemand(r.poi || "urbano", brand) *
+      cal.demand *
+      (r.delivery ? 1.16 : 1) *
+      (r.terrace ? 1.06 * cal.terrace : 1) *
+      alcPen *
       (sz.seats / 42);
     return U.clamp(raw, 0, seatsCap);
   }
@@ -264,6 +273,11 @@
     if (toMs <= fromMs) return { rev: 0, cost: 0, cust: 0 };
     const brand = BRAND.get(r.brandId);
     if (!brand) return { rev: 0, cost: 0, cust: 0 };
+    if (!r.hours) r.hours = SABOR.defaultHours(brand);
+    if (r.hoursCustom == null) r.hoursCustom = false;
+    if (r.managerAI == null) r.managerAI = true;
+    if (!r.poi) r.poi = "urbano";
+    if (!r.finance.months) r.finance.months = {};
     const year = yearOf(toMs);
     const pl = WORLD.priceLevel(r.country, year);
     const ctry = WORLD.country(r.country);
@@ -279,6 +293,10 @@
           r.status = "abierto";
           r.statusUntil = 0;
           r.openedAt = toMs;
+          SABOR.runManager(state, r, brand, toMs);
+          try {
+            SABOR.sfx.open();
+          } catch (_) {}
           pushNews(state, toMs, `Abre ${r.name} en ${r.city || WORLD.country(r.country).name}`);
         }
       }
@@ -334,6 +352,10 @@
     }
 
     const profit = rev - cost;
+    SABOR.addPnl(r, state, rev, cost, toMs);
+    if (!r.lastManagerRun || toMs - r.lastManagerRun > 20 * 3600000) {
+      SABOR.runManager(state, r, brand, toMs);
+    }
     r.finance.revTotal += rev;
     r.finance.costTotal += cost;
     r.finance.customersTotal += cust;
@@ -378,11 +400,19 @@
   }
 
   function settleAll(state, toMs) {
+    const vp = state._vp;
+    const n = state.restaurants.length;
+    const openId = state._openId;
     let rev = 0,
       cost = 0,
       cust = 0;
-    for (const r of state.restaurants) {
-      const from = r.lastSim || state.gameTime;
+    for (let i = 0; i < n; i++) {
+      const r = state.restaurants[i];
+      const from = r.lastSim || toMs;
+      const dt = toMs - from;
+      if (dt <= 0) continue;
+      const hot = n < 120 || !vp || vp.has(r.id) || r.id === openId;
+      if (!hot && dt < 3 * 3600000) continue;
       const s = settleOne(state, r, from, toMs);
       rev += s.rev;
       cost += s.cost;
@@ -541,7 +571,7 @@
 
   function createRestaurant(state, opts) {
     const brand = BRAND.get(opts.brandId);
-    const rng = U.mulberry32(U.hash32(opts.lat + "," + opts.lon + state.gameTime));
+    const rng = U.mulberry32(U.hash32(opts.place.lat + "," + opts.place.lon + state.gameTime));
     const staff = hireKit(brand, opts.size, opts.place, state.gameTime, rng);
     const quote = opts.quote;
     const r = {
@@ -586,9 +616,19 @@
         costToday: 0,
         customersToday: 0,
         dayStamp: new Date(state.gameTime).toISOString().slice(0, 10),
+        months: {},
       },
       closedReason: "",
       sellValue: quote.total * 0.62,
+      managerAI: true,
+      managerNote: "El gerente de Saborama tomará carta y precios al abrir.",
+      lastManagerRun: 0,
+      hours: SABOR.defaultHours(brand),
+      hoursCustom: false,
+      poi: opts.place.poi || "urbano",
+      delivery: false,
+      terrace: false,
+      alcoholLicense: SABOR.alcoholPolicy(opts.place.countryCode).mode === "free",
     };
     return r;
   }

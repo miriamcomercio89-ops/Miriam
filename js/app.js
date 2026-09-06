@@ -12,6 +12,7 @@
     _lastNews: 0,
     _busyGeo: false,
     _mapReady: false,
+    heatmap: false,
   };
 
   function dirty() {
@@ -39,11 +40,11 @@
   function newGame() {
     try {
       const input = U.$("#new-name");
-      const name = ((input && input.value) || "Meridiano 2000").trim() || "Meridiano 2000";
+      const name = ((input && input.value) || "Saborama 2000").trim() || "Saborama 2000";
       game.state = STORE.blankState(name);
       boot();
       STORE.save(game.state).catch(function () {});
-      UI.toast("Libros abiertos. Caja: 2.000.000 €. 1 de enero de 2000.");
+      UI.toast("Saborama abre libros. Caja: 2.000.000 €. 1 de enero de 2000.");
     } catch (err) {
       console.error(err);
       alert("No se pudo empezar la partida: " + (err && err.message ? err.message : err));
@@ -183,6 +184,9 @@
     s.cash -= quote.total;
     const r = SIM.createRestaurant(s, { brandId, size: sizeId, place, quote });
     s.restaurants.push(r);
+    try {
+      SABOR.sfx.cash();
+    } catch (_) {}
     if (!s.competitors[r.country]) s.competitors[r.country] = { strength: WORLD.competitorBase(r.country) };
     SIM.pushNews(s, s.gameTime, `Solicitud de permisos: ${r.name} (${U.formatMoney(quote.total)}).`);
     UI.toast("Permisos en marcha. El tiempo de juego hace el resto.");
@@ -197,6 +201,9 @@
     const r = game.state.restaurants.find((x) => x.id === id);
     if (!r) return;
     MAP.fly(r.lat, r.lon, 16);
+    try {
+      SABOR.sfx.enter();
+    } catch (_) {}
     UI.showRestaurant(id);
   }
 
@@ -244,6 +251,9 @@
     if (game._dirty && ts - game._lastSave > 20000) {
       game._lastSave = ts;
       game._dirty = false;
+      try {
+        s.thumb = MAP.dotsThumb();
+      } catch (_) {}
       STORE.save(s);
     }
   }
