@@ -1,11 +1,29 @@
-/* Meridiano — partidas: IndexedDB + localStorage, varias ranuras, auto-guardado */
+/* Meridiano — partidas: localStorage primero (funciona abriendo el HTML), IndexedDB opcional */
 (function (global) {
   const DB_NAME = "meridiano-db";
   const DB_VER = 1;
   const META = "meridiano-meta";
+  const INDEX = "meridiano-index";
+
+  function withTimeout(promise, ms) {
+    return new Promise((resolve, reject) => {
+      const t = setTimeout(() => reject(new Error("timeout")), ms);
+      promise.then(
+        (v) => {
+          clearTimeout(t);
+          resolve(v);
+        },
+        (e) => {
+          clearTimeout(t);
+          reject(e);
+        }
+      );
+    });
+  }
 
   function openDb() {
     return new Promise((resolve, reject) => {
+      if (!global.indexedDB) return reject(new Error("no idb"));
       const req = indexedDB.open(DB_NAME, DB_VER);
       req.onupgradeneeded = () => {
         const db = req.result;
@@ -13,11 +31,12 @@
       };
       req.onsuccess = () => resolve(req.result);
       req.onerror = () => reject(req.error);
+      req.onblocked = () => reject(new Error("idb blocked"));
     });
   }
 
   async function idbPut(save) {
-    const db = await openDb();
+    const db = await withTimeout(openDb(), 800);
     return new Promise((resolve, reject) => {
       const tx = db.transaction("saves", "readwrite");
       tx.objectStore("saves").put(save);
@@ -27,7 +46,7 @@
   }
 
   async function idbGet(id) {
-    const db = await openDb();
+    const db = await withTimeout(openDb(), 800);
     return new Promise((resolve, reject) => {
       const tx = db.transaction("saves", "readonly");
       const rq = tx.objectStore("saves").get(id);
@@ -37,7 +56,7 @@
   }
 
   async function idbDel(id) {
-    const db = await openDb();
+    const db = await withTimeout(openDb(), 800);
     return new Promise((resolve, reject) => {
       const tx = db.transaction("saves", "readwrite");
       tx.objectStore("saves").delete(id);
@@ -47,7 +66,7 @@
   }
 
   async function idbAll() {
-    const db = await openDb();
+    const db = await withTimeout(openDb(), 800);
     return new Promise((resolve, reject) => {
       const tx = db.transaction("saves", "readonly");
       const rq = tx.objectStore("saves").getAll();
@@ -64,7 +83,27 @@
     }
   }
   function setMeta(m) {
-    localStorage.setItem(META, JSON.stringify(m));
+    try {
+      localStorage.setItem(META, JSON.stringify(m));
+    } catch (_) {}
+  }
+
+  function lsIndex() {
+    try {
+      return JSON.parse(localStorage.getItem(INDEX) || "[]");
+    } catch {
+      return [];
+    }
+  }
+
+  function setLsIndex(arr) {
+    try {
+      localStorage.setItem(INDEX, JSON.stringify(arr));
+    } catch (_) {}
+  }
+
+  function lsSaveKey(id) {
+    return "meridiano-save-" + id;
   }
 
   function blankState(name) {
@@ -80,7 +119,7 @@
       gameTime: Date.UTC(2000, 0, 1, 8, 0, 0),
       speed: 1,
       paused: false,
-      cash: 2_000_000,
+      cash: 2000000,
       restaurants: [],
       events: [],
       news: [
@@ -91,7 +130,7 @@
       ],
       competitors,
       revByCountry: {},
-      cashHistory: [{ t: Date.UTC(2000, 0, 1, 8, 0, 0), v: 2_000_000 }],
+      cashHistory: [{ t: Date.UTC(2000, 0, 1, 8, 0, 0), v: 2000000 }],
     };
   }
 
@@ -107,34 +146,64 @@
     };
   }
 
+  function readLocal(id) {
+    try {
+      const raw = localStorage.getItem(lsSaveKey(id)) || localStorage.getItem("meridiano-fallback-" + id);
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
+    }
+  }
+
   async function listSlots() {
+    const local = lsIndex();
     try {
       const all = await idbAll();
-      return all.map(summaryOf).sort((a, b) => b.savedAt - a.savedAt);
+      const map = {};
+      local.forEach((s) => {
+        map[s.id] = s;
+      });
+      all.forEach((s) => {
+        const sum = summaryOf(s);
+        if (!map[sum.id] || sum.savedAt >= (map[sum.id].savedAt || 0)) map[sum.id] = sum;
+      });
+      return Object.values(map).sort((a, b) => b.savedAt - a.savedAt);
     } catch {
-      return [];
+      return local.sort((a, b) => b.savedAt - a.savedAt);
     }
   }
 
   async function save(state) {
     state.savedAt = Date.now();
     const clone = JSON.parse(JSON.stringify(state));
+    const json = JSON.stringify(clone);
     try {
-      await idbPut(clone);
-    } catch (e) {
-      localStorage.setItem("meridiano-fallback-" + state.id, JSON.stringify(clone));
+      localStorage.setItem(lsSaveKey(state.id), json);
+    } catch (_) {
+      try {
+        localStorage.setItem("meridiano-fallback-" + state.id, json);
+      } catch (e2) {
+        console.warn("No se pudo guardar en localStorage", e2);
+      }
     }
+    const idx = lsIndex().filter((x) => x.id !== state.id);
+    idx.unshift(summaryOf(state));
+    setLsIndex(idx.slice(0, 16));
     const m = meta();
     m.current = state.id;
     setMeta(m);
+    try {
+      await idbPut(clone);
+    } catch (_) {}
     return summaryOf(state);
   }
 
   async function load(id) {
-    let s = await idbGet(id);
+    let s = readLocal(id);
     if (!s) {
-      const raw = localStorage.getItem("meridiano-fallback-" + id);
-      if (raw) s = JSON.parse(raw);
+      try {
+        s = await idbGet(id);
+      } catch (_) {}
     }
     if (s) {
       const m = meta();
@@ -145,8 +214,14 @@
   }
 
   async function remove(id) {
-    await idbDel(id);
-    localStorage.removeItem("meridiano-fallback-" + id);
+    try {
+      localStorage.removeItem(lsSaveKey(id));
+      localStorage.removeItem("meridiano-fallback-" + id);
+    } catch (_) {}
+    setLsIndex(lsIndex().filter((x) => x.id !== id));
+    try {
+      await idbDel(id);
+    } catch (_) {}
     const m = meta();
     if (m.current === id) delete m.current;
     setMeta(m);

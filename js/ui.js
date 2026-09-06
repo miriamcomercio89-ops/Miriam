@@ -6,9 +6,13 @@
 
   function mount(g) {
     game = g;
-    fillFilterSelects();
+    try {
+      fillFilterSelects();
+    } catch (err) {
+      console.error(err);
+    }
     bind();
-    renderSplash();
+    renderSplash().catch(function () {});
   }
 
   function fillFilterSelects() {
@@ -41,8 +45,9 @@
         game.filters.status = U.$("#f-status").value;
         game.filters.profit = U.$("#f-profit").value;
         game.filters.sort = U.$("#f-sort").value;
-        renderPanel();
-        MAP.refresh();
+        try {
+          MAP.refresh();
+        } catch (_) {}
       });
     });
     U.$("#speeds").addEventListener("click", (e) => {
@@ -63,9 +68,6 @@
       game.importSave(await f.text());
       e.target.value = "";
     });
-    U.$("#new-game").addEventListener("click", () => game.newGame());
-    U.$("#continue-game").addEventListener("click", () => game.continueGame());
-
     const search = U.$("#search");
     const sug = U.$("#suggest");
     const runSearch = U.debounce(async () => {
@@ -239,7 +241,7 @@
     const slots = await STORE.listSlots();
     const box = U.$("#slot-list");
     box.innerHTML = "";
-    U.$("#continue-game").style.display = slots.length ? "block" : "none";
+    if (U.$("#continue-game")) U.$("#continue-game").style.display = "block";
     slots.slice(0, 6).forEach((s) => {
       const b = document.createElement("button");
       b.className = "slot";

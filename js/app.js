@@ -19,39 +19,74 @@
   }
 
   function ensureMap() {
-    if (!game._mapReady) {
-      MAP.init(game);
-      game._mapReady = true;
-    }
-    MAP.invalidate();
-    MAP.refresh();
-  }
-
-  async function newGame() {
-    const input = U.$("#new-name");
-    const name = ((input && input.value) || "Meridiano 2000").trim() || "Meridiano 2000";
-    game.state = STORE.blankState(name);
-    await STORE.save(game.state);
-    boot();
-    UI.toast("Libros abiertos. Caja: 2.000.000 €. 1 de enero de 2000.");
-  }
-
-  async function continueGame() {
-    const m = STORE.meta();
-    const slots = await STORE.listSlots();
-    const id = m.current || (slots[0] && slots[0].id);
-    if (!id) return newGame();
-    return loadSlot(id);
-  }
-
-  async function loadSlot(id) {
-    const s = await STORE.load(id);
-    if (!s) {
-      UI.toast("No se pudo cargar.", true);
+    if (!window.L) {
+      UI.toast("El mapa no se ha cargado (vendor/leaflet.js). El resto del juego sí arranca.", true);
       return;
     }
-    game.state = s;
-    boot();
+    try {
+      if (!game._mapReady) {
+        MAP.init(game);
+        game._mapReady = true;
+      }
+      MAP.invalidate();
+      MAP.refresh();
+    } catch (err) {
+      console.error(err);
+      UI.toast("Error al crear el mapa: " + (err && err.message ? err.message : err), true);
+    }
+  }
+
+  function newGame() {
+    try {
+      const input = U.$("#new-name");
+      const name = ((input && input.value) || "Meridiano 2000").trim() || "Meridiano 2000";
+      game.state = STORE.blankState(name);
+      boot();
+      STORE.save(game.state).catch(function () {});
+      UI.toast("Libros abiertos. Caja: 2.000.000 €. 1 de enero de 2000.");
+    } catch (err) {
+      console.error(err);
+      alert("No se pudo empezar la partida: " + (err && err.message ? err.message : err));
+    }
+  }
+
+  function continueGame() {
+    try {
+      const m = STORE.meta();
+      const idx = (function () {
+        try {
+          return JSON.parse(localStorage.getItem("meridiano-index") || "[]");
+        } catch {
+          return [];
+        }
+      })();
+      const id = m.current || (idx[0] && idx[0].id);
+      if (!id) {
+        UI.toast("No hay partida guardada. Se abre una nueva.", true);
+        return newGame();
+      }
+      return loadSlot(id);
+    } catch (err) {
+      console.error(err);
+      UI.toast("No hay partida guardada. Se abre una nueva.", true);
+      return newGame();
+    }
+  }
+
+  function loadSlot(id) {
+    return STORE.load(id)
+      .then(function (s) {
+        if (!s) {
+          UI.toast("No se pudo cargar.", true);
+          return;
+        }
+        game.state = s;
+        boot();
+      })
+      .catch(function (err) {
+        console.error(err);
+        UI.toast("No se pudo cargar la partida.", true);
+      });
   }
 
   function boot() {
@@ -60,7 +95,7 @@
     ensureMap();
     UI.renderHud();
     UI.renderPanel();
-    MAP.refresh();
+    if (game._mapReady) MAP.refresh();
     dirty();
   }
 
@@ -227,7 +262,12 @@
   game.loadSlot = loadSlot;
   game.dirty = dirty;
 
-  UI.mount(game);
-  requestAnimationFrame(loop);
   window.GAME = game;
+  try {
+    UI.mount(game);
+  } catch (err) {
+    console.error(err);
+    alert("Error al iniciar Meridiano: " + (err && err.message ? err.message : err));
+  }
+  requestAnimationFrame(loop);
 })();

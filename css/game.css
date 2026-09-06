@@ -268,7 +268,7 @@ table.data tr:hover td { background: #fff6e8; }
 .splash h1 { font-family: var(--display); font-size: 42px; margin: 0 0 6px; font-weight: 600; }
 .splash p { opacity: .86; }
 .splash .actions { display: flex; flex-direction: column; gap: 8px; margin-top: 18px; }
-.splash .actions button { padding: 12px; border-radius: 14px; border: 0; font-weight: 700; }
+.splash .actions button { width: 100%; cursor: pointer; padding: 12px; border-radius: 14px; border: 0; font-weight: 700; }
 .slot {
   background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.18);
   border-radius: 14px; padding: 10px 12px; margin-top: 8px; display: flex; justify-content: space-between; gap: 8px; align-items: center;

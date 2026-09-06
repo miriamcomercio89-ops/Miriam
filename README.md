@@ -2,7 +2,7 @@
 
 Videojuego de gestión en el navegador: una sola cadena, **50 marcas** (cocina, food truck, lujo y bares) y el **mapa real de OpenStreetMap**. Empiezas el **1 de enero de 2000** con 2.000.000 € y el objetivo, infinito, de cubrir el mundo.
 
-No hace falta servidor ni build. Abre `index.html` en un navegador moderno con internet (teselas del mapa y geocodificación).
+No hace falta servidor ni build. **Descomprime el ZIP**, entra en la carpeta (deben verse `index.html`, `js/`, `css/` y `vendor/`) y abre `index.html` en Chrome o Edge. No lo abras desde el visor de ZIP de Windows. El mapa necesita internet.
 
 ## Cómo jugar
 
