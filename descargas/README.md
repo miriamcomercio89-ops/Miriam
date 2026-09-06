@@ -8,7 +8,7 @@ El atlas ocupa más de 2 GB, así que va en **tres ZIP**. Descomprime los tres e
 
 Índice (qué país va en cada parte): [saborama_atlas_completo.zip](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/saborama_atlas_completo.zip)
 
-**Cada local, en todos los PDF, lleva su ficha con descripción**: cómo es el local, en qué barrio está, de qué pueblo o ciudad, dirección, si hay metro o zona peatonal, alquiler o compra, y horario semanal.
+**Cada local, en todos los PDF, lleva su ficha con descripción** y una **dirección real**: calle (y número si consta en OSM) de ese municipio, más el código postal GeoNames. Ya no hay calles inventadas (tipo Calle Larios en Coín).
 
 Marcas: las 50 de Horizon Restaurant Group (Horizon Grill, Casa Oliva, Maré, Sakura House…).
 

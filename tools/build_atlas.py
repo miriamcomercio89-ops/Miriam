@@ -22,6 +22,11 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
 
+import sys
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from osm_addresses import build_index, district_for
+
 ROOT = Path("/workspace")
 GEONAMES = Path("/tmp/geonames")
 OUT_ROOT = Path("/tmp/horizon_atlas/Horizon_Atlas_Restaurantes")
@@ -139,22 +144,6 @@ TIER_LABEL = {
     "bar": "Bar",
 }
 
-DISTRICTS = [
-    "Casco", "Centro", "Norte", "Sur", "Este", "Oeste", "Ensanche",
-    "Residencial", "Universidad", "Estacion", "Poligono", "Industrial",
-    "Playa", "Arenal",
-]
-STREETS_ES = [
-    "Calle Mayor", "Gran Via", "Paseo Maritimo", "Calle Sierpes", "Calle Serrano",
-    "Avenida Constitucion", "Rambla", "Paseo del Prado", "Calle Alcala", "Calle Colon",
-    "Avenida de America", "Calle Real", "Calle del Arenal", "Calle Bailen",
-    "Avenida Andalucia", "Calle Larios", "Plaza Mayor",
-]
-STREETS_INT = [
-    "Church Street", "Broadway Ave", "Harbor Blvd", "Mission Street", "Oak Street",
-    "1st Street", "Park Avenue", "Washington Ave", "Sunset Blvd", "Market Street",
-    "University Ave", "Main Street", "2nd Street", "Station Road",
-]
 
 
 def h32(*parts) -> int:
@@ -427,16 +416,14 @@ def make_venues(city, n):
         if bid == "taco":
             size_id = "food_hall"
         sl, seats, m2 = SIZES[size_id]
-        dist = DISTRICTS[h32(city["id"], i, "d") % len(DISTRICTS)]
-        if city["cc"] == "ES":
-            street = STREETS_ES[h32(city["id"], i, "s") % len(STREETS_ES)]
-            num = 1 + h32(city["id"], i, "n") % 220
-            pc = 10000 + (h32(city["id"], "pc") % 50000)
-            addr = f"{street} {num}, {pc:05d} {city['name']}, {city['admin2']}, {city['admin1']}, {city['country']}"
-        else:
-            street = STREETS_INT[h32(city["id"], i, "s") % len(STREETS_INT)]
-            num = 1 + h32(city["id"], i, "n") % 220
-            addr = f"{street} {num}, {city['name']}, {city['admin2']}, {city['country']}"
+        pool = city.get("addrs") or []
+        rec = pool[i % len(pool)] if pool else {
+            "text": f"{city['name']}, {city['admin2']}, {city['country']}",
+            "lat": city["lat"],
+            "lon": city["lon"],
+        }
+        addr = rec["text"]
+        dist = district_for(city, rec["lat"], rec["lon"])
         metro = r() < (0.72 if city["pop"] > 80000 else 0.22 if city["pop"] > 15000 else 0.08)
         ped = r() < (0.55 if city["cc"] == "ES" else 0.18)
         mult = 0.55 if size_id == "ghost" else 1.35 if size_id == "food_hall" else 1.0
@@ -497,8 +484,17 @@ def draw_header(c, head, members, part, nparts, nloc, y, W):
         y -= 10
     c.setFillColorRGB(0.35, 0.4, 0.38)
     c.setFont("DejaVu", 7)
-    c.drawString(16, y, "Cada ficha describe el local (ambiente y ubicación), dirección real del municipio, metro/peatonal, alquiler o compra y horario.")
-    return y - 14
+    for line in wrap(
+        c,
+        "Direcciones reales de OpenStreetMap (calle del municipio y número si consta) y código postal GeoNames. "
+        "Cada ficha: cómo es el local, dónde está, metro/peatonal, alquiler o compra y horario.",
+        "DejaVu",
+        7,
+        W - 32,
+    ):
+        c.drawString(16, y, line)
+        y -= 9
+    return y - 8
 
 
 def draw_venue(c, v, y, W, H):
@@ -607,6 +603,10 @@ def main():
     if args.cc:
         cities = [c for c in cities if c["cc"] == args.cc.upper()]
     print("cities", len(cities))
+    print("real OSM addresses…")
+    addrs = build_index(cities)
+    for c in cities:
+        c["addrs"] = addrs.get(c["id"], [])
     print("clustering…")
     heads, loc = cluster(cities)
     by_id = {c["id"]: c for c in cities}
@@ -645,8 +645,9 @@ def main():
         "================================================================================\n"
         "Pais / region o CCAA / provincia / cabecera /\n\n"
         "Cada carpeta de cabecera incluye los municipios de alrededor (~26 km).\n"
-        "Cada local tiene descripción de cómo es y dónde se encuentra, más dirección,\n"
-        "metro/peatonal, alquiler o compra y horario semanal.\n\n"
+        "Cada local tiene descripción de cómo es y dónde se encuentra.\n"
+        "Las direcciones son reales: calles (y números si constan) de OpenStreetMap\n"
+        "del propio municipio, con código postal GeoNames.\n\n"
         f"Zonas: {len(work)}\nLocales: {n_loc}\nPDF: {n_pdf}\n",
         encoding="utf-8",
     )
