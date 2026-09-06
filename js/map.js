@@ -64,7 +64,8 @@
 
   function pinLogo(brand, px) {
     const src = (brand && brand.logoFile) || "";
-    return `<img class="pin-logo" src="${src}" alt="" width="${px}" height="${px}" decoding="async">`;
+    const s = `${px}px`;
+    return `<img class="pin-logo" src="${src}" alt="" width="${px}" height="${px}" decoding="async" style="width:${s};height:${s};max-width:${s};max-height:${s};object-fit:cover;display:block;flex-shrink:0">`;
   }
 
   function brandIcon(brand, extra, size = 36) {

@@ -291,10 +291,15 @@ table.data tr:hover td { background: #fff6e8; }
 }
 .slot:hover { background: rgba(255,255,255,.16); }
 
-.brand-pin, .agg-pin, .city-pin {
+.brand-pin, .agg-pin {
   background: none !important;
   border: 0 !important;
   overflow: visible !important;
+}
+.city-pin {
+  background: none !important;
+  border: 0 !important;
+  overflow: hidden !important;
 }
 .leaflet-div-icon.brand-pin,
 .leaflet-div-icon.city-pin,
@@ -311,7 +316,8 @@ table.data tr:hover td { background: #fff6e8; }
   display: block; width: 100% !important; height: 100% !important;
   max-width: 40px !important; max-height: 40px !important; object-fit: cover;
 }
-.leaflet-marker-pane img {
+/* Leaflet sets .leaflet-container .leaflet-marker-pane img { width:auto; max-width:none !important } */
+.leaflet-container .leaflet-marker-pane img.pin-logo {
   max-width: 40px !important;
   max-height: 40px !important;
 }
@@ -324,17 +330,15 @@ table.data tr:hover td { background: #fff6e8; }
   box-shadow: 0 10px 22px rgba(0,0,0,.2); border: 2px solid #fff;
   display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--ink);
   max-width: 160px;
+  overflow: hidden;
 }
 .agg-bubble strong, .city-bubble strong { display: block; font-size: 14px; }
 .agg-bubble span, .city-bubble span { color: var(--muted); white-space: nowrap; max-width: 90px; overflow: hidden; text-overflow: ellipsis; }
-.city-bubble img, .city-bubble svg {
+.city-bubble img, .city-bubble svg,
+.leaflet-container .leaflet-marker-pane .city-bubble img.pin-logo {
   width: 28px !important; height: 28px !important;
   max-width: 28px !important; max-height: 28px !important;
   border-radius: 8px; object-fit: cover; flex-shrink: 0; display: block;
-}
-.leaflet-marker-pane .city-bubble img {
-  max-width: 28px !important;
-  max-height: 28px !important;
 }
 
 .bar {
