@@ -47,14 +47,17 @@
     const ph = U.$(phId.startsWith("#") ? phId : "#" + phId);
     const url = U.safePhoto(photo);
     if (!img) return;
+    const frame = img.closest(".venue-photo-frame");
     if (url) {
       img.src = url;
       img.hidden = false;
       if (ph) ph.hidden = true;
+      if (frame) frame.classList.add("has-photo");
     } else {
       img.removeAttribute("src");
       img.hidden = true;
       if (ph) ph.hidden = false;
+      if (frame) frame.classList.remove("has-photo");
     }
   }
 

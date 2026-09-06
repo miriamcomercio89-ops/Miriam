@@ -433,8 +433,11 @@ table.data tr:hover td { background: #fff6e8; }
 .venue-photo-ph {
   position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
   color: #dce7f5; font-size: 13px; font-weight: 600; letter-spacing: 0.04em;
-  text-align: center; padding: 12px;
+  text-align: center; padding: 12px; pointer-events: none;
 }
+.venue-photo-ph[hidden],
+.venue-photo-frame.has-photo .venue-photo-ph { display: none !important; }
+.venue-photo-frame.has-photo img { display: block; }
 .venue-photo-actions { flex: 1; min-width: 180px; display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
 .venue-desc { display: block; margin-top: 12px; font-size: 13px; color: var(--muted); }
 .venue-desc span { display: block; margin-bottom: 6px; font-weight: 650; color: var(--ink); }
