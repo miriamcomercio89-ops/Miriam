@@ -1,9 +1,9 @@
-# Atlas Saborama (un solo ZIP)
+# Atlas Saborama
 
-**[saborama_atlas_completo.zip](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/saborama_atlas_completo.zip)**
+Descarga: [saborama_atlas_completo.zip](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/saborama_atlas_completo.zip)
 
-Por **ciudad** (no un PDF por estado). Ejemplo: California tiene cientos de ciudades (Los Angeles, San Diego, San Jose...).
+Cada carpeta de cabecera cubre **el pueblo y los municipios de alrededor**.
+Ejemplo: `España / Andalucía / Málaga / Coín` incluye Guaro, Monda, Alozaina…
+Álora y Pizarra están en la zona de **Cártama** (más cerca de esa cabecera).
 
-Cada ficha incluye dirección, metro/peatonal, alquiler o compra, horario domingo–sábado, food hall con marcas invitadas y leyenda.
-
-`País / región o CCAA / ciudad / Saborama_<ciudad>.pdf`
+Ruta: `País / CCAA o estado / provincia / cabecera / Saborama_….pdf`
