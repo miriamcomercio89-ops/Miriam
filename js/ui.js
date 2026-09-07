@@ -795,6 +795,7 @@
         <div class="place-box">
           <div>Permisos ${U.formatMoney(q.permits)} · Obra ${U.formatMoney(q.works + q.fitout)}</div>
           <div><b>Inversión ${U.formatMoney(q.total)}</b> · Alquiler ${U.formatMoney(q.rentMonthly)}/mes</div>
+          ${q.total > game.state.cash ? `<p class="loss">Caja ${U.formatMoney(game.state.cash)}: no alcanza. En Matriz puedes pedir un préstamo o usar un truco.</p>` : ""}
           <div class="muted">${SIM.sizeOf(sizeId).ghost ? "Sin terraza. Delivery de serie." : SIM.sizeOf(sizeId).hall ? "Varias filiales, un edificio." : "Puedes comprar el bajo más tarde."} · Permisos ~${Math.round(q.permitH / 24)} d · Obra ~${Math.round(q.buildH / 24)} d</div>
         </div>
         <h3>Foto y descripción</h3>

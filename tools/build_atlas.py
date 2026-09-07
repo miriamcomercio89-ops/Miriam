@@ -480,7 +480,7 @@ def image_prompt(v, city) -> str:
     return (
         "PROMPT IMAGEN: Fotografía fotorrealista a pie de calle de la fachada del restaurante "
         f"«{v['brand']}» en {city['name']}, {city['admin2']}, {city['admin1']} ({city['country']}). "
-        f"Es un {kind} de {pop} habitantes. Formato {v['size_name'].lower()} "
+        f"{kind.capitalize()} de {pop} habitantes. Formato {v['size_name'].lower()} "
         f"({v['seats']} plazas, {v['m2']} m²), cocina {v['cuisine']}, tramo {TIER_LABEL[v['tier']].lower()}. "
         f"Ubicación: {setting_for(v)}. Dirección de referencia: {v['address']}. "
         f"{arch_for(city)}. Rótulo claramente legible con el nombre «{v['brand']}». "
@@ -721,7 +721,7 @@ def draw_town_banner(c, city, y, W, H, head, page):
 
 
 def draw_venue(c, v, y, W, H, head, page):
-    desc_lines = wrap(c, v["desc"], "DejaVu", 7.2, W - 78)
+    desc_lines = wrap(c, v["desc"], "DejaVu", 7.2, W - 44)
     need = 62 + 9 * len(desc_lines)
     if y < 28 + need:
         y = new_page(c, head, page, W, H, v.get("city_name") or "")

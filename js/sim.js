@@ -649,7 +649,7 @@
 
   function createRestaurant(state, opts) {
     const brand = BRAND.get(opts.brandId);
-    const rng = U.mulberry32(U.hash32(opts.place.lat + "," + opts.place.lon + state.gameTime));
+    const rng = U.mulberry32(U.hash32(opts.place.lat + "," + opts.place.lon + "," + opts.brandId + "," + opts.size + "," + state.gameTime));
     const staff = hireKit(brand, opts.size, opts.place, state.gameTime, rng);
     const quote = opts.quote;
     const r = {
