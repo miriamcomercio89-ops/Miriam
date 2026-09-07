@@ -112,8 +112,8 @@
       <p>La matriz y sus 50 marcas. Empiezas el 1 de enero de 2000. El gerente de cada local gestiona el sitio según su habilidad. En Matriz: préstamos y trucos de caja.</p>
       <div class="actions">
         <input id="new-name" value="Horizon 2000" style="padding:12px;border-radius:14px;border:0;font-weight:600" />
-        <button type="button" class="btn primary" id="new-game" onclick="window.startMeridiano('new')">Nueva partida</button>
-        <button type="button" class="btn" id="continue-game" style="background:#fff;" onclick="window.startMeridiano('continue')">Continuar</button>
+        <button type="button" class="btn primary" id="new-game" onclick="window.startHorizon('new')">Nueva partida</button>
+        <button type="button" class="btn" id="continue-game" style="background:#fff;" onclick="window.startHorizon('continue')">Continuar</button>
       </div>
       <p id="boot-error" class="muted" style="display:none;margin-top:12px;color:#ffe0d6;"></p>
       <div id="slot-list"></div>
@@ -121,7 +121,7 @@
   </div>
 
   <script>
-    window.startMeridiano = function (kind) {
+    window.startHorizon = window.startMeridiano = function (kind) {
       var g = window.GAME;
       if (!g) {
         var el = document.getElementById("boot-error");
@@ -141,13 +141,13 @@
   <script src="js/brands.js?v=hz1"></script>
   <script src="js/horizon.js?v=lg2"></script>
   <script src="js/menu-extra.js?v=hz1"></script>
-  <script src="js/saborama.js?v=mgr2"></script>
-  <script src="js/geo.js?v=geo2"></script>
-  <script src="js/sim.js?v=mgr2"></script>
-  <script src="js/store.js?v=mgr2"></script>
-  <script src="js/map.js?v=mapc2"></script>
-  <script src="js/ui.js?v=mgr2"></script>
-  <script src="js/app.js?v=mgr2"></script>
+  <script src="js/saborama.js?v=hall1"></script>
+  <script src="js/geo.js?v=hz3"></script>
+  <script src="js/sim.js?v=hall1"></script>
+  <script src="js/store.js?v=hall1"></script>
+  <script src="js/map.js?v=hall1"></script>
+  <script src="js/ui.js?v=hall1"></script>
+  <script src="js/app.js?v=hall1"></script>
   <script>
     setTimeout(function () {
       if (window.GAME) return;

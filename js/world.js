@@ -1,4 +1,4 @@
-/* Meridiano — países, ciudades y economía (base año 2000, se infla en juego) */
+/* Horizon — países, ciudades y economía (base año 2000, se infla en juego) */
 (function (global) {
   /**
    * Campos: iso, name, lat, lon, tz (h UTC), popM, gdppc (€ año 2000),

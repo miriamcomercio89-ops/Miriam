@@ -1,4 +1,4 @@
-/* Meridiano — bucle de juego */
+/* Horizon — bucle de juego */
 (function () {
   const GAME_MS_PER_REAL_MS = 60; /* 1 s real = 1 min de juego a 1× */
 
@@ -71,7 +71,7 @@
       const m = STORE.meta();
       const idx = (function () {
         try {
-          return JSON.parse(localStorage.getItem("meridiano-index") || "[]");
+          return JSON.parse(localStorage.getItem("horizon-index") || localStorage.getItem("meridiano-index") || "[]");
         } catch {
           return [];
         }
@@ -215,6 +215,10 @@
       description: extra && extra.description,
     });
     s.restaurants.push(r);
+    if (r.size === "food_hall") {
+      const guests = (extra && extra.hallBrands) || [];
+      SIM.spawnHallStalls(s, r, guests);
+    }
     try {
       SABOR.sfx.cash();
     } catch (_) {}
@@ -304,7 +308,7 @@
     UI.mount(game);
   } catch (err) {
     console.error(err);
-    alert("Error al iniciar Meridiano: " + (err && err.message ? err.message : err));
+      alert("Error al iniciar Horizon: " + (err && err.message ? err.message : err));
   }
   requestAnimationFrame(loop);
 })();

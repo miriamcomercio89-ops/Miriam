@@ -1,9 +1,11 @@
-/* Meridiano — partidas: localStorage primero (funciona abriendo el HTML), IndexedDB opcional */
+/* Horizon — partidas: localStorage primero (funciona abriendo el HTML), IndexedDB opcional */
 (function (global) {
   const DB_NAME = "meridiano-db";
   const DB_VER = 1;
-  const META = "meridiano-meta";
-  const INDEX = "meridiano-index";
+  const META = "horizon-meta";
+  const INDEX = "horizon-index";
+  const OLD_META = "meridiano-meta";
+  const OLD_INDEX = "meridiano-index";
 
   function withTimeout(promise, ms) {
     return new Promise((resolve, reject) => {
@@ -77,7 +79,7 @@
 
   function meta() {
     try {
-      return JSON.parse(localStorage.getItem(META) || "{}");
+      return JSON.parse(localStorage.getItem(META) || localStorage.getItem(OLD_META) || "{}");
     } catch {
       return {};
     }
@@ -90,7 +92,8 @@
 
   function lsIndex() {
     try {
-      return JSON.parse(localStorage.getItem(INDEX) || "[]");
+      const raw = localStorage.getItem(INDEX) || localStorage.getItem(OLD_INDEX) || "[]";
+      return JSON.parse(raw);
     } catch {
       return [];
     }
@@ -103,7 +106,7 @@
   }
 
   function lsSaveKey(id) {
-    return "meridiano-save-" + id;
+    return "horizon-save-" + id;
   }
 
   function blankState(name) {
@@ -154,7 +157,7 @@
 
   function readLocal(id) {
     try {
-      const raw = localStorage.getItem(lsSaveKey(id)) || localStorage.getItem("meridiano-fallback-" + id);
+      const raw = localStorage.getItem(lsSaveKey(id)) || localStorage.getItem("meridiano-save-" + id) || localStorage.getItem("meridiano-fallback-" + id);
       return raw ? JSON.parse(raw) : null;
     } catch {
       return null;
@@ -241,7 +244,7 @@
 
   function exportJSON(state) {
     const blob = JSON.stringify(state);
-    U.download(`meridiano-${state.name.replace(/\s+/g, "_")}-${new Date(state.gameTime).toISOString().slice(0, 10)}.json`, blob);
+    U.download(`horizon-${state.name.replace(/\s+/g, "_")}-${new Date(state.gameTime).toISOString().slice(0, 10)}.json`, blob);
   }
 
   function parseImport(text) {

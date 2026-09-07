@@ -215,7 +215,7 @@ def _add(buckets, city, street, num, lat, lon, numbered: bool):
 def build_index(cities: list[dict]) -> dict:
     if CACHE.exists():
         data = pickle.loads(CACHE.read_bytes())
-        if data.get("n") == len(cities) and data.get("ids") == (cities[0]["id"], cities[-1]["id"]) and data.get("v") == 5:
+        if data.get("n") == len(cities) and data.get("ids") == (cities[0]["id"], cities[-1]["id"]) and data.get("v") == 6:
             print("address cache hit", CACHE)
             return data["buckets"]
     print("indexing postcodes…")
@@ -302,14 +302,32 @@ def build_index(cities: list[dict]) -> dict:
             if txt in seen_txt:
                 continue
             seen_txt.add(txt)
-            addrs.append({"text": txt, "lat": r["lat"], "lon": r["lon"]})
+            addrs.append({
+                "text": txt,
+                "lat": r["lat"],
+                "lon": r["lon"],
+                "street": r["street"],
+                "num": r.get("num") or "",
+                "metro": False,
+                "ped": False,
+                "beach": False,
+            })
         if not addrs:
             pc = c.get("postcode") or ""
             loc = f"{c['name']}, {c['admin2']}, {c['admin1']}, {c['country']}"
             if c["cc"] != "ES":
                 loc = f"{c['name']}, {c['admin2']}, {c['country']}"
             txt = f"{pc} {loc}".strip() if pc else loc
-            addrs.append({"text": txt, "lat": c["lat"], "lon": c["lon"]})
+            addrs.append({
+                "text": txt,
+                "lat": c["lat"],
+                "lon": c["lon"],
+                "street": "",
+                "num": "",
+                "metro": False,
+                "ped": False,
+                "beach": False,
+            })
         out[c["id"]] = addrs
         if len(addrs) > 1 or addrs[0]["text"] != format_addr(c["name"], "", c):
             got += 1
@@ -318,14 +336,36 @@ def build_index(cities: list[dict]) -> dict:
         c.pop("_cos", None)
         c.pop("_cap2", None)
         c.pop("_want", None)
+    if es_cities:
+        annotate_access(out, es_cities)
+    for rows in out.values():
+        for rec in rows:
+            st = (rec.get("street") or rec.get("text") or "").lower()
+            if any(k in st for k in ("peatonal", "plaza", "plaça", "paseo marítimo", "paseo maritimo", "rambla")):
+                rec["ped"] = True
     print(f"cities with OSM streets: {got}/{len(cities)}")
     CACHE.parent.mkdir(parents=True, exist_ok=True)
-    CACHE.write_bytes(pickle.dumps({"v": 5, "n": len(cities), "ids": (cities[0]["id"], cities[-1]["id"]), "buckets": out}, protocol=4))
+    CACHE.write_bytes(pickle.dumps({"v": 6, "n": len(cities), "ids": (cities[0]["id"], cities[-1]["id"]), "buckets": out}, protocol=4))
     return out
 
 
 SPAIN_PBF = OSM / "spain-latest.osm.pbf"
-SPAIN_EXTRACT = OSM / "spain_extract.pkl"
+SPAIN_EXTRACT = OSM / "spain_extract_v2.pkl"
+
+
+def _way_centroid(w):
+    lats, lons = [], []
+    try:
+        for n in w.nodes:
+            loc = n.location
+            if loc.valid():
+                lats.append(loc.lat)
+                lons.append(loc.lon)
+    except Exception:
+        return None
+    if not lats:
+        return None
+    return sum(lats) / len(lats), sum(lons) / len(lons)
 
 
 def _spain_extract():
@@ -339,49 +379,129 @@ def _spain_extract():
             super().__init__()
             self.streets = []
             self.houses = []
+            self.peds = []
+            self.stations = []
+            self.beaches = []
             self.n_way = 0
             self.n_node = 0
 
         def way(self, w):
             self.n_way += 1
+            pt = None
             hw = w.tags.get("highway")
             name = w.tags.get("name")
-            if not hw or not name or not _ok_street(name, hw):
-                return
-            lats = []
-            lons = []
-            try:
-                for n in w.nodes:
-                    loc = n.location
-                    if loc.valid():
-                        lats.append(loc.lat)
-                        lons.append(loc.lon)
-            except Exception:
-                return
-            if not lats:
-                return
-            self.streets.append((name, sum(lats) / len(lats), sum(lons) / len(lons)))
+            if hw and name and _ok_street(name, hw):
+                pt = _way_centroid(w)
+                if pt:
+                    self.streets.append((name, pt[0], pt[1]))
+                    if hw in ("pedestrian", "living_street"):
+                        self.peds.append(pt)
+            if hw in ("pedestrian", "living_street"):
+                if pt is None:
+                    pt = _way_centroid(w)
+                if pt:
+                    self.peds.append(pt)
+            rail = w.tags.get("railway")
+            if rail in ("station", "halt") or w.tags.get("station") == "subway" or w.tags.get("public_transport") == "station":
+                if pt is None:
+                    pt = _way_centroid(w)
+                if pt:
+                    self.stations.append(pt)
+            if w.tags.get("natural") == "beach" or w.tags.get("leisure") == "beach":
+                if pt is None:
+                    pt = _way_centroid(w)
+                if pt:
+                    self.beaches.append(pt)
 
         def node(self, n):
             self.n_node += 1
-            num = n.tags.get("addr:housenumber")
-            street = n.tags.get("addr:street")
-            if not num or not street:
-                return
             loc = n.location
             if not loc.valid():
                 return
-            if not _ok_street(street, "residential"):
-                return
-            self.houses.append((street, num, loc.lat, loc.lon))
+            lat, lon = loc.lat, loc.lon
+            num = n.tags.get("addr:housenumber")
+            street = n.tags.get("addr:street")
+            if num and street and _ok_street(street, "residential"):
+                self.houses.append((street, num, lat, lon))
+            rail = n.tags.get("railway")
+            if rail in ("station", "halt", "subway_entrance") or n.tags.get("station") == "subway":
+                self.stations.append((lat, lon))
+            elif n.tags.get("public_transport") == "station" and n.tags.get("amenity") != "bus_station":
+                self.stations.append((lat, lon))
+            if n.tags.get("natural") == "beach" or n.tags.get("leisure") == "beach":
+                self.beaches.append((lat, lon))
 
     print("  parsing", SPAIN_PBF)
     h = H()
     h.apply_file(str(SPAIN_PBF), locations=True, idx="flex_mem")
-    print(f"  spain ways {h.n_way:,} streets {len(h.streets):,} house {len(h.houses):,}")
-    data = {"streets": h.streets, "houses": h.houses}
+    print(
+        f"  spain ways {h.n_way:,} streets {len(h.streets):,} house {len(h.houses):,} "
+        f"ped {len(h.peds):,} station {len(h.stations):,} beach {len(h.beaches):,}"
+    )
+    data = {
+        "streets": h.streets,
+        "houses": h.houses,
+        "peds": h.peds,
+        "stations": h.stations,
+        "beaches": h.beaches,
+    }
     SPAIN_EXTRACT.write_bytes(pickle.dumps(data, protocol=4))
     return data
+
+
+def _pt_grid(pts, cell=0.02):
+    g = defaultdict(list)
+    for lat, lon in pts:
+        g[(int(lat / cell), int(lon / cell))].append((lat, lon))
+    return g, cell
+
+
+def _nearest_km(lat, lon, grid, cell, max_km):
+    if not grid:
+        return None
+    i, j = int(lat / cell), int(lon / cell)
+    best = None
+    cap = max_km * max_km
+    cos = math.cos(math.radians(lat))
+    span = max(1, int(max_km / (111.0 * cell)) + 1)
+    for di in range(-span, span + 1):
+        for dj in range(-span, span + 1):
+            for plat, plon in grid.get((i + di, j + dj), ()):
+                dy = (plat - lat) * 111.0
+                dx = (plon - lon) * 111.0 * cos
+                d2 = dx * dx + dy * dy
+                if d2 <= cap and (best is None or d2 < best):
+                    best = d2
+    return math.sqrt(best) if best is not None else None
+
+
+def annotate_access(out, es_cities):
+    if not SPAIN_PBF.exists() and not SPAIN_EXTRACT.exists():
+        return
+    try:
+        data = _spain_extract()
+    except Exception as e:
+        print("  access extract failed", e)
+        return
+    ped_g, pc = _pt_grid(data.get("peds") or [])
+    st_g, sc = _pt_grid(data.get("stations") or [])
+    be_g, bc = _pt_grid(data.get("beaches") or [])
+    n_m = n_p = n_b = 0
+    for c in es_cities:
+        for rec in out.get(c["id"], []):
+            lat, lon = rec["lat"], rec["lon"]
+            if _nearest_km(lat, lon, ped_g, pc, 0.14) is not None:
+                rec["ped"] = True
+                n_p += 1
+            if _nearest_km(lat, lon, st_g, sc, 0.55) is not None:
+                rec["metro"] = True
+                n_m += 1
+            bk = _nearest_km(lat, lon, be_g, bc, 1.2)
+            if bk is not None:
+                rec["beach"] = True
+                rec["beach_km"] = bk
+                n_b += 1
+    print(f"  access flags metro={n_m} ped={n_p} beach={n_b}")
 
 
 def overlay_spain(es_cities, buckets, grid, gcell, by_name):
@@ -406,10 +526,17 @@ def overlay_spain(es_cities, buckets, grid, gcell, by_name):
     print("  spain overlay done")
 
 
-def district_for(city, lat, lon) -> str:
+def district_for(city, lat, lon, rec=None) -> str:
+    rec = rec or {}
     dy = (lat - city["lat"]) * 111.0
     dx = (lon - city["lon"]) * 111.0 * math.cos(math.radians(city["lat"]))
     dist = math.hypot(dx, dy)
+    if rec.get("beach"):
+        return "Arenal" if (rec.get("beach_km") or 1) < 0.4 else "Playa"
+    if rec.get("ped") and dist < 0.7:
+        return "Casco"
+    if rec.get("metro"):
+        return "Estacion"
     if dist < 0.45:
         return "Centro"
     if abs(dy) >= abs(dx):

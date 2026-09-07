@@ -1,4 +1,4 @@
-/* Meridiano — geocodificación OSM (Photon + Nominatim, datos OpenStreetMap) */
+/* Horizon — geocodificación OSM (Photon + Nominatim, datos OpenStreetMap) */
 (function (global) {
   const queue = U.throttleQueue(1100);
   const PHOTON = "https://photon.komoot.io";

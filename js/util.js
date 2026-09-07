@@ -1,4 +1,4 @@
-/* Meridiano — utilidades */
+/* Horizon — utilidades */
 (function (global) {
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];

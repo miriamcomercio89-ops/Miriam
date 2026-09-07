@@ -1,4 +1,4 @@
-/* Meridiano — mapa Leaflet, agregación por país/ciudad y clusters de marca */
+/* Horizon — mapa Leaflet, agregación por país/ciudad y clusters de marca */
 (function (global) {
   let map, layer, game;
   let clickArmed = true;
@@ -133,6 +133,7 @@
   function filtered() {
     const f = game.filters;
     return game.state.restaurants.filter((r) => {
+      if (r.hallParentId) return false;
       if (f.brand && r.brandId !== f.brand) return false;
       if (f.cuisine) {
         const b = BRAND.get(r.brandId);

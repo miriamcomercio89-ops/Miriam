@@ -1,4 +1,4 @@
-/* Meridiano — 50 marcas, recetas e ingredientes (estilo Cook Serve Delicious) */
+/* Horizon — 50 marcas, recetas e ingredientes */
 (function (global) {
   const ING = {
     pan: { n: "Pan", d: 3, c: 0.25, g: "horno" },

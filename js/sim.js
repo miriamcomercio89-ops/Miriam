@@ -1,4 +1,4 @@
-/* Meridiano — reglas de simulación, tamaños, personal, economía */
+/* Horizon — reglas de simulación, tamaños, personal, economía */
 (function (global) {
   const SIZES = [
     { id: "kiosco", name: "Kiosco", seats: 8, m2: 22, permitH: 12, buildH: 24, cost: 22000, staff: { gerente: 1, cocinero: 1, camarero: 1, limpieza: 0, bartender: 0 } },
@@ -6,6 +6,7 @@
     { id: "ghost", name: "Cocina fantasma", seats: 6, m2: 38, permitH: 8, buildH: 16, cost: 42000, staff: { gerente: 1, cocinero: 2, camarero: 0, limpieza: 0, bartender: 0 }, ghost: true },
     { id: "flagship", name: "Flagship", seats: 140, m2: 480, permitH: 72, buildH: 192, cost: 920000, staff: { gerente: 2, cocinero: 6, camarero: 6, limpieza: 2, bartender: 1 } },
     { id: "food_hall", name: "Food hall", seats: 168, m2: 640, permitH: 96, buildH: 240, cost: 1480000, staff: { gerente: 2, cocinero: 8, camarero: 8, limpieza: 3, bartender: 2 }, hall: true },
+    { id: "puesto", name: "Puesto", seats: 22, m2: 32, permitH: 0, buildH: 0, cost: 0, staff: { gerente: 1, cocinero: 1, camarero: 1, limpieza: 0, bartender: 0 }, stall: true },
     { id: "estadio", name: "Estadio", seats: 480, m2: 2800, permitH: 168, buildH: 480, cost: 4800000, staff: { gerente: 4, cocinero: 16, camarero: 20, limpieza: 6, bartender: 4 } },
   ];
   const SIZE_BY = Object.fromEntries(SIZES.map((s) => [s.id, s]));
@@ -250,7 +251,6 @@
     const cal = SABOR.calendarMod(r.country, brand, r.poi || "urbano", gameMs);
     const seatsCap = sz.seats * 0.55 * (r.delivery || sz.ghost ? 1.35 : 1);
     const alcPen = brand.tier === "bar" && SABOR.alcoholPolicy(r.country).mode === "dry" ? 0.22 : 1;
-    const hallN = r.size === "food_hall" ? 1 + (r.hallBrands || []).length : 1;
     const street =
       (r.metro ? 1.22 : 1) *
       (r.pedestrian ? (brand.tier === "fast_food" ? 1.08 : 1.18) : 1);
@@ -275,7 +275,6 @@
       alcPen *
       street *
       ghostMul *
-      (0.82 + hallN * 0.18) *
       (sz.seats / 42);
     return U.clamp(raw, 0, seatsCap);
   }
@@ -293,9 +292,32 @@
     brand.dishes.forEach((d, i) => {
       if (!r.menu[i]) r.menu[i] = { on: true, price: d.price };
     });
+    if (r.size === "food_hall") ensureHallStalls(state, r);
+    if (r.hallParentId) {
+      const parent = state.restaurants.find((x) => x.id === r.hallParentId);
+      if (parent) {
+        if (parent.status !== "abierto") {
+          r.status = parent.status;
+          r.statusUntil = parent.statusUntil;
+          r.lastSim = toMs;
+          return { rev: 0, cost: 0, cust: 0 };
+        }
+        if (r.status !== "abierto") {
+          r.status = "abierto";
+          r.statusUntil = 0;
+          r.openedAt = parent.openedAt || toMs;
+          SABOR.runManager(state, r, brand, toMs);
+        }
+      }
+    }
+
     const year = yearOf(toMs);
-    const pl = WORLD.priceLevel(r.country, year);
+    const shock = 1 + (((state.competitors[r.country] || {}).inflBump) || 0);
+    const pl = WORLD.priceLevel(r.country, year) * shock;
     const ctry = WORLD.country(r.country);
+    const inflNow = WORLD.inflationFactor(r.country, year);
+    const inflOpen = r.openInfl || WORLD.inflationFactor(r.country, yearOf(r.builtAt || toMs));
+    const inflMul = (inflNow / Math.max(0.25, inflOpen)) * shock;
 
     if (r.status === "permisos" || r.status === "obras") {
       let guard = 0;
@@ -322,7 +344,7 @@
     }
 
     if (r.status === "cerrado") {
-      const rent = (r.rentMonthly / 30 / 24) * ((toMs - fromMs) / 3600000);
+      const rent = (r.rentMonthly * inflMul / 30 / 24) * ((toMs - fromMs) / 3600000);
       r.finance.costTotal += rent;
       state.cash -= rent;
       r.lastSim = toMs;
@@ -334,9 +356,9 @@
     let cost = 0;
     let cust = 0;
     const st = staffStats(r.staff);
-    const wageHour = st.wageDay / 8;
+    const wageHour = (st.wageDay / 8) * inflMul;
     const rentMonth = r.owned ? (r.communityMonthly || r.rentMonthly * 0.08) : r.rentMonthly;
-    const rentHour = rentMonth / 30 / 24;
+    const rentHour = (rentMonth * inflMul) / 30 / 24;
     const utilHour = sizeOf(r.size).m2 * 0.035 * pl;
     const ticket = avgTicket(r, brand);
     const cogs = avgCogs(r, brand, pl);
@@ -368,9 +390,16 @@
     }
 
     if (r.owned && r.propertyValue) {
-      r.propertyValue *= 1 + 0.000035 * hours;
+      r.propertyValue *= 1 + 0.000035 * hours * shock;
     }
-    const profit = rev - cost;
+    let profit = rev - cost;
+    let tax = 0;
+    if (profit > 0) {
+      tax = profit * (ctry.tax || 0);
+      cost += tax;
+      profit -= tax;
+    }
+    r.finance.taxTotal = (r.finance.taxTotal || 0) + tax;
     SABOR.addPnl(r, state, rev, cost, toMs);
     if (!r.lastManagerRun || toMs - r.lastManagerRun > 20 * 3600000) {
       SABOR.runManager(state, r, brand, toMs);
@@ -497,7 +526,7 @@
         start,
         end: start + 60 * 86400000,
         demand: 0.92,
-        news: `Brote inflacionario en ${WORLD.country(cc).name}. Costes al alza.`,
+        news: `Brote inflacionario en ${WORLD.country(cc).name}. Alquileres, salarios y género suben.`,
       });
     } else if (kind === "apagon" && target) {
       target.status = "cerrado";
@@ -662,6 +691,7 @@
       finance: {
         revTotal: 0,
         costTotal: 0,
+        taxTotal: 0,
         customersTotal: 0,
         revToday: 0,
         costToday: 0,
@@ -671,6 +701,7 @@
       },
       closedReason: "",
       sellValue: quote.total * 0.62,
+      openInfl: WORLD.inflationFactor(opts.place.countryCode, yearOf(state.gameTime)),
       managerAI: true,
       managerNote: "El gerente de este local llevará carta, precios, horario, género y plantilla según su habilidad.",
       lastManagerRun: 0,
@@ -687,8 +718,96 @@
       delivery: sizeOf(opts.size).ghost ? true : false,
       photo: U.safePhoto(opts.photo) || "",
       description: String(opts.description || "").slice(0, 800),
+      hallParentId: opts.hallParentId || null,
+      hallStallIds: opts.hallStallIds || [],
     };
     return r;
+  }
+
+  function placeFromRestaurant(r) {
+    return {
+      countryCode: r.country,
+      countryName: r.countryName,
+      lat: r.lat,
+      lon: r.lon,
+      city: r.city,
+      municipality: r.municipality,
+      settlementKind: r.settlementKind,
+      region: r.region,
+      display: r.address,
+      street: r.street,
+      osmKey: r.osmKey,
+      osmValue: r.osmValue,
+      tz: r.tz,
+      popK: r.popK,
+      poi: r.poi,
+      metro: r.metro,
+      pedestrian: r.pedestrian,
+    };
+  }
+
+  function spawnHallStalls(state, hall, brandIds) {
+    if (!hall || hall.size !== "food_hall") return [];
+    hall.hallStallIds = hall.hallStallIds || [];
+    const have = new Set(
+      state.restaurants.filter((x) => x.hallParentId === hall.id).map((x) => x.brandId)
+    );
+    const ids = (brandIds || hall.hallBrands || []).filter((id) => id && id !== hall.brandId && !have.has(id)).slice(0, 3);
+    const born = [];
+    const place = placeFromRestaurant(hall);
+    for (const bid of ids) {
+      const brand = BRAND.get(bid);
+      if (!brand) continue;
+      const quote = {
+        total: 0,
+        permits: 0,
+        works: 0,
+        fitout: 0,
+        rentMonthly: 0,
+        permitH: 0,
+        buildH: 0,
+      };
+      const stall = createRestaurant(state, {
+        brandId: bid,
+        size: "puesto",
+        place,
+        quote,
+      });
+      stall.hallParentId = hall.id;
+      stall.status = hall.status;
+      stall.statusUntil = hall.statusUntil;
+      stall.rentMonthly = 0;
+      stall.owned = false;
+      stall.name = `${brand.name} · puesto · ${hall.city || hall.countryName}`;
+      stall.managerNote = "Este puesto lo gestiona su propio gerente, según su habilidad.";
+      stall.photo = "";
+      stall.description = "Puesto del food hall " + (hall.name || "");
+      stall.openInfl = hall.openInfl;
+      state.restaurants.push(stall);
+      hall.hallStallIds.push(stall.id);
+      hall.hallBrands = hall.hallBrands || [];
+      if (!hall.hallBrands.includes(bid)) hall.hallBrands.push(bid);
+      born.push(stall);
+    }
+    return born;
+  }
+
+  function ensureHallStalls(state, hall) {
+    if (!hall || hall.size !== "food_hall") return;
+    const kids = state.restaurants.filter((x) => x.hallParentId === hall.id);
+    hall.hallStallIds = kids.map((x) => x.id);
+    if (kids.length) return;
+    const guests = (hall.hallBrands || []).filter((id) => id && id !== hall.brandId).slice(0, 3);
+    if (!guests.length) {
+      const extras = BRAND.list.filter((b) => b.id !== hall.brandId).slice(0, 2).map((b) => b.id);
+      spawnHallStalls(state, hall, extras);
+    } else {
+      spawnHallStalls(state, hall, guests);
+    }
+  }
+
+  function hallStalls(state, hallId) {
+    return (state.restaurants || []).filter((x) => x.hallParentId === hallId);
   }
 
   function hireRole(r, role, gameMs, mgrSkill) {
@@ -831,6 +950,9 @@
     pushNews,
     driftCompetition,
     createRestaurant,
+    spawnHallStalls,
+    ensureHallStalls,
+    hallStalls,
     sellValue,
     competingShare,
     personName,

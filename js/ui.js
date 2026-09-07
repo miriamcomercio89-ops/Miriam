@@ -1,4 +1,4 @@
-/* Meridiano — interfaz */
+/* Horizon — interfaz */
 (function (global) {
   let game;
 
@@ -396,6 +396,7 @@
         const chips = [
           r.size === "ghost" ? `<span class="chip violet">Fantasma</span>` : "",
           r.size === "food_hall" ? `<span class="chip warn">Food hall</span>` : "",
+          r.size === "puesto" || r.hallParentId ? `<span class="chip">Puesto</span>` : "",
           r.owned ? `<span class="chip ok">Propiedad</span>` : "",
           r.metro ? `<span class="chip sky">Metro</span>` : "",
           r.pedestrian ? `<span class="chip">Peatonal</span>` : "",
@@ -786,7 +787,7 @@
         <div class="format-grid" id="sz"></div>
         ${
           sizeId === "food_hall"
-            ? `<p class="muted">Food hall: elige hasta 3 filiales invitadas además de la principal.</p><div class="brand-grid" id="hallg"></div>`
+            ? `<p class="muted">Food hall: hasta 3 filiales invitadas. Cada una abre un puesto con su propio gerente, carta y P&amp;L.</p><div class="brand-grid" id="hallg"></div>`
             : sizeId === "ghost"
               ? `<p class="muted">Cocina fantasma: sin sala, delivery incluido, inversión y alquiler más bajos.</p>`
               : ""
@@ -818,6 +819,7 @@
       });
       const sz = U.$("#sz");
       SIM.SIZES.forEach((s) => {
+        if (s.stall) return;
         const t = document.createElement("button");
         t.type = "button";
         t.className = "size-tile" + (s.id === sizeId ? " on" : "");
@@ -936,6 +938,19 @@
             ${r.pedestrian ? `<span class="chip">Peatonal</span>` : ""}
             ${(r.hallBrands || []).map((id) => { const bb = BRAND.get(id); return bb ? `<span class="chip">${bb.name}</span>` : ""; }).join("")}
           </div>
+          ${
+            r.size === "food_hall"
+              ? `<p class="muted">Cada puesto tiene su gerente y su carta. El hall y cada marca se simulan por separado.</p>
+                 <div class="place-flags">${(SIM.hallStalls(game.state, r.id) || [])
+                   .map((st) => {
+                     const bb = BRAND.get(st.brandId);
+                     const sk = SIM.managerSkill(st);
+                     return `<button type="button" class="chip" data-stall="${st.id}">${bb ? bb.name : st.name} · ger. ${Math.round(sk)}</button>`;
+                   })
+                   .join("")}</div>`
+              : ""
+          }
+          ${r.hallParentId ? `<p class="muted">Puesto dentro de un food hall. Su gerente gestiona solo este fogón según su habilidad.</p>` : ""}
           <h3>Foto y descripción</h3>
           ${venueMetaHtml(REST_META)}
           ${(() => {
@@ -952,6 +967,9 @@
           ${(r.reviews || []).map((rv) => `<div class="news-item">${rv.stars}★ · ${U.escapeHtml(rv.text)}</div>`).join("") || "<p class='muted'>Aún no hay reseñas.</p>"}
         `;
         bindRestaurantPhotoDesc(r);
+        body.querySelectorAll("[data-stall]").forEach((btn) => {
+          btn.onclick = () => game.openRestaurant(btn.dataset.stall);
+        });
         const mgr = U.$("#mgr");
         if (mgr)
           mgr.onchange = () => {
@@ -1085,9 +1103,11 @@
             <div class="kpi"><b>${U.formatMoney(r.finance.revTotal)}</b><span>Ingresos</span></div>
             <div class="kpi"><b>${U.formatMoney(r.finance.costTotal)}</b><span>Costes</span></div>
             <div class="kpi"><b class="${profit >= 0 ? "gain" : "loss"}">${U.formatMoney(profit)}</b><span>EBITDA acum.</span></div>
+            <div class="kpi"><b>${U.formatMoney(r.finance.taxTotal || 0)}</b><span>Sociedades acum.</span></div>
             <div class="kpi"><b>${U.formatMoney(dayP)}</b><span>Hoy (juego)</span></div>
           </div>
-          <p>Alquiler mensual ${U.formatMoney(r.rentMonthly)} · masa salarial ~${U.formatMoney(st.wageDay)}/día laboral</p>
+          <p>Alquiler mensual ${U.formatMoney(r.rentMonthly)} · masa salarial ~${U.formatMoney(st.wageDay)}/día laboral${r.hallParentId ? " · puesto de food hall (sin alquiler propio)" : ""}</p>
+          <p class="muted">El impuesto de sociedades del país se cobra sobre el beneficio operativo de este local. La inflación (y los brotes) suben alquiler, salarios y género.</p>
           <h3>Mensual</h3>
           ${months.map(([k, v]) => `<div class="rank-row"><div>${k}</div><div class="${v.rev - v.cost >= 0 ? "gain" : "loss"}">${U.formatMoney(v.rev - v.cost)}</div></div>`).join("") || "<p class='muted'>Sin meses aún.</p>"}`;
       } else {
@@ -1120,7 +1140,7 @@
             ${r.metro ? `<span class="chip sky">Metro cerca</span>` : `<span class="chip">Sin metro</span>`}
             ${r.pedestrian ? `<span class="chip ok">Calle peatonal</span>` : ""}
           </div>
-          ${r.owned ? `<button type="button" class="btn ghost" id="sell-brick">Vender solo el ladrillo</button>` : `<button type="button" class="btn primary" id="buy-brick">Comprar el bajo</button>`}
+          ${r.owned ? `<button type="button" class="btn ghost" id="sell-brick">Vender solo el ladrillo</button>` : r.hallParentId ? "" : `<button type="button" class="btn primary" id="buy-brick">Comprar el bajo</button>`}
           <p class="muted">Alcohol: ${pol.mode === "dry" ? "país seco — no se puede servir" : pol.mode === "license" ? "requiere licencia" : "libre con tasa"} · ${r.alcoholLicense ? "licencia activa" : "sin licencia"}${r.managerAI !== false && !r.alcoholLicense ? " · el gerente la gestiona" : ""}</p>
           ${pol.mode !== "dry" && !r.alcoholLicense && r.managerAI === false ? `<button class="btn ghost" id="lic">Comprar licencia (${U.formatMoney(pol.license * WORLD.inflationFactor(r.country, SIM.yearOf(game.state.gameTime)))})</button>` : ""}
           <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">
@@ -1276,14 +1296,28 @@
             r.status = "abierto";
             r.closedReason = "";
           }
+          if (r.size === "food_hall") {
+            SIM.hallStalls(game.state, r.id).forEach((st) => {
+              st.status = r.status;
+              st.closedReason = r.closedReason;
+            });
+          }
           game.dirty();
           paint();
           MAP.refresh();
         };
         U.$("#sell").onclick = () => {
           if (!confirm("¿Vender este local?")) return;
-          game.state.cash += val;
-          game.state.restaurants = game.state.restaurants.filter((x) => x.id !== r.id);
+          let pay = val;
+          const drop = new Set([r.id]);
+          if (r.size === "food_hall") {
+            SIM.hallStalls(game.state, r.id).forEach((st) => {
+              pay += SIM.sellValue(st, game.state.gameTime);
+              drop.add(st.id);
+            });
+          }
+          game.state.cash += pay;
+          game.state.restaurants = game.state.restaurants.filter((x) => !drop.has(x.id));
           toast("Local vendido.");
           game.dirty();
           closeSheet();

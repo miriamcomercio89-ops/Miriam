@@ -385,7 +385,7 @@
       }
     }
     if (r.size === "ghost") r.delivery = true;
-    if (!r.terrace && r.size !== "ghost" && skill >= 60 && (r.poi === "playa" || r.poi === "turistico" || r.pedestrian)) {
+    if (!r.terrace && !r.hallParentId && r.size !== "ghost" && skill >= 60 && (r.poi === "playa" || r.poi === "turistico" || r.pedestrian)) {
       const c = r.rentMonthly * 0.12;
       if (spendOps(state, c, false)) {
         r.terrace = true;
@@ -504,12 +504,13 @@
   let audioCtx = null;
   let muted = true;
   try {
-    muted = localStorage.getItem("saborama-sfx") !== "on";
+    muted = localStorage.getItem("horizon-sfx") !== "on" && localStorage.getItem("saborama-sfx") !== "on";
   } catch (_) {}
 
   function setMuted(v) {
     muted = v;
     try {
+      localStorage.setItem("horizon-sfx", v ? "off" : "on");
       localStorage.setItem("saborama-sfx", v ? "off" : "on");
     } catch (_) {}
   }

@@ -1,24 +1,26 @@
 # Atlas de locales — Horizon Restaurant Group
 
-El atlas ocupa más de 2 GB, así que va en **tres ZIP**. Descomprime los tres en la misma carpeta y se juntan en `Horizon_Atlas_Restaurantes/`.
+## España (formato nuevo)
 
-1. [Parte 1 — incluye España](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/horizon_atlas_parte1.zip) (~1,3 GB)
-2. [Parte 2](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/horizon_atlas_parte2.zip) (~1,3 GB)
-3. [Parte 3](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/horizon_atlas_parte3.zip) (~1,3 GB)
+[horizon_atlas_espana.zip](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/horizon_atlas_espana.zip)
 
-Índice (qué país va en cada parte): [saborama_atlas_completo.zip](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/saborama_atlas_completo.zip)
+Descomprime: `Horizon_Atlas_Restaurantes / España / CCAA / provincia / cabecera /`.
 
-**Cada local, en todos los PDF, lleva su ficha con descripción** y una **dirección real**: calle (y número si consta en OSM) de ese municipio, más el código postal GeoNames. Ya no hay calles inventadas (tipo Calle Larios en Coín).
+Cada cuaderno:
 
-Marcas: las 50 de Horizon Restaurant Group (Horizon Grill, Casa Oliva, Maré, Sakura House…).
+- Mapa de zona (cabecera + municipios ~26 km)
+- Sección por municipio (no se corta un pueblo a mitad)
+- Logo de la marca en cada ficha
+- Dirección OSM, metro/peatonal OSM, distrito (Playa, Casco, Estación…)
+- **Prompt de imagen** de la fachada (para generar la foto con otra IA)
+- Índice: `INDICE_CIUDADES.csv` y `INDICE_CIUDADES.pdf`
 
-Ruta: `Horizon_Atlas_Restaurantes / País / CCAA o estado / provincia / cabecera / Horizon_….pdf`
+Coín cubre Guaro, Monda, Alozaina… Álora y Pizarra van con Cártama. Fuengirola y Marbella tienen cuaderno propio.
 
-Ejemplo: `España / Andalucía / Málaga / Coín` incluye Guaro, Monda, Alozaina…
-Álora y Pizarra están en la zona de **Cártama**. Fuengirola y Marbella tienen cuaderno propio.
+## Resto del mundo (cuadernos anteriores)
 
-Cifras (GeoNames, municipios ≥ 1.000 hab.):
+Siguen en tres ZIP; el formato de ficha es el de antes (sin logo ni mapa de zona):
 
-- Zonas / cabeceras: 46.122
-- Locales: 1.649.119
-- PDF: 83.044
+1. [Parte 1](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/horizon_atlas_parte1.zip)
+2. [Parte 2](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/horizon_atlas_parte2.zip)
+3. [Parte 3](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/horizon_atlas_parte3.zip)
