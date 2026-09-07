@@ -60,6 +60,9 @@ TERRITORY_ES = {
     "KM": "Comoras",
 }
 
+COUNTRY_ES = {}
+COUNTRY_RENT = {}
+
 
 def load_world_js():
     text = (ROOT / "js/world.js").read_text()
