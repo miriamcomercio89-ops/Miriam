@@ -35,9 +35,9 @@ Cincuenta filiales con identidad propia (carta, tramo y colores). Un local = una
 - Autoguardado.
 - Exportar / importar JSON.
 
-## Atlas de locales
+## Atlas de locales y plan de expansión
 
-PDFs de todo el mundo (dirección OSM, mapa de zona, logo y prompt de fachada para generar la foto): ver [descargas/README.md](descargas/README.md).
+PDFs de todo el mundo (dirección OSM, mapa de zona, logo y prompt de fachada para generar la foto) y el plan de expansión global de Horizon (empezando en Cártama): ver [descargas/README.md](descargas/README.md).
 
 ## Créditos de mapa
 

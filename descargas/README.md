@@ -1,4 +1,12 @@
-# Atlas de locales — Horizon Restaurant Group
+# Atlas y plan de expansión — Horizon Restaurant Group
+
+## Plan de Expansión Global
+
+[horizon_plan_expansion.pdf](https://raw.githubusercontent.com/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/horizon_plan_expansion.pdf)
+
+Documento estratégico de 18 páginas: empezamos en **Cártama** (Málaga) y nos expandimos en círculos concéntricos (zona natural → Costa del Sol → provincia → Andalucía → España → cada continente) hasta cubrir el mundo. Usa el mismo motor de datos que el atlas: población real de GeoNames, direcciones OSM, formatos ligados a la ciudad real y cocina dominante por país. Incluye la ficha con los 12 locales piloto de Cártama, tablas de cada fase con cifras reales, la progresión acumulada hasta el 100% mundial, riesgos/palancas y el portafolio completo de las 50 marcas.
+
+## Atlas de locales
 
 Mismo formato en todo el mundo: mapa de zona, logo, dirección OSM, metro/peatonal/playa, tamaño y **formato del local según la ciudad real** (playa, estación, centro comercial, polígono, azotea…), la **cocina que más se consume en la zona** predominando entre las 50 marcas, y un **PROMPT IMAGEN** de la fachada con clima, vegetación y ambiente de calle.
 

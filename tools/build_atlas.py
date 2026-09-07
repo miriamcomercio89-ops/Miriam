@@ -222,6 +222,7 @@ ADMIN1_ES = {
     "Canary Islands": "Canarias",
     "Cantabria": "Cantabria",
     "Castille and Leon": "Castilla y León",
+    "Castille and León": "Castilla y León",
     "Castille-La Mancha": "Castilla-La Mancha",
     "Catalonia": "Cataluña",
     "Extremadura": "Extremadura",
