@@ -289,14 +289,7 @@ def gather_data():
     for c in es:
         by_ccaa[c["admin1"]].append(c)
 
-    cont = {}
-    cont_path = B.GEONAMES / "countryInfo.txt"
-    for line in cont_path.read_text(encoding="utf-8", errors="replace").splitlines():
-        if not line or line.startswith("#"):
-            continue
-        p = line.split("\t")
-        if len(p) > 8:
-            cont[p[0]] = p[8]
+    cont = B.load_continents()
 
     by_cc = defaultdict(list)
     for c in all_cities:
@@ -311,6 +304,14 @@ def gather_data():
     for cc, (nmuni, nv, name) in country_stats.items():
         by_cont[cont.get(cc, "??")].append((nv, nmuni, cc, name))
 
+    # Reparto mundial de las 50 marcas (mismo motor que el atlas y que el plan por marca):
+    # cuántos locales le tocan a cada marca en el conjunto de los ~148.000 municipios del mundo.
+    brand_counts = [0] * len(B.BRANDS)
+    for c in all_cities:
+        n = B.n_venues(c["pop"])
+        for bi in B.pick_brand_sequence(c, n):
+            brand_counts[bi] += 1
+
     return {
         "cartama": cartama,
         "cartama_venues": cartama_venues,
@@ -324,6 +325,9 @@ def gather_data():
         "es": es,
         "by_cont": by_cont,
         "all_cities": all_cities,
+        "by_cc": by_cc,
+        "cont": cont,
+        "brand_counts": brand_counts,
     }
 
 
@@ -652,22 +656,185 @@ def build():
         "La normativa local de licencias y horarios varía mucho entre fases; cada salto de país requiere validación legal propia antes de firmar el primer local.",
     ])
 
+    # ---------------- Del plan regional al calendario por marca ----------------
+    labele = B.phase_period(B.N_PHASES)[2]
+    total_brand_target = sum(d["brand_counts"])
+    doc.new_page("Ejecución", "Del plan regional al calendario por marca")
+    total_pdfs = fmt_n(50 * B.N_PHASES)
+    doc.para(
+        f"Las fases 0 a 11 reparten el territorio (de Cártama al mundo); a partir de aquí, cada una de "
+        f"las 50 marcas propias ejecuta ese reparto con su propio calendario de apertura, dividido en "
+        f"{B.N_PHASES} fases — un PDF por fase, {total_pdfs} documentos en total, entregados en 50 ZIP "
+        "(uno por marca, con sus 500 fases dentro)."
+    )
+    doc.gap(4)
+    doc.para(
+        "El orden de apertura dentro de cada marca es aleatorio real y muy salteado por el mundo: no "
+        "sigue el orden geográfico de este documento, así que una marca puede abrir en Londres, seguir "
+        "por doce ciudades de otros continentes y volver a abrir en Londres varias fases después. Lo "
+        "único fijo es el calendario: la fase N cae siempre en el mismo mes para las 50 marcas, así que "
+        "los planes son comparables fase a fase."
+    )
+    doc.gap(8)
+    doc.kpis([
+        (B.phase_period(1)[2], "Fase 1 (inicio del calendario)"),
+        (str(B.N_PHASES), "Fases por marca"),
+        ("50", "Marcas · calendario propio"),
+        (f"{50 * B.N_PHASES:,}".replace(",", "."), "PDF de fase en total"),
+    ])
+    doc.gap(4)
+    doc.h2("Calendario común")
+    cal_rows = [
+        ["Cadencia", "1 fase = 1 mes natural, igual para las 50 marcas"],
+        ["Fase 1", B.phase_period(1)[2]],
+        [f"Fase {B.N_PHASES}", labele],
+        ["Duración total del calendario", f"{B.N_PHASES} meses (~{B.N_PHASES / 12:.0f} años)"],
+        ["Locales del modelo (50 marcas, 500 fases)", fmt_n(total_brand_target)],
+        ["Ritmo medio por marca y fase", f"≈{total_brand_target / 50 / B.N_PHASES:.0f} locales/fase"],
+        ["Ritmo medio del grupo (50 marcas) por fase", f"≈{total_brand_target / B.N_PHASES:.0f} locales/mes"],
+    ]
+    doc.table(["Parámetro", "Valor"], cal_rows, [230, CONTENT_W - 230], align=["l", "l"])
+    doc.gap(4)
+    doc.para(
+        "El total de 500 fases por marca reparte, en cada una, los locales que le corresponden a esa "
+        "marca según la cocina dominante de cada país (igual que en el atlas): unas marcas de comida "
+        "rápida superan los 38.000 locales a lo largo del calendario; algunas marcas de lujo, más "
+        "selectivas, se quedan cerca de los 30.000. El detalle exacto de cada marca está en el anexo "
+        "final de este documento y, fase a fase, en su propio ZIP."
+    )
+
+    # ---------------- Modelo de inversión ----------------
+    doc.new_page("Ejecución", "Modelo de inversión por local")
+    doc.para(
+        "Cada local de los PDF de fase por marca lleva cuatro partidas de inversión estimada, calculadas "
+        "a partir del tamaño real del formato (m² y aforo) y del nivel de costes del país (salario/hora "
+        "de js/world.js, la misma fuente que usa el simulador para sueldos e inflación):"
+    )
+    doc.gap(4)
+    doc.bullets([
+        "Alquiler / Compra: el 72% de los locales se abren en alquiler (fianza + 6 meses de renta); el resto se compra, a un precio ≈ alquiler mensual × 108 (misma fórmula que el simulador).",
+        "Obra: ≈950 €/m² en España, escalado por el salario/hora del país frente al de España (4,2 €/h).",
+        "Mobiliario: ≈300 €/m² en España, con el mismo escalado por coste laboral del país.",
+        "Stock inicial: ≈140 €/plaza en España (materia prima, vajilla, uniformes de arranque), también escalado.",
+    ], size=8.6, leading=12)
+    doc.gap(6)
+    doc.h2("Ejemplo: un Local (42 plazas, 140 m²) en tres países")
+    ex_rows = []
+    for cc, m2, seats in [("ES", 140, 42), ("US", 140, 42), ("IN", 140, 42)]:
+        ce = B.COUNTRY_ECON.get(cc, {"wage": 15.0, "name": cc})
+        scale = max(0.12, ce["wage"] / 4.2)
+        obra = m2 * 950 * scale
+        mob = m2 * 300 * scale
+        stock = seats * 140 * scale
+        ex_rows.append([ce["name"], f"{ce['wage']:.1f} €/h", fmt_eur(obra), fmt_eur(mob), fmt_eur(stock), fmt_eur(obra + mob + stock)])
+    doc.table(
+        ["País", "Salario/h", "Obra", "Mobiliario", "Stock inicial", "Subtotal*"],
+        ex_rows,
+        [120, 65, 90, 90, 90, CONTENT_W - 120 - 65 - 90 - 90 - 90],
+        align=["l", "r", "r", "r", "r", "r"],
+    )
+    doc.para("* Subtotal de obra + mobiliario + stock inicial; no incluye alquiler/compra del local.", size=7.6, color=GRAY)
+
+    # ---------------- Marco legal y fiscal por continente ----------------
+    doc.new_page("Marco legal", "Riesgos legales, fiscales y de tipo de cambio por continente")
+    doc.para(
+        "Cada vez que una marca entra por primera vez en un país nuevo, su PDF de fase incluye esta "
+        "misma nota de riesgo, con el impuesto de sociedades y el IVA reales del país (js/world.js). "
+        "Aquí va el resumen por continente, con los tres países de más peso de cada uno."
+    )
+    doc.gap(6)
+    cont_order = [("EU", "Europa"), ("AS", "Asia"), ("NA", "América del Norte y Central"),
+                  ("SA", "América del Sur"), ("AF", "África"), ("OC", "Oceanía")]
+    for code, cname in cont_order:
+        lst = sorted(d["by_cont"].get(code, []), key=lambda x: -x[0])
+        if not lst:
+            continue
+        doc.h2(cname)
+        doc.para(B.REGION_RISK.get(code, ""), size=8.8, leading=11.8)
+        doc.gap(2)
+        top3 = lst[:3]
+        rows = []
+        for nv, nmuni, cc, name in top3:
+            ce = B.COUNTRY_ECON.get(cc, {})
+            tax = ce.get("tax")
+            vat = ce.get("vat")
+            rows.append([
+                name,
+                f"{tax * 100:.0f}%" if tax is not None else "—",
+                f"{vat * 100:.0f}%" if vat is not None else "—",
+                fmt_n(nv),
+            ])
+        doc.table(
+            ["País de referencia", "Imp. sociedades", "IVA", "Locales potenciales"],
+            rows,
+            [200, 110, 90, CONTENT_W - 200 - 110 - 90],
+            align=["l", "r", "r", "r"],
+        )
+        doc.gap(6)
+
+    # ---------------- Directorio mundial de municipios ----------------
+    doc.new_page("Directorio mundial", "Todos los municipios del mundo, país a país")
+    doc.para(
+        f"Listado completo de los {fmt_n(total_muni_world)} municipios del mundo con población registrada "
+        "en GeoNames — el mismo universo que alimenta el atlas y el reparto de las 50 marcas — ordenado "
+        "de forma jerárquica y geográfica: continente, país (de mayor a menor tamaño) y, dentro de cada "
+        "país, municipio de mayor a menor población. Es la base territorial completa sobre la que se "
+        "construye el calendario aleatorio de cada marca."
+    )
+    doc.gap(6)
+    for code, cname in cont_order:
+        lst = sorted(d["by_cont"].get(code, []), key=lambda x: -x[0])
+        if not lst:
+            continue
+        doc.new_page("Directorio mundial", cname)
+        tot_nv = sum(x[0] for x in lst)
+        tot_nm = sum(x[1] for x in lst)
+        doc.kpis([
+            (str(len(lst)), "Países"),
+            (fmt_n(tot_nm), "Municipios"),
+            (fmt_n(tot_nv), "Locales potenciales"),
+        ])
+        for nv, nmuni, cc, name in lst:
+            cs = sorted(d["by_cc"].get(cc, []), key=lambda c: -c["pop"])
+            if not cs:
+                continue
+            doc.h2(f"{name}  ·  {nmuni} municipios  ·  {fmt_n(nv)} locales potenciales")
+            rows = [[c["name"], c["admin1"], fmt_n(c["pop"]), str(B.n_venues(c["pop"]))] for c in cs]
+            doc.table(
+                ["Municipio", "Región", "Habitantes", "Locales"],
+                rows,
+                [190, 175, 100, CONTENT_W - 190 - 175 - 100],
+                size=7.4,
+                align=["l", "l", "r", "r"],
+                phase_label=f"Directorio mundial · {cname}",
+                title=name,
+                total_row=[f"TOTAL {name}", f"{nmuni} municipios", fmt_n(n_pop(cs)), fmt_n(nv)],
+            )
+            doc.gap(4)
+
     # ---------------- Portafolio de marcas ----------------
     doc.new_page("Anexo", "Portafolio de las 50 marcas")
-    doc.para("Las mismas 50 marcas viajan por todas las fases; lo que cambia es su peso relativo según la cocina dominante de cada país y el formato disponible en cada municipio.")
+    doc.para(
+        "Las mismas 50 marcas viajan por todas las fases; lo que cambia es su peso relativo según la "
+        "cocina dominante de cada país y el formato disponible en cada municipio. El número bajo cada "
+        "marca es su objetivo total a lo largo de sus 500 fases (mismo reparto que el atlas mundial); "
+        "el detalle fase a fase está en horizon_plan_marca_<código>.zip."
+    )
     doc.gap(6)
     c = doc.c
     cols = 5
     cell_w = CONTENT_W / cols
-    cell_h = 66
+    cell_h = 82
     x0, y0 = MARGIN, doc.y
-    for i, (bid, name, cuisine, tier, tag) in enumerate(B.BRANDS):
-        col = i % cols
-        row = (i // cols)
+    pos = 0  # índice relativo a la página actual de la rejilla (se reinicia en cada salto de página)
+    for idx, (bid, name, cuisine, tier, tag) in enumerate(B.BRANDS):
+        col = pos % cols
+        row = pos // cols
         if row * cell_h > y0 - 30:
             doc.new_page("Anexo", "Portafolio de las 50 marcas (cont.)")
             x0, y0 = MARGIN, doc.y
-            row = 0
+            pos = 0
+            col, row = 0, 0
         x = x0 + col * cell_w
         y = y0 - row * cell_h
         c.setFillColorRGB(1, 1, 1)
@@ -678,12 +845,19 @@ def build():
         c.drawString(x + 34, y - 16, name[:20])
         c.setFillColorRGB(*GRAY)
         c.setFont("DejaVu", 7)
-        for k, line in enumerate(B.wrap(c, cuisine, "DejaVu", 7, cell_w - 40)):
-            c.drawString(x + 34, y - 26 - k * 8, line)
+        cuisine_lines = B.wrap(c, cuisine, "DejaVu", 7, cell_w - 40)
+        c.drawString(x + 34, y - 26, cuisine_lines[0] if cuisine_lines else cuisine)
+        c.setFillColorRGB(*GREEN)
+        c.setFont("DejaVuBold", 7.2)
+        c.drawString(x + 8, y - 40, f"{fmt_n(d['brand_counts'][idx])} locales · 500 fases")
+        c.setFillColorRGB(*GRAY)
+        c.setFont("DejaVu", 6.2)
+        c.drawString(x + 8, y - 51, f"horizon_plan_marca_{bid}.zip")
         c.setFillColorRGB(*RED)
         c.setFont("DejaVu", 6.6)
         c.drawString(x + 8, y - cell_h + 14, B.TIER_LABEL.get(tier, tier))
-    doc.y = y0 - (((len(B.BRANDS) - 1) // cols) + 1) * cell_h
+        pos += 1
+    doc.y = y0 - (((pos - 1) // cols) + 1) * cell_h
 
     doc.save()
     print("PDF escrito:", OUT_PDF, OUT_PDF.stat().st_size, "bytes", "páginas~", doc.page_no + 2)
