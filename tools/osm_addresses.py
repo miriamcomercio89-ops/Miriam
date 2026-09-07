@@ -212,11 +212,40 @@ def _add(buckets, city, street, num, lat, lon, numbered: bool):
     b.append({"street": street, "num": num or "", "lat": lat, "lon": lon, "numbered": numbered})
 
 
+PED_NAME_KEYS = (
+    "peatonal", "plaza", "plaça", "piazza", "paseo marítimo", "paseo maritimo", "rambla",
+    "pedestrian", "walking street", "marktplatz", "woonstraat", "zone piétonne",
+    "rue piétonne", "corso", "promenade",
+)
+STATION_NAME_KEYS = (
+    "estación", "estacion", "station", "bahnhof", "gare", "stazione",
+    "metro", "subway", "cercanías", "cercanias", "railway", "train station",
+)
+BEACH_NAME_KEYS = (
+    "playa", "beach", "plage", "spiaggia", "strand", "praia", "arenal",
+    "seafront", "waterfront", "paseo marítimo", "paseo maritimo", "lungomare",
+)
+
+
+def cache_path(cities: list[dict]) -> Path:
+    only_es = bool(cities) and all(c["cc"] == "ES" for c in cities)
+    if only_es:
+        return CACHE
+    return OSM / f"addrs_world_v7_{len(cities)}.pkl"
+
+
+def cache_version(cities: list[dict]) -> int:
+    only_es = bool(cities) and all(c["cc"] == "ES" for c in cities)
+    return 6 if only_es else 7
+
+
 def build_index(cities: list[dict]) -> dict:
-    if CACHE.exists():
-        data = pickle.loads(CACHE.read_bytes())
-        if data.get("n") == len(cities) and data.get("ids") == (cities[0]["id"], cities[-1]["id"]) and data.get("v") == 6:
-            print("address cache hit", CACHE)
+    cpath = cache_path(cities)
+    ver = cache_version(cities)
+    if cpath.exists():
+        data = pickle.loads(cpath.read_bytes())
+        if data.get("n") == len(cities) and data.get("ids") == (cities[0]["id"], cities[-1]["id"]) and data.get("v") == ver:
+            print("address cache hit", cpath)
             return data["buckets"]
     print("indexing postcodes…")
     load_postcodes(cities)
@@ -227,6 +256,7 @@ def build_index(cities: list[dict]) -> dict:
     buckets = defaultdict(list)
 
     only_es = bool(cities) and all(c["cc"] == "ES" for c in cities)
+    peds, stations, beaches = [], [], []
     if not only_es:
         hn = OSM / "planet-latest_housenumbers.tsv.gz"
         if hn.exists():
@@ -255,21 +285,32 @@ def build_index(cities: list[dict]) -> dict:
             print("  housenumbers done", n)
 
         geo = OSM / "planet-latest_geonames.tsv.gz"
-        print("indexing OSM streets…")
+        print("indexing OSM streets and access…")
         n = 0
         with gzip.open(geo, "rt", encoding="utf-8", errors="replace") as f:
             f.readline()
             for line in f:
                 n += 1
                 p = line.rstrip("\n").split("\t")
-                if len(p) < 16 or p[4] != "highway":
+                if len(p) < 16:
                     continue
-                name, typ, osm_city, cc = p[0], p[5], p[11], p[15]
-                if not _ok_street(name, typ):
-                    continue
+                cls, typ = p[4], p[5]
                 try:
                     lon, lat = float(p[6]), float(p[7])
                 except ValueError:
+                    continue
+                if cls == "highway" and typ in ("pedestrian", "living_street"):
+                    peds.append((lat, lon))
+                elif cls == "railway" and typ in ("station", "halt", "subway_entrance"):
+                    stations.append((lat, lon))
+                elif cls == "public_transport" and typ == "station":
+                    stations.append((lat, lon))
+                elif cls in ("natural", "leisure") and typ == "beach":
+                    beaches.append((lat, lon))
+                if cls != "highway":
+                    continue
+                name, osm_city, cc = p[0], p[11], p[15]
+                if not _ok_street(name, typ):
                     continue
                 city = _name_city(osm_city, cc, lat, lon, by_name)
                 if city is None:
@@ -278,8 +319,8 @@ def build_index(cities: list[dict]) -> dict:
                     continue
                 _add(buckets, city, name, "", lat, lon, False)
                 if n % 5_000_000 == 0:
-                    print(f"  streets {n:,}", flush=True)
-        print("  streets done", n)
+                    print(f"  streets {n:,}  ped={len(peds):,} st={len(stations):,} beach={len(beaches):,}", flush=True)
+        print("  streets done", n, "ped", len(peds), "station", len(stations), "beach", len(beaches))
 
     es_cities = [c for c in cities if c["cc"] == "ES"]
     if es_cities:
@@ -336,16 +377,24 @@ def build_index(cities: list[dict]) -> dict:
         c.pop("_cos", None)
         c.pop("_cap2", None)
         c.pop("_want", None)
+    if not only_es and (peds or stations or beaches):
+        print("annotating world metro/peatonal/playa…")
+        annotate_from_points(out, cities, peds, stations, beaches)
     if es_cities:
         annotate_access(out, es_cities)
     for rows in out.values():
         for rec in rows:
             st = (rec.get("street") or rec.get("text") or "").lower()
-            if any(k in st for k in ("peatonal", "plaza", "plaça", "paseo marítimo", "paseo maritimo", "rambla")):
+            if any(k in st for k in PED_NAME_KEYS):
                 rec["ped"] = True
+            if any(k in st for k in STATION_NAME_KEYS):
+                rec["metro"] = True
+            if any(k in st for k in BEACH_NAME_KEYS):
+                rec["beach"] = True
     print(f"cities with OSM streets: {got}/{len(cities)}")
-    CACHE.parent.mkdir(parents=True, exist_ok=True)
-    CACHE.write_bytes(pickle.dumps({"v": 6, "n": len(cities), "ids": (cities[0]["id"], cities[-1]["id"]), "buckets": out}, protocol=4))
+    cpath.parent.mkdir(parents=True, exist_ok=True)
+    cpath.write_bytes(pickle.dumps({"v": ver, "n": len(cities), "ids": (cities[0]["id"], cities[-1]["id"]), "buckets": out}, protocol=4))
+    print("address cache wrote", cpath)
     return out
 
 
@@ -475,19 +524,12 @@ def _nearest_km(lat, lon, grid, cell, max_km):
     return math.sqrt(best) if best is not None else None
 
 
-def annotate_access(out, es_cities):
-    if not SPAIN_PBF.exists() and not SPAIN_EXTRACT.exists():
-        return
-    try:
-        data = _spain_extract()
-    except Exception as e:
-        print("  access extract failed", e)
-        return
-    ped_g, pc = _pt_grid(data.get("peds") or [])
-    st_g, sc = _pt_grid(data.get("stations") or [])
-    be_g, bc = _pt_grid(data.get("beaches") or [])
+def annotate_from_points(out, cities, peds, stations, beaches):
+    ped_g, pc = _pt_grid(peds or [])
+    st_g, sc = _pt_grid(stations or [])
+    be_g, bc = _pt_grid(beaches or [])
     n_m = n_p = n_b = 0
-    for c in es_cities:
+    for c in cities:
         for rec in out.get(c["id"], []):
             lat, lon = rec["lat"], rec["lon"]
             if _nearest_km(lat, lon, ped_g, pc, 0.14) is not None:
@@ -502,6 +544,17 @@ def annotate_access(out, es_cities):
                 rec["beach_km"] = bk
                 n_b += 1
     print(f"  access flags metro={n_m} ped={n_p} beach={n_b}")
+
+
+def annotate_access(out, es_cities):
+    if not SPAIN_PBF.exists() and not SPAIN_EXTRACT.exists():
+        return
+    try:
+        data = _spain_extract()
+    except Exception as e:
+        print("  access extract failed", e)
+        return
+    annotate_from_points(out, es_cities, data.get("peds") or [], data.get("stations") or [], data.get("beaches") or [])
 
 
 def overlay_spain(es_cities, buckets, grid, gcell, by_name):

@@ -7,11 +7,13 @@ de descripción (cómo es el local y dónde está).
 from __future__ import annotations
 
 import argparse
+import csv
 import hashlib
 import math
 import re
 import shutil
 import unicodedata
+import zipfile
 from collections import defaultdict
 from multiprocessing import Pool, cpu_count
 from pathlib import Path
@@ -95,6 +97,77 @@ ADMIN1_ES = {
     "Valencia": "Comunidad Valenciana",
     "Ceuta": "Ceuta",
     "Melilla": "Melilla",
+}
+
+ARCH_CC = {
+    "AD": "granito pirenaico, pizarra y calle estrecha",
+    "LU": "piedra y ensanche luxemburgués",
+    "MT": "cal y piedra de Malta, persiana",
+    "IS": "madera pintada, chapa y luz polar",
+    "EE": "ensanche báltico, portal y ladrillo",
+    "LV": "art nouveau de Riga o pueblo de madera",
+    "LT": "ladrillo báltico y portal",
+    "SK": "ensanche, portal y sillería",
+    "SI": "alpino o mediterráneo esloveno",
+    "RS": "ensanche, estuco y portal",
+    "HR": "piedra dálmata o ensanche continental",
+    "BG": "estuco, portal y calle de interior",
+    "FR": "fachada francesa, piedra o zinc, persiana y balcón",
+    "IT": "fachada italiana, persiana, estuco ocre o piedra",
+    "PT": "azulejo, cal y persiana, luz atlántica",
+    "DE": "ladrillo o entramado, alero y acera ancha",
+    "AT": "sillería alpina o ensanche imperial",
+    "CH": "madera, piedra y alero alpino",
+    "BE": "ladrillo belga, escaparate estrecho",
+    "NL": "ladrillo estrecho, canal o calle de bici",
+    "GB": "ladrillo victoriano o high street británica",
+    "IE": "fachada pintada, high street irlandesa",
+    "US": "storefront americano, ladrillo o strip, letrero de caja",
+    "CA": "storefront canadiense, ladrillo y nieve o arce",
+    "MX": "cal, cantera y color mexicano, portón",
+    "AR": "fachada porteña o de interior, persiana y reja",
+    "BR": "modernista tropical o colonial, persiana y sombra",
+    "CL": "sillar o madera, calle estrecha andina o costera",
+    "CO": "balcón colonial, color y patio",
+    "PE": "adobe, balcón de madera y cal limeña",
+    "JP": "madera, noren y alero, calle estrecha",
+    "KR": "hanok urbano o bloque contemporáneo, letrero vertical",
+    "CN": "baja con letrero vertical, azulejo o hormigón cotidiano",
+    "TW": "baja taiwanesa, toldo y letrero vertical",
+    "HK": "bajo de torre, neón y acera estrecha",
+    "IN": "baja colorida, toldo y tráfico de motos",
+    "TH": "toldo, shophouse y humedad tropical",
+    "VN": "shophouse estrecho, balcón y cableado",
+    "ID": "shophouse, toldo y calle tropical",
+    "MY": "shophouse malayo, persiana y porche",
+    "SG": "shophouse o plinto de centro comercial, trópico urbano",
+    "AU": "veranda, ladrillo y luz dura australiana",
+    "NZ": "madera pintada, veranda y pueblo oceánico",
+    "MA": "medina o ensanche, cal, persiana y sombra",
+    "TN": "cal, azulejo y persiana magrebí",
+    "EG": "bajo de calle densa, persiana y polvo claro",
+    "TR": "persiana, sillería otomana o ensanche",
+    "GR": "cal blanca, persiana azul o ensanche ateniense",
+    "PL": "ensanche centroeuropeo, portal y ladrillo",
+    "CZ": "sillería bohemia, portal y alero",
+    "HU": "ensanche de Pest, estuco y portal",
+    "RO": "estuco, portal y calle de interior",
+    "RU": "portal soviético o ensanche, ladrillo y nieve",
+    "UA": "ensanche de ladrillo, portal y acera ancha",
+    "SE": "madera pintada o ladrillo, luz nórdica",
+    "NO": "madera, muelle o calle de fiordo",
+    "DK": "ladrillo danés, bicicleta y escaparate",
+    "FI": "granito o madera, luz baja nórdica",
+    "ZA": "veranda, ladrillo y luz alta",
+    "NG": "baja de chapa y hormigón, toldo y calle densa",
+    "KE": "baja de ciudad africana, toldo y acera irregular",
+    "IL": "cal, persiana y piedra clara o ensanche",
+    "AE": "plinto de mall o calle aclimatada, vidrio y sombra",
+    "SA": "bajo contemporáneo, piedra clara y sombra",
+    "PH": "toldo y baja tropical, acera irregular",
+    "PK": "baja densa, toldo y letrero pintado",
+    "BD": "baja de ciudad densa, toldo y humedad",
+    "IR": "arco, ladrillo y persiana, bazar o ensanche",
 }
 
 BRANDS = [
@@ -423,7 +496,7 @@ def setting_for(v) -> str:
     if d == "Estacion":
         return "junto a una estación de tren, metro o cercanías, viajeros y marquesina"
     if d == "Casco":
-        return "casco antiguo, calle estrecha peatonal, piedra o cal, rejas"
+        return "casco antiguo o centro histórico, calle estrecha peatonal"
     if d == "Universidad":
         return "entorno de campus, estudiantes y terrazas de mediodía"
     if d in ("Poligono", "Industrial"):
@@ -451,7 +524,7 @@ def setting_for(v) -> str:
 
 def arch_for(city) -> str:
     a1 = city.get("admin1") or ""
-    return {
+    by_region = {
         "Andalucía": "arquitectura andaluza de cal blanca, rejas y toldo",
         "Cataluña": "ensanche o pueblo catalán, balcones y persiana",
         "Comunidad Valenciana": "fachada mediterránea, persiana y luz dura",
@@ -471,7 +544,11 @@ def arch_for(city) -> str:
         "Extremadura": "granito y cal, plaza de interior",
         "Ceuta": "norte de África español, persiana y estrecho",
         "Melilla": "modernista menor y luz del Rif",
-    }.get(a1, "arquitectura local coherente con el municipio, sin resort")
+    }
+    txt = by_region.get(a1) or ARCH_CC.get(city.get("cc") or "", "")
+    if not txt:
+        txt = "arquitectura local coherente con el municipio, sin resort"
+    return txt[0].upper() + txt[1:] if txt else txt
 
 
 def image_prompt(v, city) -> str:
@@ -836,54 +913,214 @@ def build_head(args):
 def write_city_index(rows, out_dir: Path):
     rows = sorted(rows, key=lambda r: (r[3], r[1], r[2], r[0]))
     csv_path = out_dir / "INDICE_CIUDADES.csv"
-    csv_path.write_text(
-        "municipio,ccaa_o_region,provincia,pais,locales_en_pdf,archivo\n"
-        + "\n".join(f"{a},{b},{c},{d},{e},{f}" for a, b, c, d, e, f in rows),
-        encoding="utf-8",
-    )
+    with csv_path.open("w", encoding="utf-8", newline="") as f:
+        w = csv.writer(f)
+        w.writerow(["municipio", "ccaa_o_region", "provincia", "pais", "locales_en_pdf", "archivo"])
+        for a, b, c, d, e, fn in rows:
+            w.writerow([a, b, c, d, e, fn])
     pdf_path = out_dir / "INDICE_CIUDADES.pdf"
     W, H = A4
-    c = canvas.Canvas(str(pdf_path), pagesize=A4)
-    c.setTitle("Horizon — índice de ciudades")
+    cnv = canvas.Canvas(str(pdf_path), pagesize=A4)
+    cnv.setTitle("Horizon — índice de ciudades")
     y = H - 28
-    c.setFont("DejaVuBold", 14)
-    c.drawString(16, y, "Horizon Restaurant Group — índice de ciudades")
+    cnv.setFont("DejaVuBold", 14)
+    cnv.drawString(16, y, "Horizon Restaurant Group — índice de ciudades")
     y -= 16
-    c.setFont("DejaVu", 8)
-    c.drawString(16, y, "Municipio → archivo PDF relativo a Horizon_Atlas_Restaurantes/")
+    cnv.setFont("DejaVu", 8)
+    cnv.drawString(16, y, "Municipio → archivo PDF relativo a Horizon_Atlas_Restaurantes/")
     y -= 14
-    c.setFont("DejaVuBold", 7)
-    c.drawString(16, y, "Municipio")
-    c.drawString(140, y, "Provincia")
-    c.drawString(250, y, "País")
-    c.drawString(340, y, "Archivo")
+    cnv.setFont("DejaVuBold", 7)
+    cnv.drawString(16, y, "Municipio")
+    cnv.drawString(140, y, "Provincia")
+    cnv.drawString(250, y, "País")
+    cnv.drawString(340, y, "Archivo")
     y -= 10
-    c.setFont("DejaVu", 6.8)
+    cnv.setFont("DejaVu", 6.8)
     page = 1
-    for a, b, ctry_admin, d, e, f in rows:
+    for a, b, ctry_admin, d, e, fn in rows:
         if y < 22:
-            c.showPage()
+            cnv.showPage()
             page += 1
             y = H - 22
-            c.setFont("DejaVu", 7)
-            c.drawRightString(W - 16, 10, str(page))
-            c.setFont("DejaVu", 6.8)
-        c.drawString(16, y, str(a)[:28])
-        c.drawString(140, y, str(ctry_admin)[:22])
-        c.drawString(250, y, str(d)[:16])
-        c.drawString(340, y, str(f)[-48:])
+            cnv.setFont("DejaVu", 7)
+            cnv.drawRightString(W - 16, 10, str(page))
+            cnv.setFont("DejaVu", 6.8)
+        cnv.drawString(16, y, str(a)[:28])
+        cnv.drawString(140, y, str(ctry_admin)[:22])
+        cnv.drawString(250, y, str(d)[:16])
+        cnv.drawString(340, y, str(fn)[-48:])
         y -= 8
-    c.save()
+    cnv.save()
     return csv_path, pdf_path
 
 
+def dir_bytes(p: Path) -> int:
+    return sum(f.stat().st_size for f in p.rglob("*") if f.is_file())
+
+
+def zip_add_path(zf: zipfile.ZipFile, path: Path, root: Path):
+    if path.is_file():
+        zf.write(path, path.relative_to(root).as_posix())
+        return
+    for f in path.rglob("*"):
+        if f.is_file():
+            zf.write(f, f.relative_to(root).as_posix())
+
+
+def pack_units(country_dir: Path, max_bytes: int) -> list[tuple[Path, int]]:
+    sz = dir_bytes(country_dir)
+    if sz <= max_bytes:
+        return [(country_dir, sz)]
+    units = []
+    for a1 in sorted([p for p in country_dir.iterdir() if p.is_dir()], key=lambda x: x.name):
+        s1 = dir_bytes(a1)
+        if s1 <= max_bytes:
+            units.append((a1, s1))
+            continue
+        for a2 in sorted([p for p in a1.iterdir() if p.is_dir()], key=lambda x: x.name):
+            units.append((a2, dir_bytes(a2)))
+    return units or [(country_dir, sz)]
+
+
+def pack_world_zips(base: Path, dest_dir: Path, max_bytes: int) -> list[Path]:
+    atlas = base / "Horizon_Atlas_Restaurantes"
+    extras = [p for p in (base / "INDICE_CIUDADES.csv", base / "INDICE_CIUDADES.pdf", base / "LEEME.txt") if p.exists()]
+    countries = sorted([p for p in atlas.iterdir() if p.is_dir()], key=lambda p: p.name) if atlas.exists() else []
+    units = []
+    for cdir in countries:
+        units.extend(pack_units(cdir, max_bytes))
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    parts = []
+    batch, bsz = [], 0
+
+    def flush():
+        nonlocal batch, bsz
+        if not batch:
+            return
+        idx = len(parts) + 1
+        zpath = dest_dir / f"horizon_atlas_mundo_{idx:02d}.zip"
+        if zpath.exists():
+            zpath.unlink()
+        print("zipping", zpath, "folders", len(batch), "bytes~", bsz, flush=True)
+        with zipfile.ZipFile(zpath, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=6) as zf:
+            for extra in extras:
+                zip_add_path(zf, extra, base)
+            for folder, _sz in batch:
+                zip_add_path(zf, folder, base)
+        print("  wrote", zpath, "bytes", zpath.stat().st_size, flush=True)
+        parts.append(zpath)
+        batch, bsz = [], 0
+
+    for folder, sz in units:
+        if batch and bsz + sz > max_bytes:
+            flush()
+        batch.append((folder, sz))
+        bsz += sz
+        if sz > max_bytes:
+            flush()
+    flush()
+    return parts
+
+
 def main():
+    global OUT_ROOT
     ap = argparse.ArgumentParser()
     ap.add_argument("--cc", default="", help="ISO country filter, e.g. ES")
+    ap.add_argument("--exclude-cc", default="", help="comma ISO to skip, e.g. ES")
+    ap.add_argument("--out", default="", help="output folder (contains Horizon_Atlas_Restaurantes/)")
     ap.add_argument("--limit-heads", type=int, default=0)
     ap.add_argument("--jobs", type=int, default=max(1, cpu_count()))
     ap.add_argument("--zip", dest="make_zip", action="store_true")
+    ap.add_argument("--max-zip-mb", type=int, default=1650)
     args = ap.parse_args()
+    load_world_js()
+    print("loading cities…")
+    cities = load_cities()
+    if args.cc:
+        want = {x.strip().upper() for x in args.cc.split(",") if x.strip()}
+        cities = [c for c in cities if c["cc"] in want]
+    skip = {x.strip().upper() for x in (args.exclude_cc or "").split(",") if x.strip()}
+    if skip:
+        cities = [c for c in cities if c["cc"] not in skip]
+        print("excluded", ",".join(sorted(skip)))
+    print("cities", len(cities))
+    if args.out:
+        OUT_ROOT = Path(args.out) / "Horizon_Atlas_Restaurantes"
+    elif skip or not args.cc:
+        OUT_ROOT = Path("/tmp/horizon_atlas_mundo") / "Horizon_Atlas_Restaurantes"
+    print("out", OUT_ROOT)
+    print("real OSM addresses…")
+    addrs = build_index(cities)
+    for c in cities:
+        c["addrs"] = addrs.get(c["id"], [])
+    print("clustering…")
+    heads, loc = cluster(cities)
+    by_id = {c["id"]: c for c in cities}
+    groups = defaultdict(list)
+    for cid, hid in loc.items():
+        groups[hid].append(by_id[cid])
+    work = [(by_id[hid], groups[hid]) for hid in groups]
+    work.sort(key=lambda x: -x[0]["pop"])
+    if args.limit_heads:
+        work = work[: args.limit_heads]
+    print("zones", len(work), "jobs", args.jobs)
+    OUT_ROOT.parent.mkdir(parents=True, exist_ok=True)
+    if OUT_ROOT.exists():
+        shutil.rmtree(OUT_ROOT)
+    n_pdf = n_loc = 0
+    done = 0
+    index_rows = []
+    if args.jobs == 1 or len(work) < 8:
+        for w in work:
+            a, b, rows = build_head(w)
+            n_pdf += a
+            n_loc += b
+            index_rows.extend(rows)
+            done += 1
+            if done % 50 == 0:
+                print(f"  {done}/{len(work)} zones  pdfs={n_pdf} locales={n_loc}", flush=True)
+    else:
+        with Pool(args.jobs) as pool:
+            for a, b, rows in pool.imap_unordered(build_head, work, chunksize=4):
+                n_pdf += a
+                n_loc += b
+                index_rows.extend(rows)
+                done += 1
+                if done % 100 == 0:
+                    print(f"  {done}/{len(work)} zones  pdfs={n_pdf} locales={n_loc}", flush=True)
+    csv_p, pdf_p = write_city_index(index_rows, OUT_ROOT.parent)
+    leeme = OUT_ROOT.parent / "LEEME.txt"
+    leeme.write_text(
+        "HORIZON RESTAURANT GROUP — Atlas por zona (municipio cabecera + pueblos cercanos)\n"
+        "================================================================================\n"
+        "Pais / region o CCAA / provincia / cabecera /\n\n"
+        "Cada carpeta de cabecera incluye los municipios de alrededor (~26 km).\n"
+        "Cada municipio abre su propia sección en el PDF (no se corta a mitad de pueblo).\n"
+        "Cada ficha: logo de marca, dirección OSM, metro/peatonal OSM, alquiler o compra,\n"
+        "horario, y un PROMPT DE IMAGEN de la fachada (peatonal, playa, estación, mall, etc.).\n"
+        "Índice: INDICE_CIUDADES.csv y INDICE_CIUDADES.pdf\n\n"
+        f"Zonas: {len(work)}\nLocales: {n_loc}\nPDF: {n_pdf}\n",
+        encoding="utf-8",
+    )
+    print("index", csv_p, pdf_p)
+    print("done pdfs", n_pdf, "locales", n_loc)
+    if args.make_zip:
+        dest = Path("/workspace/descargas")
+        dest.mkdir(parents=True, exist_ok=True)
+        tag = (args.cc or "mundo").lower().replace(",", "_")
+        if tag == "es" and not skip:
+            zpath = dest / "horizon_atlas_espana.zip"
+            if zpath.exists():
+                zpath.unlink()
+            print("zipping", zpath)
+            shutil.make_archive(str(zpath.with_suffix("")), "zip", OUT_ROOT.parent)
+            print("zip", zpath, "bytes", zpath.stat().st_size)
+        else:
+            max_bytes = args.max_zip_mb * 1024 * 1024
+            parts = pack_world_zips(OUT_ROOT.parent, dest, max_bytes)
+            extra = "\nPartes:\n" + "\n".join(f"  {p.name}  ({p.stat().st_size} bytes)" for p in parts) + "\n"
+            leeme.write_text(leeme.read_text(encoding="utf-8") + extra, encoding="utf-8")
+            print("zips", [p.name for p in parts])
     load_world_js()
     print("loading cities…")
     cities = load_cities()
