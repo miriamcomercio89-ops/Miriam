@@ -649,7 +649,19 @@
 
   function createRestaurant(state, opts) {
     const brand = BRAND.get(opts.brandId);
-    const rng = U.mulberry32(U.hash32(opts.place.lat + "," + opts.place.lon + "," + opts.brandId + "," + opts.size + "," + state.gameTime));
+    const rng = U.mulberry32(
+      U.hash32(
+        [
+          opts.place.lat,
+          opts.place.lon,
+          opts.brandId,
+          opts.size,
+          state.gameTime,
+          opts.seedSalt || "",
+          (state.restaurants || []).length,
+        ].join("|")
+      )
+    );
     const staff = hireKit(brand, opts.size, opts.place, state.gameTime, rng);
     const quote = opts.quote;
     const r = {
@@ -755,9 +767,9 @@
     const ids = (brandIds || hall.hallBrands || []).filter((id) => id && id !== hall.brandId && !have.has(id)).slice(0, 3);
     const born = [];
     const place = placeFromRestaurant(hall);
-    for (const bid of ids) {
+    ids.forEach((bid, i) => {
       const brand = BRAND.get(bid);
-      if (!brand) continue;
+      if (!brand) return;
       const quote = {
         total: 0,
         permits: 0,
@@ -772,6 +784,7 @@
         size: "puesto",
         place,
         quote,
+        seedSalt: `${hall.id}:${bid}:${i}`,
       });
       stall.hallParentId = hall.id;
       stall.status = hall.status;
@@ -788,7 +801,7 @@
       hall.hallBrands = hall.hallBrands || [];
       if (!hall.hallBrands.includes(bid)) hall.hallBrands.push(bid);
       born.push(stall);
-    }
+    });
     return born;
   }
 
