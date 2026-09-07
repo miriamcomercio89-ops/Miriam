@@ -83,6 +83,136 @@ def load_world_js():
         COUNTRY_RENT[r[0]] = float(r[10])
 
 
+# Gustos dominantes por país (mismo modelo que el simulador, js/saborama.js::TASTE),
+# usados para que la cocina más consumida en la zona predomine entre las 50 marcas.
+TASTE_CC = {
+    "ES": ["española", "tapas", "mediterránea", "brunch"],
+    "PT": ["portuguesa", "mediterránea", "pescado"],
+    "FR": ["francesa", "alta cocina", "mediterránea", "brunch"],
+    "IT": ["italiana", "pizza", "alta cocina", "pasta", "postres"],
+    "GR": ["griega", "mediterránea"],
+    "TR": ["turca", "kebab"],
+    "DE": ["alemana", "hot dog", "cerveza"],
+    "GB": ["británica", "pescado", "pub", "brunch", "café"],
+    "IE": ["británica", "pub"],
+    "PL": ["polaca", "del este"],
+    "RU": ["del este"],
+    "US": ["americana", "hamburguesas", "barbacoa", "diner"],
+    "CA": ["americana", "hamburguesas", "diner"],
+    "MX": ["mexicana", "tex-mex", "tequila"],
+    "AR": ["argentina", "empanadas", "parrilla"],
+    "BR": ["brasileña", "parrilla"],
+    "PE": ["peruana"],
+    "CL": ["parrilla", "mediterránea"],
+    "CO": ["empanadas"],
+    "JP": ["japonesa", "sushi", "ramen", "izakaya", "kaiseki"],
+    "KR": ["coreana"],
+    "CN": ["china", "bao", "dim sum", "cantonesa", "wok"],
+    "TW": ["china", "dim sum"],
+    "HK": ["china", "dim sum", "cantonesa"],
+    "TH": ["tailandesa"],
+    "VN": ["vietnamita"],
+    "IN": ["india"],
+    "PK": ["india"],
+    "ID": ["china"],
+    "MY": ["china", "india"],
+    "PH": ["china"],
+    "SG": ["china", "india", "malasia"],
+    "MA": ["marroquí", "magrebí"],
+    "TN": ["magrebí", "mediterránea"],
+    "DZ": ["magrebí"],
+    "EG": ["levantina"],
+    "LB": ["libanesa", "levantina", "mediterránea"],
+    "JO": ["levantina"],
+    "IL": ["levantina"],
+    "AE": ["levantina", "india"],
+    "SA": ["levantina"],
+    "JM": ["caribeña"],
+    "CU": ["caribeña", "cubana"],
+    "DO": ["caribeña"],
+    "TT": ["caribeña"],
+    "AU": ["americana", "poké", "hawaiana"],
+    "NZ": ["pescado"],
+    "ZA": ["barbacoa"],
+    "NG": ["caribeña"],
+    "KE": ["caribeña"],
+    "CH": ["suiza", "alpina", "francesa"],
+    "AT": ["alpina"],
+    "SE": ["nórdica"],
+    "NO": ["nórdica", "pescado"],
+    "DK": ["nórdica"],
+    "FI": ["nórdica"],
+    "NL": ["pub", "cerveza"],
+    "BE": ["francesa", "cerveza"],
+    "HU": ["del este"],
+    "CZ": ["del este", "cerveza"],
+    "RO": ["del este"],
+}
+
+# Tokens de sabor asociados a cada marca (BID) para casar con TASTE_CC.
+BID_TASTE = {
+    "roble": ["parrilla", "barbacoa", "alpina"],
+    "olivo": ["española", "mediterránea", "tapas"],
+    "marea": ["pescado", "nórdica"],
+    "farol": ["japonesa", "izakaya"],
+    "nudo": ["japonesa", "ramen"],
+    "cinta": ["japonesa", "sushi"],
+    "wok": ["china", "wok"],
+    "thai": ["tailandesa", "vietnamita"],
+    "monzon": ["india"],
+    "seul": ["coreana"],
+    "palazzo": ["italiana", "pasta"],
+    "vesubio": ["italiana", "pasta"],
+    "pizza": ["italiana", "pizza"],
+    "nieve": ["italiana", "pizza"],
+    "empanada": ["argentina", "parrilla", "empanadas"],
+    "arena": ["mexicana"],
+    "bao": ["mexicana", "tex-mex"],
+    "jerk": ["caribeña", "cubana"],
+    "pampa": ["brasileña", "parrilla"],
+    "ola": ["peruana"],
+    "pho": ["americana", "hamburguesas"],
+    "bufalo": ["americana", "hamburguesas"],
+    "pollo": ["americana"],
+    "dumpling": ["americana"],
+    "frankfurt": ["alemana", "hot dog", "del este", "cerveza", "polaca"],
+    "carbon": ["barbacoa", "del este"],
+    "gyros": ["americana", "diner"],
+    "nord": ["parrilla", "alpina"],
+    "linterna": [],
+    "mezze": ["mediterránea", "levantina", "magrebí", "marroquí"],
+    "poke": ["poké", "hawaiana"],
+    "falafel": ["levantina", "magrebí"],
+    "alpina": ["italiana", "pasta"],
+    "eclipse": ["británica", "brunch"],
+    "cerveza": ["café", "pub"],
+    "vermu": ["italiana", "postres"],
+    "tequila": [],
+    "bodega": ["italiana"],
+    "whisky": [],
+    "absenta": ["brunch"],
+    "latitud": [],
+    "polar": [],
+    "seda": ["alta cocina"],
+    "etoile": ["francesa", "alta cocina"],
+    "rubi": ["alta cocina"],
+    "mar": ["pescado", "nórdica"],
+    "sakura": ["mediterránea"],
+    "tropico": [],
+    "doner": ["turca", "kebab"],
+    "taco": [],
+}
+
+MONSOON_CC = {"IN", "BD", "MM", "TH", "KH", "LA", "VN", "PH", "ID", "LK", "NP"}
+MED_CC = {"ES", "PT", "IT", "GR", "HR", "FR", "MT", "CY", "TR", "TN", "MA"}
+ARID_CC = {
+    "SA", "AE", "QA", "KW", "BH", "OM", "YE", "IQ", "IR", "JO", "IL", "PS", "EG",
+    "LY", "DZ", "TN", "MA", "MR", "SD", "TD", "NE", "ML", "DJ", "SO", "NA", "BW",
+    "AU", "AF", "TM", "UZ", "TJ", "PK",
+}
+COLD_CC = {"RU", "CA", "IS", "GL", "FI", "NO", "SE", "MN", "KZ", "AK"}
+
+
 ADMIN1_ES = {
     "Andalusia": "Andalucía",
     "Aragon": "Aragón",
@@ -236,6 +366,11 @@ SIZES = {
     "flagship": ("Flagship", 140, 480),
     "food_hall": ("Food hall", 168, 640),
     "estadio": ("Estadio", 480, 2800),
+    "kiosco_playa": ("Kiosco de playa", 6, 14),
+    "kiosco_estacion": ("Kiosco de estación", 10, 18),
+    "local_mall": ("Local de centro comercial", 36, 110),
+    "drive_thru": ("Drive-thru", 24, 90),
+    "rooftop": ("Rooftop", 90, 230),
 }
 
 TIER_LABEL = {
@@ -347,6 +482,24 @@ def load_cities():
     return cities
 
 
+def mark_mall_stadium(cities):
+    """Como no hay POI de mall/estadio en el extracto OSM mundial disponible, se aproxima
+    'hay un centro comercial o mercado real cerca' / 'hay un estadio real cerca' restringiendo
+    esos formatos a las ciudades de mayor población de cada país (las que realmente los tienen)."""
+    by_cc = defaultdict(list)
+    for c in cities:
+        by_cc[c["cc"]].append(c)
+    for cc, group in by_cc.items():
+        group.sort(key=lambda c: -c["pop"])
+        n = len(group)
+        mall_n = max(3, min(80, round(n * 0.06) + 3))
+        stadium_n = max(1, min(14, round(n * 0.012) + 1))
+        for c in group[:mall_n]:
+            c["mall_ok"] = True
+        for c in group[:stadium_n]:
+            c["stadium_ok"] = True
+
+
 def cluster(cities):
     cities = sorted(cities, key=lambda c: (-c["pop"], c["id"]))
     grid = defaultdict(list)
@@ -398,16 +551,35 @@ def n_venues(pop: int) -> int:
     return max(6, min(64, int(round(pop / 1800.0))))
 
 
-def size_for(tier: str, r, pop: int) -> str:
+def size_for(tier: str, r, pop: int, ctx: dict | None = None) -> str:
+    ctx = ctx or {}
+    dist = ctx.get("dist") or ""
+    beach = bool(ctx.get("beach"))
+    metro = bool(ctx.get("metro"))
+    mall_ok = bool(ctx.get("mall_ok"))
+    stadium_ok = bool(ctx.get("stadium_ok"))
+    edge = dist in ("Poligono", "Industrial", "Norte", "Sur", "Este", "Oeste")
+    central = dist in ("Centro", "Casco")
+
     allow = ["kiosco", "local"]
     if pop >= 3500:
         allow.append("ghost")
     if pop >= 22000:
         allow.append("flagship")
-    if pop >= 70000:
+    if pop >= 70000 and mall_ok:
         allow.append("food_hall")
-    if pop >= 220000:
+    if pop >= 220000 and stadium_ok:
         allow.append("estadio")
+    if pop >= 35000 and mall_ok:
+        allow.append("local_mall")
+    if pop >= 15000 and edge:
+        allow.append("drive_thru")
+    if pop >= 300000 and central:
+        allow.append("rooftop")
+    if beach:
+        allow.append("kiosco_playa")
+    if metro:
+        allow.append("kiosco_estacion")
 
     def pick(order):
         for sid in order:
@@ -417,20 +589,41 @@ def size_for(tier: str, r, pop: int) -> str:
 
     u = r()
     if tier == "luxury":
-        return pick(["estadio" if u < 0.12 else "", "flagship" if u < 0.55 else "", "local"])
-    if tier == "food_truck":
-        return pick(["kiosco" if u < 0.5 else "", "ghost" if u < 0.75 else "", "local"])
-    if tier == "fast_food":
-        return pick(["kiosco" if u < 0.3 else "", "ghost" if u < 0.5 else "", "food_hall" if u < 0.6 else "", "local"])
+        return pick([
+            "rooftop" if u < 0.16 else "",
+            "estadio" if u < 0.26 else "",
+            "flagship" if u < 0.62 else "",
+            "local",
+        ])
     if tier == "bar":
-        return pick(["flagship" if u < 0.22 else "", "local"])
-    if u < 0.12:
-        return pick(["food_hall", "flagship", "local"])
-    if u < 0.22:
-        return pick(["flagship", "local"])
-    if u < 0.38:
-        return pick(["kiosco", "local"])
-    return "local"
+        return pick(["rooftop" if u < 0.24 else "", "flagship" if u < 0.4 else "", "local"])
+    if tier == "food_truck":
+        return pick([
+            "kiosco_playa" if beach and u < 0.4 else "",
+            "kiosco" if u < 0.65 else "",
+            "ghost" if u < 0.85 else "",
+            "local",
+        ])
+    if tier == "fast_food":
+        return pick([
+            "kiosco_playa" if beach and u < 0.22 else "",
+            "kiosco_estacion" if metro and u < 0.4 else "",
+            "kiosco" if u < 0.55 else "",
+            "drive_thru" if u < 0.68 else "",
+            "ghost" if u < 0.78 else "",
+            "food_hall" if u < 0.85 else "",
+            "local",
+        ])
+    # casual (mayoría de marcas)
+    return pick([
+        "kiosco_playa" if beach and u < 0.1 else "",
+        "food_hall" if u < 0.14 else "",
+        "local_mall" if u < 0.24 else "",
+        "flagship" if u < 0.34 else "",
+        "drive_thru" if u < 0.4 else "",
+        "kiosco" if u < 0.5 else "",
+        "local",
+    ])
 
 
 def hours_for(tier: str, r):
@@ -492,11 +685,27 @@ def format_copy(size_id: str) -> str:
         "flagship": "Es un flagship (140 plazas, 480 m²), el formato grande de la marca en la zona.",
         "food_hall": "Es un food hall (168 plazas, 640 m²) con varios fogones bajo el mismo techo.",
         "estadio": "Es un recinto tipo estadio (480 plazas, 2.800 m²) para eventos y gran afluencia.",
+        "kiosco_playa": "Es un kiosco de playa (6 plazas, 14 m²): caseta o carrito en la arena, para llevar.",
+        "kiosco_estacion": "Es un kiosco de estación (10 plazas, 18 m²): mostrador rápido para viajeros.",
+        "local_mall": "Es un local de centro comercial (36 plazas, 110 m²) en galería interior, sin fachada a la calle.",
+        "drive_thru": "Es un drive-thru (24 plazas, 90 m²) con carril de coche y ventanilla de recogida.",
+        "rooftop": "Es un rooftop (90 plazas, 230 m²) en última planta, con vistas a la ciudad.",
     }.get(size_id, "Es un local de la red Horizon.")
 
 
 def setting_for(v) -> str:
     d = v.get("district") or ""
+    sid = v.get("size_id")
+    if sid == "kiosco_playa":
+        return "caseta o carrito de madera sobre la arena, sombrillas y toallas alrededor"
+    if sid == "kiosco_estacion":
+        return "mostrador dentro del vestíbulo de una estación de tren o metro, viajeros con maletas"
+    if sid == "local_mall":
+        return "local en galería interior de un centro comercial, suelo pulido, luz artificial, sin fachada exterior"
+    if sid == "drive_thru":
+        return "edificio bajo con carril de coche, ventanilla de recogida y señalética de carretera"
+    if sid == "rooftop":
+        return "terraza en la última planta de un edificio alto, barandilla de cristal y vistas al perfil de la ciudad"
     if d in ("Playa", "Arenal"):
         return "paseo marítimo, fachada frente a la playa, arena y luz de costa"
     if d == "Estacion":
@@ -507,13 +716,13 @@ def setting_for(v) -> str:
         return "entorno de campus, estudiantes y terrazas de mediodía"
     if d in ("Poligono", "Industrial"):
         return "polígono o naves, parking y tráfico de furgonetas"
-    if v.get("size_id") == "food_hall":
+    if sid == "food_hall":
         return "entrada de un food hall o mercado gastronómico, varios fogones a la vista"
-    if v.get("size_id") == "ghost":
+    if sid == "ghost":
         return "bajo o nave de cocina fantasma, motos de reparto, sin sala al público"
-    if v.get("size_id") == "kiosco":
+    if sid == "kiosco":
         return "kiosco o puesto de calle, mostrador a la acera"
-    if v.get("size_id") == "estadio":
+    if sid == "estadio":
         return "recinto de gran aforo junto a un recinto deportivo o ferial"
     if v.get("ped") and v.get("metro"):
         return "calle peatonal urbana con acceso de metro o cercanías cerca"
@@ -526,6 +735,56 @@ def setting_for(v) -> str:
     if d == "Residencial":
         return "barrio residencial, bajos entre viviendas"
     return "calle comercial cotidiana, bajo con escaparate a la vía"
+
+
+def climate_for(city, r) -> str:
+    cc = city.get("cc") or ""
+    lat = abs(city.get("lat") or 0.0)
+    if cc in ARID_CC and lat < 45:
+        band = "árido"
+    elif cc in COLD_CC and lat > 45:
+        band = "frío"
+    elif lat < 12:
+        band = "ecuatorial"
+    elif lat < 23.5:
+        band = "tropical"
+    elif cc in MED_CC:
+        band = "mediterráneo"
+    elif lat < 38:
+        band = "subtropical"
+    elif lat < 55:
+        band = "templado"
+    elif lat < 66:
+        band = "frío"
+    else:
+        band = "polar"
+
+    weather = {
+        "ecuatorial": ["cielo cargado y húmedo", "sol de justicia entre nubes bajas", "acabado de chubasco cálido"],
+        "tropical": ["calor húmedo y cielo despejado", "luz intensa de trópico", "nubes altas y bochorno"],
+        "árido": ["calor seco y polvo claro en el aire", "cielo despejado sin una nube", "luz dura de desierto"],
+        "mediterráneo": ["cielo azul y luz seca", "tarde templada sin viento", "sol suave de costa"],
+        "subtropical": ["aire cálido y algo de humedad", "cielo mayormente despejado", "luz cálida de tarde"],
+        "templado": ["cielo parcialmente nublado", "aire fresco de entretiempo", "llovizna reciente sobre el asfalto"],
+        "frío": ["aire frío, abrigos y bufandas", "cielo gris de invierno", "resto de nieve sucia en la acera"],
+        "polar": ["frío intenso y luz baja", "nieve reciente y aire muy seco", "cielo despejado y gélido"],
+    }.get(band, ["cielo despejado"])
+
+    veg = {
+        "ecuatorial": "palmeras y vegetación exuberante al fondo",
+        "tropical": "palmeras o vegetación tropical cercana",
+        "árido": "vegetación escasa, alguna palmera aislada o ninguna",
+        "mediterráneo": "algún ciprés, olivo o palmera de alineación",
+        "subtropical": "arbolado de alineación denso",
+        "templado": "arbolado de alineación caducifolio",
+        "frío": "coníferas o árboles desnudos de invierno",
+        "polar": "sin vegetación relevante, superficie helada",
+    }.get(band, "arbolado urbano discreto")
+
+    light = ["hora dorada", "mediodía de luz dura", "atardecer con cielo rosado", "última luz de la tarde", "luz suave de mañana"]
+    hora = light[int(r() * len(light)) % len(light)]
+    w = weather[int(r() * len(weather)) % len(weather)]
+    return f"{hora}, {w}, {veg}"
 
 
 def arch_for(city) -> str:
@@ -560,14 +819,21 @@ def arch_for(city) -> str:
 def image_prompt(v, city) -> str:
     kind = "ciudad" if city["pop"] >= 20000 else "villa" if city["pop"] >= 5000 else "pueblo"
     pop = f"{city['pop']:,}".replace(",", ".")
+    cr = rng(h32(city["id"], v["bid"], "clima"))
+    clima = climate_for(city, cr)
+    gente = ["un par de viandantes al fondo", "alguna persona caminando cerca", "poca gente, sin aglomeración", "un cliente entrando al local"]
+    calle = ["algún coche aparcado cerca", "tráfico ligero al fondo", "una bicicleta apoyada cerca", "una moto de reparto pasando"]
+    detalle_gente = gente[int(cr() * len(gente)) % len(gente)]
+    detalle_calle = calle[int(cr() * len(calle)) % len(calle)]
     return (
         "PROMPT IMAGEN: Fotografía fotorrealista a pie de calle de la fachada del restaurante "
         f"«{v['brand']}» en {city['name']}, {city['admin2']}, {city['admin1']} ({city['country']}). "
         f"{kind.capitalize()} de {pop} habitantes. Formato {v['size_name'].lower()} "
         f"({v['seats']} plazas, {v['m2']} m²), cocina {v['cuisine']}, tramo {TIER_LABEL[v['tier']].lower()}. "
         f"Ubicación: {setting_for(v)}. Dirección de referencia: {v['address']}. "
-        f"{arch_for(city)}. Rótulo claramente legible con el nombre «{v['brand']}». "
-        "Hora dorada, óptica 35 mm, luz natural, pocas personas, sin texto extra en la imagen, "
+        f"{arch_for(city)}. Ambiente: {clima}, {detalle_gente}, {detalle_calle}. "
+        f"Rótulo claramente legible con el nombre «{v['brand']}». "
+        "Óptica 35 mm, luz natural, sin texto extra en la imagen, "
         "sin hotel, sin resort, sin logotipos de otras cadenas, sin interior de comedor a pantalla completa."
     )
 
@@ -594,6 +860,54 @@ def take_addr(city, used: set) -> dict:
     return {"text": txt, "lat": city["lat"], "lon": city["lon"], "metro": False, "ped": False, "beach": False}
 
 
+def brand_weight(bid: str, liked: set, jitter: float, boost: float = 3.2) -> float:
+    w = 1.0
+    toks = BID_TASTE.get(bid, [])
+    if liked and any(t in liked for t in toks):
+        w *= boost
+    return w * jitter
+
+
+def pick_brand_sequence(city, n) -> list[int]:
+    """Ordena las 50 marcas para esta ciudad: más peso a la cocina dominante del país
+    (predomina lo que más se consume en la zona) con variedad aleatoria real entre
+    ciudades similares, y repite marcas populares si hacen falta más de 50 locales."""
+    liked = set(TASTE_CC.get(city["cc"], []))
+    pr = rng(h32(city["id"], "brandpick"))
+    weights = [brand_weight(b[0], liked, 0.7 + pr() * 0.75) for b in BRANDS]
+    pool = list(range(len(BRANDS)))
+    order = []
+    k = min(n, len(BRANDS))
+    for _ in range(k):
+        total = sum(weights[i] for i in pool)
+        u = pr() * total
+        acc = 0.0
+        chosen = pool[-1]
+        for idx in pool:
+            acc += weights[idx]
+            if u <= acc:
+                chosen = idx
+                break
+        pool.remove(chosen)
+        order.append(chosen)
+    if n > len(BRANDS):
+        # en las repeticiones (locales extra en grandes ciudades) la cocina dominante
+        # del país se lleva la mayoría de los huecos, para que predomine de verdad.
+        rep_weights = [brand_weight(b[0], liked, 0.8 + pr() * 0.5, boost=9.0) for b in BRANDS]
+        total = sum(rep_weights)
+        for _ in range(n - len(BRANDS)):
+            u = pr() * total
+            acc = 0.0
+            chosen = len(BRANDS) - 1
+            for idx, w in enumerate(rep_weights):
+                acc += w
+                if u <= acc:
+                    chosen = idx
+                    break
+            order.append(chosen)
+    return order
+
+
 def make_venues(city, n):
     rent_ctry = COUNTRY_RENT.get(city["cc"], 40)
     pop_k = city["pop"] / 1000.0
@@ -601,25 +915,34 @@ def make_venues(city, n):
     rent_idx = (rent_ctry / 72.0) * city_factor
     out = []
     used = set()
-    for i in range(n):
-        bid, name, cuisine, tier, tag = BRANDS[i % len(BRANDS)]
+    sequence = pick_brand_sequence(city, n)
+    for i, bi in enumerate(sequence):
+        bid, name, cuisine, tier, tag = BRANDS[bi]
         r = rng(h32(city["id"], i, bid))
-        size_id = size_for(tier, r, city["pop"])
-        if bid == "taco":
-            size_id = "food_hall" if city["pop"] >= 70000 else "local"
-        sl, seats, m2 = SIZES[size_id]
         rec = take_addr(city, used)
         addr = rec["text"]
         dist = district_for(city, rec["lat"], rec["lon"], rec)
         metro = bool(rec.get("metro"))
         ped = bool(rec.get("ped"))
-        mult = 0.55 if size_id == "ghost" else 1.35 if size_id == "food_hall" else 1.0
+        beach = bool(rec.get("beach"))
+        ctx = {
+            "dist": dist,
+            "beach": beach,
+            "metro": metro,
+            "mall_ok": bool(city.get("mall_ok")),
+            "stadium_ok": bool(city.get("stadium_ok")),
+        }
+        size_id = size_for(tier, r, city["pop"], ctx)
+        if bid == "taco" and size_id not in ("food_hall",):
+            size_id = "food_hall" if (city["pop"] >= 70000 and city.get("mall_ok")) else "local"
+        sl, seats, m2 = SIZES[size_id]
+        mult = {"ghost": 0.55, "food_hall": 1.35, "rooftop": 1.6, "local_mall": 1.25, "kiosco_playa": 0.9, "kiosco_estacion": 1.1, "drive_thru": 0.85}.get(size_id, 1.0)
         rent = max(180, int(round(m2 * 9 * rent_idx * mult)))
         owned = r() < 0.28
         guests = []
         if size_id == "food_hall":
             for g in range(2):
-                other = BRANDS[(i + 3 + g * 7) % len(BRANDS)]
+                other = BRANDS[(bi + 3 + g * 7) % len(BRANDS)]
                 if other[1] != name:
                     guests.append(other[1])
         v = {
@@ -1050,6 +1373,7 @@ def main():
         cities = [c for c in cities if c["cc"] not in skip]
         print("excluded", ",".join(sorted(skip)))
     print("cities", len(cities))
+    mark_mall_stadium(cities)
     if args.out:
         OUT_ROOT = Path(args.out) / "Horizon_Atlas_Restaurantes"
     elif skip or not args.cc:
