@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Horizon Restaurant Group — atlas PDF por zona (cabecera + pueblos ~26 km).
 
-Cada local lleva ficha con dirección, horario, alquiler/compra y un párrafo
-de descripción (cómo es el local y dónde está).
+Cada local lleva ficha con dirección OSM, horario, alquiler/compra y un
+PROMPT DE IMAGEN de la fachada (peatonal, playa, estación, mall, etc.).
 """
 from __future__ import annotations
 
@@ -60,6 +60,12 @@ TERRITORY_ES = {
     "VG": "Islas Vírgenes Británicas", "VI": "Islas Vírgenes de EE. UU.", "WF": "Wallis y Futuna",
     "XK": "Kosovo", "YT": "Mayotte", "AN": "Antillas Neerlandesas", "CS": "Serbia y Montenegro",
     "KM": "Comoras",
+    "AG": "Antigua y Barbuda", "AS": "Samoa Americana", "AW": "Aruba", "BB": "Barbados",
+    "BM": "Bermudas", "BS": "Bahamas", "DM": "Dominica", "FM": "Micronesia", "GD": "Granada",
+    "KI": "Kiribati", "KN": "San Cristóbal y Nieves", "KP": "Corea del Norte",
+    "LC": "Santa Lucía", "MH": "Islas Marshall", "NR": "Nauru", "PG": "Papúa Nueva Guinea",
+    "PW": "Palaos", "SB": "Islas Salomón", "SC": "Seychelles", "ST": "Santo Tomé y Príncipe",
+    "TV": "Tuvalu", "VC": "San Vicente y las Granadinas", "VU": "Vanuatu", "WS": "Samoa",
 }
 
 COUNTRY_ES = {}
@@ -1121,76 +1127,6 @@ def main():
             extra = "\nPartes:\n" + "\n".join(f"  {p.name}  ({p.stat().st_size} bytes)" for p in parts) + "\n"
             leeme.write_text(leeme.read_text(encoding="utf-8") + extra, encoding="utf-8")
             print("zips", [p.name for p in parts])
-    load_world_js()
-    print("loading cities…")
-    cities = load_cities()
-    if args.cc:
-        cities = [c for c in cities if c["cc"] == args.cc.upper()]
-    print("cities", len(cities))
-    print("real OSM addresses…")
-    addrs = build_index(cities)
-    for c in cities:
-        c["addrs"] = addrs.get(c["id"], [])
-    print("clustering…")
-    heads, loc = cluster(cities)
-    by_id = {c["id"]: c for c in cities}
-    groups = defaultdict(list)
-    for cid, hid in loc.items():
-        groups[hid].append(by_id[cid])
-    work = [(by_id[hid], groups[hid]) for hid in groups]
-    work.sort(key=lambda x: -x[0]["pop"])
-    if args.limit_heads:
-        work = work[: args.limit_heads]
-    print("zones", len(work), "jobs", args.jobs)
-    OUT_ROOT.parent.mkdir(parents=True, exist_ok=True)
-    if OUT_ROOT.exists():
-        shutil.rmtree(OUT_ROOT)
-    n_pdf = n_loc = 0
-    done = 0
-    index_rows = []
-    if args.jobs == 1 or len(work) < 8:
-        for w in work:
-            a, b, rows = build_head(w)
-            n_pdf += a
-            n_loc += b
-            index_rows.extend(rows)
-            done += 1
-            if done % 50 == 0:
-                print(f"  {done}/{len(work)} zones  pdfs={n_pdf} locales={n_loc}", flush=True)
-    else:
-        with Pool(args.jobs) as pool:
-            for a, b, rows in pool.imap_unordered(build_head, work, chunksize=4):
-                n_pdf += a
-                n_loc += b
-                index_rows.extend(rows)
-                done += 1
-                if done % 100 == 0:
-                    print(f"  {done}/{len(work)} zones  pdfs={n_pdf} locales={n_loc}", flush=True)
-    csv_p, pdf_p = write_city_index(index_rows, OUT_ROOT.parent)
-    leeme = OUT_ROOT.parent / "LEEME.txt"
-    leeme.write_text(
-        "HORIZON RESTAURANT GROUP — Atlas por zona (municipio cabecera + pueblos cercanos)\n"
-        "================================================================================\n"
-        "Pais / region o CCAA / provincia / cabecera /\n\n"
-        "Cada carpeta de cabecera incluye los municipios de alrededor (~26 km).\n"
-        "Cada municipio abre su propia sección en el PDF (no se corta a mitad de pueblo).\n"
-        "Cada ficha: logo de marca, dirección OSM, metro/peatonal OSM, alquiler o compra,\n"
-        "horario, y un PROMPT DE IMAGEN de la fachada (peatonal, playa, estación, etc.).\n"
-        "Índice: INDICE_CIUDADES.csv y INDICE_CIUDADES.pdf\n\n"
-        f"Zonas: {len(work)}\nLocales: {n_loc}\nPDF: {n_pdf}\n",
-        encoding="utf-8",
-    )
-    print("index", csv_p, pdf_p)
-    print("done pdfs", n_pdf, "locales", n_loc)
-    if args.make_zip:
-        tag = (args.cc or "mundo").lower()
-        zpath = Path("/workspace/descargas") / f"horizon_atlas_{'espana' if tag == 'es' else tag}.zip"
-        zpath.parent.mkdir(parents=True, exist_ok=True)
-        if zpath.exists():
-            zpath.unlink()
-        print("zipping", zpath)
-        shutil.make_archive(str(zpath.with_suffix("")), "zip", OUT_ROOT.parent)
-        print("zip", zpath, "bytes", zpath.stat().st_size)
 
 
 if __name__ == "__main__":

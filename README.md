@@ -35,6 +35,10 @@ Cincuenta filiales con identidad propia (carta, tramo y colores). Un local = una
 - Autoguardado.
 - Exportar / importar JSON.
 
+## Atlas de locales
+
+PDFs de todo el mundo (dirección OSM, mapa de zona, logo y prompt de fachada para generar la foto): ver [descargas/README.md](descargas/README.md).
+
 ## Créditos de mapa
 
 © [OpenStreetMap](https://www.openstreetmap.org/copyright) · teselas OSM Carto en ciudad · imágenes [Esri World Imagery](https://www.esri.com/) al alejar · geocodificación [Photon](https://photon.komoot.io/).

@@ -1,26 +1,27 @@
 # Atlas de locales — Horizon Restaurant Group
 
-## España (formato nuevo)
+Mismo formato en todo el mundo: mapa de zona, logo, dirección OSM, metro/peatonal, tamaños según población y **PROMPT IMAGEN** de la fachada (peatonal, playa, estación, mall, etc.).
+
+Descomprime las partes en la misma carpeta: `Horizon_Atlas_Restaurantes / país / región / provincia / cabecera /`.
+
+Cada ZIP incluye también `INDICE_CIUDADES.csv` y `INDICE_CIUDADES.pdf`.
+
+## España
 
 [horizon_atlas_espana.zip](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/horizon_atlas_espana.zip)
 
-Descomprime: `Horizon_Atlas_Restaurantes / España / CCAA / provincia / cabecera /`.
+## Resto del mundo (formato nuevo)
 
-Cada cuaderno:
+86.980 PDFs · 1.616.991 locales · 45.191 zonas. Nueve partes (GitHub LFS, máximo ~1,4 GB):
 
-- Mapa de zona (cabecera + municipios ~26 km)
-- Sección por municipio (no se corta un pueblo a mitad)
-- Logo de la marca en cada ficha
-- Dirección OSM, metro/peatonal OSM, distrito (Playa, Casco, Estación…)
-- **Prompt de imagen** de la fachada (para generar la foto con otra IA)
-- Índice: `INDICE_CIUDADES.csv` y `INDICE_CIUDADES.pdf`
+1. [Parte 01](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/horizon_atlas_mundo_01.zip) — Alemania, Argentina, Australia, Austria…
+2. [Parte 02](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/horizon_atlas_mundo_02.zip) — Brasil, Bélgica, Canadá, Chile…
+3. [Parte 03](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/horizon_atlas_mundo_03.zip) — China, Colombia, Corea del Sur, Dinamarca, Egipto…
+4. [Parte 04](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/horizon_atlas_mundo_04.zip) — **Estados Unidos**, Filipinas, Finlandia…
+5. [Parte 05](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/horizon_atlas_mundo_05.zip) — **Francia**, **India**, Grecia, Hong Kong…
+6. [Parte 06](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/horizon_atlas_mundo_06.zip) — Indonesia, **Italia**, **Japón**, Marruecos…
+7. [Parte 07](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/horizon_atlas_mundo_07.zip) — **México**, **Reino Unido**, Países Bajos, Perú, Polonia, Portugal…
+8. [Parte 08](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/horizon_atlas_mundo_08.zip) — **Rusia**, Sudáfrica, Suecia, Suiza, Tailandia, Turquía…
+9. [Parte 09](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/horizon_atlas_mundo_09.zip) — Venezuela, Vietnam, Zambia…
 
-Coín cubre Guaro, Monda, Alozaina… Álora y Pizarra van con Cártama. Fuengirola y Marbella tienen cuaderno propio.
-
-## Resto del mundo (cuadernos anteriores)
-
-Siguen en tres ZIP; el formato de ficha es el de antes (sin logo ni mapa de zona):
-
-1. [Parte 1](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/horizon_atlas_parte1.zip)
-2. [Parte 2](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/horizon_atlas_parte2.zip)
-3. [Parte 3](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/horizon_atlas_parte3.zip)
+España no se repite aquí: está en su propio ZIP.
