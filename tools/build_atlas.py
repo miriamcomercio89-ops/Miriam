@@ -70,6 +70,7 @@ TERRITORY_ES = {
 
 COUNTRY_ES = {}
 COUNTRY_RENT = {}
+COUNTRY_ECON = {}  # cc -> {popM, gdppc, wage, tax, vat, rent, infl}
 
 
 def load_world_js():
@@ -79,8 +80,21 @@ def load_world_js():
         text,
     )
     for r in rows:
-        COUNTRY_ES[r[0]] = r[1]
-        COUNTRY_RENT[r[0]] = float(r[10])
+        cc = r[0]
+        COUNTRY_ES[cc] = r[1]
+        COUNTRY_RENT[cc] = float(r[10])
+        COUNTRY_ECON[cc] = {
+            "name": r[1],
+            "lat": float(r[2]),
+            "lon": float(r[3]),
+            "popM": float(r[5]),
+            "gdppc": float(r[6]),
+            "wage": float(r[7]),
+            "tax": float(r[8]),
+            "vat": float(r[9]),
+            "rent": float(r[10]),
+            "infl": float(r[11]),
+        }
 
 
 # Gustos dominantes por país (mismo modelo que el simulador, js/saborama.js::TASTE),
@@ -373,6 +387,68 @@ SIZES = {
     "drive_thru": ("Drive-thru", 24, 90),
     "rooftop": ("Rooftop", 90, 230),
 }
+
+CONTINENT_ES = {
+    "EU": "Europa", "AS": "Asia", "AF": "África", "OC": "Oceanía",
+    "NA": "América del Norte y Central", "SA": "América del Sur", "AN": "Antártida",
+}
+
+REGION_RISK = {
+    "EU": "Mercado único con licencias armonizadas en muchos trámites, pero sanidad, horarios y "
+          "urbanismo se deciden a nivel municipal. El IVA y el impuesto de sociedades varían mucho "
+          "entre países (del 9% al 25%+ de IVA); el euro cubre la mayoría, con riesgo de cambio en "
+          "Europa del Este y Reino Unido.",
+    "AS": "Marco muy heterogéneo: desde apertura casi inmediata (Emiratos, Singapur) hasta control de "
+          "capital extranjero y socios locales obligatorios (India, Indonesia, Vietnam, China). Riesgo "
+          "de cambio alto salvo en las divisas ancladas al dólar del Golfo.",
+    "NA": "EE. UU. y Canadá tienen licencias rápidas pero reguladas estado a estado/provincia a "
+          "provincia (alcohol, sanidad, salario mínimo). México y Centroamérica añaden aranceles de "
+          "importación de maquinaria y variabilidad cambiaria relevante en pesos y córdobas/quetzales.",
+    "SA": "Alta carga fiscal e inflación crónica en varios países (Argentina, Venezuela), con control "
+          "de cambios y restricciones a la repatriación de beneficios. Brasil exige homologación "
+          "sanitaria estatal además de la federal.",
+    "AF": "Licencias de importación de maquinaria y menaje son el mayor cuello de botella; la moneda "
+          "local suele depreciarse rápido frente al euro, por lo que los contratos de alquiler en "
+          "divisas fuertes son habituales en las capitales.",
+    "OC": "Marco regulatorio similar al británico, estable y previsible, pero con costes laborales y "
+          "de construcción altos y mercados pequeños fuera de las grandes ciudades costeras.",
+    "AN": "Sin actividad comercial permanente; no forma parte del plan de expansión.",
+}
+
+N_PHASES = 500
+PHASE_START_YEAR = 2027
+PHASE_START_MONTH = 1  # Fase 1 = enero 2027, cadencia mensual, igual para las 50 marcas
+MONTHS_ES = [
+    "enero", "febrero", "marzo", "abril", "mayo", "junio",
+    "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre",
+]
+
+
+def phase_period(phase_no: int):
+    """Fase N -> (año, mes, etiqueta). Mismo calendario para las 50 marcas."""
+    idx = phase_no - 1
+    total_months = (PHASE_START_MONTH - 1) + idx
+    year = PHASE_START_YEAR + total_months // 12
+    month = total_months % 12 + 1
+    return year, month, f"{MONTHS_ES[month - 1]} {year}"
+
+
+_CC_CONT = {}
+
+
+def load_continents():
+    """cc -> código de continente (EU/AS/NA/SA/AF/OC/AN), desde GeoNames countryInfo.txt."""
+    if _CC_CONT:
+        return _CC_CONT
+    cont_path = GEONAMES / "countryInfo.txt"
+    for line in cont_path.read_text(encoding="utf-8", errors="replace").splitlines():
+        if not line or line.startswith("#"):
+            continue
+        p = line.split("\t")
+        if len(p) > 8:
+            _CC_CONT[p[0]] = p[8]
+    return _CC_CONT
+
 
 TIER_LABEL = {
     "food_truck": "Food truck",
