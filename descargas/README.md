@@ -16,9 +16,9 @@ Documento estratégico de ~3.000 páginas, sin límite de extensión: empezamos 
 
 ## Plan de expansión por marca (50 marcas × 500 fases)
 
-Cada una de las 50 marcas propias tiene su propio calendario de apertura mundial, muy salteado (aleatorio real: puede abrir en Londres, seguir por otros continentes y volver a abrir en Londres varias fases después), dividido en **500 fases — un PDF por fase**. La fase N cae siempre en el mismo mes en las 50 marcas (fase 1 = enero de 2027, cadencia mensual, hasta agosto de 2068), así que los 50 planes son comparables fase a fase. Cada PDF de fase incluye los locales que abre esa marca ese mes (ciudad, país, formato, aforo), la inversión estimada de cada uno (alquiler/compra, obra, mobiliario, stock inicial), el acumulado de la marca hasta esa fase, y una nota de riesgo legal/fiscal por cada país nuevo en el que entra la marca esa fase.
+Cada una de las 50 marcas propias tiene su propio calendario de apertura mundial, muy salteado (aleatorio real: puede abrir en Londres, seguir por otros continentes y volver a abrir en Londres varias fases después), dividido en **500 fases — un PDF por fase**. La fase N cae siempre en el mismo mes en las 50 marcas (fase 1 = enero de 2027, cadencia mensual, hasta agosto de 2068), así que los 50 planes son comparables fase a fase. Cada PDF de fase trae una ficha completa por local abierto ese mes, con los mismos datos que el atlas de restaurantes: **dirección real de OpenStreetMap**, barrio/zona, formato y aforo, accesibilidad (metro/cercanías, calle peatonal, frente de playa), horario semanal, la inversión estimada (alquiler/compra, obra, mobiliario, stock inicial y total) y el **prompt de imagen** (descripción fotorrealista de la fachada, con clima, luz, gente, tráfico y arquitectura de la zona) listo para generar la foto con otra IA. Además incluye el acumulado de la marca hasta esa fase y una nota de riesgo legal/fiscal por cada país nuevo en el que entra la marca esa fase.
 
-Un ZIP por marca, con sus 500 PDF de fase dentro (~25-30 MB cada uno):
+Un ZIP por marca, con sus 500 PDF de fase dentro (~45-90 MB cada uno):
 
 | Marca | ZIP | Marca | ZIP |
 | --- | --- | --- | --- |
