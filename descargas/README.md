@@ -135,3 +135,36 @@ Cada ZIP incluye también `INDICE_CIUDADES.csv` y `INDICE_CIUDADES.pdf`.
 10. [Parte 10](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/horizon_atlas_mundo_10.zip) — **Tailandia**, Taiwán, Tanzania, Turquía, Ucrania, Uganda, Uruguay, Venezuela, **Vietnam**, Zambia, Zimbabue…
 
 España no se repite aquí: está en su propio ZIP.
+
+# Horizon Hotels
+
+Segundo simulador independiente (carpeta `hoteles/`), con su propio Plan de Construcción Real. Mismo motor de ciudades, direcciones OSM y economía por país que Horizon Restaurant Group, pero con un catálogo de marcas y formatos propio y un mundo mucho más concentrado en ciudades y zonas turísticas reales.
+
+## El simulador (videojuego)
+
+[horizon_hotels_simulador.zip](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/simulador-mejoras-iconos-busqueda-rentabilidad-d2e2/descargas/horizon_hotels_simulador.zip)
+
+Descomprime, entra en la carpeta `hoteles/` (deben verse `index.html`, `js/`, `css/`, `vendor/` e `img/`) y abre `index.html` en Chrome o Edge. No hace falta servidor ni build; el mapa necesita internet. Empiezas el 1 de enero de 2000 con 5.000.000 €.
+
+- **50 marcas Horizon**: 10 segmentos (urbano/negocios, aeropuerto, playa/resort, todo incluido, boutique/diseño, rural/eco, montaña/nieve, bienestar/spa, aparthotel, histórico/patrimonio) × 5 categorías de estrellas (económico a ultralujo), todas con el nombre Horizon y logo propio complejo (no un simple icono+color).
+- **30 formatos**: de un hostal pequeño de 12 habitaciones a un mega-resort todo incluido de 600, pasando por hotel cápsula de aeropuerto, torre de negocios, resort de golf, eco-lodge rural, refugio de montaña, chalet de esquí, palacio patrimonio restaurado, hotel de diseño, residencias de lujo, torre skyline con rooftop, resort de isla privada, balneario termal wellness y glamping de lujo, entre otros.
+- **Simulación por ocupación/ADR/RevPAR**: la demanda diaria depende de la ubicación real (playa, urbano, aeropuerto, rural…), la temporada, el ajuste de precio de la IA y las amenities activas (piscina, spa, gimnasio, restaurante interno, parking, salones, business center, playa privada). El personal se reparte en dirección, recepción, pisos/limpieza y mantenimiento, cada uno con su propia habilidad.
+- El resto de la mecánica es idéntica a Horizon Restaurant Group: gerente IA por hotel según su habilidad, impuesto de sociedades sobre el beneficio, inflación real (alquiler, salarios, suministros), buscador de direcciones tipo Google Maps, iconos de marca grandes en el mapa, foto A4 completa con zoom de rueda en la ficha del hotel, y autoguardado tanto en el navegador (localStorage + IndexedDB, sobrevive a "borrar caché") como copia de seguridad automática en disco.
+
+## Plan de Construcción Real (etapas y fases)
+
+Mismo formato que el de restaurantes: un único calendario de obra con las **50 marcas mezcladas**, dividido en **etapas de 1.000 hoteles**, cada una repartida en **20 fases de 50 hoteles** (un PDF por fase, organizado en una carpeta por etapa). Sin calendario de fechas ni horario (es un calendario de obra, no de operación): cada fase se identifica solo por su etapa y su número de fase (1 a 20).
+
+**Orden de apertura**: el primer hotel del plan es el **Horizon Lagoon Palace** de **Marbella** (Málaga) — sede fundacional turística del grupo —, seguido de un resumen muy corto del resto de la provincia (sus municipios de más peso hotelero real) y, enseguida, el resto de las ciudades del mundo en una única clasificación global por potencial hotelero real (tamaño de la ciudad + turismo verificado: costa, centros comerciales, universidades, estadios), sin agrupar por país ni continente. Dentro de esa lista, los hoteles se abren **por rondas** (round-robin): 1 hotel por ciudad y ronda, así que la etapa 1 ya cubre una amplia variedad de países del mundo desde el principio.
+
+**Ficha completa por hotel**: marca (con logo), ciudad y país, dirección real de OpenStreetMap, distrito, formato/habitaciones/m², accesibilidad real (metro/cercanías, calle peatonal, frente de playa), ADR estimada e **inversión total en una sola cifra** (alquiler o compra + obra + mobiliario, ajustada al coste laboral real del país) y el **prompt de imagen** de la fachada (clima, arquitectura local, estilo propio de la marca, gente y tráfico de la zona) listo para generar la foto con otra IA. Cada fase indica también los hoteles e inversión acumulados del grupo, el % del plan mundial completado y los países nuevos de esa fase con su nota de riesgo legal/fiscal.
+
+Mismo motor de datos que el atlas de restaurantes (ciudades de GeoNames, direcciones reales de OpenStreetMap, economía real por país), pero con una densidad mucho más concentrada: **160.755 hoteles potenciales** en **161 etapas** (3.220 PDF de fase en total), **414.376 M€** de inversión total estimada.
+
+9 ZIP con las 161 etapas repartidas por tamaño (~80-116 MB cada uno, ~1 GB en total). Descomprime cada ZIP en la misma carpeta `horizon_hotels_plan_construccion/`: cada uno trae directamente sus carpetas `Etapa_NNNN/` con sus 20 `fase_NN.pdf` dentro, sin solaparse entre partes.
+
+| Etapas | ZIP | Etapas | ZIP | Etapas | ZIP |
+| --- | --- | --- | --- | --- | --- |
+| 1-19 | [Parte 01](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/simulador-mejoras-iconos-busqueda-rentabilidad-d2e2/descargas/horizon_hotels_plan_construccion_01_e0001-0019.zip) | 20-38 | [Parte 02](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/simulador-mejoras-iconos-busqueda-rentabilidad-d2e2/descargas/horizon_hotels_plan_construccion_02_e0020-0038.zip) | 39-57 | [Parte 03](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/simulador-mejoras-iconos-busqueda-rentabilidad-d2e2/descargas/horizon_hotels_plan_construccion_03_e0039-0057.zip) |
+| 58-76 | [Parte 04](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/simulador-mejoras-iconos-busqueda-rentabilidad-d2e2/descargas/horizon_hotels_plan_construccion_04_e0058-0076.zip) | 77-95 | [Parte 05](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/simulador-mejoras-iconos-busqueda-rentabilidad-d2e2/descargas/horizon_hotels_plan_construccion_05_e0077-0095.zip) | 96-113 | [Parte 06](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/simulador-mejoras-iconos-busqueda-rentabilidad-d2e2/descargas/horizon_hotels_plan_construccion_06_e0096-0113.zip) |
+| 114-131 | [Parte 07](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/simulador-mejoras-iconos-busqueda-rentabilidad-d2e2/descargas/horizon_hotels_plan_construccion_07_e0114-0131.zip) | 132-148 | [Parte 08](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/simulador-mejoras-iconos-busqueda-rentabilidad-d2e2/descargas/horizon_hotels_plan_construccion_08_e0132-0148.zip) | 149-161 | [Parte 09](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/simulador-mejoras-iconos-busqueda-rentabilidad-d2e2/descargas/horizon_hotels_plan_construccion_09_e0149-0161.zip) |

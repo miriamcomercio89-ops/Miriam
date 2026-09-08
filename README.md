@@ -43,6 +43,14 @@ Cincuenta filiales con identidad propia (carta, tramo y colores). Un local = una
 
 PDFs de todo el mundo (dirección OSM, mapa de zona, logo y prompt de fachada para generar la foto), el plan de expansión global maestro de Horizon (empezando en la provincia de Málaga —con el piloto de Cártama— y expandiéndose por orden lógico y realista, ciudades grandes y zonas turísticas primero, con el directorio completo de los 147.884 municipios del mundo), el plan de expansión de cada una de las 50 marcas propias (500 fases, un PDF por fase) y el Plan de Construcción Real definitivo del grupo (50 marcas mezcladas, etapas de 1.000 locales divididas en 20 fases de 50, empezando en Álora y abriendo por rondas —1 local por ciudad del mundo antes de abrir el segundo— para cubrir casi todo el planeta ya en la primera etapa): ver [descargas/README.md](descargas/README.md).
 
+## Horizon Hotels — el mismo simulador, ahora de hoteles
+
+Segundo videojuego independiente en la carpeta [`hoteles/`](hoteles/): la misma mecánica (mapa real, gerente IA por local, impuesto de sociedades, inflación real, autoguardado en disco, buscador de direcciones, iconos grandes, foto A4 con zoom) pero para una cadena hotelera — **Horizon Hotels**, con **50 marcas propias** (10 segmentos × 5 categorías de estrellas, todas con el nombre Horizon) y **30 formatos** de hotel (de un hostal de 12 habitaciones a un mega-resort todo incluido de 600). Se juega con **ocupación (%), ADR y RevPAR** en lugar de tickets y comensales: el personal (recepción, pisos, mantenimiento, dirección) y las amenities (piscina, spa, gimnasio, restaurante interno, parking…) suben la demanda y el precio. Empiezas el 1 de enero de 2000 con 5.000.000 €.
+
+**Descarga:** [horizon_hotels_simulador.zip](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/simulador-mejoras-iconos-busqueda-rentabilidad-d2e2/descargas/horizon_hotels_simulador.zip) — descomprime, entra en la carpeta `hoteles/` (deben verse `index.html`, `js/`, `css/`, `vendor/` e `img/`) y abre `index.html` en Chrome o Edge.
+
+Trae también su propio **Plan de Construcción Real**: mismo formato que el de restaurantes (etapas de 1.000 hoteles divididas en 20 fases de 50), empezando en **Marbella** y expandiéndose por rondas a las ciudades y zonas turísticas reales del mundo — un universo mucho más concentrado (~160.000 hoteles, casi ausente en pueblos pequeños sin atractivo turístico). Ver [descargas/README.md](descargas/README.md#horizon-hotels).
+
 ## Créditos de mapa
 
 © [OpenStreetMap](https://www.openstreetmap.org/copyright) · teselas OSM Carto en ciudad · imágenes [Esri World Imagery](https://www.esri.com/) al alejar · geocodificación [Photon](https://photon.komoot.io/).
