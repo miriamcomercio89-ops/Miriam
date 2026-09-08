@@ -57,6 +57,35 @@ Un ZIP por marca, con sus 500 PDF de fase dentro (~45-90 MB cada uno):
 
 El listado completo de las 50 marcas (nombre, cocina, marca/tier y objetivo total de locales) está en el anexo final de `horizon_plan_expansion.pdf`.
 
+## Plan unificado de construcción (5.000 fases)
+
+Producto adicional a los dos anteriores (no sustituye ni al plan maestro ni a los 50 planes por marca): un **único calendario de obra para todo el grupo**, con las **50 marcas mezcladas** en cada fase — como si fuera el calendario de apertura de todo Horizon Restaurant Group a la vez, no el de una marca sola. Empieza en la provincia de Málaga y avanza, círculo a círculo (Andalucía, España, Europa, Asia, América, África, Oceanía), con el mismo criterio del plan maestro — ciudades grandes y zonas turísticas reales primero — pero con una **variedad aleatoria real dentro de cada zona** (salteo local determinista por ciudad), así que el orden no es municipio a municipio estrictamente.
+
+- **5.000 fases, un PDF por fase**, de tamaño parecido (~330 locales cada una).
+- **Cadencia fija**: 1 fase = 3 días naturales, desde el 1 de enero de 2027 hasta enero de 2068 (~41 años) — el mismo horizonte que las 500 fases mensuales de cada marca.
+- **Ficha completa por local**: marca (con su logo), ciudad y país, dirección real de OpenStreetMap, distrito, formato/aforo/m², accesibilidad real (metro/cercanías, calle peatonal, frente de playa) y el **prompt de imagen** de la fachada — con la única diferencia de que la inversión se muestra en **una sola cifra total** (alquiler o compra + obra + mobiliario + stock, ya sumados) y **no se incluye horario** (es un calendario de obra, no de operación; el desglose completo por partidas y el horario semanal siguen en `horizon_plan_marca_<código>.zip`).
+- Cada fase indica los **locales e inversión acumulados del grupo** hasta ese momento, el **% del plan mundial completado** y los **países nuevos** en los que entra el grupo esa fase, con su nota de riesgo legal/fiscal.
+- Mismo motor de datos que el atlas: 1.649.119 locales, 321.590 M€ de inversión total estimada.
+
+22 ZIP con las 5.000 fases repartidas por tamaño (~110-115 MB cada uno, ~2,5 GB en total):
+
+| Fases | ZIP | Fases | ZIP |
+| --- | --- | --- | --- |
+| 1-228 | [Parte 01](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/horizon_plan_construccion_01_f0001-0228.zip) | 2288-2516 | [Parte 11](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/horizon_plan_construccion_11_f2288-2516.zip) |
+| 229-456 | [Parte 02](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/horizon_plan_construccion_02_f0229-0456.zip) | 2517-2744 | [Parte 12](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/horizon_plan_construccion_12_f2517-2744.zip) |
+| 457-683 | [Parte 03](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/horizon_plan_construccion_03_f0457-0683.zip) | 2745-2973 | [Parte 13](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/horizon_plan_construccion_13_f2745-2973.zip) |
+| 684-911 | [Parte 04](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/horizon_plan_construccion_04_f0684-0911.zip) | 2974-3201 | [Parte 14](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/horizon_plan_construccion_14_f2974-3201.zip) |
+| 912-1141 | [Parte 05](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/horizon_plan_construccion_05_f0912-1141.zip) | 3202-3429 | [Parte 15](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/horizon_plan_construccion_15_f3202-3429.zip) |
+| 1142-1371 | [Parte 06](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/horizon_plan_construccion_06_f1142-1371.zip) | 3430-3657 | [Parte 16](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/horizon_plan_construccion_16_f3430-3657.zip) |
+| 1372-1600 | [Parte 07](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/horizon_plan_construccion_07_f1372-1600.zip) | 3658-3886 | [Parte 17](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/horizon_plan_construccion_17_f3658-3886.zip) |
+| 1601-1829 | [Parte 08](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/horizon_plan_construccion_08_f1601-1829.zip) | 3887-4115 | [Parte 18](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/horizon_plan_construccion_18_f3887-4115.zip) |
+| 1830-2058 | [Parte 09](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/horizon_plan_construccion_09_f1830-2058.zip) | 4116-4344 | [Parte 19](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/horizon_plan_construccion_19_f4116-4344.zip) |
+| 2059-2287 | [Parte 10](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/horizon_plan_construccion_10_f2059-2287.zip) | 4345-4575 | [Parte 20](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/horizon_plan_construccion_20_f4345-4575.zip) |
+| | | 4576-4805 | [Parte 21](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/horizon_plan_construccion_21_f4576-4805.zip) |
+| | | 4806-5000 | [Parte 22](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/horizon_plan_construccion_22_f4806-5000.zip) |
+
+Descomprime cada ZIP en la misma carpeta `horizon_plan_construccion/`: cada uno trae directamente sus PDF de fase (`fase_0001.pdf`… `fase_5000.pdf`), sin solaparse entre partes.
+
 ## Atlas de locales
 
 Mismo formato en todo el mundo: mapa de zona, logo, dirección OSM, metro/peatonal/playa, tamaño y **formato del local según la ciudad real** (playa, estación, centro comercial, polígono, azotea…), la **cocina que más se consume en la zona** predominando entre las 50 marcas, y un **PROMPT IMAGEN** de la fachada con clima, vegetación y ambiente de calle.
