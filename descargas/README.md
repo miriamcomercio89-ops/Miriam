@@ -1,5 +1,11 @@
 # Atlas y plan de expansión — Horizon Restaurant Group
 
+## El simulador (videojuego)
+
+[horizon_simulador.zip](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/horizon_simulador.zip)
+
+Descomprime, entra en la carpeta (deben verse `index.html`, `js/`, `css/`, `vendor/` e `img/`) y abre `index.html` en Chrome o Edge. No hace falta servidor ni build; el mapa necesita internet. Detalle completo en el [README principal](../README.md).
+
 ## Plan de Expansión Global (documento maestro)
 
 [horizon_plan_expansion.pdf](https://raw.githubusercontent.com/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/horizon_plan_expansion.pdf)

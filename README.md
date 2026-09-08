@@ -6,6 +6,8 @@ Cada local tiene un **gerente IA** que gestiona el sitio entero según su habili
 
 No hace falta servidor ni build. **Descomprime el ZIP**, entra en la carpeta (deben verse `index.html`, `js/`, `css/` y `vendor/`) y abre `index.html` en Chrome o Edge. No lo abras desde el visor de ZIP de Windows. El mapa necesita internet.
 
+**Descarga:** [horizon_simulador.zip](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/horizon_simulador.zip)
+
 ## Cómo jugar
 
 1. Abre `index.html` (o sirve la carpeta: `python3 -m http.server 8080`).
