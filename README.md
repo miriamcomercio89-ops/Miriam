@@ -36,7 +36,8 @@ Cincuenta filiales con identidad propia (carta, tramo y colores). Un local = una
 - Varias partidas (localStorage + IndexedDB), incluidas las fotos que subas a cada local.
 - Autoguardado.
 - Exportar / importar JSON (botones ⤓/⤒ de la cabecera): crea un archivo real en tu disco que sobrevive a cualquier borrado de caché o datos del navegador.
-- **Copia de seguridad automática en disco** (botón 🛡 de la cabecera, Chrome/Edge de escritorio): eliges una vez un archivo en tu PC y, desde entonces, cada guardado se escribe también ahí solo. Ese archivo vive fuera del navegador, así que **nunca lo borra "limpiar caché" ni "borrar datos del sitio"**; si el navegador te pide reconfirmar el permiso tras un borrado, el botón se pone en ámbar — un clic y sigue igual, sin perder nada. En navegadores sin esta API (Firefox, Safari) usa Exportar (⤓) de cuando en cuando como copia externa.
+- **Copia de seguridad automática en disco** (botón 🛡 de la cabecera, Chrome/Edge de escritorio): eliges una vez un archivo en tu PC y, desde entonces, cada guardado se escribe también ahí solo. Ese archivo vive fuera del navegador, así que **nunca lo borra "limpiar caché" ni "borrar datos del sitio"**; si el navegador te pide reconfirmar el permiso tras un borrado, el botón se pone en ámbar — un clic y sigue igual, sin perder nada. En navegadores sin esta API (Firefox, Safari) el mismo botón activa una **descarga periódica automática** del guardado a tu carpeta de Descargas (cada varios minutos), así que el respaldo en disco también funciona ahí.
+- Al empezar o cargar una partida, si el autoguardado en disco no está activo todavía, aparece un aviso abajo con un botón **Activar** para encenderlo con un solo clic (se puede descartar con "Ahora no" y no vuelve a molestar).
 
 ## Atlas de locales y plan de expansión
 
