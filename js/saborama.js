@@ -294,7 +294,7 @@
 
     const year = SIM.yearOf(gameMs);
     const pl = WORLD.priceLevel(r.country, year);
-    const fair = 8 * BRAND.tiers[brand.tier].ticket * Math.sqrt(Math.max(0.2, pl));
+    const fair = SIM.fairTicket(brand, pl);
     const taste = tasteFit(brand, r.country);
     const pol = alcoholPolicy(r.country);
     const book = (state.books && state.books[brand.id]) || defaultBook(brand);
@@ -419,7 +419,7 @@
       if (on) nOn++;
     });
     if (nOn === 0 && r.menu[0]) r.menu[0].on = true;
-    applyBook(state, r, brand);
+    applyBook(state, r, brand, pl);
 
     /* Horario: el gerente lo lleva siempre; un crack adapta al sitio */
     const hrs = r.hours || defaultHours(brand);
@@ -634,16 +634,24 @@
     return state.books;
   }
 
-  function applyBook(state, r, brand) {
+  function applyBook(state, r, brand, pl) {
     const book = (state.books && state.books[brand.id]) || defaultBook(brand);
     const pol = alcoholPolicy(r.country);
     const alcOk = book.allowAlc && pol.mode !== "dry" && (pol.mode === "free" || r.alcoholLicense);
     if (r.ingQ == null) r.ingQ = 1;
     r.ingQ = U.clamp(r.ingQ, book.minIngQ, book.maxIngQ);
+    /* El mín./máx. del libro de marca son una banda relativa (p.ej. ×0.78 a
+       ×1.45) alrededor del precio "justo" de CADA sitio, no del precio base
+       europeo fijo: si no, ningún gerente podría subir precios en un país
+       caro (ni bajarlos del todo en uno barato), y el libro acababa
+       anulando por completo el ajuste por ubicación. */
+    const avgBase = brand.dishes.reduce((a, d) => a + d.price, 0) / brand.dishes.length;
+    const fair = SIM.fairTicket(brand, pl == null ? 1 : pl);
     brand.dishes.forEach((d, i) => {
       if (!r.menu[i]) r.menu[i] = { on: true, price: d.price };
-      const lo = +(d.price * book.minMul).toFixed(1);
-      const hi = +(d.price * book.maxMul).toFixed(1);
+      const ref = fair * (d.price / avgBase);
+      const lo = +(ref * book.minMul).toFixed(1);
+      const hi = +(ref * book.maxMul).toFixed(1);
       r.menu[i].price = U.clamp(r.menu[i].price, lo, hi);
       if (d.alc && !alcOk) r.menu[i].on = false;
       if (book.enforceSig && d.sig && !(d.alc && !alcOk)) r.menu[i].on = true;
