@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Horizon Hotels</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%231d3557'/%3E%3Ctext x='32' y='44' text-anchor='middle' font-size='34' fill='white' font-family='Georgia'%3EH%3C/text%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="vendor/leaflet.css" />
+  <link rel="stylesheet" href="css/game.css?v=1" />
+</head>
+<body>
+  <a class="skip" href="#search">Ir al buscador</a>
+  <div id="map" role="application" aria-label="Mapa mundial Horizon Hotels"></div>
+  <div id="hud">
+    <aside id="panel" aria-label="Panel de gestión">
+      <div class="panel-tabs" role="tablist">
+        <button type="button" role="tab" data-tab="locales" class="active" aria-selected="true">Hoteles</button>
+        <button type="button" role="tab" data-tab="matriz" aria-selected="false">Matriz</button>
+        <button type="button" role="tab" data-tab="ranking" aria-selected="false">Ranking</button>
+        <button type="button" role="tab" data-tab="noticias" aria-selected="false">Prensa</button>
+      </div>
+      <div class="search-row">
+        <span class="ico">⌕</span>
+        <label class="sr-only" for="search">Buscar ciudad o dirección</label>
+        <input id="search" placeholder="Ciudad, dirección o lat, lon" autocomplete="off" />
+        <div id="suggest" class="suggest"></div>
+      </div>
+      <div class="tool-row">
+        <button type="button" class="btn ghost sm" id="btn-geo">Mi ubicación</button>
+        <button type="button" class="btn ghost sm" id="btn-table">Tabla</button>
+        <button type="button" class="btn ghost sm" id="btn-saves">Partidas</button>
+        <button type="button" class="btn ghost sm" id="btn-heat">Mapa P&amp;L</button>
+        <button type="button" class="btn ghost sm" id="btn-sfx" title="Sonido apagado por defecto" aria-pressed="false">Sonido</button>
+      </div>
+      <div class="filters">
+        <select id="f-brand"><option value="">Todas las marcas</option></select>
+        <select id="f-segment"><option value="">Todos los segmentos</option></select>
+        <select id="f-country"><option value="">Todos los países</option></select>
+        <select id="f-status">
+          <option value="">Cualquier estado</option>
+          <option value="abierto">Abierto</option>
+          <option value="permisos">Permisos</option>
+          <option value="obras">En obras</option>
+          <option value="cerrado">Cerrado</option>
+        </select>
+        <select id="f-profit">
+          <option value="">Rentabilidad</option>
+          <option value="gain">En ganancias</option>
+          <option value="loss">En pérdidas</option>
+        </select>
+        <select id="f-sort">
+          <option value="new">Más recientes</option>
+          <option value="rev">Más facturan</option>
+          <option value="stars">Mejor nota</option>
+          <option value="name">Nombre</option>
+        </select>
+      </div>
+      <div id="alerts" class="alerts"></div>
+      <div class="panel-body" id="panel-body"></div>
+      <div id="legend" class="legend"></div>
+      <div class="jump-row">
+        <button class="btn ghost sm" id="btn-best">Más rentable</button>
+        <button class="btn ghost sm" id="btn-worst">En pérdidas</button>
+      </div>
+    </aside>
+
+    <header id="topbar">
+      <div class="wordmark">
+        <div class="mark">H</div>
+        <div>
+          <h1>Horizon</h1>
+          <small>Hotels</small>
+        </div>
+      </div>
+      <button type="button" class="cash" id="cash-box" title="Caja, préstamos y trucos">
+        <span id="cash">0 €</span>
+        <small id="debt" hidden></small>
+      </button>
+      <div class="clock">
+        <span class="d" id="gdate">1 ene 2000</span>
+        <span class="h" id="gtime">08:00 UTC · 1× = 1 min/hora</span>
+      </div>
+      <div class="spacer"></div>
+      <div class="seg" id="speeds" role="group" aria-label="Velocidad de juego">
+        <button type="button" data-sp="0" aria-label="Pausa">Ⅱ</button>
+        <button type="button" data-sp="1" class="active">1×</button>
+        <button type="button" data-sp="2">2×</button>
+        <button type="button" data-sp="4">4×</button>
+        <button type="button" data-sp="8">8×</button>
+        <button type="button" data-sp="16">16×</button>
+      </div>
+      <button type="button" class="btn ghost" id="btn-day">Saltar día</button>
+      <button type="button" class="icon-btn" id="btn-export" title="Exportar partida" aria-label="Exportar partida">⤓</button>
+      <button type="button" class="icon-btn" id="btn-import" title="Importar partida" aria-label="Importar partida">⤒</button>
+      <input type="file" id="import-file" accept="application/json" hidden />
+      <button type="button" class="icon-btn" id="btn-backup" title="Copia de seguridad automática en disco" aria-label="Copia de seguridad automática en disco">🛡</button>
+    </header>
+    <div id="toasts"></div>
+    <div id="map-tip" class="map-tip"></div>
+  </div>
+
+  <div class="overlay" id="sheet"></div>
+  <div class="modal-center" id="modal"></div>
+
+  <div class="photo-lightbox" id="photo-lightbox" hidden>
+    <button type="button" class="photo-lightbox-close" id="photo-lightbox-close" aria-label="Cerrar imagen">✕</button>
+    <img id="photo-lightbox-img" alt="Foto del hotel ampliada" />
+  </div>
+
+  <div class="backup-prompt" id="backup-prompt">
+    <span class="backup-prompt-ico">🛡</span>
+    <div class="backup-prompt-text">
+      <strong>¿Guardar también en tu ordenador?</strong>
+      <span>Además del autoguardado en el navegador, Horizon Hotels puede escribir cada partida en un archivo real de tu disco, que no se borra aunque limpies la caché.</span>
+    </div>
+    <div class="backup-prompt-actions">
+      <button type="button" class="btn primary" id="backup-prompt-yes">Activar</button>
+      <button type="button" class="btn ghost" id="backup-prompt-no">Ahora no</button>
+    </div>
+  </div>
+
+  <div class="splash" id="splash">
+    <div class="splash-inner">
+      <div class="mark" style="width:52px;height:52px;border-radius:16px;font-size:26px;margin-bottom:14px;">H</div>
+      <h1>Horizon Hotels</h1>
+      <p>La matriz y sus 50 marcas hoteleras. Empiezas el 1 de enero de 2000. La dirección de cada hotel lo gestiona según su habilidad (tarifas, personal, amenities). En Matriz: préstamos y trucos de caja.</p>
+      <div class="actions">
+        <input id="new-name" value="Horizon Hotels 2000" style="padding:12px;border-radius:14px;border:0;font-weight:600" />
+        <button type="button" class="btn primary" id="new-game" onclick="window.startHorizon('new')">Nueva partida</button>
+        <button type="button" class="btn" id="continue-game" style="background:#fff;" onclick="window.startHorizon('continue')">Continuar</button>
+      </div>
+      <p id="boot-error" class="muted" style="display:none;margin-top:12px;color:#ffe0d6;"></p>
+      <div id="slot-list"></div>
+    </div>
+  </div>
+
+  <script>
+    window.startHorizon = function (kind) {
+      var g = window.GAME;
+      if (!g) {
+        var el = document.getElementById("boot-error");
+        if (el) {
+          el.style.display = "block";
+          el.textContent = "El juego aún no ha cargado. Entra en la carpeta del ZIP y abre index.html (debe haber carpetas js, css y vendor al lado).";
+        }
+        return;
+      }
+      if (kind === "continue") g.continueGame();
+      else g.newGame();
+    };
+  </script>
+  <script src="vendor/leaflet.js"></script>
+  <script src="js/util.js?v=1"></script>
+  <script src="js/world.js?v=1"></script>
+  <script src="js/brands.js?v=1"></script>
+  <script src="js/saborama.js?v=1"></script>
+  <script src="js/geo.js?v=1"></script>
+  <script src="js/sim.js?v=1"></script>
+  <script src="js/store.js?v=1"></script>
+  <script src="js/backup.js?v=1"></script>
+  <script src="js/map.js?v=1"></script>
+  <script src="js/ui.js?v=1"></script>
+  <script src="js/app.js?v=1"></script>
+  <script>
+    setTimeout(function () {
+      if (window.GAME) return;
+      var el = document.getElementById("boot-error");
+      if (!el) return;
+      el.style.display = "block";
+      el.textContent = "No se cargó el JavaScript. Abre index.html desde la carpeta descomprimida, no desde dentro de un visor de ZIP.";
+    }, 1500);
+  </script>
+</body>
+</html>
