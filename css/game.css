@@ -469,12 +469,16 @@ table.data tr:hover td { background: #fff6e8; }
   background: var(--sand); border-radius: 16px; padding: 12px;
 }
 .venue-photo-frame {
-  width: 220px; height: 140px; border-radius: 14px; overflow: hidden;
+  /* Las fotos que sube el jugador son folios A4 (210×297mm): el marco usa
+     ese mismo ratio y "contain" en vez de "cover" para que se vea el A4
+     completo, sin recortar ningún borde. */
+  width: 220px; aspect-ratio: 210 / 297; height: auto; max-height: 70vh;
+  border-radius: 14px; overflow: hidden;
   background: #1d3557; flex-shrink: 0; position: relative;
   box-shadow: 0 8px 20px rgba(12, 28, 22, 0.12);
 }
 .venue-photo-frame img {
-  width: 100%; height: 100%; object-fit: cover; display: block;
+  width: 100%; height: 100%; object-fit: contain; background: #fff;
 }
 .venue-photo-ph {
   position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
