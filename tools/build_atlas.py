@@ -1100,11 +1100,26 @@ def pick_brand_sequence(city, n) -> list[int]:
     return order
 
 
+def city_rent_factor(pop: int) -> float:
+    """Prima real de alquiler por tamaño de ciudad: una capital o gran ciudad paga más
+    €/m² que un pueblo del mismo país, con independencia del país. Mismo factor que usa
+    make_venues(), expuesto aquí para que el plan de expansión use la fórmula real y no
+    una aproximación aparte."""
+    pop_k = pop / 1000.0
+    return min(2.8, max(0.55, math.log10(pop_k + 10) / 2.2))
+
+
+def rent_per_m2_month(cc: str, pop: int) -> float:
+    """€/m²/mes base (antes del multiplicador de formato) para un municipio de esta
+    población en este país: mismo cálculo real que usa make_venues() para fijar el
+    alquiler de cada local, así el plan de expansión y el atlas nunca se desincronizan."""
+    rent_ctry = COUNTRY_RENT.get(cc, 40)
+    rent_idx = (rent_ctry / 72.0) * city_rent_factor(pop)
+    return 9 * rent_idx
+
+
 def make_venues(city, n):
-    rent_ctry = COUNTRY_RENT.get(city["cc"], 40)
-    pop_k = city["pop"] / 1000.0
-    city_factor = min(2.8, max(0.55, math.log10(pop_k + 10) / 2.2))
-    rent_idx = (rent_ctry / 72.0) * city_factor
+    rent_idx = rent_per_m2_month(city["cc"], city["pop"]) / 9.0
     out = []
     used = set()
     sequence = pick_brand_sequence(city, n)

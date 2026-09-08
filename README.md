@@ -40,7 +40,7 @@ Cincuenta filiales con identidad propia (carta, tramo y colores). Un local = una
 
 ## Atlas de locales y plan de expansión
 
-PDFs de todo el mundo (dirección OSM, mapa de zona, logo y prompt de fachada para generar la foto), el plan de expansión global maestro de Horizon (empezando en Cártama, con el directorio completo de los 147.884 municipios del mundo) y el plan de expansión de cada una de las 50 marcas propias (500 fases, un PDF por fase): ver [descargas/README.md](descargas/README.md).
+PDFs de todo el mundo (dirección OSM, mapa de zona, logo y prompt de fachada para generar la foto), el plan de expansión global maestro de Horizon (empezando en la provincia de Málaga —con el piloto de Cártama— y expandiéndose por orden lógico y realista, ciudades grandes y zonas turísticas primero, con el directorio completo de los 147.884 municipios del mundo) y el plan de expansión de cada una de las 50 marcas propias (500 fases, un PDF por fase): ver [descargas/README.md](descargas/README.md).
 
 ## Créditos de mapa
 

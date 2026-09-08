@@ -10,13 +10,14 @@ Descomprime, entra en la carpeta (deben verse `index.html`, `js/`, `css/`, `vend
 
 [horizon_plan_expansion.pdf](https://raw.githubusercontent.com/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/horizon_plan_expansion.pdf)
 
-Documento estratégico de ~3.000 páginas, sin límite de extensión: empezamos en **Cártama** (Málaga) y nos expandimos en círculos concéntricos (zona natural → Costa del Sol → provincia → Andalucía → España → cada continente) hasta cubrir el mundo. Usa el mismo motor de datos que el atlas: población real de GeoNames, direcciones OSM, formatos ligados a la ciudad real y cocina dominante por país. Incluye:
+Documento estratégico de ~3.000 páginas, sin límite de extensión, en **9 fases (0 a 8)**: la fase 0 abre con el piloto de Cártama (Málaga) y cubre a la vez toda la provincia; de ahí avanza por Andalucía, España y cada continente. Dentro de cada fase el orden de apertura es **lógico y realista**: ciudades grandes y zonas con costa/playa real primero, municipios pequeños del interior al final — no un orden de cercanía geográfica al punto de partida. Usa el mismo motor de datos que el atlas: población real de GeoNames, direcciones OSM, formatos ligados a la ciudad real, alquiler real por m² (según país **y** tamaño de la ciudad) y cocina dominante por país. Incluye:
 
-- La ficha con los 12 locales piloto de Cártama y las tablas de cada fase regional, con cifras reales.
+- La ficha con los 12 locales piloto de Cártama y, para toda la provincia de Málaga, el orden real de apertura de sus 78 municipios (habitantes, costa/playa real y locales potenciales de cada uno).
+- Las tablas de cada fase regional (Andalucía, España, cada continente), con cifras reales y las cabeceras/países de más peso primero.
 - La progresión acumulada hasta el 100% mundial (1.649.119 locales potenciales, 147.884 municipios).
-- **Del plan regional al calendario por marca**: cómo cada una de las 50 marcas ejecuta su propio calendario de apertura de 500 fases (ver más abajo), con el ritmo de apertura y el calendario común (fase 1 = enero de 2027, una fase por mes).
-- **Modelo de inversión por local**: fórmulas de alquiler/compra, obra, mobiliario y stock inicial, con un ejemplo comparado en tres países.
-- **Marco legal, fiscal y de tipo de cambio por continente**: impuesto de sociedades e IVA reales (de `js/world.js`) de los países de más peso de cada continente, y los riesgos regulatorios y de divisa a vigilar.
+- **Del plan regional al calendario por marca**: cómo cada una de las 50 marcas ejecuta su propio calendario de apertura de 500 fases (ver más abajo) — con el matiz de que el plan maestro ordena el territorio de forma lógica, mientras que el calendario de cada marca es aleatorio real y muy salteado dentro de ese territorio — con el ritmo de apertura y el calendario común (fase 1 = enero de 2027, una fase por mes).
+- **Modelo de inversión por local**: fórmulas de alquiler/compra (con una tabla de alquiler real €/m²/mes cruzando 4 tamaños de ciudad × 5 países), obra, mobiliario y stock inicial, con un ejemplo completo en tres países.
+- **Marco legal por país**: no solo un resumen por continente, sino una ficha propia — licencia clave para abrir, restricción a inversión extranjera, competencia local dominante y riesgo de divisa/repatriación — para los 6 países de más peso de cada continente (impuesto de sociedades e IVA reales de `js/world.js`).
 - **Directorio mundial de municipios**: los 147.884 municipios del mundo con datos de GeoNames, uno por uno, ordenados por continente → país → municipio (de mayor a menor población).
 - El portafolio completo de las 50 marcas, con su objetivo de locales a lo largo de sus 500 fases.
 

@@ -1,14 +1,19 @@
 #!/usr/bin/env python3
 """Horizon Restaurant Group — Plan de Expansión Global (PDF).
 
-Documento estratégico: empezamos en Cártama (Málaga) y nos expandimos en
-círculos concéntricos hasta cubrir el mundo. Todos los números (municipios,
-locales potenciales, direcciones, marcas) se calculan con el mismo motor de
-datos del atlas (tools/build_atlas.py): población real de GeoNames, la
-misma fórmula de nº de locales por población, el mismo reparto de marcas
-por cocina dominante del país y los mismos formatos (kiosco, local,
-flagship, food hall, estadio, kiosco de playa/estación, mall, drive-thru,
-rooftop, cocina fantasma).
+Documento estratégico: la fase 0 abre con el local piloto de Cártama (Málaga),
+sede fundacional del grupo, y cubre a la vez toda la provincia de Málaga; a
+partir de ahí, la expansión avanza por círculos de administración (provincia,
+comunidad autónoma, país, continente, mundo) pero dentro de cada círculo el
+orden de apertura es lógico y realista — ciudades grandes y zonas turísticas
+reales primero, municipios pequeños del interior al final — no un orden de
+cercanía geográfica al punto de partida. Todos los números (municipios,
+locales potenciales, direcciones, marcas, alquileres reales por m² y ciudad)
+se calculan con el mismo motor de datos del atlas (tools/build_atlas.py):
+población real de GeoNames, la misma fórmula de nº de locales por población,
+el mismo reparto de marcas por cocina dominante del país y los mismos 13
+formatos (kiosco, bistró, local, local grande, flagship, food hall, estadio,
+cocina fantasma, kiosco de playa/estación, mall, drive-thru, rooftop).
 
 Uso:
     python3 tools/build_expansion_plan.py
@@ -50,6 +55,235 @@ def fmt_n(n) -> str:
 
 def fmt_eur(n) -> str:
     return f"{n:,.0f} €".replace(",", ".")
+
+
+def city_priority_score(c) -> float:
+    """Orden de apertura 'lógico' dentro de una misma región: primero las ciudades
+    grandes (más locales potenciales) y, como único desempate, las de costa/playa real
+    (turismo verificado). Se deja fuera cualquier otro factor para que el orden mostrado
+    en las tablas sea siempre coherente con las columnas visibles (habitantes, costa, locales)."""
+    nv = B.n_venues(c["pop"])
+    mult = 1.25 if c.get("coast_ok") else 1.0
+    return nv * mult
+
+
+# Notas de entrada específicas por país: licencia clave, restricción a inversión
+# extranjera, competencia local dominante y riesgo de divisa/repatriación de
+# beneficios. Cobertura de los países que más pesan en cada continente (los que
+# aparecen en el top de "locales potenciales" de cada uno en este documento).
+COUNTRY_RISK = {
+    "DE": "Licencia de establecimiento de hostelería (Gaststättenerlaubnis) a nivel de "
+          "cada Land, sin restricción a la inversión extranjera (libre establecimiento UE). "
+          "Competencia local muy fragmentada (Gasthaus y döner independientes) más las "
+          "grandes cadenas ya presentes; euro, sin riesgo de cambio.",
+    "FR": "Licencia de venta de alcohol (licence IV/petite licence) y cumplimiento estricto "
+          "del código laboral (35 h, indemnizaciones altas); sin restricción a inversión "
+          "extranjera en hostelería. Fuerte competencia de la cultura de bistró y brasserie "
+          "local; euro, sin riesgo de cambio.",
+    "GB": "Premises licence (alcohol) y personal licence del gerente, más el sistema público "
+          "de calificación higiénica (Food Hygiene Rating). Sin restricción a la inversión "
+          "extranjera tras el brexit, pero con fricción aduanera en importación de género "
+          "desde la UE; libra con riesgo de cambio moderado.",
+    "IT": "SCIA (comunicación de inicio de actividad) ante el ayuntamiento y licencia de "
+          "alimentos (ASL); sin restricción a inversión extranjera. Competencia local muy "
+          "fuerte de trattorias y pizzerías familiares con marca de barrio consolidada; "
+          "euro, sin riesgo de cambio.",
+    "PL": "Registro sanitario-veterinario y licencia de alcohol municipal; sin restricción a "
+          "inversión extranjera (UE). Competencia local en expansión de cadenas polacas de "
+          "comida rápida y bares de leche (bary mleczne); zloty con riesgo de cambio moderado.",
+    "NL": "Licencia de establecimiento (Drank- en Horecawet) y registro en la cámara de "
+          "comercio (KvK); sin restricción a inversión extranjera. Alta densidad de terrazas "
+          "y cadenas locales de comida rápida; euro, sin riesgo de cambio.",
+    "RU": "Licencia sanitaria (Rospotrebnadzor) y de alcohol; desde 2022, fuerte riesgo "
+          "regulatorio y de sanciones para inversión occidental, con controles de capital "
+          "estrictos y repatriación de beneficios muy restringida; rublo con riesgo de "
+          "cambio alto. Entrada no recomendada mientras se mantengan las sanciones vigentes.",
+    "TR": "Permiso municipal de actividad (işyeri açma ruhsatı) y registro sanitario; sin "
+          "restricción a inversión extranjera. Competencia local muy fuerte del kebab y la "
+          "pastelería de barrio; lira turca con riesgo de cambio muy alto por inflación "
+          "crónica — conviene indexar alquileres a divisa fuerte.",
+    "CN": "Licencia de empresa con inversión extranjera (FICE) más el certificado sanitario "
+          "SC de cada local; la restauración ya no está en la lista negativa, pero el "
+          "papeleo local es lento. Competencia feroz de cadenas nacionales y del ecosistema "
+          "de delivery (Meituan/Ele.me); yuan con control de capital y repatriación sujeta a "
+          "aprobación del banco central.",
+    "IN": "La restauración (servicio, no venta al por menor) admite el 100% de inversión "
+          "extranjera por vía automática, pero exige licencia sanitaria FSSAI y de "
+          "establecimiento municipal. Competencia local muy fuerte del street food y "
+          "cadenas regionales; rupia con riesgo de cambio moderado.",
+    "ID": "Lista de inversión negativa: algunos formatos de restauración exigen socio local "
+          "mayoritario (PT PMA con condiciones) y certificación halal obligatoria (BPJPH). "
+          "Competencia local de warung y cadenas nacionales muy asentada; rupia indonesia con "
+          "riesgo de cambio alto.",
+    "PK": "Licencia municipal y certificado sanitario provincial; inversión extranjera "
+          "permitida sin socio local obligatorio en la mayoría de formatos. Fuerte "
+          "competencia informal de puestos callejeros; rupia paquistaní con riesgo de cambio "
+          "muy alto y control de divisas para importar maquinaria.",
+    "BD": "Licencia de la autoridad municipal (City Corporation) y certificado de la "
+          "autoridad de alimentos (BSTI/BFSA); inversión extranjera permitida vía BIDA. "
+          "Competencia local informal muy densa; taka con riesgo de cambio alto y controles "
+          "de repatriación.",
+    "JP": "Licencia sanitaria del centro de salud pública local (hokenjo) y, si hay alcohol, "
+          "permiso de la policía; sin restricción a inversión extranjera. Alquileres muy "
+          "altos en Tokio/Osaka y competencia local extremadamente fiel a cadenas "
+          "domésticas; yen con riesgo de cambio bajo pero debilidad estructural reciente.",
+    "KR": "Registro de negocio de restauración ante el distrito y, con alcohol, licencia "
+          "adicional; sin restricción a inversión extranjera. Mercado de restauración muy "
+          "denso y competitivo (alta rotación de locales); won con riesgo de cambio moderado.",
+    "TH": "La Ley de Negocio Extranjero limita a extranjeros a un máximo del 49% en muchos "
+          "servicios salvo promoción BOI o socio tailandés mayoritario; licencia sanitaria "
+          "Or.Sor.4 obligatoria. Competencia feroz del street food; baht con riesgo de "
+          "cambio moderado.",
+    "VN": "Certificado de registro de inversión y licencia de negocio por cada local "
+          "(prueba de necesidad económica en algunos casos); sin socio local obligatorio en "
+          "general. Competencia local de street food muy densa; dong con control de capital "
+          "y repatriación sujeta a aprobación del banco central.",
+    "PH": "Licencia municipal (Mayor's Permit) y certificado sanitario; la ley de venta al "
+          "por menor limita la propiedad extranjera salvo capital mínimo alto, aunque la "
+          "restauración suele encajar como servicio. Competencia local de carinderías y "
+          "cadenas nacionales; peso filipino con riesgo de cambio moderado.",
+    "AE": "Licencia comercial del DED (o de zona franca, con 100% de propiedad extranjera "
+          "posible desde 2021) más permiso sanitario municipal. Alquileres altos en zonas "
+          "turísticas; dirham fijo al dólar, riesgo de cambio prácticamente nulo.",
+    "SA": "Licencia de inversión extranjera del ministerio de inversión (MISA) y cuotas de "
+          "personal saudí (Nitaqat). Competencia local en fuerte crecimiento por la apertura "
+          "de Visión 2030; riyal fijo al dólar, riesgo de cambio prácticamente nulo.",
+    "IL": "Licencia municipal de negocio (rishayon esek) y certificado sanitario del "
+          "ministerio de salud; sin restricción relevante a inversión extranjera. "
+          "Competencia local de cadenas de comida rápida muy consolidada; shéquel con riesgo "
+          "de cambio bajo-moderado.",
+    "US": "Licencia de negocio estatal/municipal y, con alcohol, licencia específica estado "
+          "a estado; sin restricción a inversión extranjera. Mercado enorme y fragmentado, "
+          "muy competitivo, con salario mínimo y normativa laboral distintos por estado; "
+          "dólar, sin riesgo de cambio (divisa de referencia del grupo).",
+    "MX": "Registro sanitario COFEPRIS y licencia municipal de uso de suelo; sin "
+          "restricción relevante a inversión extranjera en restauración. Fuerte competencia "
+          "informal de puestos y fondas; peso mexicano con riesgo de cambio moderado.",
+    "CA": "Licencia provincial de alcohol y permiso municipal de salud; sin restricción a "
+          "inversión extranjera. Competencia de cadenas canadienses y estadounidenses ya "
+          "asentadas; dólar canadiense con riesgo de cambio bajo-moderado.",
+    "GT": "Licencia municipal y registro sanitario del ministerio de salud; inversión "
+          "extranjera sin restricción relevante. Competencia local de comedores y cadenas "
+          "regionales centroamericanas; quetzal relativamente estable, riesgo de cambio bajo.",
+    "CU": "Marco de inversión extranjera muy restringido (empresa mixta o contrato con el "
+          "estado obligatorio en la mayoría de sectores) y doble sistema cambiario de facto; "
+          "riesgo de cambio y de repatriación de beneficios muy alto. Entrada solo viable a "
+          "medio plazo con socio estatal.",
+    "DO": "Licencia municipal y registro sanitario; ley de inversión extranjera favorable "
+          "sin restricciones relevantes para restauración. Fuerte peso del turismo en la "
+          "demanda; peso dominicano con riesgo de cambio moderado.",
+    "BR": "Registro sanitario ante ANVISA (estatal y municipal) y aranceles de importación "
+          "altos para maquinaria de cocina; sin restricción relevante a inversión "
+          "extranjera. Fuerte cultura local de boteco/lanchonete; real con riesgo de cambio "
+          "alto y registro obligatorio ante el Banco Central para repatriar beneficios (RDE-IED).",
+    "CO": "Registro sanitario del INVIMA y licencia municipal (Cámara de Comercio); sin "
+          "restricción relevante a inversión extranjera. Competencia local de comida "
+          "callejera y cadenas regionales; peso colombiano con riesgo de cambio alto.",
+    "AR": "Control de cambios (cepo) e inflación crónica muy altos: la repatriación de "
+          "beneficios está fuertemente restringida y conviene indexar contratos a dólar. "
+          "Registro sanitario ANMAT y licencia municipal; fuerte cultura local de parrilla y "
+          "café de esquina como competencia.",
+    "PE": "Licencia municipal de funcionamiento y registro sanitario (DIGESA); sin "
+          "restricción relevante a inversión extranjera. Competencia local muy fuerte de la "
+          "gastronomía peruana de marca propia; sol peruano con riesgo de cambio moderado.",
+    "VE": "Control de cambios oficial con tipo múltiple de facto, hiperinflación histórica "
+          "reciente y repatriación de beneficios prácticamente inviable sin estructura "
+          "especial; riesgo de cambio y expropiatorio muy altos. Entrada no recomendada a "
+          "corto plazo.",
+    "CL": "Licencia municipal (patente comercial) y registro sanitario (SEREMI de Salud); "
+          "sin restricción a inversión extranjera, uno de los marcos más abiertos de la "
+          "región. Peso chileno con riesgo de cambio moderado.",
+    "EC": "Licencia municipal y registro sanitario (ARCSA); dolarización oficial desde 2000, "
+          "por lo que el riesgo de cambio es nulo frente al euro-dólar. Competencia local de "
+          "comida callejera y cadenas regionales andinas.",
+    "NG": "Licencias de importación de maquinaria y registro NAFDAC son el mayor cuello de "
+          "botella; escasez de divisas y devaluaciones frecuentes de la naira hacen el "
+          "riesgo de cambio muy alto — se recomienda indexar alquileres a dólar. Fuerte "
+          "competencia informal de bukka y chop houses.",
+    "ET": "Licencia de inversión de la comisión etíope (EIC) y fuerte control de cambio de "
+          "divisas, con escasez crónica de dólares para importar; birr con riesgo de cambio "
+          "muy alto. Competencia local dominada por cadenas de café e injera tradicionales.",
+    "EG": "Registro ante la autoridad general de inversión (GAFI) y licencias de "
+          "importación restrictivas; libra egipcia con historial de devaluaciones fuertes y "
+          "riesgo de cambio muy alto. Competencia local muy densa de comida callejera "
+          "(foul, taameya) y cadenas regionales.",
+    "CD": "Marco de inversión inestable, con licencias de importación lentas y escasez de "
+          "divisas fuertes en el interior del país; riesgo de cambio y de repatriación muy "
+          "altos, recomendable solo en Kinshasa con contratos en dólares.",
+    "ZA": "Registro sanitario municipal y, para inversores extranjeros de cierto tamaño, "
+          "consideraciones de B-BBEE (empoderamiento económico); sin restricción legal "
+          "dura a la propiedad extranjera. Competencia local muy fuerte de cadenas "
+          "sudafricanas ya consolidadas (Nando's, Steers); rand con riesgo de cambio moderado-alto.",
+    "KE": "Licencia sanitaria de KEBS/autoridad municipal y aranceles de importación de "
+          "maquinaria; sin restricción relevante a inversión extranjera. Competencia local "
+          "en expansión de cadenas nacionales (Java House y similares); chelín keniano con "
+          "riesgo de cambio moderado.",
+    "TZ": "Licencia de inversión del TIC (Tanzania Investment Centre) y registro sanitario "
+          "municipal; sin restricción relevante para restauración. Competencia local "
+          "informal muy extendida; chelín tanzano con riesgo de cambio moderado.",
+    "MA": "Registro sanitario ONSSA y licencia municipal; sin restricción relevante a "
+          "inversión extranjera. Fuerte competencia de la restauración tradicional en zonas "
+          "turísticas (medinas); dirham marroquí con banda de flotación controlada, riesgo "
+          "de cambio bajo-moderado.",
+    "GH": "Licencia del centro de promoción de inversiones (GIPC, con capital mínimo para "
+          "extranjeros) y registro sanitario (FDA); competencia local de chop bars muy "
+          "extendida; cedi ganés con riesgo de cambio alto.",
+    "AU": "Aprobación del FIRB solo necesaria por encima de umbrales de inversión altos (no "
+          "aplica a la mayoría de locales); licencia de alcohol y salud estatal. Costes "
+          "laborales altos (salario mínimo por convenio); dólar australiano con riesgo de "
+          "cambio moderado.",
+    "NZ": "Aprobación de la Overseas Investment Office solo para operaciones sensibles o de "
+          "gran tamaño; licencia de alcohol y salud del consejo local. Mercado pequeño fuera "
+          "de las grandes ciudades costeras; dólar neozelandés con riesgo de cambio moderado.",
+    "PG": "Licencia de inversión extranjera (IPA) y registro sanitario; infraestructura "
+          "limitada fuera de Port Moresby. Kina con riesgo de cambio alto y disponibilidad "
+          "limitada de divisa fuerte.",
+    "FJ": "Licencia de inversión extranjera (Investment Fiji) y registro sanitario "
+          "municipal; fuerte peso del turismo en la demanda. Dólar fiyiano con riesgo de "
+          "cambio moderado.",
+    "ES": "Licencia municipal de actividad (apertura) y comunicación previa de puesta en "
+          "marcha; sin restricción a inversión extranjera (libre establecimiento UE). "
+          "Competencia local muy fuerte de bares y restaurantes de barrio independientes; "
+          "euro, sin riesgo de cambio — es el mercado de origen del grupo.",
+    "IR": "Licencia de actividad comercial y sanitaria del municipio; la inversión "
+          "extranjera exige autorización previa de la organización de inversión (OIETAI) "
+          "y está sujeta a sanciones internacionales que dificultan la repatriación de "
+          "beneficios; rial con riesgo de cambio y de sanciones muy alto.",
+    "HN": "Licencia municipal y registro sanitario; ley de inversión extranjera sin "
+          "restricción relevante para restauración. Competencia local de comedores y "
+          "cadenas regionales centroamericanas; lempira relativamente estable, riesgo de "
+          "cambio bajo-moderado.",
+    "CI": "Licencia del centro de promoción de inversiones (CEPICI) y registro sanitario; "
+          "sin restricción relevante a inversión extranjera. Fuerte competencia informal de "
+          "maquis (puestos de comida callejera); franco CFA fijo al euro, riesgo de cambio "
+          "prácticamente nulo pero con controles de transferencia fuera de la zona franco.",
+    "DZ": "Régimen de inversión extranjera con reglas de participación local en sectores "
+          "estratégicos (no siempre aplicable a restauración) y control de cambios estricto; "
+          "dinar argelino con acceso limitado a divisa fuerte y riesgo de cambio muy alto. "
+          "Competencia local de la restauración tradicional muy asentada.",
+    "NC": "Territorio francés de ultramar: marco regulatorio francés con particularidades "
+          "locales de aduanas; franco CFP fijo al euro, riesgo de cambio prácticamente nulo. "
+          "Fuerte peso del turismo y de la importación de género.",
+    "TL": "Licencia municipal y registro sanitario del ministerio de salud; inversión "
+          "extranjera sin restricción relevante. Dólar estadounidense como moneda oficial, "
+          "riesgo de cambio nulo frente al dólar; mercado pequeño y muy dependiente de la "
+          "importación.",
+    "PF": "Territorio francés de ultramar: marco regulatorio francés con particularidades "
+          "locales; franco CFP fijo al euro, riesgo de cambio prácticamente nulo. Fuerte peso "
+          "del turismo de alta gama en la demanda.",
+}
+
+
+def country_risk_text(cc: str, cont_code: str) -> str:
+    if cc in COUNTRY_RISK:
+        return COUNTRY_RISK[cc]
+    ce = B.COUNTRY_ECON.get(cc, {})
+    tax = ce.get("tax")
+    tax_txt = f"{tax * 100:.0f}%" if tax is not None else "sin dato"
+    return (
+        f"Sin ficha propia todavía: se aplica la nota regional — {B.REGION_RISK.get(cont_code, '')} "
+        f"Impuesto de sociedades de referencia: {tax_txt}."
+    )
 
 
 class Doc:
@@ -118,7 +352,7 @@ class Doc:
         c = self.c
         c.setFillColorRGB(*GRAY)
         c.setFont("DejaVu", 7.2)
-        c.drawString(MARGIN, 12, "Horizon Restaurant Group · Plan de Expansión Global · De Cártama al mundo")
+        c.drawString(MARGIN, 12, "Horizon Restaurant Group · Plan de Expansión Global · De la provincia de Málaga al mundo")
         c.drawRightString(W - MARGIN, 12, str(self.page_no))
 
     def ensure(self, need, phase_label=None, title=None):
@@ -262,26 +496,13 @@ def gather_data():
     import global_poi as G
     G.annotate_addresses(es, poi_idx)
 
-    heads, loc = B.cluster(es)
-    by_id = {c["id"]: c for c in es}
-    groups = defaultdict(list)
-    for cid, hid in loc.items():
-        groups[hid].append(by_id[cid])
-
     cartama = next(c for c in es if c["name"] == "Cártama")
     cartama_venues = B.make_venues(cartama, B.n_venues(cartama["pop"]))
 
-    zone_members = sorted(groups.get(cartama["id"], []), key=lambda c: -c["pop"])
-
-    near_heads = []
-    for h in heads:
-        d = B.haversine((cartama["lat"], cartama["lon"]), (h["lat"], h["lon"]))
-        if d <= 35:
-            near_heads.append((d, h))
-    near_heads.sort(key=lambda x: x[0])
-
-    malaga_prov = [c for c in es if c["admin2"] == "Málaga"]
+    malaga_prov = sorted([c for c in es if c["admin2"] == "Málaga"], key=lambda c: -city_priority_score(c))
     andalucia = [c for c in es if c["admin1"] == "Andalucía"]
+    andalucia_rest = sorted([c for c in andalucia if c["admin2"] != "Málaga"], key=lambda c: -city_priority_score(c))
+    es_rest = sorted([c for c in es if c["admin1"] != "Andalucía"], key=lambda c: -city_priority_score(c))
 
     by_prov_and = defaultdict(list)
     for c in andalucia:
@@ -317,11 +538,10 @@ def gather_data():
     return {
         "cartama": cartama,
         "cartama_venues": cartama_venues,
-        "zone_members": zone_members,
-        "near_heads": near_heads,
-        "groups": groups,
         "malaga_prov": malaga_prov,
         "andalucia": andalucia,
+        "andalucia_rest": andalucia_rest,
+        "es_rest": es_rest,
         "by_prov_and": by_prov_and,
         "by_ccaa": by_ccaa,
         "es": es,
@@ -355,46 +575,56 @@ def build():
     doc.cover(
         title=["PLAN DE EXPANSIÓN", "GLOBAL"],
         subtitle=[
-            "De Cártama al mundo: 12 formatos de local, 50 marcas propias",
+            "De la provincia de Málaga al mundo: 13 formatos de local, 50 marcas propias",
             f"y un mapa de {fmt_n(total_muni_world)} municipios en todos los países.",
         ],
         kicker="Horizon Restaurant Group",
     )
 
     # ---------------- Visión ----------------
-    doc.new_page("Visión", "Por qué empezamos en Cártama")
+    doc.new_page("Visión", "Un plan lógico: primero las ciudades grandes y las zonas turísticas")
     doc.para(
-        "Horizon Restaurant Group nace en Cártama (Málaga, Andalucía) como laboratorio de marca: "
-        "un municipio de tamaño medio, bien conectado con la capital y la Costa del Sol, con casco "
-        "histórico, ensanche y polígonos, donde probar a la vez formato de calle, food truck y "
-        "flagship antes de escalar a las cabeceras de zona vecinas."
+        "Horizon Restaurant Group nace con su primer local piloto en Cártama (Málaga, Andalucía), "
+        "sede fundacional del grupo, pero el despliegue real de la provincia no sigue un orden de "
+        "cercanía a esa sede: sigue el orden en que de verdad se abriría una cadena de restauración, "
+        "priorizando primero las ciudades con más población y las zonas turísticas reales (costa, "
+        "playa, estación) y dejando para el final los municipios más pequeños del interior."
     )
     doc.gap(4)
     doc.para(
-        "La expansión sigue círculos concéntricos: del municipio a su zona natural (≈26 km, el mismo "
-        "radio que agrupa los cuadernos del atlas), de la zona a la provincia, de la provincia a la "
-        "comunidad autónoma, de España al continente y del continente al resto del mundo. En cada "
-        "salto se reutiliza el mismo motor de asignación: tamaño del local según población real, "
-        "formato según el distrito real del municipio (playa, estación, polígono, centro comercial, "
-        "azotea de gran ciudad) y mezcla de marcas ponderada por la cocina que más se consume en cada país."
+        "El criterio de orden dentro de cada fase es el mismo en toda la provincia, el país y el "
+        "mundo: cuantos más locales potenciales tiene un municipio (población real de GeoNames) y "
+        "cuanto más peso turístico real tiene (playa u ola de calor de costa, estación, centro "
+        "comercial, todo verificado con datos reales, no supuesto), antes entra en el calendario. "
+        "La expansión avanza por círculos de administración — provincia, comunidad autónoma, país, "
+        "continente, mundo — pero dentro de cada círculo manda el tamaño y el turismo real, no la "
+        "cercanía geográfica al punto de partida. En cada salto se reutiliza el mismo motor de "
+        "asignación: tamaño del local según población real, formato según el distrito real del "
+        "municipio (playa, estación, polígono, centro comercial, azotea de gran ciudad), alquiler "
+        "real por m² según el país y el tamaño de la ciudad, y mezcla de marcas ponderada por la "
+        "cocina que más se consume en cada país."
     )
     doc.gap(10)
     doc.h2("Hoja de ruta en una tabla")
     phase_rows = [
-        ["Fase 0", "Cártama (piloto)", fmt_n(B.n_venues(d["cartama"]["pop"])) + " locales"],
-        ["Fase 1", "Zona Cártama (≈26 km)", fmt_n(n_v(d["zone_members"])) + " locales"],
-        ["Fase 2", "Costa del Sol / área de Málaga", fmt_n(sum(n_v(d["groups"].get(h["id"], [])) for _, h in d["near_heads"])) + " locales"],
-        ["Fase 3", "Provincia de Málaga", fmt_n(n_v(d["malaga_prov"])) + " locales"],
-        ["Fase 4", "Andalucía", fmt_n(n_v(d["andalucia"])) + " locales"],
-        ["Fase 5", "España", fmt_n(n_v(d["es"])) + " locales"],
-        ["Fase 6", "Europa (resto)", fmt_n(sum(x[0] for x in d["by_cont"].get("EU", [])) - n_v(d["es"])) + " locales"],
-        ["Fase 7", "Asia y Oriente Medio", fmt_n(sum(x[0] for x in d["by_cont"].get("AS", []))) + " locales"],
-        ["Fase 8", "América del Norte y Central", fmt_n(sum(x[0] for x in d["by_cont"].get("NA", []))) + " locales"],
-        ["Fase 9", "América del Sur", fmt_n(sum(x[0] for x in d["by_cont"].get("SA", []))) + " locales"],
-        ["Fase 10", "África", fmt_n(sum(x[0] for x in d["by_cont"].get("AF", []))) + " locales"],
-        ["Fase 11", "Oceanía → cobertura mundial total", fmt_n(total_world) + " locales"],
+        ["Fase 0", "Provincia de Málaga (con el piloto de Cártama)", fmt_n(n_v(d["malaga_prov"])) + " locales"],
+        ["Fase 1", "Andalucía (resto de provincias)", fmt_n(n_v(d["andalucia_rest"])) + " locales"],
+        ["Fase 2", "España (resto de comunidades)", fmt_n(n_v(d["es_rest"])) + " locales"],
+        ["Fase 3", "Europa (resto)", fmt_n(sum(x[0] for x in d["by_cont"].get("EU", [])) - n_v(d["es"])) + " locales"],
+        ["Fase 4", "Asia y Oriente Medio", fmt_n(sum(x[0] for x in d["by_cont"].get("AS", []))) + " locales"],
+        ["Fase 5", "América del Norte y Central", fmt_n(sum(x[0] for x in d["by_cont"].get("NA", []))) + " locales"],
+        ["Fase 6", "América del Sur", fmt_n(sum(x[0] for x in d["by_cont"].get("SA", []))) + " locales"],
+        ["Fase 7", "África", fmt_n(sum(x[0] for x in d["by_cont"].get("AF", []))) + " locales"],
+        ["Fase 8", "Oceanía → cobertura mundial total", fmt_n(total_world) + " locales"],
     ]
     doc.table(["Fase", "Ámbito", "Objetivo de locales"], phase_rows, [55, 330, CONTENT_W - 55 - 330], align=["l", "l", "r"])
+    doc.gap(4)
+    doc.para(
+        "Dentro de cada fase, el orden de apertura municipio a municipio (o país a país, dentro de "
+        "cada continente) sigue siempre el mismo criterio de tamaño y turismo real explicado arriba; "
+        "las tablas de este documento ya están ordenadas así, de mayor a menor prioridad de apertura.",
+        size=8.4, color=GRAY,
+    )
 
     # ---------------- Modelo de formatos ----------------
     doc.new_page("Modelo", "Cómo decidimos el formato de cada local")
@@ -435,20 +665,47 @@ def build():
         "municipios de tamaño parecido."
     )
 
-    # ---------------- Fase 0: Cártama ----------------
-    doc.new_page("Fase 0 · El origen", "Cártama (Málaga, Andalucía)")
+    # ---------------- Fase 0: Provincia de Málaga (con el piloto de Cártama) ----------------
+    doc.new_page("Fase 0 · Provincia", "Málaga: el piloto de Cártama y la cabecera turística de la provincia")
     c0 = d["cartama"]
+    mp = d["malaga_prov"]
     doc.kpis([
-        (fmt_n(c0["pop"]), "Habitantes (Cártama)"),
-        (str(len(d["cartama_venues"])), "Locales piloto"),
-        (fmt_n(sum(v["rent"] for v in d["cartama_venues"] if not v["owned"])), "Alquiler agregado / mes"),
-        (str(sum(1 for v in d["cartama_venues"] if v["owned"])), "Locales en propiedad"),
+        (str(len(mp)), "Municipios de la provincia"),
+        (fmt_n(n_pop(mp)), "Habitantes"),
+        (fmt_n(n_v(mp)), "Locales potenciales"),
+        (str(len(d["cartama_venues"])), "Locales del piloto de Cártama"),
     ])
     doc.para(
-        "Cártama es el municipio de partida: casco antiguo, ensanche del este y una estación de "
-        "cercanías propia (Estación de Cártama), a 19 km de Málaga capital. La cocina dominante en "
-        "España es mediterránea, tapas y brunch, así que el primer lote de locales prioriza esas "
-        "marcas y añade algo de lujo y comida rápida para completar la oferta del pueblo."
+        "El primer local del grupo abre en Cártama —casco antiguo, ensanche del este y estación de "
+        "cercanías propia, a 19 km de Málaga capital—, sede fundacional de Horizon Restaurant Group. "
+        "Pero en paralelo, ese mismo trimestre, el plan ya entra en las cabeceras grandes y turísticas "
+        "de la provincia: Málaga capital, Marbella, Torremolinos, Fuengirola, Benalmádena y Mijas "
+        "concentran la mayoría del volumen inicial (flagship y food hall en la capital, kiosco de "
+        "playa en todo el litoral, el primer rooftop del grupo si la ciudad supera el umbral de "
+        "población). El resto de los municipios de la provincia —hasta completar los " + str(len(mp)) +
+        "— se abre por orden de tamaño y peso turístico real, no por cercanía a Cártama."
+    )
+    doc.gap(6)
+    doc.h2("Orden de apertura de la provincia (mayor a menor prioridad)")
+    mp_rows = [[
+        c["name"] + (" ★ piloto" if c["id"] == c0["id"] else ""),
+        fmt_n(c["pop"]),
+        "Sí" if c.get("coast_ok") else "",
+        str(B.n_venues(c["pop"])),
+    ] for c in mp]
+    doc.table(
+        ["Municipio (orden real de apertura)", "Habitantes", "Costa/playa real", "Locales"],
+        mp_rows,
+        [230, 110, 100, CONTENT_W - 230 - 110 - 100],
+        align=["l", "r", "l", "r"],
+        total_row=["TOTAL provincia de Málaga", fmt_n(n_pop(mp)), "", fmt_n(n_v(mp))],
+    )
+    doc.gap(6)
+    doc.h2("El piloto de Cártama, local a local")
+    doc.para(
+        "La cocina dominante en España es mediterránea, tapas y brunch, así que el primer lote de "
+        "Cártama prioriza esas marcas y añade algo de lujo y comida rápida para completar la oferta "
+        "del pueblo:"
     )
     doc.gap(4)
     rows = []
@@ -465,111 +722,85 @@ def build():
         title="Cártama",
     )
 
-    # ---------------- Fase 1: Zona Cártama ----------------
-    doc.new_page("Fase 1 · Zona natural (≈26 km)", "Cártama y sus pueblos vecinos")
-    zrows = [[c["name"], B.ADMIN1_ES.get(c["admin1"], c["admin1"]), fmt_n(c["pop"]), str(B.n_venues(c["pop"]))] for c in d["zone_members"]]
-    doc.table(
-        ["Municipio", "Provincia", "Habitantes", "Locales"],
-        zrows,
-        [160, 120, 100, CONTENT_W - 160 - 120 - 100],
-        align=["l", "l", "r", "r"],
-        total_row=["TOTAL zona Cártama", f"{len(d['zone_members'])} municipios", fmt_n(n_pop(d["zone_members"])), str(n_v(d["zone_members"]))],
-    )
-    doc.para(
-        "Álora, Pizarra, Estación de Cártama y Almogía completan la primera corona: municipios a menos "
-        "de 26 km que ya comparten proveedores, personal y clientela con Cártama. Es la misma zona que "
-        "agruparía un solo cuaderno del atlas."
-    )
-
-    # ---------------- Fase 2: Costa del Sol ----------------
-    doc.new_page("Fase 2 · Área metropolitana", "Costa del Sol y área de Málaga (≈35 km)")
-    crows = []
-    tot_muni = tot_vv = tot_pp = 0
-    for dist, h in d["near_heads"]:
-        members = d["groups"].get(h["id"], [])
-        nmuni, nv, pop = len(members), n_v(members), n_pop(members)
-        tot_muni += nmuni
-        tot_vv += nv
-        tot_pp += pop
-        crows.append([h["name"], f"{dist:.0f} km", str(nmuni), fmt_n(pop), str(nv)])
-    doc.table(
-        ["Cabecera de zona", "Distancia", "Municipios", "Habitantes", "Locales"],
-        crows,
-        [140, 65, 75, 100, CONTENT_W - 140 - 65 - 75 - 100],
-        align=["l", "r", "r", "r", "r"],
-        total_row=["TOTAL área metropolitana", "", str(tot_muni), fmt_n(tot_pp), str(tot_vv)],
-    )
-    doc.para(
-        "Con Málaga capital, Marbella, Mijas, Fuengirola, Torremolinos y Benalmádena como cabeceras "
-        "grandes, esta corona añade formatos que Cártama no tiene: kiosco de playa en el litoral, "
-        "flagship y food hall en Málaga capital, y el primer rooftop del grupo si la ciudad supera el "
-        "umbral de población."
-    )
-
-    # ---------------- Fase 3: Málaga provincia ----------------
-    doc.new_page("Fase 3 · Provincia", "Málaga completa")
-    mp = d["malaga_prov"]
-    doc.kpis([
-        (str(len(mp)), "Municipios"),
-        (fmt_n(n_pop(mp)), "Habitantes"),
-        (str(n_v(mp)), "Locales potenciales"),
-    ])
-    top_mp = sorted(mp, key=lambda c: (-B.n_venues(c["pop"]), -c["pop"]))[:16]
-    doc.table(
-        ["Municipio", "Habitantes", "Locales"],
-        [[c["name"], fmt_n(c["pop"]), str(B.n_venues(c["pop"]))] for c in top_mp],
-        [260, 140, CONTENT_W - 260 - 140],
-        align=["l", "r", "r"],
-    )
-    doc.para("Los 16 municipios con más locales potenciales de la provincia; el resto —hasta " + str(len(mp)) + "— completa la cobertura de barrio a barrio.")
-
-    # ---------------- Fase 4: Andalucía ----------------
-    doc.new_page("Fase 4 · Comunidad autónoma", "Andalucía completa")
+    # ---------------- Fase 1: Andalucía (resto) ----------------
+    doc.new_page("Fase 1 · Comunidad autónoma", "Andalucía: el resto de provincias, capital y costa primero")
     an = d["andalucia"]
+    ar = d["andalucia_rest"]
     doc.kpis([
-        (str(len(an)), "Municipios"),
+        (str(len(an)), "Municipios (Andalucía completa)"),
         (fmt_n(n_pop(an)), "Habitantes"),
-        (str(n_v(an)), "Locales potenciales"),
+        (fmt_n(n_v(an)), "Locales potenciales (con Málaga)"),
+        (fmt_n(n_v(ar)), "Locales de esta fase (resto)"),
     ])
+    doc.para(
+        "Con la provincia de Málaga ya cubierta en la fase 0, esta fase abre el resto de Andalucía. "
+        "Dentro de cada provincia manda el mismo criterio: la capital y las cabeceras turísticas "
+        "primero (Sevilla capital, Granada capital y su costa tropical, Cádiz y la Costa de la Luz, "
+        "Córdoba capital, Almería y su litoral, Jaén capital y Huelva con Punta Umbría), y los "
+        "municipios más pequeños del interior al final de cada provincia."
+    )
     prov_rows = []
     for prov, cs in sorted(d["by_prov_and"].items(), key=lambda kv: -n_v(kv[1])):
+        if prov == "Málaga":
+            continue
         prov_rows.append([prov, str(len(cs)), fmt_n(n_pop(cs)), str(n_v(cs))])
     doc.table(
-        ["Provincia", "Municipios", "Habitantes", "Locales"],
+        ["Provincia (orden de apertura)", "Municipios", "Habitantes", "Locales"],
         prov_rows,
         [160, 110, 130, CONTENT_W - 160 - 110 - 130],
         align=["l", "r", "r", "r"],
-        total_row=["TOTAL Andalucía", str(len(an)), fmt_n(n_pop(an)), str(n_v(an))],
+        total_row=["TOTAL resto de Andalucía", str(len(ar)), fmt_n(n_pop(ar)), str(n_v(ar))],
+    )
+    doc.gap(4)
+    top_ar = ar[:14]
+    doc.h2("Las 14 primeras cabeceras que abren fuera de Málaga")
+    doc.table(
+        ["Municipio", "Provincia", "Habitantes", "Costa real", "Locales"],
+        [[c["name"], c["admin2"], fmt_n(c["pop"]), "Sí" if c.get("coast_ok") else "", str(B.n_venues(c["pop"]))] for c in top_ar],
+        [150, 110, 90, 65, CONTENT_W - 150 - 110 - 90 - 65],
+        align=["l", "l", "r", "l", "r"],
     )
 
-    # ---------------- Fase 5: España ----------------
-    doc.new_page("Fase 5 · País", "España completa")
+    # ---------------- Fase 2: España (resto) ----------------
+    doc.new_page("Fase 2 · País", "España: el resto de comunidades, Madrid y Barcelona primero")
     es = d["es"]
+    er = d["es_rest"]
     doc.kpis([
-        (str(len(es)), "Municipios"),
+        (str(len(es)), "Municipios (España completa)"),
         (fmt_n(n_pop(es)), "Habitantes"),
-        (str(n_v(es)), "Locales potenciales"),
-        (f"×{n_v(es) / max(1, B.n_venues(c0['pop'])):,.0f}".replace(",", "."), "Crecimiento desde Cártama"),
+        (fmt_n(n_v(es)), "Locales potenciales (con Andalucía)"),
+        (fmt_n(n_v(er)), "Locales de esta fase (resto)"),
+        (f"×{n_v(es) / max(1, B.n_venues(c0['pop'])):,.0f}".replace(",", "."), "Crecimiento desde el piloto de Cártama"),
     ])
+    doc.para(
+        "Con toda Andalucía cubierta, la fase 2 entra en el resto de comunidades autónomas, ordenadas "
+        "por volumen de locales potenciales (Madrid y Cataluña primero, por sus grandes ciudades). "
+        "Dentro de cada comunidad, el criterio de la fase 0 se mantiene: la capital y las cabeceras "
+        "turísticas reales abren antes que los municipios pequeños del interior — en Baleares y "
+        "Canarias, con playa real en todas sus islas, esto adelanta a casi toda su red frente a "
+        "comunidades de interior de tamaño de población parecido."
+    )
     ccaa_rows = []
     for ccaa, cs in sorted(d["by_ccaa"].items(), key=lambda kv: -n_v(kv[1])):
+        if ccaa == "Andalucía":
+            continue
         ccaa_rows.append([B.ADMIN1_ES.get(ccaa, ccaa), str(len(cs)), fmt_n(n_pop(cs)), str(n_v(cs))])
     doc.table(
-        ["Comunidad autónoma", "Municipios", "Habitantes", "Locales"],
+        ["Comunidad autónoma (orden de apertura)", "Municipios", "Habitantes", "Locales"],
         ccaa_rows,
         [175, 105, 120, CONTENT_W - 175 - 105 - 120],
         align=["l", "r", "r", "r"],
-        total_row=["TOTAL España", str(len(es)), fmt_n(n_pop(es)), str(n_v(es))],
+        total_row=["TOTAL resto de España", str(len(er)), fmt_n(n_pop(er)), str(n_v(er))],
     )
 
-    # ---------------- Fases 6-11: continentes ----------------
+    # ---------------- Fases 3-8: continentes ----------------
     cont_defs = [
-        ("Fase 6 · Continente", "Europa (resto, sin España)", "EU", True),
-        ("Fase 7 · Continente", "Asia y Oriente Medio", "AS", False),
-        ("Fase 8 · Continente", "América del Norte y Central", "NA", False),
-        ("Fase 9 · Continente", "América del Sur", "SA", False),
-        ("Fase 10 · Continente", "África", "AF", False),
-        ("Fase 11 · Continente", "Oceanía", "OC", False),
+        ("Fase 3 · Continente", "Europa (resto, sin España)", "EU", True),
+        ("Fase 4 · Continente", "Asia y Oriente Medio", "AS", False),
+        ("Fase 5 · Continente", "América del Norte y Central", "NA", False),
+        ("Fase 6 · Continente", "América del Sur", "SA", False),
+        ("Fase 7 · Continente", "África", "AF", False),
+        ("Fase 8 · Continente", "Oceanía", "OC", False),
     ]
     for phase_label, title, code, exclude_es in cont_defs:
         doc.new_page(phase_label, title)
@@ -600,7 +831,7 @@ def build():
         (fmt_n(total_muni_world), "Municipios"),
         (fmt_n(total_world), "Locales potenciales"),
         ("50", "Marcas propias"),
-        ("11", "Formatos de local"),
+        (str(len(B.SIZES)), "Formatos de local"),
     ])
     doc.para(
         "El punto de llegada es el mismo modelo que hoy alimenta el atlas mundial de Horizon: "
@@ -612,22 +843,18 @@ def build():
     doc.gap(6)
     doc.h2("Progresión acumulada, fase a fase")
     cum_rows = []
-    acc = 0
     seq = [
-        ("Fase 0", B.n_venues(c0["pop"])),
-        ("Fase 1", n_v(d["zone_members"])),
-        ("Fase 2", sum(n_v(d["groups"].get(h["id"], [])) for _, h in d["near_heads"])),
-        ("Fase 3", n_v(d["malaga_prov"])),
-        ("Fase 4", n_v(d["andalucia"])),
-        ("Fase 5", n_v(d["es"])),
-        ("Fase 6", n_v(d["es"]) + sum(x[0] for x in d["by_cont"].get("EU", []) if x[2] != "ES")),
+        ("Fase 0", n_v(d["malaga_prov"])),
+        ("Fase 1", n_v(d["andalucia"])),
+        ("Fase 2", n_v(d["es"])),
+        ("Fase 3", n_v(d["es"]) + sum(x[0] for x in d["by_cont"].get("EU", []) if x[2] != "ES")),
     ]
     running_extra = seq[-1][1]
-    for label, code in [("Fase 7", "AS"), ("Fase 8", "NA"), ("Fase 9", "SA"), ("Fase 10", "AF"), ("Fase 11", "OC")]:
+    for label, code in [("Fase 4", "AS"), ("Fase 5", "NA"), ("Fase 6", "SA"), ("Fase 7", "AF"), ("Fase 8", "OC")]:
         running_extra += sum(x[0] for x in d["by_cont"].get(code, []))
         seq.append((label, running_extra))
     labels_scope = [
-        "Cártama", "Zona Cártama", "Costa del Sol", "Prov. Málaga", "Andalucía", "España",
+        "Prov. Málaga (piloto Cártama)", "Andalucía", "España",
         "+ Europa", "+ Asia/O. Medio", "+ América N/C", "+ América del Sur", "+ África", "Mundo completo",
     ]
     for (label, cumval), scope in zip(seq, labels_scope):
@@ -653,9 +880,9 @@ def build():
     doc.h2("Riesgos a vigilar")
     doc.bullets([
         "Food hall y estadio se aproximan a partir de la población de la ciudad, no de un mercado o estadio verificado uno a uno; conviene validar sobre el terreno antes de construir esos formatos concretos.",
-        "La estacionalidad turística de la Costa del Sol (fase 2) puede distorsionar la demanda real frente a la estimada por población censada.",
+        "La estacionalidad turística de la Costa del Sol y de las cabeceras costeras de la fase 0 puede distorsionar la demanda real frente a la estimada por población censada.",
         "En mercados con alquileres muy altos (grandes capitales asiáticas y norteamericanas) el ritmo de apertura debe ajustarse al flujo de caja, no solo al mapa.",
-        "La normativa local de licencias y horarios varía mucho entre fases; cada salto de país requiere validación legal propia antes de firmar el primer local.",
+        "La normativa local de licencias y horarios varía mucho entre fases; cada salto de país requiere validación legal propia antes de firmar el primer local (ver el detalle país a país en «Marco legal»).",
     ])
 
     # ---------------- Del plan regional al calendario por marca ----------------
@@ -664,18 +891,22 @@ def build():
     doc.new_page("Ejecución", "Del plan regional al calendario por marca")
     total_pdfs = fmt_n(50 * B.N_PHASES)
     doc.para(
-        f"Las fases 0 a 11 reparten el territorio (de Cártama al mundo); a partir de aquí, cada una de "
+        f"Las fases 0 a 8 reparten el territorio (de la provincia de Málaga al mundo, con el piloto de "
+        f"Cártama como origen fundacional); a partir de aquí, cada una de "
         f"las 50 marcas propias ejecuta ese reparto con su propio calendario de apertura, dividido en "
         f"{B.N_PHASES} fases — un PDF por fase, {total_pdfs} documentos en total, entregados en 50 ZIP "
         "(uno por marca, con sus 500 fases dentro)."
     )
     doc.gap(4)
     doc.para(
-        "El orden de apertura dentro de cada marca es aleatorio real y muy salteado por el mundo: no "
-        "sigue el orden geográfico de este documento, así que una marca puede abrir en Londres, seguir "
-        "por doce ciudades de otros continentes y volver a abrir en Londres varias fases después. Lo "
-        "único fijo es el calendario: la fase N cae siempre en el mismo mes para las 50 marcas, así que "
-        "los planes son comparables fase a fase."
+        "Ojo a la diferencia entre los dos documentos: este plan maestro ordena el TERRITORIO de forma "
+        "lógica (ciudades grandes y zonas turísticas primero, municipio pequeño al final de cada "
+        "región), para decidir en qué orden el grupo entra en cada mercado. El calendario de cada MARCA, "
+        "en cambio, es aleatorio real y muy salteado por el mundo dentro de ese territorio ya ordenado: "
+        "no sigue el orden geográfico de este documento, así que una marca puede abrir en Londres, "
+        "seguir por doce ciudades de otros continentes y volver a abrir en Londres varias fases después. "
+        "Lo único fijo es el calendario: la fase N cae siempre en el mismo mes para las 50 marcas, así "
+        "que los planes son comparables fase a fase."
     )
     doc.gap(8)
     doc.kpis([
@@ -709,40 +940,74 @@ def build():
     doc.new_page("Ejecución", "Modelo de inversión por local")
     doc.para(
         "Cada local de los PDF de fase por marca lleva cuatro partidas de inversión estimada, calculadas "
-        "a partir del tamaño real del formato (m² y aforo) y del nivel de costes del país (salario/hora "
-        "de js/world.js, la misma fuente que usa el simulador para sueldos e inflación):"
+        "a partir del tamaño real del formato (m² y aforo), del nivel de costes del país (salario/hora "
+        "de js/world.js, la misma fuente que usa el simulador para sueldos e inflación) y, en el "
+        "alquiler, también del tamaño real de la ciudad — el mismo dato que fija el alquiler de cada "
+        "local del atlas y del simulador, no una media plana por país:"
     )
     doc.gap(4)
     doc.bullets([
-        "Alquiler / Compra: el 72% de los locales se abren en alquiler (fianza + 6 meses de renta); el resto se compra, a un precio ≈ alquiler mensual × 108 (misma fórmula que el simulador).",
-        "Obra: ≈950 €/m² en España, escalado por el salario/hora del país frente al de España (4,2 €/h).",
-        "Mobiliario: ≈300 €/m² en España, con el mismo escalado por coste laboral del país.",
-        "Stock inicial: ≈140 €/plaza en España (materia prima, vajilla, uniformes de arranque), también escalado.",
-    ], size=8.6, leading=12)
+        "Alquiler / Compra: €/m²/mes = 9 € × (índice de renta del país ÷ 72) × factor de ciudad; el "
+        "factor de ciudad sube con la población real (de ≈0,55× en un pueblo a ≈2,8× en una megaciudad), "
+        "así que dos locales del mismo formato en el mismo país pueden pagar un alquiler muy distinto "
+        "según la zona. El 72% de los locales se abren en alquiler (fianza + 6 meses de renta); el "
+        "resto se compra, a un precio ≈ alquiler mensual × 108 (misma fórmula que el simulador).",
+        "Obra: ≈950 €/m² en España, escalado por el salario/hora del país frente al de España (4,2 €/h) "
+        "y, en una proporción menor, por el mismo factor de tamaño de ciudad (la obra también es más "
+        "cara de ejecutar en una gran ciudad que en un pueblo).",
+        "Mobiliario: ≈300 €/m² en España, con el mismo doble escalado (coste laboral del país + tamaño de ciudad).",
+        "Stock inicial: ≈140 €/plaza en España (materia prima, vajilla, uniformes de arranque), escalado solo por coste laboral del país.",
+    ], size=8.4, leading=11.6)
     doc.gap(6)
-    doc.h2("Ejemplo: un Local (42 plazas, 140 m²) en tres países")
+    doc.h2("Alquiler real por m² y mes, según tamaño de la ciudad y país")
+    tiers = [("Pueblo (≈5.000 hab.)", 5000), ("Ciudad media (≈60.000 hab.)", 60000),
+             ("Gran ciudad (≈500.000 hab.)", 500000), ("Megaciudad (≈5.000.000 hab.)", 5000000)]
+    rent_countries = ["ES", "GB", "US", "AE", "IN"]
+    rent_rows = []
+    for label, pop in tiers:
+        row = [label]
+        for cc in rent_countries:
+            row.append(fmt_eur(B.rent_per_m2_month(cc, pop)))
+        rent_rows.append(row)
+    rc_names = [B.COUNTRY_ECON.get(cc, {}).get("name", cc) for cc in rent_countries]
+    ncols = len(rent_countries)
+    colw = [150] + [(CONTENT_W - 150) / ncols] * ncols
+    doc.table(
+        ["Tamaño de la ciudad"] + rc_names,
+        rent_rows,
+        colw,
+        align=["l"] + ["r"] * ncols,
+    )
+    doc.para("Alquiler base por m² y mes (formato Local, antes del multiplicador de formato); mismo cálculo real que fija el alquiler de cada local del atlas.", size=7.6, color=GRAY)
+    doc.gap(8)
+    doc.h2("Ejemplo completo: un Local (42 plazas, 140 m²) en una gran ciudad (≈500.000 hab.)")
     ex_rows = []
-    for cc, m2, seats in [("ES", 140, 42), ("US", 140, 42), ("IN", 140, 42)]:
+    for cc, m2, seats, pop in [("ES", 140, 42, 500000), ("US", 140, 42, 500000), ("IN", 140, 42, 500000)]:
         ce = B.COUNTRY_ECON.get(cc, {"wage": 15.0, "name": cc})
         scale = max(0.12, ce["wage"] / 4.2)
-        obra = m2 * 950 * scale
-        mob = m2 * 300 * scale
+        cfac = B.city_rent_factor(pop)
+        obra = m2 * 950 * scale * (0.85 + 0.15 * cfac)
+        mob = m2 * 300 * scale * (0.85 + 0.15 * cfac)
         stock = seats * 140 * scale
-        ex_rows.append([ce["name"], f"{ce['wage']:.1f} €/h", fmt_eur(obra), fmt_eur(mob), fmt_eur(stock), fmt_eur(obra + mob + stock)])
+        rent_m = m2 * B.rent_per_m2_month(cc, pop)
+        ex_rows.append([ce["name"], fmt_eur(rent_m) + "/mes", fmt_eur(obra), fmt_eur(mob), fmt_eur(stock), fmt_eur(obra + mob + stock)])
     doc.table(
-        ["País", "Salario/h", "Obra", "Mobiliario", "Stock inicial", "Subtotal*"],
+        ["País", "Alquiler/mes", "Obra", "Mobiliario", "Stock inicial", "Subtotal obra+mob.+stock*"],
         ex_rows,
-        [120, 65, 90, 90, 90, CONTENT_W - 120 - 65 - 90 - 90 - 90],
+        [110, 85, 85, 85, 85, CONTENT_W - 110 - 85 - 85 - 85 - 85],
         align=["l", "r", "r", "r", "r", "r"],
     )
-    doc.para("* Subtotal de obra + mobiliario + stock inicial; no incluye alquiler/compra del local.", size=7.6, color=GRAY)
+    doc.para("* No incluye alquiler/compra del local, que ya se muestra en su propia columna.", size=7.6, color=GRAY)
 
     # ---------------- Marco legal y fiscal por continente ----------------
-    doc.new_page("Marco legal", "Riesgos legales, fiscales y de tipo de cambio por continente")
+    doc.new_page("Marco legal", "Barreras de entrada por país: licencias, competencia local y divisa")
     doc.para(
         "Cada vez que una marca entra por primera vez en un país nuevo, su PDF de fase incluye esta "
         "misma nota de riesgo, con el impuesto de sociedades y el IVA reales del país (js/world.js). "
-        "Aquí va el resumen por continente, con los tres países de más peso de cada uno."
+        "Aquí va el detalle país a país (no solo el resumen regional) de los seis países de más peso "
+        "de cada continente: la licencia clave para abrir, si hay restricción a la inversión "
+        "extranjera, quién es la competencia local dominante y el riesgo real de tipo de cambio y de "
+        "repatriación de beneficios."
     )
     doc.gap(6)
     cont_order = [("EU", "Europa"), ("AS", "Asia"), ("NA", "América del Norte y Central"),
@@ -751,12 +1016,12 @@ def build():
         lst = sorted(d["by_cont"].get(code, []), key=lambda x: -x[0])
         if not lst:
             continue
-        doc.h2(cname)
+        doc.new_page("Marco legal", cname)
         doc.para(B.REGION_RISK.get(code, ""), size=8.8, leading=11.8)
         doc.gap(2)
-        top3 = lst[:3]
+        top6 = lst[:6]
         rows = []
-        for nv, nmuni, cc, name in top3:
+        for nv, nmuni, cc, name in top6:
             ce = B.COUNTRY_ECON.get(cc, {})
             tax = ce.get("tax")
             vat = ce.get("vat")
@@ -773,6 +1038,10 @@ def build():
             align=["l", "r", "r", "r"],
         )
         doc.gap(6)
+        for nv, nmuni, cc, name in top6:
+            doc.h2(name, color=RED)
+            doc.para(country_risk_text(cc, code), size=8.4, leading=11.4)
+            doc.gap(4)
 
     # ---------------- Directorio mundial de municipios ----------------
     doc.new_page("Directorio mundial", "Todos los municipios del mundo, país a país")
