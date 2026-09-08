@@ -29,6 +29,9 @@
       s.thumb = MAP.dotsThumb();
     } catch (_) {}
     STORE.save(s).catch(function () {});
+    try {
+      BACKUP.writeNow(s);
+    } catch (_) {}
   }
 
   function ensureMap() {
@@ -255,6 +258,26 @@
     if (game.state) STORE.exportJSON(game.state);
   }
 
+  async function backupEnable() {
+    const st = await BACKUP.enable();
+    if (st.active && game.state) BACKUP.writeNow(game.state);
+    return st;
+  }
+
+  async function backupReactivate() {
+    const st = await BACKUP.reactivate();
+    if (st.active && game.state) BACKUP.writeNow(game.state);
+    return st;
+  }
+
+  function backupDisable() {
+    return BACKUP.disable();
+  }
+
+  function backupStatus() {
+    return BACKUP.status();
+  }
+
   async function importSave(text) {
     try {
       const data = STORE.parseImport(text);
@@ -297,6 +320,11 @@
   game.goMyLocation = goMyLocation;
   game.exportSave = exportSave;
   game.importSave = importSave;
+  game.backupEnable = backupEnable;
+  game.backupReactivate = backupReactivate;
+  game.backupDisable = backupDisable;
+  game.backupStatus = backupStatus;
+  game.backupOnChange = BACKUP.onChange;
   game.newGame = newGame;
   game.continueGame = continueGame;
   game.loadSlot = loadSlot;
@@ -310,5 +338,9 @@
     console.error(err);
       alert("Error al iniciar Horizon: " + (err && err.message ? err.message : err));
   }
+  try {
+    BACKUP.requestPersistentStorage();
+    BACKUP.restore();
+  } catch (_) {}
   requestAnimationFrame(loop);
 })();

@@ -230,6 +230,58 @@
       game.importSave(await f.text());
       e.target.value = "";
     });
+    const backupBtn = U.$("#btn-backup");
+    if (backupBtn) {
+      backupBtn.addEventListener("click", async () => {
+        const st = game.backupStatus();
+        if (!st.supported) {
+          toast("Este navegador no admite guardar en disco automáticamente. Usa Chrome o Edge, o exporta la partida (⤓) de cuando en cuando: ese archivo tampoco se borra al limpiar la caché.", true);
+          return;
+        }
+        if (st.active) {
+          if (confirm("Copia de seguridad automática activa" + (st.fileName ? " en " + st.fileName : "") + ". ¿Desactivarla? El archivo ya escrito no se borra.")) {
+            game.backupDisable();
+            renderBackupBtn();
+            toast("Copia de seguridad automática desactivada.");
+          }
+          return;
+        }
+        if (st.hasHandle) {
+          const r = await game.backupReactivate();
+          renderBackupBtn();
+          if (r.active) {
+            toast("Copia de seguridad reactivada en " + (r.fileName || "el archivo elegido") + ".");
+          } else {
+            game.backupDisable();
+            renderBackupBtn();
+            toast("No se pudo recuperar el permiso. Pulsa otra vez para elegir el archivo de copia de nuevo (tu partida sigue a salvo en este dispositivo).", true);
+          }
+          return;
+        }
+        const r = await game.backupEnable();
+        renderBackupBtn();
+        if (r.active) toast("Copia de seguridad automática activa en " + (r.fileName || "el archivo elegido") + ". Cada partida se escribirá también ahí, aunque borres la caché del navegador.");
+        else if (r.lastError === "elegir-archivo") toast("No se pudo activar la copia de seguridad.", true);
+      });
+      game.backupOnChange(renderBackupBtn);
+      renderBackupBtn();
+    }
+    function renderBackupBtn() {
+      if (!backupBtn) return;
+      const st = game.backupStatus();
+      backupBtn.classList.remove("primary", "warn");
+      if (!st.supported) {
+        backupBtn.title = "Copia de seguridad automática en disco: no disponible en este navegador. Usa ⤓ Exportar de cuando en cuando.";
+      } else if (st.active) {
+        backupBtn.classList.add("primary");
+        backupBtn.title = "Copia de seguridad automática activa" + (st.fileName ? " (" + st.fileName + ")" : "") + ". Clic para desactivar.";
+      } else if (st.hasHandle) {
+        backupBtn.classList.add("warn");
+        backupBtn.title = "Copia de seguridad en pausa: falta permiso. Clic para reactivarla.";
+      } else {
+        backupBtn.title = "Activar copia de seguridad automática en disco (recomendado): la partida y las fotos se escriben también en un archivo real que no borra la caché del navegador.";
+      }
+    }
     const search = U.$("#search");
     const sug = U.$("#suggest");
     const runSearch = U.debounce(async () => {
