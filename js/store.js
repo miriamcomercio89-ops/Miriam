@@ -182,8 +182,18 @@
     }
   }
 
+  function stripTransient(state) {
+    /* _vp (Set) y _openId son cachés en memoria que pinta MAP.refresh(); un
+       Set no sobrevive a un JSON.stringify (queda como "{}"), así que ni
+       falta hace guardarlos: se recalculan solos en el siguiente refresco. */
+    delete state._vp;
+    delete state._openId;
+    return state;
+  }
+
   async function save(state) {
     state.savedAt = Date.now();
+    stripTransient(state);
     const clone = JSON.parse(JSON.stringify(state));
     const json = JSON.stringify(clone);
     try {
@@ -224,6 +234,8 @@
       const m = meta();
       m.current = id;
       setMeta(m);
+      stripTransient(s);
+      if (Array.isArray(s.restaurants)) sanitizeRestaurants(s.restaurants);
     }
     return s;
   }
@@ -243,8 +255,24 @@
   }
 
   function exportJSON(state) {
+    stripTransient(state);
     const blob = JSON.stringify(state);
     U.download(`horizon-${state.name.replace(/\s+/g, "_")}-${new Date(state.gameTime).toISOString().slice(0, 10)}.json`, blob);
+  }
+
+  function sanitizeRestaurants(list) {
+    for (const r of list) {
+      if (!r || typeof r !== "object") continue;
+      if (!r.gh && Number.isFinite(r.lat) && Number.isFinite(r.lon)) r.gh = U.geohash(r.lat, r.lon, 6);
+      if (!r.finance) {
+        r.finance = { revTotal: 0, costTotal: 0, taxTotal: 0, customersTotal: 0, revToday: 0, costToday: 0, customersToday: 0, dayStamp: "", months: {} };
+      }
+      if (!Array.isArray(r.staff)) r.staff = [];
+      if (!r.menu || typeof r.menu !== "object") r.menu = {};
+      if (!Array.isArray(r.reviews)) r.reviews = [];
+      if (!r.status) r.status = "abierto";
+    }
+    return list;
   }
 
   function parseImport(text) {
@@ -253,6 +281,11 @@
     data.id = data.id || U.uid("slot");
     data.savedAt = Date.now();
     if (!Array.isArray(data.loans)) data.loans = [];
+    /* Partidas antiguas (o exportadas antes de algún campo nuevo, o con un
+       _vp de un JSON previo) no deben romper el mapa ni el resto del juego
+       al volver a cargarlas. */
+    stripTransient(data);
+    sanitizeRestaurants(data.restaurants);
     return data;
   }
 

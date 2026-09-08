@@ -1,6 +1,6 @@
 /* Horizon — mapa Leaflet, agregación por país/ciudad y clusters de marca */
 (function (global) {
-  let map, layer, game;
+  let map, layer, game, searchPin;
   let clickArmed = true;
 
   function init(g) {
@@ -54,6 +54,7 @@
         clickArmed = true;
         return;
       }
+      clearSearchPin();
       game.onMapClick(e.latlng.lat, e.latlng.lng);
     });
     map.on("moveend zoomend", () => refresh());
@@ -147,7 +148,20 @@
     });
   }
 
+  let refreshErrorShown = false;
   function refresh() {
+    try {
+      refreshInner();
+    } catch (err) {
+      console.error("MAP.refresh", err);
+      if (!refreshErrorShown && game && typeof UI !== "undefined" && UI.toast) {
+        refreshErrorShown = true;
+        UI.toast("Algún local tenía datos incompletos: se ha omitido para no romper el mapa. El resto se ve con normalidad.", true);
+      }
+    }
+  }
+
+  function refreshInner() {
     if (!map) return;
     layer.clearLayers();
     const list = filtered();
@@ -207,7 +221,12 @@
       const prec = z >= 12 ? 6 : z >= 10 ? 5 : 4;
       const groups = {};
       for (const r of vis) {
-        const key = r.gh.slice(0, prec);
+        /* Un local de una partida antigua (o de un JSON importado sin este
+           campo) puede no traer geohash: si no, un solo registro así
+           reventaba el refresco entero del mapa (y con él, cualquier
+           local construido dejaba de verse tras importar). */
+        const gh = r.gh || U.geohash(r.lat, r.lon, 6);
+        const key = gh.slice(0, prec);
         if (!groups[key]) groups[key] = { n: 0, lat: 0, lon: 0, brands: {}, sample: r };
         groups[key].n++;
         groups[key].lat += r.lat;
@@ -222,7 +241,7 @@
         if (g.n === 1) {
           addRest(g.sample);
         } else {
-          const m = L.marker([lat, lon], { icon: brandIcon(brand, g.n, 36), keyboard: false });
+          const m = L.marker([lat, lon], { icon: brandIcon(brand, g.n, 46), keyboard: false });
           m.on("click", (ev) => {
             L.DomEvent.stop(ev);
             map.setView([lat, lon], Math.min(19, z + 2));
@@ -240,7 +259,7 @@
     const profit = (r.finance.revTotal || 0) - (r.finance.costTotal || 0);
     const heat = game.heatmap ? (profit >= 0 ? " pin-gain" : " pin-loss") : "";
     const extra = r.size === "food_hall" ? 1 + (r.hallBrands || []).length : r.size === "ghost" ? "CF" : 0;
-    const m = L.marker([r.lat, r.lon], { icon: brandIcon(brand, extra, r.size === "food_hall" ? 40 : 36), keyboard: false });
+    const m = L.marker([r.lat, r.lon], { icon: brandIcon(brand, extra, r.size === "food_hall" ? 56 : 50), keyboard: false });
     if (heat || r.size === "ghost" || r.size === "food_hall") {
       const ic = m.options.icon;
       let cls = "pin-wrap" + heat;
@@ -257,6 +276,29 @@
 
   function fly(lat, lon, zoom = 14) {
     map.setView([lat, lon], zoom, { animate: true });
+  }
+
+  function searchIcon() {
+    return L.divIcon({
+      className: "search-pin",
+      html: '<div class="search-pin-drop"></div><div class="search-pin-dot"></div>',
+      iconSize: [34, 46],
+      iconAnchor: [17, 44],
+    });
+  }
+
+  function dropSearchPin(lat, lon, label) {
+    clearSearchPin();
+    searchPin = L.marker([lat, lon], { icon: searchIcon(), keyboard: false, zIndexOffset: 1000 });
+    if (label) searchPin.bindTooltip(label, { permanent: false, direction: "top", offset: [0, -44] });
+    searchPin.addTo(map);
+  }
+
+  function clearSearchPin() {
+    if (searchPin) {
+      map.removeLayer(searchPin);
+      searchPin = null;
+    }
   }
 
   function invalidate() {
@@ -295,5 +337,5 @@
     return c.toDataURL("image/png");
   }
 
-  global.MAP = { init, refresh, fly, invalidate, get: () => map, jumpProfit, dotsThumb };
+  global.MAP = { init, refresh, fly, invalidate, get: () => map, jumpProfit, dotsThumb, dropSearchPin, clearSearchPin };
 })(window);

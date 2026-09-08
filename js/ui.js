@@ -284,27 +284,41 @@
     }
     const search = U.$("#search");
     const sug = U.$("#suggest");
+    let lastHits = [];
+    const goToHit = (h) => {
+      sug.style.display = "none";
+      search.value = h.label;
+      MAP.fly(h.lat, h.lon, 16);
+      MAP.dropSearchPin(h.lat, h.lon, h.label);
+    };
     const runSearch = U.debounce(async () => {
       const q = search.value.trim();
       if (q.length < 2) {
         sug.style.display = "none";
+        lastHits = [];
         return;
       }
       const hits = await GEO.search(q);
+      lastHits = hits;
       sug.innerHTML = "";
       hits.forEach((h) => {
         const b = document.createElement("button");
-        b.textContent = h.label;
-        b.onclick = () => {
-          sug.style.display = "none";
-          search.value = h.label;
-          MAP.fly(h.lat, h.lon, 14);
-        };
+        b.innerHTML = `<span class="sug-ico">📍</span><span>${h.label}</span>`;
+        b.onclick = () => goToHit(h);
         sug.append(b);
       });
       sug.style.display = hits.length ? "block" : "none";
     }, 450);
     search.addEventListener("input", runSearch);
+    search.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && lastHits.length) {
+        e.preventDefault();
+        goToHit(lastHits[0]);
+      } else if (e.key === "Escape") {
+        sug.style.display = "none";
+        search.blur();
+      }
+    });
     document.addEventListener("click", (e) => {
       if (!e.target.closest(".search-row")) sug.style.display = "none";
     });

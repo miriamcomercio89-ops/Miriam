@@ -165,10 +165,11 @@ button.cash:hover { filter: brightness(0.97); }
   display: none;
 }
 .suggest button {
-  display: block; width: 100%; text-align: left; border: 0; background: #fff;
-  padding: 10px 12px; font-size: 12px; border-bottom: 1px solid var(--line);
+  display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; border: 0; background: #fff;
+  padding: 10px 12px; font-size: 12px; border-bottom: 1px solid var(--line); cursor: pointer;
 }
 .suggest button:hover { background: var(--sand); }
+.suggest button .sug-ico { flex-shrink: 0; font-size: 13px; opacity: .75; }
 
 .filters { padding: 10px 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
 .filters select {
@@ -339,16 +340,16 @@ table.data tr:hover td { background: #fff6e8; }
 }
 .pin-wrap img, .pin-wrap svg {
   display: block; width: 100% !important; height: 100% !important;
-  max-width: 40px !important; max-height: 40px !important; object-fit: cover;
+  max-width: 64px !important; max-height: 64px !important; object-fit: cover;
 }
 /* Leaflet sets .leaflet-container .leaflet-marker-pane img { width:auto; max-width:none !important } */
 .leaflet-container .leaflet-marker-pane img.pin-logo {
-  max-width: 40px !important;
-  max-height: 40px !important;
+  max-width: 64px !important;
+  max-height: 64px !important;
 }
 .pin-badge {
-  position: absolute; right: -6px; top: -6px; background: var(--ink); color: #fff;
-  font-size: 10px; padding: 1px 5px; border-radius: 8px; font-weight: 700;
+  position: absolute; right: -7px; top: -7px; background: var(--ink); color: #fff;
+  font-size: 11px; padding: 2px 6px; border-radius: 9px; font-weight: 700;
 }
 .agg-bubble, .city-bubble {
   background: linear-gradient(180deg, #fffef8, #e7f7ef);
@@ -417,6 +418,24 @@ table.data tr:hover td { background: #fff6e8; }
 .chip.sky { background: #dcebff; color: #0f4f86; }
 .pin-ghost { border-style: dashed !important; border-color: var(--violet) !important; }
 .pin-hall { border-color: var(--gold) !important; box-shadow: 0 0 0 3px rgba(195,146,22,.35); }
+
+.search-pin { background: none !important; border: 0 !important; overflow: visible !important; }
+.search-pin-drop {
+  position: absolute; left: 5px; top: 0; width: 24px; height: 24px;
+  background: linear-gradient(155deg, #e85d4c, #9b2226);
+  border-radius: 50% 50% 50% 0; transform: rotate(-45deg);
+  box-shadow: 0 6px 14px rgba(0,0,0,.35); border: 2px solid #fff;
+  animation: pin-drop .38s cubic-bezier(.32,1.6,.55,1);
+}
+.search-pin-dot {
+  position: absolute; left: 12px; top: 8px; width: 10px; height: 10px;
+  background: #fff; border-radius: 50%;
+}
+@keyframes pin-drop {
+  0% { transform: translateY(-26px) rotate(-45deg) scale(.4); opacity: 0; }
+  70% { transform: translateY(2px) rotate(-45deg) scale(1.08); opacity: 1; }
+  100% { transform: translateY(0) rotate(-45deg) scale(1); }
+}
 
 .paper {
   border-radius: 16px; padding: 14px; margin-bottom: 12px;
