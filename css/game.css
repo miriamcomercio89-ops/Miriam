@@ -334,22 +334,23 @@ table.data tr:hover td { background: #fff6e8; }
   border: none !important;
 }
 .pin-wrap {
-  width: 36px; height: 36px; border-radius: 12px; overflow: hidden;
-  box-shadow: 0 8px 18px rgba(0,0,0,.25); position: relative; border: 2px solid #fff;
+  width: 36px; height: 36px; border-radius: 16px; overflow: hidden;
+  box-shadow: 0 10px 24px rgba(0,0,0,.3); position: relative; border: 3px solid #fff;
   flex-shrink: 0;
 }
 .pin-wrap img, .pin-wrap svg {
   display: block; width: 100% !important; height: 100% !important;
-  max-width: 64px !important; max-height: 64px !important; object-fit: cover;
+  max-width: 120px !important; max-height: 120px !important; object-fit: cover;
 }
 /* Leaflet sets .leaflet-container .leaflet-marker-pane img { width:auto; max-width:none !important } */
 .leaflet-container .leaflet-marker-pane img.pin-logo {
-  max-width: 64px !important;
-  max-height: 64px !important;
+  max-width: 120px !important;
+  max-height: 120px !important;
 }
 .pin-badge {
-  position: absolute; right: -7px; top: -7px; background: var(--ink); color: #fff;
-  font-size: 11px; padding: 2px 6px; border-radius: 9px; font-weight: 700;
+  position: absolute; right: -10px; top: -10px; background: var(--ink); color: #fff;
+  font-size: 13px; padding: 3px 8px; border-radius: 11px; font-weight: 700;
+  box-shadow: 0 3px 8px rgba(0,0,0,.3);
 }
 .agg-bubble, .city-bubble {
   background: linear-gradient(180deg, #fffef8, #e7f7ef);
@@ -488,6 +489,26 @@ table.data tr:hover td { background: #fff6e8; }
 .venue-photo-ph[hidden],
 .venue-photo-frame.has-photo .venue-photo-ph { display: none !important; }
 .venue-photo-frame.has-photo img { display: block; }
+.venue-photo-frame.has-photo img { cursor: zoom-in; }
+.photo-lightbox {
+  position: fixed; inset: 0; z-index: 5000;
+  background: rgba(10, 14, 12, 0.92);
+  display: flex; align-items: center; justify-content: center;
+  padding: min(24px, 4vw); cursor: zoom-out;
+}
+.photo-lightbox[hidden] { display: none !important; }
+.photo-lightbox img {
+  max-width: min(96vw, 900px); max-height: 96vh; width: auto; height: auto;
+  object-fit: contain; border-radius: 10px; box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+  cursor: default;
+}
+.photo-lightbox-close {
+  position: absolute; top: 18px; right: 22px; width: 44px; height: 44px;
+  border-radius: 50%; border: none; background: rgba(255, 255, 255, 0.16);
+  color: #fff; font-size: 20px; line-height: 1; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.photo-lightbox-close:hover { background: rgba(255, 255, 255, 0.28); }
 .venue-photo-actions { flex: 1; min-width: 180px; display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
 .venue-desc { display: block; margin-top: 12px; font-size: 13px; color: var(--muted); }
 .venue-desc span { display: block; margin-bottom: 6px; font-weight: 650; color: var(--ink); }

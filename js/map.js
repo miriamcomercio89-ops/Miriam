@@ -241,7 +241,7 @@
         if (g.n === 1) {
           addRest(g.sample);
         } else {
-          const m = L.marker([lat, lon], { icon: brandIcon(brand, g.n, 46), keyboard: false });
+          const m = L.marker([lat, lon], { icon: brandIcon(brand, g.n, 66), keyboard: false });
           m.on("click", (ev) => {
             L.DomEvent.stop(ev);
             map.setView([lat, lon], Math.min(19, z + 2));
@@ -259,7 +259,7 @@
     const profit = (r.finance.revTotal || 0) - (r.finance.costTotal || 0);
     const heat = game.heatmap ? (profit >= 0 ? " pin-gain" : " pin-loss") : "";
     const extra = r.size === "food_hall" ? 1 + (r.hallBrands || []).length : r.size === "ghost" ? "CF" : 0;
-    const m = L.marker([r.lat, r.lon], { icon: brandIcon(brand, extra, r.size === "food_hall" ? 56 : 50), keyboard: false });
+    const m = L.marker([r.lat, r.lon], { icon: brandIcon(brand, extra, r.size === "food_hall" ? 92 : 82), keyboard: false });
     if (heat || r.size === "ghost" || r.size === "food_hall") {
       const ic = m.options.icon;
       let cls = "pin-wrap" + heat;

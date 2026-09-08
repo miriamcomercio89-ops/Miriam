@@ -42,6 +42,37 @@
     </div>`;
   }
 
+  let lightboxBound = false;
+  function bindPhotoLightboxOnce() {
+    if (lightboxBound) return;
+    lightboxBound = true;
+    const box = U.$("#photo-lightbox");
+    const closeBtn = U.$("#photo-lightbox-close");
+    if (!box) return;
+    const close = () => {
+      box.hidden = true;
+      const img = U.$("#photo-lightbox-img");
+      if (img) img.removeAttribute("src");
+    };
+    box.addEventListener("click", (ev) => {
+      if (ev.target === box || ev.target === closeBtn) close();
+    });
+    if (closeBtn) closeBtn.onclick = close;
+    document.addEventListener("keydown", (ev) => {
+      if (ev.key === "Escape" && !box.hidden) close();
+    });
+  }
+
+  function openPhotoLightbox(url) {
+    if (!url) return;
+    bindPhotoLightboxOnce();
+    const box = U.$("#photo-lightbox");
+    const img = U.$("#photo-lightbox-img");
+    if (!box || !img) return;
+    img.src = url;
+    box.hidden = false;
+  }
+
   function applyPhotoFrame(photo, imgId, phId) {
     const img = U.$(imgId.startsWith("#") ? imgId : "#" + imgId);
     const ph = U.$(phId.startsWith("#") ? phId : "#" + phId);
@@ -53,11 +84,13 @@
       img.hidden = false;
       if (ph) ph.hidden = true;
       if (frame) frame.classList.add("has-photo");
+      img.onclick = () => openPhotoLightbox(url);
     } else {
       img.removeAttribute("src");
       img.hidden = true;
       if (ph) ph.hidden = false;
       if (frame) frame.classList.remove("has-photo");
+      img.onclick = null;
     }
   }
 
