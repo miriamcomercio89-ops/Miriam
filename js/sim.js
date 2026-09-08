@@ -2,12 +2,19 @@
 (function (global) {
   const SIZES = [
     { id: "kiosco", name: "Kiosco", seats: 8, m2: 22, permitH: 12, buildH: 24, cost: 22000, staff: { gerente: 1, cocinero: 1, camarero: 1, limpieza: 0, bartender: 0 } },
+    { id: "bistro", name: "Barra/Bistró", seats: 16, m2: 60, permitH: 16, buildH: 32, cost: 68000, rentMult: 0.85, staff: { gerente: 1, cocinero: 1, camarero: 2, limpieza: 0, bartender: 0 } },
     { id: "local", name: "Local", seats: 42, m2: 140, permitH: 24, buildH: 48, cost: 165000, staff: { gerente: 1, cocinero: 2, camarero: 2, limpieza: 1, bartender: 0 } },
-    { id: "ghost", name: "Cocina fantasma", seats: 6, m2: 38, permitH: 8, buildH: 16, cost: 42000, staff: { gerente: 1, cocinero: 2, camarero: 0, limpieza: 0, bartender: 0 }, ghost: true },
+    { id: "local_grande", name: "Local grande", seats: 80, m2: 260, permitH: 40, buildH: 96, cost: 440000, rentMult: 1.15, staff: { gerente: 1, cocinero: 4, camarero: 4, limpieza: 1, bartender: 1 } },
+    { id: "ghost", name: "Cocina fantasma", seats: 6, m2: 38, permitH: 8, buildH: 16, cost: 42000, rentMult: 0.55, staff: { gerente: 1, cocinero: 2, camarero: 0, limpieza: 0, bartender: 0 }, ghost: true },
     { id: "flagship", name: "Flagship", seats: 140, m2: 480, permitH: 72, buildH: 192, cost: 920000, staff: { gerente: 2, cocinero: 6, camarero: 6, limpieza: 2, bartender: 1 } },
-    { id: "food_hall", name: "Food hall", seats: 168, m2: 640, permitH: 96, buildH: 240, cost: 1480000, staff: { gerente: 2, cocinero: 8, camarero: 8, limpieza: 3, bartender: 2 }, hall: true },
+    { id: "food_hall", name: "Food hall", seats: 168, m2: 640, permitH: 96, buildH: 240, cost: 1480000, rentMult: 1.35, staff: { gerente: 2, cocinero: 8, camarero: 8, limpieza: 3, bartender: 2 }, hall: true },
     { id: "puesto", name: "Puesto", seats: 22, m2: 32, permitH: 0, buildH: 0, cost: 0, staff: { gerente: 1, cocinero: 1, camarero: 1, limpieza: 0, bartender: 0 }, stall: true },
     { id: "estadio", name: "Estadio", seats: 480, m2: 2800, permitH: 168, buildH: 480, cost: 4800000, staff: { gerente: 4, cocinero: 16, camarero: 20, limpieza: 6, bartender: 4 } },
+    { id: "kiosco_playa", name: "Kiosco de playa", seats: 6, m2: 14, permitH: 6, buildH: 10, cost: 20000, rentMult: 0.9, staff: { gerente: 1, cocinero: 1, camarero: 1, limpieza: 0, bartender: 0 }, poiTag: "playa" },
+    { id: "kiosco_estacion", name: "Kiosco de estación", seats: 10, m2: 18, permitH: 10, buildH: 16, cost: 25000, rentMult: 1.1, staff: { gerente: 1, cocinero: 1, camarero: 1, limpieza: 0, bartender: 0 }, poiTag: "metro" },
+    { id: "local_mall", name: "Local de centro comercial", seats: 36, m2: 110, permitH: 30, buildH: 60, cost: 150000, rentMult: 1.25, staff: { gerente: 1, cocinero: 2, camarero: 2, limpieza: 1, bartender: 0 }, poiTag: "comercial" },
+    { id: "drive_thru", name: "Drive-thru", seats: 24, m2: 90, permitH: 36, buildH: 80, cost: 180000, rentMult: 0.85, staff: { gerente: 1, cocinero: 2, camarero: 1, limpieza: 1, bartender: 0 }, poiTag: "poligono" },
+    { id: "rooftop", name: "Rooftop", seats: 90, m2: 230, permitH: 60, buildH: 150, cost: 500000, rentMult: 1.6, staff: { gerente: 2, cocinero: 4, camarero: 5, limpieza: 1, bartender: 2 }, poiTag: "rooftop" },
   ];
   const SIZE_BY = Object.fromEntries(SIZES.map((s) => [s.id, s]));
 
@@ -98,7 +105,7 @@
     const works = base;
     const fitout = sz.m2 * 180 * infl * (ctry.rent / 72);
     const total = Math.round(permits + works + fitout);
-    const rentMonthly = sz.m2 * 9 * infl * rentIdx * (sz.ghost ? 0.55 : sz.hall ? 1.35 : 1);
+    const rentMonthly = sz.m2 * 9 * infl * rentIdx * (sz.rentMult != null ? sz.rentMult : 1);
     return {
       total,
       permits: Math.round(permits),

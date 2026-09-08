@@ -720,7 +720,8 @@
     const infl = WORLD.inflationFactor(place.countryCode, year);
     const ctry = WORLD.country(place.countryCode);
     let brandId = BRAND.list[0].id;
-    let sizeId = "local";
+    let sizeId = SABOR.suggestSize(BRAND.get(brandId), place);
+    let sizeTouched = false;
     let hallBrands = [];
     let draftPhoto = "";
     let draftDesc = "";
@@ -814,19 +815,23 @@
         t.title = b.tagline;
         t.onclick = () => {
           brandId = b.id;
+          if (!sizeTouched) sizeId = SABOR.suggestSize(BRAND.get(brandId), place);
           paint();
         };
         bg.append(t);
       });
       const sz = U.$("#sz");
+      const recommended = SABOR.suggestSize(brand, place);
       SIM.SIZES.forEach((s) => {
         if (s.stall) return;
+        const isRec = s.id === recommended;
         const t = document.createElement("button");
         t.type = "button";
-        t.className = "size-tile" + (s.id === sizeId ? " on" : "");
-        t.innerHTML = `<b>${s.name}</b><small>${s.seats} cubiertos · ${s.m2} m²${s.ghost ? " · delivery" : ""}${s.hall ? " · multi-marca" : ""}</small>`;
+        t.className = "size-tile" + (s.id === sizeId ? " on" : "") + (isRec ? " rec" : "");
+        t.innerHTML = `<b>${s.name}${isRec ? '<span class="rec-badge">Recomendado</span>' : ""}</b><small>${s.seats} cubiertos · ${s.m2} m²${s.ghost ? " · delivery" : ""}${s.hall ? " · multi-marca" : ""}</small>`;
         t.onclick = () => {
           sizeId = s.id;
+          sizeTouched = true;
           if (s.id !== "food_hall") hallBrands = [];
           paint();
         };

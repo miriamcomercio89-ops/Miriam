@@ -580,6 +580,30 @@
     };
   }
 
+  function suggestSize(brand, place) {
+    const pop = (place.popK || 0) * 1000;
+    const poi = place.poi;
+    const metro = !!place.metro;
+    const tier = brand.tier;
+    const beach = poi === "playa";
+    const mallOk = poi === "comercial";
+    const stadiumOk = poi === "estadio";
+    const edge = poi === "poligono" || poi === "rural";
+    if (beach) return "kiosco_playa";
+    if (metro && (tier === "fast_food" || tier === "food_truck") && pop < 60000) return "kiosco_estacion";
+    if (stadiumOk && pop >= 60000) return "estadio";
+    if (mallOk && pop >= 15000) return "local_mall";
+    if (edge && pop >= 8000 && (tier === "fast_food" || tier === "food_truck")) return "drive_thru";
+    if (tier === "luxury") return pop >= 150000 ? "rooftop" : pop >= 30000 ? "flagship" : "local_grande";
+    if (tier === "bar") return pop >= 80000 ? "rooftop" : pop >= 20000 ? "flagship" : "local_grande";
+    if (poi === "historico" || poi === "turistico") return pop >= 12000 ? "local_grande" : "bistro";
+    if (pop >= 60000) return "local_grande";
+    if (pop >= 20000) return "flagship";
+    if (pop >= 3000) return "bistro";
+    if (pop >= 900) return "local";
+    return "kiosco";
+  }
+
   function streetFlags(place) {
     const blob = [place.osmKey, place.osmValue, place.type, place.name, place.display, place.street]
       .join(" ")
@@ -747,6 +771,7 @@
     monthKey,
     estimateHover,
     streetFlags,
+    suggestSize,
     defaultBook,
     ensureBooks,
     applyBook,

@@ -275,7 +275,12 @@ button.cash:hover { filter: brightness(0.97); }
   border: 1px solid var(--line); background: #fff; border-radius: 14px; padding: 10px; text-align: left;
 }
 .size-tile.on { border-color: var(--teal); background: #e7f4ef; }
+.size-tile.rec:not(.on) { border-color: #f2b705; box-shadow: 0 0 0 2px #fdf3d4; }
 .size-tile b { display: block; }
+.size-tile .rec-badge {
+  display: inline-block; background: #f2b705; color: #4a3800; font-size: 9px; font-weight: 700;
+  border-radius: 999px; padding: 1px 7px; margin-left: 6px; vertical-align: middle; letter-spacing: 0.02em;
+}
 
 .tabs-inline { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
 .tabs-inline button {

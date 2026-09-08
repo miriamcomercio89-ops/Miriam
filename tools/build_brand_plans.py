@@ -76,10 +76,12 @@ def split_boundaries(total: int, parts: int):
     return bounds
 
 
-def load_all_addresses(cities):
+def load_all_addresses(cities, poi_idx=None):
     """Carga direcciones reales de OpenStreetMap para TODO el mundo, reutilizando los mismos
     índices/caché que ya usó el atlas (España aparte, resto del mundo aparte), y las deja
-    colgadas de cada ciudad en city['addrs'] — igual que hace build_atlas.main()."""
+    colgadas de cada ciudad en city['addrs'] — igual que hace build_atlas.main(). Además, si
+    se pasa el índice de POI reales mundiales (tools/global_poi.py), añade a cada dirección
+    playa/estación/mall/universidad/polígono reales en cualquier país del mundo."""
     es = [c for c in cities if c["cc"] == "ES"]
     world = [c for c in cities if c["cc"] != "ES"]
     addrs = {}
@@ -89,6 +91,9 @@ def load_all_addresses(cities):
         addrs.update(B.build_index(world))
     for c in cities:
         c["addrs"] = addrs.get(c["id"], [])
+    if poi_idx is not None:
+        import global_poi as G
+        G.annotate_addresses(cities, poi_idx)
 
 
 def build_brand_events(cities):
@@ -142,7 +147,8 @@ def build_brand_records(bid_idx: int, events: list, addr_for: dict, econ: dict):
         size_id = B.size_for(tier, r_size, city["pop"], ctx)
         if bid == "taco" and size_id != "food_hall":
             size_id = "food_hall" if (city["pop"] >= 70000 and city.get("mall_ok")) else "local"
-        sl, seats, m2 = B.SIZES[size_id]
+        sl = B.SIZES[size_id][0]
+        seats, m2 = B.size_jitter(size_id, r_size)
 
         rent_ctry = B.COUNTRY_RENT.get(cc, 40)
         pop_k = city["pop"] / 1000.0
@@ -151,6 +157,7 @@ def build_brand_records(bid_idx: int, events: list, addr_for: dict, econ: dict):
         mult = {
             "ghost": 0.55, "food_hall": 1.35, "rooftop": 1.6, "local_mall": 1.25,
             "kiosco_playa": 0.9, "kiosco_estacion": 1.1, "drive_thru": 0.85,
+            "bistro": 0.85, "local_grande": 1.15,
         }.get(size_id, 1.0)
         rent = max(180, int(round(m2 * 9 * rent_idx * mult)))
 
@@ -419,10 +426,10 @@ def main():
     global _CC_CONT, _EVENTS_BY_BRAND, _ADDR_FOR, _ECON
     _CC_CONT = B.load_continents()
     cities = B.load_cities()
-    B.mark_mall_stadium(cities)
+    poi_idx = B.mark_mall_stadium(cities)
     print(f"Ciudades cargadas: {len(cities)}")
     print("cargando direcciones reales de OpenStreetMap…")
-    load_all_addresses(cities)
+    load_all_addresses(cities, poi_idx)
 
     _EVENTS_BY_BRAND, _ADDR_FOR = build_brand_events(cities)
     _ECON = B.COUNTRY_ECON

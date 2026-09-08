@@ -590,6 +590,10 @@ def district_for(city, lat, lon, rec=None) -> str:
         return "Casco"
     if rec.get("metro"):
         return "Estacion"
+    if rec.get("university_near"):
+        return "Universidad"
+    if rec.get("industrial_near"):
+        return "Poligono"
     if dist < 0.45:
         return "Centro"
     if abs(dy) >= abs(dx):

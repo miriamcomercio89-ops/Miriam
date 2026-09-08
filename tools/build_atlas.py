@@ -263,30 +263,30 @@ ARCH_CC = {
     "RS": "ensanche, estuco y portal",
     "HR": "piedra dálmata o ensanche continental",
     "BG": "estuco, portal y calle de interior",
-    "FR": "fachada francesa, piedra o zinc, persiana y balcón",
-    "IT": "fachada italiana, persiana, estuco ocre o piedra",
+    "FR": ["fachada francesa, piedra o zinc, persiana y balcón", "boulevard parisino de hierro forjado y balcón corrido", "pueblo francés de piedra caliza y contraventana"],
+    "IT": ["fachada italiana, persiana, estuco ocre o piedra", "centro histórico italiano de piedra y toldo de rayas", "periferia italiana de bloque moderno y persiana enrollable"],
     "PT": "azulejo, cal y persiana, luz atlántica",
-    "DE": "ladrillo o entramado, alero y acera ancha",
+    "DE": ["ladrillo o entramado, alero y acera ancha", "casco histórico alemán de entramado de madera", "ensanche alemán de posguerra, hormigón y balcón"],
     "AT": "sillería alpina o ensanche imperial",
     "CH": "madera, piedra y alero alpino",
     "BE": "ladrillo belga, escaparate estrecho",
     "NL": "ladrillo estrecho, canal o calle de bici",
-    "GB": "ladrillo victoriano o high street británica",
+    "GB": ["ladrillo victoriano o high street británica", "terraced house de ladrillo rojo y puerta de color", "high street de posguerra, escaparate y toldo"],
     "IE": "fachada pintada, high street irlandesa",
-    "US": "storefront americano, ladrillo o strip, letrero de caja",
+    "US": ["storefront americano, ladrillo o strip, letrero de caja", "centro comercial de periferia con gran aparcamiento", "downtown de ladrillo con escalera de incendios de hierro"],
     "CA": "storefront canadiense, ladrillo y nieve o arce",
-    "MX": "cal, cantera y color mexicano, portón",
+    "MX": ["cal, cantera y color mexicano, portón", "centro colonial mexicano de cantera y balcón de hierro", "avenida moderna mexicana de vidrio y toldo de color"],
     "AR": "fachada porteña o de interior, persiana y reja",
-    "BR": "modernista tropical o colonial, persiana y sombra",
+    "BR": ["modernista tropical o colonial, persiana y sombra", "favela o periferia de ladrillo visto y cableado aéreo", "centro colonial portugués de azulejo y balcón"],
     "CL": "sillar o madera, calle estrecha andina o costera",
     "CO": "balcón colonial, color y patio",
     "PE": "adobe, balcón de madera y cal limeña",
-    "JP": "madera, noren y alero, calle estrecha",
+    "JP": ["madera, noren y alero, calle estrecha", "calle comercial japonesa de metal ondulado y cartel vertical", "shotengai cubierto, luces y cartelería densa"],
     "KR": "hanok urbano o bloque contemporáneo, letrero vertical",
-    "CN": "baja con letrero vertical, azulejo o hormigón cotidiano",
+    "CN": ["baja con letrero vertical, azulejo o hormigón cotidiano", "hutong o calle antigua de ladrillo gris", "avenida moderna china de torres y zócalo comercial de vidrio"],
     "TW": "baja taiwanesa, toldo y letrero vertical",
     "HK": "bajo de torre, neón y acera estrecha",
-    "IN": "baja colorida, toldo y tráfico de motos",
+    "IN": ["baja colorida, toldo y tráfico de motos", "bazar denso de cableado aéreo y cartel pintado a mano", "calle residencial de hormigón visto y balcón con ropa tendida"],
     "TH": "toldo, shophouse y humedad tropical",
     "VN": "shophouse estrecho, balcón y cableado",
     "ID": "shophouse, toldo y calle tropical",
@@ -297,28 +297,92 @@ ARCH_CC = {
     "MA": "medina o ensanche, cal, persiana y sombra",
     "TN": "cal, azulejo y persiana magrebí",
     "EG": "bajo de calle densa, persiana y polvo claro",
-    "TR": "persiana, sillería otomana o ensanche",
+    "TR": ["persiana, sillería otomana o ensanche", "bazar otomano de piedra y toldo", "avenida turca moderna de vidrio y cartel luminoso"],
     "GR": "cal blanca, persiana azul o ensanche ateniense",
     "PL": "ensanche centroeuropeo, portal y ladrillo",
     "CZ": "sillería bohemia, portal y alero",
     "HU": "ensanche de Pest, estuco y portal",
     "RO": "estuco, portal y calle de interior",
-    "RU": "portal soviético o ensanche, ladrillo y nieve",
+    "RU": ["portal soviético o ensanche, ladrillo y nieve", "bloque soviético de panel prefabricado y balcón acristalado", "centro histórico ruso de estuco color y cúpula lejana"],
     "UA": "ensanche de ladrillo, portal y acera ancha",
     "SE": "madera pintada o ladrillo, luz nórdica",
     "NO": "madera, muelle o calle de fiordo",
     "DK": "ladrillo danés, bicicleta y escaparate",
     "FI": "granito o madera, luz baja nórdica",
     "ZA": "veranda, ladrillo y luz alta",
-    "NG": "baja de chapa y hormigón, toldo y calle densa",
+    "NG": ["baja de chapa y hormigón, toldo y calle densa", "mercado callejero de chapa pintada y polvo rojo", "avenida moderna de Lagos, vidrio y valla publicitaria"],
     "KE": "baja de ciudad africana, toldo y acera irregular",
     "IL": "cal, persiana y piedra clara o ensanche",
-    "AE": "plinto de mall o calle aclimatada, vidrio y sombra",
+    "AE": ["plinto de mall o calle aclimatada, vidrio y sombra", "zócalo de rascacielos acristalado con toldo de sombra"],
     "SA": "bajo contemporáneo, piedra clara y sombra",
     "PH": "toldo y baja tropical, acera irregular",
-    "PK": "baja densa, toldo y letrero pintado",
-    "BD": "baja de ciudad densa, toldo y humedad",
+    "PK": ["baja densa, toldo y letrero pintado", "bazar de Lahore o Karachi, cartel pintado a mano y cableado"],
+    "BD": ["baja de ciudad densa, toldo y humedad", "calle de Daca, rickshaw y cartel pintado"],
     "IR": "arco, ladrillo y persiana, bazar o ensanche",
+}
+
+ARCH_ERA = [
+    "de construcción reciente y aspecto cuidado",
+    "renovado hace pocos años, con toques actuales",
+    "clásico, sin reformas recientes",
+    "algo desgastado por el uso diario, auténtico",
+    "recién pintado, con el rótulo nuevo",
+    "con carpintería y persiana originales conservadas",
+    "de bloque moderno de varias plantas sobre el bajo",
+    "en esquina, con doble fachada a la calle",
+]
+
+BID_STYLE = {
+    "roble": "maderas oscuras y brasa a la vista, aire serio de asador",
+    "olivo": "azulejo y mantel de cuadros, aceite y huerta sobre la mesa",
+    "marea": "tonos azules y blancos, aire de lonja marinera",
+    "farol": "madera oscura, farolillos y barra de izakaya",
+    "nudo": "barra estrecha, vapor de caldo y neón discreto",
+    "cinta": "minimalismo japonés, madera clara y piedra",
+    "wok": "rojo y dorado discretos, cocina wok a la vista",
+    "thai": "colorido de calle asiática, toldos y farolillos",
+    "monzon": "especiado en color, cortinas y detalles de latón",
+    "seul": "mesas con parrilla integrada y letrero vertical",
+    "palazzo": "clásico italiano, mantel de cuadros y madera cálida",
+    "vesubio": "trattoria sencilla, harina a la vista y madera clara",
+    "pizza": "horno de leña visible y azulejo napolitano",
+    "nieve": "pizzería moderna, hormigón y horno a la vista",
+    "empanada": "parrilla criolla, madera oscura y cuero",
+    "arena": "color mexicano, cerámica y mantel bordado",
+    "bao": "mostrador rápido, azulejo de color y letrero de neón",
+    "jerk": "trópico caribeño, madera pintada y ventilador de techo",
+    "pampa": "rodizio brasileño, madera oscura y parrilla central",
+    "ola": "cerámica andina y madera clara, aire de altura",
+    "pho": "laboratorio urbano, acero y ladrillo visto",
+    "bufalo": "mostrador rápido, rojo corporativo y acero",
+    "pollo": "mostrador de barrio, rojo y amarillo de cadena",
+    "dumpling": "barra deportiva, pantallas y madera oscura",
+    "frankfurt": "carrito o ventanilla de acera, acero y toldo a rayas",
+    "carbon": "humo visible, madera quemada y ladrillo",
+    "gyros": "diner americano clásico, acero cromado y neón",
+    "nord": "sala de carnes elegante, mármol oscuro y latón",
+    "linterna": "cocina contemporánea, hormigón pulido y madera clara",
+    "mezze": "aire de huerta, plantas colgantes y madera clara",
+    "poke": "barra saludable, colores vivos y madera clara",
+    "falafel": "barra rápida y luminosa, verde y blanco",
+    "alpina": "mostrador rápido, harina a la vista y tonos cálidos",
+    "eclipse": "horno a la vista, madera clara y vitrina de pan",
+    "cerveza": "cafetería de barrio, madera clara y vitrina de bollería",
+    "vermu": "vitrina dulce italiana, mármol claro y dorado suave",
+    "tequila": "vitrina de chocolate, madera oscura y dorado",
+    "bodega": "heladería italiana, colores pastel y vitrina fría",
+    "whisky": "pastelería elegante, vitrina de tartas y dorado suave",
+    "absenta": "brunch luminoso, madera clara y plantas",
+    "latitud": "azotea de cócteles, cristal y luces cálidas",
+    "polar": "rooftop contemporáneo, cristal y perfil de la ciudad",
+    "seda": "fachada oscura y minimalista, sin cartel llamativo",
+    "etoile": "elegancia francesa clásica, cortina y dorado",
+    "rubi": "sobrio y de firma, piedra oscura y latón",
+    "mar": "azul profundo y mármol claro, aire de gran marisquería",
+    "sakura": "mediterráneo de autor, piedra clara y madera",
+    "tropico": "salón de banquetes, cristal y luz cálida de evento",
+    "doner": "mostrador de tránsito, acero y señalética de viaje",
+    "taco": "food hall industrial, acero visto y varios fogones",
 }
 
 BRANDS = [
@@ -376,7 +440,9 @@ BRANDS = [
 
 SIZES = {
     "kiosco": ("Kiosco", 8, 22),
+    "bistro": ("Barra/Bistró", 16, 60),
     "local": ("Local", 42, 140),
+    "local_grande": ("Local grande", 80, 260),
     "ghost": ("C. fantasma", 6, 38),
     "flagship": ("Flagship", 140, 480),
     "food_hall": ("Food hall", 168, 640),
@@ -387,6 +453,17 @@ SIZES = {
     "drive_thru": ("Drive-thru", 24, 90),
     "rooftop": ("Rooftop", 90, 230),
 }
+
+
+def size_jitter(size_id: str, r) -> tuple[int, int]:
+    """Aplica una variación aleatoria real de ±25% al aforo y los m² de un formato, para que
+    dos locales del mismo formato no midan siempre exactamente lo mismo."""
+    _, seats0, m2_0 = SIZES[size_id]
+    f_seats = 0.75 + r() * 0.5
+    f_m2 = 0.75 + r() * 0.5
+    seats = max(2, int(round(seats0 * f_seats)))
+    m2 = max(8, int(round(m2_0 * f_m2)))
+    return seats, m2
 
 CONTINENT_ES = {
     "EU": "Europa", "AS": "Asia", "AF": "África", "OC": "Oceanía",
@@ -559,22 +636,31 @@ def load_cities():
     return cities
 
 
-def mark_mall_stadium(cities):
-    """Como no hay POI de mall/estadio en el extracto OSM mundial disponible, se aproxima
-    'hay un centro comercial o mercado real cerca' / 'hay un estadio real cerca' restringiendo
-    esos formatos a las ciudades de mayor población de cada país (las que realmente los tienen)."""
+def mark_mall_stadium(cities, poi_idx=None):
+    """Presencia real de centro comercial/mercado, estadio, universidad, polígono industrial,
+    costa y estación de tren en el área metropolitana de cada municipio, usando el gaceteero
+    mundial de GeoNames y la línea de costa real (tools/global_poi.py) — ya no una aproximación
+    por población. Si un país entero no tiene ningún punto real registrado (cobertura pobre de
+    GeoNames en esa zona), se recurre como último recurso a la aproximación anterior por ranking
+    de población dentro de ese país, para no dejarlo sin ninguno de estos formatos."""
+    import global_poi as G
+
+    idx = poi_idx or G.GlobalPoiIndex(G.load_all())
+    G.annotate_cities(cities, idx)
+
     by_cc = defaultdict(list)
     for c in cities:
         by_cc[c["cc"]].append(c)
     for cc, group in by_cc.items():
         group.sort(key=lambda c: -c["pop"])
         n = len(group)
-        mall_n = max(3, min(80, round(n * 0.06) + 3))
-        stadium_n = max(1, min(14, round(n * 0.012) + 1))
-        for c in group[:mall_n]:
-            c["mall_ok"] = True
-        for c in group[:stadium_n]:
-            c["stadium_ok"] = True
+        if not any(c.get("mall_ok") for c in group):
+            for c in group[: max(1, min(80, round(n * 0.06) + 1))]:
+                c["mall_ok"] = True
+        if not any(c.get("stadium_ok") for c in group):
+            for c in group[: max(1, min(14, round(n * 0.012) + 1))]:
+                c["stadium_ok"] = True
+    return idx
 
 
 def cluster(cities):
@@ -635,12 +721,17 @@ def size_for(tier: str, r, pop: int, ctx: dict | None = None) -> str:
     metro = bool(ctx.get("metro"))
     mall_ok = bool(ctx.get("mall_ok"))
     stadium_ok = bool(ctx.get("stadium_ok"))
+    university = dist == "Universidad"
     edge = dist in ("Poligono", "Industrial", "Norte", "Sur", "Este", "Oeste")
     central = dist in ("Centro", "Casco")
 
     allow = ["kiosco", "local"]
+    if pop >= 900:
+        allow.append("bistro")
     if pop >= 3500:
         allow.append("ghost")
+    if pop >= 12000:
+        allow.append("local_grande")
     if pop >= 22000:
         allow.append("flagship")
     if pop >= 70000 and mall_ok:
@@ -665,40 +756,55 @@ def size_for(tier: str, r, pop: int, ctx: dict | None = None) -> str:
         return "local"
 
     u = r()
+    if university:
+        return pick([
+            "bistro" if u < 0.42 else "",
+            "kiosco" if u < 0.6 else "",
+            "kiosco_estacion" if metro and u < 0.68 else "",
+            "local",
+        ])
     if tier == "luxury":
         return pick([
             "rooftop" if u < 0.16 else "",
             "estadio" if u < 0.26 else "",
-            "flagship" if u < 0.62 else "",
+            "flagship" if u < 0.56 else "",
+            "local_grande" if u < 0.72 else "",
             "local",
         ])
     if tier == "bar":
-        return pick(["rooftop" if u < 0.24 else "", "flagship" if u < 0.4 else "", "local"])
+        return pick([
+            "rooftop" if u < 0.24 else "", "flagship" if u < 0.36 else "",
+            "local_grande" if u < 0.55 else "", "local",
+        ])
     if tier == "food_truck":
         return pick([
             "kiosco_playa" if beach and u < 0.4 else "",
-            "kiosco" if u < 0.65 else "",
-            "ghost" if u < 0.85 else "",
+            "kiosco" if u < 0.58 else "",
+            "bistro" if u < 0.7 else "",
+            "ghost" if u < 0.88 else "",
             "local",
         ])
     if tier == "fast_food":
         return pick([
             "kiosco_playa" if beach and u < 0.22 else "",
             "kiosco_estacion" if metro and u < 0.4 else "",
-            "kiosco" if u < 0.55 else "",
-            "drive_thru" if u < 0.68 else "",
-            "ghost" if u < 0.78 else "",
-            "food_hall" if u < 0.85 else "",
+            "kiosco" if u < 0.5 else "",
+            "bistro" if u < 0.58 else "",
+            "drive_thru" if u < 0.71 else "",
+            "ghost" if u < 0.8 else "",
+            "food_hall" if u < 0.86 else "",
             "local",
         ])
     # casual (mayoría de marcas)
     return pick([
         "kiosco_playa" if beach and u < 0.1 else "",
         "food_hall" if u < 0.14 else "",
-        "local_mall" if u < 0.24 else "",
-        "flagship" if u < 0.34 else "",
-        "drive_thru" if u < 0.4 else "",
-        "kiosco" if u < 0.5 else "",
+        "local_mall" if u < 0.23 else "",
+        "flagship" if u < 0.31 else "",
+        "local_grande" if u < 0.42 else "",
+        "drive_thru" if u < 0.48 else "",
+        "bistro" if u < 0.56 else "",
+        "kiosco" if u < 0.64 else "",
         "local",
     ])
 
@@ -864,15 +970,15 @@ def climate_for(city, r) -> str:
     return f"{hora}, {w}, {veg}"
 
 
-def arch_for(city) -> str:
+def arch_for(city, r=None) -> str:
     a1 = city.get("admin1") or ""
     by_region = {
-        "Andalucía": "arquitectura andaluza de cal blanca, rejas y toldo",
-        "Cataluña": "ensanche o pueblo catalán, balcones y persiana",
-        "Comunidad Valenciana": "fachada mediterránea, persiana y luz dura",
+        "Andalucía": ["arquitectura andaluza de cal blanca, rejas y toldo", "patio andaluz con macetas y cal reciente"],
+        "Cataluña": ["ensanche o pueblo catalán, balcones y persiana", "modernismo catalán menor, hierro forjado y balcón"],
+        "Comunidad Valenciana": ["fachada mediterránea, persiana y luz dura", "casco valenciano de azulejo y persiana verde"],
         "Galicia": "piedra granítica, alero y humedad atlántica",
         "País Vasco": "caserío urbano o ensanche, hierro y piedra",
-        "Madrid": "granito y ladrillo madrileño, portal de inmueble",
+        "Madrid": ["granito y ladrillo madrileño, portal de inmueble", "ensanche madrileño de ladrillo visto y balcón"],
         "Islas Baleares": "marés, persiana verde y luz de isla",
         "Canarias": "volcánico, cal y luz atlántica",
         "Murcia": "huerta y cal, persiana y sol",
@@ -887,9 +993,15 @@ def arch_for(city) -> str:
         "Ceuta": "norte de África español, persiana y estrecho",
         "Melilla": "modernista menor y luz del Rif",
     }
-    txt = by_region.get(a1) or ARCH_CC.get(city.get("cc") or "", "")
-    if not txt:
-        txt = "arquitectura local coherente con el municipio, sin resort"
+    base = by_region.get(a1) or ARCH_CC.get(city.get("cc") or "", "")
+    if not base:
+        base = "arquitectura local coherente con el municipio, sin resort"
+    txt = base[int(r() * len(base)) % len(base)] if isinstance(base, list) and r is not None else (
+        base[0] if isinstance(base, list) else base
+    )
+    if r is not None:
+        era = ARCH_ERA[int(r() * len(ARCH_ERA)) % len(ARCH_ERA)]
+        txt = f"{txt}, {era}"
     return txt[0].upper() + txt[1:] if txt else txt
 
 
@@ -902,13 +1014,16 @@ def image_prompt(v, city) -> str:
     calle = ["algún coche aparcado cerca", "tráfico ligero al fondo", "una bicicleta apoyada cerca", "una moto de reparto pasando"]
     detalle_gente = gente[int(cr() * len(gente)) % len(gente)]
     detalle_calle = calle[int(cr() * len(calle)) % len(calle)]
+    arch_txt = arch_for(city, cr)
+    style = BID_STYLE.get(v.get("bid") or "", "")
+    marca_txt = f" Estilo propio de la marca: {style}." if style else ""
     return (
         "PROMPT IMAGEN: Fotografía fotorrealista a pie de calle de la fachada del restaurante "
         f"«{v['brand']}» en {city['name']}, {city['admin2']}, {city['admin1']} ({city['country']}). "
         f"{kind.capitalize()} de {pop} habitantes. Formato {v['size_name'].lower()} "
         f"({v['seats']} plazas, {v['m2']} m²), cocina {v['cuisine']}, tramo {TIER_LABEL[v['tier']].lower()}. "
         f"Ubicación: {setting_for(v)}. Dirección de referencia: {v['address']}. "
-        f"{arch_for(city)}. Ambiente: {clima}, {detalle_gente}, {detalle_calle}. "
+        f"{arch_txt}.{marca_txt} Ambiente: {clima}, {detalle_gente}, {detalle_calle}. "
         f"Rótulo claramente legible con el nombre «{v['brand']}». "
         "Óptica 35 mm, luz natural, sin texto extra en la imagen, "
         "sin hotel, sin resort, sin logotipos de otras cadenas, sin interior de comedor a pantalla completa."
@@ -1012,8 +1127,13 @@ def make_venues(city, n):
         size_id = size_for(tier, r, city["pop"], ctx)
         if bid == "taco" and size_id not in ("food_hall",):
             size_id = "food_hall" if (city["pop"] >= 70000 and city.get("mall_ok")) else "local"
-        sl, seats, m2 = SIZES[size_id]
-        mult = {"ghost": 0.55, "food_hall": 1.35, "rooftop": 1.6, "local_mall": 1.25, "kiosco_playa": 0.9, "kiosco_estacion": 1.1, "drive_thru": 0.85}.get(size_id, 1.0)
+        sl = SIZES[size_id][0]
+        seats, m2 = size_jitter(size_id, r)
+        mult = {
+            "ghost": 0.55, "food_hall": 1.35, "rooftop": 1.6, "local_mall": 1.25,
+            "kiosco_playa": 0.9, "kiosco_estacion": 1.1, "drive_thru": 0.85,
+            "bistro": 0.85, "local_grande": 1.15,
+        }.get(size_id, 1.0)
         rent = max(180, int(round(m2 * 9 * rent_idx * mult)))
         owned = r() < 0.28
         guests = []
@@ -1450,7 +1570,8 @@ def main():
         cities = [c for c in cities if c["cc"] not in skip]
         print("excluded", ",".join(sorted(skip)))
     print("cities", len(cities))
-    mark_mall_stadium(cities)
+    print("POI reales mundiales (mall/estadio/universidad/polígono/costa/estación)…")
+    poi_idx = mark_mall_stadium(cities)
     if args.out:
         OUT_ROOT = Path(args.out) / "Horizon_Atlas_Restaurantes"
     elif skip or not args.cc:
@@ -1460,6 +1581,8 @@ def main():
     addrs = build_index(cities)
     for c in cities:
         c["addrs"] = addrs.get(c["id"], [])
+    import global_poi as G
+    G.annotate_addresses(cities, poi_idx)
     print("clustering…")
     heads, loc = cluster(cities)
     by_id = {c["id"]: c for c in cities}

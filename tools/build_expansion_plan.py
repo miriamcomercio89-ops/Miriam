@@ -255,10 +255,12 @@ def gather_data():
     B.load_world_js()
     all_cities = B.load_cities()
     es = [c for c in all_cities if c["cc"] == "ES"]
-    B.mark_mall_stadium(es)
+    poi_idx = B.mark_mall_stadium(es)
     addrs = B.build_index(es)
     for c in es:
         c["addrs"] = addrs.get(c["id"], [])
+    import global_poi as G
+    G.annotate_addresses(es, poi_idx)
 
     heads, loc = B.cluster(es)
     by_id = {c["id"]: c for c in es}
