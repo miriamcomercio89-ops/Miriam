@@ -1,41 +1,59 @@
 #!/usr/bin/env python3
-"""Horizon Restaurant Group — Plan unificado de construcción (5.000 fases).
+"""Horizon Restaurant Group — Plan de Construcción Real (etapas y fases).
 
-Producto adicional (no sustituye ni al atlas mundial ni a los 50 planes de
-expansión por marca): un único calendario de obra para todo el grupo, con
-las 50 marcas mezcladas fase a fase, dividido en 5.000 fases de tamaño
-parecido (~330 locales cada una). Empieza en la provincia de Málaga y avanza,
-círculo a círculo (Andalucía, España, Europa, Asia, América, África,
-Oceanía), con el mismo criterio "ciudades grandes y turismo real primero" que
-el plan maestro (tools/build_expansion_plan.py) — pero con una variedad
-aleatoria real dentro de cada zona (salteo local determinista por ciudad), de
-forma que el orden no sea municipio a municipio estrictamente.
+El plan definitivo de construcción del grupo: sustituye al plan unificado de
+5.000 fases anterior. Un único calendario de obra con las 50 marcas
+mezcladas, dividido en tantas **etapas** como hagan falta para cubrir el
+mundo — cada etapa consta de **1.000 locales** y se divide, a su vez, en
+**20 fases de 50 locales** cada una (un PDF por fase, organizados en una
+carpeta por etapa).
 
-Cada fase es un PDF independiente con el periodo real de la fase (cadencia
-fija para todo el grupo: 1 fase = 3 días naturales, desde enero de 2027, lo
-que da un horizonte de ~41 años, coherente con las 500 fases mensuales de
-cada marca) y, para cada local: marca, ciudad y país, dirección real de
+Orden de apertura (determinista, sin variedad aleatoria):
+
+  1. Álora (Málaga) — el primer local del plan.
+  2. Un resumen muy corto del resto de la provincia de Málaga: sus 10
+     municipios de más peso (población real y turismo de costa verificado).
+  3. El resto de las ciudades del mundo (incluido el resto de Málaga,
+     Andalucía y España) en una única clasificación global por tamaño y
+     turismo real — sin agrupar por país ni continente, así que una gran
+     ciudad extranjera compite directamente con Madrid o Barcelona por su
+     posición en el calendario.
+
+Dentro de esa lista de ciudades, los locales no se abren agotando cada
+ciudad antes de pasar a la siguiente: se abren **por rondas** (round-robin).
+En la ronda 0 se abre 1 local en cada ciudad del mundo, en el orden de arriba;
+solo cuando ya hay un primer local en (casi) todas las ciudades del planeta
+empieza la ronda 1 (segundo local en las que tengan más de uno), y así hasta
+la ronda 63 (el máximo de locales por ciudad, ver build_atlas.n_venues). Con
+esto, la etapa 1 (locales 1-1.000) ya cubre unas 1.000 ciudades distintas de
+casi todos los países del mundo — "dominando" el mapa desde el principio — y
+las rondas siguientes van rellenando cada ciudad ya abierta con más locales.
+
+No hay calendario de fechas: cada fase se identifica solo por su etapa y su
+número de fase (1 a 20) dentro de ella.
+
+Cada local trae: marca (con logo), ciudad y país, dirección real de
 OpenStreetMap, distrito, formato/aforo/m², accesibilidad real (metro, calle
-peatonal, playa) e inversión TOTAL estimada (alquiler o compra + obra +
-mobiliario + stock, ya sumados en una sola cifra) más el prompt de imagen de
-la fachada. No incluye horario de apertura (no aporta a un plan de obra).
+peatonal, playa), inversión TOTAL estimada en una sola cifra (alquiler o
+compra + obra + mobiliario + stock) y el prompt de imagen de la fachada. No
+incluye horario de apertura (calendario de obra, no de operación).
 
 Todos los datos (población real, direcciones OSM, reparto de marcas por
-cocina dominante, alquiler real por m² y ciudad) usan exactamente el mismo
-motor que el atlas (tools/build_atlas.py), así que el total mundial
-(~1,65 millones de locales) coincide con el atlas y con los planes por marca.
+cocina dominante, alquiler real por m² y ciudad) usan el mismo motor que el
+atlas (tools/build_atlas.py), así que el total mundial (~1,65 millones de
+locales) coincide con el atlas y con los planes por marca.
 
-Salida: varios ZIP con las 5.000 fases repartidas por tamaño:
-    /workspace/descargas/horizon_plan_construccion_NN_fAAAA-BBBB.zip
+Salida: varios ZIP con las carpetas Etapa_NNNN/fase_NN.pdf repartidas por
+tamaño:
+    /workspace/descargas/horizon_plan_construccion_NN_eAAAA-BBBB.zip
 
 Uso:
     python3 tools/build_construction_plan.py
-    python3 tools/build_construction_plan.py --phases 20 --limit-cities 4000  # prueba rápida
+    python3 tools/build_construction_plan.py --etapas 3 --limit-cities 3000  # prueba rápida
 """
 from __future__ import annotations
 
 import argparse
-import datetime
 import math
 import os
 import shutil
@@ -59,12 +77,13 @@ from build_brand_plans import (  # noqa: E402
 ROOT = Path("/workspace")
 OUT_DIR = ROOT / "descargas"
 TMP_DIR = Path("/tmp/horizon_plan_construccion")
-N_PHASES = 5000
 MAX_ZIP_BYTES = 150_000_000
 
-PHASE_START = datetime.date(2027, 1, 1)
-DAYS_PER_PHASE = 3
-MONTHS_ES = B.MONTHS_ES
+N_POR_ETAPA = 1000
+N_FASES_POR_ETAPA = 20
+N_POR_FASE = N_POR_ETAPA // N_FASES_POR_ETAPA  # 50
+TOP_MALAGA_N = 10
+MAX_ROUNDS = 64  # tope real de locales por ciudad (build_atlas.n_venues)
 
 SIZE_RENT_MULT = {
     "ghost": 0.55, "food_hall": 1.35, "rooftop": 1.6, "local_mall": 1.25,
@@ -75,79 +94,52 @@ SIZE_RENT_MULT = {
 _CC_CONT = {}
 
 
-def phase_period(phase_no: int):
-    """Fase N -> (fecha inicio, fecha fin, etiqueta). Cadencia fija: 3 días/fase."""
-    start = PHASE_START + datetime.timedelta(days=(phase_no - 1) * DAYS_PER_PHASE)
-    end = start + datetime.timedelta(days=DAYS_PER_PHASE - 1)
-    if start.year == end.year and start.month == end.month:
-        label = f"{start.day}-{end.day} {MONTHS_ES[start.month - 1]} {start.year}"
-    elif start.year == end.year:
-        label = f"{start.day} {MONTHS_ES[start.month - 1]} - {end.day} {MONTHS_ES[end.month - 1]} {start.year}"
-    else:
-        label = f"{start.day} {MONTHS_ES[start.month - 1]} {start.year} - {end.day} {MONTHS_ES[end.month - 1]} {end.year}"
-    return start, end, label
-
-
-def jittered_score(c) -> float:
-    """Igual que el criterio 'lógico' del plan maestro (ciudades grandes y costa real
-    primero) pero con una variación aleatoria real y determinista por ciudad, para que
-    dentro de cada zona el orden no sea estrictamente municipio a municipio."""
-    base = city_priority_score(c)
-    r = B.rng(B.h32(c["id"], "constructionorder"))
-    return base * (0.7 + r() * 0.6)
-
-
-def build_world_order(all_cities):
-    """Orden geográfico completo del mundo: provincia de Málaga, resto de Andalucía,
-    resto de España y, después, continente a continente (Europa, Asia, América del Norte
-    y Central, América del Sur, África, Oceanía), país a país por locales potenciales y,
-    dentro de cada país, ciudad a ciudad por el mismo criterio con salteo local."""
+def build_city_order(all_cities):
+    """Orden determinista de ciudades: Álora, el top-10 de la provincia de Málaga y,
+    después, todas las demás ciudades del mundo (incluido el resto de Málaga, Andalucía
+    y España) en una sola clasificación global por tamaño y turismo real."""
     es = [c for c in all_cities if c["cc"] == "ES"]
-    andalucia = [c for c in es if c["admin1"] == "Andalucía"]
-    malaga_prov = sorted([c for c in es if c["admin2"] == "Málaga"], key=lambda c: -jittered_score(c))
-    andalucia_rest = sorted([c for c in andalucia if c["admin2"] != "Málaga"], key=lambda c: -jittered_score(c))
-    es_rest = sorted([c for c in es if c["admin1"] != "Andalucía"], key=lambda c: -jittered_score(c))
+    malaga = [c for c in es if c["admin2"] == "Málaga"]
+    alora = next((c for c in malaga if c["name"] in ("Álora", "Alora")), None)
+    if alora is None:
+        raise SystemExit("No se encuentra Álora (Málaga) en el listado de municipios reales.")
 
-    cont = B.load_continents()
-    by_cc = defaultdict(list)
-    for c in all_cities:
-        by_cc[c["cc"]].append(c)
-    country_nv = {cc: sum(B.n_venues(c["pop"]) for c in cs) for cc, cs in by_cc.items()}
+    top_malaga = sorted(
+        [c for c in malaga if c["id"] != alora["id"]],
+        key=lambda c: -city_priority_score(c),
+    )[:TOP_MALAGA_N]
 
-    by_cont_cc = defaultdict(set)
-    for cc in by_cc:
-        by_cont_cc[cont.get(cc, "??")].add(cc)
-
-    cont_order = ["EU", "AS", "NA", "SA", "AF", "OC"]
-    seen_codes = set(cont_order)
-    cont_order += sorted(set(by_cont_cc.keys()) - seen_codes)
-
-    rest_world = []
-    for code in cont_order:
-        ccs = sorted(by_cont_cc.get(code, ()), key=lambda cc: -country_nv.get(cc, 0))
-        for cc in ccs:
-            if code == "EU" and cc == "ES":
-                continue
-            rest_world.extend(sorted(by_cc[cc], key=lambda c: -jittered_score(c)))
-
-    return malaga_prov + andalucia_rest + es_rest + rest_world
+    chosen_ids = {alora["id"]} | {c["id"] for c in top_malaga}
+    resto = [c for c in all_cities if c["id"] not in chosen_ids]
+    resto_sorted = sorted(resto, key=lambda c: -city_priority_score(c))
+    return [alora] + top_malaga + resto_sorted
 
 
-def build_ordered_events_and_addr(cities_in_order):
-    """Recorre el mundo en el orden final del plan y, para cada ciudad, reparte sus
-    locales entre las 50 marcas (mismo motor que el atlas) asignando ya una dirección
-    real de OSM a cada uno (sin repetir dentro de la misma ciudad si es posible).
-    Devuelve (events, addr_for): events es la secuencia completa (ciudad, slot, marca)
-    en el orden final del calendario único; addr_for mapea (city_id, slot) -> dirección."""
-    events = []
-    addr_for = {}
-    for c in cities_in_order:
+def build_round_robin_events(city_order):
+    """Para cada ciudad calcula su secuencia de marcas (mismo motor que el atlas) y su
+    dirección real por local; luego intercala los locales por rondas (round-robin): 1
+    local por ciudad y ronda, en el orden fijo de city_order, hasta agotar la ciudad con
+    más locales (máx. 64). Devuelve (events, addr_for): events es la secuencia final
+    (ciudad, slot, marca); addr_for mapea (city_id, slot) -> dirección real."""
+    per_city = []
+    for c in city_order:
         n = B.n_venues(c["pop"])
         seq = B.pick_brand_sequence(c, n)
         used = set()
-        for slot, bi in enumerate(seq):
-            events.append((c, slot, bi))
-            addr_for[(c["id"], slot)] = B.take_addr(c, used)
+        addrs = [B.take_addr(c, used) for _ in range(n)]
+        per_city.append((c, seq, addrs))
+
+    events = []
+    addr_for = {}
+    for r in range(MAX_ROUNDS):
+        found = False
+        for c, seq, addrs in per_city:
+            if r < len(seq):
+                found = True
+                events.append((c, r, seq[r]))
+                addr_for[(c["id"], r)] = addrs[r]
+        if not found:
+            break
     return events, addr_for
 
 
@@ -222,16 +214,28 @@ def build_full_record(city, slot, bid_idx, rec, econ):
     }
 
 
-def compute_phase_totals(ordered_events, addr_for, econ, bounds):
-    """Una única pasada secuencial (barata: sin texto de dirección ni prompt de imagen)
-    sobre los ~1,65 millones de locales para obtener, fase a fase, la inversión exacta y
-    los países que entran por primera vez — así los workers que renderizan en paralelo no
-    necesitan coordinarse entre sí para mostrar cifras acumuladas correctas."""
-    n_phases = len(bounds)
-    phase_invest = [0] * n_phases
-    phase_first_cc = [[] for _ in range(n_phases)]
+def fixed_chunks(total: int, size: int):
+    """Trocea en bloques EXACTOS de `size` elementos (salvo el último, que se queda con
+    el resto) — así cada etapa tiene siempre 1.000 locales, salvo la última."""
+    bounds = []
+    start = 0
+    while start < total:
+        end = min(start + size, total)
+        bounds.append((start, end))
+        start = end
+    return bounds or [(0, 0)]
+
+
+def compute_fase_totals(ordered_events, addr_for, econ, fase_bounds):
+    """Pasada secuencial barata (sin texto de dirección ni prompt de imagen) sobre los
+    ~1,65 millones de locales para obtener, fase a fase, la inversión exacta y los países
+    que entran por primera vez — así los workers en paralelo no necesitan coordinarse
+    entre sí para mostrar cifras acumuladas correctas."""
+    n_fases = len(fase_bounds)
+    fase_invest = [0] * n_fases
+    fase_first_cc = [[] for _ in range(n_fases)]
     seen_cc = set()
-    for pi, (start, end) in enumerate(bounds):
+    for fi, (start, end) in enumerate(fase_bounds):
         s = 0
         for i in range(start, end):
             city, slot, bid_idx = ordered_events[i]
@@ -241,27 +245,26 @@ def compute_phase_totals(ordered_events, addr_for, econ, bounds):
             s += calc["total_inv"]
             if cc not in seen_cc:
                 seen_cc.add(cc)
-                phase_first_cc[pi].append(cc)
-        phase_invest[pi] = s
-        if (pi + 1) % 500 == 0:
-            print(f"  … totales fase {pi + 1}/{n_phases}", flush=True)
+                fase_first_cc[fi].append(cc)
+        fase_invest[fi] = s
+        if (fi + 1) % 5000 == 0:
+            print(f"  … totales fase {fi + 1}/{n_fases}", flush=True)
 
-    cum_before_invest = [0] * n_phases
-    cum_before_count = [0] * n_phases
+    cum_before_invest = [0] * n_fases
+    cum_before_count = [0] * n_fases
     running_invest = 0
     running_count = 0
-    for pi, (start, end) in enumerate(bounds):
-        cum_before_invest[pi] = running_invest
-        cum_before_count[pi] = running_count
-        running_invest += phase_invest[pi]
+    for fi, (start, end) in enumerate(fase_bounds):
+        cum_before_invest[fi] = running_invest
+        cum_before_count[fi] = running_count
+        running_invest += fase_invest[fi]
         running_count += (end - start)
-    return phase_invest, cum_before_invest, cum_before_count, phase_first_cc, running_invest, running_count
+    return cum_before_invest, cum_before_count, fase_first_cc, running_invest, running_count
 
 
 def fmt_eur_kpi(n: float) -> str:
     """Para las tarjetas KPI: a partir de 1.000 M€ la cifra completa con separadores de
-    miles ya no cabe en el ancho de la tarjeta (ni de la página, en las últimas fases, con
-    más de 300.000 M€ acumulados); a partir de ahí se expresa en millones enteros."""
+    miles ya no cabe en el ancho de la tarjeta ni de la página; se expresa en millones."""
     if abs(n) >= 1_000_000_000:
         return f"{n / 1e6:,.0f} M€".replace(",", ".")
     return fmt_eur(n)
@@ -277,11 +280,11 @@ def dominant_zone(records) -> str:
     return " y ".join(name for name, _ in top)
 
 
-class PhaseDoc(Doc):
-    def header(self, phase_label, title, accent=NAVY):
+class FaseDoc(Doc):
+    def header(self, fase_label, title, accent=NAVY):
         c = self.c
         self.page_no = 1
-        self.phase = phase_label
+        self.phase = fase_label
         c.setFillColorRGB(*CREAM)
         c.rect(0, 0, W, H, fill=1, stroke=0)
         c.setFillColorRGB(*accent)
@@ -290,7 +293,7 @@ class PhaseDoc(Doc):
         c.rect(0, H - 58, W, 4, fill=1, stroke=0)
         c.setFillColorRGB(1, 1, 1)
         c.setFont("DejaVu", 8.5)
-        c.drawString(MARGIN, H - 20, phase_label.upper())
+        c.drawString(MARGIN, H - 20, fase_label.upper())
         c.setFont("DejaVuBold", 15)
         c.drawString(MARGIN, H - 42, title)
         self._footer()
@@ -301,16 +304,16 @@ class PhaseDoc(Doc):
         c = self.c
         c.setFillColorRGB(*GRAY)
         c.setFont("DejaVu", 7.2)
-        c.drawString(MARGIN, 12, "Horizon Restaurant Group · Plan unificado de construcción (5.000 fases)")
+        c.drawString(MARGIN, 12, "Horizon Restaurant Group · Plan de Construcción Real")
         c.drawRightString(W - MARGIN, 12, str(self.page_no))
 
 
-def draw_venue_card(doc: "PhaseDoc", idx: int, r: dict, phase_label: str, title: str):
+def draw_venue_card(doc: "FaseDoc", idx: int, r: dict, fase_label: str, title: str):
     c = doc.c
     desc_lines = B.wrap(c, r["desc"], "DejaVu", 6.9, CONTENT_W - 44)
     addr_lines = B.wrap(c, r["address"], "DejaVu", 7.4, CONTENT_W - 44)
     need = 44 + 9 * len(desc_lines) + 9.5 * max(0, len(addr_lines) - 1)
-    doc.ensure(need + 6, phase_label, title)
+    doc.ensure(need + 6, fase_label, title)
     y = doc.y
     c.setFillColorRGB(0.965, 0.955, 0.915)
     c.roundRect(MARGIN, y - need + 4, CONTENT_W, need - 4, 6, fill=1, stroke=0)
@@ -352,27 +355,24 @@ def draw_venue_card(doc: "PhaseDoc", idx: int, r: dict, phase_label: str, title:
     doc.y = yy - 6
 
 
-def render_phase_pdf(path, phase_no, n_phases, slice_records, cum_count_before, cum_invest_before,
-                      first_cc_list, total_world_count, total_world_invest):
-    start, end, period_label = phase_period(phase_no)
+def render_fase_pdf(path, etapa_no, n_etapas, fase_no, slice_records, cum_count_before, cum_invest_before,
+                     first_cc_list, total_world_count, total_world_invest):
     n_this = len(slice_records)
     invest_this = sum(r["total_inv"] for r in slice_records)
     cum_count = cum_count_before + n_this
     cum_invest = cum_invest_before + invest_this
     pct = 100.0 * cum_count / total_world_count if total_world_count else 0.0
 
-    doc = PhaseDoc(path)
-    doc.header(
-        f"Fase {phase_no} de {n_phases} · {period_label}",
-        "Plan unificado de construcción — Horizon Restaurant Group",
-    )
+    fase_label = f"Etapa {etapa_no} de {n_etapas} · Fase {fase_no} de {N_FASES_POR_ETAPA}"
+    title = "Plan de Construcción Real — Horizon Restaurant Group"
+    doc = FaseDoc(path)
+    doc.header(fase_label, title)
     c = doc.c
     c.setFillColorRGB(*GRAY)
     c.setFont("DejaVu", 8.2)
     c.drawString(
         MARGIN, doc.y - 2,
-        f"Zona predominante: {dominant_zone(slice_records)}  ·  cadencia: 1 fase = {DAYS_PER_PHASE} días naturales, "
-        "misma marca única para las 50 marcas",
+        f"Zona predominante de esta fase: {dominant_zone(slice_records)}  ·  50 marcas mezcladas, sin horario",
     )
     doc.y -= 14
 
@@ -383,8 +383,8 @@ def render_phase_pdf(path, phase_no, n_phases, slice_records, cum_count_before, 
         (fmt_eur_kpi(cum_invest), "Inversión acumulada del grupo"),
     ])
     doc.para(
-        f"Progreso del plan mundial: {pct:.2f}% de los {fmt_n(total_world_count)} locales potenciales del grupo "
-        f"Horizon ({fmt_eur(total_world_invest)} de inversión total estimada al cierre de las 5.000 fases).",
+        f"Progreso del plan mundial: {pct:.4f}% de los {fmt_n(total_world_count)} locales potenciales del grupo "
+        f"Horizon ({fmt_eur_kpi(total_world_invest)} de inversión total estimada al cierre de todas las etapas).",
         size=8.2, color=GRAY,
     )
     doc.gap(4)
@@ -404,19 +404,17 @@ def render_phase_pdf(path, phase_no, n_phases, slice_records, cum_count_before, 
             doc.para(f"… y {len(first_cc_list) - 6} país(es) más en esta misma fase.", size=8.2, color=GRAY)
         doc.gap(4)
 
-    doc.h2(f"Locales de la fase {phase_no} ({n_this})")
-    phase_label = f"Fase {phase_no} de {n_phases} · {period_label}"
-    title = "Plan unificado de construcción (cont.)"
+    doc.h2(f"Locales de la fase ({n_this})")
     for idx, r in enumerate(slice_records, 1):
-        draw_venue_card(doc, idx, r, phase_label, title)
+        draw_venue_card(doc, idx, r, fase_label, title)
 
     c = doc.c
-    doc.ensure(20, phase_label, title)
+    doc.ensure(20, fase_label, title)
     c.setFillColorRGB(*GREEN)
     c.rect(MARGIN, doc.y - 16, CONTENT_W, 16, fill=1, stroke=0)
     c.setFillColorRGB(1, 1, 1)
     c.setFont("DejaVuBold", 8.6)
-    c.drawString(MARGIN + 6, doc.y - 11, f"TOTAL fase {phase_no}: {n_this} locales")
+    c.drawString(MARGIN + 6, doc.y - 11, f"TOTAL fase: {n_this} locales")
     c.drawRightString(W - MARGIN - 6, doc.y - 11, f"Inversión: {fmt_eur(invest_this)}")
     doc.y -= 22
     doc.para(
@@ -436,33 +434,42 @@ _ADDR_FOR = None
 _ECON = None
 
 
-def render_phase_batch(phase_start_no, phase_end_no, n_phases, bounds, cum_before_invest, cum_before_count,
-                        first_cc_lists, total_world_count, total_world_invest, tmp_dir: Path):
+def render_etapa_batch(etapa_start_no, etapa_end_no, n_etapas, etapa_bounds, fase_bounds_by_etapa,
+                        cum_before_invest, cum_before_count, first_cc_lists,
+                        total_world_count, total_world_invest, tmp_dir: Path):
     events = _ORDERED_EVENTS
     addr_for = _ADDR_FOR
     econ = _ECON
-    for phase_no in range(phase_start_no, phase_end_no + 1):
-        pi = phase_no - 1
-        start, end = bounds[pi]
-        slice_records = [
-            build_full_record(*events[i], addr_for.get((events[i][0]["id"], events[i][1])) or {}, econ)
-            for i in range(start, end)
-        ]
-        path = tmp_dir / f"fase_{phase_no:04d}.pdf"
-        render_phase_pdf(
-            path, phase_no, n_phases, slice_records,
-            cum_before_count[pi], cum_before_invest[pi], first_cc_lists[pi],
-            total_world_count, total_world_invest,
-        )
-    return phase_start_no, phase_end_no
+    for etapa_no in range(etapa_start_no, etapa_end_no + 1):
+        ei = etapa_no - 1
+        e_start, _e_end = etapa_bounds[ei]
+        etapa_dir = tmp_dir / f"Etapa_{etapa_no:04d}"
+        etapa_dir.mkdir(parents=True, exist_ok=True)
+        for fase_no, (rel_start, rel_end) in enumerate(fase_bounds_by_etapa[ei], 1):
+            start, end = e_start + rel_start, e_start + rel_end
+            slice_records = [
+                build_full_record(*events[i], addr_for.get((events[i][0]["id"], events[i][1])) or {}, econ)
+                for i in range(start, end)
+            ]
+            path = etapa_dir / f"fase_{fase_no:02d}.pdf"
+            render_fase_pdf(
+                path, etapa_no, n_etapas, fase_no, slice_records,
+                cum_before_count[ei][fase_no - 1], cum_before_invest[ei][fase_no - 1], first_cc_lists[ei][fase_no - 1],
+                total_world_count, total_world_invest,
+            )
+    return etapa_start_no, etapa_end_no
 
 
 def _worker(args):
-    return render_phase_batch(*args)
+    return render_etapa_batch(*args)
+
+
+def dir_bytes(p: Path) -> int:
+    return sum(f.stat().st_size for f in p.rglob("*") if f.is_file())
 
 
 def pack_construction_zips(tmp_dir: Path, dest_dir: Path, max_bytes: int) -> list[Path]:
-    files = sorted(tmp_dir.glob("fase_*.pdf"))
+    etapa_dirs = sorted(tmp_dir.glob("Etapa_*"), key=lambda p: p.name)
     dest_dir.mkdir(parents=True, exist_ok=True)
     parts = []
     batch, bsz = [], 0
@@ -472,24 +479,25 @@ def pack_construction_zips(tmp_dir: Path, dest_dir: Path, max_bytes: int) -> lis
         if not batch:
             return
         idx = len(parts) + 1
-        first_no = int(batch[0].stem.split("_")[1])
-        last_no = int(batch[-1].stem.split("_")[1])
-        zpath = dest_dir / f"horizon_plan_construccion_{idx:02d}_f{first_no:04d}-{last_no:04d}.zip"
+        first_no = int(batch[0].name.split("_")[1])
+        last_no = int(batch[-1].name.split("_")[1])
+        zpath = dest_dir / f"horizon_plan_construccion_{idx:02d}_e{first_no:04d}-{last_no:04d}.zip"
         if zpath.exists():
             zpath.unlink()
-        print("zipping", zpath, "fases", len(batch), "bytes~", bsz, flush=True)
+        print("zipping", zpath, "etapas", len(batch), "bytes~", bsz, flush=True)
         with zipfile.ZipFile(zpath, "w", zipfile.ZIP_DEFLATED, compresslevel=6) as zf:
-            for p in batch:
-                zf.write(p, arcname=f"horizon_plan_construccion/{p.name}")
+            for d in batch:
+                for f in sorted(d.rglob("*.pdf")):
+                    zf.write(f, arcname=f"horizon_plan_construccion/{d.name}/{f.name}")
         print("  wrote", zpath, "bytes", zpath.stat().st_size, flush=True)
         parts.append(zpath)
         batch, bsz = [], 0
 
-    for p in files:
-        sz = p.stat().st_size
+    for d in etapa_dirs:
+        sz = dir_bytes(d)
         if batch and bsz + sz > max_bytes:
             flush()
-        batch.append(p)
+        batch.append(d)
         bsz += sz
         if sz > max_bytes:
             flush()
@@ -499,7 +507,7 @@ def pack_construction_zips(tmp_dir: Path, dest_dir: Path, max_bytes: int) -> lis
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--phases", type=int, default=N_PHASES)
+    ap.add_argument("--etapas", type=int, default=0, help="limita el nº de etapas (0 = todas)")
     ap.add_argument("--workers", type=int, default=max(1, os.cpu_count() or 1))
     ap.add_argument("--chunks-per-worker", type=int, default=6)
     ap.add_argument("--limit-cities", type=int, default=0, help="para pruebas rápidas")
@@ -511,27 +519,52 @@ def main():
     cities = B.load_cities()
     if args.limit_cities:
         cities = sorted(cities, key=lambda c: -c["pop"])[: args.limit_cities]
+        if not any(c["name"] in ("Álora", "Alora") and c["cc"] == "ES" for c in cities):
+            all_cities = B.load_cities()
+            alora = next(c for c in all_cities if c["name"] in ("Álora", "Alora") and c["cc"] == "ES")
+            cities.append(alora)
     poi_idx = B.mark_mall_stadium(cities)
     print(f"Ciudades cargadas: {len(cities)}", flush=True)
     print("cargando direcciones reales de OpenStreetMap…", flush=True)
     load_all_addresses(cities, poi_idx)
 
-    print("calculando orden geográfico único (Málaga -> Andalucía -> España -> mundo)…", flush=True)
-    order = build_world_order(cities)
-    events, addr_for = build_ordered_events_and_addr(order)
+    print("calculando orden de ciudades (Álora -> top Málaga -> resto del mundo por tamaño real)…", flush=True)
+    city_order = build_city_order(cities)
+    print("intercalando locales por rondas (round-robin, 1 local por ciudad y ronda)…", flush=True)
+    events, addr_for = build_round_robin_events(city_order)
     print(f"Locales totales en el calendario unificado: {len(events)}", flush=True)
 
     _ORDERED_EVENTS = events
     _ADDR_FOR = addr_for
     _ECON = B.COUNTRY_ECON
 
-    n_phases = args.phases
-    bounds = split_boundaries(len(events), n_phases)
+    etapa_bounds = fixed_chunks(len(events), N_POR_ETAPA)
+    if args.etapas:
+        etapa_bounds = etapa_bounds[: args.etapas]
+    n_etapas = len(etapa_bounds)
+    fase_bounds_by_etapa = [split_boundaries(end - start, N_FASES_POR_ETAPA) for start, end in etapa_bounds]
 
+    # Límites de fase en índice global (para la pasada de totales)
+    fase_bounds_global = []
+    for (e_start, _e_end), fbs in zip(etapa_bounds, fase_bounds_by_etapa):
+        for rel_start, rel_end in fbs:
+            fase_bounds_global.append((e_start + rel_start, e_start + rel_end))
+
+    print(f"{n_etapas} etapas x {N_FASES_POR_ETAPA} fases = {len(fase_bounds_global)} PDF de fase", flush=True)
     print("calculando inversión y países nuevos por fase (pasada rápida)…", flush=True)
-    phase_invest, cum_before_invest, cum_before_count, phase_first_cc, total_invest, total_count = \
-        compute_phase_totals(events, addr_for, _ECON, bounds)
+    cum_before_invest_flat, cum_before_count_flat, fase_first_cc_flat, total_invest, total_count = \
+        compute_fase_totals(events, addr_for, _ECON, fase_bounds_global)
     print(f"Inversión total del plan: {fmt_eur(total_invest)} en {fmt_n(total_count)} locales", flush=True)
+
+    # Reagrupa las listas planas (por fase global) en listas por etapa (20 fases cada una)
+    cum_before_invest, cum_before_count, fase_first_cc = [], [], []
+    p = 0
+    for fbs in fase_bounds_by_etapa:
+        k = len(fbs)
+        cum_before_invest.append(cum_before_invest_flat[p:p + k])
+        cum_before_count.append(cum_before_count_flat[p:p + k])
+        fase_first_cc.append(fase_first_cc_flat[p:p + k])
+        p += k
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     if TMP_DIR.exists():
@@ -539,14 +572,15 @@ def main():
     TMP_DIR.mkdir(parents=True)
 
     n_chunks = max(1, args.workers * args.chunks_per_worker)
-    chunk_bounds = split_boundaries(n_phases, min(n_chunks, n_phases))
+    etapa_chunk_bounds = split_boundaries(n_etapas, min(n_chunks, n_etapas))
     tasks = [
-        (start + 1, end, n_phases, bounds, cum_before_invest, cum_before_count, phase_first_cc,
+        (start + 1, end, n_etapas, etapa_bounds, fase_bounds_by_etapa,
+         cum_before_invest, cum_before_count, fase_first_cc,
          total_count, total_invest, TMP_DIR)
-        for start, end in chunk_bounds
+        for start, end in etapa_chunk_bounds
     ]
 
-    print(f"Renderizando {n_phases} fases en {len(tasks)} lotes con {args.workers} procesos…", flush=True)
+    print(f"Renderizando {n_etapas} etapas en {len(tasks)} lotes con {args.workers} procesos…", flush=True)
     from multiprocessing import Pool
     if args.workers == 1:
         for t in tasks:
