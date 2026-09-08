@@ -491,7 +491,7 @@ table.data tr:hover td { background: #fff6e8; }
 .venue-photo-frame.has-photo img { display: block; }
 .venue-photo-frame.has-photo img { cursor: zoom-in; }
 .photo-lightbox {
-  position: fixed; inset: 0; z-index: 5000;
+  position: fixed; inset: 0; z-index: 5000; overflow: hidden;
   background: rgba(10, 14, 12, 0.92);
   display: flex; align-items: center; justify-content: center;
   padding: min(24px, 4vw); cursor: zoom-out;
@@ -500,7 +500,7 @@ table.data tr:hover td { background: #fff6e8; }
 .photo-lightbox img {
   max-width: min(96vw, 900px); max-height: 96vh; width: auto; height: auto;
   object-fit: contain; border-radius: 10px; box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
-  cursor: default;
+  cursor: zoom-in; transition: transform 0.06s linear; touch-action: none;
 }
 .photo-lightbox-close {
   position: absolute; top: 18px; right: 22px; width: 44px; height: 44px;

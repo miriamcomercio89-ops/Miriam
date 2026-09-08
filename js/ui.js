@@ -43,16 +43,29 @@
   }
 
   let lightboxBound = false;
+  let lightboxZoom = 1;
+  const LIGHTBOX_ZOOM_MIN = 1;
+  const LIGHTBOX_ZOOM_MAX = 6;
+
+  function setLightboxZoom(img, zoom) {
+    lightboxZoom = U.clamp(zoom, LIGHTBOX_ZOOM_MIN, LIGHTBOX_ZOOM_MAX);
+    img.style.transform = lightboxZoom > 1 ? `scale(${lightboxZoom.toFixed(3)})` : "";
+    img.style.cursor = lightboxZoom > 1 ? "zoom-out" : "zoom-in";
+  }
+
   function bindPhotoLightboxOnce() {
     if (lightboxBound) return;
     lightboxBound = true;
     const box = U.$("#photo-lightbox");
     const closeBtn = U.$("#photo-lightbox-close");
+    const img = U.$("#photo-lightbox-img");
     if (!box) return;
     const close = () => {
       box.hidden = true;
-      const img = U.$("#photo-lightbox-img");
-      if (img) img.removeAttribute("src");
+      if (img) {
+        img.removeAttribute("src");
+        setLightboxZoom(img, 1);
+      }
     };
     box.addEventListener("click", (ev) => {
       if (ev.target === box || ev.target === closeBtn) close();
@@ -61,6 +74,18 @@
     document.addEventListener("keydown", (ev) => {
       if (ev.key === "Escape" && !box.hidden) close();
     });
+    if (img) {
+      img.addEventListener(
+        "wheel",
+        (ev) => {
+          ev.preventDefault();
+          const factor = Math.exp(-ev.deltaY * 0.0015);
+          setLightboxZoom(img, lightboxZoom * factor);
+        },
+        { passive: false }
+      );
+      img.addEventListener("dblclick", () => setLightboxZoom(img, lightboxZoom > 1 ? 1 : 2.5));
+    }
   }
 
   function openPhotoLightbox(url) {
@@ -70,6 +95,7 @@
     const img = U.$("#photo-lightbox-img");
     if (!box || !img) return;
     img.src = url;
+    setLightboxZoom(img, 1);
     box.hidden = false;
   }
 
