@@ -1,6 +1,14 @@
-# Horizon Restaurant Group
+# Horizon Group
 
-Videojuego de gestión en el navegador: la matriz **Horizon Restaurant Group** y **50 marcas** independientes (de la comida rápida a la alta cocina) sobre el mapa real. Empiezas el **1 de enero de 2000** con 2.000.000 €.
+Videojuego de gestión en el navegador sobre el mapa real. **Horizon Group** reúne dos divisiones en una sola partida y una sola caja: **Horizon Restaurant Group** (50 marcas de restaurantes, de la comida rápida a la alta cocina) y **Horizon Hotels** (50 marcas de hoteles). Puedes construir restaurantes y hoteles a la vez, compitiendo por las mismas direcciones reales del mapa.
+
+**Descarga (simulador fusionado):** [horizon_group_simulador.zip](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/simulador-mejoras-iconos-busqueda-rentabilidad-d2e2/descargas/horizon_group_simulador.zip) — empiezas el 1 de enero de 2000 con **30.000.000 €** de caja compartida. Descomprime, entra en la carpeta (deben verse `index.html`, `js/`, `css/` y `vendor/`) y abre `index.html` en Chrome o Edge. No lo abras desde el visor de ZIP de Windows. El mapa necesita internet.
+
+Si prefieres jugar cada cadena por separado, los dos simuladores originales (previos a la fusión) se documentan más abajo y siguen disponibles.
+
+## Horizon Restaurant Group (simulador independiente)
+
+La matriz **Horizon Restaurant Group** y **50 marcas** independientes (de la comida rápida a la alta cocina) sobre el mapa real. Empiezas el **1 de enero de 2000** con 2.000.000 €.
 
 Cada local tiene un **gerente IA** que gestiona el sitio entero según su habilidad. En un **food hall**, cada puesto tiene su propio gerente, carta y P&L. El impuesto de **sociedades** se cobra sobre el beneficio; la **inflación** (y los brotes) suben alquiler, salarios y género.
 
@@ -41,7 +49,7 @@ Cincuenta filiales con identidad propia (carta, tramo y colores). Un local = una
 
 ## Atlas de locales y plan de expansión
 
-PDFs de todo el mundo (dirección OSM, mapa de zona, logo y prompt de fachada para generar la foto), el plan de expansión global maestro de Horizon (empezando en la provincia de Málaga —con el piloto de Cártama— y expandiéndose por orden lógico y realista, ciudades grandes y zonas turísticas primero, con el directorio completo de los 147.884 municipios del mundo), el plan de expansión de cada una de las 50 marcas propias (500 fases, un PDF por fase) y el Plan de Construcción Real definitivo del grupo (50 marcas mezcladas, etapas de 1.000 locales divididas en 20 fases de 50, empezando en Álora y abriendo por rondas —1 local por ciudad del mundo antes de abrir el segundo— para cubrir casi todo el planeta ya en la primera etapa): ver [descargas/README.md](descargas/README.md).
+PDFs de todo el mundo (dirección OSM, mapa de zona, logo y prompt de fachada para generar la foto), el plan de expansión global maestro de Horizon (empezando en la provincia de Málaga —con el piloto de Cártama— y expandiéndose por orden lógico y realista, ciudades grandes y zonas turísticas primero, con el directorio completo de los 147.884 municipios del mundo), el plan de expansión de cada una de las 50 marcas propias (500 fases, un PDF por fase) y el Plan de Construcción Real definitivo del grupo (50 marcas mezcladas, etapas de 1.000 locales divididas en 20 fases de 50, empezando en Álora y abriendo por rondas —1 local por ciudad del mundo antes de abrir el segundo— para cubrir casi todo el planeta ya en la primera etapa). Este último tiene ahora, igual que el de Horizon Hotels, una **ficha de página completa (A4)** por local: banda de marca con logo y colores, prompt de imagen principal de fachada, imágenes secundarias según el formato del local, las 5 secciones Marca/Básico/Local/Servicios/Extras y una sección propia de **Carta / plato estrella** con 3-5 platos representativos y precios. Ver [descargas/README.md](descargas/README.md).
 
 ## Horizon Hotels — el mismo simulador, ahora de hoteles
 
