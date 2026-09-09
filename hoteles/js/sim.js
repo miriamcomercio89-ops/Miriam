@@ -39,11 +39,14 @@
   ];
   const HTYPE_BY = Object.fromEntries(HTYPES.map((s) => [s.id, s]));
 
+  /* Salarios (multiplicador sobre el salario/hora del país) más ajustados que en
+     la primera versión: una plantilla algo más eficiente, para que abrir y
+     sostener un hotel sea más rentable desde el principio. */
   const ROLES = {
-    gerente: { name: "Dirección", wage: 2.6, skillFx: "ops" },
-    recepcion: { name: "Recepción", wage: 1.3, skillFx: "service" },
-    limpieza: { name: "Pisos / limpieza", wage: 1.1, skillFx: "clean" },
-    mantenimiento: { name: "Mantenimiento", wage: 1.5, skillFx: "maint" },
+    gerente: { name: "Dirección", wage: 2.3, skillFx: "ops" },
+    recepcion: { name: "Recepción", wage: 1.15, skillFx: "service" },
+    limpieza: { name: "Pisos / limpieza", wage: 0.98, skillFx: "clean" },
+    mantenimiento: { name: "Mantenimiento", wage: 1.3, skillFx: "maint" },
   };
 
   const NAMES_A = ["Ana","Luis","Mei","Omar","Inés","Hugo","Sofía","Kenji","Amara","Pavel","Léa","Diego","Noor","Iris","Mateo","Yara","Ravi","Clara","Jonas","Lila","Efe","Nia","Piotr","Hana","Gael","Zeynep","Ivo","Amina","Theo","Lucia"];
@@ -321,10 +324,13 @@
     const rentMonth = r.owned ? (r.communityMonthly || r.rentMonthly * 0.08) : r.rentMonthly;
     const rentHour = (rentMonth * inflMul) / 30 / 24;
     const rooms = sizeOf(r.htype).rooms;
-    const utilHour = rooms * sizeOf(r.htype).m2r * 0.03 * pl;
+    const utilHour = rooms * sizeOf(r.htype).m2r * 0.024 * pl;
     const adr = r.adr || fairADR(brand, pl);
     const vat = ctry.vat || 0;
-    const ameMul = 1 + (r.amenities || []).length * 0.045;
+    /* +18% de ingresos extra por upselling (minibar, spa de pago, tasas de
+       resort, extras de habitación) no modelado explícitamente: hace que el
+       negocio sea notablemente más rentable sin tocar la tarifa mostrada. */
+    const ameMul = (1 + (r.amenities || []).length * 0.045) * 1.18;
     const shiftCoverage = U.clamp(0.62 - (st.n - 4) * 0.01, 0.42, 0.62);
     const step = hours > 72 ? 6 : 1;
     let wagesSum = 0;
@@ -336,7 +342,7 @@
       cust += roomsSoldHour;
       const sales = roomsSoldHour * adr * ameMul;
       const vatPaid = sales * vat;
-      const laundry = roomsSoldHour * 4.2 * pl;
+      const laundry = roomsSoldHour * 3.3 * pl;
       const wages = (open ? wageHour * shiftCoverage : wageHour * 0.35) * step;
       const rent = rentHour * step;
       const util = (open ? utilHour : utilHour * 0.4) * step;

@@ -121,7 +121,7 @@
       gameTime: Date.UTC(2000, 0, 1, 8, 0, 0),
       speed: 1,
       paused: false,
-      cash: 5000000,
+      cash: 25000000,
       loans: [],
       hotels: [],
       events: [],
@@ -135,7 +135,7 @@
       ],
       competitors,
       revByCountry: {},
-      cashHistory: [{ t: Date.UTC(2000, 0, 1, 8, 0, 0), v: 5000000 }],
+      cashHistory: [{ t: Date.UTC(2000, 0, 1, 8, 0, 0), v: 25000000 }],
       books: {},
       yearbooks: [],
     };
