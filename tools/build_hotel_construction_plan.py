@@ -45,6 +45,7 @@ Uso:
 from __future__ import annotations
 
 import argparse
+import math
 import os
 import shutil
 import sys
@@ -145,28 +146,43 @@ def calc_hotel_calc(city, slot, bid_idx, rec, econ, ctx_by_id):
 
 
 def build_full_record(city, slot, bid_idx, rec, econ, ctx_by_id):
-    """Registro completo de un hotel (dirección real, distrito, inversión total, ADR
-    y prompt de imagen) para las tarjetas del PDF de fase."""
+    """Registro completo de un hotel (dirección real, distrito, inversión total, ADR,
+    amenities, secciones 1-5 e imagen principal + secundarias) para su ficha A4 en el
+    PDF de fase."""
     brand, htype, calc, dist = calc_hotel_calc(city, slot, bid_idx, rec, econ, ctx_by_id)
     address = rec.get("text") or f"{city['name']}, {city['country']}"
     v = {
-        "bid": brand["id"], "brand": brand["name"], "segment": brand["segment"],
+        "bid": brand["id"], "brand": brand["name"], "segment": brand["segment"], "tier": brand["tier"],
         "tier_label": H.TIERS[brand["tier"]]["name"], "stars": brand["stars"],
         "htype_name": htype["name"], "rooms": htype["rooms"],
         "district": dist, "address": address,
         "metro": bool(rec.get("metro")), "ped": bool(rec.get("ped")), "beach": bool(rec.get("beach")),
     }
     desc = H.hotel_image_prompt(v, city)
+    amenities = H.active_amenities(city, brand, htype)
+    edificio = H.edificio_section(city, brand, htype, amenities)
+    basico = H.basico_section(brand, htype)
+    extras = H.extras_section(brand, htype)
+    sustain_active, sustain_text = H.sustainability_info(brand)
+    icons = H.feature_icons(htype["rooms"], brand, htype, amenities, edificio, sustain_active)
+    secimgs = H.secondary_images(city, brand, htype, amenities)
+    cont_code = _CC_CONT.get(city["cc"], "")
+    cont_es = H.CONTINENT_ES.get(cont_code, "Europa")
+    story = H.brand_story(brand, cont_es)
     return {
-        "city": city["name"], "country": city["country"], "cc": city["cc"],
+        "city": city["name"], "country": city["country"], "cc": city["cc"], "continent": cont_es,
         "admin1": city["admin1"], "admin2": city["admin2"], "pop": city["pop"],
-        "bid": brand["id"], "brand": brand["name"], "segment": brand["segment"], "stars": brand["stars"],
+        "bid": brand["id"], "brand": brand["name"], "segment": brand["segment"], "tier": brand["tier"],
+        "stars": brand["stars"], "color": brand["color"], "color2": brand["color2"], "tagline": brand["tagline"],
         "tier_label": H.TIERS[brand["tier"]]["name"],
         "district": dist, "address": address,
         "metro": v["metro"], "ped": v["ped"], "beach": v["beach"],
         "htype_id": htype["id"], "htype_name": htype["name"], "rooms": htype["rooms"], "m2r": htype["m2r"],
         "owned": calc["owned"], "rent": calc["rent"], "price": calc["price"],
         "adr": calc["adr"], "total_inv": calc["total_inv"], "desc": desc,
+        "amenities": amenities, "edificio": edificio, "basico": basico, "extras": extras,
+        "sustain_active": sustain_active, "sustain_text": sustain_text,
+        "icons": icons, "secimgs": secimgs, "story": story,
     }
 
 
@@ -218,6 +234,118 @@ def fmt_eur_kpi(n: float) -> str:
     return fmt_eur(n)
 
 
+def hex_to_rgb(hexstr: str):
+    hexstr = (hexstr or "#335").lstrip("#")
+    if len(hexstr) < 6:
+        hexstr = (hexstr + "000000")[:6]
+    return tuple(int(hexstr[i:i + 2], 16) / 255.0 for i in (0, 2, 4))
+
+
+def draw_icon(c, kind, cx, cy, r, color):
+    """Icono vectorial simple (sin depender de glifos de fuente/emoji)."""
+    c.saveState()
+    c.setFillColorRGB(*color)
+    c.setStrokeColorRGB(*color)
+    if kind == "bed":
+        c.roundRect(cx - r, cy - r * 0.55, r * 2, r * 1.05, r * 0.25, fill=1, stroke=0)
+        c.roundRect(cx - r * 0.85, cy + r * 0.05, r * 0.85, r * 0.5, r * 0.18, fill=1, stroke=0)
+    elif kind == "meeting":
+        c.ellipse(cx - r, cy - r * 0.5, cx + r, cy + r * 0.5, fill=1, stroke=0)
+    elif kind == "restaurant":
+        c.setLineWidth(1.1)
+        c.line(cx - r * 0.55, cy - r, cx - r * 0.55, cy + r)
+        for dx in (-r * 0.75, -r * 0.55, -r * 0.35):
+            c.line(cx + dx, cy + r * 0.45, cx + dx, cy + r)
+        c.line(cx + r * 0.55, cy - r, cx + r * 0.55, cy + r)
+        c.ellipse(cx + r * 0.35, cy + r * 0.45, cx + r * 0.75, cy + r, fill=1, stroke=0)
+    elif kind == "bar":
+        p = c.beginPath()
+        p.moveTo(cx - r, cy + r)
+        p.lineTo(cx + r, cy + r)
+        p.lineTo(cx, cy - r * 0.05)
+        p.close()
+        c.drawPath(p, fill=1, stroke=0)
+        c.setLineWidth(1.2)
+        c.line(cx, cy - r * 0.05, cx, cy - r * 0.65)
+        c.line(cx - r * 0.5, cy - r * 0.65, cx + r * 0.5, cy - r * 0.65)
+    elif kind == "gym":
+        c.setLineWidth(max(1.4, r * 0.42))
+        c.line(cx - r, cy, cx + r, cy)
+        c.circle(cx - r, cy, r * 0.4, fill=1, stroke=0)
+        c.circle(cx + r, cy, r * 0.4, fill=1, stroke=0)
+    elif kind == "wifi":
+        for i, h in enumerate((0.5, 0.85, 1.2)):
+            bw = r * 0.4
+            x = cx - r * 0.75 + i * bw * 1.6
+            c.roundRect(x, cy - r * 0.9, bw, r * h, bw * 0.3, fill=1, stroke=0)
+    elif kind == "shield":
+        p = c.beginPath()
+        p.moveTo(cx, cy + r)
+        p.lineTo(cx + r * 0.85, cy + r * 0.5)
+        p.lineTo(cx + r * 0.85, cy - r * 0.35)
+        p.lineTo(cx, cy - r)
+        p.lineTo(cx - r * 0.85, cy - r * 0.35)
+        p.lineTo(cx - r * 0.85, cy + r * 0.5)
+        p.close()
+        c.drawPath(p, fill=1, stroke=0)
+    elif kind == "leaf":
+        c.ellipse(cx - r * 0.85, cy - r * 0.55, cx + r * 0.85, cy + r * 0.85, fill=1, stroke=0)
+    elif kind == "briefcase":
+        c.roundRect(cx - r, cy - r * 0.65, r * 2, r * 1.25, r * 0.2, fill=1, stroke=0)
+        c.setLineWidth(1.1)
+        c.rect(cx - r * 0.4, cy + r * 0.4, r * 0.8, r * 0.35, fill=0, stroke=1)
+    elif kind == "roomservice":
+        c.rect(cx - r, cy - r * 0.85, r * 2, r * 0.26, fill=1, stroke=0)
+        c.ellipse(cx - r * 0.85, cy - r * 0.6, cx + r * 0.85, cy + r * 0.5, fill=1, stroke=0)
+        c.circle(cx, cy + r * 0.7, r * 0.13, fill=1, stroke=0)
+    elif kind == "concierge":
+        p = c.beginPath()
+        p.moveTo(cx - r * 0.8, cy)
+        p.curveTo(cx - r * 0.8, cy + r, cx + r * 0.8, cy + r, cx + r * 0.8, cy)
+        p.close()
+        c.drawPath(p, fill=1, stroke=0)
+        c.rect(cx - r, cy - r * 0.22, r * 2, r * 0.2, fill=1, stroke=0)
+        c.circle(cx, cy + r, r * 0.13, fill=1, stroke=0)
+    elif kind == "pool":
+        c.setLineWidth(1.3)
+        for dy in (-r * 0.4, r * 0.15, r * 0.7):
+            p = c.beginPath()
+            p.moveTo(cx - r, cy + dy)
+            p.curveTo(cx - r * 0.4, cy + dy + r * 0.32, cx + r * 0.4, cy + dy - r * 0.32, cx + r, cy + dy)
+            c.drawPath(p, fill=0, stroke=1)
+    elif kind == "spa":
+        p = c.beginPath()
+        p.moveTo(cx, cy - r)
+        p.curveTo(cx + r, cy - r * 0.2, cx + r * 0.5, cy + r, cx, cy + r)
+        p.curveTo(cx - r * 0.5, cy + r, cx - r, cy - r * 0.2, cx, cy - r)
+        p.close()
+        c.drawPath(p, fill=1, stroke=0)
+    elif kind == "parking":
+        c.setLineWidth(1.1)
+        c.circle(cx, cy, r, fill=0, stroke=1)
+        c.setFont("DejaVuBold", r * 1.25)
+        c.drawCentredString(cx, cy - r * 0.36, "P")
+    elif kind == "beach":
+        c.circle(cx, cy, r * 0.5, fill=1, stroke=0)
+        c.setLineWidth(1.1)
+        for a in range(0, 360, 45):
+            rad = math.radians(a)
+            x1, y1 = cx + r * 0.68 * math.cos(rad), cy + r * 0.68 * math.sin(rad)
+            x2, y2 = cx + r * 1.05 * math.cos(rad), cy + r * 1.05 * math.sin(rad)
+            c.line(x1, y1, x2, y2)
+    elif kind == "pin":
+        c.circle(cx, cy + r * 0.25, r * 0.55, fill=1, stroke=0)
+        p = c.beginPath()
+        p.moveTo(cx - r * 0.42, cy)
+        p.lineTo(cx + r * 0.42, cy)
+        p.lineTo(cx, cy - r * 0.85)
+        p.close()
+        c.drawPath(p, fill=1, stroke=0)
+    else:
+        c.circle(cx, cy, r * 0.55, fill=1, stroke=0)
+    c.restoreState()
+
+
 def dominant_zone(records) -> str:
     cnt = defaultdict(int)
     for r in records:
@@ -256,52 +384,310 @@ class FaseDoc(Doc):
         c.drawRightString(W - MARGIN, 12, str(self.page_no))
 
 
-def draw_venue_card(doc: "FaseDoc", idx: int, r: dict, fase_label: str, title: str):
-    c = doc.c
-    desc_lines = H.wrap(c, r["desc"], "DejaVu", 6.9, CONTENT_W - 44)
-    addr_lines = H.wrap(c, r["address"], "DejaVu", 7.4, CONTENT_W - 44)
-    need = 44 + 9 * len(desc_lines) + 9.5 * max(0, len(addr_lines) - 1)
-    doc.ensure(need + 6, fase_label, title)
-    y = doc.y
-    c.setFillColorRGB(0.965, 0.955, 0.915)
-    c.roundRect(MARGIN, y - need + 4, CONTENT_W, need - 4, 6, fill=1, stroke=0)
-    c.setFillColorRGB(1, 1, 1)
-    c.roundRect(MARGIN + 4, y - 32, 28, 28, 5, fill=1, stroke=0)
-    H.draw_logo(c, r["bid"], MARGIN + 8, y - 29, 20)
-    text_x = MARGIN + 40
+WHITE = (1, 1, 1)
+SB_W = 174  # ancho de la banda de marca a sangre en el lateral izquierdo de la ficha
+
+
+def _fit_lines(c, text, font, size, width, max_lines):
+    lines = H.wrap(c, text, font, size, width)
+    if len(lines) <= max_lines:
+        return lines
+    lines = lines[:max_lines]
+    last = lines[-1]
+    while last and c.stringWidth(last + "…", font, size) > width:
+        last = last[:-1]
+    lines[-1] = last + "…"
+    return lines
+
+
+def draw_section(c, x, top_y, w, box_h, number, title, lines, accent_rgb):
+    c.setFillColorRGB(0.975, 0.968, 0.94)
+    c.roundRect(x, top_y - box_h, w, box_h, 5, fill=1, stroke=0)
+    c.setFillColorRGB(*accent_rgb)
+    c.circle(x + 12, top_y - 11, 7.2, fill=1, stroke=0)
+    c.setFillColorRGB(*WHITE)
+    c.setFont("DejaVuBold", 8.0)
+    c.drawCentredString(x + 12, top_y - 13.6, str(number))
+    c.setFillColorRGB(*NAVY)
+    c.setFont("DejaVuBold", 8.6)
+    c.drawString(x + 23, top_y - 13.6, title)
+    yy = top_y - 25
+    c.setFont("DejaVu", 7.1)
     c.setFillColorRGB(*TEXT)
-    c.setFont("DejaVuBold", 9.0)
-    stars = "★" * int(r["stars"])
-    header = f"{idx}. {r['brand']} {stars} — {r['city']} ({r['country']}) · {r['htype_name']}"
-    c.drawString(text_x, y - 8, header[:108])
-    c.setFillColorRGB(*GREEN)
-    c.setFont("DejaVu", 7.3)
-    meta = f"{H.SEGMENTS[r['segment']]['name']} · {r['tier_label']} · {r['rooms']} hab · {r['m2r']} m²/hab  ·  " + district_short(r["district"])
-    c.drawString(text_x, y - 19, meta[:126])
-    c.setFillColorRGB(*TEXT)
-    c.setFont("DejaVu", 7.4)
-    yy = y - 30
-    for line in addr_lines[:2]:
-        c.drawString(text_x, yy, line)
-        yy -= 9.5
-    acc = "  ·  ".join(filter(None, [
-        "Metro/cercanías OSM" if r["metro"] else "",
-        "Calle peatonal" if r["ped"] else "",
-        "Frente de playa" if r["beach"] else "",
-    ])) or "Ubicación de uso cotidiano"
-    money = (f"Compra {r['price']:,} €".replace(",", ".") if r["owned"]
-             else f"Alquiler {r['rent']:,} €/mes".replace(",", "."))
-    line = f"{acc}  ·  {money}  ·  ADR estimada {r['adr']:,.0f} €/noche  ·  Inversión total: {fmt_compact(r['total_inv'])}"
-    c.setFont("DejaVuBold", 7.1)
-    c.setFillColorRGB(*GREEN)
-    c.drawString(text_x, yy, line[:170])
-    yy -= 11
+    for line in lines:
+        for wl in _fit_lines(c, line, "DejaVu", 7.1, w - 14, 2):
+            c.drawString(x + 9, yy, wl)
+            yy -= 9.4
+
+
+def draw_hotel_sidebar(c, r, top_y, bottom_y):
+    color = hex_to_rgb(r.get("color") or "#234")
+    c.saveState()
+    c.setFillColorRGB(*color)
+    c.rect(0, bottom_y, SB_W, top_y - bottom_y, fill=1, stroke=0)
+    pad = 15
+    y = top_y - 22
+    # logo
+    c.setFillColorRGB(*WHITE)
+    c.roundRect(pad, y - 44, SB_W - pad * 2, 44, 6, fill=1, stroke=0)
+    H.draw_logo(c, r["bid"], pad + 6, y - 40, 32)
+    y -= 56
+    accent = hex_to_rgb(r.get("color2") or "#caa24a")
+    c.setFillColorRGB(*accent)
+    c.setFont("DejaVuBold", 12.5)
+    for line in _fit_lines(c, r["brand"].upper(), "DejaVuBold", 12.5, SB_W - pad * 2, 3):
+        c.drawString(pad, y, line)
+        y -= 14
+    y -= 2
+    c.setFillColorRGB(*WHITE)
+    c.setFont("DejaVu", 7.6)
+    c.drawString(pad, y, H.SEGMENTS[r["segment"]]["name"].upper())
+    y -= 14
+    c.setStrokeColorRGB(*accent)
+    c.setLineWidth(1)
+    c.line(pad, y, SB_W - pad, y)
+    y -= 16
+    c.setFillColorRGB(*accent)
+    c.setFont("DejaVuBold", 13)
+    c.drawString(pad, y, "★" * int(r["stars"]))
+    y -= 13
+    c.setFillColorRGB(*WHITE)
+    c.setFont("DejaVuBold", 8.4)
+    c.drawString(pad, y, f"HOTEL DE {int(r['stars'])} ESTRELLAS")
+    y -= 18
+    c.setFont("DejaVu", 7.8)
+    for line in _fit_lines(c, f"«{r['tagline']}»", "DejaVu", 7.8, SB_W - pad * 2, 2):
+        c.drawString(pad, y, line)
+        y -= 10.4
+    y -= 8
     c.setFont("DejaVu", 6.9)
-    c.setFillColorRGB(0.30, 0.32, 0.30)
-    for dl in desc_lines:
-        c.drawString(MARGIN + 6, yy, dl)
-        yy -= 9
-    doc.y = yy - 6
+    for line in _fit_lines(c, r["story"], "DejaVu", 6.9, SB_W - pad * 2, 11):
+        c.drawString(pad, y, line)
+        y -= 9.1
+    # skyline decorativo
+    sky_y = bottom_y + 92
+    c.setFillColorRGB(*accent)
+    rgen = H.rng(H.h32(r["bid"], r["city"], "skyline"))
+    bx = pad
+    while bx < SB_W - pad - 6:
+        bw = 8 + rgen() * 14
+        bh = 14 + rgen() * 46
+        c.setFillAlpha(0.35)
+        c.rect(bx, sky_y, bw, bh, fill=1, stroke=0)
+        bx += bw + 3
+    c.setFillAlpha(1)
+    # ubicación al pie
+    yb = bottom_y + 70
+    draw_icon(c, "pin", pad + 6, yb, 6, (1, 1, 1))
+    c.setFillColorRGB(*WHITE)
+    c.setFont("DejaVuBold", 7.6)
+    c.drawString(pad + 16, yb - 3, r["city"][:22])
+    c.setFont("DejaVu", 6.8)
+    yb -= 12
+    for line in _fit_lines(c, f"{r['admin2']}, {r['admin1']} ({r['country']})", "DejaVu", 6.8, SB_W - pad * 2 - 6, 2):
+        c.drawString(pad + 16, yb, line)
+        yb -= 8.6
+    c.setFont("DejaVu", 6.5)
+    yb -= 4
+    for line in _fit_lines(c, r["address"], "DejaVu", 6.5, SB_W - pad * 2, 3):
+        c.drawString(pad, yb, line)
+        yb -= 8.2
+    c.restoreState()
+
+
+def draw_hotel_page(c, r, idx_in_fase, n_this):
+    top_y = PAGE_H - 58
+    bottom_y = 26
+    draw_hotel_sidebar(c, r, top_y, bottom_y)
+
+    rx0 = SB_W + 14
+    rx1 = W - MARGIN
+    rw = rx1 - rx0
+    y = top_y - 8
+
+    # ficha nº + ubicación real resumida
+    c.setFillColorRGB(*GRAY)
+    c.setFont("DejaVu", 7.2)
+    c.drawString(rx0, y, f"Ficha {idx_in_fase} de {n_this} de esta fase  ·  {r['htype_name']} · {r['rooms']} habitaciones · " + district_short(r["district"]))
+    y -= 14
+
+    # 1) imagen principal (prompt)
+    mi_h = 160
+    c.setFillColorRGB(0.925, 0.94, 0.95)
+    c.roundRect(rx0, y - mi_h, rw, mi_h, 6, fill=1, stroke=0)
+    c.setDash(3, 2)
+    c.setStrokeColorRGB(*GRAY)
+    c.setLineWidth(0.8)
+    c.roundRect(rx0, y - mi_h, rw, mi_h, 6, fill=0, stroke=1)
+    c.setDash()
+    c.setFillColorRGB(*NAVY)
+    c.setFont("DejaVuBold", 7.6)
+    c.drawString(rx0 + 8, y - 12, "IMAGEN PRINCIPAL — PROMPT (fachada; deben verse el rótulo y el logo)")
+    c.setFont("DejaVu", 6.5)
+    c.setFillColorRGB(0.28, 0.32, 0.34)
+    yy = y - 24
+    for line in _fit_lines(c, r["desc"], "DejaVu", 6.5, rw - 16, 16):
+        c.drawString(rx0 + 8, yy, line)
+        yy -= 8.4
+    c.setFillColorRGB(*NAVY)
+    c.roundRect(rx0 + 8, y - mi_h + 6, 150, 16, 4, fill=1, stroke=0)
+    c.setFillColorRGB(*WHITE)
+    c.setFont("DejaVuBold", 7.4)
+    c.drawString(rx0 + 13, y - mi_h + 11, f"{r['brand']} {'★' * int(r['stars'])}"[:32])
+    y -= mi_h + 10
+
+    # 2) tira de iconos de características (2 columnas x 4 filas)
+    icons = r["icons"]
+    ic_h = 60
+    col_w = rw / 2
+    for i, (kind, label) in enumerate(icons[:8]):
+        col = i % 2
+        row = i // 2
+        ix = rx0 + col * col_w + 8
+        iy = y - 9 - row * 14.2
+        draw_icon(c, kind, ix, iy, 5.2, GREEN)
+        c.setFillColorRGB(*TEXT)
+        c.setFont("DejaVu", 7.0)
+        c.drawString(ix + 11, iy - 2.6, label[:44])
+    y -= ic_h + 6
+
+    # 3) imágenes secundarias (según amenities activas de este hotel)
+    secimgs = r["secimgs"]
+    n_si = max(1, len(secimgs))
+    gap = 6
+    si_w = (rw - gap * (n_si - 1)) / n_si
+    si_img_h = 42
+    si_h = si_img_h + 30
+    for i, (cap, prompt) in enumerate(secimgs):
+        sx = rx0 + i * (si_w + gap)
+        c.setFillColorRGB(0.93, 0.93, 0.9)
+        c.roundRect(sx, y - si_img_h, si_w, si_img_h, 4, fill=1, stroke=0)
+        c.setFillColorRGB(0.62, 0.62, 0.58)
+        c.setFont("DejaVu", 6.2)
+        c.drawCentredString(sx + si_w / 2, y - si_img_h / 2 - 2, "FOTO / PROMPT")
+        c.setFillColorRGB(*NAVY)
+        c.setFont("DejaVuBold", 6.6)
+        c.drawCentredString(sx + si_w / 2, y - si_img_h - 9, cap.upper()[:20])
+        c.setFillColorRGB(0.35, 0.37, 0.34)
+        c.setFont("DejaVu", 5.6)
+        prompt_lines = _fit_lines(c, prompt, "DejaVu", 5.6, si_w - 4, 2)
+        for j, line in enumerate(prompt_lines):
+            c.drawCentredString(sx + si_w / 2, y - si_img_h - 18 - j * 6, line)
+    y -= si_h + 10
+
+    # 4) secciones numeradas 1-5
+    accent = hex_to_rgb(r.get("color") or "#234")
+    colA_x = rx0
+    colB_x = rx0 + rw / 2 + 5
+    col_w2 = rw / 2 - 5
+    b = r["basico"]
+    ed = r["edificio"]
+    ex = r["extras"]
+    money = (f"Compra estimada: {r['price']:,} €".replace(",", ".") if r["owned"]
+             else f"Alquiler: {r['rent']:,} €/mes".replace(",", "."))
+
+    h1 = 70
+    draw_section(c, colA_x, y, col_w2, h1, 1, "MARCA", [r["story"][:150] + ("…" if len(r["story"]) > 150 else "")], accent)
+    h2b = 95
+    draw_section(c, colA_x, y - h1 - 6, col_w2, h2b, 2, "BÁSICO", [
+        f"Estrellas: {int(r['stars'])} · Categoría {r['tier_label'].lower()}",
+        f"Personal aprox.: {b['personal_aprox']} empleados",
+        f"Tipo de clientes: {b['clientes']}",
+        f"Régimen principal: {b['regimen']}",
+    ], accent)
+
+    h3 = 115
+    ed_lines = [
+        f"Calidad: {ed['calidad']}",
+        f"Plantas: {ed['plantas']} · {ed['seguridad']}",
+        f"Tecnología: {ed['tecnologia']}",
+        f"Habitaciones con vistas: ~{ed['vista_pct']}%",
+    ]
+    if ed["salas_reuniones"]:
+        ed_lines.append(f"{ed['salas_reuniones']} salas · hasta {ed['capacidad_max']} pers. · {ed['espacio_eventos']} m² eventos")
+    if ed["nivel_restaurante"]:
+        ed_lines.append(f"Nivel del restaurante: {ed['nivel_restaurante']}/5")
+    draw_section(c, colB_x, y, col_w2, h3, 3, "EDIFICIO", ed_lines, accent)
+
+    tidx = H.TIER_ORDER.index(r["tier"])
+    h4 = 95
+    serv_lines = ["WiFi rápido en todo el hotel"]
+    if "parking" in r["amenities"]:
+        serv_lines.append("Parking cubierto")
+    serv_lines.append("Lavandería")
+    if tidx >= 2:
+        serv_lines.append("Comida a la habitación 24h")
+    if r["segment"] in ("urbano", "aeropuerto", "aparthotel"):
+        serv_lines.append("Zona de trabajo")
+    if "gimnasio" in r["amenities"]:
+        serv_lines.append("Gimnasio")
+    if tidx >= 1:
+        serv_lines.append("Conserjería 24h")
+    draw_section(c, colB_x, y - h3 - 6, col_w2, h4, 4, "SERVICIOS", serv_lines, accent)
+
+    y -= max(h1 + 6 + h2b, h3 + 6 + h4) + 8
+
+    h5 = 80
+    ex_lines = [
+        f"Días de oferta de apertura: {ex['dias_oferta']}",
+        f"Buffet: {ex['buffet']}",
+        f"Bares: {ex['bares']}",
+        f"Concepto de restaurante: {ex['concepto']}" if "restaurante" in r["amenities"] else "Concepto de restaurante: sin restaurante propio",
+        f"Extras operativos: {', '.join(ex['operativo'])}",
+    ]
+    draw_section(c, rx0, y, rw, h5, 5, "EXTRAS", ex_lines, accent)
+    y -= h5 + 10
+
+    # 5) ubicación + sostenibilidad
+    fh = 60
+    fw = (rw - 8) / 2
+    c.setFillColorRGB(0.975, 0.968, 0.94)
+    c.roundRect(rx0, y - fh, fw, fh, 5, fill=1, stroke=0)
+    draw_icon(c, "pin", rx0 + 12, y - 13, 6, NAVY)
+    c.setFillColorRGB(*NAVY)
+    c.setFont("DejaVuBold", 7.6)
+    c.drawString(rx0 + 22, y - 15, "UBICACIÓN PRIVILEGIADA")
+    c.setFont("DejaVu", 6.6)
+    c.setFillColorRGB(*TEXT)
+    yy = y - 27
+    acc_bits = "  ·  ".join(filter(None, [
+        "metro/cercanías" if r["metro"] else "", "calle peatonal" if r["ped"] else "", "frente de playa" if r["beach"] else "",
+    ])) or "ubicación de uso cotidiano"
+    for line in _fit_lines(c, f"{r['address']} — {acc_bits}.", "DejaVu", 6.6, fw - 16, 4):
+        c.drawString(rx0 + 8, yy, line)
+        yy -= 8.6
+
+    sx2 = rx0 + fw + 8
+    c.setFillColorRGB(0.975, 0.968, 0.94)
+    c.roundRect(sx2, y - fh, fw, fh, 5, fill=1, stroke=0)
+    if r["sustain_active"]:
+        draw_icon(c, "leaf", sx2 + 12, y - 13, 6, (0.2, 0.5, 0.28))
+        c.setFillColorRGB(0.15, 0.4, 0.22)
+        c.setFont("DejaVuBold", 7.6)
+        c.drawString(sx2 + 22, y - 15, "COMPROMETIDOS CON LA SOSTENIBILIDAD")
+        txt = r["sustain_text"]
+    else:
+        draw_icon(c, "leaf", sx2 + 12, y - 13, 6, GRAY)
+        c.setFillColorRGB(*GRAY)
+        c.setFont("DejaVuBold", 7.6)
+        c.drawString(sx2 + 22, y - 15, "SOSTENIBILIDAD")
+        txt = "Certificación ambiental en evaluación para este hotel."
+    c.setFont("DejaVu", 6.6)
+    c.setFillColorRGB(*TEXT)
+    yy = y - 27
+    for line in _fit_lines(c, txt, "DejaVu", 6.6, fw - 16, 4):
+        c.drawString(sx2 + 8, yy, line)
+        yy -= 8.6
+    y -= fh + 8
+
+    # 6) barra de inversión
+    c.setFillColorRGB(*GREEN)
+    c.rect(rx0, y - 17, rw, 17, fill=1, stroke=0)
+    c.setFillColorRGB(*WHITE)
+    c.setFont("DejaVuBold", 7.4)
+    c.drawString(rx0 + 6, y - 12, money)
+    adr_str = f"{r['adr']:,.0f}".replace(",", ".") + " €/noche"
+    c.drawRightString(rx1 - 6, y - 12, f"ADR: {adr_str}  ·  Inversión: {fmt_compact(r['total_inv'])}")
 
 
 def render_fase_pdf(path, etapa_no, n_etapas, fase_no, slice_records, cum_count_before, cum_invest_before,
@@ -353,9 +739,15 @@ def render_fase_pdf(path, etapa_no, n_etapas, fase_no, slice_records, cum_count_
             doc.para(f"… y {len(first_cc_list) - 6} país(es) más en esta misma fase.", size=8.2, color=GRAY)
         doc.gap(4)
 
-    doc.h2(f"Hoteles de la fase ({n_this})")
-    for idx, r in enumerate(slice_records, 1):
-        draw_venue_card(doc, idx, r, fase_label, title)
+    doc.h2(f"Hoteles de la fase ({n_this}) — ficha completa en las páginas siguientes")
+    doc.para(
+        "Cada hotel de esta fase tiene su propia ficha de una página completa (formato A4), con marca y logo, "
+        "prompt de imagen principal de fachada, imágenes secundarias según sus amenities activas, iconos de "
+        "características, las 5 secciones (Marca, Básico, Edificio, Servicios, Extras), ubicación real y sello "
+        "de sostenibilidad cuando aplica.",
+        size=8.4, leading=11.4,
+    )
+    doc.gap(4)
 
     c = doc.c
     doc.ensure(20, fase_label, title)
@@ -371,10 +763,30 @@ def render_fase_pdf(path, etapa_no, n_etapas, fase_no, slice_records, cum_count_
         "La inversión total incluye alquiler/compra inicial, obra y mobiliario, ajustados al coste laboral "
         "real del país (una sola cifra por hotel). La ADR (tarifa media diaria) es una estimación inicial "
         "orientativa según la marca y el nivel de precios del país. Dirección y accesibilidad (metro, calle "
-        "peatonal, playa) provienen de OpenStreetMap real. No se incluye horario: este documento es un "
-        "calendario de obra, no de operación.",
+        "peatonal, playa) provienen de OpenStreetMap real. Amenities, secciones y prompts de imagen son "
+        "estimaciones generadas de forma determinista a partir de la marca, el formato y la ubicación real; "
+        "no se incluye horario, este documento es un calendario de obra, no de operación.",
         size=6.8, color=GRAY, leading=8.8,
     )
+
+    for idx, r in enumerate(slice_records, 1):
+        c.showPage()
+        doc.page_no += 1
+        doc.phase = f"{fase_label} · Hotel {idx} de {n_this}"
+        c.setFillColorRGB(*CREAM)
+        c.rect(0, 0, W, PAGE_H, fill=1, stroke=0)
+        c.setFillColorRGB(*NAVY)
+        c.rect(0, PAGE_H - 54, W, 54, fill=1, stroke=0)
+        c.setFillColorRGB(*RED)
+        c.rect(0, PAGE_H - 58, W, 4, fill=1, stroke=0)
+        c.setFillColorRGB(1, 1, 1)
+        c.setFont("DejaVu", 8.5)
+        c.drawString(MARGIN, PAGE_H - 20, doc.phase.upper())
+        c.setFont("DejaVuBold", 15)
+        c.drawString(MARGIN, PAGE_H - 42, f"{r['brand']} — {r['city']} ({r['country']})"[:70])
+        doc._footer()
+        draw_hotel_page(c, r, idx, n_this)
+
     doc.save()
 
 
