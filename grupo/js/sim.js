@@ -848,6 +848,7 @@
       stall.photo = "";
       stall.description = "Puesto del food hall " + (hall.name || "");
       stall.openInfl = hall.openInfl;
+      stall.kind = "restaurant";
       state.restaurants.push(stall);
       hall.hallStallIds.push(stall.id);
       hall.hallBrands = hall.hallBrands || [];

@@ -238,6 +238,7 @@
         photo: extra && extra.photo,
         description: extra && extra.description,
       });
+      r.kind = "hotel";
       s.hotels.push(r);
       try {
         HSABOR.sfx.cash();
@@ -252,6 +253,7 @@
         photo: extra && extra.photo,
         description: extra && extra.description,
       });
+      r.kind = "restaurant";
       s.restaurants.push(r);
       if (r.size === "food_hall") {
         const guests = (extra && extra.hallBrands) || [];
