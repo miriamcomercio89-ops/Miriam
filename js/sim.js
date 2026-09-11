@@ -7,7 +7,7 @@
     { id: "local_grande", name: "Local grande", seats: 80, m2: 260, permitH: 40, buildH: 96, cost: 440000, rentMult: 1.15, staff: { gerente: 1, cocinero: 4, camarero: 4, limpieza: 1, bartender: 1 } },
     { id: "ghost", name: "Cocina fantasma", seats: 6, m2: 38, permitH: 8, buildH: 16, cost: 42000, rentMult: 0.55, staff: { gerente: 1, cocinero: 2, camarero: 0, limpieza: 0, bartender: 0 }, ghost: true },
     { id: "flagship", name: "Flagship", seats: 140, m2: 480, permitH: 72, buildH: 192, cost: 920000, staff: { gerente: 2, cocinero: 6, camarero: 6, limpieza: 2, bartender: 1 } },
-    { id: "food_hall", name: "Food hall", seats: 168, m2: 640, permitH: 96, buildH: 240, cost: 1480000, rentMult: 1.35, staff: { gerente: 2, cocinero: 8, camarero: 8, limpieza: 3, bartender: 2 }, hall: true },
+    { id: "food_hall", name: "Food hall", seats: 168, m2: 640, permitH: 96, buildH: 240, cost: 1480000, rentMult: 1.05, staff: { gerente: 2, cocinero: 6, camarero: 3, limpieza: 3, bartender: 2 }, hall: true },
     { id: "puesto", name: "Puesto", seats: 22, m2: 32, permitH: 0, buildH: 0, cost: 0, staff: { gerente: 1, cocinero: 1, camarero: 1, limpieza: 0, bartender: 0 }, stall: true },
     { id: "estadio", name: "Estadio", seats: 480, m2: 2800, permitH: 168, buildH: 480, cost: 4800000, staff: { gerente: 4, cocinero: 16, camarero: 20, limpieza: 6, bartender: 4 } },
     { id: "kiosco_playa", name: "Kiosco de playa", seats: 6, m2: 14, permitH: 6, buildH: 10, cost: 20000, rentMult: 0.9, staff: { gerente: 1, cocinero: 1, camarero: 1, limpieza: 0, bartender: 0 }, poiTag: "playa" },
@@ -69,6 +69,18 @@
     }
     if (b === 24) return localH >= a;
     return localH >= a && localH < b;
+  }
+
+  function fairTicket(brand, pl) {
+    /* El género (avgCogs) y el alquiler/sueldos ya escalan de forma ~lineal
+       con el nivel de precios del país; si el ticket "justo" solo crecía con
+       su raíz cuadrada, el margen se estrechaba mucho en los países con
+       sueldos altos en proporción a su PIB per cápita (Alemania, Reino
+       Unido, Japón…) aunque no fueran los de "pl" más extremo. Con una
+       potencia algo mayor (0.8) el precio sube más al ritmo de esos costes
+       sin llegar a la escala lineal (que dispararía los precios en los
+       países más ricos más de la cuenta). */
+    return 9 * BRAND.tiers[brand.tier].ticket * Math.pow(Math.max(0.2, pl), 0.8);
   }
 
   function demandCurve(h, tier) {
@@ -243,11 +255,14 @@
     const placePop = r.popK || 10;
     const year = yearOf(gameMs);
     const pl = WORLD.priceLevel(r.country, year);
-    const wealth = U.clamp(pl, 0.15, 3.2);
+    const wealth = U.clamp(pl, 0.2, 3.2);
     const sz = sizeOf(r.size);
     const q = qualityOf(r, brand) / 100;
     const ticket = avgTicket(r, brand);
-    const fairTicket = 8 * BRAND.tiers[brand.tier].ticket * Math.sqrt(pl);
+    /* Mismo suelo que el precio "justo" que fija el gerente (SABOR.runManager):
+       si no coincidieran, un local con precios bien puestos parecería "caro" y
+       perdía clientes que no debía perder, sobre todo en países pobres. */
+    const fairTicket = SIM.fairTicket(brand, pl);
     const priceFit = U.clamp(1.35 - Math.abs(ticket - fairTicket) / Math.max(4, fairTicket), 0.25, 1.25);
     const stars = (r.stars || 3) / 5;
     const clean = r.cleanliness / 100;
@@ -265,7 +280,7 @@
     const walkCurve = sz.ghost ? 0.22 + (r.delivery ? 1.05 : 0.4) : curve;
     const raw =
       pop *
-      1.15 *
+      4.0 *
       wealth *
       walkCurve *
       (0.45 + q) *
@@ -282,7 +297,12 @@
       alcPen *
       street *
       ghostMul *
-      (sz.seats / 42);
+      /* Formatos pequeños (kiosco, food truck…) viven de un público de paso muy
+         rápido: no tiene sentido que su tráfico caiga en línea recta con el
+         aforo. Se usa una potencia intermedia para suavizar el castigo a lo
+         pequeño sin des-premiar en exceso a los formatos grandes (que además
+         cargan con plantillas mucho más caras, proporcionales al aforo). */
+      Math.pow(sz.seats / 42, 0.68);
     return U.clamp(raw, 0, seatsCap);
   }
 
@@ -371,7 +391,16 @@
     const cogs = avgCogs(r, brand, pl);
     const vat = ctry.vat || 0;
 
+    /* wageHour asume que TODA la plantilla trabaja a la vez cada hora abierta,
+       pero en la realidad los turnos se escalonan (descansos, entradas/salidas
+       por franjas, limpieza fuera de las horas punta…). Cuantos más empleados
+       tiene un local, más margen hay para organizar turnos eficientes, así que
+       la cobertura media baja un poco con la plantilla (un kiosco de 3
+       personas casi siempre las necesita a las tres a la vez; un food hall de
+       16 puede escalonarlos mucho más). */
+    const shiftCoverage = U.clamp(0.7 - (st.n - 3) * 0.013, 0.55, 0.7);
     const step = hours > 72 ? 3 : 1;
+    let wagesSum = 0;
     for (let h = 0; h < hours; h += step) {
       const t = fromMs + h * 3600000;
       const c = hourCustomers(r, brand, state, t) * step;
@@ -380,11 +409,12 @@
       const sales = c * ticket;
       const vatPaid = sales * vat;
       const cogsPay = c * cogs;
-      const wages = (open ? wageHour : wageHour * 0.15) * step;
+      const wages = (open ? wageHour * shiftCoverage : wageHour * 0.08) * step;
       const rent = rentHour * step;
       const util = (open ? utilHour : utilHour * 0.25) * step;
       rev += sales;
       cost += cogsPay + wages + rent + util + vatPaid;
+      wagesSum += wages;
       r.stock = U.clamp(r.stock - c * 0.15 * step, 0, 100);
       r.cleanliness = U.clamp(r.cleanliness - c * 0.07 * step + (st.avgClean > 0 ? st.by.limpieza.length * 0.35 * step : -0.08 * step), 8, 100);
     }
@@ -417,12 +447,17 @@
     r.finance.revToday += rev;
     r.finance.costToday += cost;
     r.finance.customersToday += cust;
+    r.finance.wagesToday = (r.finance.wagesToday || 0) + wagesSum;
     const iso = new Date(toMs).toISOString().slice(0, 10);
     if (r.finance.dayStamp !== iso) {
       r.finance.revYesterday = r.finance.revToday;
+      r.finance.costYesterday = r.finance.costToday;
+      r.finance.custYesterday = r.finance.customersToday;
+      r.finance.wagesYesterday = r.finance.wagesToday;
       r.finance.revToday = 0;
       r.finance.costToday = 0;
       r.finance.customersToday = 0;
+      r.finance.wagesToday = 0;
       r.finance.dayStamp = iso;
     }
 
@@ -455,7 +490,12 @@
   }
 
   function settleAll(state, toMs) {
-    const vp = state._vp;
+    /* _vp es un Set volátil que pinta MAP.refresh() para saber qué locales
+       están en pantalla; si una partida se exporta a JSON y se vuelve a
+       importar, un Set se serializa como "{}" (no como Set), así que aquí
+       no puede asumirse que siga siendo uno. */
+    const vpRaw = state._vp;
+    const vp = vpRaw && typeof vpRaw.has === "function" ? vpRaw : null;
     const n = state.restaurants.length;
     const openId = state._openId;
     let rev = 0,
@@ -777,12 +817,18 @@
     ids.forEach((bid, i) => {
       const brand = BRAND.get(bid);
       if (!brand) return;
+      /* El puesto no paga entrada (cost:0, sin obras/permisos: se monta con el
+         food hall), pero SÍ paga un alquiler de local pequeño dentro del
+         centro: si no, todo el peso del alquiler del edificio entero recaía
+         solo sobre el local ancla, que además solo se queda con su propia
+         parte de la facturación del conjunto. */
+      const puestoQuote = buildQuote(brand, "puesto", place, state.gameTime);
       const quote = {
         total: 0,
         permits: 0,
         works: 0,
         fitout: 0,
-        rentMonthly: 0,
+        rentMonthly: puestoQuote.rentMonthly * 0.6,
         permitH: 0,
         buildH: 0,
       };
@@ -796,7 +842,6 @@
       stall.hallParentId = hall.id;
       stall.status = hall.status;
       stall.statusUntil = hall.statusUntil;
-      stall.rentMonthly = 0;
       stall.owned = false;
       stall.name = `${brand.name} · puesto · ${hall.city || hall.countryName}`;
       stall.managerNote = "Este puesto lo gestiona su propio gerente, según su habilidad.";
@@ -956,6 +1001,7 @@
     yearOf,
     localHour,
     isOpenHour,
+    fairTicket,
     buildQuote,
     hireKit,
     defaultMenu,

@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="vendor/leaflet.css" />
-  <link rel="stylesheet" href="css/game.css?v=backup1" />
+  <link rel="stylesheet" href="css/game.css?v=fix5" />
 </head>
 <body>
   <a class="skip" href="#search">Ir al buscador</a>
@@ -106,6 +106,23 @@
   <div class="overlay" id="sheet"></div>
   <div class="modal-center" id="modal"></div>
 
+  <div class="photo-lightbox" id="photo-lightbox" hidden>
+    <button type="button" class="photo-lightbox-close" id="photo-lightbox-close" aria-label="Cerrar imagen">✕</button>
+    <img id="photo-lightbox-img" alt="Foto del local ampliada" />
+  </div>
+
+  <div class="backup-prompt" id="backup-prompt">
+    <span class="backup-prompt-ico">🛡</span>
+    <div class="backup-prompt-text">
+      <strong>¿Guardar también en tu ordenador?</strong>
+      <span>Además del autoguardado en el navegador, Horizon puede escribir cada partida en un archivo real de tu disco, que no se borra aunque limpies la caché.</span>
+    </div>
+    <div class="backup-prompt-actions">
+      <button type="button" class="btn primary" id="backup-prompt-yes">Activar</button>
+      <button type="button" class="btn ghost" id="backup-prompt-no">Ahora no</button>
+    </div>
+  </div>
+
   <div class="splash" id="splash">
     <div class="splash-inner">
       <div class="mark" style="width:52px;height:52px;border-radius:16px;font-size:26px;margin-bottom:14px;">H</div>
@@ -142,14 +159,14 @@
   <script src="js/brands.js?v=hz1"></script>
   <script src="js/horizon.js?v=lg2"></script>
   <script src="js/menu-extra.js?v=hz1"></script>
-  <script src="js/saborama.js?v=variety1"></script>
+  <script src="js/saborama.js?v=fix1"></script>
   <script src="js/geo.js?v=hz3"></script>
-  <script src="js/sim.js?v=variety1"></script>
-  <script src="js/store.js?v=hall2"></script>
-  <script src="js/backup.js?v=backup1"></script>
-  <script src="js/map.js?v=hall2"></script>
-  <script src="js/ui.js?v=backup1"></script>
-  <script src="js/app.js?v=backup1"></script>
+  <script src="js/sim.js?v=fix2"></script>
+  <script src="js/store.js?v=fix1"></script>
+  <script src="js/backup.js?v=backup2"></script>
+  <script src="js/map.js?v=fix2"></script>
+  <script src="js/ui.js?v=fix4"></script>
+  <script src="js/app.js?v=backup2"></script>
   <script>
     setTimeout(function () {
       if (window.GAME) return;

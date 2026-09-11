@@ -117,6 +117,9 @@
     UI.renderPanel();
     if (game._mapReady) MAP.refresh();
     dirty();
+    try {
+      UI.maybeShowBackupPrompt();
+    } catch (_) {}
   }
 
   function setSpeed(sp) {

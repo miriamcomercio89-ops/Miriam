@@ -42,6 +42,63 @@
     </div>`;
   }
 
+  let lightboxBound = false;
+  let lightboxZoom = 1;
+  const LIGHTBOX_ZOOM_MIN = 1;
+  const LIGHTBOX_ZOOM_MAX = 6;
+
+  function setLightboxZoom(img, zoom) {
+    lightboxZoom = U.clamp(zoom, LIGHTBOX_ZOOM_MIN, LIGHTBOX_ZOOM_MAX);
+    img.style.transform = lightboxZoom > 1 ? `scale(${lightboxZoom.toFixed(3)})` : "";
+    img.style.cursor = lightboxZoom > 1 ? "zoom-out" : "zoom-in";
+  }
+
+  function bindPhotoLightboxOnce() {
+    if (lightboxBound) return;
+    lightboxBound = true;
+    const box = U.$("#photo-lightbox");
+    const closeBtn = U.$("#photo-lightbox-close");
+    const img = U.$("#photo-lightbox-img");
+    if (!box) return;
+    const close = () => {
+      box.hidden = true;
+      if (img) {
+        img.removeAttribute("src");
+        setLightboxZoom(img, 1);
+      }
+    };
+    box.addEventListener("click", (ev) => {
+      if (ev.target === box || ev.target === closeBtn) close();
+    });
+    if (closeBtn) closeBtn.onclick = close;
+    document.addEventListener("keydown", (ev) => {
+      if (ev.key === "Escape" && !box.hidden) close();
+    });
+    if (img) {
+      img.addEventListener(
+        "wheel",
+        (ev) => {
+          ev.preventDefault();
+          const factor = Math.exp(-ev.deltaY * 0.0015);
+          setLightboxZoom(img, lightboxZoom * factor);
+        },
+        { passive: false }
+      );
+      img.addEventListener("dblclick", () => setLightboxZoom(img, lightboxZoom > 1 ? 1 : 2.5));
+    }
+  }
+
+  function openPhotoLightbox(url) {
+    if (!url) return;
+    bindPhotoLightboxOnce();
+    const box = U.$("#photo-lightbox");
+    const img = U.$("#photo-lightbox-img");
+    if (!box || !img) return;
+    img.src = url;
+    setLightboxZoom(img, 1);
+    box.hidden = false;
+  }
+
   function applyPhotoFrame(photo, imgId, phId) {
     const img = U.$(imgId.startsWith("#") ? imgId : "#" + imgId);
     const ph = U.$(phId.startsWith("#") ? phId : "#" + phId);
@@ -53,11 +110,13 @@
       img.hidden = false;
       if (ph) ph.hidden = true;
       if (frame) frame.classList.add("has-photo");
+      img.onclick = () => openPhotoLightbox(url);
     } else {
       img.removeAttribute("src");
       img.hidden = true;
       if (ph) ph.hidden = false;
       if (frame) frame.classList.remove("has-photo");
+      img.onclick = null;
     }
   }
 
@@ -133,6 +192,55 @@
     }
     bind();
     renderSplash().catch(function () {});
+  }
+
+  const BACKUP_PROMPT_KEY = "horizon-backup-prompt-seen";
+
+  function bindBackupPrompt() {
+    const box = U.$("#backup-prompt");
+    if (!box) return;
+    const yes = U.$("#backup-prompt-yes");
+    const no = U.$("#backup-prompt-no");
+    const dismiss = () => {
+      box.classList.remove("show");
+      try {
+        localStorage.setItem(BACKUP_PROMPT_KEY, "1");
+      } catch (_) {}
+    };
+    if (yes)
+      yes.onclick = async () => {
+        dismiss();
+        const r = await game.backupEnable();
+        if (r.active) {
+          toast(
+            r.fallback
+              ? "Este navegador no permite elegir un archivo fijo, así que cada varios minutos se descargará automáticamente una copia de tu partida a la carpeta de Descargas."
+              : "Autoguardado en tu ordenador activo en " + (r.fileName || "el archivo elegido") + ". Cada partida se escribirá también ahí, aunque borres la caché del navegador."
+          );
+        } else if (r.lastError === "elegir-archivo") {
+          toast("No se pudo activar el autoguardado en tu ordenador.", true);
+        }
+      };
+    if (no) no.onclick = dismiss;
+  }
+
+  /** Se llama cada vez que arranca una partida (nueva o cargada): si el autoguardado
+   * en disco no está activo todavía y el jugador no ha respondido antes a esta
+   * invitación, se le ofrece activarlo con un clic. */
+  function maybeShowBackupPrompt() {
+    const box = U.$("#backup-prompt");
+    if (!box || !game || !game.backupStatus) return;
+    let seen = false;
+    try {
+      seen = localStorage.getItem(BACKUP_PROMPT_KEY) === "1";
+    } catch (_) {}
+    if (seen) return;
+    const st = game.backupStatus();
+    if (st.active) return;
+    setTimeout(() => {
+      if (game.backupStatus().active) return;
+      box.classList.add("show");
+    }, 2500);
   }
 
   function fillFilterSelects() {
@@ -234,16 +342,21 @@
     if (backupBtn) {
       backupBtn.addEventListener("click", async () => {
         const st = game.backupStatus();
-        if (!st.supported) {
-          toast("Este navegador no admite guardar en disco automáticamente. Usa Chrome o Edge, o exporta la partida (⤓) de cuando en cuando: ese archivo tampoco se borra al limpiar la caché.", true);
-          return;
-        }
         if (st.active) {
-          if (confirm("Copia de seguridad automática activa" + (st.fileName ? " en " + st.fileName : "") + ". ¿Desactivarla? El archivo ya escrito no se borra.")) {
+          const msg = st.fallback
+            ? "Descarga automática activa: cada varios minutos se guarda una copia de tu partida en la carpeta de Descargas. ¿Desactivarla?"
+            : "Copia de seguridad automática activa" + (st.fileName ? " en " + st.fileName : "") + ". ¿Desactivarla? El archivo ya escrito no se borra.";
+          if (confirm(msg)) {
             game.backupDisable();
             renderBackupBtn();
             toast("Copia de seguridad automática desactivada.");
           }
+          return;
+        }
+        if (!st.supported) {
+          const r = await game.backupEnable();
+          renderBackupBtn();
+          if (r.active) toast("Este navegador no permite elegir un archivo fijo, así que cada varios minutos se descargará automáticamente una copia de tu partida a la carpeta de Descargas: tampoco se borra al limpiar la caché.");
           return;
         }
         if (st.hasHandle) {
@@ -270,41 +383,58 @@
       if (!backupBtn) return;
       const st = game.backupStatus();
       backupBtn.classList.remove("primary", "warn");
-      if (!st.supported) {
-        backupBtn.title = "Copia de seguridad automática en disco: no disponible en este navegador. Usa ⤓ Exportar de cuando en cuando.";
-      } else if (st.active) {
+      if (st.active) {
         backupBtn.classList.add("primary");
-        backupBtn.title = "Copia de seguridad automática activa" + (st.fileName ? " (" + st.fileName + ")" : "") + ". Clic para desactivar.";
+        backupBtn.title = st.fallback
+          ? "Descarga automática activa: cada varios minutos se guarda una copia en tu carpeta de Descargas. Clic para desactivar."
+          : "Copia de seguridad automática activa" + (st.fileName ? " (" + st.fileName + ")" : "") + ". Clic para desactivar.";
+      } else if (!st.supported) {
+        backupBtn.title = "Activar autoguardado en tu ordenador (recomendado): tu navegador no permite elegir un archivo fijo, así que se descargará una copia periódicamente en Descargas.";
       } else if (st.hasHandle) {
         backupBtn.classList.add("warn");
         backupBtn.title = "Copia de seguridad en pausa: falta permiso. Clic para reactivarla.";
       } else {
-        backupBtn.title = "Activar copia de seguridad automática en disco (recomendado): la partida y las fotos se escriben también en un archivo real que no borra la caché del navegador.";
+        backupBtn.title = "Activar autoguardado en tu ordenador (recomendado): la partida y las fotos se escriben también en un archivo real que no se borra al limpiar la caché del navegador.";
       }
     }
+    bindBackupPrompt();
     const search = U.$("#search");
     const sug = U.$("#suggest");
+    let lastHits = [];
+    const goToHit = (h) => {
+      sug.style.display = "none";
+      search.value = h.label;
+      MAP.fly(h.lat, h.lon, 16);
+      MAP.dropSearchPin(h.lat, h.lon, h.label);
+    };
     const runSearch = U.debounce(async () => {
       const q = search.value.trim();
       if (q.length < 2) {
         sug.style.display = "none";
+        lastHits = [];
         return;
       }
       const hits = await GEO.search(q);
+      lastHits = hits;
       sug.innerHTML = "";
       hits.forEach((h) => {
         const b = document.createElement("button");
-        b.textContent = h.label;
-        b.onclick = () => {
-          sug.style.display = "none";
-          search.value = h.label;
-          MAP.fly(h.lat, h.lon, 14);
-        };
+        b.innerHTML = `<span class="sug-ico">📍</span><span>${h.label}</span>`;
+        b.onclick = () => goToHit(h);
         sug.append(b);
       });
       sug.style.display = hits.length ? "block" : "none";
     }, 450);
     search.addEventListener("input", runSearch);
+    search.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && lastHits.length) {
+        e.preventDefault();
+        goToHit(lastHits[0]);
+      } else if (e.key === "Escape") {
+        sug.style.display = "none";
+        search.blur();
+      }
+    });
     document.addEventListener("click", (e) => {
       if (!e.target.closest(".search-row")) sug.style.display = "none";
     });
@@ -1533,6 +1663,7 @@
     renderSplash,
     hideSplash,
     showSplash,
+    maybeShowBackupPrompt,
     showBuild,
     showRestaurant,
     showTable,
