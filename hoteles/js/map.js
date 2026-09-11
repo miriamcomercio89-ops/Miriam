@@ -12,17 +12,23 @@
       maxZoom: 19,
     }).setView([22, 12], 3);
 
+    /* Mundo: satélite Esri (océanos y continentes de color).
+       Ciudad: Esri World Street Map (calles, parques, agua). Sin API key.
+       Nota: NO usar tile.openstreetmap.org directo: su política de uso
+       bloquea apps redistribuidas y sirve una imagen "Access blocked" en
+       vez de un error de red, así que el fallback por tileerror nunca
+       saltaba. Carto Voyager tampoco sirve: exige API key desde 2024. */
     const sat = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
       maxZoom: 6,
       maxNativeZoom: 19,
       className: "basemap-sat",
       attribution: 'Imágenes &copy; <a href="https://www.esri.com/">Esri</a>',
     }).addTo(map);
-    const osm = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    const osm = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}", {
       minZoom: 7,
       maxZoom: 19,
       className: "basemap-vivid",
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      attribution: 'Teselas &copy; <a href="https://www.esri.com/">Esri</a> &mdash; datos &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
     }).addTo(map);
     const esriTopo = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}", {
       minZoom: 7,
