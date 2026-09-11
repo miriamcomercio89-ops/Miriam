@@ -14,7 +14,7 @@ Cada local tiene un **gerente IA** que gestiona el sitio entero según su habili
 
 No hace falta servidor ni build. **Descomprime el ZIP**, entra en la carpeta (deben verse `index.html`, `js/`, `css/` y `vendor/`) y abre `index.html` en Chrome o Edge. No lo abras desde el visor de ZIP de Windows. El mapa necesita internet.
 
-**Descarga:** [horizon_simulador.zip](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/horizon_simulador.zip)
+**Descarga:** [horizon_simulador.zip](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/simulador-mejoras-iconos-busqueda-rentabilidad-d2e2/descargas/horizon_simulador.zip)
 
 ## Cómo jugar
 
@@ -61,4 +61,4 @@ Trae también su propio **Plan de Construcción Real**: mismo formato que el de 
 
 ## Créditos de mapa
 
-© [OpenStreetMap](https://www.openstreetmap.org/copyright) · teselas OSM Carto en ciudad · imágenes [Esri World Imagery](https://www.esri.com/) al alejar · geocodificación [Photon](https://photon.komoot.io/).
+© [OpenStreetMap](https://www.openstreetmap.org/copyright) · teselas [Esri World Street Map](https://www.esri.com/) en ciudad · imágenes [Esri World Imagery](https://www.esri.com/) al alejar · geocodificación [Photon](https://photon.komoot.io/).

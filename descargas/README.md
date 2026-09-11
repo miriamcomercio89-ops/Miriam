@@ -14,7 +14,7 @@ Mantiene toda la mecánica de ambos simuladores originales: gerente IA por local
 
 Si prefieres jugar cada cadena por separado, los simuladores individuales se mantienen disponibles:
 
-- **Horizon Restaurant Group** (solo restaurantes): [horizon_simulador.zip](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/meridiano-imperio-gastronomico-d2e2/descargas/horizon_simulador.zip)
+- **Horizon Restaurant Group** (solo restaurantes): [horizon_simulador.zip](https://media.githubusercontent.com/media/miriamcomercio89-ops/Miriam/cursor/simulador-mejoras-iconos-busqueda-rentabilidad-d2e2/descargas/horizon_simulador.zip)
 - **Horizon Hotels** (solo hoteles): ver la sección [Horizon Hotels](#horizon-hotels) más abajo.
 
 Descomprime, entra en la carpeta correspondiente (deben verse `index.html`, `js/`, `css/`, `vendor/` e `img/`) y abre `index.html` en Chrome o Edge. No hace falta servidor ni build; el mapa necesita internet. Detalle completo en el [README principal](../README.md).
