@@ -97,6 +97,8 @@ addEventListener("keydown", (e) => {
   if (e.key === "k" || e.key === "K") openModal(game, "rank");
   if (e.key === "l" || e.key === "L") openModal(game, "saves");
   if (e.key === "g" || e.key === "G") openModal(game, "stats");
+  if (e.key === "m" || e.key === "M") openModal(game, "spain");
+  if (e.key === "j" || e.key === "J") openModal(game, "calc");
   const nums = "1234567890";
   const idx = nums.indexOf(e.key);
   if (idx >= 0) {

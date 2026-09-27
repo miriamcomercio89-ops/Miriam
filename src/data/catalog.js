@@ -327,7 +327,7 @@ const NAMED = [
   ["alnico", "Alnico", ["Al", "Ni", "Co"], "advanced-metals", "blast", [{ id: "ingot-al", n: 1 }, { id: "ingot-ni", n: 1 }, { id: "ingot-co", n: 1 }]],
   ["titanium-alloy", "Aleación de titanio", ["Ti", "Al", "V"], "advanced-metals", "blast", [{ id: "ingot-ti", n: 4 }, { id: "ingot-al", n: 1 }, { id: el("V"), n: 1 }]],
   ["tungsten-carbide", "Carburo de wolframio", ["W", "C"], "advanced-metals", "blast", [{ id: el("W"), n: 1 }, { id: el("C"), n: 1 }]],
-  ["silicon-wafer", "Oblea de silicio", ["Si"], "solar", "assembler", [{ id: "plate-si", n: 1 }, { id: el("P"), n: 1 }]],
+  ["silicon-wafer", "Oblea de silicio", ["Si"], "solar", "assembler", [{ id: "ore-si", n: 1 }, { id: el("P"), n: 1 }]],
   ["circuit-basic", "Circuito básico", ["Cu", "Si"], "electronics", "assembler", [{ id: "silicon-wafer", n: 1 }, { id: "wire-cu", n: 4 }, { id: "plastic-pe", n: 1 }]],
   ["circuit-advanced", "Circuito avanzado", ["Cu", "Si", "Au"], "electronics", "assembler", [{ id: "circuit-basic", n: 2 }, { id: "wire-au", n: 2 }, { id: "solder", n: 1 }]],
   ["magnet-nd", "Imán de neodimio", ["Nd", "Fe", "B"], "rare-earths", "assembler", [{ id: el("Nd"), n: 2 }, { id: "ingot-fe", n: 1 }, { id: el("B"), n: 1 }]],

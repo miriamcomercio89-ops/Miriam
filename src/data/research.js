@@ -30,6 +30,12 @@ export const RESEARCH = [
   R("logistics-2", "Logística avanzada", "era-start", { "sci-mining": 20 }, ["logistics"], "Divisores, filtros y cintas subterráneas.", [
     "Divisor, filtro, subterránea",
   ]),
+  R("industry-2", "Fábricas II", "era-start", { "sci-mining": 24, "sci-metal": 8 }, ["logistics", "steel"], "Extractores, hornos y ensambladoras de nivel 2.", [
+    "Máquinas II",
+  ]),
+  R("industry-3", "Fábricas III", "era-elec", { "sci-elec": 20, "sci-metal": 16 }, ["industry-2", "electronics"], "Líneas automáticas de nivel 3.", [
+    "Máquinas III",
+  ]),
   R("fluids", "Fluidos", "era-start", { "sci-mining": 16 }, ["start"], "Bombas y agua.", ["Bomba"]),
   R("metallurgy", "Metalurgia", "era-metal", { "sci-mining": 20 }, ["logistics"], "Metales poco comunes.", ["Ti, Ni, Zn, Sn"]),
   R("steel", "Aceros", "era-metal", { "sci-mining": 18, "sci-metal": 8 }, ["metallurgy"], "Alto horno y aleaciones.", [

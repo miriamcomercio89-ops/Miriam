@@ -1,4 +1,4 @@
-import { BUILDINGS, BUILDING_LIST } from "../data/buildings.js";
+import { BUILDINGS, BUILDING_LIST, BUILDING_TABS, canCraftRecipe } from "../data/buildings.js";
 import { ELEMENTS, CATEGORIES, ELEMENT_BY_SYMBOL, elementItemId } from "../data/elements.js";
 import { ITEM_BY_ID, RECIPES, searchItems, getItem } from "../data/catalog.js";
 import { ERAS, RESEARCH, RESEARCH_BY_ID, isResearched, canResearch } from "../data/research.js";
@@ -12,6 +12,8 @@ import { buildChain, chainToHtml } from "../game/chain.js";
 import { setMuted, isMuted, sfx } from "../audio/sound.js";
 import { listSaves, writeSave, clearSave, resolveSaveKey } from "../game/saves.js";
 import { logoImg, factoryImg } from "../render/logos.js";
+import { SPAIN_CITIES, SPAIN_BY_ID } from "../data/spain.js";
+import { planFactory, flattenPlan } from "../game/calc.js";
 
 let uiState = {
   modal: null,
@@ -22,6 +24,11 @@ let uiState = {
   researchKey: "",
   inspectKey: "",
   saveKey: "periodica-save-v4",
+  hotTab: "mineria",
+  hotKey: "",
+  calcId: "steel",
+  calcRate: 6,
+  calcQuery: "",
 };
 
 export function bindUI(game, opts = {}) {
@@ -73,6 +80,20 @@ export function bindUI(game, opts = {}) {
   });
   buildHotbar(game);
   buildPeriodic(game);
+  const calcSearch = $("calc-search");
+  if (calcSearch) {
+    calcSearch.addEventListener("input", (e) => {
+      uiState.calcQuery = e.target.value;
+      renderCalc(game);
+    });
+  }
+  const calcRate = $("calc-rate");
+  if (calcRate) {
+    calcRate.addEventListener("input", (e) => {
+      uiState.calcRate = Math.max(0.5, Number(e.target.value) || 6);
+      renderCalc(game);
+    });
+  }
   renderPedia(game);
   renderResearch(game);
   document.body.classList.toggle("colorblind", game.colorblind);
@@ -91,7 +112,21 @@ export function openModal(game, id) {
   if (id === "stats") renderStats(game);
   if (id === "rank") renderRank(game);
   if (id === "saves") renderSaves(game);
+  if (id === "spain") renderSpain(game);
+  if (id === "calc") renderCalc(game);
   sfx("click");
+}
+
+export function openHowTo(game, itemId) {
+  if (!itemId) return;
+  game.pinned = itemId;
+  uiState.pediaSel = itemId;
+  uiState.pediaTab = "all";
+  uiState.pediaQuery = getItem(itemId)?.name || "";
+  const search = document.getElementById("pedia-search");
+  if (search) search.value = uiState.pediaQuery;
+  document.querySelectorAll("[data-pedia-tab]").forEach((b) => b.classList.toggle("active", b.dataset.pediaTab === "all"));
+  openModal(game, "pedia");
 }
 
 export function closeModals() {
@@ -106,20 +141,46 @@ export function isModalOpen() {
 }
 
 function buildHotbar(game) {
+  renderHotbar(game, true);
+}
+
+function renderHotbar(game, force = false) {
   const bar = document.getElementById("hotbar");
-  bar.innerHTML = "";
-  for (const def of BUILDING_LIST) {
-    const btn = document.createElement("button");
-    btn.className = "hot";
-    btn.dataset.type = def.id;
-    btn.title = `${def.name}: ${def.desc}`;
-    btn.innerHTML = `${factoryImg(def.id, "hot-logo")}<small>${def.name}</small>`;
-    btn.addEventListener("click", () => {
-      game.build.type = def.id;
+  if (!bar) return;
+  const key = `${uiState.hotTab}:${Object.keys(game.researched).sort().join(",")}:${game.build.type}`;
+  if (!force && key === uiState.hotKey) return;
+  uiState.hotKey = key;
+  const tabs = BUILDING_TABS.map(
+    (t) => `<button type="button" class="hot-tab ${t.id === uiState.hotTab ? "on" : ""}" data-tab="${t.id}">${t.name}</button>`
+  ).join("");
+  const list = BUILDING_LIST.filter((def) => (def.tab || "talleres") === uiState.hotTab);
+  const unlocked = list.filter((def) => !def.research || isResearched(game, def.research));
+  const locked = list.filter((def) => def.research && !isResearched(game, def.research)).slice(0, 4);
+  const cells = unlocked
+    .map((def) => {
+      const on = game.build.type === def.id ? "on" : "";
+      return `<button type="button" class="hot ${on}" data-type="${def.id}" title="${def.name}: ${def.desc}">
+        ${factoryImg(def.id, "hot-logo")}<small>${def.name}</small>
+      </button>`;
+    })
+    .join("");
+  const soon = locked
+    .map((def) => `<button type="button" class="hot locked" disabled title="Investiga ${def.research}">${factoryImg(def.id, "hot-logo")}<small>${def.name}</small></button>`)
+    .join("");
+  bar.innerHTML = `<div class="hot-tabs">${tabs}</div><div class="hot-grid">${cells}${soon}</div>`;
+  bar.querySelectorAll("[data-tab]").forEach((btn) => {
+    btn.onclick = () => {
+      uiState.hotTab = btn.dataset.tab;
+      renderHotbar(game, true);
+    };
+  });
+  bar.querySelectorAll("[data-type]").forEach((btn) => {
+    btn.onclick = () => {
+      game.build.type = btn.dataset.type;
       game.pasteMode = false;
-    });
-    bar.appendChild(btn);
-  }
+      renderHotbar(game, true);
+    };
+  });
 }
 
 function buildPeriodic(game) {
@@ -165,6 +226,7 @@ function tablePos(el) {
 }
 
 export function renderUI(game) {
+  renderHotbar(game);
   const power = game.power ?? { produced: 0, demand: 0, satisfaction: 1 };
   const rank = worldRanking(game);
   setStat("stat-power", `${power.produced | 0}/${power.demand | 0}`);
@@ -229,6 +291,9 @@ function bindOrderButtons(game, root) {
   root.querySelectorAll("[data-nego]").forEach((btn) => {
     btn.onclick = () => negotiateOrder(game, btn.dataset.nego);
   });
+  root.querySelectorAll("[data-howto]").forEach((btn) => {
+    btn.onclick = () => openHowTo(game, btn.dataset.howto);
+  });
 }
 
 function orderActions(o, have) {
@@ -237,15 +302,17 @@ function orderActions(o, have) {
       <button data-accept="${o.id}">Aceptar</button>
       <button data-reject="${o.id}">Rechazar</button>
       ${o.crisis || o.negotiated ? "" : `<button data-nego="${o.id}">Negociar</button>`}
+      <button data-howto="${o.itemId}">Cómo se fabrica</button>
     </div>`;
   }
   if (o.status === "open") {
     return `<div class="order-actions">
       <button data-ship="${o.id}" ${have >= o.amount ? "" : "disabled"}>Enviar</button>
       ${o.crisis || o.negotiated ? "" : `<button data-nego="${o.id}">Negociar</button>`}
+      <button data-howto="${o.itemId}">Cómo se fabrica</button>
     </div>`;
   }
-  return "";
+  return `<div class="order-actions"><button data-howto="${o.itemId}">Cómo se fabrica</button></div>`;
 }
 
 function renderOrdersMini(game) {
@@ -528,10 +595,10 @@ function feedBuilding(game, b) {
 
 function recOptions(game, b) {
   const tile = game.world.tiles[b.y][b.x];
-  return RECIPES.filter((r) => r.building === b.type && !r.science)
+  return RECIPES.filter((r) => canCraftRecipe(b.type, r) && !r.science)
     .filter((r) => !r.research || isResearched(game, r.research))
     .filter((r) => {
-      if (b.type !== "extractor" && b.type !== "pump") return true;
+      if (!r.deposit) return true;
       const dep = tile.deposit || (tile.terrain === "water" ? "water" : null);
       return r.deposit === dep;
     });
@@ -702,6 +769,84 @@ function renderStats(game) {
         })
         .join("")
     : `<p class="muted">Cuando la fábrica produzca, aquí verás el ritmo.</p>`;
+}
+
+function renderSpain(game) {
+  const box = document.getElementById("spain-map");
+  const detail = document.getElementById("spain-detail");
+  if (!box) return;
+  const live = (game.orders || []).filter((o) => (o.status === "open" || o.status === "offer") && o.cityId);
+  const byCity = Object.fromEntries(live.map((o) => [o.cityId, o]));
+  box.innerHTML = `
+    <svg class="iberia-svg" viewBox="0 0 100 100" aria-hidden="true">
+      <path d="M18 16 L32 10 L46 12 L58 16 L70 14 L78 22 L84 34 L82 48 L76 62 L68 74 L58 84 L46 88 L34 84 L24 74 L16 62 L12 48 L10 36 L14 24 Z" />
+    </svg>
+    ${SPAIN_CITIES.map((c) => {
+      const o = byCity[c.id];
+      const cls = o ? (o.crisis ? "city-pin crisis" : "city-pin live") : "city-pin";
+      return `<button type="button" class="${cls}" style="left:${c.x}%;top:${c.y}%" data-city="${c.id}" title="${c.name}">${c.flag}</button>`;
+    }).join("")}
+  `;
+  const showCity = (id) => {
+    const c = SPAIN_BY_ID[id];
+    if (!c || !detail) return;
+    const o = byCity[c.id];
+    const item = o ? getItem(o.itemId) : null;
+    detail.innerHTML = `
+      <h3>${c.flag} ${c.name} <small class="muted">${c.region}</small></h3>
+      ${o ? `<p class="with-logo">${logoImg(o.itemId)} Pide ${o.amount}× <b>${item?.name}</b> (${o.status === "offer" ? "oferta" : "aceptado"}).</p>
+        <button data-howto="${o.itemId}">Cómo se fabrica</button>` : `<p class="muted">Ahora mismo no hay pedido. Suele pedir: ${c.items.map((id) => getItem(id)?.name || id).join(", ")}.</p>`}
+    `;
+    detail.querySelectorAll("[data-howto]").forEach((btn) => {
+      btn.onclick = () => openHowTo(game, btn.dataset.howto);
+    });
+  };
+  box.querySelectorAll("[data-city]").forEach((btn) => {
+    btn.onclick = () => showCity(btn.dataset.city);
+  });
+  if (live[0]) showCity(live[0].cityId);
+  else showCity("madrid");
+}
+
+function renderCalc(game) {
+  const list = document.getElementById("calc-list");
+  const body = document.getElementById("calc-body");
+  if (!list || !body) return;
+  const q = (uiState.calcQuery || "").trim().toLowerCase();
+  const hits = (q ? searchItems(q, 24) : FEATURED.map((f) => getItem(f.id)).filter(Boolean)).slice(0, 18);
+  if (!hits.find((i) => i.id === uiState.calcId) && hits[0]) uiState.calcId = hits[0].id;
+  list.innerHTML = hits
+    .map((item) => `<button class="list-row ${item.id === uiState.calcId ? "on" : ""}" data-calc="${item.id}"><span class="with-logo">${logoImg(item.id, "logo sm")}${item.name}</span></button>`)
+    .join("");
+  list.querySelectorAll("[data-calc]").forEach((btn) => {
+    btn.onclick = () => {
+      uiState.calcId = btn.dataset.calc;
+      renderCalc(game);
+    };
+  });
+  const rate = uiState.calcRate || 6;
+  const plan = planFactory(uiState.calcId, rate);
+  const flat = [...flattenPlan(plan).values()].sort((a, b) => b.machines - a.machines);
+  const tree = (node, depth = 0) => {
+    if (!node) return "";
+    const factory = node.building ? `${factoryImg(node.building, "logo xs")} ${node.raw ? "yacimiento" : `${node.machines}× ${BUILDINGS[node.building]?.name || node.building}`}` : "";
+    return `<div class="calc-node" style="margin-left:${depth * 10}px">
+      <div class="with-logo">${logoImg(node.itemId, "logo sm")}<b>${node.name}</b> <span class="muted">${node.perMin}/min</span> ${factory}</div>
+      ${(node.inputs || []).map((c) => tree(c, depth + 1)).join("")}
+    </div>`;
+  };
+  const rows = flat
+    .map((n) => {
+      const extra = n.mk2 ? ` · II: ${n.mk2} · III: ${n.mk3}` : "";
+      return `<div class="inv-row"><span class="with-logo">${n.building ? factoryImg(n.building, "logo sm") : ""}${logoImg(n.itemId, "logo sm")}${n.name}</span><b>${n.machines} máquina${n.machines === 1 ? "" : "s"}${extra}</b></div>`;
+    })
+    .join("");
+  body.innerHTML = `
+    <p class="lead">Para ${rate}/min de <span class="with-logo">${logoImg(uiState.calcId)}${getItem(uiState.calcId)?.name}</span></p>
+    <div class="calc-sum">${rows || "<p class='muted'>Elige un producto.</p>"}</div>
+    <h4>Cadena</h4>
+    ${tree(plan)}
+  `;
 }
 
 export function showTip(e, html) {

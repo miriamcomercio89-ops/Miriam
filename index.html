@@ -40,6 +40,8 @@
           <div class="stat" id="stat-time"><span>⏱</span><b>—</b></div>
         </div>
         <div class="top-actions">
+          <button data-modal="spain" title="España (M)">España</button>
+          <button data-modal="calc" title="Calculadora (J)">Calculadora</button>
           <button data-modal="periodic" title="Tabla (P)">Tabla</button>
           <button data-modal="research" title="Ciencia (T)">Ciencia</button>
           <button data-modal="pedia" title="Recetas (E)">Recetas</button>
@@ -90,8 +92,7 @@
 
       <nav class="hotbar" id="hotbar"></nav>
       <footer class="shortcuts">
-        Arrastra cintas · Shift+arrastrar selecciona · Ctrl+C/V copiar/pegar · Ctrl+Z deshacer · R rota ·
-        P tabla · O pedidos · K ranking · L partidas · G stats
+        Arrastra cintas · R rota · M España · J calculadora · E recetas · O pedidos
       </footer>
 
       <div id="tooltip" hidden></div>
@@ -184,6 +185,38 @@
         </div>
       </div>
 
+      <div class="modal" id="modal-spain" hidden>
+        <div class="modal-card wide">
+          <header>
+            <h2>España · ciudades que te piden</h2>
+            <button class="close" data-close>×</button>
+          </header>
+          <p class="lead">Clic en una ciudad. Si brilla, tiene un pedido ahora mismo.</p>
+          <div class="spain-layout">
+            <div id="spain-map" class="spain-board"></div>
+            <div id="spain-detail" class="detail"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal" id="modal-calc" hidden>
+        <div class="modal-card wide">
+          <header>
+            <h2>Calculadora de fábrica</h2>
+            <button class="close" data-close>×</button>
+          </header>
+          <p class="lead">Elige un producto y cuántos quieres por minuto. Te dice las máquinas.</p>
+          <div class="calc-toolbar">
+            <input id="calc-search" type="search" placeholder="Busca acero, vidrio, coche…" />
+            <label>Por minuto <input id="calc-rate" type="number" min="0.5" step="0.5" value="6" /></label>
+          </div>
+          <div class="pedia-layout">
+            <div id="calc-list"></div>
+            <div id="calc-body" class="detail"></div>
+          </div>
+        </div>
+      </div>
+
       <div class="modal" id="modal-help" hidden>
         <div class="modal-card">
           <header>
@@ -205,7 +238,12 @@
               <li><b>Puerto</b> — aduana: las cintas que llegan cumplen pedidos.</li>
               <li><b>Fijar receta</b> — en Recetas, deja a la vista lo que te falta.</li>
               <li><b>Rojo</b> — máquina atascada (falta entrada o la salida está llena).</li>
-              <li><b>Logos</b> — cada producto y cada fábrica tiene su imagen (inventario, recetas, pedidos, mapa).</li>
+              <li><b>Cómo se fabrica</b> — en un pedido, abre la receta y la fija.</li>
+              <li><b>España (M)</b> — mapa con muchas ciudades. Las que piden algo brillan.</li>
+              <li><b>Calculadora (J)</b> — “quiero 10 de acero al minuto” y te dice las máquinas.</li>
+              <li><b>Fábricas II y III</b> — más rápidas. También hay hornos, química y talleres especializados.</li>
+              <li><b>Barra de abajo</b> — pestañas: minería, cintas, hornos, química, talleres, energía, ciencia.</li>
+              <li><b>Logos</b> — cada producto y cada fábrica tiene su imagen.</li>
               <li><b>Daltonismo</b> — formas además de color en los logos de elementos.</li>
             </ul>
           </div>

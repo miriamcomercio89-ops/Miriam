@@ -401,8 +401,10 @@ function parseHex(hex) {
 }
 
 function drawFactoryGlyph(ctx, type, size, tick, extras) {
+  const def = BUILDINGS[type];
+  const kind = def?.visual || type;
   const s = size;
-  if (type === "extractor") {
+  if (kind === "extractor") {
     ctx.beginPath();
     ctx.moveTo(-s * 0.2, s * 0.18);
     ctx.lineTo(0, -s * 0.22);
@@ -412,7 +414,7 @@ function drawFactoryGlyph(ctx, type, size, tick, extras) {
     ctx.arc(0, s * 0.1, s * 0.09, 0, Math.PI * 2);
     ctx.fill();
     ctx.fillRect(-s * 0.03, -s * 0.02, s * 0.06, s * 0.16);
-  } else if (type === "belt" || type === "splitter" || type === "filter" || type === "underground") {
+  } else if (kind === "belt" || type === "splitter" || type === "filter" || type === "underground") {
     const dir = extras.dir ?? 0;
     const ang = (dir * Math.PI) / 2;
     ctx.rotate(ang);
@@ -442,12 +444,12 @@ function drawFactoryGlyph(ctx, type, size, tick, extras) {
       ctx.fillStyle = "#0b1220";
       ctx.fillRect(-s * 0.08, -s * 0.04, s * 0.16, s * 0.08);
     }
-  } else if (type === "furnace" || type === "blast") {
+  } else if (kind === "furnace" || kind === "blast") {
     ctx.fillRect(-s * 0.16, -s * 0.04, s * 0.32, s * 0.2);
-    if (type === "blast") ctx.fillRect(-s * 0.1, -s * 0.22, s * 0.2, s * 0.18);
+    if (kind === "blast") ctx.fillRect(-s * 0.1, -s * 0.22, s * 0.2, s * 0.18);
     ctx.fillStyle = `rgba(251, 146, 60, ${0.45 + 0.4 * Math.sin(tick / 6)})`;
     ctx.fillRect(-s * 0.1, 0.02 * s, s * 0.2, s * 0.1);
-  } else if (type === "coalGen") {
+  } else if (kind === "coalGen") {
     ctx.fillRect(-s * 0.16, -s * 0.02, s * 0.32, s * 0.18);
     ctx.fillRect(s * 0.04, -s * 0.22, s * 0.1, s * 0.2);
     ctx.globalAlpha = 0.45;
@@ -455,7 +457,7 @@ function drawFactoryGlyph(ctx, type, size, tick, extras) {
     ctx.arc(s * 0.1, -s * 0.26, s * 0.07, 0, Math.PI * 2);
     ctx.fill();
     ctx.globalAlpha = 1;
-  } else if (type === "pump") {
+  } else if (kind === "pump") {
     ctx.fillRect(-s * 0.04, -s * 0.2, s * 0.08, s * 0.28);
     ctx.beginPath();
     ctx.arc(0, s * 0.12, s * 0.12, 0, Math.PI * 2);
@@ -464,7 +466,7 @@ function drawFactoryGlyph(ctx, type, size, tick, extras) {
     ctx.beginPath();
     ctx.arc(0, s * 0.12, s * 0.05, 0, Math.PI * 2);
     ctx.fill();
-  } else if (type === "reactor") {
+  } else if (kind === "reactor") {
     ctx.beginPath();
     ctx.moveTo(-s * 0.1, -s * 0.16);
     ctx.lineTo(s * 0.1, -s * 0.16);
@@ -474,7 +476,7 @@ function drawFactoryGlyph(ctx, type, size, tick, extras) {
     ctx.fill();
     ctx.fillStyle = "rgba(167, 139, 250, 0.5)";
     ctx.fillRect(-s * 0.08, 0, s * 0.16, s * 0.12);
-  } else if (type === "electrolyzer") {
+  } else if (kind === "electrolyzer") {
     ctx.fillRect(-s * 0.18, s * 0.04, s * 0.36, s * 0.12);
     ctx.fillRect(-s * 0.1, -s * 0.16, s * 0.05, s * 0.22);
     ctx.fillRect(s * 0.05, -s * 0.16, s * 0.05, s * 0.22);
@@ -482,14 +484,14 @@ function drawFactoryGlyph(ctx, type, size, tick, extras) {
     ctx.globalAlpha = 0.5;
     ctx.fillRect(-s * 0.16, s * 0.06, s * 0.32, s * 0.08);
     ctx.globalAlpha = 1;
-  } else if (type === "assembler") {
+  } else if (kind === "assembler") {
     ctx.fillRect(-s * 0.16, s * 0.06, s * 0.32, s * 0.1);
     ctx.fillRect(-s * 0.03, -s * 0.16, s * 0.06, s * 0.24);
     ctx.fillRect(0, -s * 0.18, s * 0.16, s * 0.05);
     ctx.beginPath();
     ctx.arc(s * 0.16, -s * 0.16, s * 0.05, 0, Math.PI * 2);
     ctx.fill();
-  } else if (type === "lab") {
+  } else if (kind === "lab") {
     ctx.beginPath();
     ctx.moveTo(-s * 0.1, -s * 0.18);
     ctx.lineTo(s * 0.1, -s * 0.18);
@@ -499,11 +501,11 @@ function drawFactoryGlyph(ctx, type, size, tick, extras) {
     ctx.fill();
     ctx.fillStyle = "#0b1220";
     ctx.fillRect(-s * 0.04, -s * 0.08, s * 0.08, s * 0.16);
-  } else if (type === "chest") {
+  } else if (kind === "chest") {
     ctx.fillRect(-s * 0.18, -s * 0.12, s * 0.36, s * 0.26);
     ctx.fillStyle = "#0b1220";
     ctx.fillRect(-s * 0.14, -s * 0.02, s * 0.28, s * 0.05);
-  } else if (type === "port") {
+  } else if (kind === "port") {
     ctx.fillRect(-s * 0.2, s * 0.02, s * 0.4, s * 0.12);
     ctx.beginPath();
     ctx.moveTo(-s * 0.16, s * 0.02);
@@ -511,7 +513,7 @@ function drawFactoryGlyph(ctx, type, size, tick, extras) {
     ctx.lineTo(s * 0.16, s * 0.02);
     ctx.fill();
     ctx.fillRect(-s * 0.03, -s * 0.22, s * 0.06, s * 0.12);
-  } else if (type === "solar") {
+  } else if (kind === "solar") {
     ctx.fillRect(-s * 0.2, -s * 0.14, s * 0.4, s * 0.28);
     ctx.strokeStyle = "#0b1220";
     ctx.beginPath();
@@ -520,7 +522,7 @@ function drawFactoryGlyph(ctx, type, size, tick, extras) {
     ctx.moveTo(0, -s * 0.14);
     ctx.lineTo(0, s * 0.14);
     ctx.stroke();
-  } else if (type === "nuclear") {
+  } else if (kind === "nuclear") {
     ctx.beginPath();
     ctx.arc(-s * 0.08, s * 0.08, s * 0.08, 0, Math.PI * 2);
     ctx.arc(s * 0.1, s * 0.08, s * 0.08, 0, Math.PI * 2);
@@ -529,11 +531,65 @@ function drawFactoryGlyph(ctx, type, size, tick, extras) {
     ctx.beginPath();
     ctx.arc(0, -s * 0.08, s * 0.05, 0, Math.PI * 2);
     ctx.fill();
+  } else if (type === "refinery") {
+    ctx.fillRect(-s * 0.18, s * 0.04, s * 0.36, s * 0.12);
+    ctx.fillRect(-s * 0.14, -s * 0.2, s * 0.08, s * 0.26);
+    ctx.fillRect(0.04 * s, -s * 0.12, s * 0.1, s * 0.18);
+  } else if (type === "greenhouse") {
+    ctx.beginPath();
+    ctx.moveTo(0, -s * 0.2);
+    ctx.lineTo(s * 0.2, 0);
+    ctx.lineTo(s * 0.2, s * 0.16);
+    ctx.lineTo(-s * 0.2, s * 0.16);
+    ctx.lineTo(-s * 0.2, 0);
+    ctx.closePath();
+    ctx.stroke();
+  } else if (type === "wind") {
+    ctx.fillRect(-s * 0.03, -s * 0.04, s * 0.06, s * 0.22);
+    ctx.beginPath();
+    ctx.moveTo(0, -s * 0.04);
+    ctx.lineTo(s * 0.2, -s * 0.16);
+    ctx.moveTo(0, -s * 0.04);
+    ctx.lineTo(-s * 0.18, -s * 0.14);
+    ctx.moveTo(0, -s * 0.04);
+    ctx.lineTo(0.02 * s, s * 0.18);
+    ctx.stroke();
+  } else if (type === "pharma" || type === "distillery") {
+    ctx.beginPath();
+    ctx.moveTo(-s * 0.08, -s * 0.18);
+    ctx.lineTo(s * 0.08, -s * 0.18);
+    ctx.lineTo(s * 0.14, s * 0.16);
+    ctx.lineTo(-s * 0.14, s * 0.16);
+    ctx.closePath();
+    ctx.fill();
+  } else if (type === "chipFab" || type === "printer") {
+    ctx.fillRect(-s * 0.16, -s * 0.16, s * 0.32, s * 0.32);
+    ctx.fillStyle = "#0b1220";
+    ctx.fillRect(-s * 0.08, -s * 0.08, s * 0.16, s * 0.16);
+  } else if (type === "recycler") {
+    ctx.beginPath();
+    ctx.arc(0, 0, s * 0.16, 0.4, Math.PI * 1.6);
+    ctx.stroke();
+  } else if (type === "shipyard" || type === "welder") {
+    ctx.fillRect(-s * 0.2, s * 0.04, s * 0.4, s * 0.1);
+    ctx.beginPath();
+    ctx.moveTo(-s * 0.12, s * 0.04);
+    ctx.lineTo(0, -s * 0.16);
+    ctx.lineTo(s * 0.12, s * 0.04);
+    ctx.fill();
   } else {
     ctx.font = `${Math.max(14, s * 0.32)}px sans-serif`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText(BUILDINGS[type]?.icon || "?", 0, 0);
+  }
+  if (def?.tier > 1) {
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = "#f8fafc";
+    ctx.font = `700 ${Math.max(9, s * 0.2)}px "IBM Plex Sans", sans-serif`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(String(def.tier), s * 0.24, -s * 0.22);
   }
 }
 
