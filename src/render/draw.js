@@ -219,9 +219,9 @@ function drawBuilding(ctx, b, x, y, size, state) {
   const cx = x + size / 2;
   const cy = y + size / 2;
 
-  if (b.type === "belt") {
+  if (def.isBelt) {
     const d = DIRS[b.dir ?? 0];
-    ctx.fillStyle = "#fbbf24";
+    ctx.fillStyle = def.color;
     const shift = ((tick * 0.15) % 1) * size * 0.15;
     for (let i = -1; i < 2; i++) {
       const ox = d.dx * (i * size * 0.18 + shift);
@@ -232,6 +232,22 @@ function drawBuilding(ctx, b, x, y, size, state) {
       ctx.lineTo(cx + ox + d.dy * size * 0.12, cy + oy + d.dx * size * 0.12);
       ctx.closePath();
       ctx.fill();
+    }
+    if (b.type === "splitter") {
+      ctx.strokeStyle = def.color;
+      ctx.beginPath();
+      ctx.moveTo(cx - size * 0.16, cy);
+      ctx.lineTo(cx + size * 0.16, cy - size * 0.12);
+      ctx.moveTo(cx - size * 0.16, cy);
+      ctx.lineTo(cx + size * 0.16, cy + size * 0.12);
+      ctx.stroke();
+    } else if (b.type === "filter") {
+      ctx.fillStyle = "#0b1220";
+      ctx.fillRect(cx - size * 0.1, cy - size * 0.1, size * 0.2, size * 0.2);
+      if (b.filterId) drawItem(ctx, b.filterId, cx - size * 0.08, cy - size * 0.08, size * 0.16);
+    } else if (b.type === "underground") {
+      ctx.fillStyle = "#0b1220";
+      ctx.fillRect(cx - size * 0.18, cy - size * 0.06, size * 0.36, size * 0.12);
     }
     return;
   }
@@ -296,6 +312,9 @@ function drawBuilding(ctx, b, x, y, size, state) {
     ctx.beginPath();
     ctx.arc(0, size * 0.12, size * 0.1, 0, Math.PI * 2);
     ctx.fill();
+  } else if (b.type === "port") {
+    ctx.fillRect(-size * 0.18, -size * 0.08, size * 0.36, size * 0.18);
+    ctx.fillRect(-size * 0.04, -size * 0.2, size * 0.08, size * 0.16);
   } else {
     ctx.font = `${Math.max(14, size * 0.28)}px sans-serif`;
     ctx.textAlign = "center";
@@ -307,6 +326,11 @@ function drawBuilding(ctx, b, x, y, size, state) {
   if (b.progress > 0) {
     ctx.fillStyle = "rgba(255,255,255,0.18)";
     ctx.fillRect(x + pad, y + size - pad * 2.2, (size - pad * 2) * Math.min(1, b.progress), pad * 0.9);
+  }
+  if (b.bottleneck) {
+    ctx.strokeStyle = "#fb7185";
+    ctx.lineWidth = 3;
+    ctx.strokeRect(x + 2, y + 2, size - 4, size - 4);
   }
   const outId = Object.keys(b.output ?? {})[0];
   if (outId) drawItem(ctx, outId, x + size * 0.62, y + size * 0.62, size * 0.26);

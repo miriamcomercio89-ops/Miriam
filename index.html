@@ -32,6 +32,9 @@
         <div class="stats">
           <div class="stat" id="stat-power" title="Energía"><span>⚡</span><b>—</b></div>
           <div class="stat" id="stat-rep" title="Reputación mundial"><span>🇪🇸</span><b>—</b></div>
+          <div class="stat" id="stat-eu" title="Reputación UE"><span>🇪🇺</span><b>—</b></div>
+          <div class="stat" id="stat-rank" title="Ranking mundial"><span>🏆</span><b>—</b></div>
+          <div class="stat" id="stat-pollution" title="Contaminación"><span>☁️</span><b>—</b></div>
           <div class="stat" id="stat-orders" title="Pedidos"><span>📦</span><b>—</b></div>
           <div class="stat" id="stat-tech" title="Investigaciones"><span>🔬</span><b>—</b></div>
           <div class="stat" id="stat-time"><span>⏱</span><b>—</b></div>
@@ -41,6 +44,8 @@
           <button data-modal="research" title="Ciencia (T)">Ciencia</button>
           <button data-modal="pedia" title="Recetas (E)">Recetas</button>
           <button data-modal="orders" title="Pedidos (O)">Pedidos</button>
+          <button data-modal="rank" title="Ranking (K)">Ranking</button>
+          <button data-modal="saves" title="Partidas (L)">Partidas</button>
           <button data-modal="stats" title="Producción (G)">Stats</button>
           <button data-modal="help" title="Ayuda (H)">Ayuda</button>
           <button id="btn-pause">Pausa</button>
@@ -53,9 +58,17 @@
       </header>
 
       <aside class="left-dock">
+        <div class="panel" id="pin-hud">
+          <h3>Receta fijada</h3>
+          <div id="pin-body" class="muted">En Recetas, pulsa Fijar.</div>
+        </div>
         <div class="panel" id="orders-mini">
           <h3>Pedidos al mundo</h3>
           <div id="orders-body"></div>
+        </div>
+        <div class="panel" id="news-panel">
+          <h3>Titulares</h3>
+          <div id="news-body" class="muted">El cable está en silencio.</div>
         </div>
         <div class="panel" id="alerts-panel">
           <h3>Alertas</h3>
@@ -78,7 +91,7 @@
       <nav class="hotbar" id="hotbar"></nav>
       <footer class="shortcuts">
         Arrastra cintas · Shift+arrastrar selecciona · Ctrl+C/V copiar/pegar · Ctrl+Z deshacer · R rota ·
-        P tabla · O pedidos · G stats · clic en un elemento para ir a su yacimiento
+        P tabla · O pedidos · K ranking · L partidas · G stats
       </footer>
 
       <div id="tooltip" hidden></div>
@@ -139,6 +152,28 @@
         </div>
       </div>
 
+      <div class="modal" id="modal-rank" hidden>
+        <div class="modal-card">
+          <header>
+            <h2>Ranking industrial mundial</h2>
+            <button class="close" data-close>×</button>
+          </header>
+          <p class="lead" id="rank-lead"></p>
+          <div id="rank-body"></div>
+        </div>
+      </div>
+
+      <div class="modal" id="modal-saves" hidden>
+        <div class="modal-card">
+          <header>
+            <h2>Partidas guardadas</h2>
+            <button class="close" data-close>×</button>
+          </header>
+          <p class="lead">Tres ranuras más el autoguardado. Guardar escribe en la ranura activa.</p>
+          <div id="saves-body"></div>
+        </div>
+      </div>
+
       <div class="modal" id="modal-stats" hidden>
         <div class="modal-card">
           <header>
@@ -165,7 +200,11 @@
               <li><b>Shift + arrastrar</b> selecciona. <b>Ctrl+C / Ctrl+V</b> copia y pega. <b>Ctrl+Z</b> deshace.</li>
               <li><b>Tabla (P)</b> — clic en Fe, C, Cu… y saltas al yacimiento.</li>
               <li><b>Recetas (E)</b> — destacados con historia + árbol “desde cero”.</li>
-              <li><b>Pedidos (O)</b> — envía si tienes el material en el inventario.</li>
+              <li><b>Pedidos (O)</b> — acepta, rechaza o negocia. El puerto despacha solo.</li>
+              <li><b>Divisor / filtro / subterránea</b> — logística avanzada (ciencia Logística avanzada).</li>
+              <li><b>Puerto</b> — aduana: las cintas que llegan cumplen pedidos.</li>
+              <li><b>Fijar receta</b> — en Recetas, deja a la vista lo que te falta.</li>
+              <li><b>Rojo</b> — máquina atascada (falta entrada o la salida está llena).</li>
               <li><b>Daltonismo</b> — formas además de color en los logos de elementos.</li>
             </ul>
           </div>

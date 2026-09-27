@@ -1,10 +1,10 @@
-import { BUILDINGS, DIRS } from "../data/buildings.js";
-import { ITEM_BY_ID, RECIPES } from "../data/catalog.js";
+import { BUILDINGS, DIRS, isConveyor } from "../data/buildings.js";
+import { RECIPES } from "../data/catalog.js";
 import { RESEARCH_BY_ID, isResearched } from "../data/research.js";
 import { ELEMENT_BY_SYMBOL, researchForElement } from "../data/elements.js";
 import { inMap, tileKey } from "./worldgen.js";
 import { addInventory, buildingAt, pushMessage } from "./state.js";
-import { ensureOrders, tickOrders } from "./orders.js";
+import { ensureOrders, tickOrders, tryAutofillPorts } from "./orders.js";
 import { collectGroupBonuses } from "./focus.js";
 import { getItem } from "../data/catalog.js";
 
@@ -26,12 +26,18 @@ function stepOnce(state) {
   state.power.satisfaction = sat;
 
   for (const b of Object.values(state.buildings)) {
-    if (b.type === "belt" || b.type === "chest") continue;
+    if (isConveyor(b) || b.type === "chest" || b.type === "port") continue;
     stepMachine(state, b, sat);
   }
   stepBelts(state);
   deliverOutputs(state);
   pullInputs(state);
+  if (state.tick % 10 === 0) tryAutofillPorts(state);
+  state.pollution = computePollution(state);
+  if (isResearched(state, "eu-green") && state.tick % 200 === 0) {
+    if (state.pollution > 20) state.repEU = Math.max(0, (state.repEU ?? 50) - 1);
+    else if (state.pollution < 6) state.repEU = Math.min(120, (state.repEU ?? 50) + 1);
+  }
   if (state.researching) stepResearch(state);
   if (state.tick % 20 === 0) sampleRates(state);
   if (state.tick % 15 === 0) state.alerts = collectAlerts(state);
@@ -71,16 +77,31 @@ export function collectAlerts(state) {
     if (["furnace", "blast", "reactor", "electrolyzer", "assembler"].includes(b.type)) {
       if (!b.recipe) alerts.push({ level: "info", text: `${def.name} sin receta (${b.x},${b.y})` });
       const full = Object.values(b.output || {}).some((n) => n >= 28);
-      if (full) alerts.push({ level: "warn", text: `${def.name} con la salida llena (${b.x},${b.y})` });
+      if (full || b.bottleneck) alerts.push({ level: "warn", text: `${def.name} atascada (${b.x},${b.y})` });
     }
   }
   for (const o of state.orders || []) {
-    if (o.status === "open" && o.deadline - state.tick < 1200) {
+    if ((o.status === "open" || o.status === "offer") && o.deadline - state.tick < 1200) {
       const item = getItem(o.itemId);
-      alerts.push({ level: "urgent", text: `Pedido urgente de ${o.country}: ${item?.name}` });
+      alerts.push({ level: "urgent", text: `Pedido urgente: ${item?.name}` });
     }
   }
+  if ((state.pollution ?? 0) > 18) {
+    alerts.push({ level: "warn", text: `Contaminación alta (${state.pollution}). La UE penaliza.` });
+  }
   return alerts.slice(0, 8);
+}
+
+export function computePollution(state) {
+  let p = 0;
+  for (const b of Object.values(state.buildings)) {
+    if (b.type === "coalGen" && b.powered) p += 3;
+    else if (b.type === "nuclear" && b.powered) p += 1;
+    else if (b.type === "solar") p -= 1;
+    else if (b.type === "blast") p += 2;
+    else if (b.type === "furnace") p += 1;
+  }
+  return Math.max(0, p);
 }
 
 function computePower(state) {
@@ -120,6 +141,7 @@ function recipeById(id) {
 
 function stepMachine(state, b, sat) {
   const def = BUILDINGS[b.type];
+  b.bottleneck = false;
   if (!def || def.generator) {
     if (def?.generator && def.fuel) tryPullFuel(state, b, def.fuel);
     return;
@@ -144,14 +166,21 @@ function stepMachine(state, b, sat) {
     if (tile.reserve !== undefined && tile.reserve <= 0 && tile.reserve !== 9999) return;
   }
 
-  if (!canStart(b, recipe) && (b.progress ?? 0) <= 0) return;
+  if (!canStart(b, recipe) && (b.progress ?? 0) <= 0) {
+    b.bottleneck = true;
+    return;
+  }
   if ((b.progress ?? 0) <= 0) {
-    if (!consumeInputs(b, recipe)) return;
+    if (!consumeInputs(b, recipe)) {
+      b.bottleneck = true;
+      return;
+    }
   }
   b.progress = (b.progress ?? 0) + (sat * 1) / (recipe.time * TPS);
   if (b.progress >= 1) {
     if (!canOutput(b, recipe)) {
       b.progress = 0.99;
+      b.bottleneck = true;
       return;
     }
     giveOutput(state, b, recipe);
@@ -249,6 +278,34 @@ function neighbor(x, y, dir) {
   return { x: x + d.dx, y: y + d.dy };
 }
 
+function findUndergroundExit(state, b) {
+  const d = DIRS[b.dir ?? 0];
+  for (let i = 1; i <= 6; i++) {
+    const x = b.x + d.dx * i;
+    const y = b.y + d.dy * i;
+    if (!inMap(x, y)) break;
+    const o = buildingAt(state, x, y);
+    if (o?.type === "underground" && o.dir === b.dir) return o;
+  }
+  return null;
+}
+
+function conveyorDests(state, belt) {
+  if (belt.type === "underground") {
+    const pair = findUndergroundExit(state, belt);
+    const dests = [];
+    if (pair && (pair.x !== belt.x || pair.y !== belt.y)) dests.push({ x: pair.x, y: pair.y });
+    dests.push(neighbor(belt.x, belt.y, belt.dir ?? 0));
+    return dests;
+  }
+  if (belt.type === "splitter") {
+    const dir = belt.dir ?? 0;
+    const order = belt.splitFlip ? [dir, (dir + 1) & 3, (dir + 3) & 3] : [(dir + 1) & 3, (dir + 3) & 3, dir];
+    return order.map((d) => neighbor(belt.x, belt.y, d));
+  }
+  return [neighbor(belt.x, belt.y, belt.dir ?? 0)];
+}
+
 function stepBelts(state) {
   const occupancy = new Map();
   for (const it of state.beltItems) {
@@ -258,38 +315,42 @@ function stepBelts(state) {
 
   for (const it of state.beltItems) {
     const belt = buildingAt(state, it.x, it.y);
-    if (!belt || belt.type !== "belt") {
+    if (!isConveyor(belt)) {
       it.dead = true;
+      continue;
+    }
+    if (belt.type === "filter" && belt.filterId && it.itemId !== belt.filterId) {
+      it.t = 0.99;
       continue;
     }
     it.t += 0.14;
     if (it.t < 1) continue;
-    const next = neighbor(it.x, it.y, belt.dir);
-    if (!inMap(next.x, next.y)) {
-      it.t = 0.99;
-      continue;
-    }
-    const dest = buildingAt(state, next.x, next.y);
-    if (dest?.type === "belt") {
-      const nk = tileKey(next.x, next.y);
-      if ((occupancy.get(nk) ?? 0) >= 2) {
-        it.t = 0.99;
-        continue;
+    const dests = conveyorDests(state, belt);
+    let moved = false;
+    for (const next of dests) {
+      if (!inMap(next.x, next.y)) continue;
+      const dest = buildingAt(state, next.x, next.y);
+      if (isConveyor(dest)) {
+        if (dest.type === "filter" && dest.filterId && it.itemId !== dest.filterId) continue;
+        const nk = tileKey(next.x, next.y);
+        if ((occupancy.get(nk) ?? 0) >= 2) continue;
+        occupancy.set(tileKey(it.x, it.y), (occupancy.get(tileKey(it.x, it.y)) ?? 1) - 1);
+        occupancy.set(nk, (occupancy.get(nk) ?? 0) + 1);
+        it.x = next.x;
+        it.y = next.y;
+        it.t = 0;
+        if (belt.type === "splitter") belt.splitFlip = !belt.splitFlip;
+        moved = true;
+        break;
       }
-      occupancy.set(tileKey(it.x, it.y), (occupancy.get(tileKey(it.x, it.y)) ?? 1) - 1);
-      occupancy.set(nk, (occupancy.get(nk) ?? 0) + 1);
-      it.x = next.x;
-      it.y = next.y;
-      it.t = 0;
-      continue;
-    }
-    if (dest && dest.type !== "belt") {
-      if (acceptItem(dest, it.itemId)) {
+      if (dest && !isConveyor(dest) && acceptItem(dest, it.itemId)) {
         it.dead = true;
-        continue;
+        if (belt.type === "splitter") belt.splitFlip = !belt.splitFlip;
+        moved = true;
+        break;
       }
     }
-    it.t = 0.99;
+    if (!moved) it.t = 0.99;
   }
   state.beltItems = state.beltItems.filter((it) => !it.dead);
 }
@@ -297,9 +358,9 @@ function stepBelts(state) {
 function acceptItem(b, itemId) {
   const def = BUILDINGS[b.type];
   if (!def) return false;
-  if (b.type === "chest") {
+  if (b.type === "chest" || b.type === "port") {
     const total = Object.values(b.input).reduce((a, n) => a + n, 0);
-    if (total >= 200) return false;
+    if (total >= (b.type === "port" ? 400 : 200)) return false;
     b.input[itemId] = (b.input[itemId] ?? 0) + 1;
     return true;
   }
@@ -322,14 +383,15 @@ function acceptItem(b, itemId) {
 
 function deliverOutputs(state) {
   for (const b of Object.values(state.buildings)) {
-    if (b.type === "belt" || b.type === "chest") continue;
+    if (isConveyor(b) || b.type === "chest" || b.type === "port") continue;
     const keys = Object.keys(b.output);
     if (!keys.length) continue;
     const destPos = neighbor(b.x, b.y, b.dir ?? 0);
     const dest = buildingAt(state, destPos.x, destPos.y);
     for (const id of keys) {
       if (b.output[id] <= 0) continue;
-      if (dest?.type === "belt") {
+      if (isConveyor(dest)) {
+        if (dest.type === "filter" && dest.filterId && id !== dest.filterId) continue;
         const n = state.beltItems.filter((it) => it.x === destPos.x && it.y === destPos.y).length;
         if (n >= 2) continue;
         state.beltItems.push({ x: destPos.x, y: destPos.y, t: 0, itemId: id });
@@ -337,7 +399,7 @@ function deliverOutputs(state) {
         if (b.output[id] <= 0) delete b.output[id];
         break;
       }
-      if (dest?.type === "chest" && acceptItem(dest, id)) {
+      if ((dest?.type === "chest" || dest?.type === "port") && acceptItem(dest, id)) {
         b.output[id] -= 1;
         if (b.output[id] <= 0) delete b.output[id];
         break;
@@ -348,7 +410,7 @@ function deliverOutputs(state) {
 
 function pullInputs(state) {
   for (const b of Object.values(state.buildings)) {
-    if (b.type === "belt" || b.type === "chest") continue;
+    if (isConveyor(b) || b.type === "chest" || b.type === "port") continue;
     const recipe = b.recipe ? recipeById(b.recipe) : null;
     if (recipe) {
       for (const inp of recipe.inputs) {
@@ -407,7 +469,7 @@ export function placeBuilding(state, type, x, y, dir) {
   if (type === "pump" && tile.terrain !== "water" && tile.terrain !== "brine" && tile.terrain !== "oil" && tile.deposit !== "water") {
     return false;
   }
-  if (["furnace", "blast", "reactor", "electrolyzer", "assembler", "lab", "chest", "coalGen", "solar", "nuclear"].includes(type)) {
+  if (["furnace", "blast", "reactor", "electrolyzer", "assembler", "lab", "chest", "coalGen", "solar", "nuclear", "port"].includes(type)) {
     if (tile.terrain === "water" || tile.terrain === "brine" || tile.terrain === "oil") return false;
   }
   if (!payCost(state, def.cost)) return false;
@@ -422,6 +484,9 @@ export function placeBuilding(state, type, x, y, dir) {
     output: {},
     fuel: 0,
     powered: false,
+    filterId: type === "filter" ? null : undefined,
+    splitFlip: false,
+    bottleneck: false,
   };
   if (type === "extractor" || type === "pump") autoRecipe(state, b);
   if (type === "coalGen" && (state.inventory["el-c"] ?? 0) > 0) {

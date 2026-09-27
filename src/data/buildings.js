@@ -31,10 +31,49 @@ export const BUILDINGS = {
     rotatable: true,
     isBelt: true,
   },
+  splitter: {
+    id: "splitter",
+    name: "Divisor",
+    desc: "Parte el flujo hacia el frente y los lados. Rota con R.",
+    color: "#f59e0b",
+    icon: "⑂",
+    power: 0,
+    category: "logística",
+    cost: { "plate-fe": 4, "gear-basic": 2 },
+    research: "logistics-2",
+    rotatable: true,
+    isBelt: true,
+  },
+  filter: {
+    id: "filter",
+    name: "Filtro",
+    desc: "Solo deja pasar el ítem que elijas en la selección.",
+    color: "#fb7185",
+    icon: "⛳",
+    power: 0,
+    category: "logística",
+    cost: { "plate-fe": 3, "gear-basic": 2, "glass-silica": 1 },
+    research: "logistics-2",
+    rotatable: true,
+    isBelt: true,
+  },
+  underground: {
+    id: "underground",
+    name: "Subterránea",
+    desc: "Salta obstáculos: busca otra subterránea a hasta 6 casillas en su dirección.",
+    color: "#d97706",
+    icon: "⤓",
+    power: 0,
+    category: "logística",
+    cost: { "plate-fe": 4, "gear-basic": 2 },
+    research: "logistics-2",
+    rotatable: true,
+    isBelt: true,
+  },
   coalGen: {
     id: "coalGen",
     name: "Generador",
-    desc: "Quema carbono para producir energía.",
+    desc: "Quema carbono para producir energía. Ensucia el aire.",
     color: "#64748b",
     icon: "⬛",
     power: -50,
@@ -141,6 +180,18 @@ export const BUILDINGS = {
     research: "start",
     rotatable: true,
   },
+  port: {
+    id: "port",
+    name: "Puerto",
+    desc: "Aduana de exportación. Las cintas que llegan aquí despachan pedidos solos.",
+    color: "#38bdf8",
+    icon: "🚢",
+    power: 6,
+    category: "logística",
+    cost: { "plate-fe": 20, "gear-basic": 6, "glass-silica": 8 },
+    research: "commerce",
+    rotatable: true,
+  },
   solar: {
     id: "solar",
     name: "Panel solar",
@@ -173,3 +224,11 @@ export const BUILDINGS = {
 export const BUILDING_LIST = Object.values(BUILDINGS);
 
 export const BUILDING_CATEGORIES = ["minería", "proceso", "logística", "energía", "ciencia"];
+
+export function isConveyorType(type) {
+  return Boolean(BUILDINGS[type]?.isBelt);
+}
+
+export function isConveyor(b) {
+  return Boolean(b && BUILDINGS[b.type]?.isBelt);
+}

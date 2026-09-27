@@ -6,10 +6,11 @@ import { FEATURED, FEATURED_BY_ID } from "../data/highlights.js";
 import { PLAYER, COUNTRY_BY_CODE } from "../data/countries.js";
 import { serialize, addInventory } from "../game/state.js";
 import { handCraft, startResearch, recipeById } from "../game/sim.js";
-import { fulfillOrder } from "../game/orders.js";
+import { fulfillOrder, acceptOrder, rejectOrder, negotiateOrder, availableCount, labelOf, worldRanking } from "../game/orders.js";
 import { focusDeposit, findDeposit, isEarthNatural, groupProgressOf } from "../game/focus.js";
 import { buildChain, chainToHtml } from "../game/chain.js";
 import { setMuted, isMuted, sfx } from "../audio/sound.js";
+import { listSaves, writeSave, clearSave, resolveSaveKey } from "../game/saves.js";
 
 let uiState = {
   modal: null,
@@ -19,11 +20,11 @@ let uiState = {
   periodicSel: "Fe",
   researchKey: "",
   inspectKey: "",
-  saveKey: "periodica-save-v3",
+  saveKey: "periodica-save-v4",
 };
 
 export function bindUI(game, opts = {}) {
-  uiState.saveKey = opts.saveKey || "periodica-save-v3";
+  uiState.saveKey = opts.saveKey || resolveSaveKey();
   const $ = (id) => document.getElementById(id);
   document.querySelectorAll("[data-modal]").forEach((btn) => {
     btn.addEventListener("click", () => openModal(game, btn.dataset.modal));
@@ -43,11 +44,11 @@ export function bindUI(game, opts = {}) {
     game.speed = game.speed === 1 ? 2 : game.speed === 2 ? 3 : 1;
   });
   $("btn-save").addEventListener("click", () => {
-    localStorage.setItem(uiState.saveKey, serialize(game));
-    game.messages.unshift({ t: game.tick, text: "Partida guardada." });
+    writeSave(uiState.saveKey, serialize(game));
+    game.messages.unshift({ t: game.tick, text: `Partida guardada (${uiState.saveKey.includes("slot") ? "ranura" : "auto"}).` });
   });
   $("btn-new").addEventListener("click", () => {
-    localStorage.removeItem(uiState.saveKey);
+    clearSave(uiState.saveKey);
     location.reload();
   });
   $("btn-color").addEventListener("click", () => {
@@ -87,6 +88,8 @@ export function openModal(game, id) {
   if (id === "pedia") renderPedia(game);
   if (id === "orders") renderOrdersFull(game);
   if (id === "stats") renderStats(game);
+  if (id === "rank") renderRank(game);
+  if (id === "saves") renderSaves(game);
   sfx("click");
 }
 
@@ -162,9 +165,13 @@ function tablePos(el) {
 
 export function renderUI(game) {
   const power = game.power ?? { produced: 0, demand: 0, satisfaction: 1 };
+  const rank = worldRanking(game);
   setStat("stat-power", `${power.produced | 0}/${power.demand | 0}`);
   setStat("stat-rep", `${game.reputation ?? 50} rep`);
-  setStat("stat-orders", `${(game.orders || []).filter((o) => o.status === "open").length} pedidos`);
+  setStat("stat-eu", `${game.repEU ?? 50} UE`);
+  setStat("stat-rank", `#${rank.rank}`);
+  setStat("stat-pollution", `${game.pollution ?? 0}`);
+  setStat("stat-orders", `${(game.orders || []).filter((o) => o.status === "open" || o.status === "offer").length} pedidos`);
   setStat("stat-tech", `${Object.keys(game.researched).length}/${RESEARCH.length}`);
   setStat("stat-time", `t ${game.tick} · x${game.speed}${game.paused ? " · pausa" : ""}`);
   document.getElementById("btn-pause").textContent = game.paused ? "Reanudar" : "Pausa";
@@ -179,6 +186,8 @@ export function renderUI(game) {
   });
 
   renderOrdersMini(game);
+  renderPin(game);
+  renderNews(game);
   renderAlerts(game);
   renderMessages(game);
   renderInspect(game);
@@ -186,6 +195,8 @@ export function renderUI(game) {
   if (uiState.modal === "periodic") renderPeriodic(game);
   if (uiState.modal === "orders") renderOrdersFull(game);
   if (uiState.modal === "stats") renderStats(game);
+  if (uiState.modal === "rank") renderRank(game);
+  if (uiState.modal === "saves") renderSaves(game);
   if (uiState.modal === "research") {
     const key = `${game.researching?.id || ""}:${Object.keys(game.researched).length}`;
     if (key !== uiState.researchKey) {
@@ -200,35 +211,66 @@ function setStat(id, text) {
   if (b) b.textContent = text;
 }
 
-function renderOrdersMini(game) {
-  const open = (game.orders || []).filter((o) => o.status === "open").slice(0, 4);
-  document.getElementById("orders-body").innerHTML = open
-    .map((o) => {
-      const c = COUNTRY_BY_CODE[o.country];
-      const item = getItem(o.itemId);
-      const have = game.inventory[o.itemId] ?? 0;
-      const left = Math.max(0, Math.ceil((o.deadline - game.tick) / 20));
-      return `<div class="order-row">
-        <span>${c?.flag || ""} ${c?.name || o.country}</span>
-        <span>${have}/${o.amount} ${item?.name ?? o.itemId}</span>
-        <span class="muted">${left}s</span>
-        <button data-ship="${o.id}" ${have >= o.amount ? "" : "disabled"}>Enviar</button>
-      </div>`;
-    })
-    .join("") || `<p class="muted">${PLAYER.flag} Esperando cable diplomático…</p>`;
-  document.querySelectorAll("#orders-body [data-ship]").forEach((btn) => {
+function bindOrderButtons(game, root) {
+  root.querySelectorAll("[data-ship]").forEach((btn) => {
     btn.onclick = () => {
       if (!fulfillOrder(game, btn.dataset.ship)) {
-        game.messages.unshift({ t: game.tick, text: "No tienes suficiente en el inventario." });
+        game.messages.unshift({ t: game.tick, text: "No tienes suficiente para enviar." });
       }
     };
   });
+  root.querySelectorAll("[data-accept]").forEach((btn) => {
+    btn.onclick = () => acceptOrder(game, btn.dataset.accept);
+  });
+  root.querySelectorAll("[data-reject]").forEach((btn) => {
+    btn.onclick = () => rejectOrder(game, btn.dataset.reject);
+  });
+  root.querySelectorAll("[data-nego]").forEach((btn) => {
+    btn.onclick = () => negotiateOrder(game, btn.dataset.nego);
+  });
+}
+
+function orderActions(o, have) {
+  if (o.status === "offer") {
+    return `<div class="order-actions">
+      <button data-accept="${o.id}">Aceptar</button>
+      <button data-reject="${o.id}">Rechazar</button>
+      ${o.crisis || o.negotiated ? "" : `<button data-nego="${o.id}">Negociar</button>`}
+    </div>`;
+  }
+  if (o.status === "open") {
+    return `<div class="order-actions">
+      <button data-ship="${o.id}" ${have >= o.amount ? "" : "disabled"}>Enviar</button>
+      ${o.crisis || o.negotiated ? "" : `<button data-nego="${o.id}">Negociar</button>`}
+    </div>`;
+  }
+  return "";
+}
+
+function renderOrdersMini(game) {
+  const open = (game.orders || []).filter((o) => o.status === "open" || o.status === "offer").slice(0, 4);
+  const box = document.getElementById("orders-body");
+  box.innerHTML = open
+    .map((o) => {
+      const item = getItem(o.itemId);
+      const have = availableCount(game, o.itemId);
+      const left = Math.max(0, Math.ceil((o.deadline - game.tick) / 20));
+      const tag = o.crisis ? "crisis" : o.eu ? "ue" : o.kind === "city" ? "ciudad" : "";
+      return `<div class="order-row ${o.status}">
+        <span>${labelOf(o)} ${tag ? `<small class="chip">${tag}</small>` : ""}</span>
+        <span>${have}/${o.amount} ${item?.name ?? o.itemId}</span>
+        <span class="muted">${left}s · ${o.status === "offer" ? "oferta" : "aceptado"}</span>
+        ${orderActions(o, have)}
+      </div>`;
+    })
+    .join("") || `<p class="muted">${PLAYER.flag} Esperando cable diplomático…</p>`;
+  bindOrderButtons(game, box);
 }
 
 function renderOrdersFull(game) {
   const lead = document.getElementById("orders-lead");
   if (lead) {
-    lead.textContent = `${PLAYER.flag} ${PLAYER.name} exporta desde la península. Reputación ${game.reputation ?? 50}. Completados: ${game.ordersCompleted ?? 0}.`;
+    lead.textContent = `${PLAYER.flag} ${PLAYER.name} exporta desde la península. Mundo ${game.reputation ?? 50} · UE ${game.repEU ?? 50} · Completados ${game.ordersCompleted ?? 0} · Crisis ${game.crisesSolved ?? 0}.`;
   }
   const box = document.getElementById("orders-full");
   if (!box) return;
@@ -237,17 +279,110 @@ function renderOrdersFull(game) {
       const c = COUNTRY_BY_CODE[o.country];
       const item = getItem(o.itemId);
       const feat = FEATURED_BY_ID[o.itemId];
-      const have = game.inventory[o.itemId] ?? 0;
+      const have = availableCount(game, o.itemId);
       return `<div class="order-card ${o.status}">
-        <h3>${c?.flag || ""} ${c?.name || o.country} · ${c?.region || ""}</h3>
-        <p>${o.amount}× <b>${item?.name}</b> ${feat ? `— ${feat.why}` : ""}</p>
-        <p>Tienes ${have}. Recompensa: ${o.rewardN} ${getItem(o.rewardSci)?.name} · +${o.rep} rep · ${o.status}</p>
-        ${o.status === "open" ? `<button data-ship-full="${o.id}" ${have >= o.amount ? "" : "disabled"}>Despachar desde España</button>` : ""}
+        <h3>${labelOf(o)} · ${c?.region || (o.kind === "city" ? "España" : o.kind)}</h3>
+        <p>${o.amount}× <b>${item?.name}</b> ${feat ? `— ${feat.why}` : ""} ${o.note && o.note !== feat?.why ? `· ${o.note}` : ""}</p>
+        <p>Tienes ${have} (inventario + puerto). Recompensa: ${o.rewardN} ${getItem(o.rewardSci)?.name} · +${o.rep} rep · ${o.status}</p>
+        ${orderActions(o, have)}
       </div>`;
     })
     .join("");
-  box.querySelectorAll("[data-ship-full]").forEach((btn) => {
-    btn.onclick = () => fulfillOrder(game, btn.dataset.shipFull);
+  bindOrderButtons(game, box);
+}
+
+function renderPin(game) {
+  const body = document.getElementById("pin-body");
+  if (!body) return;
+  if (!game.pinned) {
+    body.innerHTML = `<span class="muted">En Recetas, pulsa Fijar para no perder de vista una cadena.</span>`;
+    return;
+  }
+  const item = getItem(game.pinned);
+  const rec = item?.recipes?.[0];
+  if (!item || !rec) {
+    body.innerHTML = `<span class="muted">No hay receta para ${game.pinned}.</span>`;
+    return;
+  }
+  const rows = rec.inputs
+    .map((i) => {
+      const have = game.inventory[i.id] ?? 0;
+      const name = getItem(i.id)?.name ?? i.id;
+      const ok = have >= i.n;
+      return `<div class="inv-row ${ok ? "" : "missing"}"><span>${name}</span><b>${have}/${i.n}</b></div>`;
+    })
+    .join("");
+  body.innerHTML = `<p><b>${item.name}</b></p>${rows}<button id="unpin">Quitar</button>`;
+  const unpin = document.getElementById("unpin");
+  if (unpin) unpin.onclick = () => {
+    game.pinned = null;
+    renderPin(game);
+  };
+}
+
+function renderNews(game) {
+  const body = document.getElementById("news-body");
+  if (!body) return;
+  const list = game.headlines || [];
+  if (!list.length && !game.headline) {
+    body.innerHTML = `<span class="muted">Sin crisis en el teletipo.</span>`;
+    return;
+  }
+  body.innerHTML = (list.length ? list : [{ text: game.headline }])
+    .slice(0, 3)
+    .map((h) => `<div class="news-line">${h.text}</div>`)
+    .join("");
+}
+
+function renderRank(game) {
+  const box = document.getElementById("rank-body");
+  const lead = document.getElementById("rank-lead");
+  const { rank, total, rows } = worldRanking(game);
+  if (lead) lead.textContent = `${PLAYER.flag} España es la #${rank} de ${total}. Reputación ${game.reputation ?? 50}, UE ${game.repEU ?? 50}.`;
+  if (!box) return;
+  box.innerHTML = rows
+    .slice(0, 16)
+    .map((r, i) => `<div class="rank-row ${r.player ? "player" : ""}"><b>#${i + 1}</b><span>${r.flag} ${r.name}</span><b>${r.score}</b></div>`)
+    .join("");
+}
+
+function renderSaves(game) {
+  const box = document.getElementById("saves-body");
+  if (!box) return;
+  const slots = listSaves();
+  box.innerHTML = slots
+    .map((s) => {
+      const active = s.id === uiState.saveKey;
+      const info = s.empty ? "vacía" : `t ${s.tick} · ${s.rep} rep · ${s.orders} pedidos`;
+      return `<div class="save-row ${active ? "active" : ""}">
+        <div><b>${s.label}</b><div class="muted">${info}</div></div>
+        <div class="order-actions">
+          <button data-save-write="${s.id}">Guardar aquí</button>
+          <button data-save-load="${s.id}" ${s.empty ? "disabled" : ""}>Cargar</button>
+          <button data-save-clear="${s.id}" ${s.empty ? "disabled" : ""}>Borrar</button>
+        </div>
+      </div>`;
+    })
+    .join("");
+  box.querySelectorAll("[data-save-write]").forEach((btn) => {
+    btn.onclick = () => {
+      writeSave(btn.dataset.saveWrite, serialize(game));
+      uiState.saveKey = btn.dataset.saveWrite;
+      game.messages.unshift({ t: game.tick, text: `Guardado en ${btn.dataset.saveWrite}.` });
+      renderSaves(game);
+    };
+  });
+  box.querySelectorAll("[data-save-load]").forEach((btn) => {
+    btn.onclick = () => {
+      localStorage.setItem("periodica-active-slot", btn.dataset.saveLoad);
+      location.reload();
+    };
+  });
+  box.querySelectorAll("[data-save-clear]").forEach((btn) => {
+    btn.onclick = () => {
+      clearSave(btn.dataset.saveClear);
+      renderSaves(game);
+    };
   });
 }
 
@@ -286,7 +421,7 @@ function renderInspect(game) {
     ? `none:${game.build.type}:${game.pasteMode}`
     : sel.kind === "tile"
       ? `tile:${sel.x},${sel.y}`
-      : `b:${sel.x},${sel.y}:${sel.building.recipe}`;
+      : `b:${sel.x},${sel.y}:${sel.building.recipe}:${sel.building.filterId || ""}`;
   const live = document.getElementById("inspect-live");
   if (live && key === uiState.inspectKey && sel?.kind === "building") {
     const b = sel.building;
@@ -325,6 +460,10 @@ function renderInspect(game) {
         .join("")}</select>
     </label>
     ${rec ? `<p class="muted">${recipeText(rec)}</p>` : ""}
+    ${b.type === "filter" ? `<label>Dejar pasar
+      <select id="filter-select"><option value="">todo</option>${filterOptions(game, b)}</select>
+    </label>` : ""}
+    ${rec ? `<button id="pin-recipe">Fijar receta</button>` : ""}
     <button id="feed-building">Meter del inventario</button>
   `;
   const select = document.getElementById("recipe-select");
@@ -332,8 +471,28 @@ function renderInspect(game) {
     b.recipe = select.value || null;
     b.progress = 0;
   };
+  const filterSel = document.getElementById("filter-select");
+  if (filterSel) filterSel.onchange = () => {
+    b.filterId = filterSel.value || null;
+  };
+  const pin = document.getElementById("pin-recipe");
+  if (pin) pin.onclick = () => {
+    game.pinned = rec.output?.id || b.recipe;
+    game.messages.unshift({ t: game.tick, text: `Fijada: ${getItem(game.pinned)?.name}.` });
+  };
   const feed = document.getElementById("feed-building");
   if (feed) feed.onclick = () => feedBuilding(game, b);
+}
+
+function filterOptions(game, b) {
+  const ids = new Set([...Object.keys(game.inventory), b.filterId].filter(Boolean));
+  return [...ids]
+    .map((id) => {
+      const item = getItem(id);
+      if (!item) return "";
+      return `<option value="${id}" ${b.filterId === id ? "selected" : ""}>${item.name}</option>`;
+    })
+    .join("");
 }
 
 function feedBuilding(game, b) {
@@ -493,7 +652,8 @@ function renderPedia(game) {
       .map((r) => {
         const can = !r.research || isResearched(game, r.research);
         return `<div class="recipe-line"><div>${recipeText(r)}</div>
-          <button data-craft="${r.id}" ${can && !r.deposit ? "" : "disabled"}>Craftear 1</button></div>`;
+          <button data-craft="${r.id}" ${can && !r.deposit ? "" : "disabled"}>Craftear 1</button>
+          <button data-pin="${item.id}">Fijar</button></div>`;
       })
       .join("")}
     <h4>Desde cero</h4>
@@ -503,6 +663,12 @@ function renderPedia(game) {
     btn.addEventListener("click", () => {
       const r = recipeById(btn.dataset.craft);
       if (r && !handCraft(game, r, 1)) game.messages.unshift({ t: game.tick, text: "Te faltan materiales." });
+    });
+  });
+  detail.querySelectorAll("[data-pin]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      game.pinned = btn.dataset.pin;
+      game.messages.unshift({ t: game.tick, text: `Fijada: ${getItem(game.pinned)?.name}.` });
     });
   });
 }

@@ -9,13 +9,14 @@ import { drawWorld, screenToWorld, drawMinimap } from "./render/draw.js";
 import { bindUI, renderUI, closeModals, isModalOpen, openModal } from "./ui/ui.js";
 import { sfx, setMuted, pulseAmbient } from "./audio/sound.js";
 import { placeBuilding } from "./game/sim.js";
+import { resolveSaveKey, writeSave } from "./game/saves.js";
 
 const canvas = document.getElementById("world");
 const ctx = canvas.getContext("2d");
 const mini = document.getElementById("minimap");
 const miniCtx = mini.getContext("2d");
 
-export const SAVE_KEY = "periodica-save-v3";
+export const SAVE_KEY = resolveSaveKey();
 const saved = localStorage.getItem(SAVE_KEY);
 const game = saved ? safeLoad(saved) : createGame(118);
 
@@ -93,6 +94,8 @@ addEventListener("keydown", (e) => {
   if (e.key === "e" || e.key === "E") openModal(game, "pedia");
   if (e.key === "h" || e.key === "H") openModal(game, "help");
   if (e.key === "o" || e.key === "O") openModal(game, "orders");
+  if (e.key === "k" || e.key === "K") openModal(game, "rank");
+  if (e.key === "l" || e.key === "L") openModal(game, "saves");
   if (e.key === "g" || e.key === "G") openModal(game, "stats");
   const nums = "1234567890";
   const idx = nums.indexOf(e.key);
@@ -306,7 +309,7 @@ function frame(now) {
   while (acc >= TICK_MS) {
     tick(game);
     if (game.tick > 0 && game.tick % 600 === 0) {
-      localStorage.setItem(SAVE_KEY, serialize(game));
+      writeSave(SAVE_KEY, serialize(game));
     }
     acc -= TICK_MS;
   }

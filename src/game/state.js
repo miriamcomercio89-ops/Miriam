@@ -4,7 +4,7 @@ import { BUILDINGS } from "../data/buildings.js";
 export function createGame(seed = 118) {
   const world = createWorld(seed);
   return {
-    version: 1,
+    version: 4,
     seed,
     tick: 0,
     speed: 1,
@@ -50,6 +50,12 @@ export function createGame(seed = 118) {
     prodSnap: {},
     rateHistory: [],
     groupBonus: {},
+    pinned: null,
+    pollution: 0,
+    repEU: 50,
+    headline: null,
+    headlines: [],
+    crisesSolved: 0,
   };
 }
 
@@ -103,6 +109,12 @@ export function serialize(state) {
     muted: state.muted,
     groupBonus: state.groupBonus,
     rates: state.rates,
+    pinned: state.pinned,
+    pollution: state.pollution,
+    repEU: state.repEU,
+    headline: state.headline,
+    headlines: state.headlines,
+    crisesSolved: state.crisesSolved,
   });
 }
 
@@ -124,6 +136,12 @@ export function deserialize(json) {
     alerts: [],
     rateHistory: data.rateHistory || [],
     orders: data.orders || [],
+    pinned: data.pinned ?? null,
+    pollution: data.pollution ?? 0,
+    repEU: data.repEU ?? 50,
+    headline: data.headline ?? null,
+    headlines: data.headlines || [],
+    crisesSolved: data.crisesSolved ?? 0,
   };
 }
 

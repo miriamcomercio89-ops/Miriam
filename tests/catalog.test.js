@@ -46,6 +46,7 @@ test("cada elemento tiene ítem y una vía de obtención", () => {
 
 test("el árbol de investigación está conectado", () => {
   const ids = new Set(RESEARCH.map((r) => r.id));
+  assert.ok(RESEARCH.length >= 40, RESEARCH.length);
   for (const r of RESEARCH) {
     for (const req of r.requires) assert.ok(ids.has(req), req);
     for (const id of Object.keys(r.cost)) assert.ok(ITEM_BY_ID.has(id), id);
