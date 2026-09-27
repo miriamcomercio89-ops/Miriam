@@ -14,9 +14,31 @@
       href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/src/style.css" />
+    <link rel="stylesheet" href="./src/style.css" />
+    <style>
+      html, body, #app { margin: 0; height: 100%; background: #07090d; color: #e8eef7; font-family: "IBM Plex Sans", system-ui, sans-serif; }
+      canvas#world { display: block; width: 100%; height: 100%; }
+      button { border: 1px solid rgba(148,163,184,.25); background: rgba(255,255,255,.05); color: inherit; border-radius: 10px; padding: 8px 12px; cursor: pointer; font: inherit; }
+      .topbar, .panel, .hotbar { background: rgba(12,16,24,.82); border: 1px solid rgba(148,163,184,.18); border-radius: 16px; }
+      #need-server { position: fixed; inset: 0; z-index: 99; display: none; place-items: center; background: #07090d; padding: 24px; text-align: center; }
+      #need-server.show { display: grid; }
+      #need-server .card { max-width: 520px; padding: 28px; border-radius: 20px; background: #121826; border: 1px solid rgba(94,234,212,.35); }
+      #need-server h1 { margin: 0 0 8px; color: #5eead4; }
+      #need-server code { display: block; margin: 10px 0; padding: 10px; background: #0b1220; border-radius: 10px; }
+    </style>
   </head>
   <body>
+    <div id="need-server">
+      <div class="card">
+        <h1>Periodica</h1>
+        <p>No abras el archivo <b>index.html</b>. Así se ve sin formato y no arranca.</p>
+        <p>En Windows, pulsa <b>JUGAR.bat</b>. En Mac, pulsa <b>JUGAR.command</b>.</p>
+        <p>O abre una terminal en esta carpeta y escribe:</p>
+        <code>npm install</code>
+        <code>npm start</code>
+        <p>Luego entra en <b>http://localhost:5173</b></p>
+      </div>
+    </div>
     <div id="app">
       <canvas id="world"></canvas>
       <canvas id="minimap" width="168" height="168" title="Clic para saltar"></canvas>
@@ -250,6 +272,11 @@
         </div>
       </div>
     </div>
-    <script type="module" src="/src/main.js"></script>
+    <script>
+      if (location.protocol === "file:") {
+        document.getElementById("need-server").classList.add("show");
+      }
+    </script>
+    <script type="module" src="./src/main.js"></script>
   </body>
 </html>
