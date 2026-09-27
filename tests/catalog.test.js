@@ -54,18 +54,19 @@ test("el árbol de investigación está conectado", () => {
 
 test("el mundo inicial tiene hierro, carbón, cobre y agua cerca del aterrizaje", () => {
   const world = createWorld(118);
-  const near = (symbol) => {
-    let found = false;
-    for (let y = 10; y < 30; y++) {
-      for (let x = 10; x < 30; x++) {
-        if (world.tiles[y][x].deposit === symbol) found = true;
+  const { x: sx, y: sy } = world.spawn;
+  assert.notEqual(world.tiles[sy][sx].terrain, "water");
+  const near = (symbol, radius = 8) => {
+    for (let y = sy - radius; y <= sy + radius; y++) {
+      for (let x = sx - radius; x <= sx + radius; x++) {
+        if (world.tiles[y]?.[x]?.deposit === symbol) return true;
       }
     }
-    return found;
+    return false;
   };
-  assert.ok(near("Fe"));
-  assert.ok(near("C"));
-  assert.ok(near("Cu"));
+  assert.ok(near("Fe"), "Fe junto al spawn");
+  assert.ok(near("C"), "C junto al spawn");
+  assert.ok(near("Cu"), "Cu junto al spawn");
   const water = world.tiles.flat().some((t) => t.terrain === "water");
   assert.ok(water);
 });

@@ -45,6 +45,10 @@ export function bindUI(game) {
     localStorage.setItem("periodica-save-v2", serialize(game));
     game.messages.unshift({ t: game.tick, text: "Partida guardada en este navegador." });
   });
+  $("btn-new").addEventListener("click", () => {
+    localStorage.removeItem("periodica-save-v2");
+    location.reload();
+  });
   $("pedia-search").addEventListener("input", (e) => {
     uiState.pediaQuery = e.target.value;
     renderPedia(game);
