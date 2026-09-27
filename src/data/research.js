@@ -200,8 +200,8 @@ export const RESEARCH = [
     "era-nuke",
     { "sci-atom": 36, "sci-frontier": 8 },
     ["superconductors", "nuclear"],
-    "Hidrógeno pesado y helium-3. Energía casi libre.",
-    ["Núcleo de fusión", "Helio-3"]
+    "Fusión civil en la Tierra: hidrógeno pesado en un tokamak. Sin lunas ni Helio-3 espacial.",
+    ["Reactor de fusión terrestre", "Plasma de hidrógeno"]
   ),
   R(
     "frontier",

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Periodica — Fábricas de la tabla periódica</title>
+    <title>Periodica — España, fábricas de la Tierra</title>
     <link
       rel="icon"
       href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect rx='8' width='32' height='32' fill='%235eead4'/%3E%3Ctext x='16' y='22' text-anchor='middle' font-size='16' font-family='sans-serif' fill='%23071014'%3EP%3C/text%3E%3C/svg%3E"
@@ -19,45 +19,47 @@
   <body>
     <div id="app">
       <canvas id="world"></canvas>
+      <canvas id="minimap" width="168" height="168" title="Clic para saltar"></canvas>
 
       <header class="topbar">
         <div class="brand">
-          <span class="brand-mark">P</span>
+          <span class="brand-mark">ES</span>
           <div>
             <strong>Periodica</strong>
-            <small>Fábricas atómicas</small>
+            <small>España · fábrica de la Tierra</small>
           </div>
         </div>
         <div class="stats">
-          <div class="stat" id="stat-power" title="Energía">
-            <span>⚡</span><b>—</b>
-          </div>
-          <div class="stat" id="stat-items" title="Ítems en catálogo">
-            <span>📦</span><b>—</b>
-          </div>
-          <div class="stat" id="stat-tech" title="Investigaciones">
-            <span>🔬</span><b>—</b>
-          </div>
-          <div class="stat" id="stat-time">
-            <span>⏱</span><b>—</b>
-          </div>
+          <div class="stat" id="stat-power" title="Energía"><span>⚡</span><b>—</b></div>
+          <div class="stat" id="stat-rep" title="Reputación mundial"><span>🇪🇸</span><b>—</b></div>
+          <div class="stat" id="stat-orders" title="Pedidos"><span>📦</span><b>—</b></div>
+          <div class="stat" id="stat-tech" title="Investigaciones"><span>🔬</span><b>—</b></div>
+          <div class="stat" id="stat-time"><span>⏱</span><b>—</b></div>
         </div>
         <div class="top-actions">
-          <button data-modal="periodic" title="Tabla periódica (P)">Tabla</button>
-          <button data-modal="research" title="Investigación (T)">Ciencia</button>
-          <button data-modal="pedia" title="Enciclopedia (E)">Recetas</button>
+          <button data-modal="periodic" title="Tabla (P)">Tabla</button>
+          <button data-modal="research" title="Ciencia (T)">Ciencia</button>
+          <button data-modal="pedia" title="Recetas (E)">Recetas</button>
+          <button data-modal="orders" title="Pedidos (O)">Pedidos</button>
+          <button data-modal="stats" title="Producción (G)">Stats</button>
           <button data-modal="help" title="Ayuda (H)">Ayuda</button>
           <button id="btn-pause">Pausa</button>
           <button id="btn-speed">x1</button>
+          <button id="btn-color">Daltonismo</button>
+          <button id="btn-mute">Sonido</button>
           <button id="btn-save">Guardar</button>
           <button id="btn-new">Nueva</button>
         </div>
       </header>
 
       <aside class="left-dock">
-        <div class="panel" id="tutorial">
-          <h3>Primeros pasos</h3>
-          <ol id="tutorial-list"></ol>
+        <div class="panel" id="orders-mini">
+          <h3>Pedidos al mundo</h3>
+          <div id="orders-body"></div>
+        </div>
+        <div class="panel" id="alerts-panel">
+          <h3>Alertas</h3>
+          <div id="alerts-body" class="muted">Sin avisos.</div>
         </div>
         <div class="panel messages" id="messages"></div>
       </aside>
@@ -74,19 +76,24 @@
       </aside>
 
       <nav class="hotbar" id="hotbar"></nav>
+      <footer class="shortcuts">
+        Arrastra cintas · Shift+arrastrar selecciona · Ctrl+C/V copiar/pegar · Ctrl+Z deshacer · R rota ·
+        P tabla · O pedidos · G stats · clic en un elemento para ir a su yacimiento
+      </footer>
 
       <div id="tooltip" hidden></div>
 
       <div class="modal" id="modal-periodic" hidden>
         <div class="modal-card wide">
           <header>
-            <h2>Tabla periódica viva</h2>
+            <h2>Tabla periódica · tablero de la Tierra</h2>
             <button class="close" data-close>×</button>
           </header>
           <p class="lead">
-            Los 118 elementos son recursos. Color sólido: lo tienes. Borde: hay yacimiento en el mapa.
-            Clic para ver derivados.
+            Clic en un elemento: la cámara salta a su yacimiento. Completar un grupo (en la Tierra)
+            da reputación. Los sintéticos (Tc, Pm, Z&gt;92) se fabrican, no se minan.
           </p>
+          <div id="group-progress" class="group-progress"></div>
           <div id="periodic-grid" class="periodic"></div>
           <div id="periodic-detail" class="detail"></div>
         </div>
@@ -106,14 +113,39 @@
       <div class="modal" id="modal-pedia" hidden>
         <div class="modal-card wide">
           <header>
-            <h2>Enciclopedia de recetas</h2>
+            <h2>Enciclopedia</h2>
             <button class="close" data-close>×</button>
           </header>
-          <input id="pedia-search" type="search" placeholder="Busca hierro, H2SO4, neodimio, circuito…" />
+          <div class="tabs">
+            <button data-pedia-tab="featured" class="active">Destacados</button>
+            <button data-pedia-tab="all">Todos</button>
+          </div>
+          <input id="pedia-search" type="search" placeholder="Busca acero, amoníaco, Japón, Fe…" />
           <div class="pedia-layout">
             <div id="pedia-list"></div>
             <div id="pedia-detail" class="detail"></div>
           </div>
+        </div>
+      </div>
+
+      <div class="modal" id="modal-orders" hidden>
+        <div class="modal-card wide">
+          <header>
+            <h2>Pedidos internacionales · tú eres España</h2>
+            <button class="close" data-close>×</button>
+          </header>
+          <p class="lead" id="orders-lead"></p>
+          <div id="orders-full"></div>
+        </div>
+      </div>
+
+      <div class="modal" id="modal-stats" hidden>
+        <div class="modal-card">
+          <header>
+            <h2>Producción por minuto</h2>
+            <button class="close" data-close>×</button>
+          </header>
+          <div id="stats-body"></div>
         </div>
       </div>
 
@@ -125,26 +157,17 @@
           </header>
           <div class="help-copy">
             <p>
-              Periodica es un juego de fábricas. Extraes elementos de la tabla periódica, los transformas
-              en miles de compuestos y desbloqueas ciencia hasta fabricar el Núcleo.
+              Eres <b>España</b>. Fabricas en la Tierra y el resto de países te envían pedidos. Extrae
+              elementos, monta cadenas y despacha el inventario.
             </p>
             <ul>
-              <li><b>Clic izquierdo</b> — colocar el edificio de la barra.</li>
-              <li><b>Clic derecho</b> — cancelar o recoger un edificio (devuelve el 60%).</li>
-              <li><b>R</b> — rotar cintas y salidas.</li>
-              <li><b>WASD</b> o arrastrar con el botón medio — mover la cámara.</li>
-              <li><b>Rueda</b> — zoom.</li>
-              <li><b>P / T / E / H</b> — tabla, ciencia, recetas, ayuda.</li>
-              <li><b>Espacio</b> — pausa. <b>+ / −</b> — velocidad.</li>
+              <li><b>Arrastrar</b> con la cinta seleccionada traza una línea.</li>
+              <li><b>Shift + arrastrar</b> selecciona. <b>Ctrl+C / Ctrl+V</b> copia y pega. <b>Ctrl+Z</b> deshace.</li>
+              <li><b>Tabla (P)</b> — clic en Fe, C, Cu… y saltas al yacimiento.</li>
+              <li><b>Recetas (E)</b> — destacados con historia + árbol “desde cero”.</li>
+              <li><b>Pedidos (O)</b> — envía si tienes el material en el inventario.</li>
+              <li><b>Daltonismo</b> — formas además de color en los logos de elementos.</li>
             </ul>
-            <p>
-              Las cintas transportan de todo, también fluidos envasados: más simple que tuberías. Elige
-              una receta en el panel derecho o deja que la máquina la adivine con lo que le llega.
-            </p>
-            <p>
-              No hace falta saber programar ni química avanzada: la enciclopedia te dice cómo se fabrica
-              cada cosa y la tabla te muestra qué elementos te faltan.
-            </p>
           </div>
         </div>
       </div>

@@ -41,10 +41,12 @@ La tabla periódica es un mapa de progreso: color si ya tienes el elemento, bord
 ## Qué hay ahora mismo
 
 - 118 elementos, yacimientos procedurales y rareza (común → sintético).
-- Miles de productos generados con reglas químicas (óxidos, sales, hidruros, aleaciones, hidrocarburos, polímeros, formas metálicas).
-- Árbol de investigación por eras, no un espagueti de líneas.
-- Enciclopedia buscable y crafteo a mano para no quedarte bloqueada al principio.
-- Energía (carbón, solar, nuclear), almacenes, bombas y reactores.
+- Miles de productos; la UI destaca ~30 con nombre e historia, más el árbol “desde cero”.
+- Juegas como **España**. El resto de países de la Tierra envían pedidos.
+- Tabla periódica como tablero: clic en un elemento para ir a su yacimiento. Completar un grupo da reputación.
+- Cintas arrastrables, copiar/pegar (Ctrl+C/V), deshacer (Ctrl+Z), alertas, stats, daltonismo, sonido y minimapa.
+- Logos/símbolos de elemento en el mapa (casilla tipo tabla periódica).
+- Árbol de investigación por eras, enciclopedia y crafteo a mano.
 
 ## Ideas para más adelante
 

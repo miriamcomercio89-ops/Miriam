@@ -4,6 +4,9 @@ import { RESEARCH_BY_ID, isResearched } from "../data/research.js";
 import { ELEMENT_BY_SYMBOL, researchForElement } from "../data/elements.js";
 import { inMap, tileKey } from "./worldgen.js";
 import { addInventory, buildingAt, pushMessage } from "./state.js";
+import { ensureOrders, tickOrders } from "./orders.js";
+import { collectGroupBonuses } from "./focus.js";
+import { getItem } from "../data/catalog.js";
 
 const TPS = 20;
 export const TICK_MS = 1000 / TPS;
@@ -30,10 +33,54 @@ function stepOnce(state) {
   deliverOutputs(state);
   pullInputs(state);
   if (state.researching) stepResearch(state);
+  if (state.tick % 20 === 0) sampleRates(state);
+  if (state.tick % 15 === 0) state.alerts = collectAlerts(state);
+  if (state.tick === 1 || state.tick % 80 === 0) {
+    tickOrders(state);
+    const gained = collectGroupBonuses(state, getItem);
+    for (const cat of gained) pushMessage(state, `Grupo completo en la Tierra: ${cat}. +8 reputación.`);
+  }
+  if (state.tick === 2) ensureOrders(state);
   if (!state.won && (state.produced["periodica-core"] ?? 0) > 0) {
     state.won = true;
     pushMessage(state, "Has ensamblado el Núcleo de Periodica. La tabla es tuya.");
   }
+}
+
+function sampleRates(state) {
+  const now = state.produced || {};
+  const prev = state.prodSnap || {};
+  const rates = {};
+  for (const [id, n] of Object.entries(now)) {
+    const d = n - (prev[id] || 0);
+    if (d > 0) rates[id] = d * 60;
+  }
+  state.rates = rates;
+  state.prodSnap = { ...now };
+  state.rateHistory = [{ t: state.tick, rates }, ...(state.rateHistory || [])].slice(0, 24);
+}
+
+export function collectAlerts(state) {
+  const alerts = [];
+  for (const b of Object.values(state.buildings)) {
+    const def = BUILDINGS[b.type];
+    if (!def) continue;
+    if (def.generator && def.fuel && !b.powered) {
+      alerts.push({ level: "warn", text: `${def.name} sin combustible (${b.x},${b.y})` });
+    }
+    if (["furnace", "blast", "reactor", "electrolyzer", "assembler"].includes(b.type)) {
+      if (!b.recipe) alerts.push({ level: "info", text: `${def.name} sin receta (${b.x},${b.y})` });
+      const full = Object.values(b.output || {}).some((n) => n >= 28);
+      if (full) alerts.push({ level: "warn", text: `${def.name} con la salida llena (${b.x},${b.y})` });
+    }
+  }
+  for (const o of state.orders || []) {
+    if (o.status === "open" && o.deadline - state.tick < 400) {
+      const item = getItem(o.itemId);
+      alerts.push({ level: "urgent", text: `Pedido urgente de ${o.country}: ${item?.name}` });
+    }
+  }
+  return alerts.slice(0, 8);
 }
 
 function computePower(state) {

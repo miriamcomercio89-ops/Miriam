@@ -470,3 +470,128 @@ button.active {
     grid-template-columns: 1fr;
   }
 }
+
+#minimap {
+  position: absolute;
+  right: 12px;
+  bottom: 96px;
+  width: 168px;
+  height: 168px;
+  border-radius: 12px;
+  border: 1px solid var(--stroke);
+  z-index: 6;
+  cursor: pointer;
+  background: #0b1220;
+}
+
+.shortcuts {
+  position: absolute;
+  left: 50%;
+  bottom: 2px;
+  transform: translateX(-50%);
+  font-size: 11px;
+  color: var(--muted);
+  z-index: 6;
+  pointer-events: none;
+  white-space: nowrap;
+  max-width: 90vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hotbar {
+  bottom: 22px;
+}
+
+.order-row,
+.order-card {
+  display: grid;
+  gap: 4px;
+  padding: 6px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  margin-bottom: 6px;
+  font-size: 13px;
+}
+
+.order-card.failed {
+  opacity: 0.5;
+}
+
+.order-card.done {
+  border: 1px solid var(--ok);
+}
+
+.alert {
+  font-size: 12px;
+  padding: 3px 0;
+}
+
+.alert.warn,
+.alert.urgent {
+  color: #fbbf24;
+}
+
+.el-mini {
+  display: inline-block;
+  min-width: 18px;
+  margin-right: 6px;
+  font-weight: 700;
+  font-size: 11px;
+}
+
+.tabs {
+  display: flex;
+  gap: 6px;
+  margin: 8px 0;
+}
+
+.el small {
+  display: block;
+  font-size: 9px;
+  opacity: 0.8;
+}
+
+.el.synthetic {
+  border-style: dotted;
+}
+
+.el.selected-el {
+  outline: 1px solid #fff;
+}
+
+.group-progress {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.chain-node {
+  font-size: 13px;
+  margin: 4px 0;
+}
+
+.chain-branch {
+  border-left: 1px solid var(--stroke);
+  padding-left: 8px;
+  margin-left: 6px;
+}
+
+.stat-bar {
+  display: grid;
+  grid-template-columns: 1fr 120px auto;
+  gap: 8px;
+  align-items: center;
+  margin: 6px 0;
+  font-size: 13px;
+}
+
+body.colorblind .el {
+  font-weight: 800;
+}
+
+.left-dock,
+.right-dock {
+  top: 96px;
+}

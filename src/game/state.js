@@ -28,13 +28,28 @@ export function createGame(seed = 118) {
     scienceBuffer: {},
     produced: {},
     consumed: {},
-    messages: [{ t: 0, text: "Bienvenida a Periodica. Coloca un extractor sobre el hierro o el carbón." }],
+    messages: [{ t: 0, text: "Ministerio de Industria · España. Extrae hierro o carbón y atiende los pedidos del mundo." }],
     camera: { x: world.spawn.x, y: world.spawn.y, zoom: 1 },
     selected: null,
     hover: null,
     build: { type: "extractor", dir: 0 },
     tutorialStep: 0,
     won: false,
+    player: "ES",
+    reputation: 50,
+    orders: [],
+    ordersCompleted: 0,
+    undo: [],
+    selection: [],
+    clipboard: null,
+    pasteMode: false,
+    colorblind: false,
+    muted: false,
+    alerts: [],
+    rates: {},
+    prodSnap: {},
+    rateHistory: [],
+    groupBonus: {},
   };
 }
 
@@ -81,6 +96,13 @@ export function serialize(state) {
     tutorialStep: state.tutorialStep,
     won: state.won,
     camera: state.camera,
+    reputation: state.reputation,
+    orders: state.orders,
+    ordersCompleted: state.ordersCompleted,
+    colorblind: state.colorblind,
+    muted: state.muted,
+    groupBonus: state.groupBonus,
+    rates: state.rates,
   });
 }
 
@@ -95,6 +117,13 @@ export function deserialize(json) {
     hover: null,
     build: { type: "extractor", dir: 0 },
     paused: false,
+    undo: [],
+    selection: [],
+    clipboard: null,
+    pasteMode: false,
+    alerts: [],
+    rateHistory: data.rateHistory || [],
+    orders: data.orders || [],
   };
 }
 
