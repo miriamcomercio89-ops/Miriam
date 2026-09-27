@@ -160,6 +160,7 @@ canvas.addEventListener("pointerdown", (e) => {
       if (placed) game.selected = { kind: "building", building: placed, x: pos.x, y: pos.y };
       sfx("place");
       pulseAmbient(Object.keys(game.researched).length);
+      renderUI(game);
     } else {
       game.selected = { kind: "tile", x: pos.x, y: pos.y };
       if (!canAffordBuilding(game, game.build.type)) sfx("error");
