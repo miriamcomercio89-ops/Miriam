@@ -32,23 +32,30 @@ export function createWorld(seed = 118) {
   sprinklePools(tiles, rand, "brine", 4, 3);
   sprinklePools(tiles, rand, "oil", 5, 2);
 
-  const cx = 18;
-  const cy = 18;
-  placeBlob(tiles, cx + 2, cy + 1, "Fe", 3, 900);
-  placeBlob(tiles, cx - 2, cy + 4, "C", 3, 1100);
-  placeBlob(tiles, cx + 6, cy - 2, "Cu", 2, 700);
-  placeBlob(tiles, cx - 4, cy - 1, "Si", 2, 700);
-  placeBlob(tiles, cx + 3, cy + 7, "Ca", 2, 500);
-  placeBlob(tiles, cx + 8, cy + 5, "Al", 2, 500);
-  forceWater(tiles, cx + 10, cy + 2, 2);
+  const cx = 22;
+  const cy = 22;
+  flattenLanding(tiles, cx, cy, 8);
+  placeBlob(tiles, cx + 3, cy + 1, "Fe", 2, 900);
+  placeBlob(tiles, cx - 3, cy + 2, "C", 2, 1100);
+  placeBlob(tiles, cx + 4, cy - 3, "Cu", 2, 700);
+  placeBlob(tiles, cx - 4, cy - 2, "Si", 2, 700);
+  placeBlob(tiles, cx + 1, cy + 5, "Ca", 2, 500);
+  placeBlob(tiles, cx + 5, cy + 4, "Al", 2, 500);
+  forceWater(tiles, cx + 8, cy + 1, 2);
 
   for (const el of ELEMENTS) {
     if (["Fe", "C", "Cu", "Si", "Ca", "Al"].includes(el.symbol)) continue;
     const count =
       el.abundance === "common" ? 3 : el.abundance === "uncommon" ? 2 : el.abundance === "rare" ? 1 : rand() < 0.35 ? 1 : 0;
     for (let i = 0; i < count; i++) {
-      const x = 8 + Math.floor(rand() * (MAP_SIZE - 16));
-      const y = 8 + Math.floor(rand() * (MAP_SIZE - 16));
+      let x = 8 + Math.floor(rand() * (MAP_SIZE - 16));
+      let y = 8 + Math.floor(rand() * (MAP_SIZE - 16));
+      let guard = 0;
+      while ((x - cx) ** 2 + (y - cy) ** 2 < 14 * 14 && guard++ < 12) {
+        x = 8 + Math.floor(rand() * (MAP_SIZE - 16));
+        y = 8 + Math.floor(rand() * (MAP_SIZE - 16));
+      }
+      if ((x - cx) ** 2 + (y - cy) ** 2 < 14 * 14) continue;
       const r = el.abundance === "common" ? 2 : 1;
       const reserve = el.abundance === "common" ? 600 : el.abundance === "uncommon" ? 360 : 180;
       placeBlob(tiles, x, y, el.symbol, r, reserve);
@@ -75,6 +82,20 @@ function placeBlob(tiles, cx, cy, symbol, radius, reserve) {
         t.deposit = symbol;
         t.reserve = reserve;
         if (t.terrain === "grass") t.terrain = "dirt";
+      }
+    }
+  }
+}
+
+function flattenLanding(tiles, cx, cy, radius) {
+  for (let y = cy - radius; y <= cy + radius; y++) {
+    for (let x = cx - radius; x <= cx + radius; x++) {
+      if (!inMap(x, y)) continue;
+      if ((x - cx) ** 2 + (y - cy) ** 2 <= radius * radius) {
+        const t = tiles[y][x];
+        t.terrain = (x + y) % 3 === 0 ? "grass" : "dirt";
+        t.deposit = null;
+        t.reserve = 0;
       }
     }
   }

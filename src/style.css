@@ -187,8 +187,11 @@ button.active {
   bottom: 14px;
   transform: translateX(-50%);
   display: flex;
-  gap: 8px;
-  padding: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px;
+  max-width: min(920px, 92vw);
   background: var(--panel);
   border: 1px solid var(--stroke);
   border-radius: 18px;
@@ -197,9 +200,9 @@ button.active {
 }
 
 .hot {
-  width: 72px;
-  height: 72px;
-  border-radius: 14px;
+  width: 68px;
+  height: 62px;
+  border-radius: 12px;
   border: 1px solid var(--stroke);
   background: rgba(255, 255, 255, 0.03);
   display: flex;

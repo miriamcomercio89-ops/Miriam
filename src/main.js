@@ -1,4 +1,5 @@
 import { BUILDINGS } from "./data/buildings.js";
+import { ELEMENT_BY_SYMBOL, researchForElement } from "./data/elements.js";
 import { isResearched } from "./data/research.js";
 import { createGame, deserialize, serialize, buildingAt, canAffordBuilding } from "./game/state.js";
 import { inMap } from "./game/worldgen.js";
@@ -9,7 +10,8 @@ import { bindUI, renderUI, closeModals, isModalOpen, openModal } from "./ui/ui.j
 const canvas = document.getElementById("world");
 const ctx = canvas.getContext("2d");
 
-const saved = localStorage.getItem("periodica-save-v1");
+const SAVE_KEY = "periodica-save-v2";
+const saved = localStorage.getItem(SAVE_KEY);
 const game = saved ? safeLoad(saved) : createGame(118);
 
 function safeLoad(json) {
@@ -131,7 +133,14 @@ function ghost() {
   const tile = game.world.tiles[hover.y]?.[hover.x];
   let valid = !buildingAt(game, hover.x, hover.y) && canAffordBuilding(game, game.build.type);
   if (def.research && !isResearched(game, def.research)) valid = false;
-  if (game.build.type === "extractor") valid = valid && Boolean(tile?.deposit) && tile.terrain !== "water";
+  if (game.build.type === "extractor") {
+    const el = tile?.deposit ? ELEMENT_BY_SYMBOL[tile.deposit] : null;
+    valid =
+      valid &&
+      Boolean(el) &&
+      tile.terrain !== "water" &&
+      isResearched(game, researchForElement(el));
+  }
   if (game.build.type === "pump") valid = valid && (tile?.terrain === "water" || tile?.terrain === "brine" || tile?.terrain === "oil");
   return { type: game.build.type, dir: game.build.dir, x: hover.x, y: hover.y, valid };
 }
@@ -153,7 +162,7 @@ function frame(now) {
   while (acc >= TICK_MS) {
     tick(game);
     if (game.tick > 0 && game.tick % 600 === 0) {
-      localStorage.setItem("periodica-save-v1", serialize(game));
+      localStorage.setItem(SAVE_KEY, serialize(game));
     }
     acc -= TICK_MS;
   }

@@ -1,6 +1,7 @@
 import { BUILDINGS, DIRS } from "../data/buildings.js";
 import { ITEM_BY_ID, RECIPES } from "../data/catalog.js";
 import { RESEARCH_BY_ID, isResearched } from "../data/research.js";
+import { ELEMENT_BY_SYMBOL, researchForElement } from "../data/elements.js";
 import { inMap, tileKey } from "./worldgen.js";
 import { addInventory, buildingAt, pushMessage } from "./state.js";
 
@@ -351,7 +352,11 @@ export function placeBuilding(state, type, x, y, dir) {
   if (!def) return false;
   if (def.research && !isResearched(state, def.research)) return false;
   const tile = state.world.tiles[y][x];
-  if (type === "extractor" && !tile.deposit) return false;
+  if (type === "extractor") {
+    if (!tile.deposit || tile.terrain === "water" || tile.terrain === "brine" || tile.terrain === "oil") return false;
+    const el = ELEMENT_BY_SYMBOL[tile.deposit];
+    if (el && !isResearched(state, researchForElement(el))) return false;
+  }
   if (type === "pump" && tile.terrain !== "water" && tile.terrain !== "brine" && tile.terrain !== "oil" && tile.deposit !== "water") {
     return false;
   }

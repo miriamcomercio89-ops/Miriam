@@ -42,7 +42,7 @@ export function bindUI(game) {
     game.speed = game.speed === 1 ? 2 : game.speed === 2 ? 3 : 1;
   });
   $("btn-save").addEventListener("click", () => {
-    localStorage.setItem("periodica-save-v1", serialize(game));
+    localStorage.setItem("periodica-save-v2", serialize(game));
     game.messages.unshift({ t: game.tick, text: "Partida guardada en este navegador." });
   });
   $("pedia-search").addEventListener("input", (e) => {
@@ -83,6 +83,7 @@ function buildHotbar(game) {
     const btn = document.createElement("button");
     btn.className = "hot";
     btn.dataset.type = def.id;
+    btn.title = `${def.name}: ${def.desc}`;
     btn.innerHTML = `<span class="ico">${def.icon}</span><small>${def.name}</small>`;
     btn.addEventListener("click", () => {
       game.build.type = def.id;
@@ -288,9 +289,14 @@ function feedBuilding(game, b) {
 }
 
 function recOptions(game, b) {
-  return RECIPES.filter((r) => r.building === b.type && !r.science).filter(
-    (r) => !r.research || isResearched(game, r.research)
-  );
+  const tile = game.world.tiles[b.y][b.x];
+  return RECIPES.filter((r) => r.building === b.type && !r.science)
+    .filter((r) => !r.research || isResearched(game, r.research))
+    .filter((r) => {
+      if (b.type !== "extractor" && b.type !== "pump") return true;
+      const dep = tile.deposit || (tile.terrain === "water" ? "water" : null);
+      return r.deposit === dep;
+    });
 }
 
 function fmtBuf(buf) {
