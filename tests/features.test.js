@@ -4,7 +4,7 @@ import { COUNTRIES, ORDER_COUNTRIES, PLAYER } from "../src/data/countries.js";
 import { FEATURED, ORDER_POOL } from "../src/data/highlights.js";
 import { getItem } from "../src/data/catalog.js";
 import { buildChain } from "../src/game/chain.js";
-import { createGame } from "../src/game/state.js";
+import { createGame, deserialize, serialize } from "../src/game/state.js";
 import { placeTracked, undoLast, bresenham } from "../src/game/history.js";
 import {
   ensureOrders,
@@ -131,6 +131,17 @@ test("hay varias ranuras de guardado y contaminación se calcula", () => {
   const { x, y } = game.world.spawn;
   assert.equal(placeBuilding(game, "furnace", x, y, 0), true);
   assert.ok(computePollution(game) >= 1);
+});
+
+test("cargar una partida no castiga pedidos ya caducados", () => {
+  const game = createGame(118);
+  game.tick = 20000;
+  game.orders = [
+    { id: "old", status: "open", itemId: "plate-fe", amount: 4, deadline: 10, country: "DE", rewardSci: "sci-mining", rewardN: 1, rep: 3 },
+  ];
+  const again = deserialize(serialize(game));
+  assert.equal(again.orders[0].status, "failed");
+  assert.equal(again.reputation, game.reputation);
 });
 
 test("una crisis genera titular", () => {

@@ -37,7 +37,8 @@ canvas#world {
   inset: 12px 12px auto 12px;
   display: flex;
   align-items: center;
-  gap: 16px;
+  flex-wrap: wrap;
+  gap: 10px 16px;
   padding: 10px 14px;
   background: var(--panel);
   border: 1px solid var(--stroke);

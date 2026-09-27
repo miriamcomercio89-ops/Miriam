@@ -135,7 +135,12 @@ export function deserialize(json) {
     pasteMode: false,
     alerts: [],
     rateHistory: data.rateHistory || [],
-    orders: data.orders || [],
+    orders: (data.orders || []).map((o) => {
+      if ((o.status === "open" || o.status === "offer") && (data.tick ?? 0) >= (o.deadline ?? Infinity)) {
+        return { ...o, status: "failed", closedAt: data.tick };
+      }
+      return o;
+    }),
     pinned: data.pinned ?? null,
     pollution: data.pollution ?? 0,
     repEU: data.repEU ?? 50,
