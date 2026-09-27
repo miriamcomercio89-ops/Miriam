@@ -39,6 +39,34 @@
         <p>Luego entra en <b>http://localhost:5173</b></p>
       </div>
     </div>
+    <div id="main-menu" class="show">
+      <div class="menu-card">
+        <div class="menu-brand">
+          <span class="brand-mark">ES</span>
+          <div>
+            <h1>Periodica</h1>
+            <p>España · fábricas de la Tierra</p>
+          </div>
+        </div>
+        <div id="menu-stats" class="menu-stats"></div>
+        <div id="menu-mosaic" class="menu-mosaic" aria-hidden="true"></div>
+        <p class="menu-lead">
+          Miles de materias primas, semiproductos y productos finales, cada uno con su logo.
+          Decenas de edificios para fabricarlos.
+        </p>
+        <div class="menu-actions">
+          <button id="btn-continue" data-menu="continue" hidden>Continuar partida</button>
+          <button data-menu="normal" class="menu-primary">
+            <b>Modo normal</b>
+            <small>Empiezas con lo básico. Investiga para desbloquear fábricas y recetas.</small>
+          </button>
+          <button data-menu="sandbox" class="menu-sandbox">
+            <b>Sandbox</b>
+            <small>Todo desbloqueado: investigación, recetas y todas las fábricas. Materiales de sobra.</small>
+          </button>
+        </div>
+      </div>
+    </div>
     <div id="app">
       <canvas id="world"></canvas>
       <canvas id="minimap" width="168" height="168" title="Clic para saltar"></canvas>
@@ -48,7 +76,7 @@
           <span class="brand-mark">ES</span>
           <div>
             <strong>Periodica</strong>
-            <small>España · fábrica de la Tierra</small>
+            <small id="brand-sub">España · fábrica de la Tierra</small>
           </div>
         </div>
         <div class="stats">
@@ -72,6 +100,8 @@
           <button data-modal="saves" title="Partidas (L)">Partidas</button>
           <button data-modal="stats" title="Producción (G)">Stats</button>
           <button data-modal="help" title="Ayuda (H)">Ayuda</button>
+          <button id="btn-menu" title="Menú (Esc)">Menú</button>
+          <span id="mode-badge" class="mode-badge" hidden>Sandbox</span>
           <button id="btn-pause">Pausa</button>
           <button id="btn-speed">x1</button>
           <button id="btn-color">Daltonismo</button>
@@ -154,6 +184,9 @@
           </header>
           <div class="tabs">
             <button data-pedia-tab="featured" class="active">Destacados</button>
+            <button data-pedia-tab="raw">Materias primas</button>
+            <button data-pedia-tab="mid">Semiproductos</button>
+            <button data-pedia-tab="end">Productos finales</button>
             <button data-pedia-tab="all">Todos</button>
           </div>
           <input id="pedia-search" type="search" placeholder="Busca acero, amoníaco, Japón, Fe…" />
@@ -264,6 +297,7 @@
               <li><b>España (M)</b> — mapa con muchas ciudades. Las que piden algo brillan.</li>
               <li><b>Calculadora (J)</b> — “quiero 10 de acero al minuto” y te dice las máquinas.</li>
               <li><b>Fábricas II y III</b> — más rápidas. También hay hornos, química y talleres especializados.</li>
+              <li><b>Menú</b> — al arrancar eliges <b>Normal</b> (investigar) o <b>Sandbox</b> (todo desbloqueado).</li>
               <li><b>Barra de abajo</b> — pestañas: minería, cintas, hornos, química, talleres, energía, ciencia.</li>
               <li><b>Logos</b> — cada producto y cada fábrica tiene su imagen.</li>
               <li><b>Daltonismo</b> — formas además de color en los logos de elementos.</li>

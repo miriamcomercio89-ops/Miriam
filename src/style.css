@@ -852,3 +852,125 @@ body.colorblind .el {
 .shortcuts {
   font-size: 13px;
 }
+
+#main-menu {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  place-items: center;
+  padding: 24px;
+  background:
+    radial-gradient(circle at 20% 10%, rgba(94, 234, 212, 0.16), transparent 40%),
+    radial-gradient(circle at 80% 90%, rgba(167, 139, 250, 0.14), transparent 42%),
+    rgba(7, 9, 13, 0.78);
+  backdrop-filter: blur(10px);
+}
+
+#main-menu.show {
+  display: grid;
+}
+
+.menu-card {
+  width: min(720px, 100%);
+  padding: 28px;
+  border-radius: 24px;
+  background: #121826;
+  border: 1px solid rgba(94, 234, 212, 0.28);
+  box-shadow: var(--shadow);
+}
+
+.menu-brand {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.menu-brand h1 {
+  margin: 0;
+  font-size: 34px;
+}
+
+.menu-brand p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.menu-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.menu-stats span {
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--stroke);
+  font-size: 13px;
+}
+
+.menu-stats b {
+  color: var(--accent);
+}
+
+.menu-mosaic {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.menu-mosaic .logo {
+  width: 36px;
+  height: 36px;
+}
+
+.menu-lead {
+  color: var(--muted);
+  margin: 0 0 16px;
+}
+
+.menu-actions {
+  display: grid;
+  gap: 10px;
+}
+
+.menu-actions button {
+  text-align: left;
+  padding: 14px 16px;
+}
+
+.menu-actions button b {
+  display: block;
+  font-size: 18px;
+}
+
+.menu-actions button small {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.menu-primary {
+  border-color: var(--accent);
+}
+
+.menu-sandbox {
+  border-color: var(--accent-2);
+}
+
+.mode-badge {
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(167, 139, 250, 0.18);
+  border: 1px solid var(--accent-2);
+  color: #ddd6fe;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}

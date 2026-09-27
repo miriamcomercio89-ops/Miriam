@@ -26,7 +26,7 @@ test("España tiene muchas ciudades reales con pedidos posibles", () => {
 });
 
 test("hay muchas fábricas, niveles II/III y pestañas", () => {
-  assert.ok(BUILDING_LIST.length >= 40, BUILDING_LIST.length);
+  assert.ok(BUILDING_LIST.length >= 55, BUILDING_LIST.length);
   assert.equal(BUILDING_TABS.length, 7);
   assert.ok(BUILDINGS.extractor2 && BUILDINGS.furnace2 && BUILDINGS.assembler2);
   assert.ok(BUILDINGS.extractor3 && BUILDINGS.furnace3 && BUILDINGS.assembler3);

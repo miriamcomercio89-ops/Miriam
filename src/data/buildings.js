@@ -256,6 +256,107 @@ export const BUILDINGS = {
     cost: { "steel": 12, "glass-silica": 12, "circuit-basic": 4 }, research: "industry-2",
     rotatable: false, speed: 1.8, tier: 2, crafts: ["lab"], visual: "lab",
   }),
+  lab3: b("lab3", "Laboratorio III", "Campus de investigación.", {
+    color: "#f9a8d4", icon: "🔬", power: 36, category: "ciencia", tab: "ciencia",
+    cost: { "steel": 20, "circuit-advanced": 4, "glass-silica": 16 }, research: "industry-3",
+    rotatable: false, speed: 2.8, tier: 3, crafts: ["lab"], visual: "lab",
+  }),
+
+  pump3: b("pump3", "Bomba III", "Caudal máximo.", {
+    color: "#a5f3fc", icon: "💧", power: 18, category: "minería", tab: "mineria",
+    cost: { "steel": 10, "motor-basic": 2, "pipe-basic": 12 }, research: "industry-3",
+    rotatable: false, speed: 2.8, tier: 3, crafts: ["pump"], visual: "pump", waterOk: true,
+  }),
+  quarry: b("quarry", "Cantera", "Saca minerales más rápido en tierra.", {
+    color: "#94a3b8", icon: "🪨", power: 14, category: "minería", tab: "mineria",
+    cost: { "steel": 10, "gear-basic": 4 }, research: "construction",
+    rotatable: false, speed: 1.6, crafts: ["extractor"], visual: "extractor",
+  }),
+  smelter: b("smelter", "Fundidora", "Horno especializado en lingotes.", {
+    color: "#f97316", icon: "🔥", power: 20, category: "proceso", tab: "hornos",
+    cost: { "plate-fe": 14, "el-c": 10 }, research: "metallurgy",
+    speed: 1.5, crafts: ["furnace"], focus: ["start", "metallurgy", "steel"], visual: "furnace",
+  }),
+  steelMill: b("steelMill", "Acería", "Aceros y aleaciones a gran ritmo.", {
+    color: "#ea580c", icon: "🌋", power: 40, category: "proceso", tab: "hornos",
+    cost: { "steel": 24, "brick-fire": 16, "pipe-basic": 8 }, research: "construction",
+    speed: 1.9, crafts: ["blast"], visual: "blast",
+  }),
+  glassWorks: b("glassWorks", "Vidriera", "Vidrio, ventanas y lentes.", {
+    color: "#67e8f9", icon: "🪟", power: 18, category: "proceso", tab: "hornos",
+    cost: { "glass-silica": 16, "brick-fire": 8 }, research: "ceramics",
+    speed: 1.7, crafts: ["furnace"], focus: ["start", "ceramics", "urban", "optics"], visual: "furnace",
+  }),
+  bakery: b("bakery", "Panadería", "Pan y horneados.", {
+    color: "#f59e0b", icon: "🥖", power: 10, category: "proceso", tab: "hornos",
+    cost: { "brick": 8, "plate-fe": 6 }, research: "food",
+    speed: 1.9, crafts: ["furnace"], focus: ["food"], visual: "furnace",
+  }),
+  paperMill: b("paperMill", "Papelera", "Papel, cartón y prensa.", {
+    color: "#e2e8f0", icon: "📄", power: 16, category: "proceso", tab: "talleres",
+    cost: { "steel": 10, "pipe-basic": 6 }, research: "forestry",
+    speed: 1.8, crafts: ["assembler"], focus: ["forestry"],
+  }),
+  packingLine: b("packingLine", "Línea de envasado", "Latas, cajas y palés.", {
+    color: "#fbbf24", icon: "📦", power: 14, category: "proceso", tab: "talleres",
+    cost: { "steel": 10, "can-al": 8 }, research: "food",
+    speed: 1.8, crafts: ["assembler"], focus: ["food", "commerce"],
+  }),
+  paintShop: b("paintShop", "Pinturas", "Pigmentos y esmaltes.", {
+    color: "#818cf8", icon: "🎨", power: 12, category: "proceso", tab: "talleres",
+    cost: { "steel": 8, "glass-silica": 6 }, research: "pigments",
+    speed: 1.7, crafts: ["assembler", "reactor"], focus: ["pigments"],
+  }),
+  batteryWorks: b("batteryWorks", "Fábrica de baterías", "Celdas y acumuladores.", {
+    color: "#34d399", icon: "🔋", power: 22, category: "proceso", tab: "talleres",
+    cost: { "steel": 14, "circuit-basic": 4 }, research: "batteries",
+    speed: 1.8, crafts: ["assembler"], focus: ["batteries", "energy-grid"],
+  }),
+  autoWorks: b("autoWorks", "Planta de autos", "Coches, buses y camiones.", {
+    color: "#fb7185", icon: "🚗", power: 24, category: "proceso", tab: "talleres",
+    cost: { "steel": 20, "motor-basic": 3 }, research: "mobility",
+    speed: 1.8, crafts: ["assembler"], focus: ["mobility"],
+  }),
+  hangar: b("hangar", "Hangar", "Aviones y satélites.", {
+    color: "#38bdf8", icon: "✈️", power: 26, category: "proceso", tab: "talleres",
+    cost: { "duralumin": 12, "beam": 6 }, research: "aviation",
+    speed: 1.6, crafts: ["assembler"], focus: ["aviation"],
+  }),
+  clinic: b("clinic", "Planta sanitaria", "Kits, sueros y equipos.", {
+    color: "#22d3ee", icon: "🏥", power: 16, category: "proceso", tab: "quimica",
+    cost: { "glass-silica": 12, "stainless": 8 }, research: "medical",
+    speed: 1.7, crafts: ["assembler", "reactor"], focus: ["medical", "pharma"],
+  }),
+  waterPlant: b("waterPlant", "Potabilizadora", "Agua, sales e hidrógeno.", {
+    color: "#38bdf8", icon: "🚰", power: 20, category: "proceso", tab: "quimica",
+    cost: { "pipe-basic": 12, "glass-silica": 8 }, research: "fluids",
+    speed: 1.6, crafts: ["electrolyzer", "reactor", "pump"], focus: ["fluids", "electrolysis", "hydrogen"],
+  }),
+  gasPlant: b("gasPlant", "Planta de gases", "Nobles y atmósferas.", {
+    color: "#a78bfa", icon: "🫧", power: 18, category: "proceso", tab: "quimica",
+    cost: { "steel": 10, "pipe-basic": 8 }, research: "noble-gases",
+    speed: 1.6, crafts: ["reactor"], focus: ["noble-gases"],
+  }),
+  commsHub: b("commsHub", "Central telecom", "Radio, fibra y 5G.", {
+    color: "#60a5fa", icon: "📡", power: 16, category: "proceso", tab: "talleres",
+    cost: { "steel": 10, "circuit-basic": 4 }, research: "telecom",
+    speed: 1.7, crafts: ["assembler"], focus: ["telecom"],
+  }),
+  printShop: b("printShop", "Imprenta", "Libros, prensa y tinta.", {
+    color: "#cbd5e1", icon: "📰", power: 12, category: "proceso", tab: "talleres",
+    cost: { "steel": 8, "paper": 8 }, research: "forestry",
+    speed: 1.7, crafts: ["assembler"], focus: ["forestry"],
+  }),
+  hydro: b("hydro", "Hidroeléctrica", "Energía limpia constante.", {
+    color: "#22d3ee", icon: "🌊", power: -90, category: "energía", tab: "energia",
+    cost: { "steel": 24, "concrete": 16, "pipe-basic": 8 }, research: "energy-grid",
+    rotatable: false, generator: true, crafts: ["hydro"], visual: "solar",
+  }),
+  geothermal: b("geothermal", "Geotérmica", "Calor de la Tierra.", {
+    color: "#f97316", icon: "🌋", power: -70, category: "energía", tab: "energia",
+    cost: { "steel": 20, "pipe-basic": 12, "brick-fire": 8 }, research: "energy-grid",
+    rotatable: false, generator: true, crafts: ["geothermal"], visual: "nuclear",
+  }),
 };
 
 export const BUILDING_LIST = Object.values(BUILDINGS);

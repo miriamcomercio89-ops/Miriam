@@ -258,6 +258,9 @@ export function logoSpec(itemOrId) {
     const prefix = item.id.split("-")[0];
     return { family: "compound", glyph: ANION_GLYPH[prefix] || "flask", color, badge: item.elements?.[0] || "" };
   }
+  if (item.glyph) {
+    return { family: "named", glyph: item.glyph, color, badge: "" };
+  }
   if (NAMED_GLYPH[item.id]) {
     return { family: "named", glyph: NAMED_GLYPH[item.id], color, badge: "" };
   }
