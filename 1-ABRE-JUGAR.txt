@@ -1,0 +1,17 @@
+PERIODICA
+
+No abras el archivo index.html.
+Así se ve el juego sin formato, sin colores y no arranca.
+
+Cómo jugar:
+
+  Windows:  pulsa dos veces  JUGAR.bat
+  Mac:      pulsa dos veces  JUGAR.command
+
+Se abre el navegador con el juego ya maquetado.
+No cierres la ventana negra / de terminal mientras juegas.
+
+Si Windows dice “proteger tu PC”:
+  Más información → Ejecutar de todas formas.
+
+Descarga de nuevo el ZIP si el tuyo no tiene el archivo JUGAR.bat.

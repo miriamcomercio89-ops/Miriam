@@ -192,9 +192,9 @@ export function ensureOrders(state) {
     const nCity = live.filter((o) => o.kind === "city").length;
     const nEu = live.filter((o) => o.kind === "eu").length;
     let kind = "country";
-    if (nCity < 1) kind = "city";
+    if (nCity < 2) kind = "city";
     else if (isResearched(state, "commerce") && nEu < 1) kind = "eu";
-    else if (Math.random() < 0.22) kind = "city";
+    else if (Math.random() < 0.34) kind = "city";
     else if (isResearched(state, "commerce") && Math.random() < 0.28) kind = "eu";
     const made = spawnOrder(state, kind);
     if (!made) break;

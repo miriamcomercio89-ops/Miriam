@@ -2,18 +2,25 @@
 
 Juego de fábricas en el navegador, inspirado en Factorio pero más guiado: **los 118 elementos de la tabla periódica** son recursos, y a partir de ellos se generan **miles de minerales, lingotes, sales, ácidos, aleaciones, plásticos y piezas**.
 
-No hace falta saber programar. Si puedes abrir una terminal y copiar dos comandos, puedes jugar.
+No hace falta saber programar.
 
 ## Cómo jugar (en tu ordenador)
 
-Necesitas [Node.js](https://nodejs.org/) (versión 20 o superior). Luego, en esta carpeta:
+**No abras `index.html`.** El navegador lo muestra sin formato y el juego no arranca.
+
+1. Descomprime el ZIP.
+2. En Windows, pulsa dos veces **`JUGAR.bat`**. En Mac, pulsa **`JUGAR.command`**.
+3. Se abre el navegador en `http://127.0.0.1:5173` con el juego maquetado.
+4. No cierres la ventana negra / de terminal mientras juegas.
+
+La partida se guarda en el navegador con el botón **Guardar**.
+
+Si prefieres la terminal (hace falta [Node.js](https://nodejs.org/) 20+):
 
 ```bash
 npm install
-npm run dev
+npm start
 ```
-
-Abre la dirección que aparezca (normalmente `http://localhost:5173`). La partida se guarda en el navegador con el botón **Guardar**.
 
 ## Controles
 

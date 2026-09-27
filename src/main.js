@@ -1,4 +1,4 @@
-import { BUILDINGS } from "./data/buildings.js";
+import { BUILDINGS, isExtractorKind, isPumpKind } from "./data/buildings.js";
 import { ELEMENT_BY_SYMBOL, researchForElement } from "./data/elements.js";
 import { isResearched } from "./data/research.js";
 import { createGame, deserialize, serialize, buildingAt, canAffordBuilding } from "./game/state.js";
@@ -97,6 +97,8 @@ addEventListener("keydown", (e) => {
   if (e.key === "k" || e.key === "K") openModal(game, "rank");
   if (e.key === "l" || e.key === "L") openModal(game, "saves");
   if (e.key === "g" || e.key === "G") openModal(game, "stats");
+  if (e.key === "m" || e.key === "M") openModal(game, "spain");
+  if (e.key === "j" || e.key === "J") openModal(game, "calc");
   const nums = "1234567890";
   const idx = nums.indexOf(e.key);
   if (idx >= 0) {
@@ -231,11 +233,11 @@ function ghost() {
   const tile = game.world.tiles[hover.y]?.[hover.x];
   let valid = !buildingAt(game, hover.x, hover.y) && canAffordBuilding(game, game.build.type);
   if (def.research && !isResearched(game, def.research)) valid = false;
-  if (game.build.type === "extractor") {
+  if (isExtractorKind(game.build.type)) {
     const el = tile?.deposit ? ELEMENT_BY_SYMBOL[tile.deposit] : null;
     valid = valid && Boolean(el) && tile.terrain !== "water" && isResearched(game, researchForElement(el));
   }
-  if (game.build.type === "pump") valid = valid && (tile?.terrain === "water" || tile?.terrain === "brine" || tile?.terrain === "oil");
+  if (isPumpKind(game.build.type)) valid = valid && (tile?.terrain === "water" || tile?.terrain === "brine" || tile?.terrain === "oil");
   return { type: game.build.type, dir: game.build.dir, x: hover.x, y: hover.y, valid };
 }
 

@@ -1,19 +1,7 @@
 import { COUNTRY_BY_CODE } from "./countries.js";
+import { SPAIN_CITIES } from "./spain.js";
 
-export const CITY_ORDERS = [
-  { id: "madrid", name: "Madrid", flag: "🏛️", items: ["glass-silica", "circuit-basic", "concrete", "phone"] },
-  { id: "barcelona", name: "Barcelona", flag: "🌊", items: ["circuit-basic", "plastic-pe", "fiber-optic", "antenna-5g"] },
-  { id: "bilbao", name: "Bilbao", flag: "⚓", items: ["steel", "beam", "ship-plate", "rail"] },
-  { id: "valencia", name: "Valencia", flag: "🍊", items: ["plastic-pe", "tile-ceramic", "can-al", "paint-white"] },
-  { id: "sevilla", name: "Sevilla", flag: "🌞", items: ["glass-silica", "tile-ceramic", "olive-oil", "npk"] },
-  { id: "coruna", name: "A Coruña", flag: "🐟", items: ["canned-fish", "ship-plate", "pipe-basic"] },
-  { id: "zaragoza", name: "Zaragoza", flag: "🚂", items: ["motor-basic", "rail", "ev-car"] },
-  { id: "malaga", name: "Málaga", flag: "🏖️", items: ["glass-silica", "bottle-glass", "solar-panel"] },
-  { id: "vigo", name: "Vigo", flag: "🛳️", items: ["steel", "ship-plate", "canned-fish"] },
-  { id: "murcia", name: "Murcia", flag: "🍋", items: ["npk", "pipe-basic", "desal-membrane"] },
-  { id: "valladolid", name: "Valladolid", flag: "🚗", items: ["ev-car", "tire", "chassis"] },
-  { id: "oviedo", name: "Oviedo", flag: "⛏️", items: ["el-c", "steel", "gear-basic"] },
-];
+export const CITY_ORDERS = SPAIN_CITIES;
 
 export const COUNTRY_WANTS = {
   DE: ["steel", "stainless", "gear-basic", "motor-basic", "train-car", "ev-car"],

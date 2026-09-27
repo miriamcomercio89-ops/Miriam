@@ -1,4 +1,4 @@
-import { BUILDINGS, DIRS, isConveyor } from "../data/buildings.js";
+import { BUILDINGS, DIRS, isConveyor, isStorage, isExtractorKind, isPumpKind, isLabKind, canCraftRecipe, buildingSpeed, craftsOf } from "../data/buildings.js";
 import { RECIPES } from "../data/catalog.js";
 import { RESEARCH_BY_ID, isResearched } from "../data/research.js";
 import { ELEMENT_BY_SYMBOL, researchForElement } from "../data/elements.js";
@@ -26,7 +26,7 @@ function stepOnce(state) {
   state.power.satisfaction = sat;
 
   for (const b of Object.values(state.buildings)) {
-    if (isConveyor(b) || b.type === "chest" || b.type === "port") continue;
+    if (isConveyor(b) || isStorage(b)) continue;
     stepMachine(state, b, sat);
   }
   stepBelts(state);
@@ -146,7 +146,7 @@ function stepMachine(state, b, sat) {
     if (def?.generator && def.fuel) tryPullFuel(state, b, def.fuel);
     return;
   }
-  if (b.type === "lab") {
+  if (isLabKind(b.type)) {
     stepLab(state, b, sat);
     return;
   }
@@ -176,7 +176,7 @@ function stepMachine(state, b, sat) {
       return;
     }
   }
-  b.progress = (b.progress ?? 0) + (sat * 1) / (recipe.time * TPS);
+  b.progress = (b.progress ?? 0) + (sat * buildingSpeed(b.type)) / (recipe.time * TPS);
   if (b.progress >= 1) {
     if (!canOutput(b, recipe)) {
       b.progress = 0.99;
@@ -193,15 +193,15 @@ function stepMachine(state, b, sat) {
 }
 
 function autoRecipe(state, b) {
-  if (b.type === "extractor" || b.type === "pump") {
+  if (isExtractorKind(b.type) || isPumpKind(b.type)) {
     const tile = state.world.tiles[b.y][b.x];
     const dep = tile.deposit || (tile.terrain === "water" ? "water" : null);
     if (!dep) return null;
-    const found = RECIPES.find((r) => r.building === b.type && r.deposit === dep);
+    const found = RECIPES.find((r) => canCraftRecipe(b.type, r) && r.deposit === dep);
     if (found) b.recipe = found.id;
     return found ?? null;
   }
-  const options = RECIPES.filter((r) => r.building === b.type && !r.science && !r.deposit);
+  const options = RECIPES.filter((r) => canCraftRecipe(b.type, r) && !r.science && !r.deposit);
   const match = options.find((r) => r.inputs.every((i) => (b.input[i.id] ?? 0) >= i.n));
   if (match) b.recipe = match.id;
   return match ?? null;
@@ -253,7 +253,7 @@ function stepLab(state, b, sat) {
       break;
     }
   }
-  if (took) b.progress = Math.min(1, (b.progress ?? 0) + sat * 0.15);
+  if (took) b.progress = Math.min(1, (b.progress ?? 0) + sat * 0.15 * buildingSpeed(b.type));
   else b.progress = Math.max(0, (b.progress ?? 0) - 0.02);
 }
 
@@ -285,7 +285,7 @@ function findUndergroundExit(state, b) {
     const y = b.y + d.dy * i;
     if (!inMap(x, y)) break;
     const o = buildingAt(state, x, y);
-    if (o?.type === "underground" && o.dir === b.dir) return o;
+    if (o && craftsOf(o.type).includes("underground") && o.dir === b.dir) return o;
   }
   return null;
 }
@@ -323,7 +323,7 @@ function stepBelts(state) {
       it.t = 0.99;
       continue;
     }
-    it.t += 0.14;
+    it.t += BUILDINGS[belt.type]?.beltSpeed || 0.14;
     if (it.t < 1) continue;
     const dests = conveyorDests(state, belt);
     let moved = false;
@@ -358,9 +358,9 @@ function stepBelts(state) {
 function acceptItem(b, itemId) {
   const def = BUILDINGS[b.type];
   if (!def) return false;
-  if (b.type === "chest" || b.type === "port") {
+  if (isStorage(b)) {
     const total = Object.values(b.input).reduce((a, n) => a + n, 0);
-    if (total >= (b.type === "port" ? 400 : 200)) return false;
+    if (total >= (def.capacity || 200)) return false;
     b.input[itemId] = (b.input[itemId] ?? 0) + 1;
     return true;
   }
@@ -368,7 +368,7 @@ function acceptItem(b, itemId) {
     b.input[itemId] = (b.input[itemId] ?? 0) + 1;
     return true;
   }
-  if (b.type === "lab") {
+  if (isLabKind(b.type)) {
     if (!itemId.startsWith("sci-")) return false;
     b.input[itemId] = (b.input[itemId] ?? 0) + 1;
     return true;
@@ -383,7 +383,7 @@ function acceptItem(b, itemId) {
 
 function deliverOutputs(state) {
   for (const b of Object.values(state.buildings)) {
-    if (isConveyor(b) || b.type === "chest" || b.type === "port") continue;
+    if (isConveyor(b) || isStorage(b)) continue;
     const keys = Object.keys(b.output);
     if (!keys.length) continue;
     const destPos = neighbor(b.x, b.y, b.dir ?? 0);
@@ -399,7 +399,7 @@ function deliverOutputs(state) {
         if (b.output[id] <= 0) delete b.output[id];
         break;
       }
-      if ((dest?.type === "chest" || dest?.type === "port") && acceptItem(dest, id)) {
+      if (dest && isStorage(dest) && acceptItem(dest, id)) {
         b.output[id] -= 1;
         if (b.output[id] <= 0) delete b.output[id];
         break;
@@ -410,14 +410,14 @@ function deliverOutputs(state) {
 
 function pullInputs(state) {
   for (const b of Object.values(state.buildings)) {
-    if (isConveyor(b) || b.type === "chest" || b.type === "port") continue;
+    if (isConveyor(b) || isStorage(b)) continue;
     const recipe = b.recipe ? recipeById(b.recipe) : null;
     if (recipe) {
       for (const inp of recipe.inputs) {
         if ((b.input[inp.id] ?? 0) >= 8) continue;
         pullFromNeighbors(state, b, inp.id, 1);
       }
-    } else if (b.type === "lab") {
+    } else if (isLabKind(b.type)) {
       pullFromNeighbors(state, b, null, 1, (id) => id.startsWith("sci-"));
     }
   }
@@ -429,7 +429,7 @@ function pullFromNeighbors(state, b, itemId, count, pred) {
     const y = b.y + d.dy;
     const other = buildingAt(state, x, y);
     if (!other) continue;
-    if (other.type === "chest") {
+    if (isStorage(other) && other.type !== "port") {
       const keys = itemId ? [itemId] : Object.keys(other.input);
       for (const id of keys) {
         if (pred && !pred(id)) continue;
@@ -441,7 +441,7 @@ function pullFromNeighbors(state, b, itemId, count, pred) {
         }
       }
     }
-    if (other.type === "belt") {
+    if (isConveyor(other)) {
       const idx = state.beltItems.findIndex((it) => it.x === x && it.y === y && (!itemId || it.itemId === itemId) && (!pred || pred(it.itemId)));
       if (idx >= 0) {
         const it = state.beltItems[idx];
@@ -461,16 +461,16 @@ export function placeBuilding(state, type, x, y, dir) {
   if (!def) return false;
   if (def.research && !isResearched(state, def.research)) return false;
   const tile = state.world.tiles[y][x];
-  if (type === "extractor") {
+  if (isExtractorKind(type)) {
     if (!tile.deposit || tile.terrain === "water" || tile.terrain === "brine" || tile.terrain === "oil") return false;
     const el = ELEMENT_BY_SYMBOL[tile.deposit];
     if (el && !isResearched(state, researchForElement(el))) return false;
   }
-  if (type === "pump" && tile.terrain !== "water" && tile.terrain !== "brine" && tile.terrain !== "oil" && tile.deposit !== "water") {
+  if (isPumpKind(type) && tile.terrain !== "water" && tile.terrain !== "brine" && tile.terrain !== "oil" && tile.deposit !== "water") {
     return false;
   }
-  if (["furnace", "blast", "reactor", "electrolyzer", "assembler", "lab", "chest", "coalGen", "solar", "nuclear", "port"].includes(type)) {
-    if (tile.terrain === "water" || tile.terrain === "brine" || tile.terrain === "oil") return false;
+  if (!def.isBelt && !def.waterOk && (tile.terrain === "water" || tile.terrain === "brine" || tile.terrain === "oil")) {
+    return false;
   }
   if (!payCost(state, def.cost)) return false;
   const b = {
@@ -488,7 +488,7 @@ export function placeBuilding(state, type, x, y, dir) {
     splitFlip: false,
     bottleneck: false,
   };
-  if (type === "extractor" || type === "pump") autoRecipe(state, b);
+  if (isExtractorKind(type) || isPumpKind(type)) autoRecipe(state, b);
   if (type === "coalGen" && (state.inventory["el-c"] ?? 0) > 0) {
     const n = Math.min(10, state.inventory["el-c"]);
     addInventory(state, "el-c", -n);
