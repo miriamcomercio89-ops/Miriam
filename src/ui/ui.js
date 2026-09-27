@@ -11,6 +11,7 @@ import { focusDeposit, findDeposit, isEarthNatural, groupProgressOf } from "../g
 import { buildChain, chainToHtml } from "../game/chain.js";
 import { setMuted, isMuted, sfx } from "../audio/sound.js";
 import { listSaves, writeSave, clearSave, resolveSaveKey } from "../game/saves.js";
+import { logoImg, factoryImg } from "../render/logos.js";
 
 let uiState = {
   modal: null,
@@ -112,7 +113,7 @@ function buildHotbar(game) {
     btn.className = "hot";
     btn.dataset.type = def.id;
     btn.title = `${def.name}: ${def.desc}`;
-    btn.innerHTML = `<span class="ico">${def.icon}</span><small>${def.name}</small>`;
+    btn.innerHTML = `${factoryImg(def.id, "hot-logo")}<small>${def.name}</small>`;
     btn.addEventListener("click", () => {
       game.build.type = def.id;
       game.pasteMode = false;
@@ -258,7 +259,7 @@ function renderOrdersMini(game) {
       const tag = o.crisis ? "crisis" : o.eu ? "ue" : o.kind === "city" ? "ciudad" : "";
       return `<div class="order-row ${o.status}">
         <span>${labelOf(o)} ${tag ? `<small class="chip">${tag}</small>` : ""}</span>
-        <span>${have}/${o.amount} ${item?.name ?? o.itemId}</span>
+        <span class="with-logo">${logoImg(o.itemId, "logo sm")} ${have}/${o.amount} ${item?.name ?? o.itemId}</span>
         <span class="muted">${left}s · ${o.status === "offer" ? "oferta" : "aceptado"}</span>
         ${orderActions(o, have)}
       </div>`;
@@ -282,8 +283,8 @@ function renderOrdersFull(game) {
       const have = availableCount(game, o.itemId);
       return `<div class="order-card ${o.status}">
         <h3>${labelOf(o)} · ${c?.region || (o.kind === "city" ? "España" : o.kind)}</h3>
-        <p>${o.amount}× <b>${item?.name}</b> ${feat ? `— ${feat.why}` : ""} ${o.note && o.note !== feat?.why ? `· ${o.note}` : ""}</p>
-        <p>Tienes ${have} (inventario + puerto). Recompensa: ${o.rewardN} ${getItem(o.rewardSci)?.name} · +${o.rep} rep · ${o.status}</p>
+        <p class="with-logo">${logoImg(o.itemId)} ${o.amount}× <b>${item?.name}</b> ${feat ? `— ${feat.why}` : ""} ${o.note && o.note !== feat?.why ? `· ${o.note}` : ""}</p>
+        <p class="with-logo">Tienes ${have} (inventario + puerto). Recompensa: ${logoImg(o.rewardSci, "logo xs")} ${o.rewardN} ${getItem(o.rewardSci)?.name} · +${o.rep} rep · ${o.status}</p>
         ${orderActions(o, have)}
       </div>`;
     })
@@ -309,10 +310,10 @@ function renderPin(game) {
       const have = game.inventory[i.id] ?? 0;
       const name = getItem(i.id)?.name ?? i.id;
       const ok = have >= i.n;
-      return `<div class="inv-row ${ok ? "" : "missing"}"><span>${name}</span><b>${have}/${i.n}</b></div>`;
+      return `<div class="inv-row ${ok ? "" : "missing"}"><span class="with-logo">${logoImg(i.id, "logo sm")}${name}</span><b>${have}/${i.n}</b></div>`;
     })
     .join("");
-  body.innerHTML = `<p><b>${item.name}</b></p>${rows}<button id="unpin">Quitar</button>`;
+  body.innerHTML = `<p class="with-logo">${logoImg(item.id)} <b>${item.name}</b></p>${rows}<button id="unpin">Quitar</button>`;
   const unpin = document.getElementById("unpin");
   if (unpin) unpin.onclick = () => {
     game.pinned = null;
@@ -408,8 +409,7 @@ function renderInventory(game) {
   document.getElementById("inventory-body").innerHTML = entries
     .map(([id, n]) => {
       const item = getItem(id);
-      const logo = item?.symbol ? `<span class="el-mini" style="color:${item.color}">${item.symbol}</span>` : `<i class="swatch" style="background:${item?.color || "#888"}"></i>`;
-      return `<div class="inv-row"><span>${logo}${item?.name ?? id}</span><b>${n}</b></div>`;
+      return `<div class="inv-row"><span class="with-logo">${logoImg(id, "logo sm")}${item?.name ?? id}</span><b>${n}</b></div>`;
     })
     .join("");
 }
@@ -431,7 +431,7 @@ function renderInspect(game) {
   }
   uiState.inspectKey = key;
   if (!sel) {
-    body.innerHTML = `<p class="muted">Edificio: <b>${BUILDINGS[game.build.type].name}</b>. ${game.pasteMode ? "Pegando plano." : "Arrastra cintas. R rota."}</p>`;
+    body.innerHTML = `<p class="with-logo muted">${factoryImg(game.build.type)} Edificio: <b>${BUILDINGS[game.build.type].name}</b>. ${game.pasteMode ? "Pegando plano." : "Arrastra cintas. R rota."}</p>`;
     return;
   }
   if (sel.kind === "tile") {
@@ -439,7 +439,7 @@ function renderInspect(game) {
     const el = tile.deposit ? ELEMENT_BY_SYMBOL[tile.deposit] : null;
     body.innerHTML = `
       <p><b>${tile.terrain}</b> (${sel.x},${sel.y})</p>
-      <p>${el ? `Yacimiento: <b>${el.name} (${el.symbol})</b> · Z=${el.z}` : "Sin yacimiento."}</p>
+      <p class="with-logo">${el ? `${logoImg(`el-${el.symbol.toLowerCase()}`)} Yacimiento: <b>${el.name} (${el.symbol})</b> · Z=${el.z}` : "Sin yacimiento."}</p>
       <p class="muted">${el ? CATEGORIES[el.category].name : ""}</p>`;
     return;
   }
@@ -447,34 +447,46 @@ function renderInspect(game) {
   const def = BUILDINGS[b.type];
   const rec = b.recipe ? recipeById(b.recipe) : null;
   const options = recOptions(game, b);
+  const cost = Object.entries(def.cost || {})
+    .map(([id, n]) => `${logoImg(id, "logo xs")}${n} ${getItem(id)?.name ?? id}`)
+    .join(" ");
   body.innerHTML = `
-    <p><b>${def.name}</b></p>
+    <p class="with-logo">${factoryImg(b.type)}<b>${def.name}</b></p>
     <p>${def.desc}</p>
+    ${cost ? `<p class="with-logo muted">Coste: ${cost}</p>` : ""}
     <div id="inspect-live">
     <div class="progress"><span style="width:${Math.round((b.progress || 0) * 100)}%"></span></div>
     <p>Entrada: ${fmtBuf(b.input)}<br>Salida: ${fmtBuf(b.output)}</p>
     </div>
-    <label>Receta
-      <select id="recipe-select">${options
-        .map((r) => `<option value="${r.id}" ${r.id === b.recipe ? "selected" : ""}>${r.name}</option>`)
-        .join("")}</select>
-    </label>
-    ${rec ? `<p class="muted">${recipeText(rec)}</p>` : ""}
-    ${b.type === "filter" ? `<label>Dejar pasar
-      <select id="filter-select"><option value="">todo</option>${filterOptions(game, b)}</select>
-    </label>` : ""}
+    <p class="muted">Receta</p>
+    <div class="recipe-picker" id="recipe-select">${options
+      .map((r) => {
+        const out = r.output?.id;
+        return `<button type="button" class="recipe-opt ${r.id === b.recipe ? "on" : ""}" data-recipe="${r.id}">
+          ${out ? logoImg(out, "logo sm") : factoryImg(b.type, "logo sm")}
+          <span>${r.name}</span>
+        </button>`;
+      })
+      .join("")}</div>
+    ${rec ? `<p class="muted recipe-preview">${recipeText(rec)}</p>` : ""}
+    ${b.type === "filter" ? `<p class="muted">Dejar pasar</p><div class="filter-picker" id="filter-select">
+      <button type="button" class="recipe-opt ${b.filterId ? "" : "on"}" data-filter="">todo</button>
+      ${filterChips(game, b)}
+    </div>` : ""}
     ${rec ? `<button id="pin-recipe">Fijar receta</button>` : ""}
     <button id="feed-building">Meter del inventario</button>
   `;
-  const select = document.getElementById("recipe-select");
-  if (select) select.onchange = () => {
-    b.recipe = select.value || null;
-    b.progress = 0;
-  };
-  const filterSel = document.getElementById("filter-select");
-  if (filterSel) filterSel.onchange = () => {
-    b.filterId = filterSel.value || null;
-  };
+  body.querySelectorAll("[data-recipe]").forEach((btn) => {
+    btn.onclick = () => {
+      b.recipe = btn.dataset.recipe || null;
+      b.progress = 0;
+    };
+  });
+  body.querySelectorAll("[data-filter]").forEach((btn) => {
+    btn.onclick = () => {
+      b.filterId = btn.dataset.filter || null;
+    };
+  });
   const pin = document.getElementById("pin-recipe");
   if (pin) pin.onclick = () => {
     game.pinned = rec.output?.id || b.recipe;
@@ -484,13 +496,13 @@ function renderInspect(game) {
   if (feed) feed.onclick = () => feedBuilding(game, b);
 }
 
-function filterOptions(game, b) {
+function filterChips(game, b) {
   const ids = new Set([...Object.keys(game.inventory), b.filterId].filter(Boolean));
   return [...ids]
     .map((id) => {
       const item = getItem(id);
       if (!item) return "";
-      return `<option value="${id}" ${b.filterId === id ? "selected" : ""}>${item.name}</option>`;
+      return `<button type="button" class="recipe-opt ${b.filterId === id ? "on" : ""}" data-filter="${id}">${logoImg(id, "logo sm")}${item.name}</button>`;
     })
     .join("");
 }
@@ -528,13 +540,14 @@ function recOptions(game, b) {
 function fmtBuf(buf) {
   const e = Object.entries(buf || {}).filter(([, n]) => n > 0);
   if (!e.length) return "—";
-  return e.map(([id, n]) => `${n} ${getItem(id)?.name ?? id}`).join(", ");
+  return e.map(([id, n]) => `${logoImg(id, "logo xs")}${n} ${getItem(id)?.name ?? id}`).join(" ");
 }
 
 function recipeText(r) {
-  const ins = r.inputs.map((i) => `${i.n}× ${getItem(i.id)?.name ?? i.id}`).join(" + ") || "yacimiento";
-  const out = r.output?.n ? `${r.output.n}× ${getItem(r.output.id)?.name}` : "ciencia";
-  return `${ins} → ${out}  (${r.time}s)`;
+  const machine = r.building ? factoryImg(r.building, "logo xs") : "";
+  const ins = r.inputs.map((i) => `${logoImg(i.id, "logo xs")}${i.n}× ${getItem(i.id)?.name ?? i.id}`).join(" + ") || "yacimiento";
+  const out = r.output?.n ? `${logoImg(r.output.id, "logo xs")}${r.output.n}× ${getItem(r.output.id)?.name}` : "ciencia";
+  return `${machine}${ins} → ${out}  (${r.time}s)`;
 }
 
 function researchGate(el) {
@@ -579,10 +592,10 @@ function renderPeriodic(game) {
   const here = findDeposit(game, el.symbol);
   const derived = [...ITEM_BY_ID.values()].filter((i) => i.kind === "named" && i.elements.includes(el.symbol)).slice(0, 10);
   document.getElementById("periodic-detail").innerHTML = `
-    <h3>${el.name} · ${el.symbol} · Z=${el.z}</h3>
+    <h3 class="with-logo">${logoImg(`el-${el.symbol.toLowerCase()}`, "logo lg")}${el.name} · ${el.symbol} · Z=${el.z}</h3>
     <p>${CATEGORIES[el.category].name} · ${isEarthNatural(el) ? "natural en la Tierra" : "sintético / laboratorio"}</p>
     <p>${here ? `Yacimiento en (${here.x},${here.y}) — clic en la celda para ir.` : "No hay yacimiento. Se obtiene por síntesis."}</p>
-    <p>${derived.map((i) => `<span class="chip">${i.name}</span>`).join(" ")}</p>
+    <p>${derived.map((i) => `<span class="chip with-logo">${logoImg(i.id, "logo xs")}${i.name}</span>`).join(" ")}</p>
   `;
 }
 
@@ -593,9 +606,9 @@ function renderResearch(game) {
   if (game.researching) {
     const node = RESEARCH_BY_ID[game.researching.id];
     const parts = Object.entries(node.cost)
-      .map(([id, n]) => `${game.scienceBuffer[id] ?? 0}/${n} ${getItem(id)?.name ?? id}`)
+      .map(([id, n]) => `${logoImg(id, "logo xs")}${game.scienceBuffer[id] ?? 0}/${n} ${getItem(id)?.name ?? id}`)
       .join(" · ");
-    prog.textContent = `En curso: ${node.name} (${parts}).`;
+    prog.innerHTML = `En curso: ${node.name} (${parts}).`;
   } else {
     prog.textContent = "Elige una tarjeta. Los laboratorios comen ciencia.";
   }
@@ -605,7 +618,7 @@ function renderResearch(game) {
         const done = isResearched(game, r.id);
         const avail = canResearch(game, r);
         const busy = game.researching?.id === r.id;
-        const cost = Object.entries(r.cost).map(([id, n]) => `${n} ${getItem(id)?.name ?? id}`).join(", ") || "gratis";
+        const cost = Object.entries(r.cost).map(([id, n]) => `${logoImg(id, "logo xs")}${n} ${getItem(id)?.name ?? id}`).join(" ") || "gratis";
         return `<button class="node ${done ? "done" : busy ? "busy" : avail ? "available" : ""}" data-tech="${r.id}">
           <b>${r.name}</b><div class="muted">${r.desc}</div><div>${cost}</div>
         </button>`;
@@ -627,7 +640,7 @@ function renderPedia(game) {
     hits = searchItems(uiState.pediaQuery, 80);
   }
   list.innerHTML = hits
-    .map((item) => `<button class="list-row" data-item="${item.id}"><span>${item.name}</span><span class="muted">${item.kind}</span></button>`)
+    .map((item) => `<button class="list-row" data-item="${item.id}"><span class="with-logo">${logoImg(item.id, "logo sm")}${item.name}</span><span class="muted">${item.kind}</span></button>`)
     .join("");
   list.querySelectorAll("[data-item]").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -645,9 +658,9 @@ function renderPedia(game) {
   const recs = item.recipes ?? [];
   const chain = buildChain(item.id);
   detail.innerHTML = `
-    <h3>${item.name}</h3>
+    <h3 class="with-logo">${logoImg(item.id, "logo lg")}${item.name}</h3>
     <p>${feat?.blurb || item.desc || ""}</p>
-    <p>${(item.elements || []).map((s) => `<span class="chip">${s}</span>`).join("")}</p>
+    <p>${(item.elements || []).map((s) => `<span class="chip with-logo">${logoImg(`el-${s.toLowerCase()}`, "logo xs")}${s}</span>`).join("")}</p>
     ${recs
       .map((r) => {
         const can = !r.research || isResearched(game, r.research);
@@ -683,7 +696,7 @@ function renderStats(game) {
         .map(([id, n]) => {
           const item = getItem(id);
           const w = Math.round((n / max) * 100);
-          return `<div class="stat-bar"><span>${item?.name ?? id}</span>
+          return `<div class="stat-bar"><span class="with-logo">${logoImg(id, "logo sm")}${item?.name ?? id}</span>
             <div class="progress"><span style="width:${w}%"></span></div>
             <b>${n}/min</b></div>`;
         })
