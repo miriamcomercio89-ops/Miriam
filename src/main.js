@@ -156,6 +156,8 @@ canvas.addEventListener("pointerdown", (e) => {
     if (def.research && !isResearched(game, def.research)) return;
     const ok = placeTracked(game, game.build.type, pos.x, pos.y, game.build.dir);
     if (ok) {
+      const placed = buildingAt(game, pos.x, pos.y);
+      if (placed) game.selected = { kind: "building", building: placed, x: pos.x, y: pos.y };
       sfx("place");
       pulseAmbient(Object.keys(game.researched).length);
     } else {
@@ -323,7 +325,7 @@ function frame(now) {
   drawMinimap(miniCtx, game, mini.width, mini.height);
 
   uiAcc += dt;
-  if (uiAcc > 200) {
+  if (uiAcc > 120) {
     renderUI(game);
     uiAcc = 0;
   }
