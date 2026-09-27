@@ -242,8 +242,9 @@ export function renderUI(game) {
   document.getElementById("btn-color").classList.toggle("active", game.colorblind);
   document.getElementById("btn-mute").textContent = isMuted() || game.muted ? "Silencio" : "Sonido";
 
-  document.querySelectorAll(".hot").forEach((btn) => {
+  document.querySelectorAll(".hot[data-type]").forEach((btn) => {
     const def = BUILDINGS[btn.dataset.type];
+    if (!def) return;
     btn.classList.toggle("selected", game.build.type === def.id && !game.pasteMode);
     btn.classList.toggle("locked", def.research && !isResearched(game, def.research));
   });
@@ -779,7 +780,7 @@ function renderSpain(game) {
   const byCity = Object.fromEntries(live.map((o) => [o.cityId, o]));
   box.innerHTML = `
     <svg class="iberia-svg" viewBox="0 0 100 100" aria-hidden="true">
-      <path d="M18 16 L32 10 L46 12 L58 16 L70 14 L78 22 L84 34 L82 48 L76 62 L68 74 L58 84 L46 88 L34 84 L24 74 L16 62 L12 48 L10 36 L14 24 Z" />
+      <path d="M14 22 L20 12 L30 8 L42 10 L54 8 L66 12 L78 14 L86 22 L88 34 L84 46 L80 56 L82 66 L74 76 L62 84 L50 88 L40 84 L32 76 L26 80 L20 72 L16 60 L10 50 L8 38 L10 28 Z" />
     </svg>
     ${SPAIN_CITIES.map((c) => {
       const o = byCity[c.id];
