@@ -30,7 +30,7 @@ export function spawnOrder(state) {
     rewardSci: pick.research === "start" ? "sci-mining" : sciFor(pick.research),
     rewardN: Math.max(1, Math.round(amount / 8)),
     rep: pick.research === "start" ? 3 : 5,
-    deadline: state.tick + 1800 + Math.floor(Math.random() * 900),
+    deadline: state.tick + 9000 + Math.floor(Math.random() * 4000),
     status: "open",
     note: feat?.why || item?.name || pick.id,
   };

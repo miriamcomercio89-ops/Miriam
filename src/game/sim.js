@@ -75,7 +75,7 @@ export function collectAlerts(state) {
     }
   }
   for (const o of state.orders || []) {
-    if (o.status === "open" && o.deadline - state.tick < 400) {
+    if (o.status === "open" && o.deadline - state.tick < 1200) {
       const item = getItem(o.itemId);
       alerts.push({ level: "urgent", text: `Pedido urgente de ${o.country}: ${item?.name}` });
     }
