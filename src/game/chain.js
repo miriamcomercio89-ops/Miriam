@@ -1,4 +1,5 @@
 import { getItem } from "../data/catalog.js";
+import { logoImg } from "../render/logos.js";
 
 const RAW = new Set(["element", "ore", "fluid"]);
 
@@ -31,7 +32,7 @@ export function chainToHtml(node, depth = 0) {
     .map((x) => `<div class="chain-branch">${x.n}× ${chainToHtml(x.node, depth + 1)}</div>`)
     .join("");
   return `<div class="chain-node" style="margin-left:${depth * 8}px">
-    <div><b>${name}</b> <span class="muted">${mark}</span></div>
+    <div class="with-logo">${logoImg(node.item.id, "logo xs")}<b>${name}</b> <span class="muted">${mark}</span></div>
     ${kids}
   </div>`;
 }

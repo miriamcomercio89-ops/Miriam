@@ -219,6 +219,49 @@ button.active {
   font-size: 22px;
 }
 
+.hot-logo,
+.logo {
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  object-fit: contain;
+  flex: 0 0 auto;
+  image-rendering: auto;
+  background: #0b1220;
+}
+
+.logo.sm,
+.logo.xs {
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+}
+
+.logo.lg {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+}
+
+.hot-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+}
+
+.with-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.list-row .with-logo,
+.inv-row .with-logo,
+.stat-bar .with-logo {
+  display: flex;
+  min-width: 0;
+}
+
 .hot small {
   font-size: 10px;
   color: var(--muted);
