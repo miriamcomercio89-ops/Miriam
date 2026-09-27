@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Periodica — España, fábricas de la Tierra</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect rx='8' width='32' height='32' fill='%235eead4'/%3E%3Ctext x='16' y='22' text-anchor='middle' font-size='16' font-family='sans-serif' fill='%23071014'%3EP%3C/text%3E%3C/svg%3E"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <canvas id="world"></canvas>
+      <canvas id="minimap" width="168" height="168" title="Clic para saltar"></canvas>
+
+      <header class="topbar">
+        <div class="brand">
+          <span class="brand-mark">ES</span>
+          <div>
+            <strong>Periodica</strong>
+            <small>España · fábrica de la Tierra</small>
+          </div>
+        </div>
+        <div class="stats">
+          <div class="stat" id="stat-power" title="Energía"><span>⚡</span><b>—</b></div>
+          <div class="stat" id="stat-rep" title="Reputación mundial"><span>🇪🇸</span><b>—</b></div>
+          <div class="stat" id="stat-eu" title="Reputación UE"><span>🇪🇺</span><b>—</b></div>
+          <div class="stat" id="stat-rank" title="Ranking mundial"><span>🏆</span><b>—</b></div>
+          <div class="stat" id="stat-pollution" title="Contaminación"><span>☁️</span><b>—</b></div>
+          <div class="stat" id="stat-orders" title="Pedidos"><span>📦</span><b>—</b></div>
+          <div class="stat" id="stat-tech" title="Investigaciones"><span>🔬</span><b>—</b></div>
+          <div class="stat" id="stat-time"><span>⏱</span><b>—</b></div>
+        </div>
+        <div class="top-actions">
+          <button data-modal="periodic" title="Tabla (P)">Tabla</button>
+          <button data-modal="research" title="Ciencia (T)">Ciencia</button>
+          <button data-modal="pedia" title="Recetas (E)">Recetas</button>
+          <button data-modal="orders" title="Pedidos (O)">Pedidos</button>
+          <button data-modal="rank" title="Ranking (K)">Ranking</button>
+          <button data-modal="saves" title="Partidas (L)">Partidas</button>
+          <button data-modal="stats" title="Producción (G)">Stats</button>
+          <button data-modal="help" title="Ayuda (H)">Ayuda</button>
+          <button id="btn-pause">Pausa</button>
+          <button id="btn-speed">x1</button>
+          <button id="btn-color">Daltonismo</button>
+          <button id="btn-mute">Sonido</button>
+          <button id="btn-save">Guardar</button>
+          <button id="btn-new">Nueva</button>
+        </div>
+      </header>
+
+      <aside class="left-dock">
+        <div class="panel" id="pin-hud">
+          <h3>Receta fijada</h3>
+          <div id="pin-body" class="muted">En Recetas, pulsa Fijar.</div>
+        </div>
+        <div class="panel" id="orders-mini">
+          <h3>Pedidos al mundo</h3>
+          <div id="orders-body"></div>
+        </div>
+        <div class="panel" id="news-panel">
+          <h3>Titulares</h3>
+          <div id="news-body" class="muted">El cable está en silencio.</div>
+        </div>
+        <div class="panel" id="alerts-panel">
+          <h3>Alertas</h3>
+          <div id="alerts-body" class="muted">Sin avisos.</div>
+        </div>
+        <div class="panel messages" id="messages"></div>
+      </aside>
+
+      <aside class="right-dock">
+        <div class="panel" id="inspect">
+          <h3>Selección</h3>
+          <div id="inspect-body" class="muted">Haz clic en un edificio o yacimiento.</div>
+        </div>
+        <div class="panel" id="inventory-panel">
+          <h3>Inventario</h3>
+          <div id="inventory-body"></div>
+        </div>
+      </aside>
+
+      <nav class="hotbar" id="hotbar"></nav>
+      <footer class="shortcuts">
+        Arrastra cintas · Shift+arrastrar selecciona · Ctrl+C/V copiar/pegar · Ctrl+Z deshacer · R rota ·
+        P tabla · O pedidos · K ranking · L partidas · G stats
+      </footer>
+
+      <div id="tooltip" hidden></div>
+
+      <div class="modal" id="modal-periodic" hidden>
+        <div class="modal-card wide">
+          <header>
+            <h2>Tabla periódica · tablero de la Tierra</h2>
+            <button class="close" data-close>×</button>
+          </header>
+          <p class="lead">
+            Clic en un elemento: la cámara salta a su yacimiento. Completar un grupo (en la Tierra)
+            da reputación. Los sintéticos (Tc, Pm, Z&gt;92) se fabrican, no se minan.
+          </p>
+          <div id="group-progress" class="group-progress"></div>
+          <div id="periodic-grid" class="periodic"></div>
+          <div id="periodic-detail" class="detail"></div>
+        </div>
+      </div>
+
+      <div class="modal" id="modal-research" hidden>
+        <div class="modal-card wide">
+          <header>
+            <h2>Árbol de investigación</h2>
+            <button class="close" data-close>×</button>
+          </header>
+          <div id="research-progress" class="lead"></div>
+          <div id="research-tree" class="research-tree"></div>
+        </div>
+      </div>
+
+      <div class="modal" id="modal-pedia" hidden>
+        <div class="modal-card wide">
+          <header>
+            <h2>Enciclopedia</h2>
+            <button class="close" data-close>×</button>
+          </header>
+          <div class="tabs">
+            <button data-pedia-tab="featured" class="active">Destacados</button>
+            <button data-pedia-tab="all">Todos</button>
+          </div>
+          <input id="pedia-search" type="search" placeholder="Busca acero, amoníaco, Japón, Fe…" />
+          <div class="pedia-layout">
+            <div id="pedia-list"></div>
+            <div id="pedia-detail" class="detail"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal" id="modal-orders" hidden>
+        <div class="modal-card wide">
+          <header>
+            <h2>Pedidos internacionales · tú eres España</h2>
+            <button class="close" data-close>×</button>
+          </header>
+          <p class="lead" id="orders-lead"></p>
+          <div id="orders-full"></div>
+        </div>
+      </div>
+
+      <div class="modal" id="modal-rank" hidden>
+        <div class="modal-card">
+          <header>
+            <h2>Ranking industrial mundial</h2>
+            <button class="close" data-close>×</button>
+          </header>
+          <p class="lead" id="rank-lead"></p>
+          <div id="rank-body"></div>
+        </div>
+      </div>
+
+      <div class="modal" id="modal-saves" hidden>
+        <div class="modal-card">
+          <header>
+            <h2>Partidas guardadas</h2>
+            <button class="close" data-close>×</button>
+          </header>
+          <p class="lead">Tres ranuras más el autoguardado. Guardar escribe en la ranura activa.</p>
+          <div id="saves-body"></div>
+        </div>
+      </div>
+
+      <div class="modal" id="modal-stats" hidden>
+        <div class="modal-card">
+          <header>
+            <h2>Producción por minuto</h2>
+            <button class="close" data-close>×</button>
+          </header>
+          <div id="stats-body"></div>
+        </div>
+      </div>
+
+      <div class="modal" id="modal-help" hidden>
+        <div class="modal-card">
+          <header>
+            <h2>Cómo se juega</h2>
+            <button class="close" data-close>×</button>
+          </header>
+          <div class="help-copy">
+            <p>
+              Eres <b>España</b>. Fabricas en la Tierra y el resto de países te envían pedidos. Extrae
+              elementos, monta cadenas y despacha el inventario.
+            </p>
+            <ul>
+              <li><b>Arrastrar</b> con la cinta seleccionada traza una línea.</li>
+              <li><b>Shift + arrastrar</b> selecciona. <b>Ctrl+C / Ctrl+V</b> copia y pega. <b>Ctrl+Z</b> deshace.</li>
+              <li><b>Tabla (P)</b> — clic en Fe, C, Cu… y saltas al yacimiento.</li>
+              <li><b>Recetas (E)</b> — destacados con historia + árbol “desde cero”.</li>
+              <li><b>Pedidos (O)</b> — acepta, rechaza o negocia. El puerto despacha solo.</li>
+              <li><b>Divisor / filtro / subterránea</b> — logística avanzada (ciencia Logística avanzada).</li>
+              <li><b>Puerto</b> — aduana: las cintas que llegan cumplen pedidos.</li>
+              <li><b>Fijar receta</b> — en Recetas, deja a la vista lo que te falta.</li>
+              <li><b>Rojo</b> — máquina atascada (falta entrada o la salida está llena).</li>
+              <li><b>Daltonismo</b> — formas además de color en los logos de elementos.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
