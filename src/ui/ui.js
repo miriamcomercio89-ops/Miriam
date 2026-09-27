@@ -723,7 +723,8 @@ function renderPedia(game) {
       renderPedia(game);
     });
   });
-  const item = getItem(uiState.pediaSel) ?? hits[0];
+  const item = hits.find((h) => h.id === uiState.pediaSel) ?? hits[0];
+  if (item) uiState.pediaSel = item.id;
   const detail = document.getElementById("pedia-detail");
   if (!item) {
     detail.innerHTML = "";
