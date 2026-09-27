@@ -111,10 +111,7 @@ function computePower(state) {
     const def = BUILDINGS[b.type];
     if (!def) continue;
     if (def.generator) {
-      if (b.type === "solar") {
-        produced += -def.power;
-        b.powered = true;
-      } else if (def.fuel) {
+      if (def.fuel) {
         if ((b.fuel ?? 0) > 0) {
           b.fuel -= 1 / (TPS * 8);
           produced += -def.power;
@@ -127,6 +124,9 @@ function computePower(state) {
         } else {
           b.powered = false;
         }
+      } else {
+        produced += -def.power;
+        b.powered = true;
       }
     } else if (def.power > 0) {
       demand += def.power;

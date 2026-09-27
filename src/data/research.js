@@ -156,7 +156,13 @@ export const RESEARCH_BY_ID = Object.fromEntries(RESEARCH.map((r) => [r.id, r]))
 
 export function isResearched(state, id) {
   if (id === "start") return true;
-  return Boolean(state.researched[id]);
+  if (state?.mode === "sandbox") return true;
+  return Boolean(state?.researched?.[id]);
+}
+
+export function unlockAllResearch(state) {
+  state.researched = Object.fromEntries(RESEARCH.map((r) => [r.id, true]));
+  state.researching = null;
 }
 
 export function canResearch(state, node) {

@@ -1,7 +1,7 @@
 import { BUILDINGS, isExtractorKind, isPumpKind } from "./data/buildings.js";
 import { ELEMENT_BY_SYMBOL, researchForElement } from "./data/elements.js";
 import { isResearched } from "./data/research.js";
-import { createGame, deserialize, serialize, buildingAt, canAffordBuilding } from "./game/state.js";
+import { createGame, deserialize, serialize, buildingAt, canAffordBuilding, adoptGame } from "./game/state.js";
 import { inMap } from "./game/worldgen.js";
 import { TICK_MS, tick } from "./game/sim.js";
 import { placeTracked, removeTracked, undoLast, bresenham, dirFromDelta, pushUndo } from "./game/history.js";
@@ -10,6 +10,7 @@ import { bindUI, renderUI, closeModals, isModalOpen, openModal } from "./ui/ui.j
 import { sfx, setMuted, pulseAmbient } from "./audio/sound.js";
 import { placeBuilding } from "./game/sim.js";
 import { resolveSaveKey, writeSave } from "./game/saves.js";
+import { bindMenu, showMainMenu, hideMainMenu, isMenuOpen } from "./ui/menu.js";
 
 const canvas = document.getElementById("world");
 const ctx = canvas.getContext("2d");
@@ -17,15 +18,41 @@ const mini = document.getElementById("minimap");
 const miniCtx = mini.getContext("2d");
 
 export const SAVE_KEY = resolveSaveKey();
-const saved = localStorage.getItem(SAVE_KEY);
-const game = saved ? safeLoad(saved) : createGame(118);
+const game = createGame(118);
+game.paused = true;
+game.menu = true;
 
-function safeLoad(json) {
+function safeLoad(json, mode) {
   try {
     return deserialize(json);
   } catch {
-    return createGame(118);
+    return createGame(118, { mode });
   }
+}
+
+function beginGame(next) {
+  adoptGame(game, next);
+  game.menu = false;
+  game.paused = false;
+  hideMainMenu();
+  renderUI(game);
+}
+
+function openMenu() {
+  game.menu = true;
+  game.paused = true;
+  closeModals();
+  showMainMenu();
+}
+
+function startMode(mode) {
+  beginGame(createGame(118, { mode }));
+}
+
+function continueSave() {
+  const key = resolveSaveKey();
+  const raw = localStorage.getItem(key);
+  beginGame(raw ? safeLoad(raw) : createGame(118));
 }
 
 const keys = new Set();
@@ -51,15 +78,25 @@ function resize() {
 resize();
 addEventListener("resize", resize);
 
-bindUI(game, { saveKey: SAVE_KEY });
+bindUI(game, { saveKey: SAVE_KEY, onMenu: openMenu });
+bindMenu({
+  continueGame: continueSave,
+  newGame: startMode,
+});
+showMainMenu();
 
 addEventListener("keydown", (e) => {
   if (["INPUT", "SELECT", "TEXTAREA"].includes(e.target.tagName)) return;
+  if (isMenuOpen()) {
+    if (e.key === "Escape") e.preventDefault();
+    return;
+  }
   keys.add(e.key.toLowerCase());
   if (e.key === "Escape") {
     game.pasteMode = false;
     game.selection = [];
-    closeModals();
+    if (isModalOpen()) closeModals();
+    else openMenu();
   }
   if (e.key === " ") {
     e.preventDefault();
@@ -123,6 +160,7 @@ canvas.addEventListener("pointermove", (e) => {
 });
 
 canvas.addEventListener("pointerdown", (e) => {
+  if (isMenuOpen()) return;
   mouse.lastX = mouse.x;
   mouse.lastY = mouse.y;
   if (e.button === 1) {
@@ -228,7 +266,7 @@ function logicalCanvas() {
 }
 
 function ghost() {
-  if (isModalOpen() || game.pasteMode || !inMap(hover.x, hover.y)) return null;
+  if (isMenuOpen() || isModalOpen() || game.pasteMode || !inMap(hover.x, hover.y)) return null;
   const def = BUILDINGS[game.build.type];
   const tile = game.world.tiles[hover.y]?.[hover.x];
   let valid = !buildingAt(game, hover.x, hover.y) && canAffordBuilding(game, game.build.type);
@@ -312,9 +350,11 @@ function frame(now) {
 
   acc += dt;
   while (acc >= TICK_MS) {
-    tick(game);
-    if (game.tick > 0 && game.tick % 600 === 0) {
-      writeSave(SAVE_KEY, serialize(game));
+    if (!game.menu) {
+      tick(game);
+      if (game.tick > 0 && game.tick % 600 === 0) {
+        writeSave(SAVE_KEY, serialize(game));
+      }
     }
     acc -= TICK_MS;
   }

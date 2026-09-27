@@ -1,14 +1,18 @@
 import { createWorld, tileKey } from "./worldgen.js";
 import { BUILDINGS } from "../data/buildings.js";
+import { unlockAllResearch } from "../data/research.js";
 
-export function createGame(seed = 118) {
+export function createGame(seed = 118, opts = {}) {
+  const mode = opts.mode === "sandbox" ? "sandbox" : "normal";
   const world = createWorld(seed);
-  return {
-    version: 4,
+  const state = {
+    version: 5,
+    mode,
     seed,
     tick: 0,
     speed: 1,
     paused: false,
+    menu: false,
     world,
     buildings: {},
     beltItems: [],
@@ -57,6 +61,64 @@ export function createGame(seed = 118) {
     headlines: [],
     crisesSolved: 0,
   };
+  if (mode === "sandbox") applySandbox(state);
+  return state;
+}
+
+export function applySandbox(state) {
+  state.mode = "sandbox";
+  unlockAllResearch(state);
+  const stock = sandboxStock();
+  for (const [id, n] of Object.entries(stock)) {
+    state.inventory[id] = Math.max(state.inventory[id] ?? 0, n);
+  }
+  state.messages = [
+    { t: state.tick ?? 0, text: "Sandbox · todo desbloqueado. Miles de productos y todas las fábricas listos." },
+  ];
+}
+
+export function sandboxStock() {
+  const stock = {
+    "plate-fe": 400,
+    "plate-cu": 200,
+    "plate-al": 120,
+    "wire-cu": 200,
+    "el-c": 200,
+    "gear-basic": 120,
+    "glass-silica": 120,
+    "brick-fire": 80,
+    brick: 40,
+    steel: 200,
+    stainless: 80,
+    concrete: 80,
+    "pipe-basic": 80,
+    "motor-basic": 40,
+    "circuit-basic": 40,
+    "circuit-advanced": 20,
+    "silicon-wafer": 20,
+    nylon: 20,
+    "can-al": 20,
+    paper: 20,
+    "magnet-nd": 12,
+    "wind-blade": 8,
+    beam: 20,
+    duralumin: 20,
+    "ore-fe": 80,
+    "ore-cu": 80,
+    "ore-si": 80,
+    water: 80,
+  };
+  for (const def of Object.values(BUILDINGS)) {
+    for (const [id, n] of Object.entries(def.cost || {})) {
+      stock[id] = Math.max(stock[id] ?? 0, n * 40);
+    }
+  }
+  return stock;
+}
+
+export function adoptGame(target, next) {
+  for (const key of Object.keys(target)) delete target[key];
+  Object.assign(target, next);
 }
 
 export function addInventory(state, id, n) {
@@ -87,6 +149,7 @@ export function countBuilding(state, type) {
 export function serialize(state) {
   return JSON.stringify({
     version: state.version,
+    mode: state.mode || "normal",
     seed: state.seed,
     tick: state.tick,
     speed: state.speed,
@@ -124,6 +187,8 @@ export function deserialize(json) {
   return {
     ...fresh,
     ...data,
+    mode: data.mode === "sandbox" ? "sandbox" : "normal",
+    menu: false,
     messages: [{ t: data.tick ?? 0, text: "Partida cargada." }],
     selected: null,
     hover: null,

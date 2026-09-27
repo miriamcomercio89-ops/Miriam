@@ -56,9 +56,10 @@ export function bindUI(game, opts = {}) {
     game.messages.unshift({ t: game.tick, text: `Partida guardada (${uiState.saveKey.includes("slot") ? "ranura" : "auto"}).` });
   });
   $("btn-new").addEventListener("click", () => {
-    clearSave(uiState.saveKey);
-    location.reload();
+    opts.onMenu?.();
   });
+  const menuBtn = $("btn-menu");
+  if (menuBtn) menuBtn.addEventListener("click", () => opts.onMenu?.());
   $("btn-color").addEventListener("click", () => {
     game.colorblind = !game.colorblind;
     document.body.classList.toggle("colorblind", game.colorblind);
@@ -147,7 +148,7 @@ function buildHotbar(game) {
 function renderHotbar(game, force = false) {
   const bar = document.getElementById("hotbar");
   if (!bar) return;
-  const key = `${uiState.hotTab}:${Object.keys(game.researched).sort().join(",")}:${game.build.type}`;
+  const key = `${uiState.hotTab}:${game.mode}:${Object.keys(game.researched).sort().join(",")}:${game.build.type}`;
   if (!force && key === uiState.hotKey) return;
   uiState.hotKey = key;
   const tabs = BUILDING_TABS.map(
@@ -235,8 +236,12 @@ export function renderUI(game) {
   setStat("stat-rank", `#${rank.rank}`);
   setStat("stat-pollution", `${game.pollution ?? 0}`);
   setStat("stat-orders", `${(game.orders || []).filter((o) => o.status === "open" || o.status === "offer").length} pedidos`);
-  setStat("stat-tech", `${Object.keys(game.researched).length}/${RESEARCH.length}`);
+  setStat("stat-tech", game.mode === "sandbox" ? "Sandbox" : `${Object.keys(game.researched).length}/${RESEARCH.length}`);
   setStat("stat-time", `t ${game.tick} · x${game.speed}${game.paused ? " · pausa" : ""}`);
+  const badge = document.getElementById("mode-badge");
+  if (badge) badge.hidden = game.mode !== "sandbox";
+  const brand = document.getElementById("brand-sub");
+  if (brand) brand.textContent = game.mode === "sandbox" ? "Sandbox · todo desbloqueado" : "España · fábrica de la Tierra";
   document.getElementById("btn-pause").textContent = game.paused ? "Reanudar" : "Pausa";
   document.getElementById("btn-speed").textContent = `x${game.speed}`;
   document.getElementById("btn-color").classList.toggle("active", game.colorblind);
@@ -704,6 +709,8 @@ function renderPedia(game) {
   let hits;
   if (uiState.pediaTab === "featured" && !uiState.pediaQuery.trim()) {
     hits = FEATURED.map((f) => getItem(f.id)).filter(Boolean);
+  } else if (uiState.pediaTab === "raw" || uiState.pediaTab === "mid" || uiState.pediaTab === "end") {
+    hits = searchItems(uiState.pediaQuery, 80, { lane: uiState.pediaTab });
   } else {
     hits = searchItems(uiState.pediaQuery, 80);
   }

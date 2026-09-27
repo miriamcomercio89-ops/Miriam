@@ -4,6 +4,15 @@ const items = [];
 const recipes = [];
 const byId = new Map();
 
+function laneOf(kind) {
+  if (kind === "ore" || kind === "element" || kind === "fluid") return "raw";
+  if (kind === "form" || kind === "compound" || kind === "alloy" || kind === "organic" || kind === "polymer") {
+    return "mid";
+  }
+  if (kind === "science") return "science";
+  return "end";
+}
+
 function addItem(item) {
   if (byId.has(item.id)) return byId.get(item.id);
   const full = {
@@ -11,6 +20,7 @@ function addItem(item) {
     elements: [],
     tags: [],
     ...item,
+    lane: item.lane || laneOf(item.kind),
   };
   items.push(full);
   byId.set(full.id, full);
@@ -458,6 +468,59 @@ const NAMED = [
   ["euro-pallet", "Palé de exportación", ["Fe"], "commerce", "assembler", [{ id: "steel", n: 1 }, { id: "container", n: 1 }]],
 ];
 
+const MORE_GOODS = [
+  ["fridge", "Frigorífico", ["Fe"], "electronics", "assembler", [{ id: "steel", n: 3 }, { id: "circuit-basic", n: 1 }, { id: "plastic-pe", n: 2 }], "container"],
+  ["washer", "Lavadora", ["Fe"], "electronics", "assembler", [{ id: "steel", n: 2 }, { id: "motor-basic", n: 1 }, { id: "pipe-basic", n: 2 }], "motor"],
+  ["microwave", "Microondas", ["Fe"], "electronics", "assembler", [{ id: "steel", n: 1 }, { id: "circuit-basic", n: 1 }, { id: "glass-silica", n: 1 }], "display"],
+  ["dishwasher", "Lavavajillas", ["Fe"], "electronics", "assembler", [{ id: "steel", n: 2 }, { id: "pipe-basic", n: 2 }, { id: "motor-basic", n: 1 }], "motor"],
+  ["vacuum", "Aspiradora", ["Fe"], "electronics", "assembler", [{ id: "plastic-pe", n: 2 }, { id: "motor-basic", n: 1 }], "motor"],
+  ["tv-set", "Televisor", ["Si"], "electronics", "assembler", [{ id: "display", n: 1 }, { id: "plastic-pe", n: 2 }, { id: "circuit-basic", n: 1 }], "display"],
+  ["laptop", "Portátil", ["Si"], "electronics", "assembler", [{ id: "display", n: 1 }, { id: "chip", n: 1 }, { id: "battery-li", n: 1 }], "server"],
+  ["tablet", "Tableta", ["Si"], "electronics", "assembler", [{ id: "display", n: 1 }, { id: "battery-li", n: 1 }], "display"],
+  ["router", "Router", ["Si"], "telecom", "assembler", [{ id: "circuit-basic", n: 1 }, { id: "antenna-5g", n: 1 }], "antenna"],
+  ["speaker", "Altavoz", ["Fe"], "electronics", "assembler", [{ id: "magnet-nd", n: 1 }, { id: "plastic-pe", n: 1 }], "radio"],
+  ["lamp", "Lámpara", ["Si"], "electronics", "assembler", [{ id: "led", n: 2 }, { id: "glass-silica", n: 1 }], "led"],
+  ["foam-pe", "Espuma de PE", ["C"], "polymers", "reactor", [{ id: "plastic-pe", n: 1 }, { id: "el-n", n: 1 }], "polymer"],
+  ["film-pe", "Film de PE", ["C"], "polymers", "assembler", [{ id: "plastic-pe", n: 1 }], "polymer"],
+  ["sulfur-dye", "Tinte azufre", ["S"], "pigments", "reactor", [{ id: "el-s", n: 1 }, { id: "h2so4", n: 1 }], "dye"],
+  ["paint-yellow", "Pintura amarilla", ["C"], "pigments", "assembler", [{ id: "paint-white", n: 1 }, { id: "sulfur-dye", n: 1 }], "paint"],
+  ["chair", "Silla", ["C"], "urban", "assembler", [{ id: "steel", n: 1 }, { id: "fabric", n: 1 }], "kit"],
+  ["table", "Mesa", ["Fe"], "urban", "assembler", [{ id: "steel", n: 2 }, { id: "glass-silica", n: 1 }], "pallet"],
+  ["sofa", "Sofá", ["C"], "urban", "assembler", [{ id: "fabric", n: 3 }, { id: "foam-pe", n: 1 }], "fabric"],
+  ["mattress", "Colchón", ["C"], "urban", "assembler", [{ id: "foam-pe", n: 2 }, { id: "fabric", n: 2 }], "fabric"],
+  ["helmet", "Casco", ["Fe"], "construction", "assembler", [{ id: "plastic-pe", n: 1 }, { id: "foam-pe", n: 1 }], "kit"],
+  ["drill", "Taladro", ["Fe"], "logistics", "assembler", [{ id: "motor-basic", n: 1 }, { id: "steel", n: 1 }], "motor"],
+  ["hammer", "Martillo", ["Fe"], "start", "assembler", [{ id: "steel", n: 1 }, { id: "gear-basic", n: 1 }], "gear"],
+  ["wrench", "Llave inglesa", ["Fe"], "logistics", "assembler", [{ id: "steel", n: 1 }], "gear"],
+  ["can-tomato", "Tomate en lata", ["C"], "food", "assembler", [{ id: "can-al", n: 1 }, { id: "water", n: 1 }], "can"],
+  ["can-beans", "Alubias en lata", ["C"], "food", "assembler", [{ id: "can-al", n: 1 }, { id: "nacl", n: 1 }], "can"],
+  ["can-soup", "Sopa en lata", ["C"], "food", "assembler", [{ id: "can-al", n: 1 }, { id: "water", n: 1 }, { id: "nacl", n: 1 }], "can"],
+  ["yogurt", "Yogur", ["C"], "food", "assembler", [{ id: "can-al", n: 1 }, { id: "water", n: 1 }], "can"],
+  ["pasta", "Pasta", ["C"], "food", "assembler", [{ id: "urea", n: 1 }, { id: "water", n: 1 }], "pellet"],
+  ["coffee", "Café envasado", ["C"], "food", "assembler", [{ id: "can-al", n: 1 }, { id: "cardboard", n: 1 }], "can"],
+  ["tea", "Té envasado", ["C"], "food", "assembler", [{ id: "paper", n: 1 }, { id: "bottle-glass", n: 1 }], "bottle"],
+  ["soda", "Refresco", ["C"], "food", "assembler", [{ id: "bottle-glass", n: 1 }, { id: "water", n: 1 }, { id: "alc-etanol", n: 1 }], "bottle"],
+  ["shirt", "Camisa", ["C"], "textiles", "assembler", [{ id: "fabric", n: 2 }], "fabric"],
+  ["jeans", "Vaqueros", ["C"], "textiles", "assembler", [{ id: "denim", n: 2 }], "fabric"],
+  ["coat", "Abrigo", ["C"], "textiles", "assembler", [{ id: "fabric", n: 3 }, { id: "nylon", n: 1 }], "fabric"],
+  ["sneakers", "Zapatillas", ["C"], "textiles", "assembler", [{ id: "rubber", n: 1 }, { id: "fabric", n: 1 }], "tire"],
+  ["backpack", "Mochila", ["C"], "textiles", "assembler", [{ id: "nylon", n: 2 }, { id: "plastic-pe", n: 1 }], "crate"],
+  ["book", "Libro", ["C"], "forestry", "assembler", [{ id: "paper", n: 4 }, { id: "ink", n: 1 }], "paper"],
+  ["notebook", "Cuaderno", ["C"], "forestry", "assembler", [{ id: "paper", n: 2 }], "paper"],
+  ["paint-green", "Pintura verde", ["C"], "pigments", "assembler", [{ id: "paint-white", n: 1 }, { id: "dye-indigo", n: 1 }], "paint"],
+  ["paint-black", "Pintura negra", ["C"], "pigments", "assembler", [{ id: "paint-white", n: 1 }, { id: "el-c", n: 1 }], "paint"],
+  ["tile-blue", "Azulejo azul", ["Si"], "ceramics", "furnace", [{ id: "tile-ceramic", n: 1 }, { id: "paint-blue", n: 1 }], "tile"],
+  ["scooter", "Patinete", ["Al"], "mobility", "assembler", [{ id: "duralumin", n: 1 }, { id: "tire", n: 2 }, { id: "battery-li", n: 1 }], "bike"],
+  ["truck", "Camión", ["Fe"], "mobility", "assembler", [{ id: "chassis", n: 3 }, { id: "tire", n: 8 }, { id: "motor-basic", n: 2 }], "bus"],
+  ["tractor", "Tractor", ["Fe"], "agri", "assembler", [{ id: "chassis", n: 2 }, { id: "motor-basic", n: 1 }, { id: "tire", n: 4 }], "bus"],
+  ["ambulance", "Ambulancia", ["Fe"], "medical", "assembler", [{ id: "chassis", n: 1 }, { id: "hospital-kit", n: 1 }, { id: "tire", n: 4 }], "car"],
+  ["fire-truck", "Camión de bomberos", ["Fe"], "urban", "assembler", [{ id: "chassis", n: 2 }, { id: "pipe-basic", n: 4 }, { id: "tire", n: 6 }], "bus"],
+  ["school-bus", "Autobús escolar", ["Fe"], "urban", "assembler", [{ id: "bus", n: 1 }, { id: "paint-yellow", n: 1 }], "bus"],
+  ["crate-wood", "Caja de embalaje", ["C"], "forestry", "assembler", [{ id: "paper", n: 2 }, { id: "steel", n: 1 }], "crate"],
+  ["pallet-food", "Palé alimentario", ["C"], "food", "assembler", [{ id: "can-al", n: 4 }, { id: "euro-pallet", n: 1 }], "pallet"],
+  ["export-kit", "Kit de exportación", ["Fe"], "commerce", "assembler", [{ id: "container", n: 1 }, { id: "euro-pallet", n: 1 }, { id: "cardboard", n: 2 }], "crate"],
+];
+
 function addNamed() {
   for (const [id, name, elements, research, building, inputs] of NAMED) {
     addItem({
@@ -478,6 +541,84 @@ function addNamed() {
       research,
       inputs,
       output: { id, n: 1 },
+    });
+  }
+}
+
+function addMoreGoods() {
+  for (const [id, name, elements, research, building, inputs, glyph] of MORE_GOODS) {
+    addItem({
+      id,
+      name,
+      kind: "named",
+      color: byId.get(el(elements[0]))?.color ?? "#e2e8f0",
+      research,
+      tags: ["final", "catálogo"],
+      elements,
+      glyph,
+      desc: `${name}. Producto final de fábrica.`,
+    });
+    addRecipe({
+      id: `make-${id}`,
+      name: `Fabricar ${name.toLowerCase()}`,
+      building,
+      time: 5,
+      research,
+      inputs,
+      output: { id, n: 1 },
+    });
+  }
+}
+
+function addIndustrialVariants() {
+  for (const item of [...items]) {
+    if (item.kind !== "alloy") continue;
+    const id = `sheet-${item.id}`;
+    addItem({
+      id,
+      name: `Chapa de ${item.name.toLowerCase()}`,
+      kind: "form",
+      color: item.color,
+      research: item.research,
+      tags: ["chapa", "semiproducto"],
+      elements: item.elements,
+      glyph: "plate",
+      desc: `Chapa laminada de ${item.name.toLowerCase()}.`,
+    });
+    addRecipe({
+      id: `make-${id}`,
+      name: `Laminar ${item.name.toLowerCase()}`,
+      building: "assembler",
+      time: 4,
+      research: item.research,
+      inputs: [{ id: item.id, n: 1 }],
+      output: { id, n: 1 },
+    });
+  }
+  const plastics = ["plastic-pe", "plastic-pp", "plastic-pvc", "plastic-ps", "plastic-pet", "nylon", "rubber", "teflon"];
+  for (const pid of plastics) {
+    const base = byId.get(pid);
+    if (!base) continue;
+    const id = `pellet-${pid}`;
+    addItem({
+      id,
+      name: `Pellet de ${base.name.toLowerCase()}`,
+      kind: "polymer",
+      color: base.color,
+      research: "polymers",
+      tags: ["polímero", "semiproducto"],
+      elements: base.elements,
+      glyph: "pellet",
+      desc: `Granza lista para extruir ${base.name.toLowerCase()}.`,
+    });
+    addRecipe({
+      id: `make-${id}`,
+      name: `Granular ${base.name.toLowerCase()}`,
+      building: "assembler",
+      time: 3,
+      research: "polymers",
+      inputs: [{ id: pid, n: 1 }],
+      output: { id, n: 2 },
     });
   }
 }
@@ -883,8 +1024,10 @@ seedItems();
 addMetalForms();
 addCompounds();
 addNamed();
+addMoreGoods();
 addAlloysGenerated();
 addOrganics();
+addIndustrialVariants();
 addScience();
 addElectrolysis();
 addHydratesAndPurities();
@@ -910,16 +1053,19 @@ export function labRecipes() {
   return recipes.filter((r) => r.building === "lab");
 }
 
-export function searchItems(query, limit = 80) {
+export function searchItems(query, limit = 80, opts = {}) {
   const q = query.trim().toLowerCase();
-  if (!q) return items.slice(0, limit);
+  const lane = opts.lane;
   const out = [];
   for (const item of items) {
+    if (lane && item.lane !== lane) continue;
     if (
+      !q ||
       item.name.toLowerCase().includes(q) ||
       item.id.includes(q) ||
       item.elements.some((e) => e.toLowerCase() === q) ||
-      item.tags.some((t) => t.includes(q))
+      item.tags.some((t) => t.includes(q)) ||
+      item.lane === q
     ) {
       out.push(item);
       if (out.length >= limit) break;
@@ -928,8 +1074,16 @@ export function searchItems(query, limit = 80) {
   return out;
 }
 
+function countLane(lane) {
+  return items.filter((item) => item.lane === lane).length;
+}
+
 export const CATALOG_STATS = {
   items: items.length,
   recipes: recipes.length,
   elements: ELEMENTS.length,
+  raw: countLane("raw"),
+  mid: countLane("mid"),
+  end: countLane("end"),
+  science: countLane("science"),
 };

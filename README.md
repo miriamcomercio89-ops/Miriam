@@ -13,7 +13,9 @@ No hace falta saber programar.
 3. Se abre el navegador en `http://127.0.0.1:5173` con el juego maquetado.
 4. No cierres la ventana negra / de terminal mientras juegas.
 
-La partida se guarda en el navegador con el botón **Guardar**.
+Al abrir el juego verás un **menú**: **Modo normal** (investigas para desbloquear) o **Sandbox** (todo desbloqueado: recetas, fábricas y materiales). Hay miles de productos —materias primas, semiproductos y finales— cada uno con su logo, y decenas de edificios.
+
+La partida se guarda en el navegador con el botón **Guardar**. Vuelve al menú con **Esc** o el botón Menú.
 
 Si prefieres la terminal (hace falta [Node.js](https://nodejs.org/) 20+):
 
