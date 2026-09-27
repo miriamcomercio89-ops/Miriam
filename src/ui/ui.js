@@ -284,7 +284,7 @@ function renderOrdersFull(game) {
       return `<div class="order-card ${o.status}">
         <h3>${labelOf(o)} · ${c?.region || (o.kind === "city" ? "España" : o.kind)}</h3>
         <p class="with-logo">${logoImg(o.itemId)} ${o.amount}× <b>${item?.name}</b> ${feat ? `— ${feat.why}` : ""} ${o.note && o.note !== feat?.why ? `· ${o.note}` : ""}</p>
-        <p>Tienes ${have} (inventario + puerto). Recompensa: ${o.rewardN} ${getItem(o.rewardSci)?.name} · +${o.rep} rep · ${o.status}</p>
+        <p class="with-logo">Tienes ${have} (inventario + puerto). Recompensa: ${logoImg(o.rewardSci, "logo xs")} ${o.rewardN} ${getItem(o.rewardSci)?.name} · +${o.rep} rep · ${o.status}</p>
         ${orderActions(o, have)}
       </div>`;
     })
@@ -447,34 +447,46 @@ function renderInspect(game) {
   const def = BUILDINGS[b.type];
   const rec = b.recipe ? recipeById(b.recipe) : null;
   const options = recOptions(game, b);
+  const cost = Object.entries(def.cost || {})
+    .map(([id, n]) => `${logoImg(id, "logo xs")}${n} ${getItem(id)?.name ?? id}`)
+    .join(" ");
   body.innerHTML = `
     <p class="with-logo">${factoryImg(b.type)}<b>${def.name}</b></p>
     <p>${def.desc}</p>
+    ${cost ? `<p class="with-logo muted">Coste: ${cost}</p>` : ""}
     <div id="inspect-live">
     <div class="progress"><span style="width:${Math.round((b.progress || 0) * 100)}%"></span></div>
     <p>Entrada: ${fmtBuf(b.input)}<br>Salida: ${fmtBuf(b.output)}</p>
     </div>
-    <label>Receta
-      <select id="recipe-select">${options
-        .map((r) => `<option value="${r.id}" ${r.id === b.recipe ? "selected" : ""}>${r.name}</option>`)
-        .join("")}</select>
-    </label>
-    ${rec ? `<p class="muted">${recipeText(rec)}</p>` : ""}
-    ${b.type === "filter" ? `<label>Dejar pasar
-      <select id="filter-select"><option value="">todo</option>${filterOptions(game, b)}</select>
-    </label>` : ""}
+    <p class="muted">Receta</p>
+    <div class="recipe-picker" id="recipe-select">${options
+      .map((r) => {
+        const out = r.output?.id;
+        return `<button type="button" class="recipe-opt ${r.id === b.recipe ? "on" : ""}" data-recipe="${r.id}">
+          ${out ? logoImg(out, "logo sm") : factoryImg(b.type, "logo sm")}
+          <span>${r.name}</span>
+        </button>`;
+      })
+      .join("")}</div>
+    ${rec ? `<p class="muted recipe-preview">${recipeText(rec)}</p>` : ""}
+    ${b.type === "filter" ? `<p class="muted">Dejar pasar</p><div class="filter-picker" id="filter-select">
+      <button type="button" class="recipe-opt ${b.filterId ? "" : "on"}" data-filter="">todo</button>
+      ${filterChips(game, b)}
+    </div>` : ""}
     ${rec ? `<button id="pin-recipe">Fijar receta</button>` : ""}
     <button id="feed-building">Meter del inventario</button>
   `;
-  const select = document.getElementById("recipe-select");
-  if (select) select.onchange = () => {
-    b.recipe = select.value || null;
-    b.progress = 0;
-  };
-  const filterSel = document.getElementById("filter-select");
-  if (filterSel) filterSel.onchange = () => {
-    b.filterId = filterSel.value || null;
-  };
+  body.querySelectorAll("[data-recipe]").forEach((btn) => {
+    btn.onclick = () => {
+      b.recipe = btn.dataset.recipe || null;
+      b.progress = 0;
+    };
+  });
+  body.querySelectorAll("[data-filter]").forEach((btn) => {
+    btn.onclick = () => {
+      b.filterId = btn.dataset.filter || null;
+    };
+  });
   const pin = document.getElementById("pin-recipe");
   if (pin) pin.onclick = () => {
     game.pinned = rec.output?.id || b.recipe;
@@ -484,13 +496,13 @@ function renderInspect(game) {
   if (feed) feed.onclick = () => feedBuilding(game, b);
 }
 
-function filterOptions(game, b) {
+function filterChips(game, b) {
   const ids = new Set([...Object.keys(game.inventory), b.filterId].filter(Boolean));
   return [...ids]
     .map((id) => {
       const item = getItem(id);
       if (!item) return "";
-      return `<option value="${id}" ${b.filterId === id ? "selected" : ""}>${item.name}</option>`;
+      return `<button type="button" class="recipe-opt ${b.filterId === id ? "on" : ""}" data-filter="${id}">${logoImg(id, "logo sm")}${item.name}</button>`;
     })
     .join("");
 }
@@ -532,9 +544,10 @@ function fmtBuf(buf) {
 }
 
 function recipeText(r) {
+  const machine = r.building ? factoryImg(r.building, "logo xs") : "";
   const ins = r.inputs.map((i) => `${logoImg(i.id, "logo xs")}${i.n}× ${getItem(i.id)?.name ?? i.id}`).join(" + ") || "yacimiento";
   const out = r.output?.n ? `${logoImg(r.output.id, "logo xs")}${r.output.n}× ${getItem(r.output.id)?.name}` : "ciencia";
-  return `${ins} → ${out}  (${r.time}s)`;
+  return `${machine}${ins} → ${out}  (${r.time}s)`;
 }
 
 function researchGate(el) {
@@ -647,7 +660,7 @@ function renderPedia(game) {
   detail.innerHTML = `
     <h3 class="with-logo">${logoImg(item.id, "logo lg")}${item.name}</h3>
     <p>${feat?.blurb || item.desc || ""}</p>
-    <p>${(item.elements || []).map((s) => `<span class="chip">${s}</span>`).join("")}</p>
+    <p>${(item.elements || []).map((s) => `<span class="chip with-logo">${logoImg(`el-${s.toLowerCase()}`, "logo xs")}${s}</span>`).join("")}</p>
     ${recs
       .map((r) => {
         const can = !r.research || isResearched(game, r.research);

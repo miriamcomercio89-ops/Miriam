@@ -36,10 +36,19 @@ test("productos clave tienen un dibujo propio, no un cajón genérico", () => {
     "ingot-fe": "ingot",
     "plate-cu": "plate",
     "wire-cu": "wire",
+    beer: "beer",
+    "solar-panel": "solar",
+    robot: "robot",
+    airliner: "plane",
   };
   for (const [id, glyph] of Object.entries(expect)) {
     assert.equal(logoSpec(getItem(id)).glyph, glyph, id);
   }
+});
+
+test("ningún producto con nombre propio usa el cajón genérico", () => {
+  const boxes = ITEMS.filter((item) => item.kind === "named" && logoSpec(item).glyph === "box");
+  assert.deepEqual(boxes.map((i) => i.id), []);
 });
 
 test("cada fábrica tiene imagen y las URLs de logo son data:", () => {
