@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Periodica — Fábricas de la tabla periódica</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <canvas id="world"></canvas>
+
+      <header class="topbar">
+        <div class="brand">
+          <span class="brand-mark">P</span>
+          <div>
+            <strong>Periodica</strong>
+            <small>Fábricas atómicas</small>
+          </div>
+        </div>
+        <div class="stats">
+          <div class="stat" id="stat-power" title="Energía">
+            <span>⚡</span><b>—</b>
+          </div>
+          <div class="stat" id="stat-items" title="Ítems en catálogo">
+            <span>📦</span><b>—</b>
+          </div>
+          <div class="stat" id="stat-tech" title="Investigaciones">
+            <span>🔬</span><b>—</b>
+          </div>
+          <div class="stat" id="stat-time">
+            <span>⏱</span><b>—</b>
+          </div>
+        </div>
+        <div class="top-actions">
+          <button data-modal="periodic" title="Tabla periódica (P)">Tabla</button>
+          <button data-modal="research" title="Investigación (T)">Ciencia</button>
+          <button data-modal="pedia" title="Enciclopedia (E)">Recetas</button>
+          <button data-modal="help" title="Ayuda (H)">Ayuda</button>
+          <button id="btn-pause">Pausa</button>
+          <button id="btn-speed">x1</button>
+          <button id="btn-save">Guardar</button>
+        </div>
+      </header>
+
+      <aside class="left-dock">
+        <div class="panel" id="tutorial">
+          <h3>Primeros pasos</h3>
+          <ol id="tutorial-list"></ol>
+        </div>
+        <div class="panel messages" id="messages"></div>
+      </aside>
+
+      <aside class="right-dock">
+        <div class="panel" id="inspect">
+          <h3>Selección</h3>
+          <div id="inspect-body" class="muted">Haz clic en un edificio o yacimiento.</div>
+        </div>
+        <div class="panel" id="inventory-panel">
+          <h3>Inventario</h3>
+          <div id="inventory-body"></div>
+        </div>
+      </aside>
+
+      <nav class="hotbar" id="hotbar"></nav>
+
+      <div id="tooltip" hidden></div>
+
+      <div class="modal" id="modal-periodic" hidden>
+        <div class="modal-card wide">
+          <header>
+            <h2>Tabla periódica viva</h2>
+            <button class="close" data-close>×</button>
+          </header>
+          <p class="lead">
+            Los 118 elementos son recursos. Color sólido: lo tienes. Borde: hay yacimiento en el mapa.
+            Clic para ver derivados.
+          </p>
+          <div id="periodic-grid" class="periodic"></div>
+          <div id="periodic-detail" class="detail"></div>
+        </div>
+      </div>
+
+      <div class="modal" id="modal-research" hidden>
+        <div class="modal-card wide">
+          <header>
+            <h2>Árbol de investigación</h2>
+            <button class="close" data-close>×</button>
+          </header>
+          <div id="research-progress" class="lead"></div>
+          <div id="research-tree" class="research-tree"></div>
+        </div>
+      </div>
+
+      <div class="modal" id="modal-pedia" hidden>
+        <div class="modal-card wide">
+          <header>
+            <h2>Enciclopedia de recetas</h2>
+            <button class="close" data-close>×</button>
+          </header>
+          <input id="pedia-search" type="search" placeholder="Busca hierro, H2SO4, neodimio, circuito…" />
+          <div class="pedia-layout">
+            <div id="pedia-list"></div>
+            <div id="pedia-detail" class="detail"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal" id="modal-help" hidden>
+        <div class="modal-card">
+          <header>
+            <h2>Cómo se juega</h2>
+            <button class="close" data-close>×</button>
+          </header>
+          <div class="help-copy">
+            <p>
+              Periodica es un juego de fábricas. Extraes elementos de la tabla periódica, los transformas
+              en miles de compuestos y desbloqueas ciencia hasta fabricar el Núcleo.
+            </p>
+            <ul>
+              <li><b>Clic izquierdo</b> — colocar el edificio de la barra.</li>
+              <li><b>Clic derecho</b> — cancelar o recoger un edificio (devuelve el 60%).</li>
+              <li><b>R</b> — rotar cintas y salidas.</li>
+              <li><b>WASD</b> o arrastrar con el botón medio — mover la cámara.</li>
+              <li><b>Rueda</b> — zoom.</li>
+              <li><b>P / T / E / H</b> — tabla, ciencia, recetas, ayuda.</li>
+              <li><b>Espacio</b> — pausa. <b>+ / −</b> — velocidad.</li>
+            </ul>
+            <p>
+              Las cintas transportan de todo, también fluidos envasados: más simple que tuberías. Elige
+              una receta en el panel derecho o deja que la máquina la adivine con lo que le llega.
+            </p>
+            <p>
+              No hace falta saber programar ni química avanzada: la enciclopedia te dice cómo se fabrica
+              cada cosa y la tabla te muestra qué elementos te faltan.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
