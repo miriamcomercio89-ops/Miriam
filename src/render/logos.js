@@ -298,7 +298,7 @@ export function drawItemLogo(ctx, id, x, y, s, opts = {}) {
 
   const cx = x + s / 2;
   const cy = y + s / 2;
-  const g = s * 0.62;
+  const g = s * 0.72;
   drawGlyph(ctx, spec.glyph, spec.color, cx, cy, g);
 
   if (spec.badge && spec.family !== "science") {
@@ -359,24 +359,45 @@ export function drawElementCard(ctx, x, y, s, symbol, colorblind = false) {
 export function drawFactoryLogo(ctx, type, x, y, size, extras = {}) {
   const def = BUILDINGS[type];
   if (!def) return;
-  const pad = size * 0.08;
+  const pad = size * 0.05;
   const tick = extras.tick || 0;
-  roundRect(ctx, x + pad, y + pad, size - pad * 2, size - pad * 2, size * 0.12);
-  ctx.fillStyle = "#101826";
+  roundRect(ctx, x + pad, y + pad, size - pad * 2, size - pad * 2, size * 0.16);
+  ctx.fillStyle = mixHex(def.color, "#0b1220", 0.28);
   ctx.fill();
   ctx.strokeStyle = def.color;
-  ctx.lineWidth = Math.max(1.5, size * 0.04);
+  ctx.lineWidth = Math.max(2, size * 0.06);
   ctx.stroke();
+  ctx.fillStyle = def.color;
+  ctx.globalAlpha = 0.9;
+  roundRect(ctx, x + pad, y + pad, size - pad * 2, size * 0.16, size * 0.1);
+  ctx.fill();
+  ctx.globalAlpha = 1;
 
   const cx = x + size / 2;
-  const cy = y + size / 2;
+  const cy = y + size / 2 + size * 0.05;
   ctx.save();
   ctx.translate(cx, cy);
-  ctx.fillStyle = def.color;
-  ctx.strokeStyle = def.color;
-  ctx.lineWidth = Math.max(1.2, size * 0.035);
-  drawFactoryGlyph(ctx, type, size, tick, extras);
+  ctx.fillStyle = "#f8fafc";
+  ctx.strokeStyle = "#f8fafc";
+  ctx.lineWidth = Math.max(1.8, size * 0.045);
+  ctx.shadowColor = def.color;
+  ctx.shadowBlur = size * 0.08;
+  drawFactoryGlyph(ctx, type, size * 1.15, tick, extras);
   ctx.restore();
+}
+
+function mixHex(color, base, amount) {
+  const c = parseHex(color);
+  const b = parseHex(base);
+  if (!c || !b) return base;
+  const m = (a, d) => Math.round(a * amount + d * (1 - amount));
+  return `rgb(${m(c[0], b[0])},${m(c[1], b[1])},${m(c[2], b[2])})`;
+}
+
+function parseHex(hex) {
+  const h = (hex || "").replace("#", "");
+  if (h.length !== 6) return null;
+  return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
 }
 
 function drawFactoryGlyph(ctx, type, size, tick, extras) {
@@ -1476,7 +1497,7 @@ function makeCanvas(w, h) {
   return c;
 }
 
-export function itemLogoUrl(id, size = 48) {
+export function itemLogoUrl(id, size = 56) {
   const key = `i:${id}:${size}`;
   if (urlCache.has(key)) return urlCache.get(key);
   const c = makeCanvas(size, size);
@@ -1493,7 +1514,7 @@ export function itemLogoUrl(id, size = 48) {
   return url;
 }
 
-export function factoryLogoUrl(type, size = 56) {
+export function factoryLogoUrl(type, size = 72) {
   const key = `f:${type}:${size}`;
   if (urlCache.has(key)) return urlCache.get(key);
   const c = makeCanvas(size, size);

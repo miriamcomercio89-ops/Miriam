@@ -201,11 +201,11 @@ button.active {
 }
 
 .hot {
-  width: 68px;
-  height: 62px;
+  width: 72px;
+  height: 70px;
   border-radius: 12px;
   border: 1px solid var(--stroke);
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.05);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -244,9 +244,10 @@ button.active {
 }
 
 .hot-logo {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08);
 }
 
 .with-logo {
